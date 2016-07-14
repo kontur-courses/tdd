@@ -5,10 +5,6 @@ using NUnit.Framework;
 
 namespace Kontur.Courses.Testing.Tdd
 {
-	public class Frame
-	{
-	}
-
 	public class Game
 	{
 		public void Roll(int pins)
@@ -16,12 +12,10 @@ namespace Kontur.Courses.Testing.Tdd
 			
 		}
 
-		public IList<Frame> GetFrames()
-		{
-			throw new NotImplementedException();
-		}
-
-		public int Score {  get { throw new NotImplementedException(); } }
+	    public int GetScore()
+	    {
+            throw new NotImplementedException();
+        }
 	}
 
 
