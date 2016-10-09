@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 
-namespace Kontur.Courses.Testing.Tdd
+namespace Samples
 {
 	public class StringCalculator
 	{
@@ -58,29 +58,30 @@ namespace Kontur.Courses.Testing.Tdd
 			Assert.AreEqual(0, result);
 		}
 
-		[TestCase("", Result = 0)]
-		[TestCase("42", Result = 42)]
-		[TestCase("42,13", Result = 55)]
-		[TestCase("1,2,3,4,5", Result = 15)]
+        [TestCase]
+		[TestCase("", ExpectedResult = 0)]
+		[TestCase("42", ExpectedResult = 42)]
+		[TestCase("42,13", ExpectedResult = 55)]
+		[TestCase("1,2,3,4,5", ExpectedResult = 15)]
 		public int add_ComaSeparatedNumbers(string numbers)
 		{
 			return calc.Add(numbers);
 		}
 
-		[TestCase("1\n2\n3", Result = 6)]
+		[TestCase("1\n2\n3", ExpectedResult = 6)]
 		public int add_NewlineSeparatedNumbers(string numbers)
 		{
 			return calc.Add(numbers);
 		}
 
-		[TestCase("1\n2,3", Result = 6)]
+		[TestCase("1\n2,3", ExpectedResult = 6)]
 		public int add_NumbersSeparatedByBothCommaAndNewline(string numbers)
 		{
 			return calc.Add(numbers);
 		}
 
-		[TestCase("//;\n1;2;3", Result = 6)]
-		[TestCase("//|\n4|5|61", Result = 70)]
+		[TestCase("//;\n1;2;3", ExpectedResult = 6)]
+		[TestCase("//|\n4|5|61", ExpectedResult = 70)]
 		public int useDelimiterFromFirstSpecialLine(string numbers)
 		{
 			return calc.Add(numbers);

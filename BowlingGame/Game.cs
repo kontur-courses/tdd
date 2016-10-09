@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using NUnit.Framework;
 
-namespace Kontur.Courses.Testing.Tdd
+namespace BowlingGame
 {
 	public class Game
 	{
@@ -20,7 +18,7 @@ namespace Kontur.Courses.Testing.Tdd
 
 
 	[TestFixture]
-	public class BowlingGame_should
+	public class Game_should
 	{
 		[Test]
 		public void HaveEmptyFrame_BeforeAnyRolls()
