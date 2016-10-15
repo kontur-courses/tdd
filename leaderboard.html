@@ -1,0 +1,53 @@
+<html>
+<head>
+	<script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>	
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/css/bootstrap.min.css">	
+	<style>
+		body {margin:20px;}
+		h1 {text-align:center;}
+		.team-row { margin-top:0px;}
+		.testname {padding:5px;line-height: 2em;}
+		.failed {background-color: #F99; font-size:1.2em}
+		.passed {background-color: #9F9;}
+		.unknown {background-color: #FF9;}
+	</style>
+</head>
+<body>
+	<h1>Bowling Game Kata</h1>
+	<div id="container" />
+
+<script>
+	var fb = new Firebase("https://testing-challenge.firebaseio.com/bowling");
+	fb.on("value", function(snapshot) {
+		var res = snapshot.val();
+		var html = "<table class='table table-condensed table-striped'><tr><th>Team<th>Tests</tr>";
+		var names = Object.keys(res);
+		names.sort((a,b) => Object.keys(res[b].tests).length - Object.keys(res[a].tests).length);
+		
+		names.forEach(function(name){
+			html += "<tr><td class='name'>" + htmlEscape(name) + "</td><td>";
+			var tests = res[name].tests;
+			var testNames = Object.keys(tests);
+			testNames.sort((a,b) => tests[a] < tests[b] ? -1 : +(tests[a] > tests[b]));
+			testNames.forEach(n => html += formatTest(n, tests[n]));
+			html += "</td></tr>";
+		});
+		html += "</table>";
+		document.getElementById("container").innerHTML = html;
+	});
+	
+	function htmlEscape(str) {
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+	
+	function formatTest(name, status){
+		return "<span title='" + status + "' class='testname " + status + "'>" + htmlEscape(name) + "</span> "; 
+	}
+</script>
+</body>
+</html>
