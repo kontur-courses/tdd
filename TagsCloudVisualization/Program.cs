@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
-using System.Text;
+using Fclp;
 
 
 namespace TagsCloudVisualization
@@ -12,10 +10,37 @@ namespace TagsCloudVisualization
     {
         static void Main(string[] args)
         {
+
+            var commandLineParser = new FluentCommandLineParser<RunOptions>();
+
+            commandLineParser
+                .Setup(options => options.PathToWords)
+                .As('w')
+                .WithDescription("path to file with words for cloud");
+
+            commandLineParser   
+                .Setup(options => options.PathToFinalImage)
+                .As('i')
+                .WithDescription("path to final image");
+
+            commandLineParser
+                .SetupHelp("h", "help")
+                .WithHeader($"{AppDomain.CurrentDomain.FriendlyName} [-i image] [-w words]")
+                .Callback(text => Console.WriteLine(text));
+           
+            if (commandLineParser.Parse(args).HelpCalled)
+                return;
+
+            if (commandLineParser.Object.PathToFinalImage == null || commandLineParser.Object.PathToWords == null)
+            {
+                Console.WriteLine("you need to specify all parameters. for help use: -h");
+                return;
+            }
+
             string[] lines;
             try
             {
-                var fileName = @"wordsForCloud.txt";
+                var fileName = commandLineParser.Object.PathToWords;
                 lines = File.ReadAllLines(fileName).ToArray();
             }
             catch (IOException e)
@@ -30,12 +55,23 @@ namespace TagsCloudVisualization
             var countLines = lines.Length;
             for (var i = 0; i < countLines; i++)
             {
-                var coefficientFontSize = 2 * ((double)( countLines - i) / countLines) * 
+                var coefficientFontSize = 2 * ((double) (countLines - i)/countLines) *
                     (averageLengthString / (averageLengthString + lines[i].Length));
                 picture.DrawPhrase(lines[i], coefficientFontSize);
             }
-            picture.SaveToFile("image.png");
+            picture.SaveToFile(commandLineParser.Object.PathToFinalImage);
         }
 
-    }
+        private class RunOptions
+        { 
+            public string PathToWords { get; set; }
+
+            public string PathToFinalImage { get; set; }
+        }
+
+
+
+}
+
+
 }
