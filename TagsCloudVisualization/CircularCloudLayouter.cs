@@ -7,14 +7,13 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter : IEnumerable<Rectangle>
+    public class CircularCloudLayouter 
     {
         public Point Center { get; }
         private readonly Random random;
         private int radiusSetting;
         private int stepRadiusSetting = 5;
-        private double deflectionAngle = Math.PI*2;
-        private double stepDeflectionAngle = Math.PI / 24;
+        private double stepDeflectionAngle = Math.PI / 36;
         private readonly List<Rectangle> existingRectangles;
 
         public CircularCloudLayouter(Point center)
@@ -26,7 +25,7 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {  
-            deflectionAngle = 2 * Math.PI * random.NextDouble(); 
+            var deflectionAngle = 2 * Math.PI * random.NextDouble(); 
             while (true)
             {
                 while (deflectionAngle > 0)
@@ -92,14 +91,5 @@ namespace TagsCloudVisualization
             return existingRectangles.Any(r => r.IntersectsWith(rectangle));
         }
 
-        public IEnumerator<Rectangle> GetEnumerator()
-        {
-            return existingRectangles.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
     }
 }

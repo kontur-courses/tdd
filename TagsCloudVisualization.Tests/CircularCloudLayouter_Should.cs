@@ -12,6 +12,8 @@ namespace TagsCloudVisualization.Tests
     public class CircularCloudLayouter_Should
     {
         private CircularCloudLayouter cloud;
+        private List<Rectangle> rectangles;
+        private Point center;
         private Random random = new Random();
         private int defaultWidthRectangle = 200;
         private int defaultHeightRectangle = 200;
@@ -19,7 +21,9 @@ namespace TagsCloudVisualization.Tests
         [SetUp]
         public void SetUp()
         {
-            cloud = new CircularCloudLayouter(new Point(0, 0));
+            rectangles = new List<Rectangle>();
+            center = new Point(0, 0);
+            cloud = new CircularCloudLayouter(center);
         }
 
         [TearDown]
@@ -27,17 +31,21 @@ namespace TagsCloudVisualization.Tests
         {
             if (Equals(TestContext.CurrentContext.Result.Outcome.Status, ResultState.Failure.Status))
             {
-                var picture = new Picture(cloud);
-                picture.DrawRectanglesFromCloud();
+                var width = 3000;
+                var height = 3000;
+                var visualizer = new VisualizerCloud(width, height, new SolidBrush(Color.DarkGray));
+                var shiftedRectangles = rectangles
+                    .Select(r => new Rectangle(new Point(r.X + width/2, r.Y + height/2), r.Size)).ToList();
+                var image = visualizer.GetImageCloud(shiftedRectangles, Color.Crimson, Color.BurlyWood);
                 var filename = $"{TestContext.CurrentContext.TestDirectory}\\{TestContext.CurrentContext.Test.FullName}.png";
-                picture.SaveToFile(filename);
+                image.Save(filename);
                 TestContext.WriteLine(filename);
             }
         }
 
-        private void AssertDoNotIntersect(List<Rectangle> rectangles)
+        private void AssertDoNotIntersect(List<Rectangle> rectanglesList)
         {
-            var intersectingRectangles = GetPairIntersectingRectangles(rectangles);
+            var intersectingRectangles = GetPairIntersectingRectangles(rectanglesList);
             string message = "";
             if (intersectingRectangles != null)
                 message = String.Format("{0}: {1} {2}",
@@ -48,14 +56,14 @@ namespace TagsCloudVisualization.Tests
 
         }
 
-        private Tuple<Rectangle, Rectangle> GetPairIntersectingRectangles(List<Rectangle> rectangles)
+        private Tuple<Rectangle, Rectangle> GetPairIntersectingRectangles(List<Rectangle> rectanglesList)
         {
-            for (var i = 0; i < rectangles.Count - 1; i++)
+            for (var i = 0; i < rectanglesList.Count - 1; i++)
             {
-                for (var j = i + 1; j < rectangles.Count; j++)
+                for (var j = i + 1; j < rectanglesList.Count; j++)
                 {
-                    if (rectangles[i].IntersectsWith(rectangles[j]))
-                        return Tuple.Create(rectangles[i], rectangles[j]);
+                    if (rectanglesList[i].IntersectsWith(rectanglesList[j]))
+                        return Tuple.Create(rectanglesList[i], rectanglesList[j]);
                 }
             }
             return null;
@@ -71,7 +79,6 @@ namespace TagsCloudVisualization.Tests
         [Test]
         public void returnRectangleInCenter_AfterFirstPutting()
         {
-            var center = cloud.Center;
             var rectangleSize = new Size(59, 37);
             var rectangle = cloud.PutNextRectangle(rectangleSize);
             var expectedLocation = new Point(center.X - rectangleSize.Width / 2, center.Y - rectangleSize.Height / 2);
@@ -81,7 +88,6 @@ namespace TagsCloudVisualization.Tests
 
         private List<Rectangle> PutRectanglesToCloud(int numberOfRectangles)
         {
-            var rectangles = new List<Rectangle>();
             for (var i = 0; i < numberOfRectangles; i++)
             {
                 var rectangleSize = new Size(
@@ -99,7 +105,7 @@ namespace TagsCloudVisualization.Tests
         [TestCase(1000), Timeout(1000)]
         public void returnNotOverlappingRectangles_AfterPutting(int numberOfRectangles)
         {
-            var rectangles = PutRectanglesToCloud(numberOfRectangles);
+            rectangles = PutRectanglesToCloud(numberOfRectangles);
             AssertDoNotIntersect(rectangles);
         }
 
@@ -109,7 +115,7 @@ namespace TagsCloudVisualization.Tests
         [TestCase(1000)]
         public void shiftRectangleToCenter_AfterPutting(int numberOfRectangles)
         {
-            var rectangles = PutRectanglesToCloud(numberOfRectangles);
+            rectangles = PutRectanglesToCloud(numberOfRectangles);
             foreach (var rectangle in rectangles)
             {
                 var rectengleCenter = new Point(rectangle.X + rectangle.Width / 2, rectangle.Y + rectangle.Height / 2);
@@ -130,7 +136,7 @@ namespace TagsCloudVisualization.Tests
         [TestCase(1000)]
         public void placeRectanglesTightly_AfterPutting(int numberOfRectangles)
         {
-            var rectangles = PutRectanglesToCloud(numberOfRectangles);
+            rectangles = PutRectanglesToCloud(numberOfRectangles);
             AssertDoNotIntersect(rectangles);
             var totalSquare = rectangles.Sum(r => r.Width * r.Height);
             var minX = rectangles.Min(r => r.X);
@@ -139,6 +145,28 @@ namespace TagsCloudVisualization.Tests
             var maxY = rectangles.Max(r => r.Bottom);
             int squareBoundingRectangle = (maxX - minX) * (maxY - minY);
             ((double)totalSquare / squareBoundingRectangle).Should().BeGreaterThan(0.5);
+        }
+
+        [TestCase(200)]
+        [TestCase(500)]
+        [TestCase(1000)]
+        public void striveToFormCircle_AfterPutting(int numberOfRectangles)
+        {
+            rectangles = PutRectanglesToCloud(numberOfRectangles);
+            var distanceToLastRectangles = rectangles
+                .Skip(numberOfRectangles * 9 / 10)
+                .Select(r => r.MaxDistanceToPoint(center));
+            var minDistance = double.MaxValue;
+            var maxDistance = 0.0;
+            foreach (var distance in distanceToLastRectangles)
+            {
+                if (distance < minDistance)
+                    minDistance = distance;
+                if (distance > maxDistance)
+                    maxDistance = distance;
+            }
+
+            (minDistance/maxDistance).Should().BeGreaterThan(0.7);
         }
     }
 }

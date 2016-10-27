@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using Fclp;
 
 
@@ -30,36 +33,50 @@ namespace TagsCloudVisualization
            
             if (commandLineParser.Parse(args).HelpCalled)
                 return;
-
             if (commandLineParser.Object.PathToFinalImage == null || commandLineParser.Object.PathToWords == null)
             {
                 Console.WriteLine("you need to specify all parameters. for help use: -h");
                 return;
             }
-
             string[] lines;
+            var fileName = commandLineParser.Object.PathToWords;
             try
             {
-                var fileName = commandLineParser.Object.PathToWords;
                 lines = File.ReadAllLines(fileName).ToArray();
             }
-            catch (IOException e)
+            catch (IOException)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(String.Join("{0} {1}", "failed to read file", fileName));
                 return;
             }
             var width = 2000;
             var height = 2000;
-            var picture = new Picture(width, height);
-            double averageLengthString = (double)lines.Sum(s => s.Length)/lines.Length;
+            var cloud = new CircularCloudLayouter(new Point(width / 2, height / 2));
+            var visualizer = new VisualizerCloud(width, height, new SolidBrush(Color.DarkSlateBlue));
+            var averageLengthString = (double)lines.Sum(s => s.Length)/lines.Length;
+            var maxFontSize = ((double)height / lines.Length + width / averageLengthString) / 7;
             var countLines = lines.Length;
+            var blocks = new List<Tuple<Rectangle, string, Font>>();
             for (var i = 0; i < countLines; i++)
             {
-                var coefficientFontSize = 2 * ((double) (countLines - i)/countLines) *
-                    (averageLengthString / (averageLengthString + lines[i].Length));
-                picture.DrawPhrase(lines[i], coefficientFontSize);
+                var coefficientFontSize = 2*((double) (countLines - i)/countLines);
+                var emSize = maxFontSize * coefficientFontSize;
+                var font = new Font(FontFamily.GenericSerif, (float)emSize, FontStyle.Regular);
+                var size = TextRenderer.MeasureText(lines[i], font);
+                size = new Size(size.Width + lines[i].Length, size.Height + lines[i].Length);
+                var rectangle = cloud.PutNextRectangle(size);
+                blocks.Add(Tuple.Create(rectangle, lines[i], font));
             }
-            picture.SaveToFile(commandLineParser.Object.PathToFinalImage);
+            var image = visualizer.GetImageCloud(blocks, Color.Bisque);
+            fileName = commandLineParser.Object.PathToFinalImage;
+            try
+            {
+                image.Save(fileName);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine(String.Join("{0} {1}", "error saving image", fileName));
+            }
         }
 
         private class RunOptions
@@ -68,10 +85,7 @@ namespace TagsCloudVisualization
 
             public string PathToFinalImage { get; set; }
         }
-
-
-
-}
+    }
 
 
 }
