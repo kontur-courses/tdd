@@ -45,11 +45,11 @@ namespace TagsCloudVisualization.Tests
         }
 
         [Test]
-        public void returnCorrectMaxDistanceToPoint()
+        public void ReturnCorrectMaxDistanceToPoint()
         {
             var point = new Point(10, 10);
             var rectangle = new Rectangle(20, 20, 10, 10);
-            rectangle.MaxDistanceToPoint(point).Should().Be(20*Math.Sqrt(2));
+            rectangle.MaxDistanceToPoint(point).Should().Be(20 * Math.Sqrt(2));
         }
 
     }

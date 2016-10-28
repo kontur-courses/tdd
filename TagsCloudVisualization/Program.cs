@@ -46,27 +46,27 @@ namespace TagsCloudVisualization
             }
             catch (IOException)
             {
-                Console.WriteLine(String.Join("{0} {1}", "failed to read file", fileName));
+                Console.WriteLine(String.Join("failed to read file {0}", fileName));
                 return;
             }
             var width = 2000;
             var height = 2000;
             var cloud = new CircularCloudLayouter(new Point(width / 2, height / 2));
-            var visualizer = new VisualizerCloud(width, height, new SolidBrush(Color.DarkSlateBlue));
             var averageLengthString = (double)lines.Sum(s => s.Length)/lines.Length;
             var maxFontSize = ((double)height / lines.Length + width / averageLengthString) / 7;
             var countLines = lines.Length;
-            var blocks = new List<Tuple<Rectangle, string, Font>>();
+            var blocks = new List<Tag>();
             for (var i = 0; i < countLines; i++)
             {
                 var coefficientFontSize = 2*((double) (countLines - i)/countLines);
                 var emSize = maxFontSize * coefficientFontSize;
                 var font = new Font(FontFamily.GenericSerif, (float)emSize, FontStyle.Regular);
                 var size = TextRenderer.MeasureText(lines[i], font);
-                size = new Size(size.Width + lines[i].Length, size.Height + lines[i].Length);
+                size = new Size(size.Width + lines[i].Length, size.Height);
                 var rectangle = cloud.PutNextRectangle(size);
-                blocks.Add(Tuple.Create(rectangle, lines[i], font));
+                blocks.Add(new Tag(lines[i], rectangle, font));
             }
+            var visualizer = new TagsCloudVisualizer(width, height, new SolidBrush(Color.DarkSlateBlue));
             var image = visualizer.GetImageCloud(blocks, Color.Bisque);
             fileName = commandLineParser.Object.PathToFinalImage;
             try
@@ -75,8 +75,10 @@ namespace TagsCloudVisualization
             }
             catch (Exception)
             {
-                Console.WriteLine(String.Join("{0} {1}", "error saving image", fileName));
+                Console.WriteLine(String.Join("error saving image {0}", fileName));
             }
+            
+
         }
 
         private class RunOptions

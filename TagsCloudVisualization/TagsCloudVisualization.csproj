@@ -50,9 +50,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
-    <Compile Include="IVisualizer.cs" />
+    <Compile Include="RectangleCloudVisualizer.cs" />
+    <Compile Include="IRectangleCloudVisualizer.cs" />
+    <Compile Include="ITagsCloudVisualizer.cs" />
     <Compile Include="RectangleExtension.cs" />
-    <Compile Include="VisualizerCloud.cs" />
+    <Compile Include="Tag.cs" />
+    <Compile Include="TagsCloudVisualizer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

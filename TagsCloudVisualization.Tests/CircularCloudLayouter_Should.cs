@@ -14,7 +14,7 @@ namespace TagsCloudVisualization.Tests
         private CircularCloudLayouter cloud;
         private List<Rectangle> rectangles;
         private Point center;
-        private Random random = new Random();
+        private readonly Random random = new Random();
         private int defaultWidthRectangle = 200;
         private int defaultHeightRectangle = 200;
 
@@ -33,7 +33,7 @@ namespace TagsCloudVisualization.Tests
             {
                 var width = 3000;
                 var height = 3000;
-                var visualizer = new VisualizerCloud(width, height, new SolidBrush(Color.DarkGray));
+                var visualizer = new RectangleCloudVisualizer(width, height);
                 var shiftedRectangles = rectangles
                     .Select(r => new Rectangle(new Point(r.X + width/2, r.Y + height/2), r.Size)).ToList();
                 var image = visualizer.GetImageCloud(shiftedRectangles, Color.Crimson, Color.BurlyWood);
@@ -43,36 +43,11 @@ namespace TagsCloudVisualization.Tests
             }
         }
 
-        private void AssertDoNotIntersect(List<Rectangle> rectanglesList)
-        {
-            var intersectingRectangles = GetPairIntersectingRectangles(rectanglesList);
-            string message = "";
-            if (intersectingRectangles != null)
-                message = String.Format("{0}: {1} {2}",
-                    "intersecting rectangles",
-                    intersectingRectangles.Item1.ToString(),
-                    intersectingRectangles.Item2.ToString());
-            Assert.IsNull(intersectingRectangles, message);
-
-        }
-
-        private Tuple<Rectangle, Rectangle> GetPairIntersectingRectangles(List<Rectangle> rectanglesList)
-        {
-            for (var i = 0; i < rectanglesList.Count - 1; i++)
-            {
-                for (var j = i + 1; j < rectanglesList.Count; j++)
-                {
-                    if (rectanglesList[i].IntersectsWith(rectanglesList[j]))
-                        return Tuple.Create(rectanglesList[i], rectanglesList[j]);
-                }
-            }
-            return null;
-        }
 
         [Test]
         public void returnRectangleWithCorrectSize_AfterPut()
         {
-            Size size = new Size(100, 150);
+            var size = new Size(100, 150);
             cloud.PutNextRectangle(size).Size.Should().Be(size);
         }
 
@@ -84,19 +59,6 @@ namespace TagsCloudVisualization.Tests
             var expectedLocation = new Point(center.X - rectangleSize.Width / 2, center.Y - rectangleSize.Height / 2);
             rectangle.Location.Should().Be(expectedLocation);
             rectangle.Size.Should().Be(rectangleSize);
-        }
-
-        private List<Rectangle> PutRectanglesToCloud(int numberOfRectangles)
-        {
-            for (var i = 0; i < numberOfRectangles; i++)
-            {
-                var rectangleSize = new Size(
-                    (int)(defaultWidthRectangle * random.NextDouble()),
-                    (int)(defaultHeightRectangle * random.NextDouble()));
-                var rect = cloud.PutNextRectangle(rectangleSize);
-                rectangles.Add(rect);
-            }
-            return rectangles;
         }
 
         [TestCase(10)]
@@ -118,9 +80,9 @@ namespace TagsCloudVisualization.Tests
             rectangles = PutRectanglesToCloud(numberOfRectangles);
             foreach (var rectangle in rectangles)
             {
-                var rectengleCenter = new Point(rectangle.X + rectangle.Width / 2, rectangle.Y + rectangle.Height / 2);
-                var directionY = Math.Sign(cloud.Center.Y - rectengleCenter.Y);
-                var directionX = Math.Sign(cloud.Center.X - rectengleCenter.X);
+                var rectangleCenter = new Point(rectangle.X + rectangle.Width / 2, rectangle.Y + rectangle.Height / 2);
+                var directionY = Math.Sign(center.Y - rectangleCenter.Y);
+                var directionX = Math.Sign(center.X - rectangleCenter.X);
                 if (directionX != 0 || directionY != 0)
                 {
                     var newLocation = new Point(rectangle.X + directionX, rectangle.Y + directionY);
@@ -143,7 +105,7 @@ namespace TagsCloudVisualization.Tests
             var maxX = rectangles.Max(r => r.Right);
             var minY = rectangles.Min(r => r.Y);
             var maxY = rectangles.Max(r => r.Bottom);
-            int squareBoundingRectangle = (maxX - minX) * (maxY - minY);
+            var squareBoundingRectangle = (maxX - minX) * (maxY - minY);
             ((double)totalSquare / squareBoundingRectangle).Should().BeGreaterThan(0.5);
         }
 
@@ -167,6 +129,42 @@ namespace TagsCloudVisualization.Tests
             }
 
             (minDistance/maxDistance).Should().BeGreaterThan(0.7);
+        }
+
+        private List<Rectangle> PutRectanglesToCloud(int numberOfRectangles)
+        {
+            for (var i = 0; i < numberOfRectangles; i++)
+            {
+                var rectangleSize = new Size(
+                    (int)(defaultWidthRectangle * random.NextDouble()),
+                    (int)(defaultHeightRectangle * random.NextDouble()));
+                var rect = cloud.PutNextRectangle(rectangleSize);
+                rectangles.Add(rect);
+            }
+            return rectangles;
+        }
+
+        private Tuple<Rectangle, Rectangle> GetPairIntersectingRectangles(List<Rectangle> rectanglesList)
+        {
+            for (var i = 0; i < rectanglesList.Count - 1; i++)
+            {
+                for (var j = i + 1; j < rectanglesList.Count; j++)
+                {
+                    if (rectanglesList[i].IntersectsWith(rectanglesList[j]))
+                        return Tuple.Create(rectanglesList[i], rectanglesList[j]);
+                }
+            }
+            return null;
+        }
+
+        private void AssertDoNotIntersect(List<Rectangle> rectanglesList)
+        {
+            var intersectingRectangles = GetPairIntersectingRectangles(rectanglesList);
+            var message = "";
+            if (intersectingRectangles != null)
+                message = $"intersecting rectangles: {intersectingRectangles.Item1} {intersectingRectangles.Item2}";
+            Assert.IsNull(intersectingRectangles, message);
+
         }
     }
 }
