@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public class CloudRectangleVisualizer : IRectangleCloudVisualizer
+    public class RectangleCloudVisualizer : IRectangleCloudVisualizer
     {
         private int width;
         private int height;
@@ -29,7 +29,7 @@ namespace TagsCloudVisualization
                 height = value;
             }
         }
-        public CloudRectangleVisualizer(int width, int height)
+        public RectangleCloudVisualizer(int width, int height)
         {
             Width = width;
             Height = height;
