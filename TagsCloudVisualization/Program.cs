@@ -67,16 +67,19 @@ namespace TagsCloudVisualization
                 blocks.Add(new Tag(lines[i], rectangle, font));
             }
             var visualizer = new TagsCloudVisualizer(width, height, new SolidBrush(Color.DarkSlateBlue));
-            var image = visualizer.GetImageCloud(blocks, Color.Bisque);
-            fileName = commandLineParser.Object.PathToFinalImage;
-            try
+            using (var image = visualizer.GetImageCloud(blocks, Color.Bisque))
             {
-                image.Save(fileName);
+                fileName = commandLineParser.Object.PathToFinalImage;
+                try
+                {
+                    image.Save(fileName);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine(String.Join("error saving image {0}", fileName));
+                }
             }
-            catch (Exception)
-            {
-                Console.WriteLine(String.Join("error saving image {0}", fileName));
-            }
+
             
 
         }

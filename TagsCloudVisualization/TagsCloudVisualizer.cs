@@ -10,7 +10,6 @@ namespace TagsCloudVisualization
         private readonly StringFormat drawFormat;
         private int width;
         private int height;
-
         public int Width
         {
             get { return width; }
@@ -34,6 +33,8 @@ namespace TagsCloudVisualization
         }
 
 
+
+
         public TagsCloudVisualizer(int width, int height, SolidBrush brush)
         {
             Brush = brush;
@@ -44,19 +45,16 @@ namespace TagsCloudVisualization
 
         public Bitmap GetImageCloud(List<Tag> tags, Color backgroundСolor)
         {
-            using (var bitmap = new Bitmap(Width, Height))
+            var bitmap = new Bitmap(Width, Height);
+            using (var graphics = Graphics.FromImage(bitmap))
             {
-                using (var graphics = Graphics.FromImage(bitmap))
+                graphics.Clear(backgroundСolor);
+                foreach (var tag in tags)
                 {
-                    graphics.Clear(backgroundСolor);
-                    foreach (var tag in tags)
-                    {
-                        DrawPhrase(graphics, tag.Phrase, tag.Rectangle, tag.Font);
-                    }
+                    DrawPhrase(graphics, tag.Phrase, tag.Rectangle, tag.Font);
                 }
-                return bitmap;
             }
-
+            return bitmap;
         }
 
         private void DrawPhrase(Graphics graphics, string phrase, Rectangle frameRectangle, Font font)

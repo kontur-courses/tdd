@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public class RectangleCloudVisualizer : IRectangleCloudVisualizer
+    public class CloudRectangleVisualizer : IRectangleCloudVisualizer
     {
         private int width;
         private int height;
@@ -29,7 +29,7 @@ namespace TagsCloudVisualization
                 height = value;
             }
         }
-        public RectangleCloudVisualizer(int width, int height)
+        public CloudRectangleVisualizer(int width, int height)
         {
             Width = width;
             Height = height;
@@ -37,19 +37,16 @@ namespace TagsCloudVisualization
 
         public Bitmap GetImageCloud(List<Rectangle> rectangles, Color colorOfRectangle, Color backgroundСolor)
         {
-            using (var bitmap = new Bitmap(Width, Height))
+            var bitmap = new Bitmap(Width, Height);
+            using (var graphics = Graphics.FromImage(bitmap))
             {
-                using (var graphics = Graphics.FromImage(bitmap))
+                graphics.Clear(backgroundСolor);
+                foreach (var rectangle in rectangles)
                 {
-                    graphics.Clear(backgroundСolor);
-                    foreach (var rectangle in rectangles)
-                    {
-                        DrawRectangle(graphics, rectangle, colorOfRectangle);
-                    }
+                    DrawRectangle(graphics, rectangle, colorOfRectangle);
                 }
-                return bitmap;
             }
-
+            return bitmap;
         }
 
         private void DrawRectangle(Graphics graphics, Rectangle rectangle, Color color)
