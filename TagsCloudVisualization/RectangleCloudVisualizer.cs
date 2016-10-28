@@ -37,16 +37,19 @@ namespace TagsCloudVisualization
 
         public Bitmap GetImageCloud(List<Rectangle> rectangles, Color colorOfRectangle, Color backgroundСolor)
         {
-            var bitmap = new Bitmap(Width, Height);
-            using (var graphics = Graphics.FromImage(bitmap))
+            using (var bitmap = new Bitmap(Width, Height))
             {
-                graphics.Clear(backgroundСolor);
-                foreach (var rectangle in rectangles)
+                using (var graphics = Graphics.FromImage(bitmap))
                 {
-                    DrawRectangle(graphics, rectangle, colorOfRectangle);
+                    graphics.Clear(backgroundСolor);
+                    foreach (var rectangle in rectangles)
+                    {
+                        DrawRectangle(graphics, rectangle, colorOfRectangle);
+                    }
                 }
+                return bitmap;
             }
-            return bitmap;
+
         }
 
         private void DrawRectangle(Graphics graphics, Rectangle rectangle, Color color)
