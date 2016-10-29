@@ -32,7 +32,7 @@ namespace TagsCloudVisualization
                     var newRectangle = new Rectangle(new Point(x, y), rectangleSize);
                     if (!newRectangle.IntersectsWith(existingRectangles))
                     {
-                        var resultRectangle = ShiftedToCenter(newRectangle);
+                        var resultRectangle = ShiftToCenter(newRectangle);
                         existingRectangles.Add(resultRectangle);
                         return resultRectangle;
                     }
@@ -50,7 +50,7 @@ namespace TagsCloudVisualization
             return !resultRectangle.IntersectsWith(existingRectangles);
         }
 
-        private Rectangle ShiftedToCenter(Rectangle rectangle)
+        private Rectangle ShiftToCenter(Rectangle rectangle)
         {
             var currentRectangle = rectangle;
             var rectengleCenter = new Point(rectangle.X + rectangle.Width / 2, rectangle.Y + rectangle.Height / 2);
