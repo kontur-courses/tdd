@@ -50,12 +50,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
-    <Compile Include="RectangleCloudVisualizer.cs" />
-    <Compile Include="IRectangleCloudVisualizer.cs" />
-    <Compile Include="ITagsCloudVisualizer.cs" />
+    <Compile Include="Visualizer\RectangleCloudVisualizer.cs" />
+    <Compile Include="Visualizer\IRectangleCloudVisualizer.cs" />
+    <Compile Include="Visualizer\ITagsCloudVisualizer.cs" />
     <Compile Include="RectangleExtension.cs" />
-    <Compile Include="Tag.cs" />
-    <Compile Include="TagsCloudVisualizer.cs" />
+    <Compile Include="Visualizer\Tag.cs" />
+    <Compile Include="Visualizer\TagsCloudVisualizer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

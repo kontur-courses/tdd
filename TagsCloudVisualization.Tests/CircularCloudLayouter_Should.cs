@@ -5,6 +5,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using TagsCloudVisualization.Visualizer;
 
 namespace TagsCloudVisualization.Tests
 {
@@ -15,8 +16,8 @@ namespace TagsCloudVisualization.Tests
         private List<Rectangle> rectangles;
         private Point center;
         private readonly Random random = new Random();
-        private int defaultWidthRectangle = 200;
-        private int defaultHeightRectangle = 200;
+        private const int DefaultWidthRectangle = 200;
+        private const int DefaultHeightRectangle = 200;
 
         [SetUp]
         public void SetUp()
@@ -133,8 +134,8 @@ namespace TagsCloudVisualization.Tests
             for (var i = 0; i < numberOfRectangles; i++)
             {
                 var rectangleSize = new Size(
-                    (int)(defaultWidthRectangle * random.NextDouble()),
-                    (int)(defaultHeightRectangle * random.NextDouble()));
+                    (int)(DefaultWidthRectangle * random.NextDouble()),
+                    (int)(DefaultHeightRectangle * random.NextDouble()));
                 var rect = cloud.PutNextRectangle(rectangleSize);
                 rectangles.Add(rect);
             }
@@ -148,7 +149,9 @@ namespace TagsCloudVisualization.Tests
                 for (var j = i + 1; j < rectanglesList.Count; j++)
                 {
                     if (rectanglesList[i].IntersectsWith(rectanglesList[j]))
+                    {
                         return Tuple.Create(rectanglesList[i], rectanglesList[j]);
+                    }
                 }
             }
             return null;

@@ -9,8 +9,8 @@ namespace TagsCloudVisualization
         private readonly Point center;
         private readonly Random random;
         private int radiusSetting;
-        private int stepRadiusSetting = 5;
-        private double stepDeflectionAngle = Math.PI / 36;
+        private const int StepRadiusSetting = 5;
+        private const double StepDeflectionAngle = Math.PI/36;
         private readonly List<Rectangle> existingRectangles;
 
         public CircularCloudLayouter(Point center)
@@ -36,10 +36,10 @@ namespace TagsCloudVisualization
                         existingRectangles.Add(resultRectangle);
                         return resultRectangle;
                     }
-                    deflectionAngle -= stepDeflectionAngle;
+                    deflectionAngle -= StepDeflectionAngle;
                 }
                 deflectionAngle = 2 * Math.PI * random.NextDouble();
-                radiusSetting += stepRadiusSetting;
+                radiusSetting += StepRadiusSetting;
             }
         }
 

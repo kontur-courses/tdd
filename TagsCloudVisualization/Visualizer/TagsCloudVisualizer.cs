@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Visualizer
 {
     public class TagsCloudVisualizer : ITagsCloudVisualizer
     {
-        public SolidBrush Brush { get; set; }
+        private readonly SolidBrush brush;
         private readonly StringFormat drawFormat;
 
         public TagsCloudVisualizer(SolidBrush brush)
         {
-            Brush = brush;
+            this.brush = brush;
             drawFormat = new StringFormat();
         }
 
@@ -33,7 +33,7 @@ namespace TagsCloudVisualization
             graphics.DrawString(
                 phrase,
                 font,
-                Brush,
+                brush,
                 frameRectangle,
                 drawFormat
             );

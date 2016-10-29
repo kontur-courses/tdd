@@ -5,10 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Fclp;
+using TagsCloudVisualization.Visualizer;
 
 namespace TagsCloudVisualization
 {
-    class Program
+    internal class Program
     {
         static void Main(string[] args)
         {
@@ -26,7 +27,10 @@ namespace TagsCloudVisualization
                 .WithHeader($"{AppDomain.CurrentDomain.FriendlyName} [-i image] [-w words]")
                 .Callback(text => Console.WriteLine(text));
             if (commandLineParser.Parse(args).HelpCalled)
+            {
                 return;
+            }
+
             if (commandLineParser.Object.PathToFinalImage == null || commandLineParser.Object.PathToWords == null)
             {
                 Console.WriteLine("you need to specify all parameters. for help use: -h");

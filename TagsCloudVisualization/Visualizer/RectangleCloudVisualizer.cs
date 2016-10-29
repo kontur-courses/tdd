@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Visualizer
 {
     public class RectangleCloudVisualizer : IRectangleCloudVisualizer
     {
@@ -25,7 +25,7 @@ namespace TagsCloudVisualization
             return bitmap;
         }
 
-        private void DrawRectangle(Graphics graphics, Rectangle rectangle, Color color)
+        private static void DrawRectangle(Graphics graphics, Rectangle rectangle, Color color)
         {
             graphics.DrawRectangle(
                 new Pen(color, 3), rectangle

@@ -21,7 +21,7 @@ namespace TagsCloudVisualization.Tests
         }
 
         [Test]
-        public void returnTrue_forIntersectionrectangles()
+        public void returnTrue_forIntersectionRectangles()
         {
             var rect = new Rectangle(100, 100, 100, 200);
             var rectangles = new List<Rectangle>()
