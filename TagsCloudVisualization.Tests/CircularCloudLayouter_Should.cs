@@ -122,9 +122,15 @@ namespace TagsCloudVisualization.Tests
             foreach (var distance in distanceToLastRectangles)
             {
                 if (distance < minDistance)
+                {
                     minDistance = distance;
+                }
+
                 if (distance > maxDistance)
+                {
                     maxDistance = distance;
+                }
+                    
             }
             (minDistance/maxDistance).Should().BeGreaterThan(0.7);
         }
@@ -162,7 +168,9 @@ namespace TagsCloudVisualization.Tests
             var intersectingRectangles = GetPairIntersectingRectangles(rectanglesList);
             var message = "";
             if (intersectingRectangles != null)
+            {
                 message = $"intersecting rectangles: {intersectingRectangles.Item1} {intersectingRectangles.Item2}";
+            }
             Assert.IsNull(intersectingRectangles, message);
         }
     }
