@@ -10,9 +10,14 @@ namespace TagsCloudVisualization.Visualizer
         public Bitmap GetImageCloud(List<Rectangle> rectangles, int width, int height, Color colorOfRectangle, Color backgroundСolor)
         {
             if (height < 0)
+            {
                 throw new ArgumentException("height value must be a positive number");
+            }
+
             if (width < 0)
+            {
                 throw new ArgumentException("width value must be a positive number");
+            }   
             var bitmap = new Bitmap(width, height);
             using (var graphics = Graphics.FromImage(bitmap))
             {
