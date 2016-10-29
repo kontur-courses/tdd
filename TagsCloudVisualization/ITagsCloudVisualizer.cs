@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 
 namespace TagsCloudVisualization
 {
     public interface ITagsCloudVisualizer
     {
-        Bitmap GetImageCloud(List<Tag> tags, Color backgroundСolor);
+        Bitmap GetImageCloud(List<Tag> tags, int width, int height, Color backgroundСolor);
     }
 }

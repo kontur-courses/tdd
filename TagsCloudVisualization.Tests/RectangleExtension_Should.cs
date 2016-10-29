@@ -17,7 +17,7 @@ namespace TagsCloudVisualization.Tests
             {
                 new Rectangle(100, 10, 10, 23)
             };
-            rect.IsIntersectionWithRectangles(rectangles).Should().Be(false);
+            rect.IntersectsWith(rectangles).Should().Be(false);
         }
 
         [Test]
@@ -29,7 +29,7 @@ namespace TagsCloudVisualization.Tests
                 new Rectangle(90, 90, 9, 9),
                 new Rectangle(170, 170, 50, 100)
             };
-            rect.IsIntersectionWithRectangles(rectangles).Should().Be(true);
+            rect.IntersectsWith(rectangles).Should().Be(true);
         }
 
         [Test]
@@ -41,7 +41,7 @@ namespace TagsCloudVisualization.Tests
                 new Rectangle(90, 90, 9, 9),
                 new Rectangle(201, 170, 50, 100)
             };
-            rect.IsIntersectionWithRectangles(rectangles).Should().Be(false);
+            rect.IntersectsWith(rectangles).Should().Be(false);
         }
 
         [Test]
@@ -51,8 +51,5 @@ namespace TagsCloudVisualization.Tests
             var rectangle = new Rectangle(20, 20, 10, 10);
             rectangle.MaxDistanceToPoint(point).Should().Be(20 * Math.Sqrt(2));
         }
-
     }
-
-    
 }

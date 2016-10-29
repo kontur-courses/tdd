@@ -7,7 +7,7 @@ namespace TagsCloudVisualization
 {
     public static class RectangleExtension
     {
-        public static bool IsIntersectionWithRectangles(this Rectangle rectangle, List<Rectangle> rectangleList)
+        public static bool IntersectsWith(this Rectangle rectangle, List<Rectangle> rectangleList)
         {
             return rectangleList.Any(r => r.IntersectsWith(rectangle));
         }

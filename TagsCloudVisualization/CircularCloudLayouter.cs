@@ -30,7 +30,7 @@ namespace TagsCloudVisualization
                     var x = center.X + (int) (radiusSetting*Math.Cos(deflectionAngle)) - rectangleSize.Width / 2;
                     var y = center.Y + (int) (radiusSetting*Math.Sin(deflectionAngle)) - rectangleSize.Height / 2;
                     var newRectangle = new Rectangle(new Point(x, y), rectangleSize);
-                    if (!newRectangle.IsIntersectionWithRectangles(existingRectangles))
+                    if (!newRectangle.IntersectsWith(existingRectangles))
                     {
                         var resultRectangle = ShiftedToCenter(newRectangle);
                         existingRectangles.Add(resultRectangle);
@@ -47,7 +47,7 @@ namespace TagsCloudVisualization
         {
             var newLocation = new Point(rectangle.X + directionX, rectangle.Y + directionY);
             resultRectangle = new Rectangle(newLocation, rectangle.Size);
-            return !resultRectangle.IsIntersectionWithRectangles(existingRectangles);
+            return !resultRectangle.IntersectsWith(existingRectangles);
         }
 
         private Rectangle ShiftedToCenter(Rectangle rectangle)

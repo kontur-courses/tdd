@@ -6,38 +6,14 @@ namespace TagsCloudVisualization
 {
     public class RectangleCloudVisualizer : IRectangleCloudVisualizer
     {
-        private int width;
-        private int height;
-        public int Width
-        {
-            get { return width; }
-            set
-            {
-                if (width < 0)
-                    throw new ArgumentException("width value must be a positive number");
-                width = value;
-            }
-        }
 
-        public int Height
+        public Bitmap GetImageCloud(List<Rectangle> rectangles, int width, int height, Color colorOfRectangle, Color backgroundСolor)
         {
-            get { return height; }
-            set
-            {
-                if (height < 0)
-                    throw new ArgumentException("height value must be a positive number");
-                height = value;
-            }
-        }
-        public RectangleCloudVisualizer(int width, int height)
-        {
-            Width = width;
-            Height = height;
-        }
-
-        public Bitmap GetImageCloud(List<Rectangle> rectangles, Color colorOfRectangle, Color backgroundСolor)
-        {
-            var bitmap = new Bitmap(Width, Height);
+            if (height < 0)
+                throw new ArgumentException("height value must be a positive number");
+            if (width < 0)
+                throw new ArgumentException("width value must be a positive number");
+            var bitmap = new Bitmap(width, height);
             using (var graphics = Graphics.FromImage(bitmap))
             {
                 graphics.Clear(backgroundСolor);

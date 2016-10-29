@@ -6,31 +6,25 @@ using System.Linq;
 using System.Windows.Forms;
 using Fclp;
 
-
 namespace TagsCloudVisualization
 {
     class Program
     {
         static void Main(string[] args)
         {
-
             var commandLineParser = new FluentCommandLineParser<RunOptions>();
-
             commandLineParser
                 .Setup(options => options.PathToWords)
                 .As('w')
                 .WithDescription("path to file with words for cloud");
-
             commandLineParser   
                 .Setup(options => options.PathToFinalImage)
                 .As('i')
                 .WithDescription("path to final image");
-
             commandLineParser
                 .SetupHelp("h", "help")
                 .WithHeader($"{AppDomain.CurrentDomain.FriendlyName} [-i image] [-w words]")
                 .Callback(text => Console.WriteLine(text));
-           
             if (commandLineParser.Parse(args).HelpCalled)
                 return;
             if (commandLineParser.Object.PathToFinalImage == null || commandLineParser.Object.PathToWords == null)
@@ -46,7 +40,7 @@ namespace TagsCloudVisualization
             }
             catch (IOException)
             {
-                Console.WriteLine(String.Join("failed to read file {0}", fileName));
+                Console.WriteLine($"failed to read file {fileName}");
                 return;
             }
             var width = 2000;
@@ -66,8 +60,8 @@ namespace TagsCloudVisualization
                 var rectangle = cloud.PutNextRectangle(size);
                 blocks.Add(new Tag(lines[i], rectangle, font));
             }
-            var visualizer = new TagsCloudVisualizer(width, height, new SolidBrush(Color.DarkSlateBlue));
-            using (var image = visualizer.GetImageCloud(blocks, Color.Bisque))
+            var visualizer = new TagsCloudVisualizer(new SolidBrush(Color.DarkSlateBlue));
+            using (var image = visualizer.GetImageCloud(blocks, width, height, Color.Bisque))
             {
                 fileName = commandLineParser.Object.PathToFinalImage;
                 try
@@ -76,12 +70,9 @@ namespace TagsCloudVisualization
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine(String.Join("error saving image {0}", fileName));
+                    Console.WriteLine($"error saving image {fileName}");
                 }
             }
-
-            
-
         }
 
         private class RunOptions
@@ -91,6 +82,4 @@ namespace TagsCloudVisualization
             public string PathToFinalImage { get; set; }
         }
     }
-
-
 }

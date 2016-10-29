@@ -33,16 +33,15 @@ namespace TagsCloudVisualization.Tests
             {
                 var width = 3000;
                 var height = 3000;
-                var visualizer = new RectangleCloudVisualizer(width, height);
+                var visualizer = new RectangleCloudVisualizer();
                 var shiftedRectangles = rectangles
                     .Select(r => new Rectangle(new Point(r.X + width/2, r.Y + height/2), r.Size)).ToList();
-                var image = visualizer.GetImageCloud(shiftedRectangles, Color.Crimson, Color.BurlyWood);
+                var image = visualizer.GetImageCloud(shiftedRectangles, width, height, Color.Crimson, Color.BurlyWood);
                 var filename = $"{TestContext.CurrentContext.TestDirectory}\\{TestContext.CurrentContext.Test.FullName}.png";
                 image.Save(filename);
                 TestContext.WriteLine(filename);
             }
         }
-
 
         [Test]
         public void returnRectangleWithCorrectSize_AfterPut()
@@ -70,7 +69,6 @@ namespace TagsCloudVisualization.Tests
             rectangles = PutRectanglesToCloud(numberOfRectangles);
             AssertDoNotIntersect(rectangles);
         }
-
 
         [TestCase(10)]
         [TestCase(100)]
@@ -127,7 +125,6 @@ namespace TagsCloudVisualization.Tests
                 if (distance > maxDistance)
                     maxDistance = distance;
             }
-
             (minDistance/maxDistance).Should().BeGreaterThan(0.7);
         }
 
@@ -164,7 +161,6 @@ namespace TagsCloudVisualization.Tests
             if (intersectingRectangles != null)
                 message = $"intersecting rectangles: {intersectingRectangles.Item1} {intersectingRectangles.Item2}";
             Assert.IsNull(intersectingRectangles, message);
-
         }
     }
 }
