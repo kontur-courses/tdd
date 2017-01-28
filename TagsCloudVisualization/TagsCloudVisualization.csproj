@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
+    <Compile Include="TagLayouter.cs" />
     <Compile Include="Visualizer\RectangleCloudVisualizer.cs" />
     <Compile Include="Visualizer\IRectangleCloudVisualizer.cs" />
     <Compile Include="Visualizer\ITagsCloudVisualizer.cs" />
@@ -58,6 +59,9 @@
     <Compile Include="Visualizer\TagsCloudVisualizer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WordsAnalyzer\IWordsAnalyzer.cs" />
+    <Compile Include="WordsAnalyzer\WeightedWord.cs" />
+    <Compile Include="WordsAnalyzer\WordsCounter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

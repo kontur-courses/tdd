@@ -6,15 +6,15 @@ namespace TagsCloudVisualization.Visualizer
     public class TagsCloudVisualizer : ITagsCloudVisualizer
     {
         private readonly SolidBrush brush;
-        private readonly StringFormat drawFormat;
+        private readonly Color backgroundСolor;
 
-        public TagsCloudVisualizer(SolidBrush brush)
+        public TagsCloudVisualizer(SolidBrush brush, Color backgroundСolor)
         {
             this.brush = brush;
-            drawFormat = new StringFormat();
+            this.backgroundСolor = backgroundСolor;
         }
 
-        public Bitmap GetImageCloud(List<Tag> tags, int width, int height, Color backgroundСolor)
+        public Bitmap GetCloudImage(List<Tag> tags, int width, int height)
         {
             var bitmap = new Bitmap(width, height);
             using (var graphics = Graphics.FromImage(bitmap))
@@ -34,8 +34,7 @@ namespace TagsCloudVisualization.Visualizer
                 phrase,
                 font,
                 brush,
-                frameRectangle,
-                drawFormat
+                frameRectangle.Location
             );
         }
 

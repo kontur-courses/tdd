@@ -1,89 +1,124 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
+using System.Text;
 using Fclp;
 using TagsCloudVisualization.Visualizer;
+using TagsCloudVisualization.WordsAnalyzer;
 
 namespace TagsCloudVisualization
 {
     internal class Program
     {
+
         static void Main(string[] args)
         {
-            var commandLineParser = new FluentCommandLineParser<RunOptions>();
-            commandLineParser
-                .Setup(options => options.PathToWords)
-                .As('w')
-                .WithDescription("path to file with words for cloud");
-            commandLineParser   
-                .Setup(options => options.PathToFinalImage)
-                .As('i')
-                .WithDescription("path to final image");
-            commandLineParser
-                .SetupHelp("h", "help")
-                .WithHeader($"{AppDomain.CurrentDomain.FriendlyName} [-i image] [-w words]")
-                .Callback(text => Console.WriteLine(text));
-            if (commandLineParser.Parse(args).HelpCalled)
+            var cmdParser = CreateCmdParser();
+            if (cmdParser.Parse(args).HelpCalled)
             {
                 return;
             }
-
-            if (commandLineParser.Object.PathToFinalImage == null || commandLineParser.Object.PathToWords == null)
+            if (cmdParser.Object.PathToImage == null)
             {
-                Console.WriteLine("you need to specify all parameters. for help use: -h");
+                cmdParser.HelpOption.ShowHelp(cmdParser.Options);
                 return;
             }
-            string[] lines;
-            var fileName = commandLineParser.Object.PathToWords;
             try
             {
-                lines = File.ReadAllLines(fileName).ToArray();
+                Run(cmdParser.Object);
             }
-            catch (IOException)
+            catch (Exception e)
             {
-                Console.WriteLine($"failed to read file {fileName}");
-                return;
+                Console.WriteLine(e.Message);
             }
-            var width = 2000;
-            var height = 2000;
-            var cloud = new CircularCloudLayouter(new Point(width / 2, height / 2));
-            var averageLengthString = (double)lines.Sum(s => s.Length)/lines.Length;
-            var maxFontSize = ((double)height / lines.Length + width / averageLengthString) / 7;
-            var countLines = lines.Length;
-            var blocks = new List<Tag>();
-            for (var i = 0; i < countLines; i++)
+            
+        }
+
+        private static void Run(RunOptions options)
+        {
+            Console.InputEncoding = Encoding.UTF8;
+            var weightedWords = new WordsCounter()
+                .Сonsider(ReadPhrases(Console.In))
+                .OrderByDescending(w => w.Weight)
+                .ToList();
+            var center = GetCenter(options.Width, options.Height);
+            var cloud = new CircularCloudLayouter(center);
+            var tagLayouter = new TagLayouter(cloud, options.MinFont, options.MaxFont);
+            var tags = tagLayouter.GetTags(weightedWords).ToList();
+            var visualizer = new TagsCloudVisualizer(new SolidBrush(Color.DarkSlateBlue), Color.Bisque);
+            using (var image = visualizer.GetCloudImage(tags, options.Width, options.Height))
             {
-                var coefficientFontSize = 2*((double) (countLines - i)/countLines);
-                var emSize = maxFontSize * coefficientFontSize;
-                var font = new Font(FontFamily.GenericSerif, (float)emSize, FontStyle.Regular);
-                var size = TextRenderer.MeasureText(lines[i], font);
-                size = new Size(size.Width + lines[i].Length, size.Height);
-                var rectangle = cloud.PutNextRectangle(size);
-                blocks.Add(new Tag(lines[i], rectangle, font));
+                var fileName = options.PathToImage;
+                SaveImage(image, fileName);
             }
-            var visualizer = new TagsCloudVisualizer(new SolidBrush(Color.DarkSlateBlue));
-            using (var image = visualizer.GetImageCloud(blocks, width, height, Color.Bisque))
+        }
+
+        private static Point GetCenter(int width, int height)
+        {
+            return new Point(width / 2, height / 2);
+        }
+
+        public static void SaveImage(Bitmap image, string fileName)
+        {  
+            try
             {
-                fileName = commandLineParser.Object.PathToFinalImage;
-                try
-                {
-                    image.Save(fileName);
-                }
-                catch (Exception)
-                {
-                    Console.WriteLine($"error saving image {fileName}");
-                }
+                image.Save(fileName);
             }
+            catch (Exception)
+            {
+                Console.WriteLine($"error saving image {fileName}");
+            }
+        }
+
+        public static string[] ReadPhrases(TextReader textReader)
+        {
+            return textReader.ReadToEnd().Split('\n').Select(s => s.Trim()).ToArray();
+        }
+
+        static FluentCommandLineParser<RunOptions> CreateCmdParser()
+        {
+            var cmdParser = new FluentCommandLineParser<RunOptions>();
+            cmdParser
+                .Setup(options => options.MinFont)
+                .As('l')
+                .SetDefault(30)
+                .WithDescription("minimum font size");
+            cmdParser
+                .Setup(options => options.MaxFont)
+                .As('r')
+                .SetDefault(60)
+                .WithDescription("maximum font size");
+            cmdParser
+                .Setup(options => options.Width)
+                .As('w')
+                .SetDefault(1500)
+                .WithDescription("width of image");
+            cmdParser
+                .Setup(options => options.Height)
+                .As('h')
+                .SetDefault(1500)
+                .WithDescription("height of image");
+            cmdParser
+                .Setup(options => options.PathToImage)
+                .As('i')
+                .WithDescription("path to final image");
+            cmdParser
+                .SetupHelp("help")
+                .WithHeader($"{AppDomain.CurrentDomain.FriendlyName} [-i image] [-w width] [-h height]\n" +
+                            " A list of words is passed on standard input. " +
+                            "Each phrase should be written on a new line.")
+                .Callback(text => Console.WriteLine(text));
+            return cmdParser;
         }
 
         private class RunOptions
         { 
-            public string PathToWords { get; set; }
-
-            public string PathToFinalImage { get; set; }
+            public int Width { get; set; }
+            public int Height { get; set; }
+            public int MinFont { get; set; }
+            public int MaxFont { get; set; }
+            public string PathToImage { get; set; }
         }
     }
 }
