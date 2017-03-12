@@ -7,20 +7,21 @@
 		h1 {text-align:center;}
 		.team-row { margin-top:0px;}
 		.testname {padding:5px;line-height: 2em;}
-		.failed {background-color: #F99; font-size:1.2em}
-		.passed {background-color: #9F9;}
-		.unknown {background-color: #FF9;}
+		.failed {background-color: #FDD; font-size:1.2em}
+		.passed {background-color: #DFD;}
+		.unknown {background-color: #FFD;}
+		.table td {padding:0.25rem;}
 	</style>
 </head>
 <body>
-	<h1>Bowling Game Kata</h1>
+	<!--h1>Bowling Game Kata</h1-->
 	<div id="container" />
 
 <script>
 	var fb = new Firebase("https://testing-challenge.firebaseio.com/bowling");
 	fb.on("value", function(snapshot) {
 		var res = snapshot.val();
-		var html = "<table class='table table-condensed table-striped'><tr><th>Team<th>Tests</tr>";
+		var html = "<table class='table table-condensed table-striped'>";
 		var names = Object.keys(res);
 		names.sort((a,b) => Object.keys(res[b].tests).length - Object.keys(res[a].tests).length);
 		
@@ -41,8 +42,8 @@
         .replace(/&/g, '&amp;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
+        .replace(/</g, '')
+        .replace(/>/g, '');
 }
 	
 	function formatTest(name, status){
