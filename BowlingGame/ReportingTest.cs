@@ -2,113 +2,128 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using FireSharp;
 using FireSharp.Config;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 
 namespace BowlingGame
 {
-	public enum SimpleTestStatus
+    public static class Firebase
+    {
+        private static FirebaseConfig BuildConfig()
+        {
+            const string Url = "https://testing-challenge.firebaseio.com";
+            const string Realm = "bowling";
+            var dateKey = DateTime.Now.Date.ToString("yyyyMMdd");
+
+            var config = new FirebaseConfig
+            {
+                BasePath = $"{Url}/{Realm}/{dateKey}"
+            };
+            return config;
+        }
+
+        public static FirebaseClient CreateClient()
+        {
+            return new FirebaseClient(BuildConfig());
+        }
+    }
+
+    public class ReportingTest<TTestClass>
 	{
-		Unknown = 0,
-		Passed = TestStatus.Passed,
-		Failed = TestStatus.Failed
-	}
+        private static readonly string resultsFileName = typeof(TTestClass).Name + ".json";
+        private static string resultsFile;
+        private static List<TestCaseStatus> tests;
 
-	public class ReportingTest<TTestClass>
-	{
-		private static readonly object locker = new object();
-		private static readonly string resultsFile = typeof(TTestClass).Name + ".txt";
-		private static Dictionary<string, SimpleTestStatus> results;
+        [OneTimeSetUp]
+        public void ClearLocalResults()
+        {
+            resultsFile = Path.Combine(TestContext.CurrentContext.TestDirectory, resultsFileName);
+            tests = LoadResults();
+        }
 
-		[OneTimeSetUp]
-		public void ClearLocalResults()
-		{
-			Directory.SetCurrentDirectory(TestContext.CurrentContext.TestDirectory);
-			results = new Dictionary<string, SimpleTestStatus>();
-		}
+        [TearDown]
+        public static void WriteLastRunResult()
+        {
+            var test = TestContext.CurrentContext.Test;
+            var status = TestContext.CurrentContext.Result.Outcome.Status;
+            var succeeded = status == TestStatus.Passed;
 
+            var testName = test.Name;
+            if (!test.Name.Contains(test.MethodName))
+                testName = test.MethodName + " " + test.Name;
 
-		[TearDown]
-		public static void WriteLastRunResult()
-		{
-			var test = TestContext.CurrentContext.Test;
-			var status = TestContext.CurrentContext.Result.Outcome.Status;
-			var simpleStatus = status == TestStatus.Passed ? SimpleTestStatus.Passed
-					: status == TestStatus.Failed ? SimpleTestStatus.Failed
-					: SimpleTestStatus.Unknown;
-			results[test.MethodName] =
-				results.ContainsKey(test.MethodName) && results[test.MethodName] == SimpleTestStatus.Failed
-				? SimpleTestStatus.Failed
-				: simpleStatus;
-		}
+            var testStatus = tests.FirstOrDefault(t => t.TestName == testName);
+            if (testStatus != null)
+            {
+                testStatus.LastRunTime = DateTime.Now;
+                testStatus.Succeeded = succeeded;
+            }
+            else
+                tests.Add(new TestCaseStatus
+                {
+                    FirstRunTime = DateTime.Now,
+                    LastRunTime = DateTime.Now,
+                    TestName = testName,
+                    TestMethod = test.MethodName,
+                    Succeeded = succeeded
+                });
+        }
 
-		private static void SaveResults(Dictionary<string, SimpleTestStatus> testsSuccess)
-		{
-			File.WriteAllLines(resultsFile, testsSuccess.Select(kv => $"{kv.Key} {kv.Value}"));
-		}
+        private static void SaveResults(List<TestCaseStatus> tests)
+        {
+            File.WriteAllText(resultsFile, JsonConvert.SerializeObject(tests, Formatting.Indented));
+        }
 
-		private static Dictionary<string, SimpleTestStatus> LoadResults()
-		{
-			try
-			{
-				return File.ReadAllLines(resultsFile)
-					.Select(line => line.Split(' '))
-					.ToDictionary(
-						line => line[0],
-						line => (SimpleTestStatus)Enum.Parse(typeof(SimpleTestStatus), line[1]));
-			}
-			catch (Exception e)
-			{
-				Console.WriteLine(e);
-				return new Dictionary<string, SimpleTestStatus>();
-			}
-		}
+        private static List<TestCaseStatus> LoadResults()
+        {
+            try
+            {
+                var json = File.ReadAllText(resultsFile);
+                var statuses = JsonConvert.DeserializeObject<List<TestCaseStatus>>(json);
+                return RemoveOldNames(statuses);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return new List<TestCaseStatus>();
+            }
+        }
 
-		[OneTimeTearDown]
-		public static void ReportResults()
-		{
-			var names = typeof(TTestClass).GetField("Names").GetValue(null);
-			var updatedResults = UpdateResults();
-			Console.WriteLine(names);
-			if (updatedResults.Count == 0) return;
-			foreach (var tuple in updatedResults)
-			{
-				Console.WriteLine(tuple);
-			}
-			var config = new FirebaseConfig
-			{
-				BasePath = "https://testing-challenge.firebaseio.com/bowling/"
-			};
-			using (var client = new FirebaseClient(config))
-			{
-				client.Set(names + "/tests", updatedResults.ToDictionary(kv => kv.Key, kv => kv.Value.ToString().ToLower()));
-			}
-			Console.WriteLine("reported");
-		}
+        private static List<TestCaseStatus> RemoveOldNames(List<TestCaseStatus> statuses)
+        {
+            var names = new HashSet<string>(typeof(TTestClass).GetMethods().Select(m => m.Name));
+            return statuses.Where(s => names.Contains(s.TestMethod)).ToList();
+        }
 
-		private static Dictionary<string, SimpleTestStatus> UpdateResults()
-		{
-			var testMethods = typeof(TTestClass).GetMethods()
-				.Where(
-					m =>
-						m.GetCustomAttributes<TestAttribute>().Any() ||
-						m.GetCustomAttributes<TestCaseAttribute>().Any())
-				.ToList();
-			Dictionary<string, SimpleTestStatus> newResults;
-			lock (locker)
-			{
-				var prevResults = LoadResults();
-				newResults = testMethods.ToDictionary(
-					m => m.Name,
-					m => results.ContainsKey(m.Name) ? results[m.Name]
-					: prevResults.ContainsKey(m.Name) ? prevResults[m.Name]
-					: SimpleTestStatus.Unknown);
-				SaveResults(newResults);
-			}
-			return newResults;
-		}
-	}
+        [OneTimeTearDown]
+        public static void ReportResults()
+        {
+            tests = tests.OrderByDescending(t => t.LastRunTime).ThenByDescending(t => t.FirstRunTime).ToList();
+            SaveResults(tests);
+            var names = typeof(TTestClass).GetField("Names").GetValue(null);
+            Console.WriteLine(names);
+            foreach (var kv in tests)
+            {
+                Console.WriteLine(kv.TestName);
+            }
+
+            using (var client = Firebase.CreateClient())
+            {
+                client.Set(names + "/tests", tests);
+            }
+            Console.WriteLine("reported");
+        }
+    }
+
+    public class TestCaseStatus
+    {
+        public string TestMethod;
+        public string TestName;
+        public DateTime FirstRunTime;
+        public DateTime LastRunTime;
+        public bool Succeeded;
+    }
 }

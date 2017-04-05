@@ -14,11 +14,25 @@
 	</style>
 </head>
 <body>
-	<!--h1>Bowling Game Kata</h1-->
 	<div id="container" />
 
 <script>
-	var fb = new Firebase("https://testing-challenge.firebaseio.com/bowling");
+	function buildDateKey() {
+		var now = new Date();
+		var day = ("0" + now.getDate()).substr(0, 2);
+		var month = ("0" + (now.getMonth() + 1)).substr(0, 2);
+		var year = now.getFullYear();
+		return year + month + day;
+	}
+
+	function createFirebase() {
+		var url = "https://testing-challenge.firebaseio.com";
+		var realm = "bowling";
+		var dateKey = buildDateKey();
+		return new Firebase(`${url}/${realm}/${dateKey}`);
+	}
+
+	var fb = createFirebase();
 	fb.on("value", function(snapshot) {
 		var res = snapshot.val();
 		var html = "<table class='table table-condensed table-striped'>";
@@ -26,28 +40,64 @@
 		names.sort((a,b) => Object.keys(res[b].tests).length - Object.keys(res[a].tests).length);
 		
 		names.forEach(function(name){
-			html += "<tr><td class='name'>" + htmlEscape(name) + "</td><td>";
-			var tests = res[name].tests;
-			var testNames = Object.keys(tests);
-			testNames.sort((a,b) => tests[a] < tests[b] ? -1 : +(tests[a] > tests[b]));
-			testNames.forEach(n => html += formatTest(n, tests[n]));
-			html += "</td></tr>";
+			html += buildTeamHtml(name, res[name]);
 		});
 		html += "</table>";
 		document.getElementById("container").innerHTML = html;
 	});
+
+	function buildTeamHtml(name, value) {
+		var html = "<tr><td class='name'>" + htmlEscape(name) + "</td><td>";
+
+		var rawTests = value.tests;
+
+		var maxLastRunTime = getMaxLastRunTime(rawTests);
+
+		var tests = rawTests
+		.filter(test => {
+			var lastRunTime = new Date(test.LastRunTime);
+			var diffInMinutes = getDifferenceInMinutes(maxLastRunTime, lastRunTime);
+			console.log(diffInMinutes);
+			return diffInMinutes < 5;
+		})
+		.map(test => {
+			return {
+				"name": test.TestName,
+				"status": test.Succeed ? "passed" : "failed"
+			}
+		});
+
+		tests.sort((a,b) => a.name < b.name ? -1 : +(a.status > b.status));
+		tests.forEach(test => html += formatTest(test.name, test.status));
+		
+		html += "</td></tr>";
+		return html;
+	}
+
+	function getMaxLastRunTime(rawTests) {
+		var lastRunTimes = rawTests.map(test => new Date(test.LastRunTime));
+		var time = Math.max.apply(Math, lastRunTimes);
+		return new Date(time);
+	}
+
+	function getDifferenceInMinutes(date1, date2) {
+		var timeDiff = Math.abs(date2.getTime() - date1.getTime());
+		return Math.ceil(timeDiff / (1000 * 60)); 
+	}
 	
 	function htmlEscape(str) {
-    return str
-        .replace(/&/g, '&amp;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;')
-        .replace(/</g, '')
-        .replace(/>/g, '');
-}
+		return str
+			.replace(/&/g, '&amp;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#39;')
+			.replace(/</g, '')
+			.replace(/>/g, '');
+	}
 	
 	function formatTest(name, status){
-		return "<span title='" + status + "' class='testname " + status + "'>" + htmlEscape(name) + "</span> "; 
+		return "<span title='" + status + "' class='testname " + status + "'>" +
+			htmlEscape(name) +
+			"</span> "; 
 	}
 </script>
 </body>
