@@ -47,7 +47,7 @@
 	});
 
 	function buildTeamHtml(name, value) {
-		var html = "<tr><td class='name'>" + htmlEscape(name) + "</td><td>";
+		var html = "<tr><td class='name'>" + htmlEscape(name) + "</td>";
 
 		var rawTests = value.tests;
 
@@ -58,18 +58,20 @@
 			var lastRunTime = new Date(test.LastRunTime);
 			var diffInMinutes = getDifferenceInMinutes(maxLastRunTime, lastRunTime);
 			console.log(diffInMinutes);
-			return diffInMinutes < 5;
+			return diffInMinutes < 10;
 		})
 		.map(test => {
 			return {
 				"name": test.TestName,
-				"status": test.Succeed ? "passed" : "failed"
+				"status": test.Succeeded ? "passed" : "failed"
 			}
 		});
-
 		tests.sort((a,b) => a.name < b.name ? -1 : +(a.status > b.status));
-		tests.forEach(test => html += formatTest(test.name, test.status));
 		
+		html += "<td>" + tests.filter(t => t.status == "passed").length + "/" + tests.length + "</td>";
+		
+		html += "<td>"
+		tests.forEach(test => html += formatTest(test.name, test.status));
 		html += "</td></tr>";
 		return html;
 	}
