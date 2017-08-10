@@ -99,7 +99,7 @@ namespace TagsCloudVisualization
 			points1.Should().Contain(new Point(center.X, center.Y - 5));
 		}
 
-		[Test, Ignore("not ready")]
+		[Test]
 		public void ShouldPreferCloserToCenterPointsAnticlockwise()
 		{
 			layouter.PutNextRectangle(new Size(10, 10));
