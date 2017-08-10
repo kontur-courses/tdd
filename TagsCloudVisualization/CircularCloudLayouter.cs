@@ -25,7 +25,7 @@ namespace TagsCloudVisualization
 
 		private Rectangle BuildNextRectangle(Size rectangleSize)
 		{
-			foreach (var point in points.OrderBy(p => PointExtensions.GetDistanceTo(p, center)))
+			foreach (var point in points.OrderBy(p => p.GetDistanceTo(center)))
 			foreach (var rectangle in GetAdjacentRectangles(point, rectangleSize))
 				if (rectangles.All(r => !r.IsIntersectedWith(rectangle)))
 					return rectangle;
