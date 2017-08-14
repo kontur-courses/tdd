@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using FluentAssertions;
 using FluentAssertions.Common;
 using NUnit.Framework;
@@ -13,7 +14,7 @@ namespace TagsCloudVisualization.Tests
         [SetUp]
         public void SetUp()
         {
-            center = new Point(0,0);
+            center = new Point(1000,1000);
             layouter = new CircularCloudLayouter(center);
         }
 
@@ -52,7 +53,8 @@ namespace TagsCloudVisualization.Tests
         {
             var size = new Size(10, 10);
             var rectangle = layouter.PutNextRectangle(size);
-            rectangle.Point.ShouldBeEquivalentTo(center);
+            rectangle.X.ShouldBeEquivalentTo(center.X-size.Width/2);
+            rectangle.Y.ShouldBeEquivalentTo(center.Y +size.Height/ 2);
         }
         [Test]
         public void HaveNonZeroPointCenter_SecondPut()
@@ -60,8 +62,8 @@ namespace TagsCloudVisualization.Tests
             var size = new Size(10, 10);
             layouter.PutNextRectangle(size);
             var secondRectangle = layouter.PutNextRectangle(size);
-            Assert.AreNotEqual(secondRectangle.Point.X, center.X);
-            Assert.AreNotEqual(secondRectangle.Point.Y, center.Y);
+            Assert.AreNotEqual(secondRectangle.X-size.Width/2, center.X);
+            Assert.AreNotEqual(secondRectangle.Y - size.Height/ 2, center.Y);
 
         }
 
@@ -72,10 +74,37 @@ namespace TagsCloudVisualization.Tests
             var firstRectangle = layouter.PutNextRectangle(firstSize);
             var secondSize = new Size(6,6);
             var secondRectangle = layouter.PutNextRectangle(secondSize);
-            Assert.That(Math.Abs(firstRectangle.Point.X-secondRectangle.Point.X)==firstRectangle.Size.Width/2+secondRectangle.Size.Width/2);
-            Assert.That(Math.Abs(firstRectangle.Point.Y - secondRectangle.Point.Y) == firstRectangle.Size.Height / 2 + secondRectangle.Size.Height/ 2);
-
+            layouter.PutNextRectangle(new Size(4, 6));
+            layouter.PutNextRectangle(new Size(7, 8));
+            layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8)); layouter.PutNextRectangle(new Size(7, 8));
         }
+
+        [Test]
+        public void OutBitmap()
+        {
+            var x = 100;
+            var y = 40;
+            var random = new Random();
+            
+            for (int i = 0; i < 60; i++)
+            {
+                layouter.PutNextRectangle(new Size(x, y));
+                if(x>20)
+                x = x - random.Next(2, 7);
+                if(y>15) y = y - random.Next(2, 7);
+            }
+            layouter.SaveBitmap("result.bmp");
+        }
+
+
+
+        [TearDown]
+        public void TearDown()
+        {
+            if(TestContext.CurrentContext.Result.State==TestState.Failure|| TestContext.CurrentContext.Result.State == TestState.Error)
+            layouter.SaveBitmap(TestContext.CurrentContext.Test.FullName);
+        }
+
 
     }
 }

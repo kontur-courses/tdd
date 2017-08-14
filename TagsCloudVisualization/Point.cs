@@ -1,14 +1,13 @@
-﻿namespace TagsCloudVisualization
-{
-    public class Point
-    {
-        public double X { get; set; }
-        public double Y { get; set; }
+﻿using System;
+using System.Drawing;
 
-        public Point(double x, double y)
+namespace TagsCloudVisualization
+{
+    public static class PointExtensions
+    {
+        public static int DistanceFrom(this Point fromPoint, Point toPoint)
         {
-            X = x;
-            Y = y;
+            return (int)Math.Sqrt((toPoint.X-fromPoint.X)^2+(toPoint.Y-fromPoint.Y)^2);
         }
 
     }

@@ -1,30 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public class Rectangle
+    public static class RectangleExtensions
     {
-        public Size Size { get; }
-        public Point Point { get; }
-
-        public Rectangle(double x, double y, int width,int height)
+        public static IEnumerable<Rectangle> GetNeighbour(this Rectangle rectangle, Size size)
         {
-            Point = new Point(x,y);
-            Size = new Size(width,height);
+            yield return new Rectangle(rectangle.X - rectangle.Width, rectangle.Y + size.Height, size.Width, size.Height);
+            yield return new Rectangle(rectangle.X - size.Width, rectangle.Y, size.Width, size.Height);
+            yield return new Rectangle(rectangle.X - size.Width, rectangle.Y - size.Height, size.Width, size.Height);
+            yield return new Rectangle(rectangle.X + size.Width, rectangle.Y, size.Width, size.Height);
+            yield return new Rectangle(rectangle.X + size.Width, rectangle.Y + size.Height, size.Width, size.Height);
+            yield return new Rectangle(rectangle.X + size.Width, rectangle.Y - size.Height, size.Width, size.Height);
+            yield return new Rectangle(rectangle.X, rectangle.Y + size.Height, size.Width, size.Height);
+            yield return new Rectangle(rectangle.X, rectangle.Y - size.Height, size.Width, size.Height);
         }
 
-        public Rectangle(Size size, Point point)
-        {
-            if (size == null)
-            {
-                throw new NullReferenceException();
-            }
-            if (point == null)
-            {
-                throw new NullReferenceException();
-            }
-            Size = size;
-            Point = point;
-        }
     }
 }

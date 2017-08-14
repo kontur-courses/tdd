@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Drawing;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace TagsCloudVisualization.Tests
@@ -16,7 +17,8 @@ namespace TagsCloudVisualization.Tests
         public void HavePoint_AfterCreate()
         {
             var rectangle = new Rectangle(1, 1, 1, 1);
-            rectangle.Point.ShouldBeEquivalentTo(new Point(1, 1));
+            rectangle.X.ShouldBeEquivalentTo(new Point(1, 1).X);
+            rectangle.Y.ShouldBeEquivalentTo(new Point(1, 1).Y);
         }
 
 
