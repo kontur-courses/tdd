@@ -62,6 +62,7 @@
     <Compile Include="Rectangle.cs" />
     <Compile Include="Size.cs" />
     <Compile Include="Tests\CircularCloudLayouter_Should.cs" />
+    <Compile Include="Tests\Rectangle_Should.cs" />
     <Compile Include="Tests\Size_Should.cs" />
   </ItemGroup>
   <ItemGroup>
