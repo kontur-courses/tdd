@@ -83,16 +83,14 @@ namespace TagsCloudVisualization.Tests
         [Test]
         public void OutBitmap()
         {
-            var x = 100;
-            var y = 40;
             var random = new Random();
             
             for (int i = 0; i < 60; i++)
             {
+                var x = random.Next(10, 100);
+                var y = random.Next(10, 100);
                 layouter.PutNextRectangle(new Size(x, y));
-                if(x>20)
-                x = x - random.Next(2, 7);
-                if(y>15) y = y - random.Next(2, 7);
+                
             }
             layouter.SaveBitmap("result.bmp");
         }

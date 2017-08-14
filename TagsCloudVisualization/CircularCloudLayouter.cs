@@ -10,7 +10,7 @@ namespace TagsCloudVisualization
     {
         private Dictionary<Point, Rectangle> Rectangles;
         private Point center;
-        private Point firstPoint;
+        private Rectangle firstRectangle;
         public Dictionary<Point, Rectangle> GetCloud()
         {
             return Rectangles;
@@ -22,17 +22,7 @@ namespace TagsCloudVisualization
             this.center = center;
         }
 
-        private Point GetClosestFreePoint(Size rectangleSize)
-        {
-            var lastRectangle = Rectangles.FirstOrDefault().Value;
-            var x = lastRectangle.X + lastRectangle.Size.Width / 2 + rectangleSize.Width / 2;
-            var y = lastRectangle.Y + lastRectangle.Size.Height / 2 + rectangleSize.Height / 2;
-            var closestPoint = new Point(x, y);
-            return closestPoint;
-
-        }
-
-        private IEnumerable<Point> GetOrderedPoints()
+      private IEnumerable<Point> GetOrderedPoints()
         {
             return Rectangles.Keys.OrderBy(p => p.DistanceFrom(center));
         }
@@ -47,9 +37,16 @@ namespace TagsCloudVisualization
             var g = Graphics.FromImage(bitmap);
             g.FillRectangle(b,0,0,maxX,maxY);
             var pen = new Pen(Color.Red,1);
+            
+            var random = new Random();
             foreach (var rectangle in Rectangles.Values)
             {
                 g.DrawRectangle(pen,rectangle);
+                if (rectangle == firstRectangle)
+                {
+                    g.FillRectangle(new SolidBrush(Color.BlueViolet),rectangle);
+                }
+                pen.Color = Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
             }
             var cropArea = new Rectangle(minX,minY,maxX-minX,maxY-minY);
             bitmap = bitmap.Clone(cropArea, bitmap.PixelFormat);
@@ -64,8 +61,9 @@ namespace TagsCloudVisualization
             if (Rectangles.Count == 0)
             {
                 point = new Point(center.X-rectangleSize.Width/2,center.Y+rectangleSize.Height/2);
-                firstPoint = point;
+                
                 rectangle = new Rectangle(point,rectangleSize);
+                firstRectangle = rectangle;
             }
             else
             {
