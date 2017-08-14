@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using FluentAssertions;
 using FluentAssertions.Common;
 using NUnit.Framework;
@@ -96,6 +97,27 @@ namespace TagsCloudVisualization.Tests
             layouter.SaveBitmap("result.bmp");
         }
 
+        [Test]
+        public void HaveNoIntersections()
+        {
+            var x = 100;
+            var y = 40;
+            var random = new Random();
+
+            for (int i = 0; i < 60; i++)
+            {
+                layouter.PutNextRectangle(new Size(x, y));
+                if (x > 20)
+                    x = x - random.Next(2, 7);
+                if (y > 15) y = y - random.Next(2, 7);
+            }
+            var rectangles = layouter.GetCloud().Values;
+            foreach (var rectangle in rectangles)
+            {
+                var intersects = rectangles.Where(r => r != rectangle).Any(r => r.IntersectsWith(rectangle));
+                Assert.IsFalse(intersects);
+            }
+        }
 
 
         [TearDown]
