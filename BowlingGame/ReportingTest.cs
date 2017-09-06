@@ -110,11 +110,19 @@ namespace BowlingGame
                 Console.WriteLine(kv.TestName);
             }
 
-            using (var client = Firebase.CreateClient())
+            if (names != null && !names.ToString().StartsWith("ВАШИ ФАМИЛИИ",
+                    StringComparison.InvariantCultureIgnoreCase))
             {
-                client.Set(names + "/tests", tests);
+                using (var client = Firebase.CreateClient())
+                {
+                    client.Set(names + "/tests", tests);
+                }
+                Console.WriteLine("reported");
             }
-            Console.WriteLine("reported");
+            else
+            {
+                Console.WriteLine("rejected because of default name");
+            }
         }
     }
 
