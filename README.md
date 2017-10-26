@@ -15,7 +15,7 @@
 
 ## Самостоятельная подготовка
 
-Посмотрите [видеодемонстрацию TDD](https://www.youtube.com/watch?v=lLTv2JSrCBY) (10 минут)
+Посмотри [видеодемонстрацию TDD](https://www.youtube.com/watch?v=lLTv2JSrCBY) (10 минут)
 
 
 ## Очная встреча
