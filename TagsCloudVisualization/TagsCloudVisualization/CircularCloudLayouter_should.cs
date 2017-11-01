@@ -68,7 +68,7 @@ namespace TagsCloudVisualization
         }
 
         [TestCase(1000), Timeout(1000)]
-        public void PutNextRectangle_LessThanOneSecond_OnMultiplyAddition(int count)
+        public void PutNextRectangle_LessThanOneSecond_OnMultipleAddition(int count)
         {
             var wordBox = new Size(100, 100);
             for (var i = 0; i < count; i++)
