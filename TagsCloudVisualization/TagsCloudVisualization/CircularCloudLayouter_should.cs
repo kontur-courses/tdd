@@ -57,7 +57,7 @@ namespace TagsCloudVisualization
         [TestCase(2, TestName = "When only two rectangles")]
         [TestCase(10, TestName = "When myltiple rectangles")]
         [TestCase(100, TestName = "When a lot of rectangles")]
-        public void PutNextRectangleWithoutIntersectionOfOtherRectangle_AfterDoubleAddition(int count)
+        public void PutNextRectangleWithoutIntersectionOfOtherRectangle_AfterAddition(int count)
         {
             var wordBox = new Size(100, 100);
             var rectangles = new List<Rectangle>();
@@ -68,7 +68,7 @@ namespace TagsCloudVisualization
         }
 
         [TestCase(1000), Timeout(1000)]
-        public void PutNextRectangle_LessThanOneSecond_AfterMultiplyAddition(int count)
+        public void PutNextRectangle_LessThanOneSecond_OnMultiplyAddition(int count)
         {
             var wordBox = new Size(100, 100);
             for (var i = 0; i < count; i++)
