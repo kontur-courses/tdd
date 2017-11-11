@@ -1,31 +1,30 @@
-import * as Tests from "../bowlingGame.test";
-import ResultReporter from "./resultPoster";
+import ResultPoster from "./resultPoster";
 import jsonfile from "jsonfile";
 import fs from "fs";
 import { AUTHORS } from "../yourName";
 
-let currentRunTests = [];
-let now = new Date().toISOString();
-const resultsFileName = "results.json";
 
-describe("Bowling game", () => {
-    Tests.default();
+export function beginAndEndWithReporting() {
+    let currentRunTests = [];
+    let now = new Date().toISOString();
+    const resultsFileName = "results.json";
 
-    before(function () {
+    before(() => {
         if (fs.existsSync(resultsFileName))
             currentRunTests = jsonfile.readFileSync(resultsFileName);
     });
-    after(function () {
+
+    after(() => {
         if (!AUTHORS) {
             throw new Error("Enter your surnames at yourName.js in AUTHORS constant");
         }
-        const reporter = new ResultReporter();
+        jsonfile.writeFileSync(resultsFileName, currentRunTests);
+        const reporter = new ResultPoster();
         currentRunTests = currentRunTests.filter(x => x.LastRunTime === now);
         reporter.writeAsync(AUTHORS, currentRunTests);
     });
-    beforeEach(function () {
-    });
-    afterEach(function () {
+
+    afterEach(() => {
         const testName = this.currentTest.fullTitle();
         const foundTest = currentRunTests.find(x => x.TestName === testName);
         if (foundTest) {
@@ -41,6 +40,5 @@ describe("Bowling game", () => {
                 TestMethod: this.currentTest.title,
                 Succeeded: this.currentTest.state === "passed"
             });
-        jsonfile.writeFileSync(resultsFileName, currentRunTests);
     });
-});
+}

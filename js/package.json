@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --require babel-register --require babel-polyfill ./src/samples/**/*.test.js",
-    "bowling": "mocha --require babel-register --require babel-polyfill ./**/reportingTest.js"
+    "bowling": "mocha --require babel-register --require babel-polyfill ./**/bowlingGame/game.js"
   },
   "dependencies": {},
   "devDependencies": {

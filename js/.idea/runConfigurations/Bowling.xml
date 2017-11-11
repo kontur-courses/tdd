@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Samples" type="mocha-javascript-test-runner" factoryName="Mocha">
+  <configuration default="false" name="Bowling" type="mocha-javascript-test-runner" factoryName="Mocha">
     <node-interpreter>project</node-interpreter>
     <node-options />
     <working-directory>$PROJECT_DIR$</working-directory>
@@ -7,9 +7,8 @@
     <envs />
     <ui>bdd</ui>
     <extra-mocha-options>--require babel-register --require babel-polyfill</extra-mocha-options>
-    <test-kind>DIRECTORY</test-kind>
-    <test-directory>$PROJECT_DIR$/src/samples</test-directory>
-    <recursive>true</recursive>
+    <test-kind>TEST_FILE</test-kind>
+    <test-file>$PROJECT_DIR$/src/bowlingGame/game.js</test-file>
     <method />
   </configuration>
 </component>
