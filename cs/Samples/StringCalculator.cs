@@ -21,14 +21,6 @@ namespace Samples
 				.Select(int.Parse).ToList();
 		}
 
-		public static void FailOnNegatives(List<int> numbers)
-		{
-			var negatives = numbers.Where(n => n < 0).ToList();
-			if (negatives.Any())
-				throw new ArgumentException(
-					"negatives not allowed: " + string.Join(", ", negatives));
-		}
-
 		public static char[] ParseDelimiters(ref string text)
 		{
 			if (!text.StartsWith("//") || text.Length <= 2)
@@ -36,6 +28,14 @@ namespace Samples
 			var delimiter = text[2];
 			text = text.Split('\n')[1];
 			return new[] { delimiter };
+		}
+
+		public static void FailOnNegatives(List<int> numbers)
+		{
+			var negatives = numbers.Where(n => n < 0).ToList();
+			if (negatives.Any())
+				throw new ArgumentException(
+					"negatives not allowed: " + string.Join(", ", negatives));
 		}
 	}
 }

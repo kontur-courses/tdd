@@ -1,26 +1,23 @@
 {
-  "name": "tdd-js",
+  "name": "tdd",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --require babel-core/register --require babel-polyfill ./**/*.test.js",
-    "bowling": "mocha --require babel-core/register --require babel-polyfill ./**/ReportingTest.js"
+    "test": "mocha --require babel-register ./src/samples/**/*.test.js",
+    "bowling": "mocha --require babel-register ./**/reportingTest.js"
   },
-  "keywords": [
-    "tdd"
-  ],
-  "author": "",
-  "license": "ISC",
+  "dependencies": {},
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-es2015": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
     "chai": "^4.1.2",
     "firebase": "^4.6.0",
     "jsonfile": "^4.0.0",
-    "mocha": "^4.0.1",
-    "mocha-cases": "^0.1.10"
+    "mocha": "^4.0.1"
   },
-  "dependencies": {}
+  "author": "",
+  "license": "ISC"
 }

@@ -1,5 +1,5 @@
-import * as Tests from "./../BowlingGameTests";
-import ResultReporter from "./ResultReporter";
+import * as Tests from "../bowlingGame.test";
+import ResultReporter from "./resultReporter";
 import jsonfile from "jsonfile";
 import fs from "fs";
 
@@ -12,7 +12,7 @@ describe("Bowling game", () => {
 
     before(function () {
         if (Tests.Names === "ENTER YOUR NAME HERE") {
-            throw new Error("Please enter your name in BowlingGameTests.js");
+            throw new Error("Please enter your name in bowlingGame.test.js");
         }
         if (fs.existsSync(resultsFileName))
             currentRunTests = jsonfile.readFileSync(resultsFileName);;

@@ -1,6 +1,2 @@
-.vscode
-.idea
-*.log
-node_modules
-build
-results.json
+.idea/workspace.xml
+.idea/tasks.xml

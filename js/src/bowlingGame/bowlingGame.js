@@ -1,9 +1,9 @@
 export default class BowlingGame {
-    Roll(pins) {
+    roll(pins) {
 
     }
 
-    GetScore() {
+    getScore() {
         throw new Error("Not implemented, pendejo!");
     }
 }

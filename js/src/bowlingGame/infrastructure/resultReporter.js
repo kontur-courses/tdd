@@ -1,4 +1,4 @@
-import FirebaseClient from "./FirebaseClient";
+import FirebaseClient from "./firebaseClient";
 
 let firebaseClient;
 export default class ResultReporter {
