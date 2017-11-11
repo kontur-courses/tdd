@@ -4,13 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --require babel-register ./src/samples/**/*.test.js",
-    "bowling": "mocha --require babel-register ./**/reportingTest.js"
+    "test": "mocha --require babel-register --require babel-polyfill ./src/samples/**/*.test.js",
+    "bowling": "mocha --require babel-register --require babel-polyfill ./**/reportingTest.js"
   },
   "dependencies": {},
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
+    "babel-polyfill": "^6.26.0",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "chai": "^4.1.2",

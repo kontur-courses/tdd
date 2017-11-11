@@ -4,6 +4,6 @@ export default class BowlingGame {
     }
 
     getScore() {
-        throw new Error("Not implemented, pendejo!");
+        throw new Error("Not implemented!");
     }
 }

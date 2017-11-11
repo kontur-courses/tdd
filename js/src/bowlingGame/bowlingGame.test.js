@@ -6,5 +6,3 @@ export default function BowlingGameTests() {
         game.getScore();
     });
 }
-
-export const Names = "ENTER YOUR NAME HERE";

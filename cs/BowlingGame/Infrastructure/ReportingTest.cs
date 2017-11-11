@@ -2,35 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using FireSharp;
-using FireSharp.Config;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 
-namespace BowlingGame
+namespace BowlingGame.Infrastructure
 {
-    public static class Firebase
-    {
-        private static FirebaseConfig BuildConfig()
-        {
-            const string Url = "https://testing-challenge.firebaseio.com";
-            const string Realm = "bowling";
-            var dateKey = DateTime.Now.Date.ToString("yyyyMMdd");
-
-            var config = new FirebaseConfig
-            {
-                BasePath = $"{Url}/{Realm}/{dateKey}"
-            };
-            return config;
-        }
-
-        public static FirebaseClient CreateClient()
-        {
-            return new FirebaseClient(BuildConfig());
-        }
-    }
-
     public class ReportingTest<TTestClass>
 	{
         private static readonly string resultsFileName = typeof(TTestClass).Name + ".json";
@@ -103,35 +80,33 @@ namespace BowlingGame
         {
             tests = tests.OrderByDescending(t => t.LastRunTime).ThenByDescending(t => t.FirstRunTime).ToList();
             SaveResults(tests);
-            var names = typeof(TTestClass).GetField("Names").GetValue(null);
-            Console.WriteLine(names);
+
             foreach (var kv in tests)
-            {
                 Console.WriteLine(kv.TestName);
-            }
 
-            if (names != null && !names.ToString().StartsWith("ВАШИ ФАМИЛИИ",
-                    StringComparison.InvariantCultureIgnoreCase))
+            if (string.IsNullOrWhiteSpace(YourName.Authors))
+                throw new Exception("Enter your surnames at YourName.cs in AUTHORS constant");
+
+            using (var client = Firebase.CreateClient())
             {
-                using (var client = Firebase.CreateClient())
+                string authorsKey = MakeFirebaseSafe(YourName.Authors);
+                client.Set(authorsKey, new
                 {
-                    client.Set(names + "/tests", tests);
-                }
-                Console.WriteLine("reported");
+                    tests,
+                    time = DateTime.Now.ToUniversalTime(),
+                    lang = "cs"
+                });
             }
-            else
-            {
-                Console.WriteLine("rejected because of default name");
-            }
+            Console.WriteLine("reported");
         }
-    }
 
-    public class TestCaseStatus
-    {
-        public string TestMethod;
-        public string TestName;
-        public DateTime FirstRunTime;
-        public DateTime LastRunTime;
-        public bool Succeeded;
+	    private static string MakeFirebaseSafe(string s)
+	    {
+	        var badChars = Enumerable.Range(0, 32).Select(code => (char)code)
+	            .Concat(".$#[]/" + (char)127);
+	        foreach (var badChar in badChars)
+	            s = s.Replace(badChar, '_');
+	        return s;
+	    }
     }
 }

@@ -1,7 +1,8 @@
 import * as Tests from "../bowlingGame.test";
-import ResultReporter from "./resultReporter";
+import ResultReporter from "./resultPoster";
 import jsonfile from "jsonfile";
 import fs from "fs";
+import { AUTHORS } from "../yourName";
 
 let currentRunTests = [];
 let now = new Date().toISOString();
@@ -11,23 +12,22 @@ describe("Bowling game", () => {
     Tests.default();
 
     before(function () {
-        if (Tests.Names === "ENTER YOUR NAME HERE") {
-            throw new Error("Please enter your name in bowlingGame.test.js");
-        }
         if (fs.existsSync(resultsFileName))
-            currentRunTests = jsonfile.readFileSync(resultsFileName);;
+            currentRunTests = jsonfile.readFileSync(resultsFileName);
     });
     after(function () {
-        var reporter = new ResultReporter();
+        if (!AUTHORS) {
+            throw new Error("Enter your surnames at yourName.js in AUTHORS constant");
+        }
+        const reporter = new ResultReporter();
         currentRunTests = currentRunTests.filter(x => x.LastRunTime === now);
-        reporter.reportResults(currentRunTests, Tests.Names);
+        reporter.writeAsync(AUTHORS, currentRunTests);
     });
     beforeEach(function () {
-
     });
     afterEach(function () {
-        let testName = this.currentTest.fullTitle();
-        let foundTest = currentRunTests.find(x => x.TestName === testName);
+        const testName = this.currentTest.fullTitle();
+        const foundTest = currentRunTests.find(x => x.TestName === testName);
         if (foundTest) {
             foundTest.LastRunTime = now;
             foundTest.Succeeded = this.currentTest.state === "passed";
