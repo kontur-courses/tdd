@@ -1,7 +1,7 @@
 import "chai/register-should";
 import {beginAndEndWithReporting} from "./infrastructure/reportingTest";
 
-export default class Game {
+class Game {
     roll(pins) {
     }
 
@@ -11,8 +11,8 @@ export default class Game {
 }
 
 describe("Game should", () => {
-    it("have zero score before any rolls", function () {
-        let game = new Game();
+    it("have zero score before any rolls", () => {
+        const game = new Game();
         game.getScore().should.be.eq(0);
     });
 

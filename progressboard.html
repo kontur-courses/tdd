@@ -47,7 +47,9 @@
 	});
 
 	function buildTeamHtml(name, value) {
-		var html = "<tr><td class='name'>" + htmlEscape(name) + "</td>";
+		var lang = value.lang;
+		var suffix = lang ? " (" + lang + ")" : "";
+		var html = "<tr><td class='name'>" + htmlEscape(name) + suffix + "</td>";
 
 		var rawTests = value.tests;
 
