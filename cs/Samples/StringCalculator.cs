@@ -21,12 +21,12 @@ namespace Samples
 				.Select(int.Parse).ToList();
 		}
 
-		public static char[] ParseDelimiters(ref string text)
+		public static char[] ParseDelimiters(ref string expr)
 		{
-			if (!text.StartsWith("//") || text.Length <= 2)
+			if (!expr.StartsWith("//") || expr.Length <= 2)
 				return new[] { ',', '\n' };
-			var delimiter = text[2];
-			text = text.Split('\n')[1];
+			var delimiter = expr[2];
+			expr = expr.Split('\n')[1];
 			return new[] { delimiter };
 		}
 
