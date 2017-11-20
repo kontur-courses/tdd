@@ -52,31 +52,32 @@ class Game {
     }
 }
 
-describe("Game tests", () => {
+//Сохранен оригинальный TDD-стиль Боба Мартина
+suite("Game tests", () => {
     let game;
 
-    beforeEach(() => {
+    setup(() => {
         game = new Game();
     });
 
-    it("test gutter game", () => {
+    test("gutter game", () => {
         rollMany(20, 0);
         assert.equal(game.getScore(), 0);
     });
 
-    it("test all ones", () => {
+    test("all ones", () => {
         rollMany(20,1);
         assert.equal(game.getScore(), 20);
     });
 
-    it("test one spare", () => {
+    test("one spare", () => {
         rollSpare();
         game.roll(3);
         rollMany(17,0);
         assert.equal(game.getScore(), 16);
     });
 
-    it("test one strike", () => {
+    test("one strike", () => {
         rollStrike();
         game.roll(3);
         game.roll(4);
@@ -84,7 +85,7 @@ describe("Game tests", () => {
         assert.equal(game.getScore(), 24);
     });
 
-    it("test perfect game", () => {
+    test("perfect game", () => {
         rollMany(12,10);
         assert.equal(game.getScore(), 300);
     });
@@ -104,5 +105,4 @@ describe("Game tests", () => {
         game.roll(5);
     }
 });
-
 

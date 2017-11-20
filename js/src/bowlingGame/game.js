@@ -10,8 +10,8 @@ class Game {
     }
 }
 
-describe("Game should", () => {
-    it("have zero score before any rolls", () => {
+describe("Game", () => {
+    it("should have zero score before any rolls", () => {
         const game = new Game();
         game.getScore().should.be.eq(0);
     });
