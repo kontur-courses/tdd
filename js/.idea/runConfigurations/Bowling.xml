@@ -7,8 +7,11 @@
     <envs />
     <ui>bdd</ui>
     <extra-mocha-options>--require babel-register --require babel-polyfill</extra-mocha-options>
-    <test-kind>TEST_FILE</test-kind>
+    <test-kind>SUITE</test-kind>
     <test-file>$PROJECT_DIR$/src/bowlingGame/game.js</test-file>
+    <test-names>
+      <name value="Game" />
+    </test-names>
     <method />
   </configuration>
 </component>

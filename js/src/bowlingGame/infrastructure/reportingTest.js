@@ -7,18 +7,21 @@ import { AUTHORS } from "../yourName";
 export function beginAndEndWithReporting() {
     let currentRunTests = [];
     let now = new Date().toISOString();
-    const resultsFileName = "temp/results.json";
+    const resultsDirectoryPath = "temp";
+    const resultsFilePath = "temp/results.json";
 
     before(function () {
-        if (fs.existsSync(resultsFileName))
-            currentRunTests = jsonfile.readFileSync(resultsFileName);
+        if (fs.existsSync(resultsFilePath))
+            currentRunTests = jsonfile.readFileSync(resultsFilePath);
     });
 
     after(function () {
         if (!AUTHORS) {
             throw new Error("Enter your surnames at yourName.js in AUTHORS constant");
         }
-        jsonfile.writeFileSync(resultsFileName, currentRunTests);
+        if (!fs.existsSync(resultsDirectoryPath))
+            fs.mkdirSync(resultsDirectoryPath);
+        jsonfile.writeFileSync(resultsFilePath, currentRunTests);
         const reporter = new ResultPoster();
         currentRunTests = currentRunTests.filter(x => getTimeDiffInSeconds(now, x.LastRunTime) < 5*60);
         reporter.writeAsync(AUTHORS, currentRunTests);
