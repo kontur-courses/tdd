@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2019
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BowlingGame", "BowlingGame\BowlingGame.csproj", "{AD0F018A-732E-4074-8527-AB2EEC8D0BF3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.csproj", "{B5108E20-2ACF-4ED9-84FE-2A718050FC94}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{F36374C8-C5E1-4907-BB43-455B903E3B98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,8 +23,15 @@ Global
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F36374C8-C5E1-4907-BB43-455B903E3B98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F36374C8-C5E1-4907-BB43-455B903E3B98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F36374C8-C5E1-4907-BB43-455B903E3B98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F36374C8-C5E1-4907-BB43-455B903E3B98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4A41C91B-5ECE-43B3-986A-C431E2FDFEC7}
 	EndGlobalSection
 EndGlobal
