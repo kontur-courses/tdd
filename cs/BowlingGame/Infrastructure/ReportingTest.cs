@@ -9,7 +9,7 @@ using NUnit.Framework.Interfaces;
 namespace BowlingGame.Infrastructure
 {
     public class ReportingTest<TTestClass>
-	{
+    {
         private static readonly string resultsFileName = typeof(TTestClass).Name + ".json";
         private static string resultsFile;
         private static List<TestCaseStatus> tests;
@@ -100,13 +100,13 @@ namespace BowlingGame.Infrastructure
             Console.WriteLine("reported");
         }
 
-	    private static string MakeFirebaseSafe(string s)
-	    {
-	        var badChars = Enumerable.Range(0, 32).Select(code => (char)code)
-	            .Concat(".$#[]/" + (char)127);
-	        foreach (var badChar in badChars)
-	            s = s.Replace(badChar, '_');
-	        return s;
-	    }
+        private static string MakeFirebaseSafe(string s)
+        {
+            var badChars = Enumerable.Range(0, 32).Select(code => (char)code)
+                .Concat(".$#[]/" + (char)127);
+            foreach (var badChar in badChars)
+                s = s.Replace(badChar, '_');
+            return s;
+        }
     }
 }

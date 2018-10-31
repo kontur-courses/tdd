@@ -65,7 +65,7 @@ namespace BowlingGame.Solved
     }
     
     [TestFixture]
-	public class Game_Tests
+    public class Game_Tests
     {
         private Game game;
 

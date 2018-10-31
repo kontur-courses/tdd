@@ -196,3 +196,5 @@ FakesAssemblies/
 *.opt
 
 *Solved.cs
+
+.idea/
