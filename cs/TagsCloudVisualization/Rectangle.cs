@@ -1,0 +1,7 @@
+﻿namespace TagsCloudVisualization
+{
+    class Rectangle
+    {
+        
+    }
+}
