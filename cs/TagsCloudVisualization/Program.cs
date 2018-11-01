@@ -10,6 +10,7 @@ namespace TagsCloudVisualization
     {
         static void Main(string[] args)
         {
+            throw new NotImplementedException();
         }
     }
 }
