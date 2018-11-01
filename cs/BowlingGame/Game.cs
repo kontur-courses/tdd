@@ -112,7 +112,7 @@ namespace BowlingGame
             };
             beats.ShouldThrow<ArgumentException>();
         }
-
+        
         [Test]
         public void ShouldNotThrows_WhenMoreThen10PinsBeatIn2frames()
         {
