@@ -19,6 +19,7 @@ namespace TagsCloudVisualization
         {
             var rect = new Rectangle(_currentPoint, rectangleSize);
 
+            _currentAngle = Math.PI;
             while (RectOverlapWithExistRects(rect))
             {
                 var r = SpiralSize * _currentAngle;
@@ -33,7 +34,7 @@ namespace TagsCloudVisualization
             
             Rects.Add(rect);
 
-            CorrectLayout();
+            // CorrectLayout();
             
             return rect;
         }

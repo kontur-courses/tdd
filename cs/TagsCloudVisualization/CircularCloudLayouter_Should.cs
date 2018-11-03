@@ -35,7 +35,7 @@ namespace TagsCloudVisualization
         public void TearDown()
         {
             var filePath = Path.Combine(TestContext.CurrentContext.TestDirectory, Path.GetTempFileName());
-            CloudLayoutVisualizer.SaveAsImage(_layouter.Rects, filePath);
+            CloudLayoutVisualizer.SaveAsPngImage(_layouter.Rects, filePath);
             Console.WriteLine($"Tag cloud visualization saved to file {filePath}");
         }
         

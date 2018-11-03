@@ -23,7 +23,6 @@ namespace TagsCloudVisualization
                 new Rectangle(new Point(50, 0), new Size(100, 100)),
             },
             
-            
             new Rectangle[] {
                 new Rectangle(new Point(0, 0), new Size(100, 100)),
                 new Rectangle(new Point(-50, 0), new Size(100, 100)),
@@ -80,6 +79,51 @@ namespace TagsCloudVisualization
         {
             Rectangle.IsOverlap(rects[0], rects[1]).Should().BeFalse();
             Rectangle.IsOverlap(rects[1], rects[0]).Should().BeFalse();
+        }
+
+        [Test]
+        public void GetOuterRect_ShouldBeCorrect_WhenRectsHasPositiveCoordinates()
+        {
+            var rects = new Rectangle[]
+            {
+                new Rectangle(new Point(100, 100), new Size(100, 100)), 
+                new Rectangle(new Point(150, 150), new Size(100, 100)), 
+            };
+            
+            var expectedOuterRect = new Rectangle(new Point(100, 100), new Size(150, 150));
+            var actualOuterRect = Rectangle.GetOuterRect(rects);
+
+            actualOuterRect.Should().BeEquivalentTo(expectedOuterRect);
+        }
+
+        [Test]
+        public void GetOuterRect_ShouldBeCorrect_WhenRectsHasNegativeCoordinates()
+        {
+            var rects = new Rectangle[]
+            {
+                new Rectangle(new Point(-200, -200), new Size(100, 100)), 
+                new Rectangle(new Point(-150, -150), new Size(100, 100)), 
+            };
+            
+            var expectedOuterRect = new Rectangle(new Point(-200, -200), new Size(150, 150));
+            var actualOuterRect = Rectangle.GetOuterRect(rects);
+
+            actualOuterRect.Should().BeEquivalentTo(expectedOuterRect);
+        }
+
+        [Test]
+        public void GetOuterRect_ShouldBeCorrect_WhenRectsHasNegativeAndPositiveCoordinates()
+        {
+            var rects = new Rectangle[]
+            {
+                new Rectangle(new Point(-100, -100), new Size(100, 100)), 
+                new Rectangle(new Point(0, 0), new Size(100, 100)), 
+            };
+            
+            var expectedOuterRect = new Rectangle(new Point(-100, -100), new Size(200, 200));
+            var actualOuterRect = Rectangle.GetOuterRect(rects);
+
+            actualOuterRect.Should().BeEquivalentTo(expectedOuterRect);
         }
     }
 }

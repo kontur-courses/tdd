@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace TagsCloudVisualization
 {
     public class Rectangle
@@ -22,6 +26,45 @@ namespace TagsCloudVisualization
                    aBottomRight.X > b.Pos.X &&
                    a.Pos.Y < bBottomRight.Y &&
                    aBottomRight.Y > b.Pos.Y;
+        }
+        
+        public static Rectangle GetOuterRect(IEnumerable<Rectangle> rects)
+        {
+            Rectangle topRect = rects.First();
+            Rectangle leftRect = rects.First();
+            Rectangle bottomRect = rects.First();
+            Rectangle rightRect = rects.First();
+            
+            foreach (var rect in rects)
+            {
+                if (rect.Pos.Y < topRect.Pos.Y)
+                {
+                    topRect = rect;
+                }
+                
+                if (rect.Pos.X < leftRect.Pos.X)
+                {
+                    leftRect = rect;
+                }
+
+                if (rect.bottmRightPoint.Y > bottomRect.bottmRightPoint.Y)
+                {
+                    bottomRect = rect;
+                }
+
+                if (rect.bottmRightPoint.X > rightRect.bottmRightPoint.X)
+                {
+                    rightRect = rect;
+                }
+            }
+
+            var topLeftPoint = new Point(leftRect.Pos.X, topRect.Pos.Y);
+            var totalSize = new Size(
+                Math.Abs(rightRect.bottmRightPoint.X - topLeftPoint.X), 
+                Math.Abs(bottomRect.bottmRightPoint.Y - topLeftPoint.Y)
+            );
+            
+            return new Rectangle(topLeftPoint, totalSize);
         }
     }
 }
