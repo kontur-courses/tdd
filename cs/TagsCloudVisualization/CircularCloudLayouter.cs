@@ -11,17 +11,18 @@ namespace TagsCloudVisualization
     /// </summary>
     class CircularCloudLayouter
     {
-        private readonly Point center;
+        public Point Center { get; }
 
         private const double SpiralShift = 2;
-        private const double AngleShift = 0.01;
+        private const double AngleShift = 0.05;
 
         private double angle = 0;
-        private readonly List<Rectangle> rectangles = new List<Rectangle>();
+        public List<Rectangle> Rectangles {get;}
 
         public CircularCloudLayouter(Point center)
         {
-            this.center = center;
+            Rectangles = new List<Rectangle>();
+            Center = center;
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -34,15 +35,15 @@ namespace TagsCloudVisualization
                 rectangle = GetRectangleInCurrentSpiralPosition(rectangleSize);
             }
 
-            rectangles.Add(rectangle);
+            Rectangles.Add(rectangle);
 
             return rectangle;
         }
 
         private Point GetCurrentPositionOnTheSpiral()
         {
-            var x = center.X + (SpiralShift * angle * Math.Cos(angle));
-            var y = center.Y + (SpiralShift * angle * Math.Sin(angle));
+            var x = Center.X + (SpiralShift * angle * Math.Cos(angle));
+            var y = Center.Y + (SpiralShift * angle * Math.Sin(angle));
 
             return new Point((int)x, (int)y);
         }
@@ -54,7 +55,7 @@ namespace TagsCloudVisualization
 
         private bool AreIntersectingWithPrevious(Rectangle rectangle)
         {
-            return rectangles.Any(currentRectangle => currentRectangle.IntersectsWith(rectangle));
+            return Rectangles.Any(currentRectangle => currentRectangle.IntersectsWith(rectangle));
         }
 
         private Rectangle GetRectangleInCurrentSpiralPosition(Size rectangleSize)
