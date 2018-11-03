@@ -84,6 +84,5 @@ namespace TagsCloudVisualization
         {
             return new Point(rectangle.X + rectangle.Width / 2, rectangle.Y + rectangle.Height / 2);
         }
-
     }
 }

@@ -13,16 +13,6 @@ namespace TagsCloudVisualization
     [TestFixture]
     class CircularCloudLayouterTests
     {
-        //[Test]
-        //public void CenterAreNotChangingAfterInitialization()
-        //{
-        //    var expectedCenter = new Point(0, 0);
-
-        //    var actualCenter = new CircularCloudLayouter(expectedCenter).Center;
-
-        //    actualCenter.ShouldBeEquivalentTo(expectedCenter);
-        //}
-
         [TestCase(0, 0, 0, 0, TestName = "CenterOfCloudAreEquivalentToLeftUpperBoundOfFirstRectangleOnZeroSize")]
         [TestCase(0, 0, 2, 2, TestName = "CenterOfCloudAreEquivalentToLeftUpperBoundOfFirstRectangleOnSquareSize")]
         [TestCase(0, 0, 2, 4, TestName = "CenterOfCloudAreEquivalentToLeftUpperBoundOfFirstRectangleOnRectangleSize")]
