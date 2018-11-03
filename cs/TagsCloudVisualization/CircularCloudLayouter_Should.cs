@@ -20,7 +20,7 @@ namespace TagsCloudVisualization
         [SetUp]
         public void SetUp()
         {
-            center = new Point();
+            center = new Point(5, 5);
             pointsGenerator = new SpiralPointsGenerator(DistanceBetweenPoints);
             layouter = new CircularCloudLayouter(center, pointsGenerator);
             rectangleSize = new Size(10, 10);
@@ -117,7 +117,7 @@ namespace TagsCloudVisualization
         {
             AddRectangles(rectanglesAmount);
             foreach (var rectangle in layouter.Rectangles)
-                pointsGenerator.AllGeneratedPoints.Should().Contain(rectangle.GetCenter());
+                pointsGenerator.AllGeneratedPoints.Should().Contain(rectangle.GetCenter() - (Size) center);
         }
 
         private void AddRectangles(int rectanglesAmount)
@@ -130,7 +130,7 @@ namespace TagsCloudVisualization
         {
             for (var i = 0; i < rectangles.Count; i++)
             {
-                for (var j = i; j < rectangles.Count; j++)
+                for (var j = i + 1; j < rectangles.Count; j++)
                     rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse();
             }
         }
