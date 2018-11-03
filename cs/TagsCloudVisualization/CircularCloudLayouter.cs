@@ -7,13 +7,15 @@ namespace TagsCloudVisualization
 {
     class CircularCloudLayouter
     {
+        public Size LayoutSize;
         public readonly Point Center;
         public List<Rectangle> Rectangles;
         private double currentSpiralAngle;
 
-        public CircularCloudLayouter(Point center)
+        public CircularCloudLayouter(Point center, Size layoutSize)
         {
             Center = center;
+            LayoutSize = layoutSize;
             Rectangles = new List<Rectangle>();
         }
 
@@ -33,10 +35,11 @@ namespace TagsCloudVisualization
         {
             Rectangle rectangle;
             if (Rectangles.Count == 0)
-                return new Rectangle(Center, rectangleSize);
+                return new Rectangle(Center.ShiftToLeftRectangleCorner(rectangleSize), rectangleSize);
             while (true)
             {
-                var rectangleLocation = GenerateRectangleLocation();
+                var rectangleCenterPointLocation = GenerateRectangleLocation();
+                var rectangleLocation = rectangleCenterPointLocation.ShiftToLeftRectangleCorner(rectangleSize);
                 rectangle = new Rectangle(rectangleLocation, rectangleSize);
                 if (RectanglesDoNotIntersect(rectangle))
                     break;
