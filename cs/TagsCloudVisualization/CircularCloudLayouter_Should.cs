@@ -28,9 +28,8 @@ namespace TagsCloudVisualization
 
 
         [Test]
-        public void Have_ConstructorWithPointInput()
+        public void Have_ConstructorWithPointAndGeneratorInput()
         {
-            center = new Point();
             Action action = () => new CircularCloudLayouter(center, pointsGenerator);
             action.Should().NotThrow();
         }
@@ -52,9 +51,9 @@ namespace TagsCloudVisualization
         {
             get
             {
-                yield return new TestCaseData(1);
-                yield return new TestCaseData(2);
-                yield return new TestCaseData(1000);
+                yield return new TestCaseData(1).SetName("OneRectangle");
+                yield return new TestCaseData(2).SetName("TwoRectangles");
+                yield return new TestCaseData(1000).SetName("ThousandRectangles");
             }
         }
 
