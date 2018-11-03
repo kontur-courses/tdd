@@ -11,7 +11,7 @@ namespace TagsCloudVisualization
     [TestFixture]
     public class CircularCloudLayouter_Should
     {
-        private const int DistanceBetweenDots = 1;
+        private const int DistanceBetweenPoints = 1;
         private CircularCloudLayouter layouter;
         private Point center;
         private IPointsGenerator pointsGenerator;
@@ -21,7 +21,7 @@ namespace TagsCloudVisualization
         public void SetUp()
         {
             center = new Point();
-            pointsGenerator = new SpiralPointsGenerator(DistanceBetweenDots);
+            pointsGenerator = new SpiralPointsGenerator(DistanceBetweenPoints);
             layouter = new CircularCloudLayouter(center, pointsGenerator);
             rectangleSize = new Size(10, 10);
         }

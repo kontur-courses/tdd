@@ -7,7 +7,7 @@ namespace TagsCloudVisualization
     {
         public List<Point> AllGeneratedPoints { get; private set; }
 
-        public SpiralPointsGenerator(int distanceBetweenDots)
+        public SpiralPointsGenerator(int distanceBetweenPoints)
         {
 
         }
