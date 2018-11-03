@@ -32,7 +32,19 @@ namespace TagsCloudVisualization
             }
             
             Rects.Add(rect);
+
+            CorrectLayout();
+            
             return rect;
+        }
+
+        private void CorrectLayout()
+        {
+            foreach (var existRect in Rects)
+            {
+                var newPos = new Point(0, 0);
+                existRect.Pos = newPos;
+            }
         }
 
         private bool RectOverlapWithExistRects(Rectangle rect)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using NUnit.Framework;
 using FluentAssertions;
 
@@ -21,29 +22,42 @@ namespace TagsCloudVisualization
         };
 
         private readonly Point _layouterCenter = new Point(0, 0);
+
+        private CircularCloudLayouter _layouter;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _layouter = new CircularCloudLayouter(_layouterCenter);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            var filePath = Path.Combine(TestContext.CurrentContext.TestDirectory, Path.GetTempFileName());
+            CloudLayoutVisualizer.SaveAsImage(_layouter.Rects, filePath);
+            Console.WriteLine($"Tag cloud visualization saved to file {filePath}");
+        }
         
         [Test]
         public void Should_PutFirstRectangleWithCorrectPos()
         {
-            var layouter = new CircularCloudLayouter(_layouterCenter);
             var rectSize = new Size(100, 10);
             var expectedRect = new Rectangle(_layouterCenter, rectSize);
-            layouter.PutNextRectangle(rectSize).Should().BeEquivalentTo(expectedRect);
+            _layouter.PutNextRectangle(rectSize).Should().BeEquivalentTo(expectedRect);
         }
-
+        
         [Test]
         public void Should_PlaceManyRectanglesWithoutOverlaps()
         {
-            var layouter = new CircularCloudLayouter(_layouterCenter);
-            
             foreach (var rect in _testRectsSizes)
             {
-                layouter.PutNextRectangle(rect);
+                _layouter.PutNextRectangle(rect);
             }
             
-            foreach (var rectA in layouter.Rects)
+            foreach (var rectA in _layouter.Rects)
             {
-                foreach (var rectB in layouter.Rects)
+                foreach (var rectB in _layouter.Rects)
                 {
                     if (rectA == rectB) break;
                     Rectangle.IsOverlap(rectA, rectB).Should().BeFalse();
