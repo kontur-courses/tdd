@@ -9,16 +9,22 @@ namespace TagsCloudVisualization
 {
     class CircularCloudLayouter
     {
+        private readonly List<Rectangle> layout = new List<Rectangle>();
         public CircularCloudLayouter(Point center)
         {
-            throw new NotImplementedException();
+            Center = center;
         }
 
         public Point Center { get; }
+        public IEnumerable<Rectangle> Layout => layout;
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            throw new NotImplementedException();
+            Rectangle rect = default(Rectangle);
+            if (layout.Count == 0)
+                rect = new Rectangle(Center - rectangleSize.Divide(2),rectangleSize);
+            layout.Add(rect);
+            return rect;
         }
     }
 }

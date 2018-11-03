@@ -32,8 +32,7 @@ namespace TagsCloudVisualization
         public void PutFirstRectangleCenterOnLayoutCenter()
         {
             var rect = layouter.PutNextRectangle(new Size(48, 24));
-            var rectCenter = rect.Location + new Size(24,12);
-            rectCenter.Should().BeEquivalentTo(center);
+            rect.Center().Should().BeEquivalentTo(center);
         }
     }
 }
