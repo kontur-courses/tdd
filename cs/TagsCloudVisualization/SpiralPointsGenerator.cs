@@ -1,20 +1,30 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace TagsCloudVisualization
 {
     public class SpiralPointsGenerator : IPointsGenerator
     {
-        public List<Point> AllGeneratedPoints { get; private set; }
+        public List<Point> AllGeneratedPoints { get; } = new List<Point>();
+
+        private readonly int distanceBetweenPoints;
+        private int currentSpiralAngle;
 
         public SpiralPointsGenerator(int distanceBetweenPoints)
         {
-
+            this.distanceBetweenPoints = distanceBetweenPoints;
         }
 
         public Point GetNextPoint()
         {
-            throw new System.NotImplementedException();
+            var radius = distanceBetweenPoints * currentSpiralAngle;
+            var x = radius * Math.Cos(currentSpiralAngle);
+            var y = radius * Math.Sin(currentSpiralAngle);
+            currentSpiralAngle++;
+            var point = new Point((int)Math.Round(x), (int)Math.Round(y));
+            AllGeneratedPoints.Add(point);
+            return point;
         }
     }
 }
