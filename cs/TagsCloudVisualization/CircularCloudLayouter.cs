@@ -5,9 +5,13 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
+    /// <summary>
+    /// Put rectangles in cloud in order of distance from center,
+    /// using the spiral of Archimedes
+    /// </summary>
     class CircularCloudLayouter
     {
-        private Point center;
+        private readonly Point center;
 
         private const double SpiralShift = 2;
         private const double AngleShift = 0.01;
@@ -51,11 +55,6 @@ namespace TagsCloudVisualization
         private bool AreIntersectingWithPrevious(Rectangle rectangle)
         {
             return rectangles.Any(currentRectangle => currentRectangle.IntersectsWith(rectangle));
-            foreach (var rectangleToCheck in rectangles)
-                if (rectangleToCheck.IntersectsWith(rectangle))
-                    return true;
-
-            return false;
         }
 
         private Rectangle GetRectangleInCurrentSpiralPosition(Size rectangleSize)
