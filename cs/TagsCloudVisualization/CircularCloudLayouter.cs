@@ -1,64 +1,51 @@
 using System.Collections.Generic;
+using System;
 
 namespace TagsCloudVisualization
 {
-    public class Point
-    {
-        public int X { get; set; }
-        public int Y { get; set; }
-
-        public Point(int x, int y)
-        {
-            X = x;
-            Y = y;
-        }
-    }
-
-    public class Size
-    {
-        public int Width { get; set; }
-        public int Height { get; set; }
-        
-        public Size(int w, int h)
-        {
-            Width = w;
-            Height = h;
-        }
-    }
-
-    public class Rectangle
-    {
-        public Point Pos { get; }
-        public Size Size { get; }
-
-        public Rectangle(Point pos, Size size)
-        {
-            Pos = pos;
-            Size = size;
-        }
-    }
-    
     public class CircularCloudLayouter
     {
-        private Point layoutCenter;
-        private List<Rectangle> rects = new List<Rectangle>();
+        private const int SpiralSize = 10;
+        private double _currentAngle = Math.PI;
+        private Point _currentPoint;
+        public readonly List<Rectangle> Rects = new List<Rectangle>();
             
         public CircularCloudLayouter(Point center)
         {
-            layoutCenter = center;
+            _currentPoint = center;
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            return AddRectangleToLayout(rectangleSize);
+            var rect = new Rectangle(_currentPoint, rectangleSize);
+
+            while (RectOverlapWithExistRects(rect))
+            {
+                var r = SpiralSize * _currentAngle;
+                var x = (int)Math.Floor(r * Math.Cos(_currentAngle));
+                var y = (int)Math.Floor(r * Math.Sin(_currentAngle));
+                
+                _currentPoint = new Point(x, y);
+                _currentAngle += 0.1;
+                
+                rect = new Rectangle(_currentPoint, rectangleSize);
+            }
             
+            Rects.Add(rect);
+            return rect;
         }
 
-        private Rectangle AddRectangleToLayout(Size size)
+        private bool RectOverlapWithExistRects(Rectangle rect)
         {
-            var rect = new Rectangle(layoutCenter, size);
-            rects.Add(rect);
-            return rect;
+            foreach (var existRect in Rects)
+            {
+                if (Rectangle.IsOverlap(existRect, rect))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
