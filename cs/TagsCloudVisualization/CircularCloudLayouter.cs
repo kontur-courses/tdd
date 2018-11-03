@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
@@ -13,11 +9,11 @@ namespace TagsCloudVisualization
     {
         private Point center;
 
-        private const double SpiralShift = 5;
-        private const double AngleShift = 0.1;
+        private const double SpiralShift = 2;
+        private const double AngleShift = 0.01;
 
         private double angle = 0;
-        private List<Rectangle> rectangles = new List<Rectangle>();
+        private readonly List<Rectangle> rectangles = new List<Rectangle>();
 
         public CircularCloudLayouter(Point center)
         {
@@ -54,13 +50,10 @@ namespace TagsCloudVisualization
 
         private bool AreIntersectingWithPrevious(Rectangle rectangle)
         {
+            return rectangles.Any(currentRectangle => currentRectangle.IntersectsWith(rectangle));
             foreach (var rectangleToCheck in rectangles)
-            {
                 if (rectangleToCheck.IntersectsWith(rectangle))
-                {
                     return true;
-                }
-            }
 
             return false;
         }

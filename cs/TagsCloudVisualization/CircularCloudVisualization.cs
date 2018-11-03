@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace TagsCloudVisualization
 {
     class CircularCloudVisualization
     {
-        private const int CountOfRectangles = 100;
+        private const int CountOfRectangles = 500;
+
         private const int MinSizeOfRectangle = 10;
         private const int MaxSizeOfRectangle = 100;
-        private const int BitmapWidth = 1000;
-        private const int BitmapHeight = 1000;
+
+        private const int BitmapWidth = 3000;
+        private const int BitmapHeight = 3000;
+
         private const string BitmapName = "CircularCloud";
 
         public static void Main()
@@ -26,7 +26,9 @@ namespace TagsCloudVisualization
             var rectangles = GenerateRectanglesOfCloud(cloud);
             var bitmap = GetBitmapWithRectangles(center, rectangles);
 
-            bitmap.Save($"..\\..\\Images\\{BitmapName}{CountOfRectangles}.png", ImageFormat.Png);
+            var directory = Environment.CurrentDirectory;
+
+            bitmap.Save($"{directory}\\..\\..\\Images\\{BitmapName}{CountOfRectangles}.png", ImageFormat.Png);
         }
 
         private static Bitmap GetBitmapWithRectangles(Point center, List<Rectangle> rectangles)

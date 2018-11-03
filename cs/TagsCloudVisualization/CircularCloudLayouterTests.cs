@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using FluentAssertions;
 
@@ -35,7 +31,7 @@ namespace TagsCloudVisualization
             var center = new Point(0, 0);
             var cloud = new CircularCloudLayouter(center);
 
-            var rectanglesSizes = new Size[] { new Size(2, 2), new Size(2, 2) };
+            var rectanglesSizes = new [] { new Size(2, 2), new Size(2, 2) };
 
             var lastDistance = 0.0;
 
@@ -53,7 +49,7 @@ namespace TagsCloudVisualization
         [Test]
         public void RectanglesAreNotIntersectingAfterAdditionNew()
         {
-            var rectanglesSizes = new Size[] { new Size(100, 100), new Size(100, 100) };
+            var rectanglesSizes = new [] { new Size(100, 100), new Size(100, 100) };
             var cloud = new CircularCloudLayouter(new Point(0, 0));
             var rectangles = rectanglesSizes
                 .Select(
