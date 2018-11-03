@@ -72,6 +72,13 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="ReadMe.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="100BigToSmallRectangles.png" />
+    <Content Include="100SmallToBigRectangles.png" />
+    <Content Include="10BigToSmallHighRectangles.png" />
+    <Content Include="10BigToSmallSquares.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

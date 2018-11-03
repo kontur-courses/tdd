@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization
 {
@@ -26,6 +27,17 @@ namespace TagsCloudVisualization
             rectangleSize = new Size(10, 10);
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Passed)
+                return;
+            var fileName = $"{TestContext.CurrentContext.Test.Name}TestLayout.png";
+            var path = $"{TestContext.CurrentContext.WorkDirectory}/{fileName}";
+            var drawer = new RectanglesDrawer(layouter.Rectangles);
+            drawer.GenerateImage(fileName);
+            Console.WriteLine($"Tag cloud visualization saved to file {path}");
+        }
 
         [Test]
         public void Have_ConstructorWithPointAndGeneratorInput()
@@ -117,7 +129,7 @@ namespace TagsCloudVisualization
         {
             AddRectangles(rectanglesAmount);
             foreach (var rectangle in layouter.Rectangles)
-                pointsGenerator.AllGeneratedPoints.Should().Contain(rectangle.GetCenter() - (Size) center);
+                pointsGenerator.AllGeneratedPoints.Should().Contain(rectangle.GetCenter() - (Size)center);
         }
 
         private void AddRectangles(int rectanglesAmount)
