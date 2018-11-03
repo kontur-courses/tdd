@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -17,25 +18,7 @@ namespace TagsCloudVisualization
             new Size(248, 100), 
         };
         
-        private static readonly Size[] _layout2 =
-        {
-            new Size(100, 30), 
-            new Size(100, 30), 
-            new Size(100, 30), 
-            new Size(100, 30), 
-            new Size(100, 30), 
-            new Size(100, 30), 
-            new Size(100, 30), 
-            new Size(100, 30), 
-            new Size(100, 30), 
-            new Size(100, 30), 
-            new Size(100, 30), 
-            new Size(100, 30), 
-            new Size(100, 30), 
-            new Size(100, 30), 
-            new Size(100, 30), 
-            new Size(100, 30), 
-        };
+        private static readonly Size[] _layout2 = Enumerable.Range(0, 100).Select(i => new Size(200, 30)).ToArray();
         
         static void Main(string[] args)
         {
