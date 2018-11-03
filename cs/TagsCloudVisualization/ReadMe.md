@@ -1,4 +1,4 @@
-#Layout Examples
+# Layout Examples
 
 ![100 Rectangles by size descending](100BigToSmallRectanglesCut.png)
 ---
