@@ -25,9 +25,7 @@ namespace TagsCloudVisualization
         public void FirstRectangleAreInCenterOfTheCloud(int width, int height)
         {
             var firstRectangle = cloudLayouter.PutNextRectangle(new Size(width, height));
-
-            var rectangleLocation = firstRectangle.Location;
-            var rectangleCenter = new Point(rectangleLocation.X + width / 2, rectangleLocation.Y + height / 2);
+            var rectangleCenter = GetCenterOfRectangle(firstRectangle);
 
             rectangleCenter.ShouldBeEquivalentTo(center);
         }

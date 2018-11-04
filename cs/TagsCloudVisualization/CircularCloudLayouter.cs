@@ -55,7 +55,7 @@ namespace TagsCloudVisualization
 
         private bool AreIntersectingWithPrevious(Rectangle rectangle)
         {
-            return Rectangles.Any(currentRectangle => currentRectangle.IntersectsWith(rectangle));
+            return Rectangles.Any(rectangle.IntersectsWith);
         }
 
         private Rectangle GetRectangleInCurrentSpiralPosition(Size rectangleSize)
