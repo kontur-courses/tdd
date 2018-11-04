@@ -10,5 +10,10 @@ namespace TagsCloudVisualization
         {
             this.center = center;
         }
+
+        public Rectangle PutNextRectangle(Size size)
+        {
+            return Rectangle.Empty;
+        }
     }
 }

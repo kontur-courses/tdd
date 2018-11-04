@@ -9,7 +9,13 @@ namespace TagsCloudVisualization
         public void Create()
         {
             // ReSharper disable once ObjectCreationAsStatement
-            new CircularCloudLayouter(new Point());
+            new CircularCloudLayouter(Point.Empty);
+        }
+
+        [Test]
+        public void NotThrow_WhenAddsRectangles()
+        {
+            Assert.DoesNotThrow(() => new CircularCloudLayouter(Point.Empty).PutNextRectangle(Size.Empty));
         }
     }
 }
