@@ -7,22 +7,22 @@ namespace TagsCloudVisualization
 	{
 		private readonly double degreeStep;
 		private readonly double factorStep;
-		private int index;
+		private int nextPointCounter;
 
 		public Spiral(double factorStep, double degreeStep)
 		{
 			this.factorStep = factorStep;
 			this.degreeStep = degreeStep;
-			index = 0;
+			nextPointCounter = 0;
 		}
 
 		public Point GetNextPoint(Point center)
 		{
-			var degree = degreeStep * index;
-			var factor = factorStep * index;
+			var degree = degreeStep * nextPointCounter;
+			var factor = factorStep * nextPointCounter;
 			var x = center.X + (int)(factor * Math.Sin(degree));
 			var y = center.Y + (int)(factor * Math.Cos(degree));
-			index++;
+			nextPointCounter++;
 
 			return new Point(x, y);
 		}
