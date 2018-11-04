@@ -7,15 +7,12 @@ namespace TagsCloudVisualization
 {
     class CircularCloudLayouter
     {
-        public Size LayoutSize;
-        public readonly Point Center;
+        public readonly Point Center = new Point(0,0);
         public List<Rectangle> Rectangles;
-        private double currentSpiralAngle;
+        public int currentSpiralAngle;
 
-        public CircularCloudLayouter(Point center, Size layoutSize)
+        public CircularCloudLayouter()
         {
-            Center = center;
-            LayoutSize = layoutSize;
             Rectangles = new List<Rectangle>();
         }
 

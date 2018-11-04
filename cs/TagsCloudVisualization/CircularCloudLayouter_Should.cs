@@ -18,9 +18,8 @@ namespace TagsCloudVisualization
         [SetUp]
         public void SetUp()
         {
-            center = new Point(500, 500);
-            var layoutSize = new Size(1000, 1000);
-            layout = new CircularCloudLayouter(center, layoutSize);
+            center = new Point(0,0);
+            layout = new CircularCloudLayouter();
             visualizer = new CircularCloudVisualizer(layout);
             defaultSize = new Size(100, 50);
         }
@@ -51,7 +50,7 @@ namespace TagsCloudVisualization
         public void PutNextRectangle_PutSingleRectangle_SingleRectangleInCenter()
         {
             var rectangle = layout.PutNextRectangle(defaultSize);
-            rectangle.ShouldBeEquivalentTo(new Rectangle(new Point(450, 475), defaultSize));
+            rectangle.ShouldBeEquivalentTo(new Rectangle(new Point(-50, -25), defaultSize));
         }
 
         [Test]
