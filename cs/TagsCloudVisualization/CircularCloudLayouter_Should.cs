@@ -56,19 +56,16 @@ namespace TagsCloudVisualization
             var rects = AssignLayouter(Enumerable.Repeat(defaultSize, 10)).ToArray();
 
             var rectPairs = rects
-                .Select((rectangle1, i) => rects
-                    .Skip(i + 1)
-                    .Select(rectangle2 => Tuple.Create(rectangle1, rectangle2)))
-                .SelectMany(rectanglePairs => rectanglePairs.ToArray());
+                .Select((rectangle1, i) => Tuple.Create(rectangle1, rects.Skip(i + 1)));
 
             foreach (var rectPair in rectPairs)
-                rectPair.Item1.IntersectsWith(rectPair.Item2).Should().BeFalse(rectPair.Item1 + rectPair.Item2.ToString());
+                rectPair.Item1.IntersectsWithAnyFrom(rectPair.Item2).Should().BeFalse();
         }
 
         [Test]
         public void PlaceFirstRectInARelativeCenter()
         {
-            var rects = AssignLayouter(Enumerable.Repeat(defaultSize, 30)).ToArray();
+            var rects = AssignLayouter(Enumerable.Repeat(defaultSize, 10)).ToArray();
             var middleX = (float)rects.Sum(rect => rect.X) / rects.Length;
             var middleY = (float)rects.Sum(rect => rect.Y) / rects.Length;
             var relativeCenter = new PointF(middleX, middleY);
