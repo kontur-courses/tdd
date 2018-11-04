@@ -11,14 +11,14 @@ namespace TagsCloudVisualization
     {
         static void Main(string[] args)
         {
+            var rnd = new Random();
             var layouter = new CircularCloudLayouter(new Point(200, 200));
-            for (int i = 0; i < 20; i++)
+            for (var i = 0; i < 200; i++)
             {
-                layouter.PutNextRectangle(new Size(40, 24));
-                layouter.PutNextRectangle(new Size(24, 24));
+                layouter.PutNextRectangle(new Size(rnd.Next(5,40), rnd.Next(5, 20)));
             }
 
-            layouter.SaveBitmap("1", 400, 400);
+            layouter.SaveBitmap("test", 400, 400);
         }
     }
 }
