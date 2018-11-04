@@ -16,7 +16,7 @@ namespace TagsCloudVisualization
         private Point center;
         private readonly Random rnd = new Random();
         private const int minHeight = 6;
-        private const int maxHeight = 100;
+        private const int maxHeight = 50;
         private const int maxWidthHeightRatio = 10;
 
         [SetUp]
@@ -80,11 +80,12 @@ namespace TagsCloudVisualization
         public void FitManySameSizesInto2TimesBiggerCircle()
         {
             const int count = 100;
-            var sizes = count.Times(RandomSize).ToArray();
-            var space = sizes.Aggregate(0, (sum, size) => sum + size.Space());
+            var size = new Size(24,120);
+            //var space = sizes.Aggregate(0, (sum, size) => sum + size.Space());
+            var space = size.Space() * count;
             var radius = Math.Sqrt(2 * space / Math.PI);
             
-            var rects = sizes.Select(layouter.PutNextRectangle);
+            var rects = count.Times(()=>layouter.PutNextRectangle(size));
             
             rects.SelectMany(x => x.Points())
                 .Select(x => x.DistanceTo(center))

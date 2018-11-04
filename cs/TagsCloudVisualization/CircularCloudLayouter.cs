@@ -35,6 +35,6 @@ namespace TagsCloudVisualization
             }
             layout.Add(rect);
             return rect;
-        }    
+        }
     }
 }
