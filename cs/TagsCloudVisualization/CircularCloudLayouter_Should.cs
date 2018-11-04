@@ -75,5 +75,22 @@ namespace TagsCloudVisualization
                 Assert.False(rectangles[i].IntersectsWith(rectangles[j]),
                     $"{i}th rectangle was {rectangles[i]}, and {j}th rectangle was{rectangles[j]}");
         }
+
+        [Test]
+        public void FitManySameSizesInto2TimesBiggerCircle()
+        {
+            const int count = 100;
+            var sizes = count.Times(RandomSize).ToArray();
+            var space = sizes.Aggregate(0, (sum, size) => sum + size.Space());
+            var radius = Math.Sqrt(2 * space / Math.PI);
+            
+            var rects = sizes.Select(layouter.PutNextRectangle);
+            
+            rects.SelectMany(x => x.Points())
+                .Select(x => x.DistanceTo(center))
+                .All(x => x < radius)
+                .Should().BeTrue();
+        }
+        
     }
 }

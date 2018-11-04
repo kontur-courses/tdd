@@ -39,5 +39,10 @@ namespace TagsCloudVisualization
                 yield return act();
         }
 
+        public static int Space(this Size size) =>
+            size.Height * size.Width;
+
+        public static double DistanceTo(this Point from, Point to)=>
+            Math.Sqrt((to.X-from.X)*(to.X-from.X) + (to.Y-from.Y)*(to.Y-from.Y));
     }
 }
