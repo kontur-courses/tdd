@@ -9,43 +9,39 @@ namespace TagsCloudVisualization
 	{
 		private readonly Point center;
 		private readonly Spiral spiral;
-		public List<Rectangle> rectangles;
-		public int overrideCounter;
+		private readonly List<Rectangle> rectangles;
 
 		public CircularCloudLayouter(Point center)
 		{
 			this.center = center;
-			spiral = new Spiral(1, 2);
+			spiral = new Spiral(factorStep: 0.5, degreeStep: Math.PI / 18);
 			rectangles = new List<Rectangle>();
 		}
 
 		public Rectangle PutNextRectangle(Size size)
 		{
 			if (size.Width <= 0 || size.Height <= 0)
-				throw new ArgumentException();
+				throw new ArgumentException("Lengths of size must be positive");
 
-			spiral.ChangeSpiralParameters(overrideCounter);
+			var nextRect = GetNextRectangle(size);
 
-			var point = spiral.GetNextPoint(center);
-			var nextRect = GetRectangle(size, point);
-
-			while (IsIntersect(nextRect))
-			{
-				spiral.ChangeSpiralParametersIfIntersect();
-				point = spiral.GetNextPoint(center);
-				nextRect = GetRectangle(size, point);
-				overrideCounter++;
-			}
+			while (IsIntersectWithExistRectangles(nextRect))
+				nextRect = GetNextRectangle(size);
 
 			rectangles.Add(nextRect);
 
 			return nextRect;
 		}
 
-		private static Rectangle GetRectangle(Size size, Point point) =>
-			new Rectangle(point.X, point.Y, size.Width, size.Height);
+		private Rectangle GetNextRectangle(Size size)
+		{
+			var nextPoint = spiral.GetNextPoint(center);
+			return new Rectangle(nextPoint.X, nextPoint.Y, size.Width, size.Height);
+		}
 
-		private bool IsIntersect(Rectangle rect) =>
-			rectangles.Count(r => r.IntersectsWith(rect)) > 0;
+		private bool IsIntersectWithExistRectangles(Rectangle rect) =>
+			rectangles.Any(r => r.IntersectsWith(rect));
+
+		public List<Rectangle> GetExistRectangles() => rectangles;
 	}
 }

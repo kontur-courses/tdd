@@ -5,35 +5,24 @@ namespace TagsCloudVisualization
 {
 	public class Spiral
 	{
-		private double degree;
-		private int factor;
-		private int step;
+		private readonly double degreeStep;
+		private readonly double factorStep;
+		private int index;
 
-		public Spiral(int factor, int step)
+		public Spiral(double factorStep, double degreeStep)
 		{
-			this.factor = factor;
-			this.step = step;
-		}
-
-		public void ChangeSpiralParametersIfIntersect()
-		{
-			factor++;
-			degree += Math.PI / 18;
-		}
-
-		public void ChangeSpiralParameters(int counter)
-		{
-			if (counter >= 10)
-				step = 1;
-
-			factor--;
-			degree += Math.PI / 18;
+			this.factorStep = factorStep;
+			this.degreeStep = degreeStep;
+			index = 0;
 		}
 
 		public Point GetNextPoint(Point center)
 		{
-			var x = center.X + (int)(step * factor * Math.Sin(degree));
-			var y = center.Y + (int)(step * factor * Math.Cos(degree));
+			var degree = degreeStep * index;
+			var factor = factorStep * index;
+			var x = center.X + (int)(factor * Math.Sin(degree));
+			var y = center.Y + (int)(factor * Math.Cos(degree));
+			index++;
 
 			return new Point(x, y);
 		}

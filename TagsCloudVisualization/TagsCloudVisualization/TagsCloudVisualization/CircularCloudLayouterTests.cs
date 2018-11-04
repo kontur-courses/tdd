@@ -10,69 +10,55 @@ namespace TagsCloudVisualization
 	[TestFixture]
 	class CircularCloudLayouterTests
 	{
-		private CircularCloudLayouter layouter;
+		private CircularCloudLayouter cloud;
 		private Point center;
 
 		[SetUp]
 		public void SetUp()
 		{
 			center = new Point(500, 400);
-			layouter = new CircularCloudLayouter(center);
+			cloud = new CircularCloudLayouter(center);
 		}
 
-		[Test]
-		public void PutNextRectangle_RectanglesShouldCountOne()
+		[TestCase(1, TestName = "one")]
+		[TestCase(42, TestName = "fourty two")]
+		[TestCase(100, TestName = "one hundred")]
+		public void PutNextRectangle_ShouldAddNumberOfRectangles(int number)
 		{
-			var size = new Size(100, 50);
-
-			layouter.PutNextRectangle(size);
-
-			layouter.rectangles.Should().HaveCount(1);
+			var rectangles = AddRectanglesToCloud(number);
+			rectangles.Should().HaveCount(number);
 		}
 
 		[Test]
 		public void PutNextRectangle_WithCorrectSize_ReturnRectWithThisSize()
 		{
 			var size = new Size(100, 50);
+			var rectangle = cloud.PutNextRectangle(size);
 
-			layouter.PutNextRectangle(size);
-
-			layouter.rectangles.FirstOrDefault().Size.ShouldBeEquivalentTo(size);
+			rectangle.Size.ShouldBeEquivalentTo(size);
 		}
 
-		[Test]
-		public void TwoRectangles_ShouldIntersect()
+		[TestCase(100, 200, TestName = "height more than width")]
+		[TestCase(300, 100, TestName = "width more than height")]
+		public void PutNextRectangle_TwoTimes_RectanglesShouldNotIntersect(int width, int height)
 		{
-			var size = new Size(100, 50);
+			var size = new Size(width, height);
+			var theRectangle = cloud.PutNextRectangle(size);
+			var otherRectangle = cloud.PutNextRectangle(size);
 
-			var rectangle1 = new Rectangle(center, size);
-			var rectangle2 = new Rectangle(center, size);
-
-			rectangle1.IntersectsWith(rectangle2).Should().BeTrue();
+			theRectangle.IntersectsWith(otherRectangle).Should().BeFalse();
 		}
 
-		[Test]
-		public void PutNextRectangle_Twice_ShouldNotIntersect()
+		[TestCase(10, TestName = "10 rectangles")]
+		[TestCase(100, TestName = "100 rectangles")]
+		[TestCase(500, TestName = "500 rectangles")]
+		public void PutNextRectangle_NewRectangleDoesNotIntersectWithExist(int number)
 		{
-			var size = new Size(100, 50);
+			var rectangles = new List<Rectangle>();
+			rectangles.AddRange(AddRectanglesToCloud(number));
+			var actualRectangle = cloud.PutNextRectangle(new Size(100, 50));
 
-			layouter.PutNextRectangle(size);
-			layouter.PutNextRectangle(size);
-
-			IsAnyIntersect(layouter.rectangles).Should().BeFalse();
-		}
-
-		[Test]
-		public void PutNextRectangle_NewRectangleDoesNotIntersectWithExist()
-		{
-			var existRectangles = new List<Rectangle>();
-			var size = new Size(100, 50);
-			for (int i = 0; i < 10; i++)
-				existRectangles.Add(layouter.PutNextRectangle(size));
-
-			var actualRectangle = layouter.PutNextRectangle(size);
-
-			IsIntersect(existRectangles, actualRectangle).Should().BeFalse();
+			IsIntersect(actualRectangle, rectangles).Should().BeFalse();
 		}
 
 
@@ -80,33 +66,31 @@ namespace TagsCloudVisualization
 		public void PutNextRectangle_HaveNegativeSize_ShouldThrowException()
 		{
 			var size = new Size(-100, -100);
-
-			Assert.Throws<ArgumentException>(() => layouter.PutNextRectangle(size));
+			Assert.Throws<ArgumentException>(() => cloud.PutNextRectangle(size));
 		}
 
 		[Test]
-		public void PutNextRectangle_Twice_ShouldDifferentStartPoints()
+		public void PutNextRectangle_TwoTimes_ShouldDifferentStartPoints()
 		{
 			var size = new Size(100, 50);
+			var theRectangle = cloud.PutNextRectangle(size);
+			var otherRectangle = cloud.PutNextRectangle(size);
+			var theStartPoint = new[] {theRectangle.X, theRectangle.Y};
+			var otherStartPoint = new[] {otherRectangle.X, otherRectangle.Y};
 
-			var rectangle1 = layouter.PutNextRectangle(size);
-			var rectangle2 = layouter.PutNextRectangle(size);
-			var actualPoint1 = new[] { rectangle1.X, rectangle1.Y };
-			var actualPoint2 = new[] { rectangle2.X, rectangle2.Y };
-
-			actualPoint1.Should().NotBeEquivalentTo(actualPoint2);
+			theStartPoint.Should().NotBeEquivalentTo(otherStartPoint);
 		}
 
-		bool IsAnyIntersect(List<Rectangle> rectangles)
+		private bool IsIntersect(Rectangle rectangle, List<Rectangle> rectangles) =>
+			rectangles.Any(r => r.IntersectsWith(rectangle));
+
+		private List<Rectangle> AddRectanglesToCloud(int number)
 		{
-			for (var i = 0; i < rectangles.Count; i++)
-				for (var j = i + 1; j < rectangles.Count; j++)
-					if (rectangles[i].IntersectsWith(rectangles[j]))
-						return true;
+			var rnd = new Random();
+			for (var i = 0; i < number; i++)
+				cloud.PutNextRectangle(new Size(rnd.Next(10, 30), rnd.Next(4, 12)));
 
-			return false;
+			return cloud.GetExistRectangles();
 		}
-		bool IsIntersect(List<Rectangle> rectangles, Rectangle rect) =>
-			rectangles.Count(r => r.IntersectsWith(rect)) > 0;
 	}
 }

@@ -33,19 +33,19 @@ namespace TagsCloudVisualization
 		{
 			var graphics = CreateGraphics();
 			var pen = new Pen(Color.Red, 1);
-			var layouter = new CircularCloudLayouter(new Point(500, 400));
-			var data = GetData(layouter, 150, 1000);
+			var cloud = new CircularCloudLayouter(new Point(500, 400));
+			var data = GetData(cloud, 150);
 
 			graphics.DrawRectangles(pen, data.ToArray());
 		}
 
-		public static IEnumerable<Rectangle> GetData(CircularCloudLayouter layouter, int count, int width)
+		public static IEnumerable<Rectangle> GetData(CircularCloudLayouter layouter, int number)
 		{
 			var rnd = new Random();
-			for (var i = 0; i < count; i++)
+			for (var i = 0; i < number; i++)
 				layouter.PutNextRectangle(new Size(rnd.Next(10, 30), rnd.Next(4, 12)));
 
-			return layouter.rectangles;
+			return layouter.GetExistRectangles();
 		}
 
 		private void Form1_Resize(object sender, EventArgs e)
