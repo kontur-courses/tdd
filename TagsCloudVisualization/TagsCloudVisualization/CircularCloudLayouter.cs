@@ -10,8 +10,7 @@ namespace TagsCloudVisualization
     class CircularCloudLayouter
     {
         public Point Center { get; }
-        private double _angle;
-        private double p;
+        private int distance;
         private readonly List<Rectangle> _rectangles = new List<Rectangle>();
         public CircularCloudLayouter(Point center)
         {
@@ -19,21 +18,20 @@ namespace TagsCloudVisualization
         }
         public Rectangle PutNextRectangle(Size rectangleSize, bool withDensity=true)
         {
-            var coefficient = 0;
-            var a = 0.0;
+            var angle = 0.0;
             Rectangle rectangle;
             do
             {
                 rectangle = new Rectangle(
-                    Center.X - (rectangleSize.Width / 2) + (int)(p * Math.Cos(a)),
-                    Center.Y - (rectangleSize.Height / 2) + (int)(p * Math.Sin(a)),
+                    Center.X - (rectangleSize.Width / 2) + (int)(distance * Math.Cos(angle)),
+                    Center.Y - (rectangleSize.Height / 2) + (int)(distance * Math.Sin(angle)),
                     rectangleSize.Width, rectangleSize.Height);
 
-                a += Math.PI / 18;
-                if (a > Math.PI * 2)
+                angle += Math.PI / 18;
+                if (angle >= Math.PI * 2)
                 {
-                    a = 0;
-                    p++;
+                    angle = 0;
+                    distance++;
                 }
             } while (CheckCollisionWithAll(rectangle));
 
@@ -42,29 +40,9 @@ namespace TagsCloudVisualization
             _rectangles.Add(rectangle);
             return rectangle;
         }
-        private Rectangle _PutNextRectangleOld(Size rectangleSize, bool withDensity = true)
-        {
-            var coefficient = 0;
-            Rectangle rectangle;
-            do
-            {
-                coefficient += 1;
-                rectangle = new Rectangle(
-                    Center.X - (rectangleSize.Width / 2) + (int)(coefficient * Math.Cos(_angle)),
-                    Center.Y - (rectangleSize.Height / 2) + (int)(coefficient * Math.Sin(_angle)),
-                    rectangleSize.Width, rectangleSize.Height);
-            } while (CheckCollisionWithAll(rectangle));
-
-            if (_rectangles.Count > 0 && withDensity)
-                rectangle = MoveRectangleToCenter(rectangle);
-            _rectangles.Add(rectangle);
-            _angle += 0.5; //Math.PI / 7;
-            return rectangle;
-        }
-
         public Rectangle MoveRectangleToCenter(Rectangle rectangle)
         {
-            Console.WriteLine("Уплотняем прямоугольник №{0} в облако", _rectangles.Count);
+            //Console.WriteLine("Уплотняем прямоугольник №{0} в облако", _rectangles.Count);
             var wasChanged = true;
             while (wasChanged)
             {
