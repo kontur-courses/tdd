@@ -46,6 +46,14 @@ namespace TagsCloudVisualization
             rect.Center().Should().BeEquivalentTo(center);
         }
 
+        [Test]
+        public void MakeManyCorrectRectangles()
+        {
+            const int count = 100;
+            var sizes = count.Times(RandomSize).ToArray();
+            sizes.Select(layouter.PutNextRectangle).Select(x => x.Size).Should().BeEquivalentTo(sizes);
+        }
+
         private Size RandomSize()
         {
             var height = rnd.Next(minHeight, maxHeight);
@@ -56,15 +64,16 @@ namespace TagsCloudVisualization
         private Rectangle[] GenerateRectangles(int count)=>
             count.Times(RandomSize).Select(layouter.PutNextRectangle).ToArray();
 
-        [Test]
-        public void DoNotOverlap()
+        [Test]  
+        public void DoNotOverlapManyRectangles()
         {
             const int count = 100;
             var rectangles = GenerateRectangles(count);
 
             for (int i = 0; i < count; i++) 
             for (int j = 0; j < i; j++)
-                Assert.False(rectangles[i].IntersectsWith(rectangles[j]));
+                Assert.False(rectangles[i].IntersectsWith(rectangles[j]),
+                    $"{i}th rectangle was {rectangles[i]}, and {j}th rectangle was{rectangles[j]}");
         }
     }
 }

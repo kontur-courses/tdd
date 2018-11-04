@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
-    class CircularCloudLayouter
+    internal class CircularCloudLayouter
     {
         private readonly List<Rectangle> layout = new List<Rectangle>();
+        private Point lastPoint = Point.Empty;
+        
         public CircularCloudLayouter(Point center)
         {
             Center = center;
@@ -22,9 +24,17 @@ namespace TagsCloudVisualization
         {
             Rectangle rect = default(Rectangle);
             if (layout.Count == 0)
+            {
                 rect = new Rectangle(Center - rectangleSize.Divide(2),rectangleSize);
+                lastPoint = rect.Location + rect.Size.WidhtSize();
+            }
+            else
+            {
+                rect = new Rectangle(lastPoint, rectangleSize);
+                lastPoint += rectangleSize.WidhtSize();
+            }
             layout.Add(rect);
             return rect;
-        }
+        }    
     }
 }
