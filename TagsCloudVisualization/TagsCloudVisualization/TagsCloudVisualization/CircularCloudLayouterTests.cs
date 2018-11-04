@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
 
@@ -25,7 +23,8 @@ namespace TagsCloudVisualization
 		[TestCase(100, TestName = "one hundred")]
 		public void PutNextRectangle_ShouldAddNumberOfRectangles(int number)
 		{
-			var rectangles = AddRectanglesToCloud(number);
+			cloud.AddRectangleNTimes(number);
+			var rectangles = cloud.GetExistRectangles();
 			rectangles.Should().HaveCount(number);
 		}
 
@@ -54,11 +53,10 @@ namespace TagsCloudVisualization
 		[TestCase(500, TestName = "500 rectangles")]
 		public void PutNextRectangle_NewRectangleDoesNotIntersectWithExist(int number)
 		{
-			var rectangles = new List<Rectangle>();
-			rectangles.AddRange(AddRectanglesToCloud(number));
-			var actualRectangle = cloud.PutNextRectangle(new Size(100, 50));
+			cloud.AddRectangleNTimes(number);
+			var actualRectangle = cloud.GetNextNotIntersectRectangle(new Size(100, 50));
 
-			IsIntersect(actualRectangle, rectangles).Should().BeFalse();
+			cloud.IsIntersectWithExistRectangles(actualRectangle).Should().BeFalse();
 		}
 
 
@@ -79,18 +77,6 @@ namespace TagsCloudVisualization
 			var otherStartPoint = new[] {otherRectangle.X, otherRectangle.Y};
 
 			theStartPoint.Should().NotBeEquivalentTo(otherStartPoint);
-		}
-
-		private bool IsIntersect(Rectangle rectangle, List<Rectangle> rectangles) =>
-			rectangles.Any(r => r.IntersectsWith(rectangle));
-
-		private List<Rectangle> AddRectanglesToCloud(int number)
-		{
-			var rnd = new Random();
-			for (var i = 0; i < number; i++)
-				cloud.PutNextRectangle(new Size(rnd.Next(10, 30), rnd.Next(4, 12)));
-
-			return cloud.GetExistRectangles();
 		}
 	}
 }

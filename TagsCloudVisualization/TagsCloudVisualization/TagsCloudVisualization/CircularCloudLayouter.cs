@@ -23,12 +23,17 @@ namespace TagsCloudVisualization
 			if (size.Width <= 0 || size.Height <= 0)
 				throw new ArgumentException("Lengths of size must be positive");
 
-			var nextRect = GetNextRectangle(size);
+			var nextRect = GetNextNotIntersectRectangle(size);
+			rectangles.Add(nextRect);
 
+			return nextRect;
+		}
+
+		public Rectangle GetNextNotIntersectRectangle(Size size)
+		{
+			var nextRect = GetNextRectangle(size);
 			while (IsIntersectWithExistRectangles(nextRect))
 				nextRect = GetNextRectangle(size);
-
-			rectangles.Add(nextRect);
 
 			return nextRect;
 		}
@@ -39,9 +44,9 @@ namespace TagsCloudVisualization
 			return new Rectangle(nextPoint.X, nextPoint.Y, size.Width, size.Height);
 		}
 
-		private bool IsIntersectWithExistRectangles(Rectangle rect) =>
+		public bool IsIntersectWithExistRectangles(Rectangle rect) =>
 			rectangles.Any(r => r.IntersectsWith(rect));
 
-		public List<Rectangle> GetExistRectangles() => rectangles;
+		public Rectangle[] GetExistRectangles() => rectangles.ToArray();
 	}
 }
