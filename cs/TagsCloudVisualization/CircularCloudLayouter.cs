@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace TagsCloudVisualization
 {
@@ -13,7 +14,10 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size size)
         {
-            return Rectangle.Empty;
+            var rectLocation = new Point(center.X,center.Y);
+            rectLocation.Offset(-size.Width/2, - size.Height/2);
+
+            return new Rectangle(rectLocation, size);
         }
     }
 }
