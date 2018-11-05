@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.InteropServices;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -56,7 +55,7 @@ namespace TagsCloudVisualization
             var rects = AssignLayouter(Enumerable.Repeat(defaultSize, 10)).ToArray();
 
             var rectPairs = rects
-                .Select((rectangle1, i) => Tuple.Create(rectangle1, rects.Skip(i + 1)));
+                .Select((rectangle, i) => (rectangle, rects.Skip(i + 1)));
 
             foreach (var rectPair in rectPairs)
                 rectPair.Item1.IntersectsWithAnyFrom(rectPair.Item2).Should().BeFalse();
@@ -69,15 +68,12 @@ namespace TagsCloudVisualization
             var middleX = (float)rects.Sum(rect => rect.X) / rects.Length;
             var middleY = (float)rects.Sum(rect => rect.Y) / rects.Length;
             var relativeCenter = new PointF(middleX, middleY);
-            var distanceToFirst = GetDistance(relativeCenter, rects.First().Location);
+            var distanceToFirst = rects.First().Location.DistanceTo(relativeCenter);
             foreach (var rectangle in rects.Skip(1))
-                GetDistance(relativeCenter, rectangle.Location).Should().BeGreaterOrEqualTo(distanceToFirst);
+                rectangle.Location.DistanceTo(relativeCenter).Should().BeGreaterOrEqualTo(distanceToFirst);
         }
 
         private IEnumerable<Rectangle> AssignLayouter(IEnumerable<Size> sizes) =>
             sizes.Select(size => layouter.PutNextRectangle(size));
-
-        private double GetDistance(PointF point1, Point point2) =>
-            Math.Sqrt((point1.X - point2.X) * (point1.X - point2.X) + (point1.Y - point2.Y) * (point1.Y - point2.Y));
     }
 }
