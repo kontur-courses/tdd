@@ -45,25 +45,13 @@ namespace TagsCloudVisualization
 
 		[TestCase(100, 200, TestName = "height more than width")]
 		[TestCase(300, 100, TestName = "width more than height")]
-		public void PutNextRectangle_NextRectangleShouldNotIntersectWithPrevious(int width, int height)
+		public void NextRectangleShouldNotIntersectWithPrevious(int width, int height)
 		{
 			var size = new Size(width, height);
 			var nextRectangle = cloud.PutNextRectangle(size);
 			var previousRectangle = cloud.PutNextRectangle(size);
 
 			nextRectangle.IntersectsWith(previousRectangle).Should().BeFalse();
-		}
-
-		public void NextRectangleShouldNotIntersectWithExisting(int number)
-		{
-			var rectangles = new List<Rectangle>
-			{
-				cloud.PutNextRectangle(new Size(100, 50)),
-				cloud.PutNextRectangle(new Size(150, 100))
-			};
-			var actualRectangle = cloud.PutNextRectangle(new Size(50, 100));
-
-			rectangles.IntersectsWith(actualRectangle).Should().BeFalse();
 		}
 
 

@@ -29,13 +29,13 @@ namespace TagsCloudVisualization
 
 		private Rectangle GetNextNotIntersectingRectangle(Size size)
 		{
-			Rectangle nextRect;
+			Rectangle nextRectangle;
 			do
 			{
-				nextRect = GetNextRectangle(size);
-			} while (rectangles.IntersectsWith(nextRect));
+				nextRectangle = GetNextRectangle(size);
+			} while (nextRectangle.IntersectsWith(rectangles));
 
-			return nextRect;
+			return nextRectangle;
 		}
 
 		private Rectangle GetNextRectangle(Size size)
