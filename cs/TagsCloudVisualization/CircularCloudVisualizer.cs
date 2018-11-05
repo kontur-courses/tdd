@@ -5,39 +5,33 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    class CircularCloudVisualizer
+    public class CircularCloudVisualizer
     {
         private Size bitmapSize;
-        private CircularCloudLayouter layouter;
+        private List<Rectangle> rectangles;
+        private const int defaultBitmapSide = 500;
 
-        public CircularCloudVisualizer(CircularCloudLayouter layouter)
+        public CircularCloudVisualizer(List<Rectangle> rectangles)
         {
-            this.layouter = layouter;
+            this.rectangles = rectangles;
         }
 
         public void DetermineBitmapSizes()
         {
-            if (layouter.Rectangles.Count == 0)
-                throw new NullReferenceException("No Rectangles");
-            var mostDistantRectangle = layouter.Rectangles
-                .OrderByDescending(rect => GetCircumscribedСircleRadius(rect))
+            var mostDistantRectangle = rectangles
+                .OrderByDescending(rect => rect.GetCircumcircleRadius())
                 .First();
-            var circleRadius = GetCircumscribedСircleRadius(mostDistantRectangle);
-            var bitmapSide = Math.Max(circleRadius * 2, 500);
+            var circleRadius = mostDistantRectangle.GetCircumcircleRadius();
+            var bitmapSide = Math.Max(circleRadius * 2, defaultBitmapSide);
             bitmapSize = new Size(bitmapSide, bitmapSide);           
         }
 
-        public int GetCircumscribedСircleRadius(Rectangle rect)
-        {
-            var maxRightBorder = Math.Max(rect.Left, rect.Right);
-            var maxTopBorder = Math.Max(rect.Top, rect.Bottom);
-            return (int)Math.Sqrt(Math.Pow(maxRightBorder, 2) + Math.Pow(maxTopBorder, 2));
-        }
-
-        public Bitmap DrawRectangles(List<Rectangle> rectangles)
+        public Bitmap DrawRectangles()
         {
             DetermineBitmapSizes();
             var canvas = new Bitmap(bitmapSize.Width, bitmapSize.Height);
+            if (rectangles.Count == 0)
+                return canvas;
             using (var graphics = Graphics.FromImage(canvas))
             {
                 graphics.Clear(Color.White);

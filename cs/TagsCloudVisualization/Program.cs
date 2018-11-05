@@ -18,9 +18,10 @@ namespace TagsCloudVisualization
                 var newRectangle = layout.PutNextRectangle(randomSize);
                 rectangles.Add(newRectangle);
             }
-            var visualizer = new CircularCloudVisualizer(layout);
-            var bitmap = visualizer.DrawRectangles(layout.Rectangles);
+            var visualizer = new CircularCloudVisualizer(rectangles);
+            var bitmap = visualizer.DrawRectangles();
             bitmap.Save("100_rectangles.png");
+            
         }
     }
 }

@@ -13,6 +13,7 @@ namespace TagsCloudVisualization
         private Point center;
         private CircularCloudLayouter layout;
         private CircularCloudVisualizer visualizer;
+        private List<Rectangle> rectangles;
         private Size defaultSize;
 
         [SetUp]
@@ -20,7 +21,8 @@ namespace TagsCloudVisualization
         {
             center = new Point(0,0);
             layout = new CircularCloudLayouter();
-            visualizer = new CircularCloudVisualizer(layout);
+            rectangles = new List<Rectangle>();
+            visualizer = new CircularCloudVisualizer(rectangles);
             defaultSize = new Size(100, 50);
         }
 
@@ -32,7 +34,7 @@ namespace TagsCloudVisualization
                 var directory = TestContext.CurrentContext.TestDirectory;
                 var filename = TestContext.CurrentContext.Test.Name;
                 var path = $"{directory}\\{filename}.png";
-                var bitmap = visualizer.DrawRectangles(layout.Rectangles);
+                var bitmap = visualizer.DrawRectangles();
                 bitmap.Save(path);
                 TestContext.WriteLine($"Tag cloud visualization saved to file {path}");
             }
@@ -42,8 +44,7 @@ namespace TagsCloudVisualization
         [Test]
         public void CircularCloudLayouter_CreateEmptyLayout_EmptyLayout()
         {
-            layout.Center.Should().Be(center);
-            layout.Rectangles.Count.Should().Be(0);
+            rectangles.Count.Should().Be(0);
         }
 
         [Test]
@@ -53,12 +54,6 @@ namespace TagsCloudVisualization
             rectangle.ShouldBeEquivalentTo(new Rectangle(new Point(-50, -25), defaultSize));
         }
 
-        [Test]
-        public void PutNextRectangle_PutOneRectangle_AddToListOfRectangles()
-        {
-            layout.PutNextRectangle(defaultSize);
-            layout.Rectangles.Count.Should().Be(1);
-        }
 
         [Test]
         public void PutNextRectangle_PutTwoRectangles_RectanglesDoNotIntersect()
@@ -72,7 +67,6 @@ namespace TagsCloudVisualization
         public void PutNextRectangle_PutMultipleRectangles_RectanglesDoNotIntersect()
         {
             var random = new Random();
-            var rectangles = new List<Rectangle>();
 
             for (var i = 0; i < 1000; i++)
             {
@@ -81,6 +75,27 @@ namespace TagsCloudVisualization
                 rectangles.ForEach(rect => rect.IntersectsWith(newRectangle).Should().BeFalse());
                 rectangles.Add(newRectangle);
             }
+        }
+
+        [Test]
+        public void PutNextRectangle_PutMultipleRectangles_RectanglesArePlacedTightly()
+        {
+            var random = new Random();
+            var rectangles = new List<Rectangle>();
+            var circleRadius = 0;
+            var cloudSquare = 0;
+
+            for (var i = 0; i < 100; i++)
+            {
+                var randomSize = new Size(random.Next(150, 200), random.Next(75, 100));
+                var newRectangle = layout.PutNextRectangle(randomSize);
+                rectangles.ForEach(rect => rect.IntersectsWith(newRectangle).Should().BeFalse());
+                circleRadius = newRectangle.GetCircumcircleRadius();
+                cloudSquare += newRectangle.Width * newRectangle.Height;
+                rectangles.Add(newRectangle);
+            }
+            var circleSquare = Math.PI * Math.Pow(circleRadius, 2);
+            (cloudSquare / circleSquare).Should().BeApproximately(0.6, 0.1);
         }
 
     }
