@@ -8,7 +8,7 @@ namespace TagsCloudVisualization
     public class Spiral
     {
         private double currentSpiralAngle;
-        private double angleShift;
+        private double angleShift = 0.05;
 
         private void IncreaseSpiralAngle()
         {
