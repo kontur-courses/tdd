@@ -30,13 +30,19 @@ namespace TagsCloudVisualization
             visualizer.DrawRectangles().Size.Should().Be(new Size(500, 500));
         }
 
+        private static int GetRectangleRadius(Rectangle newRectangle)
+        {
+            return (int)Math.Sqrt(Math.Pow(newRectangle.Right, 2) + Math.Pow(newRectangle.Top, 2));
+        }
+
         [Test]
         public void GetGetCircumscribedСircleRadius_AddFirstRectangle_CorrectCircleRadius()
         {
             var newRectangle = layout.PutNextRectangle(new Size(200, 200));
-            var radius = (int)Math.Sqrt(Math.Pow(newRectangle.Right, 2) + Math.Pow(newRectangle.Top, 2));
+            var radius = GetRectangleRadius(newRectangle);
             newRectangle.GetCircumcircleRadius().Should().Be(radius);
         }
+
 
         [Test]
         public void ShiftRectangleToCenter_ShiftSingleRectangle_CorrectShift()

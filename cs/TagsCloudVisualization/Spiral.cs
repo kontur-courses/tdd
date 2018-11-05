@@ -7,11 +7,12 @@ namespace TagsCloudVisualization
 {
     public class Spiral
     {
-        private int currentSpiralAngle;
+        private double currentSpiralAngle;
+        private double angleShift;
 
         private void IncreaseSpiralAngle()
         {
-            currentSpiralAngle++;
+            currentSpiralAngle += angleShift;
         }
 
         public IEnumerable<Point> GenerateRectangleLocation()

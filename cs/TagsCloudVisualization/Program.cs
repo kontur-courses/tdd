@@ -21,7 +21,7 @@ namespace TagsCloudVisualization
             var visualizer = new CircularCloudVisualizer(rectangles);
             var bitmap = visualizer.DrawRectangles();
             bitmap.Save("100_rectangles.png");
-            
+
         }
     }
 }
