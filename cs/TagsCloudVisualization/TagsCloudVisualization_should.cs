@@ -24,27 +24,27 @@ namespace TagsCloudVisualization
         [Test]
         public void ReturnRectangleAtCenter_WhenAddFirstRectangle()
         {
-            var point = new Point(0, 0);
-            var circularCloudLayouter = new CircularCloudLayouter(point);
+            var center = new Point(0, 0);
+            var circularCloudLayouter = new CircularCloudLayouter(center);
             var size = new Size(100, 100);
 
             var rectangle = circularCloudLayouter.PutNextRectangle(size);
 
-            rectangle.Center.Should().BeEquivalentTo(point);
+            rectangle.Center.Should().BeEquivalentTo(center);
         }
 
         [Test]
-        public void ArrangeSecondRectangleLeftFromFirst_WhenAddTwoRectangles()
+        public void ArrangeSecondRectangleLeftByFirst_WhenAddTwoRectangles()
         {
-            var point = new Point(0, 0);
-            var circularCloudLayouter = new CircularCloudLayouter(point);
+            var center = new Point(0, 0);
+            var circularCloudLayouter = new CircularCloudLayouter(center);
             var size = new Size(100, 100);
-            var expectedCenterOfSecondRect = size.Width;
+            var expectedCenterOfSecondRect = new Point(size.Width, center.Y);
 
-            var rectangle1 = circularCloudLayouter.PutNextRectangle(size);
+            circularCloudLayouter.PutNextRectangle(size);
             var rectangle2 = circularCloudLayouter.PutNextRectangle(size);
 
-            rectangle2.Center.Should().Be(expectedCenterOfSecondRect);
+            rectangle2.Center.Should().BeEquivalentTo(expectedCenterOfSecondRect);
         }
     }
 }
