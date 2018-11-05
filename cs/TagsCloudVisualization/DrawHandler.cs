@@ -10,7 +10,7 @@ namespace TagsCloudVisualization
 {
     class DrawHandler
     {
-        public void DrawRectangles(CircularCloudLayouter circularCloudLayouter, string outputFile)
+        public static void DrawRectangles(CircularCloudLayouter circularCloudLayouter, string outputFile)
         {
             var bmp = new Bitmap(1000, 1000);
             var graphics = Graphics.FromImage(bmp);
@@ -19,7 +19,7 @@ namespace TagsCloudVisualization
                 circularCloudLayouter.Center.Y, 3, 3));
             var pen = new Pen(Color.Red, 1);
             circularCloudLayouter.Rectangles.ForEach(rect => graphics.DrawRectangle(pen, rect));
-            bmp.Save("test2.bmp", ImageFormat.Bmp);
+            bmp.Save(outputFile, ImageFormat.Bmp);
         }
 
     }

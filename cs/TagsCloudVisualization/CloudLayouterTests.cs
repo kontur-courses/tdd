@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using FluentAssertions;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization
 {
@@ -20,13 +21,18 @@ namespace TagsCloudVisualization
             var w = rnd.Next(50, 200);
             return new Size(w, h);
         }
-        
-        private IEnumerable<Rectangle> GenerateRectangles(int count)
+
+        [TearDown]
+        public void TearDown()
         {
-            for (int i = 0; i < count; i++)
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                var size = GetRandomSize();
-                yield return new Rectangle();
+
+                var testMethodName = TestContext.CurrentContext.Test.MethodName;
+                var cloudFilename = $"{testMethodName}.bmp";
+                var cloudDirectory = TestContext.CurrentContext.WorkDirectory;
+                DrawHandler.DrawRectangles(circularCloudLayouter, cloudFilename);
+                TestContext.WriteLine($"Tag cloud visualization saved to file {cloudDirectory}\\{cloudFilename}");
             }
         }
 
@@ -41,8 +47,8 @@ namespace TagsCloudVisualization
         public void CorrectSetUpCentralPoint()
         {
             var point = new Point(2, 4);
-            var ccl = new CircularCloudLayouter(point);
-            ccl.Center.ShouldBeEquivalentTo(point);
+            circularCloudLayouter = new CircularCloudLayouter(point);
+            circularCloudLayouter.Center.ShouldBeEquivalentTo(point);
         }
 
         [TestCase(1)]
@@ -52,7 +58,7 @@ namespace TagsCloudVisualization
         public void CheckCorrect_WhenPutAnyRectangles(int countRectangles)
         {
             var point = new Point(100, 100);
-            var ccl = new CircularCloudLayouter(point);
+            circularCloudLayouter = new CircularCloudLayouter(point);
             var rectagles = new List<Rectangle>();
             var sizes = new List<Size>();
 
@@ -60,11 +66,11 @@ namespace TagsCloudVisualization
             {
                 var size = GetRandomSize();
                 sizes.Add(size);
-                var rect = ccl.PutNextRectangle(size);
+                var rect = circularCloudLayouter.PutNextRectangle(size);
                 rectagles.Add(rect);
             }
 
-            CheckCorrectLayouter(ccl, sizes, rectagles);
+            CheckCorrectLayouter(circularCloudLayouter, sizes, rectagles);
         }
 
         private void CheckCorrectLayouter(CircularCloudLayouter layouter, List<Size> sizes, List<Rectangle> rectangles)
