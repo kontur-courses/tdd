@@ -92,14 +92,19 @@ namespace TagsCloudVisualization_Tests
 
             var totalCircleCloudRadius = GetMostDistantPointRadiusFromCenter(cloudLayouter.Rectangles);
             var totalCircleCloudArea = Math.PI * Math.Pow(totalCircleCloudRadius, 2);
-            (totalCloudArea / totalCircleCloudArea).Should().BeApproximately(0.2, 0.2);
+            (totalCloudArea / totalCircleCloudArea).Should().BeApproximately(0.2, 0.1);
         }
 
         public int GetMostDistantPointRadiusFromCenter(List<Rectangle> rectangles)
         {
             return rectangles
-                .Select(rect => new Point(Math.Max(rect.Left, rect.Right), Math.Max(rect.Top, rect.Bottom)))
-                .Select(point => (int)Math.Sqrt(Math.Pow(point.X, 2) + Math.Pow(point.Y, 2))).Max();
+                .Select(rect => new Point(MaxAbs(rect.Left, rect.Right), MaxAbs(rect.Top, rect.Bottom)))
+                .Select(point => (int)Math.Sqrt(Math.Pow(point.X - center.X, 2) + Math.Pow(point.Y - center.Y, 2))).Max();
+        }
+
+        public int MaxAbs(int val1, int val2)
+        {
+            return Math.Abs(val1) == Math.Max(Math.Abs(val1), Math.Abs(val2)) ? val1 : val2;
         }
     }
 }
