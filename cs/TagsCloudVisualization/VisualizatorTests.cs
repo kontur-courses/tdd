@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace TagsCloudVisualization
 {
-    public class Visualizator_Should
+    public class VisualizatorTests
     {
         #region InvalidSizes
 
@@ -41,6 +41,20 @@ namespace TagsCloudVisualization
             action
                 .Should()
                 .Throw<ArgumentNullException>();
+        }
+
+        [Test]
+        public void Generate_ReturnsBitmap_WithGivenSize()
+        {
+            var size = new Size(1024, 1024);
+            var visualizator = new Visualizator(size, new List<Rectangle>());
+
+            var result = visualizator.Generate();
+
+            result.Size
+                .Equals(size)
+                .Should()
+                .BeTrue();
         }
     }
 }

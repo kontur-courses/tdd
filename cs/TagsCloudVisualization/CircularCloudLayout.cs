@@ -4,19 +4,19 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter : ICircularCloudLayouter
+    public class CircularCloudLayout : ICircularCloudLayout
     {
         private readonly List<Rectangle> rectangles;
         private readonly Point centerPoint;
         private double angle;
 
-        public CircularCloudLayouter(Point centerPoint)
+        public CircularCloudLayout(Point centerPoint)
         {
             rectangles = new List<Rectangle>();
             this.centerPoint = centerPoint;
         }
 
-        private IEnumerable<Point> GetNextPoint()
+        private IEnumerable<Point> GetPoints()
         {
             while (true)
             {
@@ -44,7 +44,7 @@ namespace TagsCloudVisualization
                     nameof(rectangleSize));
             }
 
-            var points = GetNextPoint();
+            var points = GetPoints();
 
             foreach (var point in points)
             {
@@ -61,7 +61,7 @@ namespace TagsCloudVisualization
             }
 
             throw new InvalidOperationException(
-                $"{nameof(GetNextPoint)} method didn't return new point by undefined reason.");
+                $"{nameof(GetPoints)} method didn't return new point by undefined reason.");
         }
     }
 }

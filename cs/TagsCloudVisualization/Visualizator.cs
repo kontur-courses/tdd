@@ -34,11 +34,11 @@ namespace TagsCloudVisualization
             var rects = rectangles
                 .Select(rectangle =>
                 {
-                    rectangle.Location = new Point(
+                    var location = new Point(
                         rectangle.Location.X + center.X,
                         rectangle.Location.Y + center.Y);
 
-                    return rectangle;
+                    return new Rectangle(location, rectangle.Size);
                 })
                 .ToArray();
 

@@ -11,7 +11,7 @@ namespace TagsCloudVisualization
     {
         static void Main(string[] args)
         {
-            ICircularCloudLayouter circ = new CircularCloudLayouter(new Point());
+            ICircularCloudLayout layout = new CircularCloudLayout(centerPoint: new Point());
             var sizes = new List<Size>();
             var random = new Random();
 
@@ -21,11 +21,11 @@ namespace TagsCloudVisualization
             }
 
             var rectangles = sizes
-                .Select(circ.PutNextRectangle)
+                .Select(layout.PutNextRectangle)
                 .ToList();
 
-            IVisualizator viz = new Visualizator(new Size(1600, 1600), rectangles);
-            viz
+            IVisualizator visualizator = new Visualizator(imageSize: new Size(1600, 1600), rectangles: rectangles);
+            visualizator
                 .Generate()
                 .Save("result.bmp");
         }
