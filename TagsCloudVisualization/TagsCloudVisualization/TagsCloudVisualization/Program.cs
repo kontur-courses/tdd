@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace TagsCloudVisualization
@@ -34,15 +32,22 @@ namespace TagsCloudVisualization
 			var graphics = CreateGraphics();
 			var pen = new Pen(Color.Red, 1);
 			var cloud = new CircularCloudLayouter(new Point(500, 400));
-			cloud.AddRectangleNTimes(150);
+			var rectangles = GetData(cloud, 150);
 
-			graphics.DrawRectangles(pen, cloud.GetExistRectangles());
+			graphics.DrawRectangles(pen, rectangles);
 		}
-		
+
+		public Rectangle[] GetData(CircularCloudLayouter cloud, int number)
+		{
+			var rnd = new Random();
+			for (var i = 0; i < number; i++)
+				cloud.PutNextRectangle(new Size(rnd.Next(10, 30), rnd.Next(4, 12)));
+
+			return cloud.GetRectangles();
+		}
 
 		private void Form1_Resize(object sender, EventArgs e)
 		{
 		}
-
 	}
 }

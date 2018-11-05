@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
 
@@ -23,13 +25,18 @@ namespace TagsCloudVisualization
 		[TestCase(100, TestName = "one hundred")]
 		public void PutNextRectangle_ShouldAddNumberOfRectangles(int number)
 		{
-			cloud.AddRectangleNTimes(number);
-			var rectangles = cloud.GetExistRectangles();
+			for (var i = 0; i < number; i++)
+			{
+				var size = new Size(10 + i, 5 + i);
+				cloud.PutNextRectangle(size);
+			}
+			var rectangles = cloud.GetRectangles();
+
 			rectangles.Should().HaveCount(number);
 		}
 
 		[Test]
-		public void PutNextRectangle_WithCorrectSize_ReturnRectWithThisSize()
+		public void PutNextRectangle_WithCorrectSize_ReturnRectangleWithThisSize()
 		{
 			var size = new Size(100, 50);
 			var rectangle = cloud.PutNextRectangle(size);
@@ -39,44 +46,33 @@ namespace TagsCloudVisualization
 
 		[TestCase(100, 200, TestName = "height more than width")]
 		[TestCase(300, 100, TestName = "width more than height")]
-		public void PutNextRectangle_TwoTimes_RectanglesShouldNotIntersect(int width, int height)
+		public void PutNextRectangle_NextRectangleShouldNotIntersectWithPrevious(int width, int height)
 		{
 			var size = new Size(width, height);
-			var theRectangle = cloud.PutNextRectangle(size);
-			var otherRectangle = cloud.PutNextRectangle(size);
+			var nextRectangle = cloud.PutNextRectangle(size);
+			var previousRectangle = cloud.PutNextRectangle(size);
 
-			theRectangle.IntersectsWith(otherRectangle).Should().BeFalse();
+			nextRectangle.IntersectsWith(previousRectangle).Should().BeFalse();
 		}
 
-		[TestCase(10, TestName = "10 rectangles")]
-		[TestCase(100, TestName = "100 rectangles")]
-		[TestCase(500, TestName = "500 rectangles")]
-		public void PutNextRectangle_NewRectangleDoesNotIntersectWithExist(int number)
+		public void NextRectangleShouldNotIntersectWithExisting(int number)
 		{
-			cloud.AddRectangleNTimes(number);
-			var actualRectangle = cloud.GetNextNotIntersectRectangle(new Size(100, 50));
+			var rectangles = new List<Rectangle>
+			{
+				cloud.PutNextRectangle(new Size(100, 50)),
+				cloud.PutNextRectangle(new Size(150, 100))
+			};
+			var actualRectangle = cloud.PutNextRectangle(new Size(50, 100));
 
-			cloud.IsIntersectWithExistRectangles(actualRectangle).Should().BeFalse();
+			rectangles.Any(r => r.IntersectsWith(actualRectangle)).Should().BeFalse();
 		}
 
 
 		[Test]
-		public void PutNextRectangle_HaveNegativeSize_ShouldThrowException()
+		public void PutNextRectangle_WithNegativeSize_ShouldThrowException()
 		{
 			var size = new Size(-100, -100);
 			Assert.Throws<ArgumentException>(() => cloud.PutNextRectangle(size));
-		}
-
-		[Test]
-		public void PutNextRectangle_TwoTimes_ShouldDifferentStartPoints()
-		{
-			var size = new Size(100, 50);
-			var theRectangle = cloud.PutNextRectangle(size);
-			var otherRectangle = cloud.PutNextRectangle(size);
-			var theStartPoint = new[] {theRectangle.X, theRectangle.Y};
-			var otherStartPoint = new[] {otherRectangle.X, otherRectangle.Y};
-
-			theStartPoint.Should().NotBeEquivalentTo(otherStartPoint);
 		}
 	}
 }

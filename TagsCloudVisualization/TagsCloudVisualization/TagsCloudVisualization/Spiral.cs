@@ -8,15 +8,17 @@ namespace TagsCloudVisualization
 		private readonly double degreeStep;
 		private readonly double factorStep;
 		private int nextPointCounter;
+		private Point center;
 
-		public Spiral(double factorStep, double degreeStep)
+		public Spiral(double factorStep, double degreeStep, Point center)
 		{
 			this.factorStep = factorStep;
 			this.degreeStep = degreeStep;
+			this.center = center;
 			nextPointCounter = 0;
 		}
 
-		public Point GetNextPoint(Point center)
+		public Point GetNextPoint()
 		{
 			var degree = degreeStep * nextPointCounter;
 			var factor = factorStep * nextPointCounter;
