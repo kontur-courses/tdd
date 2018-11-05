@@ -13,6 +13,8 @@ namespace TagsCloudVisualization
 
         public SpiralPointsGenerator(int distanceBetweenPoints)
         {
+            if (distanceBetweenPoints <= 0)
+                throw new ArgumentException("Distance between points should be positive number");
             this.distanceBetweenPoints = distanceBetweenPoints;
         }
 

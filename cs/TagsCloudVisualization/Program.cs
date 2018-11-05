@@ -1,45 +1,47 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+using System.IO;
+using Fclp;
 
 namespace TagsCloudVisualization
 {
     public class Program
     {
-        public static void Main()
+        public static void Main(string[] args)
         {
-            var drawer = new RectanglesDrawer(GenerateRectanglesLayout(100, -1, 2, 1));
-            drawer.GenerateImage("100BigToSmallRectangles.png");
-            drawer = new RectanglesDrawer(GenerateRectanglesLayout(100, 1, 2, 1));
-            drawer.GenerateImage("100SmallToBigRectangles.png");
-            drawer = new RectanglesDrawer(GenerateRectanglesLayout(10, -1, 1, 1));
-            drawer.GenerateImage("10BigToSmallSquares.png");
-            drawer = new RectanglesDrawer(GenerateRectanglesLayout(10, -1, 1, 2));
-            drawer.GenerateImage("10BigToSmallHighRectangles.png");
-        }
+            var fileName = string.Empty;
+            var rectanglesAmount = 0;
+            var step = 0;
+            var widthMultiplier = 0;
+            var heightMultiplier = 0;
+            var centerX = 0;
+            var centerY = 0;
+            var distanceBetweenSpiralPoints = 0;
+            var imageFileName = string.Empty;
 
-        private static List<Rectangle> GenerateRectanglesLayout(int rectanglesAmount, int step,
-            int widthMultiplier, int heightMultiplier)
-        {
-            var layouter = new CircularCloudLayouter(new Point(0, 0), new SpiralPointsGenerator(1));
-            if (step > 0)
-            {
-                for (var size = 1; size <= rectanglesAmount; size += step)
-                    AddRectangle(layouter, size, widthMultiplier, heightMultiplier);
-            }
-            else
-            {
-                for (var size = rectanglesAmount; size > 0; size += step)
-                    AddRectangle(layouter, size, widthMultiplier, heightMultiplier);
-            }
-            return layouter.Rectangles;
-        }
+            var parser = new FluentCommandLineParser();
+            parser.Setup<string>('f').Callback(file => fileName = file).Required();
 
-        private static void AddRectangle(CircularCloudLayouter layouter, int size, int widthMultiplier, int heightMultiplier)
-        {
-            var width = size * widthMultiplier;
-            var height = size * heightMultiplier;
-            layouter.PutNextRectangle(new Size(width, height));
+            var result = parser.Parse(args);
+            if (result.HasErrors)
+                throw new ArgumentException("options file name undefined");
+
+            parser = new FluentCommandLineParser();
+            parser.Setup<int>('a', "rectanglesAmount").Callback(amount => rectanglesAmount = amount).Required();
+            parser.Setup<int>('s', "step").Callback(stepSize => step = stepSize).Required();
+            parser.Setup<int>('w', "widthMultiplier").Callback(width => widthMultiplier = width).Required();
+            parser.Setup<int>('h', "heightMultiplier").Callback(height => heightMultiplier = height).Required();
+            parser.Setup<int>('x', "centerX").Callback(x => centerX = x).Required();
+            parser.Setup<int>('y', "centerY").Callback(y => centerY = y).Required();
+            parser.Setup<int>('d', "distanceBetweenSpiralPoints")
+                .Callback(distance => distanceBetweenSpiralPoints = distance).Required();
+            parser.Setup<string>('f', "imageFileName").Callback(name => imageFileName = name).Required();
+
+            result = parser.Parse(File.ReadAllText(fileName).Split(' '));
+            if (result.HasErrors)
+                throw new ArgumentException("wrong file syntax");
+
+            RectanglesImageGenerator.Generate(rectanglesAmount, step, widthMultiplier, heightMultiplier, centerX,
+                centerY, distanceBetweenSpiralPoints, imageFileName);
         }
     }
 }

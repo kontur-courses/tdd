@@ -34,8 +34,7 @@ namespace TagsCloudVisualization
                 return;
             var fileName = $"{TestContext.CurrentContext.Test.Name}TestLayout.png";
             var path = $"{TestContext.CurrentContext.WorkDirectory}/{fileName}";
-            var drawer = new RectanglesDrawer(layouter.Rectangles);
-            drawer.GenerateImage(fileName);
+            RectanglesDrawer.GenerateImage(layouter.Rectangles, fileName);
             Console.WriteLine($"Tag cloud visualization saved to file {path}");
         }
 

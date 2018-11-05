@@ -29,7 +29,7 @@ namespace TagsCloudVisualization
         public void ThrowArgumentException_OnInvalidDistance(int distanceBetweenPoints)
         {
             Action action = () => new SpiralPointsGenerator(distanceBetweenPoints);
-            action.Should().NotThrow<ArgumentException>();
+            action.Should().Throw<ArgumentException>();
         }
 
         [Test]

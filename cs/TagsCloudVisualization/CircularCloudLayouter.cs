@@ -18,20 +18,19 @@ namespace TagsCloudVisualization
 
         public List<Rectangle> Rectangles { get; } = new List<Rectangle>();
 
-        public void PutNextRectangle(Size rectangleSize)
+        public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException("Rectangle width and height should be positive numbers");
             Rectangle newRectangle;
-            while (true)
+            do
             {
                 var nextPoint = pointsGenerator.GetNextPoint();
                 var location = center + (Size)nextPoint;
                 newRectangle = new Rectangle(location, rectangleSize).MoveToHavePointInCenter(location);
-                if (Rectangles.All(rectangle => !rectangle.IntersectsWith(newRectangle)))
-                    break;
-            }
+            } while (Rectangles.Any(rectangle => rectangle.IntersectsWith(newRectangle)));
             Rectangles.Add(newRectangle);
+            return newRectangle;
         }
     }
 }

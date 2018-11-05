@@ -5,22 +5,18 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class RectanglesDrawer
+    public static class RectanglesDrawer
     {
-        private readonly List<Rectangle> rectangles;
+        private const int SideShift = 10;
 
-        public RectanglesDrawer(List<Rectangle> rectangles)
+        public static void GenerateImage(IEnumerable<Rectangle> rectangles, string imageName)
         {
-            this.rectangles = rectangles;
-        }
-
-        public void GenerateImage(string imageName)
-        {
-            var size = rectangles.Sum(rectangle => Math.Max(rectangle.Height, rectangle.Width)) + 10;
+            var rectanglesArray = rectangles as Rectangle[] ?? rectangles.ToArray();
+            var size = rectanglesArray.Sum(rectangle => Math.Max(rectangle.Height, rectangle.Width)) + SideShift;
             var image = new Bitmap(size, size);
             var graphics = Graphics.FromImage(image);
             graphics.TranslateTransform(size / 2, size / 2);
-            foreach (var rectangle in rectangles)
+            foreach (var rectangle in rectanglesArray)
                 graphics.DrawRectangle(Pens.Black, rectangle);
             image.Save(imageName);
         }
