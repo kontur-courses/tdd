@@ -10,8 +10,8 @@ namespace TagsCloudVisualization
         [Test]
         public void ReturnCenter_ForTheFirstCall()
         {
-            var spiral = ArchimedeanSpiralGenerator.GetArchimedeanSpiralGenerator(new PointF(0, 0), 10, 1);
-            var firstPoint = spiral.First();
+            var spiral = new ArchimedeanSpiralGenerator(new PointF(0, 0), 10, 1);
+            var firstPoint = spiral.GetNextPoint();
             AssertPointsAlmostEqual(new PointF(0, 0), firstPoint);
         }
 
@@ -19,11 +19,12 @@ namespace TagsCloudVisualization
         public void ReturnPointsWithDistanceEqualToStep_AfterFullTurn()
         {
             var step = 10f;
-            var spiral = ArchimedeanSpiralGenerator.GetArchimedeanSpiralGenerator(new PointF(0, 0), step, 2 * (float) Math.PI);
-            var points = spiral.Take(2).ToArray();
+            var spiral = new ArchimedeanSpiralGenerator(new PointF(0, 0), step, 2 * (float) Math.PI);
+            var first = spiral.GetNextPoint();
+            var second = spiral.GetNextPoint();
             var distance = Math.Sqrt(
-                (points[0].X - points[1].X) * (points[0].X - points[1].X) +
-                (points[0].Y - points[1].Y) * (points[0].Y - points[1].Y));
+                (first.X - second.X) * (first.X - second.X) +
+                (first.Y - second.Y) * (first.Y - second.Y));
             Assert.AreEqual(step, distance, 0.01);
         }
 

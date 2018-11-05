@@ -20,17 +20,6 @@ namespace TagsCloudVisualization
             return new Point(xCenter, yCenter);
         }
 
-        public static Point[] GetVertices(this Rectangle rectangle)
-        {
-            return new[]
-            {
-                new Point(rectangle.Left, rectangle.Top),
-                new Point(rectangle.Right, rectangle.Top),
-                new Point(rectangle.Right, rectangle.Bottom),
-                new Point(rectangle.Left, rectangle.Bottom)
-            };
-        }
-
         public static bool IntersectsWithAny(this Rectangle rectangle, IEnumerable<Rectangle> otherRectangles)
         {
             return otherRectangles.Any(rect => rectangle.IntersectsWith(rect));

@@ -1,39 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    class CircularCloudLayouter
+    public class CircularCloudLayouter
     {
-        private readonly Point center;
-        private List<Rectangle> placedRectangles;
-        private IEnumerator<PointF> pointsEnumerator;
+        public List<Rectangle> PlacedRectangles { get; }
+        private readonly ArchimedeanSpiralGenerator spiralGenerator;
 
         public CircularCloudLayouter(Point center)
         {
-            this.center = center;
-            placedRectangles = new List<Rectangle>();
-            pointsEnumerator = ArchimedeanSpiralGenerator.
-                GetArchimedeanSpiralGenerator(center, 1, (float)(1 / (2 * Math.PI))).GetEnumerator();
-            pointsEnumerator.MoveNext();
+            PlacedRectangles = new List<Rectangle>();
+            spiralGenerator = new ArchimedeanSpiralGenerator(center, 1, (float)(1 / (2 * Math.PI)));
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var nextPoint = pointsEnumerator.Current;
-            var nextRectangle =
-                GetRectangleWithCenterIn(new Point((int) nextPoint.X, (int) nextPoint.Y), rectangleSize);
-            while (nextRectangle.IntersectsWithAny(placedRectangles))
+            Rectangle nextRectangle;
+            do
             {
-                pointsEnumerator.MoveNext();
-                nextPoint = pointsEnumerator.Current;
-                nextRectangle =
-                    GetRectangleWithCenterIn(new Point((int) nextPoint.X, (int) nextPoint.Y), rectangleSize);
-            }
-            placedRectangles.Add(nextRectangle);
+                var nextPoint = spiralGenerator.GetNextPoint();
+                nextRectangle = GetRectangleWithCenterIn(
+                    new Point((int)nextPoint.X, (int)nextPoint.Y), rectangleSize);
+            } while (nextRectangle.IntersectsWithAny(PlacedRectangles));
 
+            PlacedRectangles.Add(nextRectangle);
             return nextRectangle;
         }
 

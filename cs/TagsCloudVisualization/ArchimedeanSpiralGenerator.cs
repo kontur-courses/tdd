@@ -1,26 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 
 namespace TagsCloudVisualization
 {
     class ArchimedeanSpiralGenerator
-    { 
-        public static IEnumerable<PointF> GetArchimedeanSpiralGenerator(PointF center, float step, float angleDeltaInRadians)
+    {
+        private float currentAngle;
+        private PointF center;
+        private float step;
+        private float angleDeltaInRadians;
+
+        public ArchimedeanSpiralGenerator(PointF center, float step, float angleDeltaInRadians)
         {
-            var currentAngle = 0f;
-            while (true)
-            {
-                yield return GetPointFromAngle(center, step, currentAngle);
-                currentAngle += angleDeltaInRadians;
-            }
+            this.center = center;
+            this.step = step;
+            this.angleDeltaInRadians = angleDeltaInRadians;
+            currentAngle = 0f;
         }
 
-        protected static PointF GetPointFromAngle(PointF center, float step, float angleInRadians)
-        {
-            var distance = angleInRadians * step / (2 * Math.PI);
-            var xCoordinate = distance * Math.Cos(angleInRadians);
-            var yCoordinate = distance * Math.Sin(angleInRadians);
+        public PointF GetNextPoint()
+        { 
+            var distance = currentAngle * step / (2 * Math.PI);
+            var xCoordinate = distance * Math.Cos(currentAngle);
+            var yCoordinate = distance * Math.Sin(currentAngle);
+
+            currentAngle += angleDeltaInRadians;
             return new PointF((float)xCoordinate, (float)yCoordinate);
         }
     }
