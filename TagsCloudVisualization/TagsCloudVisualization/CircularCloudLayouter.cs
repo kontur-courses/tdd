@@ -11,7 +11,8 @@ namespace TagsCloudVisualization
     {
         public Point Center { get; }
         private int distance;
-        private readonly List<Rectangle> _rectangles = new List<Rectangle>();
+        private readonly List<Rectangle> rectangles = new List<Rectangle>();
+        public List<Rectangle> Result { get => new List<Rectangle>(rectangles); }
         public CircularCloudLayouter(Point center)
         {
             Center = center;
@@ -35,14 +36,13 @@ namespace TagsCloudVisualization
                 }
             } while (CheckCollisionWithAll(rectangle));
 
-            if (_rectangles.Count > 0 && withDensity)
+            if (rectangles.Count > 0 && withDensity)
                 rectangle = MoveRectangleToCenter(rectangle);
-            _rectangles.Add(rectangle);
+            rectangles.Add(rectangle);
             return rectangle;
         }
-        public Rectangle MoveRectangleToCenter(Rectangle rectangle)
+        private Rectangle MoveRectangleToCenter(Rectangle rectangle)
         {
-            //Console.WriteLine("Уплотняем прямоугольник №{0} в облако", _rectangles.Count);
             var wasChanged = true;
             while (wasChanged)
             {
@@ -63,7 +63,7 @@ namespace TagsCloudVisualization
                     rectangle.Y++;
                 rectangle.Y--;
 
-                wasChanged = original.X != rectangle.X || original.Y != rectangle.Y;
+                wasChanged = !original.Equals(rectangle.Location);
             }
 
             return rectangle;
@@ -75,28 +75,15 @@ namespace TagsCloudVisualization
                   || rectangle.Y + rectangle.Height < other.Y || other.Y + other.Height < rectangle.Y);
         }
 
-        public bool CheckCollisionWithAll(Rectangle rect)
+        private bool CheckCollisionWithAll(Rectangle rect)
         {
-            foreach (var other in _rectangles)
+            foreach (var other in rectangles)
             {
                 if (IsCollision(rect, other))
                     return true;
             }
 
             return false;
-        }
-        public void SaveBitmap(string fileName, int width, int height)
-        {
-            var bitmap = new Bitmap(width, height);
-            var g = Graphics.FromImage(bitmap);
-            g.FillRectangle(Brushes.LightBlue, 0, 0, width, height);
-            foreach (var r in _rectangles )
-            {
-                g.FillRectangle(Brushes.RoyalBlue, r);
-                g.DrawRectangle(Pens.DarkBlue, r);
-            }
-
-            bitmap.Save(fileName + ".bmp");
         }
     }
 }
