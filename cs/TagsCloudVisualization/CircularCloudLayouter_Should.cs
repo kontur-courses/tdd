@@ -54,10 +54,10 @@ namespace TagsCloudVisualization
             var rects = AssignLayouter(Enumerable.Repeat(defaultSize, 10)).ToArray();
 
             var rectPairs = rects
-                .Select((rectangle, i) => (rectangle, rects.Skip(i + 1)));
+                .Select((rectangle, i) => (rectangle: rectangle, possibleIntersectRectangles: rects.Skip(i + 1)));
 
             foreach (var rectPair in rectPairs)
-                rectPair.Item1.IntersectsWithAnyFrom(rectPair.Item2).Should().BeFalse();
+                rectPair.rectangle.IntersectsWithAnyFrom(rectPair.possibleIntersectRectangles).Should().BeFalse();
         }
 
         [Test]

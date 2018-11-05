@@ -16,9 +16,10 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var rect = new Rectangle(spiral.GetNextSpiralPosition(), rectangleSize);
-            while (rect.IntersectsWithAnyFrom(rectangles))
+            var rect = new Rectangle();
+            do
                 rect = new Rectangle(spiral.GetNextSpiralPosition(), rectangleSize);
+            while (rect.IntersectsWithAnyFrom(rectangles));
 
             rectangles.Add(rect);
             return rect;
