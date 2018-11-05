@@ -8,41 +8,41 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         private List<Rectangle> Rectangles;
-        private readonly Spiral spiral;
+        private readonly IEnumerator<Point> spiralPointGenerator;
         private readonly Point center = new Point(0,0);
 
         public CircularCloudLayouter()
         {
             Rectangles = new List<Rectangle>();
-            spiral = new Spiral();
+            spiralPointGenerator = new Spiral().GenerateRectangleLocation().GetEnumerator();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var rectangle = GenerateNewRectangle(Rectangles, rectangleSize);
+            var rectangle = GenerateNewRectangle(rectangleSize);
             Rectangles.Add(rectangle);
             return rectangle;
         }
 
-        private Rectangle GenerateNewRectangle(List<Rectangle> rectangles, Size rectangleSize)
+        private Rectangle GenerateNewRectangle(Size rectangleSize)
         {
             Rectangle rectangle;
-            if (rectangles.Count == 0)
-                return new Rectangle(center.ShiftToLeftRectangleCorner(rectangleSize), rectangleSize);
             while (true)
             {
-                var rectangleCenterPointLocation = spiral.GenerateRectangleLocation();
+                spiralPointGenerator.MoveNext();
+                var rectangleCenterPointLocation = spiralPointGenerator.Current;
                 var rectangleLocation = rectangleCenterPointLocation.ShiftToLeftRectangleCorner(rectangleSize);
                 rectangle = new Rectangle(rectangleLocation, rectangleSize);
-                if (RectanglesDoNotIntersect(rectangles, rectangle))
+                
+                if (RectanglesDoNotIntersect(rectangle))
                     break;
             }
             return rectangle;
         }
 
-        private bool RectanglesDoNotIntersect(List<Rectangle> rectangles, Rectangle newRectangle)
+        private bool RectanglesDoNotIntersect(Rectangle newRectangle)
         {
-            return !(rectangles.Any(newRectangle.IntersectsWith));
+            return !(Rectangles.Any(newRectangle.IntersectsWith));
         }
     }
 

@@ -34,7 +34,8 @@ namespace TagsCloudVisualization
         public void GetGetCircumscribedСircleRadius_AddFirstRectangle_CorrectCircleRadius()
         {
             var newRectangle = layout.PutNextRectangle(new Size(200, 200));
-            newRectangle.GetCircumcircleRadius().Should().Be(141);
+            var radius = (int)Math.Sqrt(Math.Pow(newRectangle.Right, 2) + Math.Pow(newRectangle.Top, 2));
+            newRectangle.GetCircumcircleRadius().Should().Be(radius);
         }
 
         [Test]

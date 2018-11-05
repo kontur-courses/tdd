@@ -95,7 +95,7 @@ namespace TagsCloudVisualization
                 rectangles.Add(newRectangle);
             }
             var circleSquare = Math.PI * Math.Pow(circleRadius, 2);
-            (cloudSquare / circleSquare).Should().BeApproximately(0.6, 0.1);
+            (cloudSquare / circleSquare).Should().BeApproximately(0.8, 0.2);
         }
 
     }

@@ -14,20 +14,20 @@ namespace TagsCloudVisualization
             currentSpiralAngle++;
         }
 
-        public Point GenerateRectangleLocation()
+        public IEnumerable<Point> GenerateRectangleLocation()
         {
             //For generating rectangle location (left-upper corner)
             //I'm using Archimedean Spiral
+            while (true)
+            {
+                var distanceBetweenTurnings = 1;
+                var radius = distanceBetweenTurnings * currentSpiralAngle;
 
-            var distanceBetweenTurnings = 1;
-            var radius = distanceBetweenTurnings * currentSpiralAngle;
-
-            var x = (int)(radius * Math.Cos(currentSpiralAngle));
-            var y = (int)(radius * Math.Sin(currentSpiralAngle));
-            IncreaseSpiralAngle();
-            return new Point(x,y);
+                var x = (int)(radius * Math.Cos(currentSpiralAngle));
+                var y = (int)(radius * Math.Sin(currentSpiralAngle));         
+                yield return new Point(x,y);
+                IncreaseSpiralAngle();
+            }
         }
-
-
     }
 }
