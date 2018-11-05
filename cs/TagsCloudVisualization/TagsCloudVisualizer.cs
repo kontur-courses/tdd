@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -14,9 +13,10 @@ namespace TagsCloudVisualization
             using (var graphics = Graphics.FromImage(picture))
             {
                 graphics.TranslateTransform(-pictureRectangle.X, -pictureRectangle.Y);
-                graphics.Clear(Color.Azure);
-                var pen = new Pen(Color.Black, 10);
+                graphics.Clear(Color.FromArgb(22, 44, 79));
+                var pen = new Pen(Color.DarkOrange, 3);
                 graphics.DrawRectangles(pen, rectangles.ToArray());
+
             }
 
             return picture;

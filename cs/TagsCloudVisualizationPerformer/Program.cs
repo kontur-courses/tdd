@@ -13,7 +13,7 @@ namespace TagsCloudVisualizationPerformer
             var picture = TagsCloudVisualizer.GetPictureOfRectangles(sameSizeRectangles);
             picture.Save("cloud1.png");
 
-            var randomSizeRectangles = LayoutRandomSizeRectangles(50, new Size(20, 50), new Size(200, 300));
+            var randomSizeRectangles = LayoutRandomSizeRectangles(50, new Size(50, 20), new Size(300, 200));
             var secondPicture = TagsCloudVisualizer.GetPictureOfRectangles(randomSizeRectangles);
             secondPicture.Save("cloud2.png");
         }
