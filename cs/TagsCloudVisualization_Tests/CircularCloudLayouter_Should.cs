@@ -80,15 +80,14 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_PutMultipleRectangles_RectanglesArePlacedTightly()
         {
-            var random = new Random();
             var rectangles = new List<Rectangle>();
             var circleRadius = 0;
             var cloudSquare = 0;
+            var rectanglesSize = new Size(200, 100);
 
             for (var i = 0; i < 100; i++)
             {
-                var randomSize = new Size(random.Next(150, 200), random.Next(75, 100));
-                var newRectangle = layout.PutNextRectangle(randomSize);
+                var newRectangle = layout.PutNextRectangle(rectanglesSize);
                 rectangles.ForEach(rect => rect.IntersectsWith(newRectangle).Should().BeFalse());
                 circleRadius = newRectangle.GetCircumcircleRadius();
                 cloudSquare += newRectangle.Width * newRectangle.Height;
