@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
 using NUnit.Framework;
 using FluentAssertions;
@@ -16,7 +15,8 @@ namespace TagsCloudVisualization
         public void InitializeTests()
         {
             center = new Point(1000, 1000);
-            cloudLayouter = new CircularCloudLayouter(center);
+            var spiral = new ArchimedesSpiral(center);
+            cloudLayouter = new CircularCloudLayouter(spiral, center);
         }
 
         [TestCase(0, 0, TestName = "CenterOfCloudAreEquivalentToLeftUpperBoundOfFirstRectangleOnZeroSize")]
@@ -25,7 +25,7 @@ namespace TagsCloudVisualization
         public void FirstRectangleAreInCenterOfTheCloud(int width, int height)
         {
             var firstRectangle = cloudLayouter.PutNextRectangle(new Size(width, height));
-            var rectangleCenter = GetCenterOfRectangle(firstRectangle);
+            var rectangleCenter = firstRectangle.GetCenter();
 
             rectangleCenter.ShouldBeEquivalentTo(center);
         }
@@ -40,7 +40,7 @@ namespace TagsCloudVisualization
             foreach (var rectangleSize in rectanglesSizes)
             {
                 var rectangle = cloudLayouter.PutNextRectangle(rectangleSize);
-                var distance = GetDistanceFromRectangleToPoint(rectangle, center);
+                var distance = rectangle.GetDistanceToPoint(center);
 
                 distance.Should().BeGreaterOrEqualTo(lastDistance);
 
@@ -69,18 +69,6 @@ namespace TagsCloudVisualization
         }
 
 
-        private double GetDistanceFromRectangleToPoint(Rectangle rectangle, Point point)
-        {
-            return Math.Sqrt((GetCenterOfRectangle(rectangle).X - point.X) *
-                   (GetCenterOfRectangle(rectangle).X - point.X) +
-                   (GetCenterOfRectangle(rectangle).Y - point.Y) *
-                   (GetCenterOfRectangle(rectangle).Y - point.Y));
-        }
-
-        private Point GetCenterOfRectangle(Rectangle rectangle)
-        {
-            return new Point(rectangle.X + rectangle.Width / 2, rectangle.Y + rectangle.Height / 2);
-        }
 
         [TearDown]
         public static void SaveImageOfWrongTestCase()

@@ -58,9 +58,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArchimedesSpiral.cs" />
     <Compile Include="CircularCloudLayouter.cs" />
+    <Compile Include="CircularCloudLayouterExtensions.cs" />
     <Compile Include="CircularCloudLayouterTests.cs" />
     <Compile Include="CircularCloudVisualization.cs" />
+    <Compile Include="ISpiral.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -19,7 +19,9 @@ namespace TagsCloudVisualization
         public static void Main()
         {
             var center = new Point(BitmapWidth / 2, BitmapHeight / 2);
-            var cloudLayouter = new CircularCloudLayouter(center);
+            var spiral = new ArchimedesSpiral(center);
+
+            var cloudLayouter = new CircularCloudLayouter(spiral, center);
 
             FillCloudWithRectangles(cloudLayouter);
 
