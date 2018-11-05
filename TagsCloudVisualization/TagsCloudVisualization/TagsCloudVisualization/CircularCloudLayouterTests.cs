@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
 
@@ -64,7 +63,7 @@ namespace TagsCloudVisualization
 			};
 			var actualRectangle = cloud.PutNextRectangle(new Size(50, 100));
 
-			rectangles.Any(r => r.IntersectsWith(actualRectangle)).Should().BeFalse();
+			rectangles.IntersectsWith(actualRectangle).Should().BeFalse();
 		}
 
 

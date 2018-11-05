@@ -33,7 +33,7 @@ namespace TagsCloudVisualization
 			do
 			{
 				nextRect = GetNextRectangle(size);
-			} while (IntersectsWithExistingRectangles(nextRect));
+			} while (rectangles.IntersectsWith(nextRect));
 
 			return nextRect;
 		}
@@ -43,9 +43,6 @@ namespace TagsCloudVisualization
 			var nextPoint = spiral.GetNextPoint();
 			return new Rectangle(nextPoint.X, nextPoint.Y, size.Width, size.Height);
 		}
-
-		private bool IntersectsWithExistingRectangles(Rectangle rect) =>
-			rectangles.Any(r => r.IntersectsWith(rect));
 
 		public Rectangle[] GetRectangles() => rectangles.ToArray();
 	}
