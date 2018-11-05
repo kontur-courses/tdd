@@ -45,7 +45,7 @@ namespace TagsCloudVisualization_Tests
         [Test]
         public void PutNextRectangle_PutSingleRectangleInCenter_SingleRectangleCenterShifted()
         {
-            var expectedRectangle = new Rectangle(new Point(100, 50), defaultSize);
+            var expectedRectangle = new Rectangle(new Point(-100, -50), defaultSize);
             cloudLayouter.PutNextRectangle(defaultSize).Should().BeEquivalentTo(expectedRectangle);
         }
 
@@ -78,33 +78,30 @@ namespace TagsCloudVisualization_Tests
             }
         }
 
+        private int GetRectangleToCenterRadius(Rectangle rect) =>
+            (int) Math.Sqrt(Math.Pow(rect.X - center.X, 2) + Math.Pow(rect.Y - center.Y, 2));
+
+        [Test]
+        public void GetRadius_OnSingleRectangle_ReturnCorrectRadius()
+        {
+            var rectangle = cloudLayouter.PutNextRectangle(defaultSize);
+            cloudLayouter.Radius.Should().Be(GetRectangleToCenterRadius(rectangle));
+        }
+
         [Test]
         public void PutNextRectangle_PutsRectanglesTightEnough()
         {
-            var maxRadius = 0;
             var totalCloudArea = 0;
             var random = new Random();
-            for (var i = 0; i < 500; i++)
+            for (var i = 0; i < 1000; i++)
             {
                 var nextRectangle = cloudLayouter.PutNextRectangle(new Size(random.Next(1, 200), random.Next(1, 200)));
                 totalCloudArea += nextRectangle.Width * nextRectangle.Height;
             }
 
-            var totalCircleCloudRadius = GetMostDistantPointRadiusFromCenter(cloudLayouter.Rectangles);
+            var totalCircleCloudRadius = cloudLayouter.Radius;
             var totalCircleCloudArea = Math.PI * Math.Pow(totalCircleCloudRadius, 2);
-            (totalCloudArea / totalCircleCloudArea).Should().BeApproximately(0.2, 0.1);
-        }
-
-        public int GetMostDistantPointRadiusFromCenter(List<Rectangle> rectangles)
-        {
-            return rectangles
-                .Select(rect => new Point(MaxAbs(rect.Left, rect.Right), MaxAbs(rect.Top, rect.Bottom)))
-                .Select(point => (int)Math.Sqrt(Math.Pow(point.X - center.X, 2) + Math.Pow(point.Y - center.Y, 2))).Max();
-        }
-
-        public int MaxAbs(int val1, int val2)
-        {
-            return Math.Abs(val1) == Math.Max(Math.Abs(val1), Math.Abs(val2)) ? val1 : val2;
+            (totalCloudArea / totalCircleCloudArea).Should().BeApproximately(0.5, 0.2);
         }
     }
 }

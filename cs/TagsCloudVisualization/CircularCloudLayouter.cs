@@ -10,13 +10,15 @@ namespace TagsCloudVisualization
         public List<Rectangle> Rectangles { get; }
         public Point Center { get; }
 
-        public Spiral Spiral { get; }
+        private Spiral Spiral { get; }
+
+        public int Radius => GetRadius();
 
         public CircularCloudLayouter(Point center)
         {
             Center = center;
             Rectangles = new List<Rectangle>();
-            Spiral = new Spiral(1, 0);
+            Spiral = new Spiral(0.0005, 0);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -36,12 +38,25 @@ namespace TagsCloudVisualization
                 while (true)
                 {
                     var rectangleCenter = Spiral.GetNextPoint(Center);
-                    var nexRectangle = new Rectangle(rectangleCenter, rectangleSize).ShiftRectangleToBottomLeftCorner();
+                    var nexRectangle = new Rectangle(rectangleCenter, rectangleSize)
+                        .ShiftRectangleToTopLeftCorner();
                     if (!Rectangles.Any(nexRectangle.IntersectsWith))
                         return nexRectangle;
                 }
             }
-            return new Rectangle(Center, rectangleSize).ShiftRectangleToBottomLeftCorner();
+            return new Rectangle(Center, rectangleSize).ShiftRectangleToTopLeftCorner();
+        }
+
+        private int GetRadius()
+        {
+            return Rectangles
+                .Select(rect => new Point(MaxAbs(rect.Left, rect.Right), MaxAbs(rect.Top, rect.Bottom)))
+                .Select(point => (int)Math.Sqrt(Math.Pow(point.X - Center.X, 2) + Math.Pow(point.Y - Center.Y, 2))).Max();
+        }
+
+        private int MaxAbs(int val1, int val2)
+        {
+            return Math.Abs(val1) == Math.Max(Math.Abs(val1), Math.Abs(val2)) ? val1 : val2;
         }
     }
 }
