@@ -109,7 +109,7 @@ namespace TagsCloudVisualization
                 {
                     orderedXCoordinates.First(),
                     orderedXCoordinates.Last(),
-                    orderedYCoordinates.Last(),
+                    orderedYCoordinates.First(),
                     orderedYCoordinates.Last()
                 }
                 .ToArray();
@@ -162,7 +162,9 @@ namespace TagsCloudVisualization
         private int[] GetOrderedUnsignedXCoordinates()
         {
             return rectangles
-                .Select(rectangle => rectangle.X > startPoint.X ? rectangle.X + rectangle.Width : rectangle.X)
+                .Select(rectangle => rectangle.X > startPoint.X
+                    ? rectangle.X + rectangle.Width
+                    : rectangle.X)
                 .OrderBy(x => x)
                 .Select(Math.Abs)
                 .Select(x => x - startPoint.X)
@@ -172,7 +174,9 @@ namespace TagsCloudVisualization
         private int[] GetOrderedUnsignedYCoordinates()
         {
             return rectangles
-                .Select(rectangle => rectangle.Y < startPoint.Y ? rectangle.Y + rectangle.Height : rectangle.Y)
+                .Select(rectangle => rectangle.Y < startPoint.Y
+                    ? rectangle.Y + rectangle.Height
+                    : rectangle.Y)
                 .OrderBy(y => y)
                 .Select(Math.Abs)
                 .Select(y => y - startPoint.Y)
