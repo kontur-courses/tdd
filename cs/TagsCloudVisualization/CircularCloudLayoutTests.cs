@@ -105,11 +105,24 @@ namespace TagsCloudVisualization
             GenerateRectangles(200);
             var orderedXCoordinates = GetOrderedUnsignedXCoordinates();
             var orderedYCoordinates = GetOrderedUnsignedYCoordinates();
+
             var radiuses = new[]
                 {
                     orderedXCoordinates.First(),
+                    orderedXCoordinates
+                        .Skip(1)
+                        .First(),
+                    orderedXCoordinates
+                        .Take(orderedXCoordinates.Length - 1)
+                        .Last(),
                     orderedXCoordinates.Last(),
                     orderedYCoordinates.First(),
+                    orderedYCoordinates
+                        .Skip(1)
+                        .First(),
+                    orderedYCoordinates
+                        .Take(orderedYCoordinates.Length - 1)
+                        .Last(),
                     orderedYCoordinates.Last()
                 }
                 .ToArray();
