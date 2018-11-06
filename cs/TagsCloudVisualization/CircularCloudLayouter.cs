@@ -15,40 +15,15 @@ namespace TagsCloudVisualization
 
     public class CircularCloudLayouter : ICircularCloudLayoter
     {
-        private readonly Point centerPoint;
         private readonly List<Rectangle> addedRectangles = new List<Rectangle>();
-        private readonly IEnumerator<Point> bypassAllPoints;
+        private readonly IGeneratorCloudPoints generatorCloudPoints;
 
-        public CircularCloudLayouter(Point center)
+        public CircularCloudLayouter(IGeneratorCloudPoints generatorCloudPoints)
         {
-            if (center.X < 0 || center.Y < 0)
-                throw new ArgumentException("Center should has non-negative properties");
-            centerPoint = center;
-            bypassAllPoints = GetAllPointsInSpiralWay();
-        }
-
-
-        private IEnumerable<Point> GetAllPointsInCirclePerimeter(int radius)
-        {
-            for (var deltaX = -radius; deltaX <= radius; deltaX++)
-            {
-                var deltaY = (int)Math.Sqrt(radius * radius - deltaX * deltaX);
-                var x = deltaX + centerPoint.X;
-                yield return new Point(x, deltaY + centerPoint.Y);
-                if (deltaY > 0)
-                    yield return new Point(x, -deltaY + centerPoint.Y);
-            }
-        }
-        private IEnumerator<Point> GetAllPointsInSpiralWay()
-        {
-            yield return centerPoint;
-            var radiusOfCircle = 1;
-            while (true)
-            {
-                foreach (var nextPoint in GetAllPointsInCirclePerimeter(radiusOfCircle))
-                    yield return nextPoint;
-                radiusOfCircle++;
-            }
+            this.generatorCloudPoints = generatorCloudPoints;
+            var centerPoint = generatorCloudPoints.GetCenterPoint();
+            if (centerPoint.X < 0 || centerPoint.Y < 0)
+                throw new ArgumentException("Center of circle should have non-negative coordinates");
         }
 
         private void RaiseIfRectangleSizeIsIncorrect(Size rectangleSize)
@@ -77,11 +52,9 @@ namespace TagsCloudVisualization
 
         private Rectangle GetRectangleAtFreePlace(Size rectangleSize)
         {
-            bypassAllPoints.MoveNext();
             while (true)
             {
-                var rectangle = CreateRectangle(rectangleSize, bypassAllPoints.Current);
-                bypassAllPoints.MoveNext();
+                var rectangle = CreateRectangle(rectangleSize, generatorCloudPoints.GetNextPoint());
                 if (IsCorrectRectangle(rectangle))
                     return rectangle;
             }
@@ -109,7 +82,8 @@ namespace TagsCloudVisualization
         public void PutNextRectangle_ReturnRectangleWithCorrectSize_WhenSendOneRectangleSize(int startX, int startY,
         int width, int height)
         {
-            var cloudLayouter = new CircularCloudLayouter(new Point(startX, startY));
+            var generatorCirclePoints = new EternityGeneratorCirclePoints(startX, startY);
+            var cloudLayouter = new CircularCloudLayouter(generatorCirclePoints);
             var size = new Size(width, height);
 
             var rectangle = cloudLayouter.PutNextRectangle(size);
@@ -120,9 +94,10 @@ namespace TagsCloudVisualization
 
         [TestCase(0, -1, TestName = "center point has negative y")]
         [TestCase(-1, 0, TestName = "center point has negative x")]
-        public void Creation_ShouldThrowArgumentException_WhenGetsIncorrectCenterPoint(int width, int height)
+        public void Creation_ShouldThrowArgumentException_WhenGetsIncorrectCenterPoint(int x, int y)
         {
-            Assert.Throws<ArgumentException>(() => new CircularCloudLayouter(new Point(width, height)));
+            var generatorCirclePoints = new EternityGeneratorCirclePoints(x, y);
+            Assert.Throws<ArgumentException>(() => new CircularCloudLayouter(generatorCirclePoints));
         }
 
         [TestCase(0, 10, TestName = "width is zero")]
@@ -131,8 +106,8 @@ namespace TagsCloudVisualization
         [TestCase(10, -1, TestName = "height is negative")]
         public void PutNextRectangle_ShouldThrowArgumentException_WhenGetsIncorrectSize(int width, int height)
         {
-            var centerPoint = new Point(0, 0);
-            var cloudLayouter = new CircularCloudLayouter(centerPoint);
+            var generatorCirclePoints = new EternityGeneratorCirclePoints(0, 0);
+            var cloudLayouter = new CircularCloudLayouter(generatorCirclePoints);
             var size = new Size(width, height);
 
             Assert.Throws<ArgumentException>(() => cloudLayouter.PutNextRectangle(size));
@@ -149,19 +124,20 @@ namespace TagsCloudVisualization
             int height)
         {
             var centerPoint = new Point(startX, startY);
-            var cloudLayouter = new CircularCloudLayouter(centerPoint);
+            var generatorCirclePoints = new EternityGeneratorCirclePoints(centerPoint);
+            var cloudLayouter = new CircularCloudLayouter(generatorCirclePoints);
             var size = new Size(width, height);
 
             var square = cloudLayouter.PutNextRectangle(size);
 
-            centerPoint.DistanceTo(square).Should()
-                .BeLessOrEqualTo(10);
+            centerPoint.DistanceTo(square).Should().BeLessOrEqualTo(10);
         }
 
         [Test]
         public void PutNextRectangle_ShouldReturnRectanglesWithNonNegativeCoordinates_WhenAddManyRectangles()
         {
-            var cloudLayouter = new CircularCloudLayouter(new Point(0, 0));
+            var generatorCirclePoints = new EternityGeneratorCirclePoints(0, 0);
+            var cloudLayouter = new CircularCloudLayouter(generatorCirclePoints);
             var rectangleSize = new Size(10, 10);
             var maximumSquare = new Rectangle(new Point(0, 0), new Size(10000000, 10000000));
 
@@ -176,7 +152,8 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_ShouldReturnDisjointRectangles_WhenSendManyRectangles()
         {
-            var cloudLayouter = new CircularCloudLayouter(new Point(0, 0));
+            var generatorCirclePoints = new EternityGeneratorCirclePoints(0, 0);
+            var cloudLayouter = new CircularCloudLayouter(generatorCirclePoints);
 
             var rectangles = Enumerable.Range(0, 100)
             .Select(x => cloudLayouter.PutNextRectangle(new Size(10 + x % 10, 10 + 2 * x % 10)))
@@ -192,7 +169,8 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_ShouldReturnDenseRectangles_WhenAddedALotOfRectangles()
         {
-            var cloudLayouter = new CircularCloudLayouter(new Point(400, 400));
+            var generatorCirclePoints = new EternityGeneratorCirclePoints(400, 400);
+            var cloudLayouter = new CircularCloudLayouter(generatorCirclePoints);
 
             var rectangles = Enumerable.Range(0, 200)
             .Select(x => cloudLayouter.PutNextRectangle(new Size(10 + x % 10, 10 + (3 * x) % 10)))
@@ -208,7 +186,8 @@ namespace TagsCloudVisualization
         [Test, Timeout(1000)]
         public void PutNextRectangle_WorksFast_WhenAddedALotOfRectangles()
         {
-            var cloudLayouter = new CircularCloudLayouter(new Point(0, 0));
+            var generatorCirclePoints = new EternityGeneratorCirclePoints(0, 0);
+            var cloudLayouter = new CircularCloudLayouter(generatorCirclePoints);
 
             for (int iterationIndex = 0; iterationIndex < 2000; iterationIndex++)
                 cloudLayouter.PutNextRectangle(new Size(10 + iterationIndex % 10, 10 + 3 * iterationIndex % 10));
@@ -217,7 +196,9 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_ReturnRectanglesWithCorrectSize_WhenSendALotOfRectangles()
         {
-            var cloudLayouter = new CircularCloudLayouter(new Point(400, 400));
+
+            var generatorCirclePoints = new EternityGeneratorCirclePoints(400, 400);
+            var cloudLayouter = new CircularCloudLayouter(generatorCirclePoints);
             var countRectangles = 50;
             var sizes = Enumerable.Range(1, countRectangles)
             .Select(x => new Size(x * 3, x * 5))

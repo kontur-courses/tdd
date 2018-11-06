@@ -63,7 +63,8 @@ namespace TagsCloudVisualization
 
         private void AddWordLabels(IEnumerable<String> words)
         {
-            var cloudLayouter = new CircularCloudLayouter(centerPoint);
+            var generatorCirclePoints = new EternityGeneratorCirclePoints(centerPoint);
+            var cloudLayouter = new CircularCloudLayouter(generatorCirclePoints);
             var fontSize = 35;
 
             foreach (var word in words)
