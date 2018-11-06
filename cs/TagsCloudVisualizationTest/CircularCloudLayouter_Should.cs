@@ -34,8 +34,8 @@ namespace TagsCloudVisualizationTest
             var placedRectangle = layouter.PutNextRectangle(rectangleSize);
             var rectangleCenter = placedRectangle.GetCenter();
 
-            Assert.True(Math.Abs(center.X - rectangleCenter.X) <= 1);
-            Assert.True(Math.Abs(center.Y - rectangleCenter.Y) <= 1);
+            Assert.That(Math.Abs(center.X - rectangleCenter.X), Is.LessThanOrEqualTo(1));
+            Assert.That(Math.Abs(center.Y - rectangleCenter.Y), Is.LessThanOrEqualTo(1));
         }
 
         [Test]
@@ -72,16 +72,16 @@ namespace TagsCloudVisualizationTest
                 placedRectangles.Add(nextRectangle);
             }
 
-            Assert.True(CalculateDensity(placedRectangles) > 0.6);
+            Assert.That(CalculateDensity(placedRectangles), Is.GreaterThan(0.6));
         }
 
         private double CalculateDensity(List<Rectangle> rectangles)
         {
-            var areaSum = rectangles.Select(r => r.Size.Width * r.Size.Height).Sum();
-            var topBorder = rectangles.Select(r => r.Top).Min();
-            var bottomBorder = rectangles.Select(r => r.Bottom).Max();
-            var rightBorder = rectangles.Select(r => r.Right).Max();
-            var leftBorder = rectangles.Select(r => r.Left).Min();
+            var areaSum = rectangles.Sum(r => r.Size.Width * r.Size.Height);
+            var topBorder = rectangles.Min(r => r.Top);
+            var bottomBorder = rectangles.Max(r => r.Bottom);
+            var rightBorder = rectangles.Max(r => r.Right);
+            var leftBorder = rectangles.Min(r => r.Left);
 
             var bigRectangleSize = (rightBorder - leftBorder) * (bottomBorder - topBorder);
             return (double) areaSum / bigRectangleSize;

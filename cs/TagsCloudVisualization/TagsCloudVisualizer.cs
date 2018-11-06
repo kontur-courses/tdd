@@ -24,10 +24,10 @@ namespace TagsCloudVisualization
 
         private static Rectangle CalculatePictureRectangle(List<Rectangle> rectangles)
         {
-            var minTop = rectangles.Select(r => r.Top).Min();
-            var maxBottom = rectangles.Select(r => r.Bottom).Max();
-            var minLeft = rectangles.Select(r => r.Left).Min();
-            var maxRight = rectangles.Select(r => r.Right).Max();
+            var minTop = rectangles.Min(r => r.Top);
+            var maxBottom = rectangles.Max(r => r.Bottom);
+            var minLeft = rectangles.Min(r => r.Left);
+            var maxRight = rectangles.Max(r => r.Right);
 
             return new Rectangle(
                 new Point(minLeft, minTop), 

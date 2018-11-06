@@ -50,13 +50,22 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="ArchimedeanSpiral_Should.cs" />
+    <Compile Include="CircularCloudLayouter_Should.cs" />
+    <Compile Include="RectangleExtension_Should.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TagsCloudVisualization\TagsCloudVisualization.csproj">
+      <Project>{2ff49238-09de-4e13-b5f4-d7c1b893e446}</Project>
+      <Name>TagsCloudVisualization</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

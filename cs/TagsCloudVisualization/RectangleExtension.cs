@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -16,7 +15,7 @@ namespace TagsCloudVisualization
 
         public static bool IntersectsWithAny(this Rectangle rectangle, IEnumerable<Rectangle> otherRectangles)
         {
-            return otherRectangles.Any(rect => rectangle.IntersectsWith(rect));
+            return otherRectangles.Any(rectangle.IntersectsWith);
         }
     }
 }

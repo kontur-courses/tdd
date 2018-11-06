@@ -8,11 +8,22 @@ namespace TagsCloudVisualizationTest
     class ArchimedeanSpiral_Should
     {
         [Test]
-        public void ReturnCenter_ForTheFirstCall()
+        public void ReturnCenter_ForTheFirstCall_WhenCenterIsZeroPoint()
         {
-            var spiral = new ArchimedeanSpiralGenerator(new PointF(0, 0), 10, 1);
+            ReturnCenter_ForTheFirstCall(new PointF(0, 0));
+        }
+
+        [Test]
+        public void ReturnCenter_ForTheFirstCall_WhenCenterNonZeroPoint()
+        {
+            ReturnCenter_ForTheFirstCall(new PointF(10, 20));
+        }
+
+        private void ReturnCenter_ForTheFirstCall(PointF center)
+        {
+            var spiral = new ArchimedeanSpiralGenerator(center, 10, 1);
             var firstPoint = spiral.GetNextPoint();
-            AssertPointsAlmostEqual(new PointF(0, 0), firstPoint);
+            AssertPointsAlmostEqual(center, firstPoint);
         }
 
         [Test]
