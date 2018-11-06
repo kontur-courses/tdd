@@ -123,6 +123,39 @@ namespace TagsCloudVisualization
             layouter.Rectangles.First().GetCenter().Should().Be(center);
         }
 
+        [TestCase(100)]
+        [TestCase(200)]
+        [TestCase(500)]
+        public void DensityShouldBeMoreThanSeventyPercent(int rectanglesAmount)
+        {
+            const double expectedDensity = 0.7;
+            for (var i = rectanglesAmount; i > 0; i--)
+                layouter.PutNextRectangle(new Size(i * 3, i));
+            var radius = GetDistanceToFatherPoint(layouter.Rectangles);
+            var circleSquare = Math.PI * radius * radius;
+            var rectanglesSquare = layouter.Rectangles.Sum(rectangle => rectangle.Width * rectangle.Height);
+            var density = rectanglesSquare / circleSquare;
+            density.Should().BeGreaterOrEqualTo(expectedDensity);
+        }
+
+        private double GetDistanceToFatherPoint(IEnumerable<Rectangle> rectangles)
+        {
+            var maxDistance = double.MinValue;
+            foreach (var rectangle in rectangles)
+            {
+                foreach (var corner in rectangle.GetCorners())
+                {
+                    var distance = GetDistance(center, corner);
+                    if (distance > maxDistance)
+                        maxDistance = distance;
+                }
+            }
+            return maxDistance;
+        }
+
+        private double GetDistance(Point firstPoint, Point secondPoint) => 
+            Math.Sqrt(Math.Pow(firstPoint.X + secondPoint.X, 2) + Math.Pow(firstPoint.Y + secondPoint.Y, 2));
+
         private void AddRectangles(int rectanglesAmount)
         {
             for (var i = 0; i < rectanglesAmount; i++)
