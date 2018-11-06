@@ -6,12 +6,12 @@ namespace TagsCloudVisualization
 {
 	public class CircularCloudLayouter
 	{
-		private readonly Spiral spiral;
 		private readonly List<Rectangle> rectangles;
+		private readonly ICurve curve;
 
-		public CircularCloudLayouter(Point center)
+		public CircularCloudLayouter(Point center, ICurve curve)
 		{
-			spiral = new Spiral(factorStep: 0.5, degreeStep: Math.PI / 18, center: center);
+			this.curve = curve;
 			rectangles = new List<Rectangle>();
 		}
 
@@ -39,7 +39,7 @@ namespace TagsCloudVisualization
 
 		private Rectangle GetNextRectangle(Size size)
 		{
-			var nextPoint = spiral.GetNextPoint();
+			var nextPoint = curve.GetNextPoint();
 			return new Rectangle(nextPoint.X, nextPoint.Y, size.Width, size.Height);
 		}
 

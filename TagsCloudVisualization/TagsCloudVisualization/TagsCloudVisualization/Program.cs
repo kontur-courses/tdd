@@ -10,7 +10,8 @@ namespace TagsCloudVisualization
 		static void Main(string[] args)
 		{
 			var center = new Point(500, 400);
-			var cloud = new CircularCloudLayouter(center);
+			var spiral = new Spiral(factorStep: 0.5, degreeStep: Math.PI / 18, center: center);
+			var cloud = new CircularCloudLayouter(center, spiral);
 			var rectangles = GetData(cloud, 200);
 			var vizualizer = new RectangleTagsCloudVisualizer(center.X * 2, center.Y * 2);
 			var picture = vizualizer.GetPicture(rectangles);
@@ -21,7 +22,7 @@ namespace TagsCloudVisualization
 		{
 			var rnd = new Random();
 			for (var i = 0; i < number; i++)
-				cloud.PutNextRectangle(new Size(rnd.Next(20, 60), rnd.Next(10, 20)));
+				cloud.PutNextRectangle(new Size(rnd.Next(20, 25), rnd.Next(10, 15)));
 
 			return cloud.GetRectangles();
 		}

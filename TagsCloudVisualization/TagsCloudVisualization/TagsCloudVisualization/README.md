@@ -1,3 +1,4 @@
 # Tag Cloud Examples
-![green](Examples/green.png)
-![black](Examples/black.png)
+![spiral](Examples/spiral.png)
+![heart](Examples/heart.png)
+![astroid](Examples/astroid.png)

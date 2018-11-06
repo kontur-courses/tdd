@@ -17,7 +17,8 @@ namespace TagsCloudVisualization
 		public void SetUp()
 		{
 			center = new Point(500, 400);
-			cloud = new CircularCloudLayouter(center);
+			var spiral = new Spiral(factorStep: 0.5, degreeStep: Math.PI / 18, center: center);
+			cloud = new CircularCloudLayouter(center, spiral);
 		}
 
 		[TearDown]
