@@ -23,6 +23,20 @@ namespace TagsCloudVisualization_Tests
             defaultSize = new Size(200, 100);
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            var testContext = TestContext.CurrentContext;
+            var visualizer = new CircularCloudVisualizer();
+            var filename = $"{testContext.WorkDirectory}/{testContext.Test.Name}.png";
+            if (testContext.Result.FailCount != 0)
+            {
+                var image = visualizer.DrawRectangles(cloudLayouter);
+                image.Save(filename);
+                TestContext.WriteLine($"Tag cloud visualization saved to file {filename}");
+            }
+        }
+
         [Test]
         public void SetValidCenterPoint_AfterCreation()
         {
