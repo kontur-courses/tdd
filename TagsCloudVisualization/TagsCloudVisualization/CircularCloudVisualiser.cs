@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,12 +24,12 @@ namespace TagsCloudVisualization
         public void SaveBitmap(string fileName, int width, int height, IEnumerable<Rectangle> rectangles)
         {
             var bitmap = new Bitmap(width, height);
-            var g = Graphics.FromImage(bitmap);
-            g.FillRectangle(new SolidBrush(BackColor), 0, 0, width, height);
+            var graphics = Graphics.FromImage(bitmap);
+            graphics.FillRectangle(new SolidBrush(BackColor), 0, 0, width, height);
             foreach (var r in rectangles)
             {
-                g.FillRectangle(new SolidBrush(FillColor), r);
-                g.DrawRectangle(new Pen(BorderColor), r);
+                graphics.FillRectangle(new SolidBrush(FillColor), r);
+                graphics.DrawRectangle(new Pen(BorderColor), r);
             }
 
             bitmap.Save(fileName + ".bmp");

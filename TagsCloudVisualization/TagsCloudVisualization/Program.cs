@@ -19,7 +19,7 @@ namespace TagsCloudVisualization
             }
             
             var visualiser = new CircularCloudVisualiser(Color.RoyalBlue, Color.DarkBlue, Color.LightBlue);
-            visualiser.SaveBitmap("test", 800, 800, layouter.Result);
+            visualiser.SaveBitmap("r", 800, 800, layouter.Result);
         }
     }
 }
