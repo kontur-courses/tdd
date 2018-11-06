@@ -24,7 +24,6 @@ namespace TagsCloudVisualization
         {
             if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Passed)
             {
-                var testhehe = TestContext.CurrentContext.WorkDirectory;
                 var directory = TestContext.CurrentContext.TestDirectory;
                 var filename = TestContext.CurrentContext.Test.Name;
                 var path = $"{directory}\\{filename}.png";
