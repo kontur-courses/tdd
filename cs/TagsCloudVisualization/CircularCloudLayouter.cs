@@ -9,6 +9,8 @@ namespace TagsCloudVisualization
         private readonly Spiral spiral;
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
 
+        public IEnumerable<Rectangle> Rectangles => rectangles;
+
         public CircularCloudLayouter(Point center)
         {
             spiral = new Spiral(center);

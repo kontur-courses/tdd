@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 
 namespace TagsCloudVisualization
@@ -13,6 +15,7 @@ namespace TagsCloudVisualization
         private Point center;
         private CircularCloudLayouter layouter;
         private readonly Size defaultSize = new Size(2, 4);
+
 
         [SetUp]
         public void SetUp()
@@ -70,6 +73,36 @@ namespace TagsCloudVisualization
             var distanceToFirst = rects.First().Location.DistanceTo(relativeCenter);
             foreach (var rectangle in rects.Skip(1))
                 rectangle.Location.DistanceTo(relativeCenter).Should().BeGreaterOrEqualTo(distanceToFirst);
+        }
+
+        [TestCase(2, 8, 10000, TestName = "With High Rects")]
+        [TestCase(15, 5, 1000, TestName = "With Long Rects")]
+        [TestCase(10, 10, 1000, TestName = "With Squares")]
+        public void BeTight(int width, int height, int repetitions)
+        {
+            var rects = AssignLayouter(Enumerable.Repeat(new Size(width, height), repetitions)).ToArray();
+            var limitingCircleSquare = GetLimitingCircleSquare(rects);
+            var rectsSumSquare = rects.Select(rect => rect.Width * rect.Height).Sum();
+            (rectsSumSquare / limitingCircleSquare).Should().BeGreaterOrEqualTo(0.7);
+        }
+
+        [TearDown]
+        public void DrawPictureIfFailed()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
+                return;
+            var directory = TestContext.CurrentContext.TestDirectory;
+            var bitmap = new Visualizer().Visualize(layouter.Rectangles, layouter.Center);
+            bitmap.Save(directory + $"\\{TestContext.CurrentContext.Test.Name}.bmp");
+            TestContext.Out.WriteLine($"Tag cloud visualization saved to file {directory}");
+        }
+
+        private double GetLimitingCircleSquare(IEnumerable<Rectangle> rects)
+        {
+            var xDelta = rects.Select(rect => rect.Right).Max() - rects.Select(rect => rect.Left).Min();
+            var yDelta = rects.Select(rect => rect.Bottom).Max() - rects.Select(rect => rect.Top).Min();
+            var radius = Math.Min(xDelta, yDelta) / 2.0;
+            return Math.PI * radius * radius;
         }
 
         private IEnumerable<Rectangle> AssignLayouter(IEnumerable<Size> sizes) =>

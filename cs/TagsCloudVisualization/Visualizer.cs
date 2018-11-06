@@ -14,6 +14,8 @@ namespace TagsCloudVisualization
         {
             rectanglesCenter = center;
             var rects = rectangles as Rectangle[] ?? rectangles.ToArray();
+            if (!rects.Any())
+                return new Bitmap(0, 0);
             SetMaxDistanceFromCenter(rects);
             var size = GetBitmapSize(rects);
             var bitmap = new Bitmap(size, size);
@@ -39,7 +41,7 @@ namespace TagsCloudVisualization
 
         private void SetMaxDistanceFromCenter(IEnumerable<Rectangle> rectangles)
         {
-            maxDistanceToCenter = (int)rectangles.Select(rect => rect.Location.DistanceTo(rectanglesCenter)).Max();
+            maxDistanceToCenter = (int) rectangles.Select(rect => Math.Ceiling(rect.Location.DistanceTo(rectanglesCenter))).Max();
         }
 
         private Color GetRectangleColor(Rectangle rectangle)

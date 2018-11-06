@@ -7,7 +7,6 @@ namespace TagsCloudVisualization
 {
     class Program
     {
-        private static readonly Size defaultSize = new Size(10, 5);
         private const int MinRectSize = 10;
         private const int MaxRectSize = 50;
         private const int BitmapsCount = 3;
@@ -24,9 +23,6 @@ namespace TagsCloudVisualization
                 bitmap.Save("cloud" + (i + 1) + ".bmp");
                 rectanglesCount *= 10;
             }
-            //var layouter = new CircularCloudLayouter(new Point(0, 0));
-            //var rects = AssignLayouter(Enumerable.Repeat(defaultSize, 100), layouter);
-            //var bitmap = new Visualizer().Visualize(rects, layouter.Center);
         }
 
         private static IEnumerable<Rectangle> GenerateRandomRectangles(int count)
