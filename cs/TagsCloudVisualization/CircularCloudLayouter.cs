@@ -12,13 +12,13 @@ namespace TagsCloudVisualization
         private const double MaxSpiralAngle = double.MaxValue;
         private const double SpiralTurnsInterval = 1;
 
-        private Point _center;
-        private List<Rectangle> _rectanglesList;
+        private Point center;
+        private List<Rectangle> rectanglesList;
 
         public CircularCloudLayouter(Point center)
         {
-            _center = center;
-            _rectanglesList = new List<Rectangle>();
+            this.center = center;
+            rectanglesList = new List<Rectangle>();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -27,7 +27,7 @@ namespace TagsCloudVisualization
             if (rectangle == null)
                 return null;
             rectangle = MakeCloserToCenter(rectangle);
-            _rectanglesList.Add(rectangle);
+            rectanglesList.Add(rectangle);
             return rectangle;
         }
 
@@ -81,11 +81,11 @@ namespace TagsCloudVisualization
         }
 
         private bool IsIntersectsWithAnyRect(Rectangle rectangle)
-            => _rectanglesList.Any(r => r.Intersects(rectangle));
+            => rectanglesList.Any(r => r.Intersects(rectangle));
 
         private Rectangle PutOnSpiral(Size rectangleSize)
         {
-            var newRectangle = new Rectangle(_center, rectangleSize);
+            var newRectangle = new Rectangle(center, center, rectangleSize);
             for (var angle = 0d; angle < MaxSpiralAngle; angle += SpiralAngleInterval)
             {
                 var rectCenter = ArithmeticSpiral(angle, SpiralTurnsInterval);
@@ -99,8 +99,8 @@ namespace TagsCloudVisualization
 
         private Point ArithmeticSpiral(double angle, double turnsInterval)
         {
-            var x = (_center.X + turnsInterval * angle) * Math.Cos(angle);
-            var y = (_center.Y + turnsInterval * angle) * Math.Sin(angle);
+            var x = (center.X + turnsInterval * angle) * Math.Cos(angle);
+            var y = (center.Y + turnsInterval * angle) * Math.Sin(angle);
 
             return new Point(x, y);
         }

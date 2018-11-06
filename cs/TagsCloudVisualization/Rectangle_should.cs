@@ -16,8 +16,9 @@ namespace TagsCloudVisualization
         public void ReturnFalse_WhenRectanglesAreNotIntersect()
         {
             var size = new Size(10, 10);
-            var rect1 = new Rectangle(new Point(0, 0), size);
-            var rect2 = new Rectangle(new Point(20, 0), size);
+            var center = new Point(0, 0);
+            var rect1 = new Rectangle(center, center, size);
+            var rect2 = new Rectangle(center, new Point(20, 0), size);
 
             var result = rect1.Intersects(rect2);
 
@@ -28,8 +29,9 @@ namespace TagsCloudVisualization
         public void ReturnTrue_WhenRectanglesAreIntersect()
         {
             var size = new Size(10, 10);
-            var rect1 = new Rectangle(new Point(0, 0), size);
-            var rect2 = new Rectangle(new Point(5, 0), size);
+            var center = new Point(0, 0);
+            var rect1 = new Rectangle(center, new Point(0, 0), size);
+            var rect2 = new Rectangle(center, new Point(5, 0), size);
 
             var result = rect1.Intersects(rect2);
 
@@ -47,13 +49,14 @@ namespace TagsCloudVisualization
         [TestCase(20, -20, 10, 10, new []{Quarter.BottomRight}, TestName = "bottom right quarter when its is connected")]
         public void GetQuarter(double x, double y, double width, double height, Quarter[] expectedResult)
         {
-            var rectCenter = new Point(0, 0);
+            var center = new Point(0, 0);
+            var rectCenter = new Point(x, y);
             var size = new Size(width, height);
-            var rectangle = new Rectangle(rectCenter, size);
+            var rectangle = new Rectangle(center, rectCenter, size);
 
             var actualResult = rectangle.GetQuarters();
 
-            actualResult.Should().Contain(expectedResult);
+            actualResult.Should().BeEquivalentTo(expectedResult);
         }
     }
 }

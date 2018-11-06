@@ -11,15 +11,6 @@ namespace TagsCloudVisualization
     [TestFixture]
     class TagsCloudVisualization_should
     {
-        [Test]
-        public void DoesNotThrowException_WhenInitWithCorrectArguments()
-        {
-            var point = new Point(0, 0);
-
-            Action act = () => new CircularCloudLayouter(point);
-
-            act.Should().NotThrow();
-        }
 
         [Test]
         public void ReturnRectangleAtCenter_WhenAddFirstRectangle()
