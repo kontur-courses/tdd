@@ -42,10 +42,12 @@ namespace TagsCloudVisualization
         private IEnumerator<Point> GetAllPointsInSpiralWay()
         {
             yield return centerPoint;
-            for (var lengthToSquare = 1; lengthToSquare < 1000; lengthToSquare++)
+            var radiusOfCircle = 1;
+            while (true)
             {
-                foreach (var nextPoint in GetAllPointsInCirclePerimeter(lengthToSquare))
+                foreach (var nextPoint in GetAllPointsInCirclePerimeter(radiusOfCircle))
                     yield return nextPoint;
+                radiusOfCircle++;
             }
         }
 
@@ -63,21 +65,24 @@ namespace TagsCloudVisualization
             return false;
         }
 
+        private Rectangle CreateRectangle(Size rectangleSize, Point centerOfRectangle)
+        {
+            var topBottomPoint = new Point(centerOfRectangle.X - rectangleSize.Width / 2,
+                centerOfRectangle.Y - rectangleSize.Height / 2);
+            return new Rectangle(topBottomPoint, rectangleSize);
+        }
+
+        private bool IsCorrectRectangle(Rectangle rectangle)
+            => rectangle.X >= 0 && rectangle.Y >= 0 && !IntersectsWithPreviousRectangles(rectangle);
+
         private Rectangle GetRectangleAtFreePlace(Size rectangleSize)
         {
             bypassAllPoints.MoveNext();
-            var halfSize = new Size(rectangleSize.Width / 2, rectangleSize.Height / 2);
             while (true)
             {
-                var centerOfRectangle = bypassAllPoints.Current;
-                var leftBottomVertex = new Point(centerOfRectangle.X - halfSize.Width,
-                    centerOfRectangle.Y - halfSize.Height);
+                var rectangle = CreateRectangle(rectangleSize, bypassAllPoints.Current);
                 bypassAllPoints.MoveNext();
-
-                if (leftBottomVertex.X < 0 || leftBottomVertex.Y < 0)
-                    continue;
-                var rectangle = new Rectangle(leftBottomVertex, rectangleSize);
-                if (!IntersectsWithPreviousRectangles(rectangle))
+                if (IsCorrectRectangle(rectangle))
                     return rectangle;
             }
         }
