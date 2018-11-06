@@ -5,9 +5,9 @@ namespace TagsCloudVisualization
 {
     public class Spiral
     {
-        private const int AngleDelta = 1;
-        private const int SpiralWidth = 1;
-        private int currentAngle;
+        private const double AngleDelta = 0.1;
+        private const double SpiralWidth = 1;
+        private double currentAngle;
         public Point Center { get; } 
 
         public Spiral(Point center)
