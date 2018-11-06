@@ -13,7 +13,7 @@ namespace TagsCloudVisualization
 
         public CircularCloudLayouter(Point center)
         {
-            spiralGenerator = new SpiralGenerator(center).GetEnumerator();
+            spiralGenerator = new RoundSpiralGenerator(center, 3.6).GetEnumerator();
             spiralGenerator.MoveNext();
         }
 
@@ -28,8 +28,8 @@ namespace TagsCloudVisualization
             var rectangle = new Rectangle(nextPosition, rectangleSize);
             while (rectangles.Exists(rect => rectangle.IntersectsWith(rect)))
             {
-                var step = (rectangleSize.Height + rectangleSize.Width )/ 20;
-                for (var i = 0; i < step; i++)
+                //var step = (rectangleSize.Height + rectangleSize.Width) / 20; TODO: remove this or rework
+                for (var i = 0; i < 1; i++)
                     spiralGenerator.MoveNext();
                 nextPosition = spiralGenerator.Current;
                 rectangle = new Rectangle(nextPosition, rectangleSize);
@@ -45,11 +45,48 @@ namespace TagsCloudVisualization
         }
     }
 
-    internal class SpiralGenerator : IEnumerable<Point>
+    internal class RoundSpiralGenerator : IEnumerable<Point>
+    {
+        private readonly Point center;
+        private readonly double k;
+
+        public RoundSpiralGenerator(Point center, double k)
+        {
+            this.center = center;
+            this.k = k;
+        }
+
+        private Point PolarToCartesian(double r, double phi)
+        {
+            var x = r * Math.Cos(phi) + center.X;
+            var y = r * Math.Sin(phi) + center.Y;
+            return new Point((int)x, (int)y);
+        }
+        public IEnumerator<Point> GetEnumerator()
+        {
+            var phi = 0d;
+            int step = 16;
+            var dPhi = Math.PI / step;
+            //r = k*ф;
+            var r = 0d;
+            yield return PolarToCartesian(r, phi);
+            while (true)
+            {
+                phi += dPhi;
+                r = k * phi;
+                yield return PolarToCartesian(r, phi);
+            }
+
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    internal class SquareSpiralGenerator : IEnumerable<Point>
     {
         private readonly Point center;
 
-        public SpiralGenerator(Point center)
+        public SquareSpiralGenerator(Point center)
         {
             this.center = center;
         }

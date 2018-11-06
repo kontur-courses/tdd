@@ -99,7 +99,7 @@ namespace TagsCloudVisualization
                                                  .Select((n, i) => new Size(n, i + 1)));
             layouter.Rectangles.Should()
                     .NotContainNulls()
-                    .And.HaveCount(11);
+                    .And.HaveCount(10);
         }
 
         [Test]

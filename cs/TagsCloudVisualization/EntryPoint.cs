@@ -10,8 +10,8 @@ namespace TagsCloudVisualization
         public static void Main(string[] args)
         {
             var layouter = new CircularCloudLayouter(new Point(1000, 1000));
-            layouter.PutNextRectangles(Enumerable.Range(50, 100).Select((n, i) => new Size(n * 2 + i, n + i)));
-            DrawRectangles(layouter.Rectangles, expandPercent: 1000);
+            layouter.PutNextRectangles(Enumerable.Range(50, 50).Select((n, i) => new Size(n * 2 + i, n + i)));
+            DrawRectangles(layouter.Rectangles, expandPercent: 1200);
         }
 
         public static void DrawRectangles(IEnumerable<Rectangle> rectangles, string path = @"../../../image.png", int expandPercent = 120)
