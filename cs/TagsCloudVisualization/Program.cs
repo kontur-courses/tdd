@@ -18,7 +18,7 @@ namespace TagsCloudVisualization
                 rectangles.Add(newRectangle);
             }
             var resBitmap = RectanglesVisualizer.Visualize(rectangles);
-            resBitmap.Save("100 rectangles from small to big.bmp");
+            resBitmap.Save("100 rectangles from small to big.png");
         }
     }
 }
