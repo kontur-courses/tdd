@@ -10,10 +10,10 @@ namespace TagsCloudVisualization
         private Point rectanglesCenter;
         private int maxDistanceToCenter;
 
-        public Bitmap Visualize(IEnumerable<Rectangle> rectangles, Point center)
+        public Bitmap Visualize(IEnumerable<Rectangle> rectangles)
         {
-            rectanglesCenter = center;
             var rects = rectangles as Rectangle[] ?? rectangles.ToArray();
+            rectanglesCenter = rects.First().Location;
             if (!rects.Any())
                 return new Bitmap(0, 0);
             SetMaxDistanceFromCenter(rects);

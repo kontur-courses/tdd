@@ -92,7 +92,7 @@ namespace TagsCloudVisualization
             if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
                 return;
             var directory = TestContext.CurrentContext.TestDirectory;
-            var bitmap = new Visualizer().Visualize(layouter.Rectangles, layouter.Center);
+            var bitmap = new Visualizer().Visualize(layouter.Rectangles);
             bitmap.Save(directory + $"\\{TestContext.CurrentContext.Test.Name}.bmp");
             TestContext.Out.WriteLine($"Tag cloud visualization saved to file {directory}");
         }

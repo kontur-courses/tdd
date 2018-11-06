@@ -19,7 +19,7 @@ namespace TagsCloudVisualization
             for (var i = 0; i < BitmapsCount; i++)
             {
                 var rectangles = GenerateRandomRectangles(rectanglesCount);
-                var bitmap = visualizer.Visualize(rectangles, Center);
+                var bitmap = visualizer.Visualize(rectangles);
                 bitmap.Save("cloud" + (i + 1) + ".bmp");
                 rectanglesCount *= 10;
             }
