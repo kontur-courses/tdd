@@ -47,25 +47,29 @@ namespace TagsCloudVisualization
             while (wasChanged)
             {
                 var original = new Point(rectangle.X, rectangle.Y);
-                while (!CheckCollisionWithAll(rectangle) && rectangle.X + rectangle.Width / 2 > Center.X)
+
+                if (rectangle.X + (rectangle.Width / 2) > Center.X)
                     rectangle.X--;
-                rectangle.X++;
-
-                while (!CheckCollisionWithAll(rectangle) && rectangle.Y + rectangle.Height / 2 > Center.Y)
-                    rectangle.Y--;
-                rectangle.Y++;
-
-                while (!CheckCollisionWithAll(rectangle) && rectangle.X + rectangle.Width / 2 < Center.X)
+                if (CheckCollisionWithAll(rectangle))
                     rectangle.X++;
-                rectangle.X--;
 
-                while (!CheckCollisionWithAll(rectangle) && rectangle.Y + rectangle.Height / 2 < Center.Y)
+                if (rectangle.Y + (rectangle.Height / 2) > Center.Y)
+                    rectangle.Y--;
+                if (CheckCollisionWithAll(rectangle))
                     rectangle.Y++;
-                rectangle.Y--;
 
-                wasChanged = !original.Equals(rectangle.Location);
+                if (rectangle.X + (rectangle.Width / 2) < Center.X)
+                    rectangle.X++;
+                if (CheckCollisionWithAll(rectangle))
+                    rectangle.X--;
+
+                if (rectangle.Y + (rectangle.Height / 2) < Center.Y)
+                    rectangle.Y++;
+                if (CheckCollisionWithAll(rectangle))
+                    rectangle.Y--;
+
+                wasChanged = original != rectangle.Location;
             }
-
             return rectangle;
         }
 

@@ -31,7 +31,7 @@ namespace TagsCloudVisualization
                 g.DrawRectangle(new Pen(BorderColor), r);
             }
 
-            bitmap.Save(Environment.CurrentDirectory + fileName + ".bmp");
+            bitmap.Save(fileName + ".bmp");
         }
     }
 }
