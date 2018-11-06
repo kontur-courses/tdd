@@ -4,6 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
 using NUnit.Framework.Interfaces;
+using TagsCloudVisualization.Curves;
 
 namespace TagsCloudVisualization
 {

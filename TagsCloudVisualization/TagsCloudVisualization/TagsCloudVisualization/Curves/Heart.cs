@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Drawing;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Curves
 {
-	public class Spiral : ICurve
+	class Heart : ICurve
 	{
 		private readonly double degreeStep;
 		private readonly double factorStep;
 		private int nextPointCounter;
 		private Point center;
 
-		public Spiral(double factorStep, double degreeStep, Point center)
+		public Heart(double factorStep, double degreeStep, Point center)
 		{
 			this.factorStep = factorStep;
 			this.degreeStep = degreeStep;
@@ -22,8 +22,8 @@ namespace TagsCloudVisualization
 		{
 			var degree = degreeStep * nextPointCounter;
 			var factor = factorStep * nextPointCounter;
-			var x = center.X + (int)(factor * Math.Sin(degree));
-			var y = center.Y + (int)(factor * Math.Cos(degree));
+			var x = center.X + (int)(1.3*factor * Math.Cos(degree));
+			var y = center.Y + (int)(-factor * (Math.Sin(degree)+Math.Sqrt(Math.Abs(Math.Cos(degree)))));
 			nextPointCounter++;
 
 			return new Point(x, y);

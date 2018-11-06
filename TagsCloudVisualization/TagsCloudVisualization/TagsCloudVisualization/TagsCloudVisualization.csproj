@@ -55,13 +55,13 @@
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="CircularCloudLayouterTests.cs" />
-    <Compile Include="Astroid.cs" />
-    <Compile Include="Heart.cs" />
-    <Compile Include="ICurve.cs" />
+    <Compile Include="Curves\Astroid.cs" />
+    <Compile Include="Curves\Heart.cs" />
+    <Compile Include="Curves\ICurve.cs" />
+    <Compile Include="Curves\Spiral.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectangleExtesions.cs" />
-    <Compile Include="Spiral.cs" />
     <Compile Include="RectangleTagsCloudVisualizer.cs" />
   </ItemGroup>
   <ItemGroup>
