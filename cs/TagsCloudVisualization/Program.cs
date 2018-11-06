@@ -10,31 +10,11 @@ namespace TagsCloudVisualization
         {
             for (int i = 0; i < 3; i++)
             {
-                DrawRectanglesSet(new CircularCloudLayouter(new Point(1000, 1000)), $"tag-cloud-{i+1}.png");
+                var layouter = new CircularCloudLayouter(new Point(1000, 1000));
+                var rectangles = CircularCloudLayouterDrawer.GenerateRectanglesSet(layouter, 50, 75, 100, 25, 40);
+                CircularCloudLayouterDrawer.DrawRectanglesSet(layouter.Size, $"tag-cloud-{i + 1}.png", rectangles);
             }
         }
-
-        private static void DrawRectanglesSet(CircularCloudLayouter layouter, string outputFileName)
-        {
-            var rectangles = new List<Rectangle>();
-            var random = new Random();
-
-            for (var i = 0; i < 50; i++)
-            {
-                var randomSize = new Size(random.Next(75, 100), random.Next(25, 40));
-                var newRectangle = layouter.PutNextRectangle(randomSize);
-                rectangles.Add(newRectangle);
-            }
-
-            var bitmap = new Bitmap(layouter.Size.Width, layouter.Size.Height);
-            using (var graphics = Graphics.FromImage(bitmap))
-            {
-                foreach (var rectangle in rectangles)
-                {
-                    graphics.DrawRectangle(new Pen(Color.Red), rectangle);
-                }
-                bitmap.Save(outputFileName);
-            }
-        }
+        
     }
 }
