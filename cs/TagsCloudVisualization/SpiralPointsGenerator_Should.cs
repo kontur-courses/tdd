@@ -11,12 +11,13 @@ namespace TagsCloudVisualization
     public class SpiralPointsGenerator_Should
     {
         private const int DistanceBetweenPoints = 1;
+        private const double AngleIncrement = 1;
         private IEnumerable<Point> points;
 
         [SetUp]
         public void SetUp()
         {
-            points = new SpiralPointsGenerator().GetPoints(DistanceBetweenPoints);
+            points = new SpiralPointsGenerator().GetPoints(DistanceBetweenPoints, AngleIncrement);
         }
 
         [TestCase(0, TestName = "DistanceIsZero")]
