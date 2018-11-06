@@ -34,7 +34,7 @@ namespace TagsCloudVisualization
                 var directory = TestContext.CurrentContext.TestDirectory;
                 var filename = TestContext.CurrentContext.Test.Name;
                 var path = $"{directory}\\{filename}.png";
-                var bitmap = visualizer.DrawRectangles();
+                var bitmap = visualizer.GetTagCloudImage();
                 bitmap.Save(path);
                 TestContext.WriteLine($"Tag cloud visualization saved to file {path}");
             }
@@ -95,8 +95,6 @@ namespace TagsCloudVisualization
             }
             var circleSquare = Math.PI * Math.Pow(circleRadius, 2);
             (cloudSquare / circleSquare).Should().BeGreaterThan(0.9);
-
-
         }
 
     }

@@ -27,7 +27,7 @@ namespace TagsCloudVisualization
         {
             var newRectangle = layout.PutNextRectangle(new Size(100, 100));
             rectangles.Add(newRectangle);
-            visualizer.DrawRectangles().Size.Should().Be(new Size(500, 500));
+            visualizer.GetTagCloudImage().Size.Should().Be(new Size(500, 500));
         }
 
         private static int GetRectangleRadius(Rectangle newRectangle)
