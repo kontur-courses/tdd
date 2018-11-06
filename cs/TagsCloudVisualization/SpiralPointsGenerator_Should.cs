@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -9,56 +11,73 @@ namespace TagsCloudVisualization
     public class SpiralPointsGenerator_Should
     {
         private const int DistanceBetweenPoints = 1;
-        private SpiralPointsGenerator generator;
+        private IEnumerable<Point> points;
 
         [SetUp]
         public void SetUp()
         {
-            generator = new SpiralPointsGenerator(DistanceBetweenPoints);
-        }
-
-        [Test]
-        public void Have_ConstructorTakingDistanceBetweenPoints()
-        {
-            Action action = () => new SpiralPointsGenerator(DistanceBetweenPoints);
-            action.Should().NotThrow();
+            points = new SpiralPointsGenerator().GetPoints(DistanceBetweenPoints);
         }
 
         [TestCase(0, TestName = "DistanceIsZero")]
         [TestCase(-1, TestName = "DistanceIsNegative")]
         public void ThrowArgumentException_OnInvalidDistance(int distanceBetweenPoints)
         {
-            Action action = () => new SpiralPointsGenerator(distanceBetweenPoints);
+            Action action = () => new SpiralPointsGenerator().GetPoints(distanceBetweenPoints).First();
             action.Should().Throw<ArgumentException>();
         }
 
         [Test]
         public void ReturnZeroPoint_OnFirstGenerating()
         {
-            generator.GetNextPoint().Should().Be(new Point());
+            points.First().Should().Be(new Point());
         }
 
         [Test]
         public void ReturnNotZeroPoint_AfterFirstGenerating()
         {
-            generator.GetNextPoint();
-            generator.GetNextPoint().Should().NotBe(new Point());
+            points.Take(2).Last().Should().NotBe(new Point());
         }
 
         [Test]
-        public void Have_EmptyList_AfterCreating()
+        public void GenerateNonRepeatingPoints()
         {
-            generator.AllGeneratedPoints.Should().BeEmpty();
+            var pointsToCheck = points.Take(1000).ToArray();
+            for (var i = 0; i < pointsToCheck.Length; i++)
+            {
+                for (var j = i + 1; j < pointsToCheck.Length; j++)
+                    pointsToCheck[i].Should().NotBe(pointsToCheck[j]);
+            }
         }
 
-        [TestCase(1, TestName = "OnePoint")]
-        [TestCase(2, TestName = "TwoPoints")]
-        [TestCase(1000, TestName = "ThousandPoints")]
-        public void Have_AllPointsInList_AfterGenerating(int pointsAmount)
+        [Test]
+        public void GeneratePointsWithIncreasingRadius()
         {
-            for (var i = 0; i < pointsAmount; i++)
-                generator.GetNextPoint();
-            generator.AllGeneratedPoints.Count.Should().Be(pointsAmount);
+            double previousRadius = 0;
+            var firstPoint = true;
+            foreach (var point in points.Take(100))
+            {
+                var radius = Math.Sqrt(point.X * point.X + point.Y * point.Y);
+                if (!firstPoint)
+                    radius.Should().BeGreaterThan(previousRadius);
+                firstPoint = false;
+                previousRadius = radius;
+            }
+        }
+
+        [Test]
+        public void GeneratePointsWithIncreasingAngle()
+        {
+            double previousAngle = 0;
+            var firstPoint = true;
+            foreach (var point in points.Take(4))
+            {
+                var angle = Math.Atan2(point.Y, point.X);
+                if (!firstPoint)
+                    angle.Should().BeGreaterThan(previousAngle);
+                firstPoint = false;
+                previousAngle = angle;
+            }
         }
     }
 }

@@ -8,12 +8,12 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         private readonly Point center;
-        private readonly IPointsGenerator pointsGenerator;
+        private readonly IEnumerator<Point> pointsEnumerator;
 
-        public CircularCloudLayouter(Point center, IPointsGenerator pointsGenerator)
+        public CircularCloudLayouter(Point center, IEnumerable<Point> points)
         {
             this.center = center;
-            this.pointsGenerator = pointsGenerator;
+            pointsEnumerator = points.GetEnumerator();
         }
 
         public List<Rectangle> Rectangles { get; } = new List<Rectangle>();
@@ -25,7 +25,8 @@ namespace TagsCloudVisualization
             Rectangle newRectangle;
             do
             {
-                var nextPoint = pointsGenerator.GetNextPoint();
+                pointsEnumerator.MoveNext();
+                var nextPoint = pointsEnumerator.Current;
                 var location = center + (Size)nextPoint;
                 newRectangle = new Rectangle(location, rectangleSize).MoveToHavePointInCenter(location);
             } while (Rectangles.Any(rectangle => rectangle.IntersectsWith(newRectangle)));

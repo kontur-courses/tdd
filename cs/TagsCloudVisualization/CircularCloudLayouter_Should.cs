@@ -15,15 +15,15 @@ namespace TagsCloudVisualization
         private const int DistanceBetweenPoints = 1;
         private CircularCloudLayouter layouter;
         private Point center;
-        private IPointsGenerator pointsGenerator;
         private Size rectangleSize;
+        private IEnumerable<Point> points;
 
         [SetUp]
         public void SetUp()
         {
             center = new Point(5, 5);
-            pointsGenerator = new SpiralPointsGenerator(DistanceBetweenPoints);
-            layouter = new CircularCloudLayouter(center, pointsGenerator);
+            points = new SpiralPointsGenerator().GetPoints(DistanceBetweenPoints);
+            layouter = new CircularCloudLayouter(center, points);
             rectangleSize = new Size(10, 10);
         }
 
@@ -34,14 +34,14 @@ namespace TagsCloudVisualization
                 return;
             var fileName = $"{TestContext.CurrentContext.Test.Name}TestLayout.png";
             var path = $"{TestContext.CurrentContext.WorkDirectory}/{fileName}";
-            RectanglesDrawer.GenerateImage(layouter.Rectangles, fileName);
+            new RectanglesDrawer().GenerateImage(layouter.Rectangles, fileName);
             Console.WriteLine($"Tag cloud visualization saved to file {path}");
         }
 
         [Test]
         public void Have_ConstructorWithPointAndGeneratorInput()
         {
-            Action action = () => new CircularCloudLayouter(center, pointsGenerator);
+            Action action = () => new CircularCloudLayouter(center, points);
             action.Should().NotThrow();
         }
 
@@ -123,14 +123,6 @@ namespace TagsCloudVisualization
             layouter.Rectangles.First().GetCenter().Should().Be(center);
         }
 
-        [TestCaseSource(nameof(RectanglesAmountTestCases))]
-        public void RectanglesCenter_ShouldBeOnGeneratedPoints(int rectanglesAmount)
-        {
-            AddRectangles(rectanglesAmount);
-            foreach (var rectangle in layouter.Rectangles)
-                pointsGenerator.AllGeneratedPoints.Should().Contain(rectangle.GetCenter() - (Size)center);
-        }
-
         private void AddRectangles(int rectanglesAmount)
         {
             for (var i = 0; i < rectanglesAmount; i++)
@@ -142,8 +134,16 @@ namespace TagsCloudVisualization
             for (var i = 0; i < rectangles.Count; i++)
             {
                 for (var j = i + 1; j < rectangles.Count; j++)
-                    rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse();
+                    RectanglesIntersect(rectangles[i], rectangles[j]).Should().BeFalse();
             }
+        }
+
+        private bool RectanglesIntersect(Rectangle firstRectangle, Rectangle secondRectangle)
+        {
+            return secondRectangle.Left < firstRectangle.Right &&
+                   firstRectangle.Left < secondRectangle.Right &&
+                   secondRectangle.Top < firstRectangle.Bottom &&
+                   firstRectangle.Top < secondRectangle.Bottom;
         }
     }
 }

@@ -5,14 +5,15 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public static class RectanglesDrawer
+    public class RectanglesDrawer
     {
         private const int SideShift = 10;
+        private const int MaximumSize = 4000;
 
-        public static void GenerateImage(IEnumerable<Rectangle> rectangles, string imageName)
+        public void GenerateImage(IEnumerable<Rectangle> rectangles, string imageName)
         {
             var rectanglesArray = rectangles as Rectangle[] ?? rectangles.ToArray();
-            var size = rectanglesArray.Sum(rectangle => Math.Max(rectangle.Height, rectangle.Width)) + SideShift;
+            var size = Math.Min(rectanglesArray.Sum(rectangle => Math.Max(rectangle.Height, rectangle.Width)) + SideShift, MaximumSize);
             var image = new Bitmap(size, size);
             var graphics = Graphics.FromImage(image);
             graphics.TranslateTransform(size / 2, size / 2);

@@ -40,7 +40,7 @@ namespace TagsCloudVisualization
             if (result.HasErrors)
                 throw new ArgumentException("wrong file syntax");
 
-            RectanglesImageGenerator.Generate(rectanglesAmount, step, widthMultiplier, heightMultiplier, centerX,
+            new RectanglesImageGenerator().Generate(rectanglesAmount, step, widthMultiplier, heightMultiplier, centerX,
                 centerY, distanceBetweenSpiralPoints, imageFileName);
         }
     }

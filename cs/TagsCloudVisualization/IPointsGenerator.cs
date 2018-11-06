@@ -5,7 +5,6 @@ namespace TagsCloudVisualization
 {
     public interface IPointsGenerator
     {
-        Point GetNextPoint();
-        List<Point> AllGeneratedPoints { get; }
+        IEnumerable<Point> GetPoints(int distanceBetweenPoints);
     }
 }
