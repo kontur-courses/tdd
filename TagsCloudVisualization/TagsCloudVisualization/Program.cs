@@ -15,7 +15,7 @@ namespace TagsCloudVisualization
             var layouter = new CircularCloudLayouter(new Point(400, 400));
             for (var i = 0; i < 40; i++)
             {
-                layouter.PutNextRectangle(new Size(rnd.Next(60 - i, 100 - i), rnd.Next(20 - i / 2, 40 - i / 2)));
+                layouter.PutNextRectangle(new Size(rnd.Next(20, 50), rnd.Next(10, 20)));
             }
             
             var visualiser = new CircularCloudVisualiser(Color.RoyalBlue, Color.DarkBlue, Color.LightBlue);
