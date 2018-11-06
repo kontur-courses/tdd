@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Drawing;
-using System.Linq;
 using NUnit.Framework;
+using TagsCloudVisualization;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualizationTest
 {
     class ArchimedeanSpiral_Should
     {

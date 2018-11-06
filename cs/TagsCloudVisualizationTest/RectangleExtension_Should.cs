@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Drawing;
+﻿using System.Drawing;
 using NUnit.Framework;
+using TagsCloudVisualization;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualizationTest
 {
     class RectangleExtension_Should
     {
@@ -27,15 +25,6 @@ namespace TagsCloudVisualization
 
             Assert.AreEqual(exactCenter.X, actualCenter.X, 1);
             Assert.AreEqual(exactCenter.Y, actualCenter.Y, 1);
-        }
-
-        [Test]
-        public void Enlarge_ReturnEnlargedRectangleOnPositiveDelta()
-        {
-            Rectangle initialRectangle = new Rectangle(0, 0, 10, 10);
-            Rectangle expectedRectangle = new Rectangle(-1, -1, 12, 12);
-
-            Assert.AreEqual(expectedRectangle, initialRectangle.Enlarge(1));
         }
     }
 }

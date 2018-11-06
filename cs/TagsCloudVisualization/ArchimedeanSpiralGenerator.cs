@@ -5,7 +5,7 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    class ArchimedeanSpiralGenerator
+    public class ArchimedeanSpiralGenerator
     {
         private float currentAngle;
         private PointF center;

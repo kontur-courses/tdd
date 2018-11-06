@@ -7,12 +7,6 @@ namespace TagsCloudVisualization
 {
     public static class RectangleExtension
     {
-        public static Rectangle Enlarge(this Rectangle rectangle, int delta)
-        {
-            return new Rectangle(rectangle.X - delta, rectangle.Y - delta, rectangle.Width + 2 * delta,
-                rectangle.Height + 2 * delta);
-        }
-
         public static Point GetCenter(this Rectangle rectangle)
         {
             int xCenter = rectangle.X + rectangle.Width / 2;
