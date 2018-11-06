@@ -14,36 +14,42 @@ namespace TagsCloudVisualization
         private const double AngleIncrement = 1;
         private IEnumerable<Point> points;
 
-        [SetUp]
-        public void SetUp()
-        {
-            points = new SpiralPointsGenerator().GetPoints(DistanceBetweenPoints, AngleIncrement);
-        }
-
         [TestCase(0, TestName = "DistanceIsZero")]
         [TestCase(-1, TestName = "DistanceIsNegative")]
         public void ThrowArgumentException_OnInvalidDistance(int distanceBetweenPoints)
         {
             Action action = () => new SpiralPointsGenerator().GetPoints(distanceBetweenPoints).First();
+
             action.Should().Throw<ArgumentException>();
         }
 
         [Test]
         public void ReturnZeroPoint_OnFirstGenerating()
         {
-            points.First().Should().Be(new Point());
+            points = new SpiralPointsGenerator().GetPoints(DistanceBetweenPoints, AngleIncrement);
+
+            var firstPoint = points.First();
+
+            firstPoint.Should().Be(new Point());
         }
 
         [Test]
         public void ReturnNotZeroPoint_AfterFirstGenerating()
         {
-            points.Take(2).Last().Should().NotBe(new Point());
+            points = new SpiralPointsGenerator().GetPoints(DistanceBetweenPoints, AngleIncrement);
+
+            var secondPoint = points.Take(2).Last();
+
+            secondPoint.Should().NotBe(new Point());
         }
 
         [Test]
         public void GenerateNonRepeatingPoints()
         {
+            points = new SpiralPointsGenerator().GetPoints(DistanceBetweenPoints, AngleIncrement);
+
             var pointsToCheck = points.Take(1000).ToArray();
+
             for (var i = 0; i < pointsToCheck.Length; i++)
             {
                 for (var j = i + 1; j < pointsToCheck.Length; j++)
@@ -54,9 +60,13 @@ namespace TagsCloudVisualization
         [Test]
         public void GeneratePointsWithIncreasingRadius()
         {
+            points = new SpiralPointsGenerator().GetPoints(DistanceBetweenPoints, AngleIncrement);
             double previousRadius = 0;
             var firstPoint = true;
-            foreach (var point in points.Take(100))
+
+            var pointsToCheck = points.Take(100);
+
+            foreach (var point in pointsToCheck)
             {
                 var radius = Math.Sqrt(point.X * point.X + point.Y * point.Y);
                 if (!firstPoint)
@@ -69,9 +79,13 @@ namespace TagsCloudVisualization
         [Test]
         public void GeneratePointsWithIncreasingAngle()
         {
+            points = new SpiralPointsGenerator().GetPoints(DistanceBetweenPoints, AngleIncrement);
             double previousAngle = 0;
             var firstPoint = true;
-            foreach (var point in points.Take(4))
+
+            var pointsToCheck = points.Take(4);
+
+            foreach (var point in pointsToCheck)
             {
                 var angle = Math.Atan2(point.Y, point.X);
                 if (!firstPoint)
