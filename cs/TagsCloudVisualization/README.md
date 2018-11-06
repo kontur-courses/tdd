@@ -1,2 +1,2 @@
-# Визуализация раскладки
+п»ї# Р’РёР·СѓР°Р»РёР·Р°С†РёСЏ СЂР°СЃРєР»Р°РґРєРё
 ![Rectangles](https://github.com/Andreyinthesky/tdd/raw/task-1/cs/TagsCloudVisualization/1.png)
