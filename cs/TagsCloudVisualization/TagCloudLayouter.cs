@@ -39,8 +39,9 @@ namespace TagsCloudVisualization
 
         private int GetFontSize(int currentWeight)
         {
-            var coef = maxFrequency == minFrequency ? 1 : (double)(currentWeight - minFrequency) / (maxFrequency - minFrequency + 1);
-            return (int)Math.Round(MinFontSize + coef * (MaxFontSize - MinFontSize));
+            var fontScaler = maxFrequency == minFrequency ? 1 
+                : (double)(currentWeight - minFrequency) / (maxFrequency - minFrequency + 1);
+            return (int)Math.Round(MinFontSize + fontScaler * (MaxFontSize - MinFontSize));
         }
 
     }
