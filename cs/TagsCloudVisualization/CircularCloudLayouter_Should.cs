@@ -4,12 +4,36 @@ using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter_Should
     {
+        private List<Rectangle> resRectangles;
+
+        [SetUp]
+        public void SetUp()
+        {
+            resRectangles = new List<Rectangle>();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Passed)
+            {
+                var testhehe = TestContext.CurrentContext.WorkDirectory;
+                var directory = TestContext.CurrentContext.TestDirectory;
+                var filename = TestContext.CurrentContext.Test.Name;
+                var path = $"{directory}\\{filename}.png";
+                var bitmap = RectanglesVisualizer.Visualize(resRectangles);
+                bitmap.Save(path);
+                TestContext.WriteLine($"Tag cloud visualization saved to file {path}");
+            }
+        }
+
         [TestCase(0, 0, TestName = "On point with zero coordinates")]
         [TestCase(-1, -1, TestName = "On point with negative coordinates")]
         [TestCase(1, 1, TestName = "On point with positive coordinates")]
@@ -26,7 +50,7 @@ namespace TagsCloudVisualization
             var layouter = new CircularCloudLayouter(centerPoint);
 
             var firstRectangle = layouter.PutNextRectangle(new Size(10, 10));
-
+            
             firstRectangle.Location.Should().Be(centerPoint);
         }
 
@@ -48,10 +72,9 @@ namespace TagsCloudVisualization
         {
             var layouter = new CircularCloudLayouter(new Point(1, -1));
             var rectangleSize = new Size(10, 10);
-            var resRectangles = new Rectangle[rectanglesCount];
 
             for (int i = 0; i < rectanglesCount; i++)
-                resRectangles[i] = layouter.PutNextRectangle(rectangleSize);
+                resRectangles.Add(layouter.PutNextRectangle(rectangleSize));
 
             for (int i = 0; i < rectanglesCount; i++)
                 for (int j = i + 1; j < rectanglesCount; j++)
@@ -65,10 +88,9 @@ namespace TagsCloudVisualization
         {
             var layouter = new CircularCloudLayouter(new Point(1, 1));
             var rectangleSize = new Size(10, 10);
-            var resRectangles = new Rectangle[rectanglesCount];
 
             for (int i = 0; i < rectanglesCount; i++)
-                resRectangles[i] = layouter.PutNextRectangle(rectangleSize);
+                resRectangles.Add(layouter.PutNextRectangle(rectangleSize));
 
             for (int i = 0; i < rectanglesCount; i++)
                 for (int j = i + 1; j < rectanglesCount; j++)
@@ -83,10 +105,9 @@ namespace TagsCloudVisualization
             var center = new Point(-2, 2);
             var layouter = new CircularCloudLayouter(new Point());
             var rectangleSize = new Size(3, 4);
-            var resRectangles = new Rectangle[rectanglesCount];
 
             for (int i = 0; i < rectanglesCount; i++)
-                resRectangles[i] = layouter.PutNextRectangle(rectangleSize);
+                resRectangles.Add(layouter.PutNextRectangle(rectangleSize));
 
             foreach (var rectangle in resRectangles)
                 rectangle.Location.GetDistanceTo(center).Should().BeLessThan(radius);
