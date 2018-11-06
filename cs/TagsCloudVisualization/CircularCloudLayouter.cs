@@ -1,11 +1,13 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
     internal class CircularCloudLayouter
     {
         private readonly Point center;
+        private readonly List<Rectangle> rectangles = new List<Rectangle>();
 
         public CircularCloudLayouter(Point center)
         {
@@ -14,10 +16,39 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size size)
         {
-            var rectLocation = new Point(center.X,center.Y);
-            rectLocation.Offset(-size.Width/2, - size.Height/2);
+            var rectangle = GenerateSuitableRectangle(size);
+            rectangles.Add(rectangle);
+            return rectangle;
+        }
 
-            return new Rectangle(rectLocation, size);
+        private Rectangle GenerateSuitableRectangle(Size size)
+        {
+            var rectangle = new Rectangle(center, size);
+
+            if (rectangles.Any())
+                FindSuitablePlaceFor(ref rectangle);
+            else
+            {
+                rectangle.X -= size.Width / 2;
+                rectangle.Y -= size.Height / 2;
+            }
+
+            return rectangle;
+        }
+
+        private void FindSuitablePlaceFor(ref Rectangle rectangle)
+        {
+            foreach (var direction in SpiralPath.Clockwise(Direction.Down))
+            {
+                rectangle = rectangle.Moved(direction);
+                if (!IntersectsWithExistingRectangles(rectangle))
+                    break;
+            }
+        }
+
+        private bool IntersectsWithExistingRectangles(Rectangle rect)
+        {
+            return rectangles.Any(r => r.IntersectsWith(rect));
         }
     }
 }
