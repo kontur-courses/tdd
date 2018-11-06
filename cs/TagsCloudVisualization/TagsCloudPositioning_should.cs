@@ -31,17 +31,17 @@ namespace TagsCloudVisualization
             var circularCloudLayouter = new CircularCloudLayouter(origin);
             var size = new Size(200, 100);
             var rectangles = new List<Rectangle>();
+            var result = false;
 
             for (var i = 0; i < 10; i++)
             {
                 var rectangle = circularCloudLayouter.PutNextRectangle(size);
+                if (result)
+                    break;
+                result = rectangle.IsIntersectsWithAnyRect(rectangles);
                 rectangles.Add(rectangle);
             }
 
-            var result =
-                (from rectangle1 in rectangles
-                from rectangle2 in rectangles
-                select rectangle1.Intersects(rectangle2)).Any(x => x);
             result.Should().BeFalse();
         }
     }

@@ -70,7 +70,7 @@ namespace TagsCloudVisualization
             if (movingPoint.Equals(new Point(0, 0)))
                 return rectangle;
             var previousPosition = new Point(0, 0);
-            while (!IsIntersectsWithAnyRect(rectangle))
+            while (!rectangle.IsIntersectsWithAnyRect(rectanglesList))
             {
                 previousPosition = rectangle.Center;
                 rectangle.Center += movingPoint;
@@ -80,9 +80,6 @@ namespace TagsCloudVisualization
             return rectangle;
         }
 
-        private bool IsIntersectsWithAnyRect(Rectangle rectangle)
-            => rectanglesList.Any(r => r.Intersects(rectangle));
-
         private Rectangle PutOnSpiral(Size rectangleSize)
         {
             var newRectangle = new Rectangle(center, center, rectangleSize);
@@ -90,7 +87,7 @@ namespace TagsCloudVisualization
             {
                 var rectCenter = ArithmeticSpiral(angle, SpiralTurnsInterval);
                 newRectangle.Center = rectCenter;
-                if (!IsIntersectsWithAnyRect(newRectangle))
+                if (!newRectangle.IsIntersectsWithAnyRect(rectanglesList))
                     return newRectangle;
             }
 
