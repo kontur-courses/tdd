@@ -4,19 +4,23 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace TagsCloudVisualization
 {
     class ArchimedeanSpiral
     {
-        private int k;
+        private double k;
 
-        public ArchimedeanSpiral(int k)
+        public ArchimedeanSpiral(double k)
         {
-            this.k = k;
-            
+            if (k <= 0)
+            {
+                throw new ArgumentException();
+            }
 
+            this.k = k;
         }
 
         public double GetValuePolar(double angle)
@@ -45,16 +49,16 @@ namespace TagsCloudVisualization
         {
             return GetIEnumerableDecart(step).GetEnumerator();
         }
-        
     }
-
 
     [TestFixture]
     public class ArchimedeanSpiral_Tests
     {
         [Test]
-        public void DoSomething_WhenSomething()
+        public void Constructor_ShouldThrow_ArgumentException_When_notPositiveK()
         {
+            Action ctorInvokation = () => new ArchimedeanSpiral(-2);
+            ctorInvokation.Should().Throw<ArgumentException>();
         }
     }
 }

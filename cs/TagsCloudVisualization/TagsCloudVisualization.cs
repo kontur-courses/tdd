@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.Reflection;
 using NUnit.Framework;
 using FluentAssertions;
 using NUnit.Framework.Interfaces;
@@ -20,21 +21,21 @@ namespace TagsCloudVisualization
             var width = 1920;
             for (int i = 0; i < 60; i++)
             {
-                //var nextHeight = rnd.Next(40, 50);
-                var nextHeight = 40;
-                //var nextWidth = rnd.Next(nextHeight * 2, nextHeight * 6);
-                var nextWidth = 160;
+                var nextHeight = rnd.Next(40, 50);
+                //var nextHeight = 40;
+                var nextWidth = rnd.Next(nextHeight * 2, nextHeight * 6);
+                //var nextWidth = 160;
                 allSizes.Add(new Size(nextWidth, nextHeight));
             }
 
 
-            var cilkLayouter = new CircularCloudLayouter(new Point(width / 2 - 100, height / 2));
+            var circukarCloudLayouter = new CircularCloudLayouter(new Point(width / 2 - 100, height / 2));
             foreach (var r in allSizes)
             {
-                cilkLayouter.PutNextRectangle(r);
+                circukarCloudLayouter.PutNextRectangle(r);
             }
 
-            cilkLayouter.VisualizeInPicture("img.png", new Size(width, height));
+            circukarCloudLayouter.VisualizeInPicture("img.png", new Size(width, height));
         }
     }
 
@@ -108,14 +109,18 @@ namespace TagsCloudVisualization
     [TestFixture]
     public class CircularCloudLayouterTests
     {
-        private List<Rectangle> putedRectangles;
+        private List<Rectangle> puttedRectangles;
         private CircularCloudLayouter circularCloudLayouter;
+        private Point center = new Point(500, 500);
+        private readonly int Width = 1920;
+        private readonly int Height = 1080;
+
 
         [SetUp]
         public void SetUp()
         {
-            putedRectangles = new List<Rectangle>();
-            circularCloudLayouter = new CircularCloudLayouter(new Point(100, 100));
+            puttedRectangles = new List<Rectangle>();
+            circularCloudLayouter = new CircularCloudLayouter(center);
         }
 
         [TestCase(-1, 1, TestName = "X less than 0")]
@@ -142,19 +147,17 @@ namespace TagsCloudVisualization
         {
             for (var i = 0; i < rectanglesCount; i++)
             {
-                putedRectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(50, 10)));
+                puttedRectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(50, 10)));
             }
 
-            for (var i = 0; i < putedRectangles.Count; i++)
+            for (var i = 0; i < puttedRectangles.Count; i++)
             {
-                for (var j = 0; j < putedRectangles.Count; j++)
+                for (var j = 0; j < puttedRectangles.Count; j++)
                 {
                     if (i != j)
                     {
-                        putedRectangles[i].IntersectsWith(putedRectangles[j]).Should().BeFalse();
+                        puttedRectangles[i].IntersectsWith(puttedRectangles[j]).Should().BeFalse();
                     }
-
-                    
                 }
             }
         }
@@ -173,19 +176,19 @@ namespace TagsCloudVisualization
         [TestCase(100)]
         public void PutNextRectangle_ReturnsManyRectanglesInscribedInACircle(int rectanglesCount)
         {
-            var center = new Point(100, 100);
+            var center = new Point(500, 500);
 
             var totalSquare = 0;
             for (var i = 0; i < rectanglesCount; i++)
             {
                 var x = 50;
                 var y = 10;
-                putedRectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(x, y)));
+                puttedRectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(x, y)));
                 totalSquare += x * y;
             }
 
             var r = (int) Math.Sqrt(totalSquare / Math.PI);
-            foreach (var rect in putedRectangles)
+            foreach (var rect in puttedRectangles)
             {
                 var distance = Math.Sqrt(Math.Pow(rect.X - center.X, 2) + Math.Pow(rect.Y - center.Y, 2));
                 distance.Should().BeLessThan(r * 1.2);
@@ -195,9 +198,13 @@ namespace TagsCloudVisualization
         [TearDown]
         public void TearDown()
         {
-            if (TestContext.CurrentContext.Result.Outcome.Status.)
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                circularCloudLayouter.VisualizeInPicture("log.png", new Size(1920, 1080));
+                var name = TestContext.CurrentContext.Test.FullName + ".png";
+                var path = AppDomain.CurrentDomain.BaseDirectory + name;
+                Console.WriteLine($"Tag cloud visualization saved to {path}");
+
+                circularCloudLayouter.VisualizeInPicture(path, new Size(Width, Height));
             }
         }
     }
