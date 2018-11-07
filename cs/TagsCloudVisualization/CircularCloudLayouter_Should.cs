@@ -162,11 +162,26 @@ namespace TagsCloudVisualization
         public void FitManySameSizesInto2TimesBiggerCircle()
         {
             var size = new Size(24,120);
-            //var space = sizes.Aggregate(0, (sum, size) => sum + size.Space());
-            var space = size.Space() * Hundred;
+            var space = size.Space() * Thousand;
             var radius = Math.Sqrt(2 * space / Math.PI);
             
-            var rects = Hundred.Times(()=>layouter.PutNextRectangle(size));
+            var rects = Thousand.Times(()=>layouter.PutNextRectangle(size));
+            
+            rects.SelectMany(x => x.Points())
+                .Select(x => x.DistanceTo(center))
+                .All(x => x < radius)
+                .Should().BeTrue();
+        }
+        
+        
+        [Test]
+        public void FitManyRandomSizesInto5TimesBiggerCircle()
+        {
+            var sizes = Thousand.Times(RandomSize).ToArray();
+            var space = sizes.Aggregate(0, (sum, size) => sum + size.Space());
+            var radius = Math.Sqrt(5 * space / Math.PI);
+           
+            var rects = sizes.Select(layouter.PutNextRectangle);
             
             rects.SelectMany(x => x.Points())
                 .Select(x => x.DistanceTo(center))
