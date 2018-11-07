@@ -2,7 +2,7 @@
 
 namespace TagsCloudVisualization
 {
-    public static partial class RectangleExtension
+    public static class RectangleExtension
     {
         public static Rectangle ShiftRectangleToTopLeftCorner(this Rectangle rectangle)
         {
