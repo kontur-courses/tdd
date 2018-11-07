@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
-    class CircularCloudVisualiser
+    public class CircularCloudVisualizer
     {
         public Color BackColor { get; set; }
         public Color FillColor { get; set; }
         public Color BorderColor { get; set; }
 
-        public CircularCloudVisualiser(Color fillColor, Color borderColor, Color backColor)
+        public CircularCloudVisualizer(Color fillColor, Color borderColor, Color backColor)
         {
             BackColor = backColor;
             FillColor = fillColor;

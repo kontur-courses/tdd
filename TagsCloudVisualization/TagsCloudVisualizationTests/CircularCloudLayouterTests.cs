@@ -29,11 +29,9 @@ namespace TagsCloudVisualization
             if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
                 return;
 
-            var path = String.Format(@"C:\Users\{0}\Desktop\{1}", Environment.UserName,
-                TestContext.CurrentContext.Test.Name);
-            var visualiser = new CircularCloudVisualiser(Color.Blue, Color.Black, Color.Yellow);
-            visualiser.SaveBitmap(path, 800, 800, layouter.Result);
-
+            var path = $"C:\\Users\\{Environment.UserName}\\Desktop\\{TestContext.CurrentContext.Test.Name}";
+            var visualizer = new CircularCloudVisualizer(Color.Blue, Color.Black, Color.Yellow);
+            visualizer.SaveBitmap(path, 800, 800, layouter.Result);
             Console.WriteLine("Tag cloud visualization saved to file {0}.bmp", path);
         }
 
@@ -61,7 +59,7 @@ namespace TagsCloudVisualization
                 .IsSameOrEqualTo(new Point(x - width / 2, y - height / 2));
         }
 
-        [TestCase(new [] {5, 5, 5, 5} , new[] { -5, -5, 5, 5 }, ExpectedResult = false)]
+        [TestCase(new[] { 5, 5, 5, 5 }, new[] { -5, -5, 5, 5 }, ExpectedResult = false)]
         [TestCase(new[] { 0, 0, 10, 10 }, new[] { 2, 2, 5, 5 }, ExpectedResult = true, Description = "Internal rectangle")]
         [TestCase(new[] { 0, 0, 10, 10 }, new[] { -2, -2, 5, 5 }, ExpectedResult = true)]
         [TestCase(new[] { -2, -2, 5, 5 }, new[] { 0, 0, 10, 10 }, ExpectedResult = true)]
@@ -75,35 +73,35 @@ namespace TagsCloudVisualization
         }
 
         [TestCase(40, 40, 15, 15, Description = "Equal rectangles")]
-        [TestCase(10, 30, 10, 30)]
+        [TestCase(10, 30, 10, 30, Description = "Square-like rectangles")]
         [TestCase(30, 50, 10, 20)]
         public void CloudIsDenseEnough(int minWidth, int maxWidth, int minHeight, int maxHeight)
         {
-            layouter = new CircularCloudLayouter(0, 0);
             var rnd = new Random();
             for (var i = 0; i < 100; i++)
             {
                 layouter.PutNextRectangle(new Size(rnd.Next(minWidth, maxWidth), rnd.Next(minHeight, maxHeight)));
             }
 
-            var radius = 0.0;
+            var maxRadius = 0.0;
             var occupiedArea = 0.0;
             foreach (var rectangle in layouter.Result)
             {
                 occupiedArea += rectangle.Width * rectangle.Height;
 
-                for (var i = rectangle.X; i <= rectangle.X + rectangle.Width; i += rectangle.Width)
+                for (var x = rectangle.X; x <= rectangle.X + rectangle.Width; x += rectangle.Width)
                 {
-                    for (var j = rectangle.Y; j <= rectangle.Y + rectangle.Height; j += rectangle.Height)
+                    for (var y = rectangle.Y; y <= rectangle.Y + rectangle.Height; y += rectangle.Height)
                     {
-                        var range = Math.Sqrt(i * i + j * j);
-                        if (range > radius)
-                            radius = range;
+                        var radius = Math.Sqrt((x - layouter.Center.X) * (x - layouter.Center.X) +
+                                              (y - layouter.Center.Y) * (y - layouter.Center.Y));
+                        if (radius > maxRadius)
+                            maxRadius = radius;
                     }
                 }
             }
 
-            (occupiedArea / (radius * radius * Math.PI)).Should().BeGreaterThan(0.5);
+            (occupiedArea / (maxRadius * maxRadius * Math.PI)).Should().BeGreaterThan(0.5);
         }
     }
 }

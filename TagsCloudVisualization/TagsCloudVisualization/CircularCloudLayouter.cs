@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    class CircularCloudLayouter
+    public class CircularCloudLayouter
     {
         public Point Center { get; }
         private int radius;
@@ -35,11 +35,11 @@ namespace TagsCloudVisualization
                     rectangleSize.Width, rectangleSize.Height);
 
                 angle += Math.PI / 18;
-                if (angle >= Math.PI * 2)
-                {
-                    angle = 0;
-                    radius++;
-                }
+                if (angle < Math.PI * 2)
+                    continue;
+
+                angle = 0;
+                radius++;
             } while (CheckCollisionWithAll(rectangle));
 
             if (rectangles.Count > 0 && withDensity)
@@ -50,9 +50,10 @@ namespace TagsCloudVisualization
 
         private Rectangle MoveRectangleToCenter(Rectangle rectangle)
         {
-            var original = new Point(rectangle.X, rectangle.Y);
+            Point originalLocation;
             do
             {
+                originalLocation = new Point(rectangle.X, rectangle.Y);
                 if (rectangle.X + (rectangle.Width / 2) > Center.X)
                     rectangle.X--;
                 if (CheckCollisionWithAll(rectangle))
@@ -73,7 +74,7 @@ namespace TagsCloudVisualization
                 if (CheckCollisionWithAll(rectangle))
                     rectangle.Y--;
                 
-            } while (original != rectangle.Location);
+            } while (originalLocation != rectangle.Location);
             return rectangle;
         }
 
