@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -10,6 +11,7 @@ namespace TagsCloudVisualization
         private int right;
         private int top;
         private int bottom;
+        private Spiral spiral;
 
         public Rectangle GetRectangle => new Rectangle(left, top, right - left, bottom - top);
 
@@ -20,23 +22,33 @@ namespace TagsCloudVisualization
             Center = center;
             left = right = center.X;
             top = bottom = center.Y;
+            this.spiral = new Spiral(Center);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var location = new Point(right, bottom);
-            if (left == right && top == bottom)
+            var location = spiral.GetNextPoint();
+            var newTag = new Rectangle(new Point(), rectangleSize);
+            foreach (var point in location)
             {
-                location = new Point(Center.X - rectangleSize.Width / 2, Center.Y - rectangleSize.Height / 2);
+                newTag = new Rectangle(point, rectangleSize);
+                if (!IsThereIntersection(newTag))
+                {
+                    tags.Add(newTag);
+                    left = (newTag.Left < left) ? newTag.Left : left;
+                    right = (newTag.Right > right) ? newTag.Right : right;
+                    top = (newTag.Top < top) ? newTag.Top : top;
+                    bottom = (newTag.Bottom > bottom) ? newTag.Bottom : bottom;
+                    break;
+                }
             }
-    
-            var newTag = new Rectangle(location, rectangleSize);
-            tags.Add(newTag);
-            left = (newTag.Left < left) ? newTag.Left : left;
-            right = (newTag.Right > right ) ? newTag.Right : right;
-            top = (newTag.Top < top) ? newTag.Top : top;
-            bottom = (newTag.Bottom > bottom) ? newTag.Bottom : bottom;
             return newTag;
-        }    
+        }
+
+        private bool IsThereIntersection(Rectangle newTag)
+        {
+            return tags.Any(newTag.IntersectsWith);
+        }
+        
     }
 }

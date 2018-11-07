@@ -30,5 +30,11 @@ namespace TagsCloudTests
             var rectangleSize = new Size(10, 5);
             tagCloud.PutNextRectangle(rectangleSize).Should().BeEquivalentTo(tagCloud.GetRectangle);
         }
+
+//        [Test]
+//        public void PutNewRectangle_()
+//        {
+//            
+//        }
     }
 }
