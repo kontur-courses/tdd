@@ -23,7 +23,7 @@ namespace TagsCloudVisualization
             {
                 var step = diameter - 1;
                 yield return startDirection;
-                foreach (var d in Repeat(cycle[1], step-1)
+                foreach (var d in Repeat(cycle[1], 1)
                     .Concat(Repeat(cycle[2], step))
                     .Concat(Repeat(cycle[3], step))
                     .Concat(Repeat(cycle[0], step))

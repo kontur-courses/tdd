@@ -9,6 +9,8 @@ namespace TagsCloudVisualization
         private readonly Point center;
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
 
+        public List<Rectangle> Rectangles => rectangles.Select(r => new Rectangle(r.Location, r.Size)).ToList();
+
         public CircularCloudLayouter(Point center)
         {
             this.center = center;

@@ -12,5 +12,13 @@ namespace TagsCloudVisualization
 
             return rect;
         }
+
+        public static Rectangle Moved(this Rectangle rect, Point offset)
+        {
+            rect.X += offset.X;
+            rect.Y += offset.Y;
+
+            return rect;
+        }
     }
 }
