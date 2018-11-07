@@ -51,7 +51,7 @@ namespace TagsCloudVisualization
         {
             return Rectangles
                 .Select(rect => new Point(MathHelper.MaxAbs(rect.Left, rect.Right), MathHelper.MaxAbs(rect.Top, rect.Bottom)))
-                .Select(point => (int)Math.Sqrt(Math.Pow(point.X - Center.X, 2) + Math.Pow(point.Y - Center.Y, 2))).Max();
+                .Select(point => point.GetDistanceTo(Center)).Max();
         }
     }
 }
