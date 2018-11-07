@@ -58,6 +58,8 @@
     <Compile Include="EntryPoint.cs" />
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RoundSpiralGenerator.cs" />
+    <Compile Include="SquareSpiralGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

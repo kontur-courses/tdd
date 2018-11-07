@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -43,80 +42,5 @@ namespace TagsCloudVisualization
         {
             foreach (var rectangle in rectangles) PutNextRectangle(rectangle);
         }
-    }
-
-    internal class RoundSpiralGenerator : IEnumerable<Point>
-    {
-        private readonly Point center;
-        private readonly double k;
-
-        public RoundSpiralGenerator(Point center, double k)
-        {
-            this.center = center;
-            this.k = k;
-        }
-
-        private Point PolarToCartesian(double r, double phi)
-        {
-            var x = r * Math.Cos(phi) + center.X;
-            var y = r * Math.Sin(phi) + center.Y;
-            return new Point((int)x, (int)y);
-        }
-        public IEnumerator<Point> GetEnumerator()
-        {
-            var phi = 0d;
-            int step = 16;
-            var dPhi = Math.PI / step;
-            //r = k*ф;
-            var r = 0d;
-            yield return PolarToCartesian(r, phi);
-            while (true)
-            {
-                phi += dPhi;
-                r = k * phi;
-                yield return PolarToCartesian(r, phi);
-            }
-
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-    }
-
-    internal class SquareSpiralGenerator : IEnumerable<Point>
-    {
-        private readonly Point center;
-
-        public SquareSpiralGenerator(Point center)
-        {
-            this.center = center;
-        }
-
-        public IEnumerator<Point> GetEnumerator()
-        {
-            Point currentPoint;
-            yield return center;
-            yield return new Point(center.X + 1, center.Y);
-            yield return currentPoint = new Point(center.X + 1, center.Y - 1);
-            var iteration = 1;
-            while (true)
-            {
-                var delta = iteration % 2 == 1 ? 1 : -1;
-                for (var i = 0; i < iteration; i++)
-                {
-                    currentPoint = new Point(currentPoint.X - delta, currentPoint.Y);
-                    yield return currentPoint;
-                }
-
-                for (var i = 0; i < iteration; i++)
-                {
-                    currentPoint = new Point(currentPoint.X, currentPoint.Y + delta);
-                    yield return currentPoint;
-                }
-
-                iteration++;
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }
