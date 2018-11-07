@@ -1,21 +1,12 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 namespace TagsCloudVisualization
 {
-	public class RectangleTagsCloudVisualizer
+	public static class RectangleTagsCloudVisualizer
 	{
-		private readonly Bitmap bitmap;
-
-		public RectangleTagsCloudVisualizer(int width, int height)
+		public static Bitmap GetPicture(Rectangle[] rectangles, Color color)
 		{
-			if (width <= 0 || height <= 0)
-				throw new ArgumentException("Lengths of size must be positive");
-			bitmap = new Bitmap(width, height);
-		}
-
-		public Bitmap GetPicture(Rectangle[] rectangles)
-		{
-			var pen = new Pen(Color.Black, 1);
+			var bitmap = new Bitmap(1000, 800);
+			var pen = new Pen(color, 1);
 
 			using (var graphics = Graphics.FromImage(bitmap))
 			{

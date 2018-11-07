@@ -9,7 +9,7 @@ using TagsCloudVisualization.Curves;
 namespace TagsCloudVisualization
 {
 	[TestFixture]
-	class CircularCloudLayouterTests
+	internal class CircularCloudLayouterTests
 	{
 		private CircularCloudLayouter cloud;
 		private Point center;
@@ -19,7 +19,7 @@ namespace TagsCloudVisualization
 		{
 			center = new Point(500, 400);
 			var spiral = new Spiral(factorStep: 0.5, degreeStep: Math.PI / 18, center: center);
-			cloud = new CircularCloudLayouter(center, spiral);
+			cloud = new CircularCloudLayouter(spiral);
 		}
 
 		[TearDown]
@@ -28,8 +28,7 @@ namespace TagsCloudVisualization
 			if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Passed)
 			{
 				var rectangles = cloud.GetRectangles();
-				var vizualizer = new RectangleTagsCloudVisualizer(center.X * 3, center.Y * 3);
-				var picture = vizualizer.GetPicture(rectangles);
+				var picture = RectangleTagsCloudVisualizer.GetPicture(rectangles, Color.Aqua);
 				var path = $"{TestContext.CurrentContext.TestDirectory}\\{TestContext.CurrentContext.Test.FullName}";
 				picture.Save($"{path}.png");
 				TestContext.WriteLine($"Tag cloud visualization saved to file {path}");
@@ -47,6 +46,7 @@ namespace TagsCloudVisualization
 				var size = new Size(10 + i, 5 + i);
 				cloud.PutNextRectangle(size);
 			}
+
 			var rectangles = cloud.GetRectangles();
 
 			rectangles.Should().HaveCount(number);
@@ -85,15 +85,15 @@ namespace TagsCloudVisualization
 		public void PutNextRectangles_MustBePlacedTightly(int number)
 		{
 			for (var i = 0; i < number; i++)
-				cloud.PutNextRectangle(new Size(i + 1, i + 1));
+				cloud.PutNextRectangle(new Size(2 * (i + 1), i + 1));
 
 			var rectangles = cloud.GetRectangles();
 			var min = new Point(rectangles.Min(r => r.Left), rectangles.Min(r => r.Top));
-			var max = new Point(rectangles.Max(r => r.Right), rectangles.Min(r => r.Bottom));
+			var max = new Point(rectangles.Max(r => r.Right), rectangles.Max(r => r.Bottom));
 			double rectanglesArea = rectangles.Sum(r => r.Width * r.Height);
 			double wholeArea = (max.X - min.X) * (max.Y - min.Y);
 
-			(rectanglesArea / wholeArea).Should().BeGreaterThan(0.5);
+			(rectanglesArea / wholeArea).Should().BeGreaterThan(0.4);
 		}
 	}
 }

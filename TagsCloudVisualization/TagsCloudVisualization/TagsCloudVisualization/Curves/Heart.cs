@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace TagsCloudVisualization.Curves
 {
-	class Heart : ICurve
+	public class Heart : ICurve
 	{
 		private readonly double degreeStep;
 		private readonly double factorStep;

@@ -10,7 +10,7 @@ namespace TagsCloudVisualization
 		private readonly List<Rectangle> rectangles;
 		private readonly ICurve curve;
 
-		public CircularCloudLayouter(Point center, ICurve curve)
+		public CircularCloudLayouter(ICurve curve)
 		{
 			this.curve = curve;
 			rectangles = new List<Rectangle>();
