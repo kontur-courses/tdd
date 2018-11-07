@@ -18,8 +18,8 @@ namespace TagsCloudVisualization
         {
             while (true)
             {
-                var currentLocation = Spiral.GetNextLocation();
-                var rectangle = new Rectangle(currentLocation, rectangleSize);
+                var location = Spiral.GetNextLocation();
+                var rectangle = new Rectangle((int)location.X, (int) location.Y, rectangleSize.Width, rectangleSize.Height);
 
                 if (!IsIntersectedWithOthers(rectangle))
                 {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization;
@@ -25,9 +26,9 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void not_contain_intersected_rectangles()
         {
-            for (int i = 0; i < 4; i++)
-            {
-                layouter.PutNextRectangle(GetRandomSize());
+            for (int i = 0; i < 100; i++)
+            {   
+                layouter.PutNextRectangle(new Size().SetRandom(30, 20));
             }
 
             foreach (var r1 in layouter.Rectangles)
@@ -36,11 +37,30 @@ namespace TagsCloudVisualizationTests
                         r1.IntersectsWith(r2).Should().BeFalse();
         }
 
-
-        private Size GetRandomSize()
+        [Test]
+        public void have_the_form_of_cirle()
         {
-            var r = new Random();
-            return new Size(r.Next(MaxWidth), r.Next(MaxHeight));
+            layouter.PutNextRectangle(new Size(10, 5));
+            layouter.PutNextRectangle(new Size(10, 10));
+            layouter.PutNextRectangle(new Size(10, 5));
+            layouter.PutNextRectangle(new Size(10, 10));
+            var expectedRadius = 21;
+
+            var actualMaxRadius = double.MinValue;
+
+            foreach (var rect in layouter.Rectangles)
+            {
+                var currentMaxRadius = rect
+                    .Vertexes()
+                    .Select(p =>
+                        Math.Sqrt(Math.Pow(layouter.Spiral.Center.X - p.X, 2) +
+                                  Math.Pow(layouter.Spiral.Center.Y - p.Y, 2)))
+                    .Max();
+
+                actualMaxRadius = Math.Max(actualMaxRadius, currentMaxRadius);
+            }
+
+            actualMaxRadius.Should().BeLessOrEqualTo(expectedRadius);
         }
     }
 }
