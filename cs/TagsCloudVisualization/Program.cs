@@ -28,15 +28,46 @@ namespace TagsCloudVisualization
             var y = center.Y;
             if (x < 0 || y < 0)
                 throw new ArgumentException();
+
+            var spiral = new ArchimedeanSpiral(1);
+            spiralEnumerator = spiral.GetIenumeratorDecart(0.1);
             this.center = center;
         }
 
+        private Point GetNextPoint()
+        {
+            spiralEnumerator.MoveNext();
+            return new Point(spiralEnumerator.Current.X + center.X, spiralEnumerator.Current.Y + center.Y);
+        }
+
+        private bool RectanglesAreIntersecting(Rectangle rectangle)
+        {
+            foreach (var rect in addedRectangles)
+            {
+                if (rect.IntersectsWith(rectangle))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var rnd = new Random();
+            var currentPoint = center;
+            var currentRectangle = new Rectangle(center.X, center.Y, rectangleSize.Width, rectangleSize.Height);
 
-            return new Rectangle(rnd.Next(5, 100), rnd.Next(5, 100), rectangleSize.Width, rectangleSize.Height);
+            while (RectanglesAreIntersecting(currentRectangle))
+            {
+                currentPoint = GetNextPoint();
+                currentRectangle = new Rectangle
+                    (currentPoint.X, currentPoint.Y, rectangleSize.Width, rectangleSize.Height);
+            }
+
+
+            addedRectangles.Add(currentRectangle);
+            return currentRectangle;
         }
     }
 
@@ -69,15 +100,18 @@ namespace TagsCloudVisualization
         {
             var circularCloudLayouter = new CircularCloudLayouter(new Point(100, 100));
             var putedRectangles = new List<Rectangle>();
-            putedRectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(50, 10)));
-            putedRectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(70, 140)));
-            foreach (var rect in putedRectangles)
+            for (var i = 0; i < rectanglesCount; i++)
             {
-                foreach (var rect1 in putedRectangles)
+                putedRectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(50, 10)));
+            }
+
+            for (var i = 0; i < putedRectangles.Count; i++)
+            {
+                for (var j = 0; j < putedRectangles.Count; j++)
                 {
-                    foreach (var rect2 in putedRectangles)
+                    if (i != j)
                     {
-                        rect1.IntersectsWith(rect2).Should().BeFalse();
+                        putedRectangles[i].IntersectsWith(putedRectangles[j]).Should().BeFalse();
                     }
                 }
             }
