@@ -12,6 +12,7 @@ namespace TagsCloudVisualization
     {
         private readonly Point center;
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
+        private int exampleNumber;
         public CircularCloudLayouter(Point center)
         {
             if (center.X < 0) throw new ArgumentException("center x must be a positive number");
@@ -40,12 +41,13 @@ namespace TagsCloudVisualization
 
         private bool IntersectionWithOtherRectangles(Rectangle rect) => rectangles.Exists(rect.IntersectsWith);
 
-        public void Generate()
+        public void GenerateImage()
         {
-            var bmp = new Bitmap(center.X * 2 + 100, center.Y * 2 + 100);
+
+            var bmp = new Bitmap(center.X * 2 + 300, center.Y * 2 + 300);
             var graphics = Graphics.FromImage(bmp);
-            rectangles.ToList().ForEach(r => graphics.DrawRectangle(new Pen(Color.Brown, 6f), r));
-            bmp.Save("./example.jpg");
+            rectangles.ToList().ForEach(r => graphics.DrawRectangle(new Pen(Color.Chocolate, 6f), r));
+            bmp.Save($"./example{exampleNumber++}.jpg");
         }
     }
 
@@ -107,14 +109,14 @@ namespace TagsCloudVisualization
                 rects.Add(circularCloudLayouter.PutNextRectangle(new Size(10, 20)));
             }
 
-            var maxRast = 0.0;
+            var maxDistance = 0.0;
             foreach (var rect in rects)
             {
-                GetVertexCoordinates(rect).ToList().ForEach(p => maxRast = Math.Max(maxRast,
+                GetVertexCoordinates(rect).ToList().ForEach(p => maxDistance = Math.Max(maxDistance,
                     GetDistanceFromPointToCenter(p)));
             }
 
-            maxRast.Should().BeLessThan(20.0 * 2 + 3.0);
+            maxDistance.Should().BeLessThan(20.0 * 2 + 3.0);
 
         }
 
