@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NUnit.Framework.Api;
 
 namespace TagsCloudVisualization
 {
@@ -11,21 +12,12 @@ namespace TagsCloudVisualization
     {
         static void Main(string[] args)
         {
-            var rr = new Rectangle(100,100,100,100);
-            Console.WriteLine(rr.X+rr.Y+rr.Width+rr.Height);
-            rr.X = 99999;
-            Console.WriteLine(rr.X + rr.Y + rr.Width + rr.Height);
             var circularCloudLayouter = new CircularCloudLayouter(new Point(500, 500));
 
-            circularCloudLayouter.PutNextRectangle(new Size(50, 50));
-            circularCloudLayouter.PutNextRectangle(new Size(50, 50));
-            circularCloudLayouter.PutNextRectangle(new Size(50, 50));
-            circularCloudLayouter.PutNextRectangle(new Size(50, 50));
-            circularCloudLayouter.PutNextRectangle(new Size(50, 50));
-            circularCloudLayouter.PutNextRectangle(new Size(50, 50));
-            circularCloudLayouter.PutNextRectangle(new Size(50, 50));
-            circularCloudLayouter.PutNextRectangle(new Size(50, 50));
-            circularCloudLayouter.PutNextRectangle(new Size(50, 50));
+            var rnd = new Random();
+            var count = 50;
+            while (count-- > 0)
+                circularCloudLayouter.PutNextRectangle(new Size(rnd.Next(100, 300), rnd.Next(50, 80)));
 
             circularCloudLayouter.Generate();
         }
