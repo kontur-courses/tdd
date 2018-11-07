@@ -1,3 +1,3 @@
-![alt text](./examples/example0.jpg)
-![alt text](./examples/example1.jpg)
-![alt text](./examples/example2.jpg)
+![alt text](./examples/example_0.jpg)
+![alt text](./examples/example_1.jpg)
+![alt text](./examples/example_2.jpg)

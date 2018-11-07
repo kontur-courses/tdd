@@ -1,27 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework.Api;
 
 namespace TagsCloudVisualization
 {
-    class Program
+    public class Program
     {
         static void Main(string[] args)
         {
-            var circularCloudLayouter = new CircularCloudLayouter(new Point(500, 500));
+            var ss = new Size(-1,-2);
+            var p = new Rectangle(new Point(1,1), ss);
+            var circularCloudLayouter = new CircularCloudLayouter(new Point(1000, 1000));
+            var rectangles = new List<Rectangle>();
             var exampleNumber = 0;
             while (exampleNumber++ < 3)
             {
                 var rnd = new Random();
                 var count = 20;
                 while (count-- > 0)
-                    circularCloudLayouter.PutNextRectangle(new Size(rnd.Next(100, 300), rnd.Next(50, 80)));
+                    rectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(rnd.Next(10, 200), rnd.Next(10, 200))));
 
-                circularCloudLayouter.GenerateImage();
+                var exampleImage = RectanglesRenderer.GenerateImage(rectangles);
+                exampleImage.Save($"./example_{exampleNumber}.jpg");
             }
         }
     }
