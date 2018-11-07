@@ -27,9 +27,6 @@ namespace TagsCloudVisualization
             Rectangle? rect = TryAddNewRow(rectangleSize);
             if (rect != null) //TODO Remove rect variable
                 return rect.Value;
-            
-//            if(layout.Select(x=>x.Bounds.Width).Max()>layout[firstIndex].Bounds.Width)
-//                return layout[firstIndex].Add(rectangleSize);
 
             return layout.Where(x => x.Bounds.Height >= rectangleSize.Height)
                             .OrderBy(x => x.Bounds.Width)

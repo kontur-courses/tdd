@@ -91,16 +91,17 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void HaveCorrectSizes()
-        {
-            var sizes = Hundred.Times(RandomSize).ToArray();
-            foreach (var rowLayout in layouter.layout)
-                sizes.Select(rowLayout.Add).Select(x => x.Size).Should().BeEquivalentTo(sizes);
-        }
+        public void HaveCorrectSizes()=>
+            Hundred.Times(() =>
+            {
+                var size = RandomSize();
+                layouter.PutNextRectangle(size).Size.Should().Be(size);
+            });
 
         [Test]
         public void BoundsWidthShouldMatchReactanglesSum()
         {
+            GenerateRectangles(Hundred);
             foreach (var rowLayout in layouter.layout)
                 rowLayout.Body.Sum(x => x.Width).Should().Be(rowLayout.Bounds.Width);
         }
