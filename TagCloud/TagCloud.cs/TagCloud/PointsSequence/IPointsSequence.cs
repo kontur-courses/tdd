@@ -1,8 +1,13 @@
 ﻿using System.Drawing;
 
-public interface IPointsSequence
+namespace TagCloud
 {
-    Point GetNextPoint();
+    public interface IPointsSequence
+    {
+        Point GetNextPoint();
 
-    void Reset();
+        void Reset();
+
+        void SetCenter(Point center);
+    }
 }

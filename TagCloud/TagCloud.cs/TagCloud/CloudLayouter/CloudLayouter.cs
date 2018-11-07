@@ -7,14 +7,12 @@ namespace TagCloud
 {
     public abstract class CloudLayouter : ICloudLayouter
     {
-        public Point Center { get; protected set; }
         public int Count => rectangles.Count;
 
         protected readonly List<Rectangle> rectangles;
 
-        protected CloudLayouter(Point center)
+        protected CloudLayouter()
         {
-            Center = center;
             rectangles = new List<Rectangle>();
         }
 

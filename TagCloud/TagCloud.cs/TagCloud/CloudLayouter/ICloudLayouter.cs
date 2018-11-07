@@ -1,9 +1,11 @@
 ﻿using System.Drawing;
 
-public interface ICloudLayouter
+namespace TagCloud
 {
-    Point Center { get; }
-    int Count { get; }
+    public interface ICloudLayouter
+    {
+        int Count { get; }
 
-    Rectangle PutNextRectangle(Size size);
+        Rectangle PutNextRectangle(Size size);
+    }
 }

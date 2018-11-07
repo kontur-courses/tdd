@@ -1,7 +1,10 @@
-﻿public enum DrawSettings
+﻿namespace TagCloud
 {
-    OnlyWords,
-    WordsInRectangles,
-    OnlyRectangles,
-    RectanglesWithNumeration
+    public enum DrawSettings
+    {
+        OnlyWords,
+        WordsInRectangles,
+        OnlyRectangles,
+        RectanglesWithNumeration
+    }
 }

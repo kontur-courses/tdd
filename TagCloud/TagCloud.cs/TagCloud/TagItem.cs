@@ -5,12 +5,12 @@ namespace TagCloud
     public class TagItem
     {
         public string Word { get; }
-        public Rectangle Rectangle { get; }
+        public Rectangle Bounds { get; }
 
-        public TagItem(string word, Rectangle rectangle)
+        public TagItem(string word, Rectangle bounds)
         {
             Word = word;
-            Rectangle = rectangle;
+            Bounds = bounds;
         }
     }
 }

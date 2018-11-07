@@ -6,18 +6,19 @@ namespace TagCloud
     {
         private readonly IPointsSequence pointsSequence;
 
-        public CircularCloudLayouter(Point center) : base(center)
+        public CircularCloudLayouter(IPointsSequence pointsSequence )
         {
-            pointsSequence = new SpiralPointsSequence(1);
+            this.pointsSequence = pointsSequence;
         }
 
         protected override Rectangle GetNextRectangle(Size size)
         {
             while (true)
             {
-                var center = pointsSequence.GetNextPoint().WithTranslation(Center);
-                var rectangle = new Rectangle(center.X - size.Width / 2, center.Y - size.Height / 2, size.Width, size.Height);
-                if (IsInsideSurface(rectangle)) continue;
+                var center = pointsSequence.GetNextPoint();
+                var rectangle = RectangleBuilder.CreateRectangle(size, center);
+                if (IsInsideSurface(rectangle))
+                    continue;
                 pointsSequence.Reset();
                 return rectangle;
             }
