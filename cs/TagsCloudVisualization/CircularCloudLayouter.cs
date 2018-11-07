@@ -50,13 +50,8 @@ namespace TagsCloudVisualization
         private int GetRadius()
         {
             return Rectangles
-                .Select(rect => new Point(MaxAbs(rect.Left, rect.Right), MaxAbs(rect.Top, rect.Bottom)))
+                .Select(rect => new Point(MathHelper.MaxAbs(rect.Left, rect.Right), MathHelper.MaxAbs(rect.Top, rect.Bottom)))
                 .Select(point => (int)Math.Sqrt(Math.Pow(point.X - Center.X, 2) + Math.Pow(point.Y - Center.Y, 2))).Max();
-        }
-
-        private int MaxAbs(int val1, int val2)
-        {
-            return Math.Abs(val1) == Math.Max(Math.Abs(val1), Math.Abs(val2)) ? val1 : val2;
         }
     }
 }
