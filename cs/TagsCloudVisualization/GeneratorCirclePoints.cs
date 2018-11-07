@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
@@ -31,11 +29,11 @@ namespace TagsCloudVisualization
         public Point GetCenterPoint()
             => centerPoint;
 
-        private IEnumerable<Point> GetAllPointsInCirclePerimeter(int radius)
+        private IEnumerable<Point> GetAllPointsInCirclePerimeter()
         {
-            for (var deltaX = -radius; deltaX <= radius; deltaX++)
+            for (var deltaX = -radiusOfCircle; deltaX <= radiusOfCircle; deltaX++)
             {
-                var deltaY = (int)Math.Sqrt(radius * radius - deltaX * deltaX);
+                var deltaY = (int)Math.Sqrt(radiusOfCircle * radiusOfCircle - deltaX * deltaX);
                 var x = deltaX + centerPoint.X;
                 yield return new Point(x, deltaY + centerPoint.Y);
                 if (deltaY > 0)
@@ -48,7 +46,7 @@ namespace TagsCloudVisualization
             yield return centerPoint;
             while (true)
             {
-                foreach (var nextPoint in GetAllPointsInCirclePerimeter(radiusOfCircle))
+                foreach (var nextPoint in GetAllPointsInCirclePerimeter())
                     yield return nextPoint;
                 radiusOfCircle++;
             }
