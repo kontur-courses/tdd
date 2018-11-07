@@ -93,11 +93,28 @@ namespace TagsCloudVisualization_Tests
         }
 
         private int GetRectangleToCenterRadius(Rectangle rect) =>
-            (int) Math.Sqrt(Math.Pow(rect.X - center.X, 2) + Math.Pow(rect.Y - center.Y, 2));
+            (int) Math.Sqrt(Math.Pow(MathHelper.MaxAbs(rect.Left, rect.Right) - center.X, 2) + 
+                            Math.Pow(MathHelper.MaxAbs(rect.Top, rect.Bottom) - center.Y, 2));
 
         [Test]
         public void GetRadius_OnSingleRectangle_ReturnCorrectRadius()
         {
+            var rectangle = cloudLayouter.PutNextRectangle(defaultSize);
+            cloudLayouter.Radius.Should().Be(GetRectangleToCenterRadius(rectangle));
+        }
+        [Test]
+        public void GetRadius_OnTwoRectangles_ReturnCorrectRadius()
+        {
+            cloudLayouter.PutNextRectangle(defaultSize);
+            var rectangle = cloudLayouter.PutNextRectangle(defaultSize);
+            cloudLayouter.Radius.Should().Be(GetRectangleToCenterRadius(rectangle));
+        }
+
+        [Test]
+        public void GetRadius_OnSeveralRectangles_ReturnCorrectRadius()
+        {
+            for (var i=0; i < 999; i++)
+                cloudLayouter.PutNextRectangle(defaultSize);
             var rectangle = cloudLayouter.PutNextRectangle(defaultSize);
             cloudLayouter.Radius.Should().Be(GetRectangleToCenterRadius(rectangle));
         }
