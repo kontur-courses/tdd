@@ -19,13 +19,15 @@ namespace TagsCloudVisualization
         }
         static void Main(string[] args)
         {
+            var rectangles = new List<Rectangle>();
             var ccl = new CircularCloudLayouter(new Point(500, 500));
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 150; i++)
             {
                 var size = GetRandomSize();
-                ccl.PutNextRectangle(size);
+                rectangles.Add(ccl.PutNextRectangle(size));
             }
-            DrawHandler.DrawRectangles(ccl, "test2.bmp");
+            DrawHandler.DrawRectangles(rectangles, new Point(500, 500),  "afterr.bmp");
+
         }
     }
 }

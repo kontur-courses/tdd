@@ -9,8 +9,8 @@ namespace TagsCloudVisualization
 {
     class CircularCloudLayouter
     {
-        public Point Center { get; }
-        public readonly List<Rectangle> Rectangles = new List<Rectangle>();
+        private Point center { get; }
+        private readonly List<Rectangle> cloudRectangles = new List<Rectangle>();
 
         public CircularCloudLayouter(Point center)
         {
@@ -19,33 +19,29 @@ namespace TagsCloudVisualization
                 throw new ArgumentException("Center coords should be positive");
             }
 
-            this.Center = center;
+            this.center = center;
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Height < 0 || rectangleSize.Width < 0)
                 throw new ArgumentException("height and width should be positive");
-            var spiralAngle = 0.0;
 
-            Func<double, Point> spiralEquasion = t =>
-                new Point(Center.X + (int) (t * Math.Cos(t)),
-                    Center.Y + (int) (t * Math.Sin(t)));
-
-            while (true)
+            var currentRectangle = new Rectangle();
+            foreach(var point in new PointGenerator(0, center, 0.1))
             {
-                var tempPoint = spiralEquasion(spiralAngle);
-                spiralAngle += 0.1;
-                var rectangleCenterPoint = new Point(tempPoint.X - rectangleSize.Width / 2,
-                    tempPoint.Y - rectangleSize.Height / 2);
+                var rectangleCenterPoint = new Point(
+                    point.X - rectangleSize.Width / 2,
+                    point.Y - rectangleSize.Height / 2);
 
-                var currentRectangle = new Rectangle(rectangleCenterPoint, rectangleSize);
-                if (!Rectangles.Any(rect => rect.IntersectsWith(currentRectangle)))
+                currentRectangle = new Rectangle(rectangleCenterPoint, rectangleSize);
+                if (!cloudRectangles.Any(rect => rect.IntersectsWith(currentRectangle)))
                 {
-                    Rectangles.Add(currentRectangle);
-                    return currentRectangle;
+                    cloudRectangles.Add(currentRectangle);
+                    break;
                 }
             }
+            return currentRectangle;
         }
  
     }

@@ -15,12 +15,8 @@ namespace TagsCloudVisualization
     {
         private readonly Random rnd = new Random();
         private CircularCloudLayouter circularCloudLayouter;
-        private Size GetRandomSize()
-        {
-            var h = rnd.Next(30, 100);
-            var w = rnd.Next(50, 200);
-            return new Size(w, h);
-        }
+        private readonly Point centerPoint = new Point(100, 100);
+        private List<Rectangle> rectangles = new List<Rectangle>();
 
         [TearDown]
         public void TearDown()
@@ -31,65 +27,128 @@ namespace TagsCloudVisualization
                 var testMethodName = TestContext.CurrentContext.Test.MethodName;
                 var cloudFilename = $"{testMethodName}.bmp";
                 var cloudDirectory = TestContext.CurrentContext.WorkDirectory;
-                DrawHandler.DrawRectangles(circularCloudLayouter, cloudFilename);
+                DrawHandler.DrawRectangles(rectangles, centerPoint, cloudFilename);
                 TestContext.WriteLine($"Tag cloud visualization saved to file {cloudDirectory}\\{cloudFilename}");
             }
         }
 
+
+        [TestCase(1, -2, TestName = "when central point coords x is positive, y is negative")]
+        [TestCase(-1, 2, TestName = "when central point coords x is negative, y is positive")]
         [TestCase(-1, -2, TestName = "when central point coords is negative")]
         public void ConstructorThrowArgumentException(int x, int y)
         {
             Action act = () => new CircularCloudLayouter(new Point(x, y));
+
             act.ShouldThrow<ArgumentException>();
         }
+
+
+        [TestCase(0, 0, TestName = "when central point coords is zero")]
+        [TestCase(1, 0, TestName = "when central point coords x is positive, y is zero")]
+        [TestCase(0, 2, TestName = "when central point coords x is zero, y is positive")]
+        [TestCase(3, 4, TestName = "when central point coords is positive")]
+        public void ConstructorDontThrowArgumentException(int x, int y)
+        {
+            Action act = () => new CircularCloudLayouter(new Point(x, y));
+
+            act.ShouldNotThrow<ArgumentException>();
+        }
+
 
         [Test]
         public void CorrectSetUpCentralPoint()
         {
-            var point = new Point(2, 4);
-            circularCloudLayouter = new CircularCloudLayouter(point);
-            circularCloudLayouter.Center.ShouldBeEquivalentTo(point);
+            var size = GetRandomSize();
+            circularCloudLayouter = new CircularCloudLayouter(centerPoint);
+                        
+            var firstRectangle = circularCloudLayouter.PutNextRectangle(size);
+            var rectangleCenter = GetRectangleCenter(firstRectangle);
+
+            rectangleCenter.ShouldBeEquivalentTo(centerPoint);
         }
 
-        [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(3)]
-        [TestCase(150)]
-        public void CheckCorrect_WhenPutAnyRectangles(int countRectangles)
-        {
-            var point = new Point(100, 100);
-            circularCloudLayouter = new CircularCloudLayouter(point);
-            var rectagles = new List<Rectangle>();
-            var sizes = new List<Size>();
 
-            for (int i = 0; i < countRectangles; i++)
+        [TestCase(-3, -4, TestName = "when size is negative")]
+        [TestCase(-3, 4, TestName = "when size width is negative, height is positive")]
+        [TestCase(3, -4, TestName = "when size width is positive, height is negative")]
+        public void PutNextRectangeThrowArgumentException(int width, int height)
+        {
+            var size = new Size(width, height);
+            circularCloudLayouter = new CircularCloudLayouter(centerPoint);
+
+            Action act = () => circularCloudLayouter.PutNextRectangle(size);
+
+            act.ShouldThrow<ArgumentException>();
+        }
+
+
+        [TestCase(3, 4, TestName = "when size is positive")]
+        [TestCase(0, 0, TestName = "when size is zero")]
+        [TestCase(3, 0, TestName = "when size width is positive, height is zero")]
+        [TestCase(0, 4, TestName = "when size width is zero, height is positive")]
+        public void PutNextRectangeDontThrowArgumentException(int width, int height)
+        {
+            var size = new Size(width, height);
+            circularCloudLayouter = new CircularCloudLayouter(centerPoint);
+
+            Action act = () => circularCloudLayouter.PutNextRectangle(size);
+
+            act.ShouldNotThrow<ArgumentException>();
+        }
+
+
+        [Test]
+        public void PutRectangle_ShouldNotChangeSize()
+        {
+            var size = GetRandomSize();
+            circularCloudLayouter = new CircularCloudLayouter(centerPoint);
+
+            var rectangle = circularCloudLayouter.PutNextRectangle(size);
+
+            rectangle.Size.ShouldBeEquivalentTo(size);
+        }
+
+        [TestCase(2)]
+        [TestCase(10)]
+        [TestCase(50)]
+        public void NoIntersectingRectanglesCloud(int countRectangles)
+        {
+            circularCloudLayouter = new CircularCloudLayouter(centerPoint);
+            rectangles = new List<Rectangle>();
+            for (var i = 0; i < countRectangles; i++)
             {
                 var size = GetRandomSize();
-                sizes.Add(size);
-                var rect = circularCloudLayouter.PutNextRectangle(size);
-                rectagles.Add(rect);
+                var rectangle = circularCloudLayouter.PutNextRectangle(size);
+                rectangles.Add(rectangle);
             }
 
-            CheckCorrectLayouter(circularCloudLayouter, sizes, rectagles);
+            var intersect = HaveIntersect(rectangles);
+
+            intersect.Should().BeFalse();
         }
 
-        private void CheckCorrectLayouter(CircularCloudLayouter layouter, List<Size> sizes, List<Rectangle> rectangles)
+
+        private Size GetRandomSize()
         {
-            layouter.Rectangles.Should().HaveCount(sizes.Count);
+            var h = rnd.Next(30, 100);
+            var w = rnd.Next(50, 200);
+            return new Size(w, h);
+        }
 
-            foreach (var rectangle in layouter.Rectangles)
-                sizes.Should().Contain(rectangle.Size);
-            
-            var x = rectangles.Zip(layouter.Rectangles, (r1, r2) => new List<Rectangle>{r1, r2});
-            foreach (var list in x)
-            {
-                list[0].ShouldBeEquivalentTo(list[1]);
-            }
+        private Point GetRectangleCenter(Rectangle rectangle)
+        {
+            return new Point(rectangle.X + rectangle.Width / 2, rectangle.Y + rectangle.Height / 2);
+        }
 
-            foreach (var rectangle1 in layouter.Rectangles)
-            foreach (var rectangle2 in layouter.Rectangles)
-                if (rectangle2 != rectangle1)
-                    rectangle1.IntersectsWith(rectangle2).Should().BeFalse();
+        private bool HaveIntersect(List<Rectangle> cloudRectangles)
+        {
+            foreach (var rectangle1 in cloudRectangles)
+                foreach (var rectangle2 in cloudRectangles)
+                    if (rectangle2 != rectangle1 && rectangle1.IntersectsWith(rectangle2))
+                        return true;
+            return false;
+                        
         }
     }
 }
