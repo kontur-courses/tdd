@@ -14,7 +14,7 @@ namespace TagsCloudVisualization
         private readonly Point centerPoint;
         private readonly IEnumerator<Point> generatorPoints;
         private int radiusOfCircle = 1;
-            
+
 
         public EternityGeneratorCirclePoints(Point centerPoint)
         {
@@ -42,6 +42,7 @@ namespace TagsCloudVisualization
                     yield return new Point(x, -deltaY + centerPoint.Y);
             }
         }
+
         private IEnumerator<Point> GetAllPointsInSpiralWay()
         {
             yield return centerPoint;
@@ -129,7 +130,7 @@ namespace TagsCloudVisualization
             for (var index = 0; index < lengthsToCentre.Count; index++)
             {
                 var currentLengthToCentre = lengthsToCentre[index];
-                currentAverageLength.Should().BeGreaterOrEqualTo(currentAverageLength);
+                currentLengthToCentre.Should().BeGreaterOrEqualTo(currentAverageLength);
                 currentAverageLength = (currentAverageLength * index + currentLengthToCentre) / (index + 1);
             }
         }
@@ -181,8 +182,7 @@ namespace TagsCloudVisualization
         public void GetNextPoint_IncreasesDistanceToCenterNotTooFast_WhenExecutesManyTimes()
         {
             var generatorPoints = new EternityGeneratorCirclePoints(0, 0);
-            var averageDistances = new List<double> { 0 };
-
+            
             var distances = GetNextPointManyTimes(generatorPoints, 100000)
                 .Select(x => Math.Sqrt(x.X * x.X + x.Y * x.Y))
                 .ToList();
