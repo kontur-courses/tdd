@@ -93,9 +93,9 @@ namespace TagsCloudVisualization
                     GetVertexCoordinates(rect).ToList().ForEach(p => maxDistance = Math.Max(maxDistance,
                         GetDistanceFromPointToCenter(p)));
                 }
-                const double infelicity = 3.0;
+                const double infelicity = 1.1;
                 const double approximateRadiusOfCircle = 20.0 * 2;
-                maxDistance.Should().BeLessThan(approximateRadiusOfCircle + infelicity);
+                maxDistance.Should().BeLessThan(approximateRadiusOfCircle * infelicity);
 
             }
 

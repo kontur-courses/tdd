@@ -22,10 +22,10 @@ namespace TagsCloudVisualization
                 maxHeight = Math.Max(maxHeight, rectangle.Height);
             }
 
-            var bmp = new Bitmap(maxX + maxWidth + 500, maxY + maxHeight + 500);
-            var graphics = Graphics.FromImage(bmp);
+            var image = new Bitmap(maxX + maxWidth + 500, maxY + maxHeight + 500);
+            var graphics = Graphics.FromImage(image);
             rectangles.ToList().ForEach(r => graphics.DrawRectangle(new Pen(Color.Black, 6f), r));
-            return bmp;
+            return image;
         }
     }
 }
