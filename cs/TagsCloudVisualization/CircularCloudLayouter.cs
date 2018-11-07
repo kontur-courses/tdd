@@ -12,7 +12,7 @@ namespace TagsCloudVisualization
         public CircularCloudLayouter(Point center)
         {
             placedRectangles = new List<Rectangle>();
-            spiralGenerator = new ArchimedeanSpiralGenerator(center, 1, (float)(1 / (2 * Math.PI)));
+            spiralGenerator = new ArchimedeanSpiralGenerator(center, 1, (float)(1 / (180 * Math.PI)));
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)

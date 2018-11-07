@@ -33,7 +33,7 @@ namespace TagsCloudVisualizationTest
             var rectangleSize = new Size(9, 9);
             var placedRectangle = layouter.PutNextRectangle(rectangleSize);
             var rectangleCenter = placedRectangle.GetCenter();
-
+            
             Assert.That(Math.Abs(center.X - rectangleCenter.X), Is.LessThanOrEqualTo(1));
             Assert.That(Math.Abs(center.Y - rectangleCenter.Y), Is.LessThanOrEqualTo(1));
         }
@@ -86,5 +86,5 @@ namespace TagsCloudVisualizationTest
             var bigRectangleSize = (rightBorder - leftBorder) * (bottomBorder - topBorder);
             return (double) areaSum / bigRectangleSize;
         }
-}
+    }
 }
