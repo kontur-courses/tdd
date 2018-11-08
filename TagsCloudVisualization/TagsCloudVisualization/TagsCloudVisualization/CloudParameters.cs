@@ -3,18 +3,11 @@ using TagsCloudVisualization.Curves;
 
 namespace TagsCloudVisualization
 {
-	class CloudParameters
+	public class CloudParameters
 	{
 		public int maxLengthRect;
 		public int count;
 		public ICurve curve;
-
-		public CloudParameters(ICurve curve, int count, int maxLengthRect)
-		{
-			this.curve = curve;
-			this.count = count;
-			this.maxLengthRect = maxLengthRect;
-		}
 
 		public static bool IsCorrect(CloudParameters cloudParameters)
 		{
@@ -43,7 +36,7 @@ namespace TagsCloudVisualization
 
 		public static CloudParameters Parse(string[] input)
 		{
-			var parameters = new CloudParameters(null, 0, 0);
+			var parameters = new CloudParameters();
 
 			for (var i = 0; i < input.Length; i++)
 			{
