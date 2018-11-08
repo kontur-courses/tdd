@@ -62,13 +62,7 @@ namespace TagsCloudVisualization
 
         [TestCase(0, 0, TestName = "in the center of the coordinate system")]
         [TestCase(50, 0, TestName = "on axis OX")]
-        [TestCase(0, 50, TestName = "on axis OY")]
-        [TestCase(-50, 0, TestName = "on axis -OX")]
-        [TestCase(0, -50, TestName = "on axis -OY")]
-        [TestCase(50, 50, TestName = "on first part of the coordinate system")]
-        [TestCase(-50, 50, TestName = "on second part of the coordinate system")]
         [TestCase(-50, -50, TestName = "on third part of the coordinate system")]
-        [TestCase(50, -50, TestName = "on fourth part of the coordinate system")]
         public void PutNextRectangle_FirstRectangle_PutToCenter(int x, int y)
         {
             var layouter = new CircularCloudLayouter(new Point(x, y));
@@ -122,11 +116,8 @@ namespace TagsCloudVisualization
             act.Should().Throw<ArgumentException>();
         }
 
-        [TestCase(1, 1, TestName = "small square")]
-        [TestCase(100, 100, TestName = "simple square")]
-        [TestCase(1000, 500, TestName = "long rectangle")]
-        [TestCase(500, 1000, TestName = "high rectangle")]
-        [TestCase(300, 400, TestName = "simple rectangle")]
+        [TestCase(100, 100, TestName = "square")]
+        [TestCase(500, 200, TestName = "rectangle")]
         public void PutNextRectangle_ValidRectangleSize_PutSuccessfully(int width, int height)
         {
             var rectangleSize = new Size(width, height);
