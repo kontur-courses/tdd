@@ -9,7 +9,6 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         private readonly List<Rectangle> rectangles;
-        public ImmutableList<Rectangle> Rectangles => rectangles.ToImmutableList();
 
         public Point Center { get; }
 
@@ -52,9 +51,10 @@ namespace TagsCloudVisualization
 
         private int GetRadius()
         {
-            return rectangles
+            return rectangles.Any() ?
+                rectangles
                 .Select(rect => new Point(MathHelper.MaxAbs(rect.Left, rect.Right), MathHelper.MaxAbs(rect.Top, rect.Bottom)))
-                .Select(point => point.GetDistanceTo(Center)).Max();
+                .Select(point => point.GetDistanceTo(Center)).Max() : 0;
         }
     }
 }

@@ -15,6 +15,7 @@ namespace TagsCloudVisualization_Tests
         private CircularCloudLayouter cloudLayouter;
         private Point center;
         private Size defaultSize;
+        private List<Rectangle> rectangles;
 
         [SetUp]
         public void SetUp()
@@ -22,6 +23,7 @@ namespace TagsCloudVisualization_Tests
             center = new Point(0,0);
             cloudLayouter = new CircularCloudLayouter(center);
             defaultSize = new Size(200, 100);
+            rectangles = new List<Rectangle>();
         }
 
         [TearDown]
@@ -32,7 +34,7 @@ namespace TagsCloudVisualization_Tests
             if (testContext.Result.FailCount != 0)
             {
                 new CircularCloudVisualizer()
-                    .DrawCloud(cloudLayouter.Rectangles.ToList(), cloudLayouter.Radius)
+                    .DrawCloud(rectangles, cloudLayouter.Radius)
                     .Save(filename);
                 TestContext.WriteLine($"Tag cloud visualization saved to file {filename}");
             }
@@ -42,7 +44,7 @@ namespace TagsCloudVisualization_Tests
         public void SetValidCenterPoint_AfterCreation() => cloudLayouter.Center.Should().BeEquivalentTo(center);
         
         [Test]
-        public void BeEmpty_AfterCreation() => cloudLayouter.Rectangles.Should().BeEmpty();
+        public void BeEmpty_AfterCreation() => cloudLayouter.Radius.Should().Be(0);
 
         [Test]
         public void PutNextRectangle_ThrowArgumentException_OnInvalidSize()
@@ -59,31 +61,22 @@ namespace TagsCloudVisualization_Tests
         }
 
         [Test]
-        public void PutNextRectangle_PutOneRectangle_OneRectangleInList()
-        {
-            cloudLayouter.PutNextRectangle(defaultSize);
-            cloudLayouter.Rectangles.Should().HaveCount(1);
-        }
-
-        [Test]
         public void PutNextRectangle_PutTwoRectangles_RectanglesDoNotIntersect()
         {
             var random = new Random();
-            cloudLayouter.PutNextRectangle(new Size(random.Next(1, 200), random.Next(1, 200)));
-            cloudLayouter.PutNextRectangle(defaultSize);
-            cloudLayouter.Rectangles[0].IntersectsWith(cloudLayouter.Rectangles[1]).Should().BeFalse();
+            rectangles.Add(cloudLayouter.PutNextRectangle(new Size(random.Next(1, 200), random.Next(1, 200))));
+            cloudLayouter.PutNextRectangle(defaultSize).IntersectsWith(rectangles[0]).Should().BeFalse();
         }
 
         [Test]
         public void PutNextRectangle_PutSeveralRectangles_RectanglesDoNotIntersect()
         {
-            var testRectangles = new List<Rectangle>();
             var random = new Random();
             for (var i = 0; i < 500; i++)
             {
                 var nextRectangle = cloudLayouter.PutNextRectangle(new Size(random.Next(1, 200), random.Next(1, 200)));
-                testRectangles.Any(nextRectangle.IntersectsWith).Should().BeFalse();
-                testRectangles.Add(nextRectangle);
+                rectangles.Any(nextRectangle.IntersectsWith).Should().BeFalse();
+                rectangles.Add(nextRectangle);
             }
         }
 
@@ -108,12 +101,13 @@ namespace TagsCloudVisualization_Tests
         [Test]
         public void GetRadius_OnSeveralRectangles_ReturnCorrectRadius()
         {
-            for (var i=0; i < 999; i++)
+            for (var i=0; i < 199; i++)
                 cloudLayouter.PutNextRectangle(defaultSize);
             var rectangle = cloudLayouter.PutNextRectangle(defaultSize);
-            var expectedRadius = new Point(MathHelper.MaxAbs(rectangle.Left, rectangle.Right), MathHelper.MaxAbs(rectangle.Top, rectangle.Bottom))
+            var expectedRadius = new Point(MathHelper.MaxAbs(rectangle.Left, rectangle.Right), 
+                    MathHelper.MaxAbs(rectangle.Top, rectangle.Bottom))
                 .GetDistanceTo(center);
-            cloudLayouter.Radius.Should().Be(expectedRadius);
+            expectedRadius.Should().Be(cloudLayouter.Radius);
         }
 
         [Test]
@@ -121,7 +115,7 @@ namespace TagsCloudVisualization_Tests
         {
             var totalCloudArea = 0;
             var random = new Random();
-            for (var i = 0; i < 1000; i++)
+            for (var i = 0; i < 500; i++)
             {
                 var nextRectangle = cloudLayouter.PutNextRectangle(new Size(random.Next(1, 200), random.Next(1, 200)));
                 totalCloudArea += nextRectangle.Width * nextRectangle.Height;

@@ -18,10 +18,11 @@ namespace TagsCloudVisualization_Tests
         {
             var layout = new CircularCloudLayouter(new Point(0,0));
             var visualizer = new CircularCloudVisualizer();
-            layout.PutNextRectangle(new Size(200, 100));
-            layout.PutNextRectangle(new Size(200, 100));
-            visualizer.DrawCloud(layout.Rectangles, layout.Radius).Width.Should().Be(layout.Radius*2);
-            visualizer.DrawCloud(layout.Rectangles, layout.Radius).Height.Should().Be(layout.Radius*2); 
+            var rectangles = new List<Rectangle>();
+            rectangles.Add(layout.PutNextRectangle(new Size(200, 100)));
+            rectangles.Add(layout.PutNextRectangle(new Size(200, 100)));
+            visualizer.DrawCloud(rectangles, layout.Radius).Width.Should().Be(layout.Radius*2);
+            visualizer.DrawCloud(rectangles, layout.Radius).Height.Should().Be(layout.Radius*2); 
         }
     }
 }
