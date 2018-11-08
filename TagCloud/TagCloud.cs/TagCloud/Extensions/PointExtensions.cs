@@ -5,11 +5,6 @@ namespace TagCloud
 {
     public static class PointExtensions
     {
-        public static Point WithTranslation(this Point point, Point translation)
-        {
-            return new Point(point.X + translation.X, point.Y + translation.Y);
-        }
-
         public static Rectangle GetBounds(this Point[] points)
         {
             var minX = points.Select(r => r.X).Min();

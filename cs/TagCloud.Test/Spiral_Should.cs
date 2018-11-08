@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Drawing;
-using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace TagCloud.Test
+namespace TagCloud.Tests
 {
     [TestFixture]
     public class Spiral_Should
@@ -14,7 +13,9 @@ namespace TagCloud.Test
         [TestCase(-5, TestName = "Then step length is negative")]
         public void ConstructorThrowArgumentException(double stepLength)
         {
-            Action constructor = () => Spiral.Create().WithStepLength(stepLength);
+            Action constructor = () => new SpiralBuilder()
+                .WithStepLength(stepLength)
+                .Build();
 
             constructor.Should().Throw<ArgumentException>();
         }
@@ -24,7 +25,9 @@ namespace TagCloud.Test
         [TestCase(1, 1)]
         public void ReturnCenter_ThenGettingFirstPoint(int x, int y)
         {
-            Spiral spiral = Spiral.Create().WithCenterIn(new Point(x, y));
+            var spiral = new SpiralBuilder()
+                .WithCenterIn(new Point(x, y))
+                .Build();
 
             var result = spiral.GetNextPoint();
 
@@ -48,9 +51,12 @@ namespace TagCloud.Test
         [TestCase(100, TestName = "If step equal to 100")]
         public void ReturnDifferentPoints(double stepLength)
         {
-            Spiral sequence = Spiral.Create().WithStepLength(stepLength);
-            var first = sequence.GetNextPoint();
-            var second = sequence.GetNextPoint();
+            var spiral = new SpiralBuilder()
+                .WithStepLength(stepLength)
+                .Build();
+
+            var first = spiral.GetNextPoint();
+            var second = spiral.GetNextPoint();
 
             first.Should().NotBe(second);
         }
@@ -60,14 +66,14 @@ namespace TagCloud.Test
         [TestCase(1000, TestName = "After 1000 steps")]
         public void ResetEnumeration_ThenResetMethodCalled(int steps)
         {
-            var sequence = new Spiral();
-            var first = sequence.GetNextPoint();
+            var spiral = new Spiral();
+            var first = spiral.GetNextPoint();
 
             for (var i = 0; i < steps; i++)
-                sequence.GetNextPoint();
-            sequence.Reset();
+                spiral.GetNextPoint();
+            spiral.Reset();
 
-            first.Should().Be(sequence.GetNextPoint());
+            first.Should().Be(spiral.GetNextPoint());
         }
     }
 }

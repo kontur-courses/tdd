@@ -22,7 +22,7 @@ namespace TagCloud
         public Point GetNextPoint()
         {
             enumerator.MoveNext();
-            return enumerator.Current.WithTranslation(center);
+            return enumerator.Current;
         }
 
         public abstract void Reset();

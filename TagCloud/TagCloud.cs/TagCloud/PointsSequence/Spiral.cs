@@ -33,16 +33,11 @@ namespace TagCloud
             {
                 yield return new Point
                 {
-                    X = (int)(stepLength / (PI * 2) * alpha * Cos(alpha)),
-                    Y = (int)(stepLength / (PI * 2) * alpha * Sin(alpha))
+                    X = (int)(stepLength / (PI * 2) * alpha * Cos(alpha)) + center.X,
+                    Y = (int)(stepLength / (PI * 2) * alpha * Sin(alpha) + center.Y)
                 };
                 alpha++;
             }
-        }
-
-        public static SpiralBuilder Create()
-        {
-            return new SpiralBuilder(new Spiral());
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace TagCloud.Test
+namespace TagCloud.Tests
 {
     [TestFixture]
     public class CloudVisualizer_Should
@@ -13,7 +13,7 @@ namespace TagCloud.Test
         [TestCase(100, TestName = "For 100 rectangles")]
         public void CreatePictureWithRectangles(int amountOfRectangles)
         {
-            var visualizer = new CloudVisualizer {Settings = DrawSettings.OnlyRectangles};
+            var visualizer = new CloudVisualizer { Settings = DrawSettings.OnlyRectangles };
             var rectangles = new Rectangle[amountOfRectangles];
             for (var i = 0; i < amountOfRectangles; i++)
                 rectangles[i] = new Rectangle(0, 0, 10, 10);

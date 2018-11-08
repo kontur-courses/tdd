@@ -2,13 +2,13 @@
 
 namespace TagCloud
 {
-    public class SpiralBuilder // fluent tests
+    public class SpiralBuilder
     {
         private readonly Spiral spiral;
 
-        public SpiralBuilder(Spiral spiral)
+        public SpiralBuilder()
         {
-            this.spiral = spiral;
+            spiral = new Spiral();
         }
 
         public SpiralBuilder WithStepLength(double stepLength)
@@ -23,9 +23,9 @@ namespace TagCloud
             return this;
         }
 
-        public static implicit operator Spiral(SpiralBuilder ps)
+        public Spiral Build()
         {
-            return ps.spiral;
+            return spiral;
         }
     }
 }

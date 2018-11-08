@@ -6,7 +6,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace TagCloud.Test
+namespace TagCloud.Tests
 {
     [TestFixture]
     public class CircularCloudLayouter_Should
@@ -44,8 +44,9 @@ namespace TagCloud.Test
         public void ReturnCorrectRectangle_AfterPuttingRectangleSize(int width, int height, int centerX, int centerY)
         {
             var center = new Point(centerX, centerY);
-            Spiral spiral = Spiral.Create()
-                .WithCenterIn(center);
+            var spiral = new SpiralBuilder()
+                .WithCenterIn(center)
+                .Build();
             var tagCloud = new CircularCloudLayouter(spiral);
 
             var result = tagCloud.PutNextRectangle(new Size(width, height));
