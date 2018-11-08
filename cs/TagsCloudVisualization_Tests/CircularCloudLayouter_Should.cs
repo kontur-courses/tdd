@@ -32,7 +32,7 @@ namespace TagsCloudVisualization_Tests
             var filename = $"{testContext.WorkDirectory}/{testContext.Test.Name}.png";
             if (testContext.Result.FailCount != 0)
             {
-                var image = visualizer.DrawRectangles(cloudLayouter.Rectangles.ToList(), cloudLayouter.Radius);
+                var image = visualizer.DrawRectangles(cloudLayouter.Rectangles, cloudLayouter.Radius);
                 image.Save(filename);
                 TestContext.WriteLine($"Tag cloud visualization saved to file {filename}");
             }
