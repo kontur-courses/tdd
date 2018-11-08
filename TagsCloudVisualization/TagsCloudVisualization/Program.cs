@@ -14,7 +14,7 @@ namespace TagsCloudVisualization
         {
             var bitmap1 = GetCloudPictureWith100RandomRectangles();
             bitmap1.Save("cloud1.jpg", ImageFormat.Jpeg);
-            var bitmap2 = GetCloudPictureWith10HorizontalRectangles();
+            var bitmap2 = GetCloudPictureWith100HorizontalRectangles();
             bitmap2.Save("cloud2.jpg", ImageFormat.Jpeg);
             var bitmap3 = GetCloudPictureWith100RandomDecreasingRectangles();
             bitmap3.Save("cloud3.jpg", ImageFormat.Jpeg);
@@ -48,7 +48,7 @@ namespace TagsCloudVisualization
             return TagsCloudVisualizer.GetCloudVisualization(cloud);
         }
 
-        private static Bitmap GetCloudPictureWith10HorizontalRectangles()
+        private static Bitmap GetCloudPictureWith100HorizontalRectangles()
         {
             var random = new Random();
             var cloud = new CircularCloudLayouter(new Point(0, 0));
