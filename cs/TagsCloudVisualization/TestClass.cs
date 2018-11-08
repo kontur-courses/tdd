@@ -24,7 +24,7 @@ namespace TagsCloudVisualization
 		public void TearDown()
 		{
 			var graphics = new Graphics();
-			graphics.GetMap(AllRectangles, TestContext.CurrentContext.TestDirectory);
+			graphics.SaveMap(AllRectangles, TestContext.CurrentContext.Test.FullName);
 		}
 
 		private void PutRandomRectangle(CircularCloudLayouter cloud)
@@ -49,7 +49,7 @@ namespace TagsCloudVisualization
 
 		[Test]
 		[Order(1)]
-		public void CreateCentrOfCloud()
+		public void CreateCenterOfCloud()
 		{
 			var center = new Point(0, 0);
 			Action act = () => new CircularCloudLayouter(center);

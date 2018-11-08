@@ -30,7 +30,7 @@ namespace TagsCloudVisualization
 					startPointer = new Point(x, y);
 					if (nextBoundingBox.Width == 0)
 						CreateNewBoundingBox(rectangleSize, x, y);
-					ExtensionOfNewBoundBoxForDownSide(rectangleSize, x, y);
+					ExtendOfNewBoundBoxForDownSide(rectangleSize, x, y);
 					if (x < boundingBox.X)
 					{
 						side = BoxSide.Left;
@@ -43,7 +43,7 @@ namespace TagsCloudVisualization
 					x = startPointer.X - rectangleSize.Width;
 					y = startPointer.Y;
 					startPointer.Y = y + rectangleSize.Height;
-					ExtensionOfNewBoundBoxForLeftSide(rectangleSize, x, y);
+					ExtendOfNewBoundBoxForLeftSide(rectangleSize, x, y);
 					if (y + rectangleSize.Height > boundingBox.Y + boundingBox.Height)
 					{
 						side = BoxSide.Up;
@@ -56,7 +56,7 @@ namespace TagsCloudVisualization
 					x = startPointer.X;
 					y = startPointer.Y;
 					startPointer.X = x + rectangleSize.Width;
-					ExtensionOfNewBoundBoxForUpSide(rectangleSize, x, y);
+					ExtendOfNewBoundBoxForUpSide(rectangleSize, x, y);
 					if (x + rectangleSize.Width > boundingBox.X + boundingBox.Width)
 					{
 						side = BoxSide.Right;
@@ -69,7 +69,7 @@ namespace TagsCloudVisualization
 					x = startPointer.X;
 					y = startPointer.Y - rectangleSize.Height;
 					startPointer.Y = y;
-					ExtensionForNewBoundBoxForRightSide(rectangleSize, x, y);
+					ExtendForNewBoundBoxForRightSide(rectangleSize, x, y);
 					if (y < boundingBox.Y)
 					{
 						side = BoxSide.Down;
@@ -83,7 +83,7 @@ namespace TagsCloudVisualization
 			return new Rectangle(x, y, rectangleSize.Width, rectangleSize.Height);
 		}
 
-		private void ExtensionForNewBoundBoxForRightSide(Size rectangleSize, int x, int y)
+		private void ExtendForNewBoundBoxForRightSide(Size rectangleSize, int x, int y)
 		{
 			if (IsWidthOfRectOutsideNewBoundBox(ref rectangleSize, x))
 			{
@@ -102,7 +102,7 @@ namespace TagsCloudVisualization
 			return x + rectangleSize.Width > nextBoundingBox.X + nextBoundingBox.Width;
 		}
 
-		private void ExtensionOfNewBoundBoxForUpSide(Size rectangleSize, int x, int y)
+		private void ExtendOfNewBoundBoxForUpSide(Size rectangleSize, int x, int y)
 		{
 			if (IsWidthOfRectOutsideNewBoundBox(ref rectangleSize, x))
 			{
@@ -121,7 +121,7 @@ namespace TagsCloudVisualization
 			return y + rectangleSize.Height > nextBoundingBox.Y + nextBoundingBox.Height;
 		}
 
-		private void ExtensionOfNewBoundBoxForLeftSide(Size rectangleSize, int x, int y)
+		private void ExtendOfNewBoundBoxForLeftSide(Size rectangleSize, int x, int y)
 		{
 			if (IsHeightOfRectOutsideNewBoundBox(ref rectangleSize, y))
 				nextBoundingBox.Height += rectangleSize.Height;
@@ -132,7 +132,7 @@ namespace TagsCloudVisualization
 			}
 		}
 
-		private void ExtensionOfNewBoundBoxForDownSide(Size rectangleSize, int x, int y)
+		private void ExtendOfNewBoundBoxForDownSide(Size rectangleSize, int x, int y)
 		{
 			if (x < nextBoundingBox.X)
 			{
