@@ -27,8 +27,8 @@ namespace TagsCloudVisualization
             if (currentContext.Result.FailCount != 0)
             {
                 var visualisator = new Visualisator(new Size(600, 600));
-                visualisator.ShowCurrentConfig(cloud, "DebugOutput.bmp");
-                Console.WriteLine("Tag cloud visualization saved to file DebugOutput.bmp");
+                visualisator.ShowCurrentConfig(cloud);
+                Console.WriteLine("Tag cloud visualization saved to file D:/DebugFile.bmp");
             }
         }
 
@@ -57,7 +57,7 @@ namespace TagsCloudVisualization
         {
             var firstRectangle = cloud.PutNextRectangle(new Size(20, 10));
             var secondRectangle = cloud.PutNextRectangle(new Size(10, 20));
-            firstRectangle.IntersectsWith(secondRectangle).Should().BeTrue();
+            firstRectangle.IntersectsWith(secondRectangle).Should().BeFalse();
         }
 
         [Test]
