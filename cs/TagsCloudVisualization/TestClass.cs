@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 
 namespace TagsCloudVisualization
 {
@@ -23,7 +24,7 @@ namespace TagsCloudVisualization
 		public void TearDown()
 		{
 			var graphics = new Graphics();
-			graphics.GetMap(AllRectangles, TestContext.CurrentContext.Test.FullName);
+			graphics.GetMap(AllRectangles, TestContext.CurrentContext.TestDirectory);
 		}
 
 		private void PutRandomRectangle(CircularCloudLayouter cloud)

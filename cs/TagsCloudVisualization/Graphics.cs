@@ -49,8 +49,7 @@ namespace TagsCloudVisualization
 				{
 					graphics.FillEllipse(brush, center);
 				}
-				map.Save($@"C:\Users\Svetlana\Documents\Visual Studio 2015\Projects\tdd\cs\TagsCloudVisualization\{name}.png",
-					ImageFormat.Png);
+				map.Save($"{name}.png", ImageFormat.Png);
 			}
 		}
 	}
