@@ -10,7 +10,7 @@ namespace TagsCloudVisualization
 	{
 		private readonly Random Random = new Random();
 
-		public void SaveMap(List<Rectangle> allRectangles, string nameOfImage)
+		public void SaveMap(IReadOnlyList<Rectangle> allRectangles, string nameOfImage)
 		{
 			if (allRectangles.Count == 0)
 				return;

@@ -24,7 +24,7 @@ namespace TagsCloudVisualization
 			var center = new Point(0, 0);
 			var cloud = new CircularCloudLayouter(center);
 			cloud.PutNextRectangle(GetRandomSize());
-			cloud.AllRectangles.Should().NotBeNullOrEmpty();
+			cloud.Rectangles.Should().NotBeNullOrEmpty();
 		}
 
 		[Test, Order(3)]
@@ -34,7 +34,7 @@ namespace TagsCloudVisualization
 			var cloud = new CircularCloudLayouter(center);
 			cloud.PutNextRectangle(GetRandomSize());
 			cloud.PutNextRectangle(GetRandomSize());
-			var intersection = AreRectanglesIntersect(cloud.AllRectangles);
+			var intersection = AreRectanglesIntersect(cloud.Rectangles);
 			intersection.Should().BeFalse();
 		}
 
@@ -47,10 +47,10 @@ namespace TagsCloudVisualization
 			{
 				cloud.PutNextRectangle(GetRandomSize());
 			}
-			var intersection = AreRectanglesIntersect(cloud.AllRectangles);
+			var intersection = AreRectanglesIntersect(cloud.Rectangles);
 			intersection.Should().BeFalse();
 		}
-		
+
 		public Random Random = new Random();
 
 		private Size GetRandomSize()
@@ -58,7 +58,7 @@ namespace TagsCloudVisualization
 			return new Size(Random.Next(10,50), Random.Next(10, 50));
 		}
 
-		private bool AreRectanglesIntersect(List<Rectangle> allRectangles)
+		private bool AreRectanglesIntersect(IReadOnlyList<Rectangle> allRectangles)
 		{
 			for (var i = 0; i < allRectangles.Count; i++)
 			{
