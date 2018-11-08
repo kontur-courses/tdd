@@ -8,48 +8,42 @@ namespace TagsCloudVisualization
 {
 	internal class Graphics
 	{
-		private readonly Random rnd = new Random();
+		private readonly Random Random = new Random();
 
-		public void SaveMap(List<Rectangle> list, string name)
+		public void SaveMap(List<Rectangle> allRectangles, string nameOfImage)
 		{
-			if (list.Count == 0)
+			if (allRectangles.Count == 0)
 				return;
 
-			var maxX = list.Max(f => f.X + f.Width);
-			var maxY = list.Max(f => f.Y + f.Height);
-			var minX = list.Min(f => f.X);
-			var minY = list.Min(f => f.Y);
+			var maxX = allRectangles.Max(f => f.X + f.Width);
+			var maxY = allRectangles.Max(f => f.Y + f.Height);
+			var minX = allRectangles.Min(f => f.X);
+			var minY = allRectangles.Min(f => f.Y);
 
 			var sizeX = maxX - minX;
 			var sizeY = maxY - minY;
 
-			var locationOfCenter = list[0].Location + new Size(list[0].Width - 5, list[0].Height - 5) - new Size(minX, minY);
+			var locationOfCenter = allRectangles[0].Location + new Size(allRectangles[0].Width - 5, allRectangles[0].Height - 5) - new Size(minX, minY);
 			var center = new Rectangle(locationOfCenter, new Size(10, 10));
 
 			using (var map = new Bitmap(sizeX, sizeY))
 			using (var graphics = System.Drawing.Graphics.FromImage(map))
 			{
-				for (var index = 0; index < list.Count; index++)
+				for (var index = 0; index < allRectangles.Count; index++)
 				{
-					var rectangle = list[index];
-					var color = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
+					var rectangle = allRectangles[index];
+					var color = Color.FromArgb(Random.Next(256), Random.Next(256), Random.Next(256));
 					using (var brush = new SolidBrush(color))
 					{
 						var location = rectangle.Location - new Size(minX, minY);
 						graphics.FillRectangle(brush, new Rectangle(location, rectangle.Size));
-						graphics.DrawString(
-							index.ToString(),
-							new Font(new FontFamily("Calibri"), 15),
-							new SolidBrush(Color.Teal),
-							location
-						);
 					}
 				}
 				using (var brush = new SolidBrush(Color.Black))
 				{
 					graphics.FillEllipse(brush, center);
 				}
-				map.Save($@"D:\Временная мусорка\Images\{name}.png", ImageFormat.Png);
+				map.Save($"{nameOfImage}.png", ImageFormat.Png);
 			}
 		}
 	}

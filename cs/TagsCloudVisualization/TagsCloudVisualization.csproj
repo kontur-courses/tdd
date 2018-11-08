@@ -56,13 +56,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BoxSide.cs" />
-    <Compile Include="CircularCloudLayouterBasedOnSpiral.cs" />
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="Graphics.cs" />
-    <Compile Include="NewTestClass.cs" />
+    <Compile Include="CircularCloudLayouterShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TestClass.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
