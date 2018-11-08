@@ -31,5 +31,10 @@ namespace TagsCloudVisualization.CloudLayouts
             }
             throw new InvalidOperationException("There is no place for rectangle!");
         }
+
+        public List<Rectangle> GetListOfRectangles()
+        {
+            return new List<Rectangle>(rectangles);
+        }
     }
 }
