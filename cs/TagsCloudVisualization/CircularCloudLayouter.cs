@@ -19,13 +19,17 @@ namespace TagsCloudVisualization
         {
             CheckRectangleSizeCorrectness(rectangleSize);
 
-            var possibleNextRectangle = GetNextPossibleRectangle(rectangleSize);
-            while (placedRectangles.Any(r => r.IntersectsWith(possibleNextRectangle)))
-                possibleNextRectangle = GetNextPossibleRectangle(rectangleSize);
+            while (true)
+            {
+                var possibleNextRectangle = GetNextPossibleRectangle(rectangleSize);
 
-            placedRectangles.Add(possibleNextRectangle);
+                if (placedRectangles.Any(r => r.IntersectsWith(possibleNextRectangle)))
+                    continue;
 
-            return possibleNextRectangle;
+                placedRectangles.Add(possibleNextRectangle);
+
+                return possibleNextRectangle;
+            }
         }
 
         private Rectangle GetNextPossibleRectangle(Size rectangleSize) => new Rectangle(GetNextPointOnSpiral(), rectangleSize);
