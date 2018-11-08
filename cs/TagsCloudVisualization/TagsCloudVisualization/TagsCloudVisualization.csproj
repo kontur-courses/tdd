@@ -60,9 +60,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircularCloudlayouter.cs" />
+    <Compile Include="FirstSector.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\CircularCloudLayouterTests.cs" />
+    <Compile Include="Direction.cs" />
+    <Compile Include="Tests\DirectionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
