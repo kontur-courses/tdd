@@ -30,7 +30,7 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void PutNextRectangle_returnRectangleOfSameSize()
+        public void PutNextRectangle_ReturnRectangleOfSameSize()
         {
             var size = new Size(100, 20);
             circularCloudLayouter.PutNextRectangle(size).Size.Should().Be(size);
@@ -44,7 +44,7 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void PutNextRectangle_TwoRectangles_NotIntersect()
+        public void PutNextRectangle_TwoRectangles_RectanglesNotIntersect()
         {
             var firstNextRectangle = circularCloudLayouter.PutNextRectangle(new Size(10, 20));
             var secondNextRectangle = circularCloudLayouter.PutNextRectangle(new Size(10, 20));
@@ -53,7 +53,7 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void PutNextRectangle_RectanglesShouldNotIntersect()
+        public void PutNextRectangle_ManyRectangles_RectanglesShouldNotIntersect()
         {
             var rects = new List<Rectangle>();
             for (var i = 0; i < 10; i++)
