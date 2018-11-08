@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using FluentAssertions;
 using NUnit.Framework;
+using Math = System.Math;
 
 namespace TagsCloudVisualization
 {
@@ -63,7 +63,7 @@ namespace TagsCloudVisualization
             public void Should_ReturnCorrectFirstRectangle()
             {
                 var rectangle = cloud.PutNextRectangle(new Size(5, 20));
-                
+
                 Assert.AreEqual(new Rectangle(998, 990, 5, 20), rectangle);
             }
 
@@ -90,21 +90,61 @@ namespace TagsCloudVisualization
             }
 
             [Test]
+            public void Should_HaveCircleShape()
+            {
+                const int lengthEdge = 40;
+                var listSizes = new List<Size>();
+                for (var i = 0; i < 30; i++)
+                {
+                    listSizes.Add(new Size(lengthEdge, lengthEdge));
+                }
+
+                var area = lengthEdge * lengthEdge * listSizes.Count;
+                var radius = Math.Sqrt(area / Math.PI);
+                var listRect = listSizes.Select(size => cloud.PutNextRectangle(size)).ToList();
+                var maxDistance = listRect.SelectMany(GetListRectangleTops).Max();
+
+                maxDistance.Should().BeLessThan(radius * 1.4);
+            }
+
+            private List<double> GetListRectangleTops(Rectangle rect)
+            {
+                return new List<double>
+                    {
+                        CalculateDistanceToPoint(rect.Location),
+                        CalculateDistanceToPoint(new Point(rect.X + rect.Width, rect.Y)),
+                        CalculateDistanceToPoint(new Point(rect.X, rect.Y + rect.Height)),
+                        CalculateDistanceToPoint(new Point(rect.X + rect.Width, rect.Y + rect.Height))
+                    };
+            }
+
+            private double CalculateDistanceToPoint(Point point)
+            {
+                return Math.Sqrt(Math.Pow(point.X - cloud.Center.X, 2) + Math.Pow(point.Y - cloud.Center.Y, 2));
+            }
+
+            [Test]
             public void Should_CompressCloud()
             {
-                var listSizes = new List<Size>()
+                const int lengthEdge = 40;
+                var listSizes = new List<Size>();
+                for (var i = 0; i < 60; i++)
                 {
-                    new Size(272,118),new Size(270,69),new Size(184,115),
-                    new Size(198,77),new Size(299,76),new Size(230,100),
-                };
-                var expectedListRect = new List<Rectangle>()
-                {
-                    new Rectangle(864,941,272,118),new Rectangle(971,1059,270,69),
-                    new Rectangle(953,1128,184,115),new Rectangle(1136,982,198,77),
-                    new Rectangle(1036,865,299,76),new Rectangle(1137,1128,230,100)
-                };
+                    listSizes.Add(new Size(lengthEdge, lengthEdge));
+                }
+
                 var listRect = listSizes.Select(size => cloud.PutNextRectangle(size)).ToList();
-                listRect.Should().BeEquivalentTo(expectedListRect);
+                var hasNeighbor = listRect.All(rect => listRect.Any(rect1 => TwoRectanglesTouch(rect,rect1)));
+
+                hasNeighbor.Should().BeTrue();
+            }
+
+            private bool TwoRectanglesTouch(Rectangle rect, Rectangle rect1)
+            {
+                return rect.X == rect1.X + rect1.Width ||
+                       rect.X + rect.Width == rect1.X ||
+                       rect.Y == rect1.Y + rect1.Height ||
+                       rect.Y + rect.Height == rect1.Y;
             }
         }
     }
