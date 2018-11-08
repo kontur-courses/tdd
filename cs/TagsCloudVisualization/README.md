@@ -1,2 +1,2 @@
-![TagCloud](../Images/TagsCloudVisualization.png)
+![TagCloud](../../Images/TagsCloudVisualization.png)
 Format: ![Alt Text](url)
