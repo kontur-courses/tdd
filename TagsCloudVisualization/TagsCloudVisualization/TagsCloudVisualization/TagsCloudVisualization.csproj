@@ -59,6 +59,7 @@
     <Compile Include="Curves\Heart.cs" />
     <Compile Include="Curves\ICurve.cs" />
     <Compile Include="Curves\Spiral.cs" />
+    <Compile Include="CloudParameters.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectangleExtesions.cs" />

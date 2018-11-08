@@ -8,13 +8,11 @@ namespace TagsCloudVisualization.Curves
 		private readonly double degreeStep;
 		private readonly double factorStep;
 		private int nextPointCounter;
-		private Point center;
 
-		public Astroid(double factorStep, double degreeStep, Point center)
+		public Astroid(double factorStep, double degreeStep)
 		{
 			this.factorStep = factorStep;
 			this.degreeStep = degreeStep;
-			this.center = center;
 			nextPointCounter = 0;
 		}
 
@@ -22,8 +20,8 @@ namespace TagsCloudVisualization.Curves
 		{
 			var degree = degreeStep * nextPointCounter;
 			var factor = factorStep * nextPointCounter;
-			var x = center.X + (int)(factor * Math.Pow(Math.Cos(degree), 3));
-			var y = center.Y + (int)(factor * Math.Pow(Math.Sin(degree), 3));
+			var x = (int)(factor * Math.Pow(Math.Cos(degree), 3));
+			var y = (int)(factor * Math.Pow(Math.Sin(degree), 3));
 			nextPointCounter++;
 
 			return new Point(x, y);

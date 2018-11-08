@@ -12,13 +12,11 @@ namespace TagsCloudVisualization
 	internal class CircularCloudLayouterTests
 	{
 		private CircularCloudLayouter cloud;
-		private Point center;
 
 		[SetUp]
 		public void SetUp()
 		{
-			center = new Point(500, 400);
-			var spiral = new Spiral(factorStep: 0.5, degreeStep: Math.PI / 18, center: center);
+			var spiral = new Spiral(factorStep: 0.5, degreeStep: Math.PI / 18);
 			cloud = new CircularCloudLayouter(spiral);
 		}
 
@@ -94,6 +92,23 @@ namespace TagsCloudVisualization
 			double wholeArea = (max.X - min.X) * (max.Y - min.Y);
 
 			(rectanglesArea / wholeArea).Should().BeGreaterThan(0.4);
+		}
+
+		[Test]
+		public void PutNextRectangles_CloudShouldBeRound()
+		{
+			for (var i = 0; i < 100; i++)
+				cloud.PutNextRectangle(new Size(2 * (i + 1), i + 1));
+
+			var rectangles = cloud.GetRectangles();
+			var min = new Point(rectangles.Min(r => r.Left), rectangles.Min(r => r.Top));
+			var max = new Point(rectangles.Max(r => r.Right), rectangles.Max(r => r.Bottom));
+
+			var centerOfRectangles = new Point((max.X + min.X) / 2, (max.Y + min.Y) / 2);
+			var differenceX = Math.Abs(centerOfRectangles.X);
+			var differenceY = Math.Abs(centerOfRectangles.Y);
+
+			(differenceX + differenceY).Should().BeLessThan(200);
 		}
 	}
 }
