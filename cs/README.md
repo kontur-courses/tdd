@@ -1,0 +1,1 @@
+![Nice image](https://github.com/finkrer/tdd/tree/master/cs/image.bmp)
