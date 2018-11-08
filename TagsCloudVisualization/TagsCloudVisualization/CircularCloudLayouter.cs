@@ -44,7 +44,7 @@ namespace TagsCloudVisualization
             while (true)
             {
                 yield return curPoint;
-                angle += Math.PI / 8;
+                angle += Math.PI / 16;
                 var x = (int)(angle * Math.Cos(angle) / (2 * Math.PI)) + Center.X;
                 var y = (int)(angle * Math.Sin(angle) / (2 * Math.PI)) + Center.Y;
                 curPoint = new Point(x, y);
