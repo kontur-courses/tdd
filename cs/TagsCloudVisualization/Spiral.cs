@@ -7,22 +7,20 @@ namespace TagsCloudVisualization
     public class Spiral
     {
         private readonly double step;
-        public double Angle { get; private set; }
+        private double angle;
 
         public Spiral(double step, double angle)
         {
             this.step = step;
-            Angle = angle;
+            this.angle = angle;
         }
-
-        public void IncreaseAngle() => Angle++;
 
         public Point GetNextPoint(Point center)
         {
-            var radius = step * Angle;
-            var x = center.X + (int)(radius * Math.Cos(Angle));
-            var y = center.Y + (int) (radius * Math.Sin(Angle));
-            IncreaseAngle();
+            var radius = step * angle;
+            var x = center.X + (int)(radius * Math.Cos(angle));
+            var y = center.Y + (int) (radius * Math.Sin(angle));
+            angle++;
             return new Point(x, y);
         }
     }

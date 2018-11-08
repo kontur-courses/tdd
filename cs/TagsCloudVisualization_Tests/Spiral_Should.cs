@@ -10,15 +10,6 @@ namespace TagsCloudVisualization_Tests
     public class Spiral_Should
     {
         [Test]
-        public void GetNextPoint_IncreasesAngle()
-        {
-            var center = new Point(0, 0);
-            var spiral = new Spiral(1, 0);
-            spiral.GetNextPoint(center);
-            spiral.Angle.Should().Be(1);
-        }
-
-        [Test]
         public void GetNextPoint_GetsNextPointRight()
         {
             var center = new Point(0, 0);

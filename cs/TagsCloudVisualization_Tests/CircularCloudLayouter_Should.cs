@@ -5,6 +5,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using System.Drawing;
 using TagsCloudVisualization;
+using System.Collections.Immutable;
 
 namespace TagsCloudVisualization_Tests
 {
@@ -31,23 +32,17 @@ namespace TagsCloudVisualization_Tests
             var filename = $"{testContext.WorkDirectory}/{testContext.Test.Name}.png";
             if (testContext.Result.FailCount != 0)
             {
-                var image = visualizer.DrawRectangles(cloudLayouter);
+                var image = visualizer.DrawRectangles(cloudLayouter.Rectangles.ToList(), cloudLayouter.Radius);
                 image.Save(filename);
                 TestContext.WriteLine($"Tag cloud visualization saved to file {filename}");
             }
         }
 
         [Test]
-        public void SetValidCenterPoint_AfterCreation()
-        {
-            cloudLayouter.Center.Should().BeEquivalentTo(center);
-        }
-
+        public void SetValidCenterPoint_AfterCreation() => cloudLayouter.Center.Should().BeEquivalentTo(center);
+        
         [Test]
-        public void BeEmpty_AfterCreation()
-        {
-            cloudLayouter.Rectangles.Should().BeEmpty();
-        }
+        public void BeEmpty_AfterCreation() => cloudLayouter.Rectangles.Should().BeEmpty();
 
         [Test]
         public void PutNextRectangle_ThrowArgumentException_OnInvalidSize()
@@ -134,7 +129,7 @@ namespace TagsCloudVisualization_Tests
 
             var totalCircleCloudRadius = cloudLayouter.Radius;
             var totalCircleCloudArea = Math.PI * Math.Pow(totalCircleCloudRadius, 2);
-            (totalCloudArea / totalCircleCloudArea).Should().BeApproximately(0.5, 0.2);
+            totalCircleCloudArea.Should().BeGreaterOrEqualTo(totalCloudArea);
         }
     }
 }

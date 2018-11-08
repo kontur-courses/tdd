@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
+using System.Collections.Immutable;
 
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        public List<Rectangle> Rectangles { get; }
+        private readonly List<Rectangle> rectangles;
+        public ImmutableList<Rectangle> Rectangles => rectangles.ToImmutableList();
+
         public Point Center { get; }
 
         private Spiral Spiral { get; }
@@ -17,7 +20,7 @@ namespace TagsCloudVisualization
         public CircularCloudLayouter(Point center)
         {
             Center = center;
-            Rectangles = new List<Rectangle>();
+            rectangles = new List<Rectangle>();
             Spiral = new Spiral(0.0005, 0);
         }
 
@@ -26,21 +29,21 @@ namespace TagsCloudVisualization
             if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
                 throw new ArgumentException("Size should be positive");
             var nextRectangle = GenerateNextRectangle(rectangleSize);
-            Rectangles.Add(nextRectangle);
+            rectangles.Add(nextRectangle);
             return nextRectangle;
         }
 
 
         private Rectangle GenerateNextRectangle(Size rectangleSize)
         {
-            if (Rectangles.Any())
+            if (rectangles.Any())
             {
                 while (true)
                 {
                     var rectangleCenter = Spiral.GetNextPoint(Center);
                     var nexRectangle = new Rectangle(rectangleCenter, rectangleSize)
                         .ShiftRectangleToTopLeftCorner();
-                    if (!Rectangles.Any(nexRectangle.IntersectsWith))
+                    if (!rectangles.Any(nexRectangle.IntersectsWith))
                         return nexRectangle;
                 }
             }
@@ -49,7 +52,7 @@ namespace TagsCloudVisualization
 
         private int GetRadius()
         {
-            return Rectangles
+            return rectangles
                 .Select(rect => new Point(MathHelper.MaxAbs(rect.Left, rect.Right), MathHelper.MaxAbs(rect.Top, rect.Bottom)))
                 .Select(point => point.GetDistanceTo(Center)).Max();
         }

@@ -9,16 +9,15 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudVisualizer
     {
-        public Bitmap DrawRectangles(CircularCloudLayouter layouter)
+        public Bitmap DrawRectangles(IList<Rectangle> rectangles, int radius)
         {
-            var bmp = new Bitmap(layouter.Radius*2, layouter.Radius*2);
+            var bmp = new Bitmap(radius*2, radius*2);
             using (var g = Graphics.FromImage(bmp))
             {
                 g.Clear(Color.DimGray);
-                if (layouter.Rectangles.Any())
-                    layouter
-                        .Rectangles
-                        .ForEach(rect => g.DrawRectangle(new Pen(Brushes.Salmon, 8), rect.ShiftRectangleToBitMapCenter(bmp)));
+                if (rectangles.Any())
+                    foreach (var rectangle in rectangles)
+                        g.DrawRectangle(new Pen(Brushes.Salmon, 8), rectangle.ShiftRectangleToBitMapCenter(bmp));
             }
             return bmp;
         }
