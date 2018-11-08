@@ -13,7 +13,6 @@ namespace TagsCloudVisualization_Tests
         private Point center;
         private WordsCloudLayouter cloudLayouter;
         private Font defaultFont;
-        private string defaultText;
 
         [SetUp]
         public void SetUp()
@@ -21,7 +20,6 @@ namespace TagsCloudVisualization_Tests
             center = new Point(0, 0);
             cloudLayouter = new WordsCloudLayouter(center);
             defaultFont = new Font(FontFamily.GenericSansSerif, 14);
-            defaultText = "letter";
         }
 
         [Test]
