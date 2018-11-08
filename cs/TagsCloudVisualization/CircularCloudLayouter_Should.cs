@@ -20,15 +20,13 @@ namespace TagsCloudVisualization
             circularCloudLayouter = new CircularCloudLayouter(center);
         }
 
-        [TestCase(-1, 1, "size width and height must be a positive number*", 
-            TestName = "width less than zero")]
-        [TestCase(1, -1, "size width and height must be a positive number*", 
-            TestName = "height less than zero")]
+        [TestCase(-1, 1, TestName = "width less than zero")]
+        [TestCase(1, -1, TestName = "height less than zero")]
         public void PutNextRectangle_ThrowsArgumentExceptionWhen
-            (int width, int height, string expectedExceptionMessage)
+            (int width, int height)
         {
             Action ctorInvocation = () => circularCloudLayouter.PutNextRectangle(new Size(width, height));
-            ctorInvocation.Should().Throw<ArgumentException>().WithMessage(expectedExceptionMessage);
+            ctorInvocation.Should().Throw<ArgumentException>();
         }
 
         [Test]
@@ -41,14 +39,12 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_OneRectangle_PlaceToCenter()
         {
-            const int allowableIndent = 3;
             var rectangle = circularCloudLayouter.PutNextRectangle(new Size(100, 20));
-            rectangle.X.Should().BeLessThan(450 + allowableIndent);
-            rectangle.Y.Should().BeLessThan(490 + allowableIndent);
+            rectangle.IntersectsWith(new Rectangle(center, new Size(1, 1))).Should().BeTrue();
         }
 
         [Test]
-        public void PutNextRectangle_TwoRectanglesShouldNotIntersect()
+        public void PutNextRectangle_TwoRectangles_NotIntersect()
         {
             var firstNextRectangle = circularCloudLayouter.PutNextRectangle(new Size(10, 20));
             var secondNextRectangle = circularCloudLayouter.PutNextRectangle(new Size(10, 20));
@@ -83,6 +79,7 @@ namespace TagsCloudVisualization
                 GetVertexCoordinates(rect).ToList().ForEach(p => maxDistance = Math.Max(maxDistance,
                     GetDistanceFromPointToCenter(p)));
             }
+
             const double maxRectSize = 20.0;
             const int count = 10;
             const double expectedDensity = 0.5;
@@ -100,6 +97,7 @@ namespace TagsCloudVisualization
                 image.Save(path);
                 Console.WriteLine($"Tag cloud visualization saved to file <{path}>");
             }
+
             Console.WriteLine("Tag cloud visualization saved to file <path>");
         }
 
@@ -111,7 +109,7 @@ namespace TagsCloudVisualization
             yield return new Point(rectangle.Right, rectangle.Bottom);
         }
 
-        private double GetDistanceFromPointToCenter(Point p) => 
+        private double GetDistanceFromPointToCenter(Point p) =>
             Math.Sqrt((p.X - center.X) * (p.X - center.X) + (p.Y - center.Y) * (p.Y - center.Y));
     }
 }
