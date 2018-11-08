@@ -51,6 +51,19 @@ namespace TagsCloudVisualization
 			intersection.Should().BeFalse();
 		}
 
+		[Test]
+		public void CorrectWorkWithNonZeroCenter()
+		{
+			var center = new Point(-100,150);
+			var cloud = new CircularCloudLayouter(center);
+			for (var i = 0; i < 1000; i++)
+			{
+				cloud.PutNextRectangle(GetRandomSize());
+			}
+			var intersection = AreRectanglesIntersect(cloud.Rectangles);
+			intersection.Should().BeFalse();
+		}
+
 		public Random Random = new Random();
 
 		private Size GetRandomSize()

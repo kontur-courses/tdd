@@ -58,8 +58,8 @@ namespace TagsCloudVisualization
 		private Point GetNewCoordinate()
 		{
 			radius = widthOfSpiral * angle;
-			var x = (int) (radius * Math.Cos(angle));
-			var y = (int) (radius * Math.Sin(angle));
+			var x = (int) (radius * Math.Cos(angle)) + center.X;
+			var y = (int) (radius * Math.Sin(angle)) + center.Y;
 			return new Point(x, y);
 		}
 
