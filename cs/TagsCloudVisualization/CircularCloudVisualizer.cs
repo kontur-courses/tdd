@@ -5,7 +5,7 @@ using System.IO;
 
 namespace TagsCloudVisualization
 {
-    class CircularCloudVisualizer
+    public class CircularCloudVisualizer
     {
         public static void DrawTags(IEnumerable<Rectangle> rectangles, DirectoryInfo folder, string filename, 
             int imageWidth, int imageHeight)
