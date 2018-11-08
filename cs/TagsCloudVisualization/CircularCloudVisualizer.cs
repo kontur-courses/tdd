@@ -9,7 +9,8 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudVisualizer
     {
-        public Bitmap DrawRectangles(IList<Rectangle> rectangles, int radius)
+
+        public Bitmap DrawCloud(IList<Rectangle> rectangles, int radius)
         {
             var bmp = new Bitmap(radius*2, radius*2);
             using (var g = Graphics.FromImage(bmp))

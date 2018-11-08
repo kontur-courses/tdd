@@ -20,8 +20,8 @@ namespace TagsCloudVisualization_Tests
             var visualizer = new CircularCloudVisualizer();
             layout.PutNextRectangle(new Size(200, 100));
             layout.PutNextRectangle(new Size(200, 100));
-            visualizer.DrawRectangles(layout.Rectangles, layout.Radius).Width.Should().Be(layout.Radius*2);
-            visualizer.DrawRectangles(layout.Rectangles, layout.Radius).Height.Should().Be(layout.Radius*2); 
+            visualizer.DrawCloud(layout.Rectangles, layout.Radius).Width.Should().Be(layout.Radius*2);
+            visualizer.DrawCloud(layout.Rectangles, layout.Radius).Height.Should().Be(layout.Radius*2); 
         }
     }
 }

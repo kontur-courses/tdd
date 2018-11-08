@@ -28,12 +28,12 @@ namespace TagsCloudVisualization_Tests
         public void TearDown()
         {
             var testContext = TestContext.CurrentContext;
-            var visualizer = new CircularCloudVisualizer();
             var filename = $"{testContext.WorkDirectory}/{testContext.Test.Name}.png";
             if (testContext.Result.FailCount != 0)
             {
-                var image = visualizer.DrawRectangles(cloudLayouter.Rectangles, cloudLayouter.Radius);
-                image.Save(filename);
+                new CircularCloudVisualizer()
+                    .DrawCloud(cloudLayouter.Rectangles.ToList(), cloudLayouter.Radius)
+                    .Save(filename);
                 TestContext.WriteLine($"Tag cloud visualization saved to file {filename}");
             }
         }
