@@ -23,13 +23,12 @@ namespace TagsCloudVisualization
 			var sizeX = maxX - minX;
 			var sizeY = maxY - minY;
 
-			var locationOfCenter = list[0].Location + new Size(list[0].Width-5, list[0].Height-5) - new Size(minX, minY);
-			var center = new Rectangle(locationOfCenter,new Size(10,10));
+			var locationOfCenter = list[0].Location + new Size(list[0].Width - 5, list[0].Height - 5) - new Size(minX, minY);
+			var center = new Rectangle(locationOfCenter, new Size(10, 10));
 
 			using (var map = new Bitmap(sizeX, sizeY))
 			using (var graphics = System.Drawing.Graphics.FromImage(map))
 			{
-				
 				for (var index = 0; index < list.Count; index++)
 				{
 					var rectangle = list[index];
@@ -37,18 +36,11 @@ namespace TagsCloudVisualization
 					using (var brush = new SolidBrush(color))
 					{
 						var location = rectangle.Location - new Size(minX, minY);
-						graphics.FillRectangle(
-							brush,
-							new Rectangle(
-								location,
-								rectangle.Size
-							)
-						);
-						
+						graphics.FillRectangle(brush, new Rectangle(location, rectangle.Size));
 						graphics.DrawString(
 							index.ToString(),
-							new Font(new FontFamily("Calibri"),15 ),
-							new SolidBrush(Color.Chartreuse),
+							new Font(new FontFamily("Calibri"), 15),
+							new SolidBrush(Color.Teal),
 							location
 						);
 					}

@@ -69,7 +69,7 @@ namespace TagsCloudVisualization
 					x = startPointer.X;
 					y = startPointer.Y - rectangleSize.Height;
 					startPointer.Y = y;
-					rectangleSize = ExtensionForNewBoundBoxForRightSide(rectangleSize, x, y);
+					ExtensionForNewBoundBoxForRightSide(rectangleSize, x, y);
 					if (y < boundingBox.Y)
 					{
 						side = BoxSide.Down;
@@ -83,7 +83,7 @@ namespace TagsCloudVisualization
 			return new Rectangle(x, y, rectangleSize.Width, rectangleSize.Height);
 		}
 
-		private Size ExtensionForNewBoundBoxForRightSide(Size rectangleSize, int x, int y)
+		private void ExtensionForNewBoundBoxForRightSide(Size rectangleSize, int x, int y)
 		{
 			if (IsWidthOfRectOutsideNewBoundBox(ref rectangleSize, x))
 			{
@@ -95,8 +95,6 @@ namespace TagsCloudVisualization
 				nextBoundingBox.Height += nextBoundingBox.Y - y;
 				nextBoundingBox.Y = y;
 			}
-
-			return rectangleSize;
 		}
 
 		private bool IsWidthOfRectOutsideNewBoundBox(ref Size rectangleSize, int x)
@@ -107,14 +105,25 @@ namespace TagsCloudVisualization
 		private void ExtensionOfNewBoundBoxForUpSide(Size rectangleSize, int x, int y)
 		{
 			if (IsWidthOfRectOutsideNewBoundBox(ref rectangleSize, x))
-				nextBoundingBox.Width += x + rectangleSize.Width - nextBoundingBox.X - nextBoundingBox.Width;
-			if (y + rectangleSize.Height > nextBoundingBox.Y + nextBoundingBox.Height)
-				nextBoundingBox.Height += y + rectangleSize.Height - nextBoundingBox.Y - nextBoundingBox.Height;
+			{
+				var deltaX = x + rectangleSize.Width - nextBoundingBox.X - nextBoundingBox.Width;
+				nextBoundingBox.Width += deltaX;
+			}
+			if (IsHeightOfRectOutsideNewBoundBox(ref rectangleSize, y))
+			{
+				var deltaY = y + rectangleSize.Height - nextBoundingBox.Y - nextBoundingBox.Height;
+				nextBoundingBox.Height += deltaY;
+			}
+		}
+
+		private bool IsHeightOfRectOutsideNewBoundBox(ref Size rectangleSize, int y)
+		{
+			return y + rectangleSize.Height > nextBoundingBox.Y + nextBoundingBox.Height;
 		}
 
 		private void ExtensionOfNewBoundBoxForLeftSide(Size rectangleSize, int x, int y)
 		{
-			if (y + rectangleSize.Height > nextBoundingBox.Y + nextBoundingBox.Height)
+			if (IsHeightOfRectOutsideNewBoundBox(ref rectangleSize, y))
 				nextBoundingBox.Height += rectangleSize.Height;
 			if (x < nextBoundingBox.X)
 			{
