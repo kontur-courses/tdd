@@ -6,7 +6,7 @@ namespace TagsCloudVisualization
 {
     public static class TagsCloudVisualizer
     {
-        public static Bitmap GetPictureOfRectangles(List<Rectangle> rectangles)
+        public static Bitmap GetPictureOfRectangles(IReadOnlyList<Rectangle> rectangles)
         {
             var pictureRectangle = CalculatePictureRectangle(rectangles);
             var picture = new Bitmap(pictureRectangle.Width, pictureRectangle.Height);
@@ -22,7 +22,7 @@ namespace TagsCloudVisualization
             return picture;
         }
 
-        private static Rectangle CalculatePictureRectangle(List<Rectangle> rectangles)
+        private static Rectangle CalculatePictureRectangle(IReadOnlyList<Rectangle> rectangles)
         {
             var minTop = rectangles.Min(r => r.Top);
             var maxBottom = rectangles.Max(r => r.Bottom);

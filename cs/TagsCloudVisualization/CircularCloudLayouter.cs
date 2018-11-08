@@ -7,14 +7,16 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         private readonly List<Rectangle> placedRectangles;
+        public IReadOnlyList<Rectangle> PlacedRectangles => placedRectangles.AsReadOnly();
         private readonly ArchimedeanSpiralGenerator spiralGenerator;
+        private const float SpiralGeneratorAngleDelta = (float) (1 / (180 * Math.PI));
 
         public CircularCloudLayouter(Point center)
         {
             placedRectangles = new List<Rectangle>();
-            spiralGenerator = new ArchimedeanSpiralGenerator(center, 1, (float)(1 / (180 * Math.PI)));
+            spiralGenerator = new ArchimedeanSpiralGenerator(center, 1, SpiralGeneratorAngleDelta);
         }
-
+       
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             Rectangle nextRectangle;

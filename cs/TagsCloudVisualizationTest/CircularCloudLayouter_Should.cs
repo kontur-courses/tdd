@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTest
@@ -17,6 +19,19 @@ namespace TagsCloudVisualizationTest
         {
             center = new Point(0, 0);
             layouter = new CircularCloudLayouter(center);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Passed)
+                return;
+
+            var pictureFilename = Path.Combine(
+                TestContext.CurrentContext.TestDirectory, TestContext.CurrentContext.Test.Name) + ".png";
+            var layoutPicture = TagsCloudVisualizer.GetPictureOfRectangles(layouter.PlacedRectangles);
+            layoutPicture.Save(pictureFilename);
+            TestContext.Out.WriteLine($"Tag cloud visualization saved to file {pictureFilename}");
         }
 
         [Test]
@@ -64,6 +79,7 @@ namespace TagsCloudVisualizationTest
         [Test]
         public void PlaceRectanglesWithGoodDensity()
         {
+            const double goodDensityThreshold = 0.6;
             var rectangleSize = new Size(10, 20);
             var placedRectangles = new List<Rectangle>();
             for (int i = 0; i < 50; i++)
@@ -72,7 +88,7 @@ namespace TagsCloudVisualizationTest
                 placedRectangles.Add(nextRectangle);
             }
 
-            Assert.That(CalculateDensity(placedRectangles), Is.GreaterThan(0.6));
+            Assert.That(CalculateDensity(placedRectangles), Is.GreaterThan(goodDensityThreshold));
         }
 
         private double CalculateDensity(List<Rectangle> rectangles)
