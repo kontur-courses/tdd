@@ -7,22 +7,48 @@ namespace TagsCloudVisualization
 {
     class Program
     {
-        private const int MinRectSize = 10;
-        private const int MaxRectSize = 50;
-        private const int BitmapsCount = 3;
-        private static readonly Point Center = new Point(0 , 0);
+        private static int minRectSize = 10;
+        private static int maxRectSize = 50;
+        private static int rectanglesCount = 1000;
+        private static readonly Point Center = new Point(0, 0);
 
-        private static void Main()
+        private static void Main(string[] args)
         {
-            var rectanglesCount = 100;
+            if (!ParseArgs(args))
+                return;
             var visualizer = new Visualizer();
-            for (var i = 0; i < BitmapsCount; i++)
+            var rectangles = GenerateRandomRectangles(rectanglesCount);
+            var bitmap = visualizer.Visualize(rectangles.ToArray());
+            bitmap.Save("cloud" + ".bmp");
+        }
+
+        private static bool ParseArgs(string[] args)
+        {
+            const string helpMessage =
+                "Tag Cloud Visualization\nUsage:\nTagCloudVisualization.exe rectanglesCount [minimumSize] [maximumSize]";
+            if (args.Contains("help"))
             {
-                var rectangles = GenerateRandomRectangles(rectanglesCount);
-                var bitmap = visualizer.Visualize(rectangles);
-                bitmap.Save("cloud" + (i + 1) + ".bmp");
-                rectanglesCount *= 10;
+                Console.WriteLine(helpMessage);
+                return false;
             }
+
+            try
+            {
+                var intArgs = args.Select(int.Parse).ToArray();
+                rectanglesCount = intArgs[0];
+                if (intArgs.Length > 1)
+                    minRectSize = intArgs[1];
+                if (intArgs.Length > 2)
+                    maxRectSize = intArgs[2];
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("InvalidArguments!\n");
+                Console.WriteLine(helpMessage);
+                return false;
+            }
+
+            return true;
         }
 
         private static IEnumerable<Rectangle> GenerateRandomRectangles(int count)
@@ -32,8 +58,8 @@ namespace TagsCloudVisualization
             var sizes = new List<Size>(count);
             for (var i = 0; i < count; i++)
             {
-                var width = random.Next(MinRectSize, MaxRectSize);
-                var height = random.Next(MinRectSize, MaxRectSize);
+                var width = random.Next(minRectSize, maxRectSize);
+                var height = random.Next(minRectSize, maxRectSize);
                 sizes.Add(new Size(width, height));
             }
 

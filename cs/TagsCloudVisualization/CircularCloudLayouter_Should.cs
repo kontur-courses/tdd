@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -92,8 +93,9 @@ namespace TagsCloudVisualization
             if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
                 return;
             var directory = TestContext.CurrentContext.TestDirectory;
-            var bitmap = new Visualizer().Visualize(layouter.Rectangles);
-            bitmap.Save(directory + $"\\{TestContext.CurrentContext.Test.Name}.bmp");
+            var bitmap = new Visualizer().Visualize(layouter.Rectangles.ToArray());
+            var path = Path.Combine(directory, $"{TestContext.CurrentContext.Test.Name}.bmp");
+            bitmap.Save(path);
             TestContext.Out.WriteLine($"Tag cloud visualization saved to file {directory}");
         }
 

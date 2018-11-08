@@ -10,19 +10,19 @@ namespace TagsCloudVisualization
         private Point rectanglesCenter;
         private int maxDistanceToCenter;
 
-        public Bitmap Visualize(IEnumerable<Rectangle> rectangles)
+        public Bitmap Visualize(Rectangle[] rectangles)
         {
-            var rects = rectangles as Rectangle[] ?? rectangles.ToArray();
-            rectanglesCenter = rects.First().Location;
-            if (!rects.Any())
+            //var rects = rectangles as Rectangle[] ?? rectangles.ToArray();
+            if (!rectangles.Any())
                 return new Bitmap(0, 0);
-            SetMaxDistanceFromCenter(rects);
-            var size = GetBitmapSize(rects);
+            rectanglesCenter = rectangles.First().Location;
+            SetMaxDistanceFromCenter(rectangles);
+            var size = GetBitmapSize(rectangles);
             var bitmap = new Bitmap(size, size);
             var graphics = Graphics.FromImage(bitmap);
             graphics.DrawRectangle(new Pen(Color.Blue), new Rectangle(new Point(0, 0), new Size(size - 1, size - 1)));
             graphics.TranslateTransform(bitmap.Width / 2, bitmap.Height / 2);
-            foreach (var rect in rects)
+            foreach (var rect in rectangles)
             {
                 var color = GetRectangleColor(rect);
                 graphics.FillRectangle(new SolidBrush(color), rect);
