@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace TagsCloudVisualization
 {
@@ -9,6 +10,7 @@ namespace TagsCloudVisualization
 		private Rectangle nextBoundingBox;
 		private BoxSide side = BoxSide.Down;
 		private Point startPointer;
+		public readonly List<Rectangle> AllRectangles;
 
 		public CircularCloudLayouter(Point center)
 		{
@@ -16,6 +18,7 @@ namespace TagsCloudVisualization
 			boundingBox = new Rectangle(center.X, center.Y, 0, 0);
 			nextBoundingBox = new Rectangle(0, 0, 0, 0);
 			startPointer = new Point(boundingBox.X - boundingBox.Width, boundingBox.Y);
+			AllRectangles = new List<Rectangle>();
 		}
 
 		public Rectangle PutNextRectangle(Size rectangleSize)
@@ -80,7 +83,10 @@ namespace TagsCloudVisualization
 					}
 					break;
 			}
-			return new Rectangle(x, y, rectangleSize.Width, rectangleSize.Height);
+
+			var rectangle = new Rectangle(x, y, rectangleSize.Width, rectangleSize.Height);
+			AllRectangles.Add(rectangle);
+			return rectangle;
 		}
 
 		private void ExtendForNewBoundBoxForRightSide(Size rectangleSize, int x, int y)

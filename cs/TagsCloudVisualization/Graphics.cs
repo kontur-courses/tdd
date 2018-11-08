@@ -49,7 +49,7 @@ namespace TagsCloudVisualization
 				{
 					graphics.FillEllipse(brush, center);
 				}
-				map.Save($"{name}.png", ImageFormat.Png);
+				map.Save($@"D:\Временная мусорка\Images\{name}.png", ImageFormat.Png);
 			}
 		}
 	}

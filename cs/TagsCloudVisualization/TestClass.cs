@@ -11,41 +11,7 @@ namespace TagsCloudVisualization
 	public class CircularCloudLayouterShould
 	{
 		public static Random Random = new Random();
-
-		private List<Rectangle> AllRectangles;
-
-		[SetUp]
-		public void SetUp()
-		{
-			AllRectangles = new List<Rectangle>();
-		}
-
-		[TearDown]
-		public void TearDown()
-		{
-			var graphics = new Graphics();
-			graphics.SaveMap(AllRectangles, TestContext.CurrentContext.Test.FullName);
-		}
-
-		private void PutRandomRectangle(CircularCloudLayouter cloud)
-		{
-			var size = new Size(Random.Next(50, 100), Random.Next(50, 100));
-			var rectangle = cloud.PutNextRectangle(size);
-			AllRectangles.Add(rectangle);
-		}
-
-		private bool IsIntersects()
-		{
-			for (var i = 0; i < AllRectangles.Count; i++)
-			{
-				for (var j = i + 1; j < AllRectangles.Count; j++)
-				{
-					if (AllRectangles[i].IntersectsWith(AllRectangles[j]))
-						return true;
-				}
-			}
-			return false;
-		}
+		
 
 		[Test]
 		[Order(1)]
@@ -63,7 +29,7 @@ namespace TagsCloudVisualization
 			var center = new Point(0, 0);
 			var cloud = new CircularCloudLayouter(center);
 			PutRandomRectangle(cloud);
-			AllRectangles.Should().NotBeNullOrEmpty();
+			cloud.AllRectangles.Should().NotBeNullOrEmpty();
 		}
 
 		[Test]
@@ -74,7 +40,7 @@ namespace TagsCloudVisualization
 			var cloud = new CircularCloudLayouter(center);
 			for (var i = 0; i < 4; i++)
 				PutRandomRectangle(cloud);
-			IsIntersects().Should().BeFalse();
+			IsIntersects(cloud).Should().BeFalse();
 		}
 
 		[Test]
@@ -85,7 +51,7 @@ namespace TagsCloudVisualization
 			var cloud = new CircularCloudLayouter(center);
 			for (var i = 0; i < 4; i++)
 				PutRandomRectangle(cloud);
-			IsIntersects().Should().BeFalse();
+			IsIntersects(cloud).Should().BeFalse();
 		}
 
 		[Test]
@@ -96,7 +62,7 @@ namespace TagsCloudVisualization
 			var cloud = new CircularCloudLayouter(center);
 			for (var i = 0; i < 5; i++)
 				PutRandomRectangle(cloud);
-			IsIntersects().Should().BeFalse();
+			IsIntersects(cloud).Should().BeFalse();
 		}
 
 		[Test]
@@ -107,7 +73,33 @@ namespace TagsCloudVisualization
 			var cloud = new CircularCloudLayouter(center);
 			for (var i = 0; i < 150; i++)
 				PutRandomRectangle(cloud);
-			IsIntersects().Should().BeFalse();
+			IsIntersects(cloud).Should().BeFalse();
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
+			var graphics = new Graphics();
+			//graphics.SaveMap(cloud.AllRectangles, TestContext.CurrentContext.Test.FullName);
+		}
+
+		private void PutRandomRectangle(CircularCloudLayouter cloud)
+		{
+			var size = new Size(Random.Next(50, 100), Random.Next(50, 100));
+			var rectangle = cloud.PutNextRectangle(size);
+		}
+
+		private bool IsIntersects(CircularCloudLayouter cloud)
+		{
+			for (var i = 0; i < cloud.AllRectangles.Count; i++)
+			{
+				for (var j = i + 1; j < cloud.AllRectangles.Count; j++)
+				{
+					if (cloud.AllRectangles[i].IntersectsWith(cloud.AllRectangles[j]))
+						return true;
+				}
+			}
+			return false;
 		}
 	}
 }
