@@ -12,7 +12,6 @@ namespace TagsCloudVisualization
 
         public Bitmap Visualize(Rectangle[] rectangles)
         {
-            //var rects = rectangles as Rectangle[] ?? rectangles.ToArray();
             if (!rectangles.Any())
                 return new Bitmap(0, 0);
             rectanglesCenter = rectangles.First().Location;
