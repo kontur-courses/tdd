@@ -93,7 +93,8 @@ namespace TagsCloudVisualization
                 rectangles.Add(layouter.PutNextRectangle(rs));
 
             rectangles.Any(rect => rectangles.Where(r => !r.Equals(rect))
-                                             .Any(r => r.IntersectsWith(rect)));
+                                             .Any(r => r.IntersectsWith(rect)))
+                      .Should().BeFalse();
         }
 
         public IEnumerable<Size> GenerateRectanglesSizes(int count)
