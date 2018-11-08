@@ -21,6 +21,14 @@ namespace TagsCloudVisualization
             return new Point(x, y);
         }
 
+        public static Point operator /(Point p1, double value)
+        {
+            var x = p1.X / value;
+            var y = p1.Y / value;
+
+            return new Point(x, y);
+        }
+
         public Point Normalized()
         {
             var x = 0;
@@ -45,6 +53,15 @@ namespace TagsCloudVisualization
             if (otherPoint == null)
                 return false;
             return Math.Abs(otherPoint.X - X) < 1e-7 && Math.Abs(otherPoint.Y - Y) < 1e-7;
+        }
+
+        public bool EqualsApproximately(Point otherPoint)
+        {
+            var equalityValue = 1e-7;
+            var deltaX = Math.Abs(X - otherPoint.X);
+            var deltaY = Math.Abs(Y - otherPoint.Y);
+
+            return deltaX < equalityValue && deltaY < equalityValue;
         }
     }
 }

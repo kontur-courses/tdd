@@ -11,7 +11,6 @@ namespace TagsCloudVisualization
     [TestFixture]
     class TagsCloudPositioning_should
     {
-
         [Test]
         public void ReturnRectangleAtCenter_WhenAddFirstRectangle()
         {
@@ -43,6 +42,29 @@ namespace TagsCloudVisualization
             }
 
             result.Should().BeFalse();
+        }
+
+        [Test]
+        public void MustPositioningAsCircle()
+        {
+            var origin = new Point(0, 0);
+            var circularCloudLayouter = new CircularCloudLayouter(origin);
+            var size = new Size(1, 1);
+            var rectangles = new List<Rectangle>();
+            const int radius = 10;
+
+            for (var i = 0; i < 10; i++)
+            {
+                var rectangle = circularCloudLayouter.PutNextRectangle(size);
+                rectangles.Add(rectangle);
+            }
+
+            var result = rectangles
+                .Select(r => r.Center)
+                .Select(p => Math.Pow(p.X - origin.X, 2) + Math.Pow(p.Y - origin.Y, 2))
+                .Select(Math.Abs)
+                .All(h => h <= radius);
+            result.Should().BeTrue();
         }
     }
 }

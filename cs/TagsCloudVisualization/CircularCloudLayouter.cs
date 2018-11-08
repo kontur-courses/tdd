@@ -26,7 +26,7 @@ namespace TagsCloudVisualization
             var rectangle = PutOnSpiral(rectangleSize);
             if (rectangle == null)
                 return null;
-            rectangle = MakeCloserToCenter(rectangle);
+            //rectangle = MakeCloserToCenter(rectangle);
             rectanglesList.Add(rectangle);
             return rectangle;
         }
@@ -66,11 +66,12 @@ namespace TagsCloudVisualization
         private Rectangle MakeCloserToCenter(Rectangle rectangle)
         {
             var quarters = rectangle.GetQuarters();
-            var movingPoint = FindDirectionToCenter(quarters);
+            var movingPoint = FindDirectionToCenter(quarters) / 10;
             if (movingPoint.Equals(new Point(0, 0)))
                 return rectangle;
             var previousPosition = new Point(0, 0);
-            while (!rectangle.IsIntersectsWithAnyRect(rectanglesList))
+            while (!rectangle.IsIntersectsWithAnyRect(rectanglesList) 
+                   && !rectangle.Center.EqualsApproximately(rectangle.Origin))
             {
                 previousPosition = rectangle.Center;
                 rectangle.Center += movingPoint;
