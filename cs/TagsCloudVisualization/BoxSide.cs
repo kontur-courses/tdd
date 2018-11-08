@@ -5,6 +5,6 @@
 		Up,
 		Down,
 		Left,
-		Rigth
+		Right
 	}
 }
