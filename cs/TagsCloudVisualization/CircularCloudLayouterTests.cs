@@ -12,16 +12,16 @@ namespace TagsCloudVisualization
     [TestFixture]
     class CircularCloudLayouterTests
     {
-        private string CurrentTestsFolder = TestContext.CurrentContext.TestDirectory;
-        private DirectoryInfo VisualizationsFolder;
-        private DirectoryInfo SubTestFolder;
+        private string currentTestsFolder = TestContext.CurrentContext.TestDirectory;
+        private DirectoryInfo visualizationsFolder;
+        private DirectoryInfo subTestFolder;
         private CircularCloudLayouter layouter;
         private List<Rectangle> rectangles;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            VisualizationsFolder = Directory.CreateDirectory(Path.Combine(CurrentTestsFolder, "Visualizations"));
+            visualizationsFolder = Directory.CreateDirectory(Path.Combine(currentTestsFolder, "Visualizations"));
         }
 
         [SetUp]
@@ -29,7 +29,7 @@ namespace TagsCloudVisualization
         {
             var currentTestName = TestContext.CurrentContext.Test.Name;
 
-            SubTestFolder = Directory.CreateDirectory(Path.Combine(VisualizationsFolder.FullName, currentTestName));
+            subTestFolder = Directory.CreateDirectory(Path.Combine(visualizationsFolder.FullName, currentTestName));
 
             layouter = new CircularCloudLayouter(new Point(0, 0));
 
@@ -43,9 +43,9 @@ namespace TagsCloudVisualization
 
             if (Equals(testResult, ResultState.Failure))
             {
-                CircularCloudVisualizer.DrawTags(rectangles, SubTestFolder, "screenshot", 2048, 1080);
+                CircularCloudVisualizer.DrawTags(rectangles, subTestFolder, "screenshot", 2048, 1080);
 
-                var path = Path.Combine(SubTestFolder.FullName, "screenshot");
+                var path = Path.Combine(subTestFolder.FullName, "screenshot");
 
                 TestContext.Out.WriteLine("Tag cloud visualization saved to file " + path);
             }
