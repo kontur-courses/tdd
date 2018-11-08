@@ -7,14 +7,15 @@ namespace TagsCloudVisualization
 {
     public class RectanglesRenderer
     {
-        public static Image GenerateImage(List<Rectangle> rectangles, float lineWidth = 6f)
+        public static Image GenerateImage(IEnumerable<Rectangle> rectangles, float lineWidth = 6f)
         {
             var maxX = 0;
             var maxY = 0;
             var maxWidth = 0;
             var maxHeight = 0;
 
-            foreach (var rectangle in rectangles)
+            var listOfRectangles = rectangles.ToList();
+            foreach (var rectangle in listOfRectangles)
             {
                 maxX = Math.Max(maxX, rectangle.X);
                 maxY = Math.Max(maxY, rectangle.Y);
@@ -24,7 +25,7 @@ namespace TagsCloudVisualization
 
             var image = new Bitmap(maxX + maxWidth + 500, maxY + maxHeight + 500);
             var graphics = Graphics.FromImage(image);
-            rectangles.ToList().ForEach(r => graphics.DrawRectangle(new Pen(Color.Black, 6f), r));
+            listOfRectangles.ToList().ForEach(r => graphics.DrawRectangle(new Pen(Color.Black, 6f), r));
             return image;
         }
     }
