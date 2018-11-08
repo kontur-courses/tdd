@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using NUnit.Framework.Constraints;
 using TagsCloudVisualization.CloudLayouts;
 using TagsCloudVisualization.CloudVisualizers;
 

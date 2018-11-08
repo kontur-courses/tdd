@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization.Sequences;
 
-namespace TagsCloudVisualization.Tests
+namespace TagsCloudVisualizationTest
 {
     [TestFixture]
     public class Spiral_Should
@@ -22,6 +21,19 @@ namespace TagsCloudVisualization.Tests
                 .First();
             
             actual.Should().Be(expected);
+        }
+
+        [Test]
+        public void GetPoints_ShouldReturnNotOnlyZeroPoints()
+        {
+            var spiral = new Spiral();
+            
+            var actual = spiral
+                .GetPoints()
+                .Take(100)
+                .Where(p => p != Point.Empty);
+            
+            actual.Any().Should().BeTrue();
         }
         
         [Test]

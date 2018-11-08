@@ -21,6 +21,8 @@ namespace TagsCloudVisualization.CloudLayouts
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
+            if(rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+                throw new ArgumentException($"{nameof(PutNextRectangle)} : {rectangleSize}");
             foreach (var point in spiral.GetPoints())
             {
                 var offsetPoint = new Point(center.X + point.X, center.Y + point.Y);

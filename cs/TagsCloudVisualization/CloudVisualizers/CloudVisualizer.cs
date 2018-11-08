@@ -1,19 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using System.Drawing;
-using FluentAssertions;
 using TagsCloudVisualization.CloudLayouts;
 
 namespace TagsCloudVisualization.CloudVisualizers
 {
-    public class CloudVisualizer
+    public class CloudVisualizer : ICloudVisualizer
     {
-        public Pen Pen { get; set; }
+        private readonly Pen pen;
         public ICloudLayout Cloud { get; set; }
 
-    public CloudVisualizer(Pen pen, ICloudLayout cloud)
+        public CloudVisualizer(Pen pen, ICloudLayout cloud)
         {
-            this.Pen = pen;
+            this.pen = pen;
+            if (cloud == null) throw new ArgumentNullException();
             this.Cloud = cloud;
         }
 
@@ -25,7 +24,7 @@ namespace TagsCloudVisualization.CloudVisualizers
             foreach (var rectangle in Cloud.GetListOfRectangles())
             {
                 var rectToDraw = new Rectangle(rectangle.Location + (Size)imageCenter, rectangle.Size);
-                graphics.DrawRectangle(Pen, rectToDraw);
+                graphics.DrawRectangle(pen, rectToDraw);
             }
 
             return image;
