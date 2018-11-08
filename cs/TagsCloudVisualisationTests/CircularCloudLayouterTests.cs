@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization;
@@ -56,6 +57,47 @@ namespace TagsCloudVisualisationTests
             var resultRect = tagCloud.PutNextRectangle(rectSize);
 
             resultRect.Size.Should().Be(rectSize);
+        }
+
+        [TestCase(2)]
+        [TestCase(10)]
+        [TestCase(100)]
+        public void HasCorrectCount_WhenMultipleRectanglesAdded(int count)
+        {
+            var size = new Size(10, 10);
+            var tagCloud = new CircularCloudLayouter(new Point(0, 0));
+
+            for (var i = 0; i < count; i++)
+                tagCloud.PutNextRectangle(size);
+
+            tagCloud.Rectangles.Count.Should().Be(count);
+        }
+
+        [Test]
+        public void PutNextRectangle_RectanglesDoNotIntersect()
+        {
+            const int count = 100;
+            var size = new Size(10, 10);
+            var tagCloud = new CircularCloudLayouter(new Point(0, 0));
+
+            for (var i = 0; i < count; i++)
+                tagCloud.PutNextRectangle(size);
+
+            tagCloud.Rectangles
+                .Any(rect => tagCloud.Rectangles
+                    .Where(r => !r.Equals(rect))
+                    .Any(r => r.IntersectsWith(rect)))
+                .Should().BeFalse();
+        }
+
+        [Test, Timeout(2000)]
+        public void PutNextRectangle_WorksFast_When500RectanglesArePutIn()
+        {
+            const int count = 500;
+            var size = new Size(10, 10);
+            var tagCloud = new CircularCloudLayouter(new Point(0, 0));
+            for (var i = 0; i < count; i++)
+                tagCloud.PutNextRectangle(size);
         }
     }
 }
