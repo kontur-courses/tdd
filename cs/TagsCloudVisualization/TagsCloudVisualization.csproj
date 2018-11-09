@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
+    <Compile Include="BoundingCoordinate.cs" />
     <Compile Include="Graphics.cs" />
     <Compile Include="CircularCloudLayouterShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
