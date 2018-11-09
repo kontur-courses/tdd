@@ -5,9 +5,9 @@ using System.IO;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudVisualizer
+    public class TagCloudVisualizer
     {
-        public static void DrawTags(IEnumerable<Rectangle> rectangles, DirectoryInfo folder, string filename, 
+        public static void Visualize(IEnumerable<Rectangle> layout, DirectoryInfo folder, string filename, 
             int imageWidth, int imageHeight)
         {
             var pen = new Pen(Color.White, 1);
@@ -18,12 +18,12 @@ namespace TagsCloudVisualization
             using (var bmp = new Bitmap(imageWidth, imageHeight))
             using (var g = Graphics.FromImage(bmp))
             {
-                foreach (var r in rectangles)
+                foreach (var tag in layout)
                 {
-                    var x = r.X + halfImageWidth;
-                    var y = r.Y + halfImageHeight;
+                    var x = tag.X + halfImageWidth;
+                    var y = tag.Y + halfImageHeight;
 
-                    g.DrawRectangle(pen, x, y, r.Width, r.Height);
+                    g.DrawRectangle(pen, x, y, tag.Width, tag.Height);
                 }
 
                 bmp.Save(Path.Combine(folder.FullName, filename + ".jpeg"), ImageFormat.Jpeg);

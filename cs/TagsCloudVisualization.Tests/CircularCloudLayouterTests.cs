@@ -43,7 +43,7 @@ namespace TagsCloudVisualization
 
             if (Equals(testResult, ResultState.Failure))
             {
-                CircularCloudVisualizer.DrawTags(rectangles, subTestFolder, "screenshot", 2048, 1080);
+                TagCloudVisualizer.Visualize(rectangles, subTestFolder, "screenshot", 2048, 1080);
 
                 var path = Path.Combine(subTestFolder.FullName, "screenshot");
 
@@ -81,7 +81,7 @@ namespace TagsCloudVisualization
         [TestCase(1000, TestName = "one thousand rectangles")]
         public void PutNextRectangle_SeveralRectangles_NotIntersect(int rectanglesCount)
         {
-            var rectanglesSizes = GenerateRectanglesSizes(rectanglesCount);
+            var rectanglesSizes = TagsGenerator.GenerateRectanglesSizes(rectanglesCount);
 
             foreach (var rs in rectanglesSizes)
                 rectangles.Add(layouter.PutNextRectangle(rs));
@@ -89,17 +89,6 @@ namespace TagsCloudVisualization
             rectangles.Any(rect => rectangles.Where(r => !r.Equals(rect))
                                              .Any(r => r.IntersectsWith(rect)))
                       .Should().BeFalse();
-        }
-
-        public IEnumerable<Size> GenerateRectanglesSizes(int count)
-        {
-            var random = new Random();
-            var rectangles = new List<Size>();
-
-            for (var i = 0; i < count; i++)
-                rectangles.Add(new Size(random.Next(5, 50), random.Next(5, 50)));
-
-            return rectangles;
         }
 
         [TestCase(0, 0, TestName = "with zero width and height")]
