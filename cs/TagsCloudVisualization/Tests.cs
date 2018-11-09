@@ -11,7 +11,7 @@ namespace TagsCloudVisualization
 {
     class Tests
     {
-        public CircularCloudLayouter cloud;
+        private CircularCloudLayouter cloud;
         private TestContext currentContext;
 
         [SetUp]
@@ -26,9 +26,9 @@ namespace TagsCloudVisualization
         {
             if (currentContext.Result.FailCount != 0)
             {
-                var visualisator = new Visualisator(new Size(600, 600));
-                visualisator.ShowCurrentConfig(cloud);
-                Console.WriteLine("Tag cloud visualization saved to file D:/DebugFile.bmp");
+                var visualisator = new Visualiser(new Size(600, 600));
+                visualisator.ShowCurrentConfig(cloud, "D://DebugFile.bmp");
+                Console.WriteLine("Tag cloud visualization saved to file D://DebugFile.bmp");
             }
         }
 
@@ -38,12 +38,6 @@ namespace TagsCloudVisualization
             cloud.center.Should().Be(new Point(0, 0));
         }
 
-        [Test]
-        public void PutNextRectangle_ShouldReturnsRectangles()
-        {
-            cloud.PutNextRectangle(new Size(10, 10))
-                .Should().BeOfType<Rectangle>();
-        }
 
         [Test]
         public void FirstRectange_ShouldBeNearCenter()
@@ -63,8 +57,8 @@ namespace TagsCloudVisualization
         [Test]
         public void ArchimedesSpiralePointsMaker_ShouldReturnCenterAtFirst()
         {
-            var tmp = ArchimedesSpiralePointsMaker.PointsMaker(new Point(0, 0), 2);
-            var value = tmp.GetEnumerator().Current;
+            var value = ArchimedesSpiralePointsMaker
+                .GenerateNextPoint(new Point(0, 0), 2).First();
             value.Should().Be(new Point(0, 0));
         }
     }

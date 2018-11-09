@@ -7,20 +7,20 @@ using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
-    class ArchimedesSpiralePointsMaker
+    static class ArchimedesSpiralePointsMaker
     {
 
-        public static IEnumerable<Point> PointsMaker(Point center, double spiraleStep)
+        public static IEnumerable<Point> GenerateNextPoint(Point center, double spiraleStep)
         {
             yield return center;
-            double angle = 0;
-            double angleDelta = Math.PI / 90;
+            var angle = 0.0;
+            const double angleDelta = Math.PI / 90;
             while (true)
             {
                 angle += angleDelta;
-                var p = spiraleStep * angle;
-                var x = p * Math.Sin(angle);
-                var y = p * Math.Cos(angle);
+                var distance = spiraleStep * angle;
+                var x = distance * Math.Sin(angle);
+                var y = distance * Math.Cos(angle);
                 yield return new Point((int)x + center.X, (int)y + center.Y);
             }
             

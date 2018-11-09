@@ -11,8 +11,10 @@ namespace TagsCloudVisualization
     {
         static void Main(string[] args)
         {
-            var visualisator = new Visualisator(new Size(600, 600));
-            visualisator.MakeImage("output.bmp", 30);
+            var visualisator = new Visualiser(new Size(1000, 1000));
+            visualisator.MakeExampleImage("output.bmp", 
+                rectangleCount: 1000, 
+                maxRectangleSize:new Size(10, 10));
         }
     }
 }

@@ -10,41 +10,46 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         public readonly Point center;
-        private IEnumerator<Point> pointMaker;
-        public List<Rectangle> rectangles;
-         
+        private readonly IEnumerator<Point> pointMaker;
+        private List<Rectangle> Rectangles;
+        public List<Rectangle> rectangles
+        {
+            get { return Rectangles.ToList(); }
+            private set { Rectangles = value; }
+        }
+
+        private void AddRectangle(Rectangle newRectangle)
+        {
+            Rectangles.Add(newRectangle);
+        }
+
         public CircularCloudLayouter(Point center, double spiraleStep)
         {
             this.center = center;
             pointMaker = ArchimedesSpiralePointsMaker
-                .PointsMaker(center, spiraleStep)
+                .GenerateNextPoint(center, spiraleStep)
                 .GetEnumerator();
             rectangles = new List<Rectangle>();
         }
 
         private bool AreRectanglesIntersectWith(Rectangle newRectangle)
         {
-            foreach (var rectangle in rectangles)
-            {
-                if (rectangle.IntersectsWith(newRectangle))
-                    return true;
-            }
-            return false;
+            return rectangles.Any((rectangle) => rectangle.IntersectsWith(newRectangle));
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            pointMaker.MoveNext();
-            var location = pointMaker.Current;
-            var newRectangle = new Rectangle(location, rectangleSize);
-            while (AreRectanglesIntersectWith(newRectangle))
+            while (true)
             {
-                location = pointMaker.Current;
                 pointMaker.MoveNext();
-                newRectangle = new Rectangle(location, rectangleSize);
+                var location = pointMaker.Current;
+                var newRectangle = new Rectangle(location, rectangleSize);
+                if (!AreRectanglesIntersectWith(newRectangle))
+                {
+                    AddRectangle(newRectangle);
+                    return newRectangle;
+                }
             }
-            rectangles.Add(newRectangle);
-            return newRectangle;
         }
     }
 }
