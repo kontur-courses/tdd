@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class RectanglesDrawer
+    public class RectanglesDrawer : IDrawer
     {
         private const int SideShift = 10;
         private const int MaximumSize = 4000;

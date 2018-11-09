@@ -10,14 +10,25 @@ using NUnit.Framework.Interfaces;
 namespace TagsCloudVisualization
 {
     [TestFixture]
-    public class CircularCloudLayouter_Should
+    public class CircularCloudLayouterTests
     {
         private const int DistanceBetweenPoints = 1;
+        private const double AngleIncrement = 0.01;
 
         private CircularCloudLayouter layouter;
         private Point center;
         private Size rectangleSize;
-        private IEnumerable<Point> points;
+        private SpiralPointsGenerator pointsGenerator;
+
+        private static IEnumerable RectanglesAmountTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(1).SetName("OneRectangle");
+                yield return new TestCaseData(2).SetName("TwoRectangles");
+                yield return new TestCaseData(1000).SetName("ThousandRectangles");
+            }
+        }
 
         [TearDown]
         public void TearDown()
@@ -31,22 +42,22 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void Have_ConstructorWithPointAndGeneratorInput()
+        public void Constructor_WithCenterAndGenerator_DoesNotThrowException()
         {
             center = new Point(5, 5);
-            points = new SpiralPointsGenerator().GetPoints(DistanceBetweenPoints);
+            pointsGenerator = new SpiralPointsGenerator(DistanceBetweenPoints, AngleIncrement);
 
-            Action action = () => new CircularCloudLayouter(center, points);
+            Action action = () => new CircularCloudLayouter(center, pointsGenerator);
 
             action.Should().NotThrow();
         }
 
         [Test]
-        public void Have_PutNextRectangleMethod()
+        public void PutNextRectangleMethod_OnCorrectSize_DoesNotThrowException()
         {
             center = new Point(5, 5);
-            points = new SpiralPointsGenerator().GetPoints(DistanceBetweenPoints);
-            layouter = new CircularCloudLayouter(center, points);
+            pointsGenerator = new SpiralPointsGenerator(DistanceBetweenPoints, AngleIncrement);
+            layouter = new CircularCloudLayouter(center, pointsGenerator);
             rectangleSize = new Size(10, 10);
 
             Action action = () => layouter.PutNextRectangle(rectangleSize);
@@ -55,33 +66,23 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void Have_EmptyRectanglesList_AfterCreating()
+        public void Rectangles_AfterLayouterCreating_IsEmptyList()
         {
             center = new Point(5, 5);
-            points = new SpiralPointsGenerator().GetPoints(DistanceBetweenPoints);
-            layouter = new CircularCloudLayouter(center, points);
+            pointsGenerator = new SpiralPointsGenerator(DistanceBetweenPoints, AngleIncrement);
+            layouter = new CircularCloudLayouter(center, pointsGenerator);
 
             var rectangles = layouter.Rectangles;
 
             rectangles.Should().BeEmpty();
         }
 
-        private static IEnumerable RectanglesAmountTestCases
-        {
-            get
-            {
-                yield return new TestCaseData(1).SetName("OneRectangle");
-                yield return new TestCaseData(2).SetName("TwoRectangles");
-                yield return new TestCaseData(1000).SetName("ThousandRectangles");
-            }
-        }
-
         [TestCaseSource(nameof(RectanglesAmountTestCases))]
-        public void Have_AllRectanglesInList_AfterAdding(int rectangleAmount)
+        public void Rectangles_AfterAdding_HasAllRectanglesInList(int rectangleAmount)
         {
             center = new Point(5, 5);
-            points = new SpiralPointsGenerator().GetPoints(DistanceBetweenPoints);
-            layouter = new CircularCloudLayouter(center, points);
+            pointsGenerator = new SpiralPointsGenerator(DistanceBetweenPoints, AngleIncrement);
+            layouter = new CircularCloudLayouter(center, pointsGenerator);
             rectangleSize = new Size(10, 10);
 
             AddRectangles(rectangleAmount);
@@ -96,11 +97,11 @@ namespace TagsCloudVisualization
         [TestCase(0, -1, TestName = "HeightIsNegative")]
         [TestCase(0, 0, TestName = "BothDimensionsAreZero")]
         [TestCase(-1, -1, TestName = "BothDimensionsAreNegative")]
-        public void PutNextRectangle_ShouldThrowArgumentException_OnInvalidSize(int width, int height)
+        public void PutNextRectangle_OnInvalidSize_ThrowsArgumentException(int width, int height)
         {
             center = new Point(5, 5);
-            points = new SpiralPointsGenerator().GetPoints(DistanceBetweenPoints);
-            layouter = new CircularCloudLayouter(center, points);
+            pointsGenerator = new SpiralPointsGenerator(DistanceBetweenPoints, AngleIncrement);
+            layouter = new CircularCloudLayouter(center, pointsGenerator);
             var invalidRectangleSize = new Size(width, height);
 
             Action action = () => layouter.PutNextRectangle(invalidRectangleSize);
@@ -109,25 +110,39 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void FirstRectangle_ShouldBeInCenter()
+        public void PutNextRectangle_AfterFirstAdding_ReturnsRectangleInCenter()
         {
             center = new Point(5, 5);
-            points = new SpiralPointsGenerator().GetPoints(DistanceBetweenPoints);
-            layouter = new CircularCloudLayouter(center, points);
+            pointsGenerator = new SpiralPointsGenerator(DistanceBetweenPoints, AngleIncrement);
+            layouter = new CircularCloudLayouter(center, pointsGenerator);
             rectangleSize = new Size(10, 10);
 
-            layouter.PutNextRectangle(rectangleSize);
-            var isRectangleInCenter = layouter.Rectangles.First().Contains(center);
+            var firstRectangle = layouter.PutNextRectangle(rectangleSize);
+            var isRectangleInCenter = firstRectangle.Contains(center);
 
             isRectangleInCenter.Should().BeTrue();
         }
 
-        [TestCaseSource(nameof(RectanglesAmountTestCases))]
-        public void RectanglesWithSameSize_ShouldNotIntersect(int rectanglesAmount)
+        [Test]
+        public void PutNextRectangle_AfterFirstAdding_ReturnsRectangleWithCenterInLayoutCenter()
         {
             center = new Point(5, 5);
-            points = new SpiralPointsGenerator().GetPoints(DistanceBetweenPoints);
-            layouter = new CircularCloudLayouter(center, points);
+            pointsGenerator = new SpiralPointsGenerator(DistanceBetweenPoints, AngleIncrement);
+            layouter = new CircularCloudLayouter(center, pointsGenerator);
+            rectangleSize = new Size(10, 10);
+
+            var firstRectangle = layouter.PutNextRectangle(rectangleSize);
+            var firstRectangleCenter = firstRectangle.GetCenter();
+
+            firstRectangleCenter.Should().Be(center);
+        }
+
+        [TestCaseSource(nameof(RectanglesAmountTestCases))]
+        public void Rectangles_WithSameSize_DoNotIntersect(int rectanglesAmount)
+        {
+            center = new Point(5, 5);
+            pointsGenerator = new SpiralPointsGenerator(DistanceBetweenPoints, AngleIncrement);
+            layouter = new CircularCloudLayouter(center, pointsGenerator);
             rectangleSize = new Size(10, 10);
 
             AddRectangles(rectanglesAmount);
@@ -136,47 +151,26 @@ namespace TagsCloudVisualization
         }
 
         [TestCaseSource(nameof(RectanglesAmountTestCases))]
-        public void RectanglesWithRandomSize_ShouldNotIntersect(int rectanglesAmount)
+        public void Rectangles_WithRandomSize_DoNotIntersect(int rectanglesAmount)
         {
             center = new Point(5, 5);
-            points = new SpiralPointsGenerator().GetPoints(DistanceBetweenPoints);
-            layouter = new CircularCloudLayouter(center, points);
-            var random = new Random();
+            pointsGenerator = new SpiralPointsGenerator(DistanceBetweenPoints, AngleIncrement);
+            layouter = new CircularCloudLayouter(center, pointsGenerator);
 
-            for (var i = 0; i < rectanglesAmount; i++)
-            {
-                var width = random.Next(1, 10);
-                var height = random.Next(1, 10);
-                var size = new Size(width, height);
-                layouter.PutNextRectangle(size);
-            }
+            AddRandomRectangles(rectanglesAmount);
 
             CheckIntersection(layouter.Rectangles);
         }
 
-        [Test]
-        public void FirstRectangleCenter_ShouldBeCloudCenter()
-        {
-            center = new Point(5, 5);
-            points = new SpiralPointsGenerator().GetPoints(DistanceBetweenPoints);
-            layouter = new CircularCloudLayouter(center, points);
-            rectangleSize = new Size(10, 10);
-
-            layouter.PutNextRectangle(rectangleSize);
-            var firstRectangleCenter = layouter.Rectangles.First().GetCenter();
-
-            firstRectangleCenter.Should().Be(center);
-        }
-
-        [TestCase(100)]
-        [TestCase(200)]
-        [TestCase(500)]
-        public void DensityShouldBeMoreThanSeventyPercent(int rectanglesAmount)
+        [TestCase(100, TestName = "HundredRectangles")]
+        [TestCase(200, TestName = "TwoHundredRectangles")]
+        [TestCase(500, TestName = "FiveHundredRectangles")]
+        public void Rectangles_OnIncreasingSize_HaveDensityMoreThanSeventyPercent(int rectanglesAmount)
         {
             const double expectedDensity = 0.7;
             center = new Point(5, 5);
-            points = new SpiralPointsGenerator().GetPoints(DistanceBetweenPoints);
-            layouter = new CircularCloudLayouter(center, points);
+            pointsGenerator = new SpiralPointsGenerator(DistanceBetweenPoints, AngleIncrement);
+            layouter = new CircularCloudLayouter(center, pointsGenerator);
 
             for (var i = rectanglesAmount; i > 0; i--)
                 layouter.PutNextRectangle(new Size(i * 3, i));
@@ -210,6 +204,18 @@ namespace TagsCloudVisualization
         {
             for (var i = 0; i < rectanglesAmount; i++)
                 layouter.PutNextRectangle(rectangleSize);
+        }
+
+        private void AddRandomRectangles(int rectanglesAmount)
+        {
+            var random = new Random();
+            for (var i = 0; i < rectanglesAmount; i++)
+            {
+                var width = random.Next(1, 10);
+                var height = random.Next(1, 10);
+                var size = new Size(width, height);
+                layouter.PutNextRectangle(size);
+            }
         }
 
         private void CheckIntersection(List<Rectangle> rectangles)

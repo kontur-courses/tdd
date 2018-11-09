@@ -5,15 +5,15 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter
+    public class CircularCloudLayouter : ILayouter
     {
         private readonly Point center;
         private readonly IEnumerator<Point> pointsEnumerator;
 
-        public CircularCloudLayouter(Point center, IEnumerable<Point> points)
+        public CircularCloudLayouter(Point center, IPointsGenerator pointsGenerator)
         {
             this.center = center;
-            pointsEnumerator = points.GetEnumerator();
+            pointsEnumerator = pointsGenerator.GetPoints().GetEnumerator();
         }
 
         public List<Rectangle> Rectangles { get; } = new List<Rectangle>();

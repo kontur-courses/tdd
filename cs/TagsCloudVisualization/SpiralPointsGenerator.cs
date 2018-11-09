@@ -6,10 +6,19 @@ namespace TagsCloudVisualization
 {
     public class SpiralPointsGenerator : IPointsGenerator
     {
-        public IEnumerable<Point> GetPoints(int distanceBetweenPoints, double angleIncrement = 0.01)
+        private readonly int distanceBetweenPoints;
+        private readonly double angleIncrement;
+
+        public SpiralPointsGenerator(int distanceBetweenPoints, double angleIncrement)
         {
-            if (distanceBetweenPoints <= 0)
-                throw new ArgumentException("Distance between points should be positive number");
+            if (distanceBetweenPoints <= 0 || angleIncrement <= 0)
+                throw new ArgumentException("Distance between points and angle increment should be positive numbers");
+            this.distanceBetweenPoints = distanceBetweenPoints;
+            this.angleIncrement = angleIncrement;
+        }
+
+        public IEnumerable<Point> GetPoints()
+        {
             double currentSpiralAngle = 0;
             while (true)
             {

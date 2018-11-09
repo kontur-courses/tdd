@@ -3,8 +3,8 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public interface IPointsGenerator
+    public interface IReader
     {
-        IEnumerable<Point> GetPoints();
+        IEnumerable<Size> Read(string[] lines);
     }
 }
