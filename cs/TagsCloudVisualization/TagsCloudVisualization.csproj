@@ -64,7 +64,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="СloudСonstrictor.cs" />
+    <Compile Include="CloudConstruction\CloudCompactor.cs" />
+    <Compile Include="CloudConstruction\RectangleGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

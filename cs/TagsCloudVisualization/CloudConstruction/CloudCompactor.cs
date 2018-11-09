@@ -2,26 +2,27 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using TagsCloudVisualization;
 
-namespace TagsCloudVisualization
+namespace CloudConstruction
 {
-    public class СloudСonstrictor
+    public class CloudCompactor
     {
         public CircularCloudLayouter Cloud { get; set; }
 
-        public СloudСonstrictor(CircularCloudLayouter cloud)
+        public CloudCompactor(CircularCloudLayouter cloud)
         {
             Cloud = cloud;
         }
 
         public Rectangle ShiftRectangleToTheNearest(Rectangle rectangle)
         {
-            if (Cloud.ListRectangles.Count == 0)
+            if (Cloud.Rectangles.Count == 0)
                 return rectangle;
-            var yLevelRectangles = Cloud.ListRectangles.Where(rect => !(rectangle.Y > rect.Y + rect.Height
+            var yLevelRectangles = Cloud.Rectangles.Where(rect => !(rectangle.Y > rect.Y + rect.Height
                                                                   || rectangle.Y + rectangle.Height < rect.Y)).ToList();
             rectangle = FindNearestRectangleHorizontally(rectangle, yLevelRectangles);
-            var xLevelRectangles = Cloud.ListRectangles.Where(rect => !(rectangle.X > rect.X + rect.Width
+            var xLevelRectangles = Cloud.Rectangles.Where(rect => !(rectangle.X > rect.X + rect.Width
                                                                   || rectangle.X + rectangle.Width < rect.X)).ToList();
             rectangle = FindNearestRectangleVertically(rectangle, xLevelRectangles);
 

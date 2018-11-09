@@ -36,7 +36,7 @@ namespace TagsCloudVisualization
             public void Should_InitializeListRectangles()
             {
                 var cloud = new CircularCloudLayouter(new Point(0, 0));
-                Assert.AreEqual(new List<Rectangle>(), cloud.ListRectangles);
+                Assert.AreEqual(new List<Rectangle>(), cloud.Rectangles);
             }
         }
 
@@ -93,15 +93,15 @@ namespace TagsCloudVisualization
             public void Should_HaveCircleShape()
             {
                 const int lengthEdge = 40;
-                var listSizes = new List<Size>();
+                var sizes = new List<Size>();
                 for (var i = 0; i < 30; i++)
                 {
-                    listSizes.Add(new Size(lengthEdge, lengthEdge));
+                    sizes.Add(new Size(lengthEdge, lengthEdge));
                 }
 
-                var area = lengthEdge * lengthEdge * listSizes.Count;
+                var area = lengthEdge * lengthEdge * sizes.Count;
                 var radius = Math.Sqrt(area / Math.PI);
-                var listRect = listSizes.Select(size => cloud.PutNextRectangle(size)).ToList();
+                var listRect = sizes.Select(size => cloud.PutNextRectangle(size)).ToList();
                 var maxDistance = listRect.SelectMany(GetListRectangleTops).Max();
 
                 maxDistance.Should().BeLessThan(radius * 1.4);
@@ -127,14 +127,14 @@ namespace TagsCloudVisualization
             public void Should_CompressCloud()
             {
                 const int lengthEdge = 40;
-                var listSizes = new List<Size>();
+                var sizes = new List<Size>();
                 for (var i = 0; i < 60; i++)
                 {
-                    listSizes.Add(new Size(lengthEdge, lengthEdge));
+                    sizes.Add(new Size(lengthEdge, lengthEdge));
                 }
 
-                var listRect = listSizes.Select(size => cloud.PutNextRectangle(size)).ToList();
-                var hasNeighbor = listRect.All(rect => listRect.Any(rect1 => TwoRectanglesTouch(rect,rect1)));
+                var rectangles = sizes.Select(size => cloud.PutNextRectangle(size)).ToList();
+                var hasNeighbor = rectangles.All(rect => rectangles.Any(rect1 => TwoRectanglesTouch(rect,rect1)));
 
                 hasNeighbor.Should().BeTrue();
             }
