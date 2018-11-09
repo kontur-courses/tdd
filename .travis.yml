@@ -1,0 +1,8 @@
+language: csharp
+solution: ./cs/tdd.sln
+install:
+  - nuget restore ./cs/tdd.sln
+  - nuget install NUnit.ConsoleRunner -Version 3.9.0 -OutputDirectory testrunner
+script:
+  - xbuild /p:Configuration=Release ./cs/tdd.sln
+  - mono ./testrunner/NUnit.ConsoleRunner.3.9.0/tools/nunit3-console.exe ./cs/TagCloudTests/bin/Release/TagCloudTests.dll
