@@ -8,7 +8,7 @@ namespace TagsCloudVisualization
 	{
 		private static void Main(string[] args)
 		{
-			var parameters = CloudParameters.Parse(args);
+			var parameters = CloudParametersParser.Parse(args);
 
 			if (!parameters.IsCorrect())
 				return;
