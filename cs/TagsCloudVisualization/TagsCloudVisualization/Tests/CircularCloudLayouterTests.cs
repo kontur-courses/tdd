@@ -30,6 +30,12 @@ namespace TagsCloudVisualization.Tests
             rectangle.Width.Should().Be(width);
             rectangle.Height.Should().Be(height);
         }
+
+        [Test]
+        public void InsertNewPointsCreatedByRectangle()
+        {
+            
+        }
     }
 
 
