@@ -1,44 +1,45 @@
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization
 {
-    public class RowLayout
+    internal class RowLayout
     {
         private Point center;
+        private readonly List<Rectangle> body;
         
         public RowLayout(Rectangle initial)
         {
             Bounds = initial;
-            Body = new List<Rectangle>{initial};
+            body = new List<Rectangle>{initial};
             center = initial.Center();
         }
         
         public Rectangle Bounds { get; private set; }
-        public List<Rectangle> Body { get; }
-        public double Fillness => Body.Select(x => x.Size.Space()).Sum() / (double)Bounds.Size.Space();
+        public IEnumerable<Rectangle> Body => body;
+        //public double Density => Body.Sum(x => x.Size.Area()) / (double)Bounds.Size.Area();
 
         private bool isLeft;
         public Rectangle Add(Size rectangleSize)
         {
+            if (rectangleSize.Height > Bounds.Height)
+                throw new ArgumentException("Size does not fit into row.");
+            
             Rectangle rect;
             if (isLeft)
             {
-                rect = new Rectangle(Bounds.Left - rectangleSize.Width, Bounds.Top,
-                    rectangleSize.Width, rectangleSize.Height);
-                Body.Insert(0, rect);
-                //TODO Refactor
-                Bounds = new Rectangle(new Point(Bounds.X - rectangleSize.Width, Bounds.Y),
-                                       new Size(Bounds.Width + rectangleSize.Width, Bounds.Height));
+                rect = new Rectangle(new Point(Bounds.Left - rectangleSize.Width, Bounds.Top), rectangleSize);
+                body.Insert(0, rect);
+                Bounds = new []{rect,Bounds}.EnclosingRectangle(); 
             }
             else
             {
-                rect = new Rectangle(Bounds.Right, Bounds.Top, rectangleSize.Width,
-                    rectangleSize.Height);
-                Body.Add(rect);
-                //TODO Refactor
-                Bounds = new Rectangle(Bounds.Location,new Size(Bounds.Width+rectangleSize.Width,Bounds.Height));
+                rect = new Rectangle(new Point(Bounds.Right, Bounds.Top), rectangleSize);
+                body.Add(rect);
+                Bounds = new []{rect,Bounds}.EnclosingRectangle();
             }
             isLeft = !isLeft;
             return rect;

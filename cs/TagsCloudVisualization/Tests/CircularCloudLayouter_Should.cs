@@ -7,21 +7,16 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
+using TagsCloudVisualization.Extensions;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
-    internal class CircularCloudLayouter_Should
+    internal class CircularCloudLayouter_Should : LayouterTestsBase
     {
         private CircularCloudLayouter layouter;
         private Point center;
-        private readonly Random rnd = new Random();
-        private const int MinHeight = 6;
-        private const int MaxHeight = 50;
-        private const int MaxWidthHeightRatio = 10;
-        private const int Hundred = 100;
-        private const int Thousand = 100;
-
+        
         [SetUp]
         public void SetUp()
         {
@@ -29,6 +24,9 @@ namespace TagsCloudVisualization
             layouter = new CircularCloudLayouter(center);
         }
 
+        private Rectangle[] GenerateRectangles(int count)=>
+            count.Times(RandomSize).Select(layouter.PutNextRectangle).ToArray();
+        
         [Test]
         public void HaveCorrectCenter()
         {
@@ -57,16 +55,6 @@ namespace TagsCloudVisualization
             sizes.Select(layouter.PutNextRectangle).Select(x => x.Size).Should().BeEquivalentTo(sizes);
         }
 
-        private Size RandomSize()
-        {
-            var height = rnd.Next(MinHeight, MaxHeight);
-            var width = rnd.Next(height, height* MaxWidthHeightRatio);
-            return new Size(width, height);
-        }
-
-        private Rectangle[] GenerateRectangles(int count)=>
-            count.Times(RandomSize).Select(layouter.PutNextRectangle).ToArray();
-
         [Test]  
         public void DoNotOverlapManyRectangles()
         {
@@ -79,32 +67,12 @@ namespace TagsCloudVisualization
         }
         
         [Test]
-        public void NotIntersectRectanglesRowwise()
-        {
-            GenerateRectangles(Hundred);
-            foreach (var rowLayout in layouter.layout)
-                rowLayout.Body.ForAllPairs<Rectangle>((x, y) => 
-                {
-                    Assert.False(x.IntersectsWith(y),
-                        $"One rectangle was {x} on height, and other rectangle was{y}");
-                });
-        }
-
-        [Test]
         public void HaveCorrectSizes()=>
             Hundred.Times(() =>
             {
                 var size = RandomSize();
                 layouter.PutNextRectangle(size).Size.Should().Be(size);
             });
-
-        [Test]
-        public void BoundsWidthShouldMatchReactanglesSum()
-        {
-            GenerateRectangles(Hundred);
-            foreach (var rowLayout in layouter.layout)
-                rowLayout.Body.Sum(x => x.Width).Should().Be(rowLayout.Bounds.Width);
-        }
 
         [Test]
         public void HaveSameLayoutAsReturnedRectangles()
@@ -115,7 +83,7 @@ namespace TagsCloudVisualization
         [Test]
         public void MakeSquareFrom3Bricks1X3()
         {
-            var square = 3.Times(() => layouter.PutNextRectangle(new Size(90, 30))).Unite();
+            var square = 3.Times(() => layouter.PutNextRectangle(new Size(90, 30))).EnclosingRectangle();
             square.Width.Should().Be(square.Height,
                 $"{layouter.Layout.First()} , {layouter.Layout.Skip(1).First()}, {layouter.Layout.Last()}");
         }
@@ -123,46 +91,21 @@ namespace TagsCloudVisualization
         [Test]
         public void NotMoveCenter3Bricks1X3()
         {
-            var square = 3.Times(() => layouter.PutNextRectangle(new Size(90, 30))).Unite();
+            var square = 3.Times(() => layouter.PutNextRectangle(new Size(90, 30))).EnclosingRectangle();
             square.Center().Should().Be(center);
         }
 
         [Test]
         public void NotOverlap3Bricks1X3()
         {
-            3.Times(() => layouter.PutNextRectangle(new Size(90, 30))).ToArray().ForAllPairs((x, y) =>
-            {
-                Assert.False(x.IntersectsWith(y),
-                    $"One rectangle was {x}, and other rectangle was{y}");
-            });
-        }
-
-        [Test]
-        public void FitRectanglesIntoBoundsOfItsRow()
-        {
-            GenerateRectangles(Thousand);
-            foreach (var row in layouter.layout)
-            foreach (var rect in row.Body)
-                Assert.IsTrue(row.Bounds.Contains(rect),$"{rect}, does tot fit into {row.Bounds}");
-        }
-
-        [Test]
-        public void NotIntersectRows()
-        {
-            GenerateRectangles(Hundred);
-            layouter.layout.Select(x=>x.Bounds).ForAllPairs((x, y) =>
-            {
-                Assert.False(x.IntersectsWith(y), //TODO DRY
-                    $"One rectangle was {x}, and other rectangle was{y}");
-            });
-                
+            3.Times(() => layouter.PutNextRectangle(new Size(90, 30))).ForAllPairs(AssertDontIntersect);
         }
         
         [Test]
         public void FitManySameSizesInto2TimesBiggerCircle()
         {
             var size = new Size(24,120);
-            var space = size.Space() * Thousand;
+            var space = size.Area() * Thousand;
             var radius = Math.Sqrt(2 * space / Math.PI);
             
             var rects = Thousand.Times(()=>layouter.PutNextRectangle(size));
@@ -178,7 +121,7 @@ namespace TagsCloudVisualization
         public void FitManyRandomSizesInto5TimesBiggerCircle()
         {
             var sizes = Thousand.Times(RandomSize).ToArray();
-            var space = sizes.Aggregate(0, (sum, size) => sum + size.Space());
+            var space = sizes.Aggregate(0, (sum, size) => sum + size.Area());
             var radius = Math.Sqrt(5 * space / Math.PI);
            
             var rects = sizes.Select(layouter.PutNextRectangle);

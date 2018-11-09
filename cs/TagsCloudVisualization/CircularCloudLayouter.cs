@@ -5,13 +5,13 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization
 {
-    internal class CircularCloudLayouter
+    public class CircularCloudLayouter
     {
-        //TODO remove public
-        public readonly List<RowLayout> layout = new List<RowLayout>();
+        private readonly List<RowLayout> layout = new List<RowLayout>();
         private int firstIndex;
         
         public CircularCloudLayouter(Point center)
@@ -24,9 +24,8 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            Rectangle? rect = TryAddNewRow(rectangleSize);
-            if (rect != null) //TODO Remove rect variable
-                return rect.Value;
+            if (TryAddNewRow(rectangleSize,out var rect))
+                return rect;
 
             return layout.Where(x => x.Bounds.Height >= rectangleSize.Height)
                             .OrderBy(x => x.Bounds.Width)
@@ -34,39 +33,45 @@ namespace TagsCloudVisualization
                             .Add(rectangleSize);
         }
 
-        private Rectangle? TryAddNewRow(Size rectangleSize)
+        private bool TryAddNewRow(Size rectangleSize,out Rectangle rect)
         {
             if (layout.Count == 0)
             {
-                var rect = new Rectangle(Center - rectangleSize.Divide(2), rectangleSize);
+                rect = new Rectangle(Center - rectangleSize.Divide(2), rectangleSize);
                 layout.Add(new RowLayout(rect));
                 firstIndex = 0;
-                return rect;
+                return true;
             }
 
-            if (layout.Sum(x => x.Bounds.Height) < layout.Max(x => x.Bounds.Width) ||
-                layout.Max(x => x.Bounds.Height) < rectangleSize.Height)
+            if (CaseForNewRow(rectangleSize.Height))
             {
                 var heights = layout.Select(x => x.Bounds.Width).ToArray();
-                return heights.Take(firstIndex).Sum() > heights.Skip(firstIndex + 1).Sum() ?
+                rect =  heights.Take(firstIndex).Sum() > heights.Skip(firstIndex + 1).Sum() ?
                     AddFirstRow(rectangleSize) : AddLastRow(rectangleSize);
+                return true;
             }
-            return null;
+
+            rect = default(Rectangle);
+            return false;
         }
+
+        private bool CaseForNewRow(int height) =>
+            layout.Sum(x => x.Bounds.Height) < layout.Max(x => x.Bounds.Width) ||
+            layout.Max(x => x.Bounds.Height) < height;
 
         private Rectangle AddLastRow(Size rectangleSize)
         {
             var height = layout.Last().Bounds.Bottom;
-            var rect = new Rectangle(Center.X - rectangleSize.Width / 2, height, rectangleSize.Width, rectangleSize.Height);
+            var rect = new Rectangle(new Point(Center.X - rectangleSize.Width / 2, height), rectangleSize);
             layout.Add(new RowLayout(rect));
             firstIndex++;
             return rect;
         }
-        //TODO DRY Maybe..
+        
         private Rectangle AddFirstRow(Size rectangleSize)
         {
             var height = layout.First().Bounds.Top - rectangleSize.Height;
-            var rect = new Rectangle(Center.X - rectangleSize.Width / 2, height, rectangleSize.Width, rectangleSize.Height);
+            var rect = new Rectangle(new Point(Center.X - rectangleSize.Width / 2, height), rectangleSize);
             layout.Insert(0,new RowLayout(rect));
             return rect;
         }
