@@ -7,10 +7,10 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        public Point Center { get; set; }
+        public Point Center { get; }
         private readonly List<Rectangle> placedRectangles = new List<Rectangle>();
-        private readonly double shiftOnSpiral = 0.01;
-        private int rotationAngle = 0;
+        private const double ShiftOnSpiral = 0.01;
+        private int rotationAngle;
         private const int RotationAngleStep = 1;
 
         public CircularCloudLayouter(Point center) => Center = center;
@@ -36,8 +36,8 @@ namespace TagsCloudVisualization
 
         private Point GetNextPointOnSpiral()
         {
-            var dx = Math.Cos(rotationAngle) * rotationAngle * shiftOnSpiral;
-            var dy = Math.Sin(rotationAngle) * rotationAngle * shiftOnSpiral;
+            var dx = Math.Cos(rotationAngle) * rotationAngle * ShiftOnSpiral;
+            var dy = Math.Sin(rotationAngle) * rotationAngle * ShiftOnSpiral;
 
             rotationAngle += RotationAngleStep;
 
