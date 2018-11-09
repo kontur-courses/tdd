@@ -80,7 +80,7 @@ namespace TagsCloudVisualization
 		[TestCase(50)]
 		[TestCase(150)]
 		[TestCase(400)]
-		public void PutNextRectangles_MustBePlacedTightly(int number)
+		public void CloudLayouter_ShouldBePlacedRectanglesTightly(int number)
 		{
 			for (var i = 0; i < number; i++)
 				cloud.PutNextRectangle(new Size(2 * (i + 1), i + 1));
@@ -95,7 +95,7 @@ namespace TagsCloudVisualization
 		}
 
 		[Test]
-		public void PutNextRectangles_CloudShouldBeRound()
+		public void CloudLayouter_ShouldBePlacedRectanglesInCircle()
 		{
 			for (var i = 0; i < 100; i++)
 				cloud.PutNextRectangle(new Size(2 * (i + 1), i + 1));
@@ -103,12 +103,15 @@ namespace TagsCloudVisualization
 			var rectangles = cloud.GetRectangles();
 			var min = new Point(rectangles.Min(r => r.Left), rectangles.Min(r => r.Top));
 			var max = new Point(rectangles.Max(r => r.Right), rectangles.Max(r => r.Bottom));
+			double width = max.X - min.X;
+			double height = max.Y - min.Y;
 
 			var centerOfRectangles = new Point((max.X + min.X) / 2, (max.Y + min.Y) / 2);
 			var differenceX = Math.Abs(centerOfRectangles.X);
 			var differenceY = Math.Abs(centerOfRectangles.Y);
 
-			(differenceX + differenceY).Should().BeLessThan(200);
+			(differenceY / height).Should().BeLessThan(0.1);
+			(differenceX / width).Should().BeLessThan(0.1);
 		}
 	}
 }

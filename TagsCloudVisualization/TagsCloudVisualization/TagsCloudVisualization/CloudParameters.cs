@@ -5,55 +5,30 @@ namespace TagsCloudVisualization
 {
 	public class CloudParameters
 	{
-		public int maxLengthRect;
-		public int count;
-		public ICurve curve;
-
-		public static bool IsCorrect(CloudParameters cloudParameters)
+		public static CloudParametersDTO Parse(string[] input)
 		{
-			var isGoodParameters = true;
-
-			if (cloudParameters.curve == null)
-			{
-				Console.WriteLine("Error in the name of the curve");
-				isGoodParameters = false;
-			}
-
-			if (cloudParameters.count <= 0)
-			{
-				Console.WriteLine("Count must be positive");
-				isGoodParameters = false;
-			}
-
-			if (cloudParameters.maxLengthRect <= 0)
-			{
-				Console.WriteLine("MaxLength must be positive");
-				isGoodParameters = false;
-			}
-
-			return isGoodParameters;
-		}
-
-		public static CloudParameters Parse(string[] input)
-		{
-			var parameters = new CloudParameters();
+			var parameters = new CloudParametersDTO();
+			var count = 0;
+			var maxLengthRect = 0;
 
 			for (var i = 0; i < input.Length; i++)
 			{
 				switch (input[i])
 				{
 					case "-count":
-						int.TryParse(input[i + 1], out parameters.count);
+						int.TryParse(input[i + 1], out count);
 						break;
 					case "-maxLength":
-						int.TryParse(input[i + 1], out parameters.maxLengthRect);
+						int.TryParse(input[i + 1], out maxLengthRect);
 						break;
 					case "-curve":
-						parameters.curve = GetCurve(input, i);
+						parameters.Curve = GetCurve(input, i);
 						break;
 				}
 			}
 
+			parameters.Count = count;
+			parameters.MaxLengthRect = maxLengthRect;
 			return parameters;
 		}
 
@@ -63,7 +38,7 @@ namespace TagsCloudVisualization
 			switch (args[position + 1])
 			{
 				case "spiral":
-					curve = new Spiral(0.5, Math.PI / 18);
+					curve = new Spiral(0.2, Math.PI / 36);
 					break;
 				case "heart":
 					curve = new Heart(0.2, Math.PI / 36);

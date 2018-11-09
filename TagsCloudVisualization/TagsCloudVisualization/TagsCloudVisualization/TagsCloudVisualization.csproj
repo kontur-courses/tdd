@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="CircularCloudLayouterTests.cs" />
+    <Compile Include="CloudParametersDTO.cs" />
     <Compile Include="Curves\Astroid.cs" />
     <Compile Include="Curves\Heart.cs" />
     <Compile Include="Curves\ICurve.cs" />

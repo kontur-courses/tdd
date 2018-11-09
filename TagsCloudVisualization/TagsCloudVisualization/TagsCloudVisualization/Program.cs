@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace TagsCloudVisualization
 {
@@ -9,13 +10,14 @@ namespace TagsCloudVisualization
 		{
 			var parameters = CloudParameters.Parse(args);
 
-			if (!CloudParameters.IsCorrect(parameters))
+			if (!parameters.IsCorrect())
 				return;
 
-			var cloud = new CircularCloudLayouter(parameters.curve);
-			var rectangles = GetData(cloud, parameters.count, parameters.maxLengthRect);
+			var cloud = new CircularCloudLayouter(parameters.Curve);
+			var rectangles = GetData(cloud, parameters.Count, parameters.MaxLengthRect);
 			var picture = RectangleTagsCloudVisualizer.GetPicture(rectangles, Color.Aqua);
-			picture.Save("CloudTags.png");
+			picture.Save($"{Application.StartupPath}\\CloudTags.png");
+			Console.WriteLine($"Picture saved in {Application.StartupPath}\\CloudTags.png");
 		}
 
 		public static Rectangle[] GetData(CircularCloudLayouter cloud, int number, int maxLength)
