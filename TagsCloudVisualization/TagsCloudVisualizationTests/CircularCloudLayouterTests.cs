@@ -18,11 +18,13 @@ namespace TagsCloudVisualizationTests
     {
         private CircularCloudLayouter layouter;
         private List<Rectangle> result = new List<Rectangle>();
+        private Point center;
 
         [SetUp]
         public void SetUp()
         {
-            layouter = new CircularCloudLayouter(new Point(400, 400));
+            center = new Point(400, 400);
+            layouter = new CircularCloudLayouter(center);
             result = new List<Rectangle>();
         }
 
@@ -65,7 +67,7 @@ namespace TagsCloudVisualizationTests
         [TestCase(40, 40, 15, 15, Description = "Equal rectangles")]
         [TestCase(10, 30, 10, 30, Description = "Square-like rectangles")]
         [TestCase(30, 50, 10, 20)]
-        public void CloudDensityIsMoreThan50Percents(int minWidth, int maxWidth, int minHeight, int maxHeight)
+        public void CloudOccupiesMoreThanHalfOfCircleArea(int minWidth, int maxWidth, int minHeight, int maxHeight)
         {
             var rnd = new Random();
             for (var i = 0; i < 100; i++)
@@ -79,7 +81,7 @@ namespace TagsCloudVisualizationTests
             foreach (var rectangle in result)
             {
                 occupiedArea += rectangle.Width * rectangle.Height;
-                var radius = Geometry.GetMaxDistanceToRectangle(new Point(400, 400), rectangle);
+                var radius = Geometry.GetMaxDistanceToRectangle(center, rectangle);
                 if (radius > maxRadius)
                     maxRadius = radius;
             }
@@ -108,6 +110,53 @@ namespace TagsCloudVisualizationTests
                     Geometry.IsRectangleIntersection(rectangle, other).Should().BeFalse();
                 }
             }
+        }
+
+        [TestCase(40, 40, 15, 15, Description = "Equal rectangles")]
+        [TestCase(10, 30, 10, 30, Description = "Square-like rectangles")]
+        [TestCase(30, 50, 10, 20)]
+        public void CloudIsCircleLike(int minWidth, int maxWidth, int minHeight, int maxHeight)
+        {
+            var rnd = new Random();
+            for (var i = 0; i < 100; i++)
+            {
+                result.Add(layouter.PutNextRectangle(new Size(
+                    rnd.Next(minWidth, maxWidth), rnd.Next(minHeight, maxHeight))));
+            }
+
+            var rest = result;
+            var edges = new double[8];
+            foreach (var rectangle in result)
+            {
+                var distance = Geometry.GetMaxDistanceToRectangle(center, rectangle);
+                if (rectangle.X > 0)
+                {
+                    if (rectangle.Y == 0 && edges[0] < distance)
+                        edges[0] = distance;
+                    else if (rectangle.Y > 0 && edges[1] < distance)
+                        edges[1] = distance;
+                    else if (edges[7] < distance)
+                        edges[7] = distance;
+                }
+                else if (rectangle.X < 0)
+                {
+                    if (rectangle.Y == 0 && edges[4] < distance)
+                        edges[4] = distance;
+                    else if (rectangle.Y > 0 && edges[3] < distance)
+                        edges[3] = distance;
+                    else if (edges[5] < distance)
+                        edges[5] = distance;
+                }
+                else
+                {
+                    if (rectangle.Y > 0 && edges[2] < distance)
+                        edges[2] = distance;
+                    else if (edges[6] < distance)
+                        edges[6] = distance;
+                }
+            }
+
+            ((edges.Sum() / 8) / edges.Max()).Should().BeGreaterThan(0.9);
         }
     }
 }
