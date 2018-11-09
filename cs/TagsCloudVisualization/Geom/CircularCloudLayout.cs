@@ -1,41 +1,37 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Linq;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Geom
 {
     public class CircularCloudLayouter
     {
-        public List<Rectangle> Rectangles;
-        public readonly Spiral Spiral;
+        private List<Rectangle> rectangles;
+        private Spiral spiral;
+
+        public IReadOnlyCollection<Rectangle> Rectangles => new ReadOnlyCollection<Rectangle>(rectangles);
+        public Point Center => spiral.Center;
 
         public CircularCloudLayouter(Point center)
         {
-            Spiral = new Spiral(center);
-            Rectangles = new List<Rectangle>();
+            spiral = new Spiral(center);
+            rectangles = new List<Rectangle>();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             while (true)
             {
-                var location = Spiral.GetNextLocation();
+                var location = spiral.GetNextLocation();
                 var rectangle = new Rectangle((int)location.X, (int) location.Y, rectangleSize.Width, rectangleSize.Height);
 
-                if (!IsIntersectedWithOthers(rectangle))
+                if (!rectangles.Any(rectangle.IntersectsWith))
                 {
-                    Rectangles.Add(rectangle);
+                    rectangles.Add(rectangle);
                     return rectangle;
                 }
             }
-        }
-
-        private bool IsIntersectedWithOthers(Rectangle rectangle)
-        {
-            foreach (var r in Rectangles)
-                if (rectangle.IntersectsWith(r))
-                    return true;
-
-            return false;
         }
     }
 }

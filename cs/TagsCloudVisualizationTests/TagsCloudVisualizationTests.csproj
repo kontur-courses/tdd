@@ -53,8 +53,8 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Spiral_should.cs" />
-    <Compile Include="CircularCloudLayouter_should.cs" />
+    <Compile Include="SpiralShould.cs" />
+    <Compile Include="CircularCloudLayouterShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -62,9 +62,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TagsCloudVisualization\TagsCloudVisualization.csproj">
+    <ProjectReference Include="..\TagsCloudVisualization\TagsCloud.csproj">
       <Project>{28c69639-1666-4634-984f-79ef925fcebe}</Project>
-      <Name>TagsCloudVisualization</Name>
+      <Name>TagsCloud</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

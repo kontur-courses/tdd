@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Drawing;
+using TagsCloudVisualization.Extensions;
+using TagsCloudVisualization.Geom;
 
 namespace TagsCloudVisualization
 {
-    public class Program
+    public class EntryPoint
     {
-        public const int ImageWidth = 1024;
-        public const int ImageHeight = 1024;
+        private const int ImageWidth = 1024;
+        private const int ImageHeight = 1024;
 
 
-        public static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var randomLayouter = LayouterWithRandomSizeRectangles();
             Console.WriteLine("Random generated");
@@ -20,16 +22,16 @@ namespace TagsCloudVisualization
             GenerateImage(simpleLayouter, "simple.png");
         }
 
-        public static CircularCloudLayouter LayouterWithRandomSizeRectangles()
+        private static CircularCloudLayouter LayouterWithRandomSizeRectangles()
         {
             var layouter = new CircularCloudLayouter(new Point(ImageWidth / 2, ImageHeight / 2));
             for (var i = 0; i < 300; i++)
-                layouter.PutNextRectangle(new Size().SetRandom(100, 80));
+                layouter.PutNextRectangle(new Size().SetRandom(3, 100, 3, 80));
 
             return layouter;
         }
 
-        public static CircularCloudLayouter SimpleLayouter()
+        private static CircularCloudLayouter SimpleLayouter()
         {
             var layouter = new CircularCloudLayouter(new Point(ImageWidth / 2, ImageHeight / 2));
             for (var i = 0; i < 1000; i++)
@@ -38,15 +40,15 @@ namespace TagsCloudVisualization
             return layouter;
         }
 
-        public static void GenerateImage(CircularCloudLayouter layouter, string imageName)
+        private static void GenerateImage(CircularCloudLayouter layouter, string imageName)
         {
             var bitmap = new Bitmap(ImageWidth, ImageHeight);
-            var gr = Graphics.FromImage(bitmap);
+            var graphics = Graphics.FromImage(bitmap);
 
             foreach (var r in layouter.Rectangles)
             {
-                gr.FillRectangle(Brushes.LightCoral, r);
-                gr.DrawRectangle(Pens.Black, r);
+                graphics.FillRectangle(Brushes.LightCoral, r);
+                graphics.DrawRectangle(Pens.Black, r);
             }
 
             bitmap.Save(imageName);

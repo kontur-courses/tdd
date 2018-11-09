@@ -2,16 +2,14 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Geom
 {
     public class Spiral
     {
         private const double ThetaDelta = 0.001;
 
-
-        public readonly Point Center;
         private IEnumerator<PointF> locations;
+        public readonly Point Center;
 
         public Spiral(Point center)
         {
@@ -28,8 +26,8 @@ namespace TagsCloudVisualization
 
             while (true)
             {
-                float y = (float) (a * theta * Math.Sin(theta) + Center.Y);
-                float x = (float) (a * theta * Math.Cos(theta) + Center.X);
+                var y = (float) (a * theta * Math.Sin(theta) + Center.Y);
+                var x = (float) (a * theta * Math.Cos(theta) + Center.X);
 
                 yield return new PointF(x, y);
 

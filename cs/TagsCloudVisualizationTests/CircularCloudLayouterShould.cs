@@ -3,17 +3,15 @@ using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using TagsCloudVisualization;
+using TagsCloudVisualization.Extensions;
+using TagsCloudVisualization.Geom;
 
 
 namespace TagsCloudVisualizationTests
 {
     [TestFixture]
-    public class CircularCloudLayouter_should
+    public class CircularCloudLayouterShould
     {
-        public const int MaxWidth = 30;
-        public const int MaxHeight = 20;
-
         private CircularCloudLayouter layouter;
 
         [SetUp]
@@ -24,11 +22,11 @@ namespace TagsCloudVisualizationTests
 
 
         [Test]
-        public void not_contain_intersected_rectangles()
+        public void NotConatinIntersectedRectangles()
         {
             for (int i = 0; i < 100; i++)
             {   
-                layouter.PutNextRectangle(new Size().SetRandom(30, 20));
+                layouter.PutNextRectangle(new Size().SetRandom(3, 30, 3, 20));
             }
 
             foreach (var r1 in layouter.Rectangles)
@@ -38,7 +36,7 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
-        public void have_the_form_of_cirle()
+        public void HaveTheFormOfCirle()
         {
             layouter.PutNextRectangle(new Size(10, 5));
             layouter.PutNextRectangle(new Size(10, 10));
@@ -51,10 +49,10 @@ namespace TagsCloudVisualizationTests
             foreach (var rect in layouter.Rectangles)
             {
                 var currentMaxRadius = rect
-                    .Vertexes()
+                    .Vertices()
                     .Select(p =>
-                        Math.Sqrt(Math.Pow(layouter.Spiral.Center.X - p.X, 2) +
-                                  Math.Pow(layouter.Spiral.Center.Y - p.Y, 2)))
+                        Math.Sqrt(Math.Pow(layouter.Center.X - p.X, 2) +
+                                  Math.Pow(layouter.Center.Y - p.Y, 2)))
                     .Max();
 
                 actualMaxRadius = Math.Max(actualMaxRadius, currentMaxRadius);

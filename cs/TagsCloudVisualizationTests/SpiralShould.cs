@@ -1,16 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
-using TagsCloudVisualization;
+using TagsCloudVisualization.Geom;
 
 namespace TagsCloudVisualizationTests
 {
     [TestFixture]
-    public class Spiral_should
+    public class SpiralShould
     {
         [Test]
-        public void return_center_as_first_location()
+        public void ReturnCenterAsFirstLocation()
         {
             var s = new Spiral(new Point(0, 0));
             
