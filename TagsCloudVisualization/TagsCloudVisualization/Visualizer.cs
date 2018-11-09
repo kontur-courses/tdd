@@ -8,31 +8,34 @@ using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudVisualizer
+    public class Visualizer
     {
         public Color BackColor { get; set; }
         public Color FillColor { get; set; }
         public Color BorderColor { get; set; }
 
-        public CircularCloudVisualizer(Color fillColor, Color borderColor, Color backColor)
+        public Visualizer(Color fillColor, Color borderColor, Color backColor)
         {
             BackColor = backColor;
             FillColor = fillColor;
             BorderColor = borderColor;
         }
 
-        public void SaveBitmap(string fileName, int width, int height, IEnumerable<Rectangle> rectangles)
+        public Bitmap RenderBitmapFromRectangles(IEnumerable<Rectangle> rectangles)
         {
-            var bitmap = new Bitmap(width, height);
+            var cloudRange = Geometry.GetMaxDistanceToRectangles(new Point(), rectangles);
+            var renderSize = (int)((cloudRange / Math.Sqrt(2)) * 1.1);
+
+            var bitmap = new Bitmap(renderSize, renderSize);
             var graphics = Graphics.FromImage(bitmap);
-            graphics.FillRectangle(new SolidBrush(BackColor), 0, 0, width, height);
+            graphics.FillRectangle(new SolidBrush(BackColor), 0, 0, renderSize, renderSize);
             foreach (var r in rectangles)
             {
                 graphics.FillRectangle(new SolidBrush(FillColor), r);
                 graphics.DrawRectangle(new Pen(BorderColor), r);
             }
 
-            bitmap.Save(fileName + ".bmp");
+            return bitmap;
         }
     }
 }

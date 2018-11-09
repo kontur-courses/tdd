@@ -9,18 +9,21 @@ using FluentAssertions.Common;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
+using TagsCloudVisualization;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualizationTests
 {
     [TestFixture]
     class CircularCloudLayouterTests
     {
         private CircularCloudLayouter layouter;
+        private List<Rectangle> result = new List<Rectangle>();
 
         [SetUp]
         public void SetUp()
         {
             layouter = new CircularCloudLayouter(new Point(400, 400));
+            result = new List<Rectangle>();
         }
 
         [TearDown]
@@ -30,23 +33,10 @@ namespace TagsCloudVisualization
                 return;
 
             var path = $"C:\\Users\\{Environment.UserName}\\Desktop\\{TestContext.CurrentContext.Test.Name}";
-            var visualizer = new CircularCloudVisualizer(Color.Blue, Color.Black, Color.Yellow);
-            visualizer.SaveBitmap(path, 800, 800, layouter.Result);
+            var visualizer = new Visualizer(Color.Blue, Color.Black, Color.Yellow);
+            var bitmap = visualizer.RenderBitmapFromRectangles(result);
+            ImageSaver.SaveBitmapToFile(path, bitmap);
             Console.WriteLine("Tag cloud visualization saved to file {0}.bmp", path);
-        }
-
-        [Test]
-        public void CircularCloudLayouter_CreatesEmpty()
-        {
-            layouter.Result.Count.Should().Be(0);
-        }
-
-        [TestCase(0, 0, Description = "Zeros")]
-        [TestCase(10, 0, Description = "Non-zero")]
-        [TestCase(-5, -100, Description = "Negative")]
-        public void CircularCloudLayouter_CreatesCenterCorrectly(int x, int y)
-        {
-            new CircularCloudLayouter(x, y).Center.Should().Be(new Point(x, y));
         }
 
         [TestCase(0, 0, 10, 6, Description = "Zero center")]
@@ -67,7 +57,7 @@ namespace TagsCloudVisualization
         [TestCase(new[] { 0, 0, 10, 10 }, new[] { -10, 20, 10, 10 }, ExpectedResult = false)]
         public bool CheckCollision_BetweenTwoRectangles(int[] rect, int[] other)
         {
-            return layouter.IsCollision(
+            return Geometry.IsRectangleIntersection(
                 new Rectangle(rect[0], rect[1], rect[2], rect[3]),
                 new Rectangle(other[0], other[1], other[2], other[3]));
         }
@@ -75,33 +65,49 @@ namespace TagsCloudVisualization
         [TestCase(40, 40, 15, 15, Description = "Equal rectangles")]
         [TestCase(10, 30, 10, 30, Description = "Square-like rectangles")]
         [TestCase(30, 50, 10, 20)]
-        public void CloudIsDenseEnough(int minWidth, int maxWidth, int minHeight, int maxHeight)
+        public void CloudDensityIsMoreThan50Percents(int minWidth, int maxWidth, int minHeight, int maxHeight)
         {
             var rnd = new Random();
             for (var i = 0; i < 100; i++)
             {
-                layouter.PutNextRectangle(new Size(rnd.Next(minWidth, maxWidth), rnd.Next(minHeight, maxHeight)));
+                result.Add(layouter.PutNextRectangle(new Size(
+                    rnd.Next(minWidth, maxWidth), rnd.Next(minHeight, maxHeight))));
             }
 
             var maxRadius = 0.0;
             var occupiedArea = 0.0;
-            foreach (var rectangle in layouter.Result)
+            foreach (var rectangle in result)
             {
                 occupiedArea += rectangle.Width * rectangle.Height;
-
-                for (var x = rectangle.X; x <= rectangle.X + rectangle.Width; x += rectangle.Width)
-                {
-                    for (var y = rectangle.Y; y <= rectangle.Y + rectangle.Height; y += rectangle.Height)
-                    {
-                        var radius = Math.Sqrt((x - layouter.Center.X) * (x - layouter.Center.X) +
-                                              (y - layouter.Center.Y) * (y - layouter.Center.Y));
-                        if (radius > maxRadius)
-                            maxRadius = radius;
-                    }
-                }
+                var radius = Geometry.GetMaxDistanceToRectangle(new Point(400, 400), rectangle);
+                if (radius > maxRadius)
+                    maxRadius = radius;
             }
 
             (occupiedArea / (maxRadius * maxRadius * Math.PI)).Should().BeGreaterThan(0.5);
+        }
+
+        [TestCase(40, 40, 15, 15, Description = "Equal rectangles")]
+        [TestCase(10, 30, 10, 30, Description = "Square-like rectangles")]
+        [TestCase(30, 50, 10, 20)]
+        public void ResultRectanglesDoNotIntersect(int minWidth, int maxWidth, int minHeight, int maxHeight)
+        {
+            var rnd = new Random();
+            for (var i = 0; i < 100; i++)
+            {
+                result.Add(layouter.PutNextRectangle(new Size(
+                    rnd.Next(minWidth, maxWidth), rnd.Next(minHeight, maxHeight))));
+            }
+
+            var rest = result;
+            foreach (var rectangle in result)
+            {
+                rest = rest.Skip(1).ToList();
+                foreach (var other in rest)
+                {
+                    Geometry.IsRectangleIntersection(rectangle, other).Should().BeFalse();
+                }
+            }
         }
     }
 }

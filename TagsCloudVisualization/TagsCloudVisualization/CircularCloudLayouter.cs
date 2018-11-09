@@ -9,29 +9,28 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        public Point Center { get; }
+        private readonly Point center;
         private int radius;
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
-        public List<Rectangle> Result { get => new List<Rectangle>(rectangles); }
         public CircularCloudLayouter(Point center)
         {
-            Center = center;
+            this.center = center;
         }
 
         public CircularCloudLayouter(int x, int y)
         {
-            Center = new Point(x, y);
+            center = new Point(x, y);
         }
 
-        public Rectangle PutNextRectangle(Size rectangleSize, bool withDensity=true)
+        public Rectangle PutNextRectangle(Size rectangleSize)
         {
             var angle = 0.0;
             Rectangle rectangle;
             do
             {
                 rectangle = new Rectangle(
-                    Center.X - (rectangleSize.Width / 2) + (int)(radius * Math.Cos(angle)),
-                    Center.Y - (rectangleSize.Height / 2) + (int)(radius * Math.Sin(angle)),
+                    center.X - (rectangleSize.Width / 2) + (int)(radius * Math.Cos(angle)),
+                    center.Y - (rectangleSize.Height / 2) + (int)(radius * Math.Sin(angle)),
                     rectangleSize.Width, rectangleSize.Height);
 
                 angle += Math.PI / 18;
@@ -42,7 +41,7 @@ namespace TagsCloudVisualization
                 radius++;
             } while (CheckCollisionWithAll(rectangle));
 
-            if (rectangles.Count > 0 && withDensity)
+            if (rectangles.Count > 0)
                 rectangle = MoveRectangleToCenter(rectangle);
             rectangles.Add(rectangle);
             return rectangle;
@@ -54,41 +53,36 @@ namespace TagsCloudVisualization
             do
             {
                 originalLocation = new Point(rectangle.X, rectangle.Y);
-                if (rectangle.X + (rectangle.Width / 2) > Center.X)
-                    rectangle.X--;
-                if (CheckCollisionWithAll(rectangle))
-                    rectangle.X++;
 
-                if (rectangle.Y + (rectangle.Height / 2) > Center.Y)
-                    rectangle.Y--;
-                if (CheckCollisionWithAll(rectangle))
-                    rectangle.Y++;
+                if (rectangle.X + (rectangle.Width / 2) > center.X)
+                    rectangle = MoveRectangleIfNoCollision(rectangle, -1, 0);
 
-                if (rectangle.X + (rectangle.Width / 2) < Center.X)
-                    rectangle.X++;
-                if (CheckCollisionWithAll(rectangle))
-                    rectangle.X--;
+                if (rectangle.Y + (rectangle.Height / 2) > center.Y)
+                    rectangle = MoveRectangleIfNoCollision(rectangle, 0, -1);
 
-                if (rectangle.Y + (rectangle.Height / 2) < Center.Y)
-                    rectangle.Y++;
-                if (CheckCollisionWithAll(rectangle))
-                    rectangle.Y--;
-                
+                if (rectangle.X + (rectangle.Width / 2) < center.X)
+                    rectangle = MoveRectangleIfNoCollision(rectangle, 1, 0);
+
+                if (rectangle.Y + (rectangle.Height / 2) < center.Y)
+                    rectangle = MoveRectangleIfNoCollision(rectangle, 0, 1);
+
             } while (originalLocation != rectangle.Location);
             return rectangle;
         }
 
-        public bool IsCollision(Rectangle rectangle, Rectangle other)
+        private Rectangle MoveRectangleIfNoCollision(Rectangle rectangle, int dx, int dy)
         {
-            return !(rectangle.X + rectangle.Width < other.X || other.X + other.Width < rectangle.X
-                  || rectangle.Y + rectangle.Height < other.Y || other.Y + other.Height < rectangle.Y);
-        }
+            var changed = rectangle;
+            changed.X += dx;
+            changed.Y += dy;
 
+            return CheckCollisionWithAll(changed) ? rectangle : changed;
+        }
         private bool CheckCollisionWithAll(Rectangle rect)
         {
             foreach (var other in rectangles)
             {
-                if (IsCollision(rect, other))
+                if (Geometry.IsRectangleIntersection(rect, other))
                     return true;
             }
 
