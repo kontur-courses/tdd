@@ -28,7 +28,7 @@ namespace TagsCloudVisualization
         private static bool ParseArgs(string[] args)
         {
             const string helpMessage =
-                @"Tag Cloud Visualization
+@"Tag Cloud Visualization
 Usage:
 TagCloudVisualization.exe rectanglesCount [minimumRectSize] [maximumRectSize]";
             if (args.Contains("help"))
