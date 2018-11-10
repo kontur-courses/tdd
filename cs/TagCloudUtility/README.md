@@ -10,7 +10,7 @@ Words should be in ../Test/words.txt
 Picture will be saved in ../Test/result.png
 
 Draw Settings:
-To change draw setting write in input number of chosed option
+To change draw setting write in input number of choosed option
 Options:
 Only Words == 0
 Words In Rectangles == 1
