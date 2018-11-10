@@ -49,13 +49,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\TagCloud\TagCloud.cs\TagCloud\TagCloud.csproj">
-      <Project>{35b28fef-2b66-4027-8dd3-49c1280af654}</Project>
-      <Name>TagCloud</Name>
-    </ProjectReference>
     <ProjectReference Include="..\TagCloud.Test\TagCloud.Tests.csproj">
       <Project>{c62d29c6-65b6-4692-872a-5cc737af642c}</Project>
       <Name>TagCloud.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TagCloud\TagCloud.csproj">
+      <Project>{35b28fef-2b66-4027-8dd3-49c1280af654}</Project>
+      <Name>TagCloud</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

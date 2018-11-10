@@ -51,8 +51,7 @@ namespace TagCloud.CloudVisualizer
         {
             var bounds = cloudItem.Bounds;
             var word = cloudItem.Word;
-            var letterWidth = bounds.Width / word.Length;
-            var font = new Font("Arial", letterWidth);
+            var font = new Font("Arial", 15);
             var stringSize = graphics.MeasureString(word, font);
 
             while (stringSize.Height < bounds.Height && stringSize.Width < bounds.Width)
