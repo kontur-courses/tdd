@@ -31,7 +31,7 @@ In result will be 2 groups: Big and Others
 "Big" group will include words whose frequency coef >= MaxAppearanceCount * 0.9,so the most frequent word will be included in this group;
 "Others" group will include words whose frequency coef < MaxAppearanceCount * 0.9;
 
-#### Result Examples:
+# Result Examples:
 
 ###
 Descending rectangles:
