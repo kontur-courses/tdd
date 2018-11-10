@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -27,7 +27,7 @@ namespace TagsCloudVisualization
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
                 var path = TestContext.CurrentContext.TestDirectory;
-                var fileName = $"{TestContext.CurrentContext.Test.Name} failed on {DateTime.Now}.png";
+                var fileName = $"{TestContext.CurrentContext.Test.Name} failed.png";
                 var outputFileName = Path.Combine(path, fileName);
                 using (var bitmap = new Bitmap(layouter.Size.Width, layouter.Size.Height))
                 {
@@ -102,17 +102,38 @@ namespace TagsCloudVisualization
             }
         }
 
+
         [Test]
-        public void RenderRoundCloud()
+        public void RenderRoundCloud_OfHorizontallyPositionedRectangles()
         {
             for (int i = 0; i < 100; i++)
             {
-                layouter.PutNextRectangle(new Size(100, 50));
+                layouter.PutNextRectangle(new Size(150, 50));
             }
+            var containingRectangle = GetRelativeBoundsAbs(layouter.GetRectangles());
 
+            Assert.That(containingRectangle.rightBound, Is.EqualTo(containingRectangle.leftBound).Within(150));
+            Assert.That(containingRectangle.topBound, Is.EqualTo(containingRectangle.bottomBound).Within(150));
+        }
+
+        [Test]
+        public void RenderRoundCloud_OfVerticallyPositionedRectangles()
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                layouter.PutNextRectangle(new Size(50, 150));
+            }
+            var containingRectangle = GetRelativeBoundsAbs(layouter.GetRectangles());
+
+            Assert.That(containingRectangle.rightBound, Is.EqualTo(containingRectangle.leftBound).Within(150));
+            Assert.That(containingRectangle.topBound, Is.EqualTo(containingRectangle.bottomBound).Within(150));
+        }
+
+        private (int rightBound, int leftBound, int topBound, int bottomBound) GetRelativeBoundsAbs(IEnumerable<Rectangle> rectangles)
+        {
             int leftBound = centerWidth, rightBound = centerWidth, topBound = centerHeight, bottomBound = centerHeight;
 
-            foreach (var rectangle in layouter.GetRectangles())
+            foreach (var rectangle in rectangles)
             {
                 if (rectangle.Location.X > rightBound)
                     rightBound = rectangle.Location.X;
@@ -127,14 +148,19 @@ namespace TagsCloudVisualization
                     bottomBound = rectangle.Location.Y;
             }
 
-            var relativeRightBound = Math.Abs(rightBound - centerWidth);
-            var relativeLeftBound = Math.Abs(leftBound - centerWidth);
+            return (Math.Abs(rightBound - centerWidth), Math.Abs(leftBound - centerWidth),
+                Math.Abs(topBound - centerHeight), Math.Abs(bottomBound - centerHeight));
+        }
 
-            var relativeTopBound = Math.Abs(topBound - centerHeight);
-            var relativeBottomBound = Math.Abs(bottomBound - centerHeight);
+        [Test]
+        public void RenderRoundCloud_OfRandomGeneratedSizeRectangles()
+        {
+            var rectangles = CircularCloudLayouterGenerator.GenerateRectanglesSet(layouter, 50, 100, 150, 50, 75);
 
-            Assert.That(relativeRightBound, Is.EqualTo(relativeLeftBound).Within(50));
-            Assert.That(relativeTopBound, Is.EqualTo(relativeBottomBound).Within(50));
+            var containingRectangle = GetRelativeBoundsAbs(rectangles);
+
+            Assert.That(containingRectangle.rightBound, Is.EqualTo(containingRectangle.leftBound).Within(150));
+            Assert.That(containingRectangle.topBound, Is.EqualTo(containingRectangle.bottomBound).Within(150));
         }
     }
 }
