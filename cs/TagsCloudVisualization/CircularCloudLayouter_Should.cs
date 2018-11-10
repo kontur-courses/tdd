@@ -76,8 +76,8 @@ namespace TagsCloudVisualization
             var maxDistance = 0.0;
             foreach (var rect in rects)
             {
-                GetVertexCoordinates(rect).ToList().ForEach(p => maxDistance = Math.Max(maxDistance,
-                    GetDistanceFromPointToCenter(p)));
+                rect.GetVertexCoordinates().ToList().ForEach(p => maxDistance = Math.Max(maxDistance,
+                    p.CalculateDistanceToPoint(center)));
             }
 
             const double maxRectSize = 20.0;
@@ -97,19 +97,11 @@ namespace TagsCloudVisualization
                 image.Save(path);
                 Console.WriteLine($"Tag cloud visualization saved to file <{path}>");
             }
-
-            Console.WriteLine("Tag cloud visualization saved to file <path>");
         }
-
-        private static IEnumerable<Point> GetVertexCoordinates(Rectangle rectangle)
-        {
-            yield return new Point(rectangle.Left, rectangle.Top);
-            yield return new Point(rectangle.Right, rectangle.Top);
-            yield return new Point(rectangle.Left, rectangle.Bottom);
-            yield return new Point(rectangle.Right, rectangle.Bottom);
-        }
-
-        private double GetDistanceFromPointToCenter(Point p) =>
+    }
+    public static class PointExtensions
+    {
+        public static double CalculateDistanceToPoint(this Point p, Point center) =>
             Math.Sqrt((p.X - center.X) * (p.X - center.X) + (p.Y - center.Y) * (p.Y - center.Y));
     }
 }

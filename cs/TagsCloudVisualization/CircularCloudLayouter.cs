@@ -14,7 +14,7 @@ namespace TagsCloudVisualization
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
-            provider = new RectangleLocationProvider(center);
+            provider = new SpiralPointProvider(center);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
