@@ -1,4 +1,4 @@
-﻿namespace TagCloud
+﻿namespace TagCloud.CloudVisualizer
 {
     public enum DrawSettings
     {

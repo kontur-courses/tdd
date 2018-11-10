@@ -54,8 +54,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CenterRectanglePlacer_Should.cs" />
     <Compile Include="CircularCloudLayouter_Should.cs" />
+    <Compile Include="TagItem_Should.cs" />
+    <Compile Include="CloudItem_Should.cs" />
     <Compile Include="CloudVisualizer_Should.cs" />
+    <Compile Include="PointExtensions_Should.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spiral_Should.cs" />
   </ItemGroup>

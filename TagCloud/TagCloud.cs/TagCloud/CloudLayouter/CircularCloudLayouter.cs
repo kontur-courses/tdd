@@ -1,6 +1,8 @@
 ﻿using System.Drawing;
+using TagCloud.PointsSequence;
+using TagCloud.RectanglePlacer;
 
-namespace TagCloud
+namespace TagCloud.CloudLayouter
 {
     public class CircularCloudLayouter : CloudLayouter
     {
@@ -33,7 +35,7 @@ namespace TagCloud
             while (true)
             {
                 var point = pointsSequence.GetNextPoint();
-                var rectangle = rectanglePlacer.PlaceRectangle(size, point, rectangles);
+                var rectangle = rectanglePlacer.PlaceRectangle(size, point);
                 if (IsInsideSurface(rectangle))
                     continue;
                 pointsSequence.Reset();

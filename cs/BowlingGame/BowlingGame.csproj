@@ -82,6 +82,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Game_should.cs" />
     <Compile Include="Infrastructure\Firebase.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Infrastructure\TestCaseStatus.cs" />

@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 
-namespace TagCloud
+namespace TagCloud.RectanglePlacer
 {
     public interface IRectanglePlacer
     {
-        Rectangle PlaceRectangle(Size size, Point startPoint, IReadOnlyCollection<Rectangle> reservedSpace);
+        Rectangle PlaceRectangle(Size size, Point startPoint);
     }
 }

@@ -3,6 +3,8 @@ using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using TagCloud.CloudVisualizer;
+using TagCloud.Models;
 
 namespace TagCloud.Tests
 {
@@ -13,32 +15,32 @@ namespace TagCloud.Tests
         [TestCase(100, TestName = "For 100 rectangles")]
         public void CreatePictureWithRectangles(int amountOfRectangles)
         {
-            var visualizer = new CloudVisualizer { Settings = DrawSettings.OnlyRectangles };
-            var rectangles = new Rectangle[amountOfRectangles];
+            var visualizer = new CloudVisualizer.CloudVisualizer { Settings = DrawSettings.OnlyRectangles };
+            var items = new CloudItem[amountOfRectangles];
             for (var i = 0; i < amountOfRectangles; i++)
-                rectangles[i] = new Rectangle(0, 0, 10, 10);
+                items[i] = new CloudItem(null, new Rectangle(0, 0, 10, 10));
 
-            var picture = visualizer.CreatePictureWithRectangles(rectangles);
+            var picture = visualizer.CreatePictureWithItems(items);
 
-            IsPictureContainsAllLocationPoints(rectangles, picture)
+            IsPictureContainsAllLocationPoints(items, picture)
                 .Should().BeTrue();
         }
 
-        public bool IsPictureContainsAllLocationPoints(Rectangle[] rectangles, Bitmap picture)
+        public bool IsPictureContainsAllLocationPoints(CloudItem[] items, Bitmap picture)
         {
-            return rectangles.All(rectangle =>
-                picture.GetPixel(rectangle.Location.X, rectangle.Location.Y).ToArgb() == Color.Black.ToArgb());
+            return items.All(item =>
+                picture.GetPixel(item.Bounds.Location.X, item.Bounds.Location.Y).ToArgb() == Color.Black.ToArgb());
         }
 
-        [TestCase(false, TestName = "Then rectangles list is null")]
-        [TestCase(true, TestName = "Then rectangles list is empty")]
+        [TestCase(false, TestName = "Then items list is null")]
+        [TestCase(true, TestName = "Then items list is empty")]
         public void ThrowArgumentException(bool isArrayInitialized)
         {
-            var visualizer = new CloudVisualizer();
+            var visualizer = new CloudVisualizer.CloudVisualizer();
             Action creation = ()
-                => visualizer.CreatePictureWithRectangles(
+                => visualizer.CreatePictureWithItems(
                     isArrayInitialized
-                        ? new Rectangle[0]
+                        ? new CloudItem[0]
                         : null);
 
             creation.Should().Throw<ArgumentException>();

@@ -1,11 +1,11 @@
 ﻿using System.Drawing;
+using TagCloud.Models;
 
-namespace TagCloud
+namespace TagCloud.CloudVisualizer
 {
     public interface ICloudVisualizer
     {
         DrawSettings Settings { get; set; }
-        Bitmap CreatePictureWithRectangles(Rectangle[] rectangles);
-        Bitmap CreatePictureWithItems(TagItem[] rectangles);
+        Bitmap CreatePictureWithItems(CloudItem[] cloudItems);
     }
 }

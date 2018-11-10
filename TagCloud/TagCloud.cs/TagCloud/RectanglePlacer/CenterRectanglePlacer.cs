@@ -1,14 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 
-namespace TagCloud
+namespace TagCloud.RectanglePlacer
 {
     public class CenterRectanglePlacer : IRectanglePlacer
     {
-        //todo add check on reserved space -> delete check from layouter
-        public Rectangle PlaceRectangle(Size size, Point startPoint, IReadOnlyCollection<Rectangle> reservedSpace)
+        public Rectangle PlaceRectangle(Size size, Point startPoint)
         {
-            return RectangleBuilder.CreateRectangle(size, startPoint); 
+            return new Rectangle(
+                startPoint.X - size.Width / 2,
+                startPoint.Y - size.Height / 2,
+                size.Width,
+                size.Height
+            );
         }
     }
 }

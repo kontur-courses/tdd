@@ -58,6 +58,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\CloudItem.cs" />
     <Compile Include="RectanglePlacer\CenterRectanglePlacer.cs" />
     <Compile Include="CloudLayouter\CircularCloudLayouter.cs" />
     <Compile Include="CloudLayouter\CloudLayouter.cs" />
@@ -72,9 +73,8 @@
     <Compile Include="PointsSequence\Spiral.cs" />
     <Compile Include="PointsSequence\SpiralBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AdditionalClasses\RectangleBuilder.cs" />
     <Compile Include="Extensions\RectangleExtensions.cs" />
-    <Compile Include="AdditionalClasses\TagItem.cs" />
+    <Compile Include="Models\TagItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

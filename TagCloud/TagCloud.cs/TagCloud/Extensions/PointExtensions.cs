@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Linq;
 
-namespace TagCloud
+namespace TagCloud.Extensions
 {
     public static class PointExtensions
     {

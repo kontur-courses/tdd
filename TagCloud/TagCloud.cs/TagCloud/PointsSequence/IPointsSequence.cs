@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace TagCloud
+namespace TagCloud.PointsSequence
 {
     public interface IPointsSequence
     {

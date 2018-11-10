@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace TagCloud
+namespace TagCloud.CloudLayouter
 {
     public abstract class CloudLayouter : ICloudLayouter
     {

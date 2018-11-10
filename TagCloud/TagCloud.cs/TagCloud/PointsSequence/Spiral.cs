@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using static System.Math;
 
-namespace TagCloud
+namespace TagCloud.PointsSequence
 {
     public class Spiral : PointsSequence
     {
@@ -33,8 +32,8 @@ namespace TagCloud
             {
                 yield return new Point
                 {
-                    X = (int)(stepLength / (PI * 2) * alpha * Cos(alpha)) + center.X,
-                    Y = (int)(stepLength / (PI * 2) * alpha * Sin(alpha) + center.Y)
+                    X = (int)(stepLength / (Math.PI * 2) * alpha * Math.Cos(alpha)) + center.X,
+                    Y = (int)(stepLength / (Math.PI * 2) * alpha * Math.Sin(alpha) + center.Y)
                 };
                 alpha++;
             }
