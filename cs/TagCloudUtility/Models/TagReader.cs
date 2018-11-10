@@ -9,24 +9,6 @@ namespace TagCloud.Utility.Models
     {
         public readonly TagGroups TagGroups;
 
-        /// <summary>
-        /// Creates Tag Reader with 3 groups:
-        /// Big(10% of all words, with size (W: letter * 60, H: 150)
-        /// Average(30% of all words, with size (W: letter * 40, H: 100)
-        /// Small(60% of all words, with size (W: letter * 20, H: 50)
-        /// </summary>
-        public TagReader()
-        {
-            TagGroups = new TagGroups();
-            TagGroups.AddSizeGroup("Big", new FrequencyGroup(0.9, 1), new Size(80, 150));
-            TagGroups.AddSizeGroup("Average", new FrequencyGroup(0.6, 0.9), new Size(60, 100));
-            TagGroups.AddSizeGroup("Small", new FrequencyGroup(0, 0.6), new Size(30, 50));
-        }
-
-        /// <summary>
-        /// Creates Tag Reader with custom groups
-        /// </summary>
-        /// <param name="groups">Size groups</param>
         public TagReader(TagGroups tagGroups)
         {
             TagGroups = tagGroups;
