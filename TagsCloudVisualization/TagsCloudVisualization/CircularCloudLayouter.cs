@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter
+    public class CircularCloudLayouter : ICloudLayouter
     {
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
         private readonly Circle circle;
@@ -16,6 +16,11 @@ namespace TagsCloudVisualization
         public CircularCloudLayouter(Point pointCenter)
         {
             circle = new Circle(pointCenter);
+        }
+
+        public Size GetSizeTagCloud()
+        {
+            return new Size(circle.Radius, circle.Radius);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -60,6 +65,5 @@ namespace TagsCloudVisualization
         {
             return !rectangles.Any(rect => rect.IntersectsWith(new Rectangle(point, size)));
         }
-
     }
 }

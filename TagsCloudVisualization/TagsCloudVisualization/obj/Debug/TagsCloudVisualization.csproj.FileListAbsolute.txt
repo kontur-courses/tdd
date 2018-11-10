@@ -1,0 +1,7 @@
+C:\Users\Дария\Desktop\учеба\shpora\tagclaud\tdd\TagsCloudVisualization\TagsCloudVisualization\bin\Debug\TagsCloudVisualization.exe.config
+C:\Users\Дария\Desktop\учеба\shpora\tagclaud\tdd\TagsCloudVisualization\TagsCloudVisualization\bin\Debug\TagsCloudVisualization.exe
+C:\Users\Дария\Desktop\учеба\shpora\tagclaud\tdd\TagsCloudVisualization\TagsCloudVisualization\bin\Debug\TagsCloudVisualization.pdb
+C:\Users\Дария\Desktop\учеба\shpora\tagclaud\tdd\TagsCloudVisualization\TagsCloudVisualization\obj\Debug\TagsCloudVisualization.csprojAssemblyReference.cache
+C:\Users\Дария\Desktop\учеба\shpora\tagclaud\tdd\TagsCloudVisualization\TagsCloudVisualization\obj\Debug\TagsCloudVisualization.csproj.CoreCompileInputs.cache
+C:\Users\Дария\Desktop\учеба\shpora\tagclaud\tdd\TagsCloudVisualization\TagsCloudVisualization\obj\Debug\TagsCloudVisualization.exe
+C:\Users\Дария\Desktop\учеба\shpora\tagclaud\tdd\TagsCloudVisualization\TagsCloudVisualization\obj\Debug\TagsCloudVisualization.pdb

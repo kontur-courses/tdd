@@ -45,6 +45,9 @@
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="Circle.cs" />
+    <Compile Include="ColorPallete.cs" />
+    <Compile Include="TagCloudImage.cs" />
+    <Compile Include="ICloudLayouter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
