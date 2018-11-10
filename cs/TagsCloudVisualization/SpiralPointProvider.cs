@@ -3,14 +3,14 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    internal class RectangleLocationProvider : IProvider<Point>
+    internal class SpiralPointProvider : IProvider<Point>
     {
         private readonly Point center;
         private double phi;
         private int x;
         private int y;
 
-        public RectangleLocationProvider(Point center)
+        public SpiralPointProvider(Point center)
         {
             this.center = center;
         }
