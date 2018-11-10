@@ -37,26 +37,5 @@ namespace TagsCloudVisualization
 
             result.Should().Be(true);
         }
-         
-        [TestCase(0, 0, 10, 10, new []{Quarter.BottomLeft, Quarter.BottomRight, Quarter.TopLeft, Quarter.TopRight}, TestName = "all quarters when all quarters are connected")]
-        [TestCase(0, 20, 10, 10, new []{Quarter.TopLeft, Quarter.TopRight}, TestName = "top left and right when its quarters are connected")]
-        [TestCase(0, -20, 10, 10, new []{Quarter.BottomLeft, Quarter.BottomRight}, TestName = "bottom left and right when its quarters are connected")]
-        [TestCase(20, 0, 10, 10, new []{Quarter.TopRight, Quarter.BottomRight}, TestName = "top right and bottom right when its quarters are connected")]
-        [TestCase(-20, 0, 10, 10, new []{Quarter.TopLeft, Quarter.BottomLeft}, TestName = "top left and bottom left when its quarters are connected")]
-        [TestCase(20, 20, 10, 10, new []{Quarter.TopRight}, TestName = "top right quarter when its is connected")]
-        [TestCase(-20, 20, 10, 10, new []{Quarter.TopLeft}, TestName = "top left quarter when its is connected")]
-        [TestCase(-20, -20, 10, 10, new []{Quarter.BottomLeft}, TestName = "bottom left quarter when its is connected")]
-        [TestCase(20, -20, 10, 10, new []{Quarter.BottomRight}, TestName = "bottom right quarter when its is connected")]
-        public void GetQuarter(double x, double y, double width, double height, Quarter[] expectedResult)
-        {
-            var center = new Point(0, 0);
-            var rectCenter = new Point(x, y);
-            var size = new Size(width, height);
-            var rectangle = new Rectangle(center, rectCenter, size);
-
-            var actualResult = rectangle.GetQuarters();
-
-            actualResult.Should().BeEquivalentTo(expectedResult);
-        }
     }
 }

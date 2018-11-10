@@ -51,7 +51,30 @@ namespace TagsCloudVisualization
             var circularCloudLayouter = new CircularCloudLayouter(origin);
             var size = new Size(1, 1);
             var rectangles = new List<Rectangle>();
-            const int radius = 100;
+            const int radius = 11;
+
+            for (var i = 0; i < 10; i++)
+            {
+                var rectangle = circularCloudLayouter.PutNextRectangle(size);
+                rectangles.Add(rectangle);
+            }
+
+            var result = rectangles
+                .Select(r => r.Center)
+                .Select(p => Math.Pow(p.X - origin.X, 2) + Math.Pow(p.Y - origin.Y, 2))
+                .Select(Math.Abs)
+                .All(h => h <= radius);
+            result.Should().BeTrue();
+        }
+
+        [Test]
+        public void DenseCloudFormed()
+        {
+            var origin = new Point(0, 0);
+            var circularCloudLayouter = new CircularCloudLayouter(origin);
+            var size = new Size(1, 1);
+            var rectangles = new List<Rectangle>();
+            const int radius = 11;
 
             for (var i = 0; i < 10; i++)
             {

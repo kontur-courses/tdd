@@ -3,12 +3,6 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public static class RectangleExtensions
-    {
-        public static bool IsIntersectsWithAnyRect(this Rectangle rectangle, IEnumerable<Rectangle> rectangles)
-            => rectangles.Any(r => r.Intersects(rectangle));
-    }
-
     public class Rectangle
     {
         public Point Center { get; set; }
@@ -33,20 +27,6 @@ namespace TagsCloudVisualization
                      || RightXCoord < otherRectangle.LeftXCoord
                      || TopYCoord < otherRectangle.BottomYCoord
                      || BottomYCoord > otherRectangle.TopYCoord);
-        }
-
-        public Quarter[] GetQuarters()
-        {
-            var result = new List<Quarter>();
-            if (RightXCoord > Origin.X && TopYCoord > Origin.Y)
-                result.Add(Quarter.TopRight);
-            if (LeftXCoord < Origin.X && TopYCoord > Origin.Y)
-                result.Add(Quarter.TopLeft);
-            if (LeftXCoord < Origin.X && BottomYCoord < Origin.Y)
-                result.Add(Quarter.BottomLeft);
-            if (RightXCoord > Origin.X && BottomYCoord < Origin.Y)
-                result.Add(Quarter.BottomRight);
-            return result.ToArray();
         }
 
         public override string ToString()
