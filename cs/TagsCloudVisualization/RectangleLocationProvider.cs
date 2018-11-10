@@ -3,19 +3,19 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    internal class RectanglesComposer : IComposer<Point>
+    internal class RectangleLocationProvider : IProvider<Point>
     {
         private readonly Point center;
         private double phi;
         private int x;
         private int y;
 
-        public RectanglesComposer(Point center)
+        public RectangleLocationProvider(Point center)
         {
             this.center = center;
         }
 
-        public Point GetNextPoint()
+        public Point GetNext()
         {
             phi += 0.1;
             x = center.X + (int)Math.Floor(0.001 * phi * Math.Cos(phi));
