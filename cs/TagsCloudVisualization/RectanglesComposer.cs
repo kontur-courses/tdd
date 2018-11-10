@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    internal class RectanglesComposer : IEnumerable<Point>
+    internal class RectanglesComposer : IComposer<Point>
     {
         private readonly Point center;
         private double phi;
@@ -17,20 +15,12 @@ namespace TagsCloudVisualization
             this.center = center;
         }
 
-        public IEnumerator<Point> GetEnumerator()
+        public Point GetNextPoint()
         {
-            while (true)
-            {
-                phi += 0.01;
-                x = center.X + (int)Math.Floor(0.01 * phi * Math.Cos(phi));
-                y = center.Y + (int)Math.Floor(0.01 * phi * Math.Sin(phi));
-                yield return new Point(x, y);
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
+            phi += 0.1;
+            x = center.X + (int)Math.Floor(0.001 * phi * Math.Cos(phi));
+            y = center.Y + (int)Math.Floor(0.001 * phi * Math.Sin(phi));
+            return new Point(x, y);
         }
     }
 }

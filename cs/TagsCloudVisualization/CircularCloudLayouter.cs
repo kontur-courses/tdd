@@ -4,17 +4,17 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    class CircularCloudLayouter
+    class CircularCloudLayouter : ICloudLayouter
     {
         public IReadOnlyCollection<Rectangle> Rectangles => rectangles.AsReadOnly();
         private readonly Point center;
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
-        private readonly IEnumerator<Point> composer;
+        private readonly IComposer<Point> composer;
 
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
-            composer = new RectanglesComposer(center).GetEnumerator();
+            composer = new RectanglesComposer(center);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -23,8 +23,8 @@ namespace TagsCloudVisualization
                 throw new ArgumentException("size width and height must be a positive number");
             var rectangle = new Rectangle(
                 new Point(center.X - rectangleSize.Width / 2, center.Y - rectangleSize.Height / 2), rectangleSize);
-            while (rectangle.IntersectsWith(rectangles) && composer.MoveNext())
-                rectangle.Location = composer.Current;
+            while (rectangle.IntersectsWith(rectangles))
+                rectangle.Location = composer.GetNextPoint();
             rectangles.Add(rectangle);
             return rectangle;
         }
