@@ -5,7 +5,6 @@ using FluentAssertions;
 using NUnit.Framework;
 using System.Drawing;
 using TagsCloudVisualization;
-using System.Collections.Immutable;
 
 namespace TagsCloudVisualization_Tests
 {
@@ -34,7 +33,7 @@ namespace TagsCloudVisualization_Tests
             if (testContext.Result.FailCount != 0)
             {
                 new CircularCloudVisualizer()
-                    .DrawCloud(rectangles, cloudLayouter.Radius)
+                    .DrawCloud(rectangles)
                     .Save(filename);
                 TestContext.WriteLine($"Tag cloud visualization saved to file {filename}");
             }
@@ -81,7 +80,7 @@ namespace TagsCloudVisualization_Tests
         }
 
         [Test]
-        public void GetRadius_OnSingleRectangle_ReturnCorrectRadius()
+        public void GetSurroundingCircleRadius_OnSingleRectangle_ReturnCorrectRadius()
         {
             var rectangle = cloudLayouter.PutNextRectangle(defaultSize);
             var expectedRadius = new Point(MathHelper.MaxAbs(rectangle.Left, rectangle.Right),
@@ -89,7 +88,7 @@ namespace TagsCloudVisualization_Tests
             cloudLayouter.Radius.Should().Be(expectedRadius);
         }
         [Test]
-        public void GetRadius_OnTwoRectangles_ReturnCorrectRadius()
+        public void GetSurroundingCircleRadius_OnTwoRectangles_ReturnCorrectRadius()
         {
             cloudLayouter.PutNextRectangle(defaultSize);
             var rectangle = cloudLayouter.PutNextRectangle(defaultSize);
@@ -99,7 +98,7 @@ namespace TagsCloudVisualization_Tests
         }
 
         [Test]
-        public void GetRadius_OnSeveralRectangles_ReturnCorrectRadius()
+        public void GetSurroundingCircleRadius_OnSeveralRectangles_ReturnCorrectRadius()
         {
             for (var i=0; i < 199; i++)
                 cloudLayouter.PutNextRectangle(defaultSize);

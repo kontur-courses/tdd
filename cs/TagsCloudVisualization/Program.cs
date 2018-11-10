@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 using System.IO;
 
@@ -16,14 +15,13 @@ namespace TagsCloudVisualization
             var layout2 = new CircularCloudLayouter(new Point(2, 3));
             var layout3 = new CircularCloudLayouter(new Point(-1, 5));
             var layout4 = new WordsCloudLayouter(new Point(0, 0));
-
-            var text = ReadFromFile($"{System.IO.Directory.GetCurrentDirectory()}/textExample.txt");
+            var folderName = "examples"; 
+            var text = ReadFromFile($"{System.IO.Directory.GetCurrentDirectory()}/{folderName}/textExample.txt");
             var frequencyWords = text.GetFrequency();
-            DrawCircleCloudLayout(layout1, 100, (100, 200), (100, 200), "result_0'0_100.png");
-            DrawCircleCloudLayout(layout2, 1000, (100, 200), (50, 100), "result_2'3_1000.png");
-            DrawCircleCloudLayout(layout3, 500, (50, 100), (100, 200), "result_-1'5_500.png");
-            DrawWordsCloudLayout(layout4, frequencyWords, "words_result.png");
-            
+            DrawCircleCloudLayout(layout1, 100, (100, 200), (100, 200), $"{folderName}/result_0'0_100.png");
+            DrawCircleCloudLayout(layout2, 1000, (100, 200), (50, 100), $"{folderName}/result_2'3_1000.png");
+            DrawCircleCloudLayout(layout3, 500, (50, 100), (100, 200), $"{folderName}/result_-1'5_500.png");
+            DrawWordsCloudLayout(layout4, frequencyWords, $"{folderName}/words_result.png");   
         }
 
         public static string ReadFromFile(string filename)
@@ -43,7 +41,7 @@ namespace TagsCloudVisualization
                 rectangles.Add(layout.PutNextRectangle(new Size(random.Next(minSize.width, minSize.height), 
                     random.Next(maxSize.width, maxSize.height))));
             new CircularCloudVisualizer()
-                .DrawCloud(rectangles, layout.Radius)
+                .DrawCloud(rectangles)
                 .Save(filename);
         }
 
@@ -55,7 +53,7 @@ namespace TagsCloudVisualization
                     layout.PutNextWord(pair.Key, new Font(FontFamily.GenericSansSerif, pair.Value * fontCoefficient, FontStyle.Bold)));
 
             new WordsCloudVisualizer()
-                .DrawCloud(words.ToList(), layout.Radius)
+                .DrawCloud(words.ToList())
                 .Save(filename);
         }
 

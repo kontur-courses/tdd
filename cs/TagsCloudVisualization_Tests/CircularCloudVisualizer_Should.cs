@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization;
@@ -21,8 +17,8 @@ namespace TagsCloudVisualization_Tests
             var rectangles = new List<Rectangle>();
             rectangles.Add(layout.PutNextRectangle(new Size(200, 100)));
             rectangles.Add(layout.PutNextRectangle(new Size(200, 100)));
-            visualizer.DrawCloud(rectangles, layout.Radius).Width.Should().Be(layout.Radius*2);
-            visualizer.DrawCloud(rectangles, layout.Radius).Height.Should().Be(layout.Radius*2); 
+            visualizer.DrawCloud(rectangles).Width.Should().Be(layout.Radius*2);
+            visualizer.DrawCloud(rectangles).Height.Should().Be(layout.Radius*2); 
         }
     }
 }

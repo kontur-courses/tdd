@@ -1,5 +1,4 @@
 ﻿using TagsCloudVisualization;
-using FluentAssertions;
 using NUnit.Framework;
 
 namespace TagsCloudVisualization_Tests

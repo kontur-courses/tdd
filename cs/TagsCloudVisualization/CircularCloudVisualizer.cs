@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
     public class CircularCloudVisualizer
     {
-
-        public Bitmap DrawCloud(IList<Rectangle> rectangles, int radius)
+        public Bitmap DrawCloud(IList<Rectangle> rectangles)
         {
-            var bmp = new Bitmap(radius*2, radius*2);
+            var radius = rectangles.GetSurroundingCircleRadius();
+            var bmp = new Bitmap(radius * 2, radius * 2);
             using (var g = Graphics.FromImage(bmp))
             {
                 g.Clear(Color.DimGray);

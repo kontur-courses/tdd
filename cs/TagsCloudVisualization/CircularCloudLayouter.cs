@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
-using System.Collections.Immutable;
 
 namespace TagsCloudVisualization
 {
@@ -14,7 +13,7 @@ namespace TagsCloudVisualization
 
         private Spiral Spiral { get; }
 
-        public int Radius => GetRadius();
+        public int Radius => rectangles.GetSurroundingCircleRadius();
 
         public CircularCloudLayouter(Point center)
         {
@@ -47,14 +46,6 @@ namespace TagsCloudVisualization
                 }
             }
             return new Rectangle(Center, rectangleSize).ShiftRectangleToTopLeftCorner();
-        }
-
-        private int GetRadius()
-        {
-            return rectangles.Any() ?
-                rectangles
-                .Select(rect => new Point(MathHelper.MaxAbs(rect.Left, rect.Right), MathHelper.MaxAbs(rect.Top, rect.Bottom)))
-                .Select(point => point.GetDistanceTo(Center)).Max() : 0;
         }
     }
 }
