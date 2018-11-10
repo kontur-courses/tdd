@@ -11,8 +11,8 @@ namespace TagsCloudVisualization
     public class Circle
     {
         public Point Center { get; }
-        public List<Point> RightHalfPoints { get; private set; }
-        public List<Point> LeftHalfPoints { get; private set; }
+        public List<Point> TopHalfPoints { get; private set; }
+        public List<Point> BottomHalfPoints { get; private set; }
 
         public int Radius { get; private set; } = 1;
 
@@ -30,21 +30,21 @@ namespace TagsCloudVisualization
                 var y = Math.Sqrt(Radius * Radius - (Center.X - i) * (Center.X - i)) + Center.Y;
                 quater.Add(new Point(i, (int)y));
             }
-            RightHalfPoints = FlipDown(quater);
-            LeftHalfPoints = HorizontalReflect(RightHalfPoints);
+            TopHalfPoints = FlipLeft(quater);
+            BottomHalfPoints = VerticalFlip(TopHalfPoints);
         }
 
-        private List<Point> FlipDown(IEnumerable<Point> arc)
+        private List<Point> FlipLeft(IEnumerable<Point> arc)
         {
             var result = new List<Point>();
             result.AddRange(arc);
-            result.AddRange(arc.Select(point => new Point(point.X, -point.Y)).ToList());
+            result.AddRange(arc.Select(point => new Point(-point.X, point.Y)).ToList());
             return result;
         }
 
-        private List<Point> HorizontalReflect(IEnumerable<Point> arc)
+        private List<Point> VerticalFlip(IEnumerable<Point> arc)
         {
-            return arc.Select(point => new Point(-point.X, point.Y)).ToList();
+            return arc.Select(point => new Point(point.X, -point.Y)).ToList();
         }
 
         public void IncrementRadius(int value)

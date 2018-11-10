@@ -11,5 +11,6 @@ namespace TagsCloudVisualization
     {
         Rectangle PutNextRectangle(Size rectangleSize);
         Size GetSizeTagCloud();
+        Point GetCenter();
     }
 }
