@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using CloudConstruction;
+using TagsCloudVisualization.CloudConstruction;
 
 namespace TagsCloudVisualization
 {

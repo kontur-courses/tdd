@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Drawing;
 using System.Linq;
-using TagsCloudVisualization;
 
-namespace CloudConstruction
+namespace TagsCloudVisualization.CloudConstruction
 {
     public class RectangleGenerator
     {
