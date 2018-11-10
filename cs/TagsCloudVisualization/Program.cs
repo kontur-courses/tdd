@@ -8,8 +8,6 @@ namespace TagsCloudVisualization
     {
         static void Main(string[] args)
         {
-            var ss = new Size(-1,-2);
-            var p = new Rectangle(new Point(1,1), ss);
             var circularCloudLayouter = new CircularCloudLayouter(new Point(1000, 1000));
             var rectangles = new List<Rectangle>();
             var exampleNumber = 0;

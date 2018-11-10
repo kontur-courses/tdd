@@ -25,6 +25,7 @@ namespace TagsCloudVisualization
 
             var image = new Bitmap(maxX + maxWidth + 500, maxY + maxHeight + 500);
             var graphics = Graphics.FromImage(image);
+            listOfRectangles.ToList().ForEach(r => graphics.FillRectangle(Brushes.DarkCyan, r));
             listOfRectangles.ToList().ForEach(r => graphics.DrawRectangle(new Pen(Color.Black, 6f), r));
             return image;
         }

@@ -6,15 +6,15 @@ namespace TagsCloudVisualization
 {
     class CircularCloudLayouter
     {
-        private readonly Point center;
-
         public IReadOnlyCollection<Rectangle> Rectangles => rectangles.AsReadOnly();
-
+        private readonly Point center;
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
+        private readonly IEnumerator<Point> composer;
 
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
+            composer = new RectanglesComposer(center).GetEnumerator();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -23,21 +23,12 @@ namespace TagsCloudVisualization
                 throw new ArgumentException("size width and height must be a positive number");
             var rectangle = new Rectangle(
                 new Point(center.X - rectangleSize.Width / 2, center.Y - rectangleSize.Height / 2), rectangleSize);
-
-            var phi = 0.0;
-            while (IsIntersectionWithOtherRectanglesExist(rectangle))
-            {
-                phi += 0.1;
-                rectangle.X = center.X + (int) Math.Floor(0.1 * phi * Math.Cos(phi));
-                rectangle.Y = center.Y + (int) Math.Floor(0.1 * phi * Math.Sin(phi));
-            }
-
+            while (rectangle.IntersectsWith(rectangles) && composer.MoveNext())
+                rectangle.Location = composer.Current;
             rectangles.Add(rectangle);
-
             return rectangle;
         }
-
-        private bool IsIntersectionWithOtherRectanglesExist(Rectangle rect) =>
-            rectangles.Exists(rect.IntersectsWith);
     }
+    
+
 }
