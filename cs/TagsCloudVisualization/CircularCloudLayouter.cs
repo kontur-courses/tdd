@@ -7,18 +7,20 @@ using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
-    class CircularCloudLayouter
+    public class CircularCloudLayouter
     {
         private Point center { get; }
         private readonly List<Rectangle> cloudRectangles = new List<Rectangle>();
+        private readonly IEnumerable<Point> generatorPoints;
 
-        public CircularCloudLayouter(Point center)
+        public CircularCloudLayouter(Point center, IEnumerable<Point> generatorPoints)
         {
             if (center.X < 0 || center.Y < 0)
             {
                 throw new ArgumentException("Center coords should be positive");
             }
 
+            this.generatorPoints = generatorPoints;
             this.center = center;
         }
 
@@ -28,8 +30,9 @@ namespace TagsCloudVisualization
                 throw new ArgumentException("height and width should be positive");
 
             var currentRectangle = new Rectangle();
-            foreach(var point in new PointGenerator(0, center, 0.1))
+            foreach(var point in generatorPoints)
             {
+
                 var rectangleCenterPoint = new Point(
                     point.X - rectangleSize.Width / 2,
                     point.Y - rectangleSize.Height / 2);

@@ -8,27 +8,28 @@ using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
-    class PointGenerator : IEnumerable<Point>
+    class ArchimedesSpiralPointGenerator : IEnumerable<Point>
     {
         private double spiralAngle { get; set; }
         private Point center { get; set; }
-        private double delta { get; set; }
+        private double angleStep { get; set; }
 
-        public PointGenerator(double spiralAngle, Point center, double delta)
+        public ArchimedesSpiralPointGenerator(Point center, double angleStep = 0.1, double spiralAngle = 0.0 )
         {
             this.spiralAngle = spiralAngle;
             this.center = center;
-            this.delta = delta;
+            this.angleStep = angleStep;
         }
 
         public IEnumerator<Point> GetEnumerator()
         {
+            var currentAngle = spiralAngle;
             while (true)
             {
                 yield return
-                      new Point(center.X + (int)(spiralAngle * Math.Cos(spiralAngle)),
-                          center.Y + (int)(spiralAngle * Math.Sin(spiralAngle)));
-                spiralAngle += delta;
+                      new Point(center.X + (int)(currentAngle * Math.Cos(currentAngle)),
+                          center.Y + (int)(currentAngle * Math.Sin(currentAngle)));
+                currentAngle += angleStep;
             }
         }
 
