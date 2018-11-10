@@ -51,7 +51,7 @@ namespace TagsCloudVisualization
             var circularCloudLayouter = new CircularCloudLayouter(origin);
             var size = new Size(1, 1);
             var rectangles = new List<Rectangle>();
-            const int radius = 10;
+            const int radius = 100;
 
             for (var i = 0; i < 10; i++)
             {
