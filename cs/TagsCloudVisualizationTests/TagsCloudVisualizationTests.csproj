@@ -55,13 +55,14 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircularCloudLayouterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VisualizatorTests.cs" />
+    <Compile Include="RectanglesVisualizerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

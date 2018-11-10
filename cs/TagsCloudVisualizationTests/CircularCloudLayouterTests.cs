@@ -6,6 +6,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
+using System.Numerics;
 
 namespace TagsCloudVisualizationTests
 {
@@ -14,13 +15,17 @@ namespace TagsCloudVisualizationTests
     {
         private Point center;
         private CircularCloudLayouter layouter;
-        private readonly Random random = new Random();
+        private readonly Random random = new Random(0);
 
         [SetUp]
         public void Init()
         {
-            center = new Point(random.Next(1920), random.Next(1080));
+            center = new Point(1920 / 2, 1080 / 2);
             layouter = new CircularCloudLayouter(center);
+            for (var i = 0; i < 100; i++)
+            {
+                layouter.PutNextRectangle(new Size(random.Next(60, 100), random.Next(20, 50)));
+            }
         }
 
         [TearDown]
@@ -33,30 +38,23 @@ namespace TagsCloudVisualizationTests
                 string filename = string.Format("{0}.{1}", context.Test.Name, imageFormat.ToString().ToLower());
                 var outputDir = context.WorkDirectory;
                 TestContext.Out.WriteLine(@"Tag cloud visualization saved to file {0}\{1}", outputDir, filename);
-                var visualizator = new Visualizator(layouter.Rectangles);
-                var bitmap = visualizator.CreateBitmap(new Size(1920, 1080));
+                var visualizer = new RectanglesVisualizer(layouter.Rectangles);
+                var bitmap = visualizer.RenderToBitmap();
                 bitmap.Save(filename, imageFormat);
             }
         }
 
         [Test]
-        public void Should_HaveSpecifiedCenter()
-        {
-            layouter.Center.Should().BeEquivalentTo(center);
-        }
-
-        [Test]
         public void Should_HaveNoRectangles_AfterCreation()
         {
-            layouter.Rectangles.Should().BeEmpty();
+            new CircularCloudLayouter(center).Rectangles.Should().BeEmpty();
         }
 
         [Test]
         public void Should_HaveNoIntersectingRectangles()
         {
-            for (var i = 0; i < random.Next(10, 100); i++)
+            foreach (var rectangle in layouter.Rectangles)
             {
-                var rectangle = layouter.PutNextRectangle(new Size(random.Next(60, 100), random.Next(20, 50)));
                 var haveIntersections = layouter.Rectangles.Where(r => !r.Equals(rectangle)).Any(rectangle.IntersectsWith);
                 haveIntersections.Should().BeFalse();
             }
@@ -66,30 +64,43 @@ namespace TagsCloudVisualizationTests
         public void Rectangles_ShouldBeClose_ToEachOther()
         {
             var rectangles = layouter.Rectangles;
-            for (var i = 0; i < 100; i++)
-            {
-                layouter.PutNextRectangle(new Size(random.Next(60, 100), random.Next(20, 50)));
-            }
-            var totalArea = rectangles.Sum(GetArea);
+            var totalArea = rectangles.Sum(r => r.Width * r.Height);
             var radius = Math.Sqrt(totalArea / Math.PI); // радиус окружности с такой площадью
-            var rectanglesInside = rectangles.Count(r => GetDistanceToCenter(r) <= radius);
-            TestContext.Out.WriteLine("Rectangles: {0}", rectangles.Count);
-            TestContext.Out.WriteLine("Inside: {0}", rectanglesInside);
+            var rectanglesInside = rectangles.Count(r => GetDistanceToCloudCenter(r) <= radius);
+            TestContext.Out.WriteLine("Rectangles: {0}", rectangles.Length);
+            TestContext.Out.WriteLine("With center inside: {0}", rectanglesInside);
 
             // будем считать что прямоугольники расположены плотно, если
-            // более чем для 90% их верно, что верхний левый угол прямоугольника
+            // более чем для 80% их верно, что центр прямоугольника
             // лежит внутри круга вычисленного радиуса
-            rectanglesInside.Should().BeGreaterThan((int)(rectangles.Count * 0.9));
+            rectanglesInside.Should().BeGreaterThan((int)(rectangles.Length * 0.8));
         }
 
-        private int GetArea(Rectangle rectangle)
+        private double GetDistanceToCloudCenter(Rectangle rectangle)
         {
-            return rectangle.Width * rectangle.Height;
+            var rectCenter = FindCenterOfRectangle(rectangle);
+            return Math.Sqrt(Math.Pow(center.X - rectCenter.X, 2) + Math.Pow(center.Y - rectCenter.Y, 2));
         }
 
-        private double GetDistanceToCenter(Rectangle rectangle)
+        [Test]
+        public void TagCloud_ShouldHave_CirleShape()
         {
-            return Math.Sqrt(Math.Pow(center.X - rectangle.X, 2) + Math.Pow(center.Y - rectangle.Y, 2));
+            var vector = new Vector2();
+            foreach (var rectangle in layouter.Rectangles)
+            {
+                var rectCenter = FindCenterOfRectangle(rectangle);
+                vector += new Vector2(rectCenter.X - center.X, rectCenter.Y - center.Y);
+                TestContext.Out.WriteLine(vector);
+            }
+
+            vector.Length().Should().BeLessThan(int.MaxValue);
+        }
+
+        private PointF FindCenterOfRectangle(Rectangle rectangle)
+        {
+            var x = rectangle.Left + rectangle.Width / 2.0f;
+            var y = rectangle.Top + rectangle.Height / 2.0f;
+            return new PointF(x, y);
         }
     }
 }

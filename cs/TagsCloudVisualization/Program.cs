@@ -8,7 +8,7 @@ namespace TagsCloudVisualization
     {
         static void Main()
         {
-            var layouter = new CircularCloudLayouter(new Point(1000, 500));
+            var layouter = new CircularCloudLayouter(new Point(1000, -500));
             var random = new Random();
             for (var i = 0; i < 50; i++)
             {
@@ -17,8 +17,8 @@ namespace TagsCloudVisualization
                 layouter.PutNextRectangle(new Size(width, height));
             }
 
-            var visualizator = new Visualizator(layouter.Rectangles);
-            var bitmap = visualizator.CreateBitmap(new Size(1920, 1080));
+            var visualizer = new RectanglesVisualizer(layouter.Rectangles);
+            var bitmap = visualizer.RenderToBitmap();
             var imageFormat = ImageFormat.Jpeg;
             var filename = string.Format("50rectangles.{0}", imageFormat.ToString().ToLower());
 
