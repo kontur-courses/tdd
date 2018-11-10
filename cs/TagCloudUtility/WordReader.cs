@@ -9,11 +9,13 @@ namespace TagCloud.Utility
     {
         public static List<Size> ReadWords(string pathToWords)
         {
-            var sr = new StreamReader(Directory.GetCurrentDirectory() + pathToWords);
+            var sr = new StreamReader(Path.Combine(Directory.GetCurrentDirectory(), pathToWords));
             var sizes = sr
                 .ReadToEnd()
-                .Split(';');
-            return sizes.Select(size => size.Split('x')
+                .Split(';')
+                .Where(s => !string.IsNullOrEmpty(s));
+            return sizes
+                .Select(size => size.Split('x')
                     .Select(int.Parse)
                     .ToArray())
                 .Select(bounds => new Size(bounds[0], bounds[1]))

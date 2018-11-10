@@ -8,7 +8,7 @@ namespace TagCloud.Utility
     {
         static void Main(string[] args)
         {
-            if (args == null)
+            if (args.Length == 0)
             {
                 Console.WriteLine("Input was null. For help write \"help\" in input");
                 Console.ReadLine();
@@ -25,7 +25,7 @@ namespace TagCloud.Utility
             var pathToWords = args[0];
             var pathToPicture = args[1];
             var settings = DrawSettings.RectanglesWithNumeration;
-            if (args[2] != null)
+            if (args.Length == 3)
                 settings = (DrawSettings)int.Parse(args[2]);
 
             var spiral = new Spiral();
@@ -41,7 +41,7 @@ namespace TagCloud.Utility
                 .ToArray();
 
             var picture = visualizer.CreatePictureWithRectangles(rectangles);
-            picture.Save(Directory.GetCurrentDirectory() + $"{pathToPicture}.png");
+            picture.Save(Path.Combine(Directory.GetCurrentDirectory(), $"{pathToPicture}.png"));
         }
 
         static void WriteHelp()
@@ -53,7 +53,16 @@ namespace TagCloud.Utility
                               "Exe in C:.../Test/TagCloud.Utility.exe\n" +
                               "Input: words.txt result\n" +
                               "In result: words should be in ../Test/words.txt," +
-                              " picture will be saved in ../Test/result.png");
+                              " picture will be saved in ../Test/result.png \n" +
+                              "" +
+                              "Format of word is: [width]x[height];[width]x[height]; ...\n" +
+                              "Example: 120x20;200x12;\n" +
+                              "\n" +
+                              "Draw Settings:\n" +
+                              "OnlyWords == 0\n" +
+                              "WordsInRectangles == 1\n" +
+                              "OnlyRectangles == 2\n" +
+                              "RectanglesWithNumeration == 3 \n");
         }
     }
 }
