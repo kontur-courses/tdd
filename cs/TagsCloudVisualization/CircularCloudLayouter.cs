@@ -19,8 +19,13 @@ namespace TagsCloudVisualization
             Center = center;
         }
 
+        public CircularCloudLayouter(int x, int y)
+        {
+            Center = new Point(x, y);
+        }
+
         public Point Center { get; }
-        public IEnumerable<Rectangle> Layout => layout.SelectMany(x=>x.Body);
+        public IEnumerable<Rectangle> Layout => layout.SelectMany(x => x.Body);
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
@@ -37,13 +42,13 @@ namespace TagsCloudVisualization
         {
             if (layout.Count == 0)
             {
-                rect = new Rectangle(Center - rectangleSize.Divide(2), rectangleSize);
+                rect = rectangleSize.WithCenterIn(Center);
                 layout.Add(new RowLayout(rect));
                 firstIndex = 0;
                 return true;
             }
 
-            if (CaseForNewRow(rectangleSize.Height))
+            if (IsCaseForNewRow(rectangleSize.Height))
             {
                 var heights = layout.Select(x => x.Bounds.Width).ToArray();
                 rect =  heights.Take(firstIndex).Sum() > heights.Skip(firstIndex + 1).Sum() ?
@@ -55,7 +60,7 @@ namespace TagsCloudVisualization
             return false;
         }
 
-        private bool CaseForNewRow(int height) =>
+        private bool IsCaseForNewRow(int height) =>
             layout.Sum(x => x.Bounds.Height) < layout.Max(x => x.Bounds.Width) ||
             layout.Max(x => x.Bounds.Height) < height;
 

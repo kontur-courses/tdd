@@ -19,7 +19,7 @@ namespace TagsCloudVisualization.Tests
         protected Size RandomSize()
         {
             var height = rnd.Next(MinHeight, MaxHeight);
-            var width = rnd.Next(height, height* MaxWidthHeightRatio);
+            var width = rnd.Next(height, height * MaxWidthHeightRatio);
             return new Size(width, height);
         }
 

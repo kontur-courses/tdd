@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -8,31 +9,32 @@ namespace TagsCloudVisualization.Extensions
     public static class IEnumerableExtensions
     {
         
-        public static IEnumerable<TOut> ForAllPairs<TIn,TOut>(this IList<TIn> coll, Func<TIn,TIn,TOut> func)
+        public static IEnumerable<TOut> ForAllPairs<TIn,TOut>(this IList<TIn> list, Func<TIn,TIn,TOut> func)
         {
-            for (int i = 0; i < coll.Count; i++)
+            for (int i = 0; i < list.Count; i++)
             for (int j = 0; j < i; j++)
-                yield return func(coll[i], coll[j]);
+                yield return func(list[i], list[j]);
         }
         
-        public static void ForAllPairs<TIn>(this IList<TIn> coll, Action<TIn,TIn> func)
+        public static void ForAllPairs<TIn>(this IList<TIn> list, Action<TIn,TIn> func)
         {
-            for (int i = 0; i < coll.Count; i++)
+            for (int i = 0; i < list.Count; i++)
             for (int j = 0; j < i; j++)
-                func(coll[i], coll[j]);
+                func(list[i], list[j]);
         }
         
         
         public static void ForAllPairs<TIn>(this IEnumerable<TIn> enumerable, Action<TIn,TIn> func)
         {
-            var gen = enumerable.GetEnumerator();
-            if (!gen.MoveNext())
-                return;
-            var list = new List<TIn>{gen.Current};
-            while (gen.MoveNext())
-                foreach (var el in list)
-                    func(gen.Current, el);
-            gen.Dispose();
+            using (var enumerator = enumerable.GetEnumerator())
+            {
+                if (!enumerator.MoveNext())
+                    return;
+                var list = new List<TIn>{enumerator.Current};
+                while (enumerator.MoveNext())
+                    foreach (var el in list)
+                        func(enumerator.Current, el);
+            }
         }
 
         public static Rectangle EnclosingRectangle(this IEnumerable<Rectangle> enumerable) =>
@@ -56,5 +58,8 @@ namespace TagsCloudVisualization.Extensions
             for (int i = 0; i < count; i++)
                 yield return act();
         }
+
+        public static IEnumerable<Tuple<T, int>> CountUnique<T>(this IEnumerable<T> eunmerable) =>
+            eunmerable.GroupBy(x => x).Select(x => Tuple.Create(x.Key, x.Count()));
     }
 }

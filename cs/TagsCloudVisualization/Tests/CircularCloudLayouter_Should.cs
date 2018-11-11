@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
+using MoreLinq;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization.Tests
@@ -23,6 +27,21 @@ namespace TagsCloudVisualization.Tests
             center = new Point(120,150);
             layouter = new CircularCloudLayouter(center);
         }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+            {
+                var bitmap = new Bitmap(1000,1000);
+                using (var g = Graphics.FromImage(bitmap))
+                    foreach (var rectangle in layouter.Layout)
+                        g.DrawFramedRectangle(rectangle);
+                var path = $"{TestContext.CurrentContext.Test.FullName}_visualization";
+                bitmap.Save($"./{path}.png",ImageFormat.Png);
+                TestContext.WriteLine($"Tag cloud visualization saved to file {path}");
+            }
+        } 
 
         private Rectangle[] GenerateRectangles(int count)=>
             count.Times(RandomSize).Select(layouter.PutNextRectangle).ToArray();
@@ -131,6 +150,33 @@ namespace TagsCloudVisualization.Tests
                 .All(x => x < radius)
                 .Should().BeTrue();
         }
-        
+
+        [Test]
+        public void Have20PercentDisperseOctagonalBounds()
+        {
+            const double dispersion = 0.2;
+            
+            GenerateRectangles(Thousand);
+            var centerSize = new Size(center);
+            var vectors = layouter.Layout
+                    .SelectMany(x => x.Points())
+                    .Select(x => x - centerSize)
+                    .ToArray();
+            
+            var octogonEdgesDist = new[]
+            {
+                vectors.Max(x => x.X),
+                vectors.Max(x => -x.X),
+                vectors.Max(x => x.Y),
+                vectors.Max(x => -x.Y), 
+                vectors.MaxBy(x => x.X + x.Y).DistanceTo(Point.Empty),
+                vectors.MaxBy(x => x.X + x.Y).DistanceTo(Point.Empty),
+                vectors.MaxBy(x => x.X + x.Y).DistanceTo(Point.Empty),
+                vectors.MaxBy(x => x.X + x.Y).DistanceTo(Point.Empty)
+            };
+
+            var meanRadius = octogonEdgesDist.Sum() / octogonEdgesDist.Length; 
+            octogonEdgesDist.All(x => Math.Abs(x - meanRadius) / meanRadius < dispersion).Should().BeTrue();
+        }
     }
 }

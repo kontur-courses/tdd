@@ -15,5 +15,8 @@ namespace TagsCloudVisualization.Extensions
 
         public static Size Divide(this Size size, int by) =>
             new Size(size.Width /= by, size.Height /= by);
+
+        public static Rectangle WithCenterIn(this Size size, Point center) =>
+            new Rectangle(center - size.Divide(2), size);
     }
 }

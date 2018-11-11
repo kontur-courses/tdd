@@ -11,8 +11,8 @@ namespace TagsCloudVisualization.Extensions
         public static IEnumerable<Point> Points(this Rectangle rect)
         {
             yield return rect.Location;
-            yield return rect.Location + rect.Size.HeightSize();
-            yield return rect.Location + rect.Size.WidthSize();
+            yield return rect.Location.AddWidth(rect.Size.Width);
+            yield return rect.Location.AddHeight(rect.Size.Height);
             yield return rect.Location + rect.Size;
         }
 
