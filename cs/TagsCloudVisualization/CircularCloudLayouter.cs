@@ -12,11 +12,14 @@ namespace TagsCloudVisualization
 
         public CircularCloudLayouter(Point center)
         {
-            spiralGenerator = new RoundSpiralGenerator(center, 3.6).GetEnumerator();
+            Center = center;
+            spiralGenerator = new RoundSpiralGenerator(center, 0.1).GetEnumerator();
             spiralGenerator.MoveNext();
         }
 
-        public IEnumerable<Rectangle> Rectangles => rectangles.AsEnumerable();
+        public Point Center { get; }
+
+        public IEnumerable<Rectangle> Rectangles => rectangles;
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
@@ -25,22 +28,34 @@ namespace TagsCloudVisualization
 
             var nextPosition = spiralGenerator.Current;
             var rectangle = new Rectangle(nextPosition, rectangleSize);
-            while (rectangles.Exists(rect => rectangle.IntersectsWith(rect)))
+            while (DoesIntersectWithPreviousRectangles(rectangle))
             {
-                //var step = (rectangleSize.Height + rectangleSize.Width) / 20; TODO: remove this or rework
-                for (var i = 0; i < 1; i++)
-                    spiralGenerator.MoveNext();
+                spiralGenerator.MoveNext();
                 nextPosition = spiralGenerator.Current;
                 rectangle = new Rectangle(nextPosition, rectangleSize);
             }
 
+            rectangle = AdjustPosition(rectangle);
             rectangles.Add(rectangle);
             return rectangle;
         }
 
-        public void PutNextRectangles(IEnumerable<Size> rectangles)
+        private Rectangle AdjustPosition(Rectangle rectangle)
         {
-            foreach (var rectangle in rectangles) PutNextRectangle(rectangle);
+            var centerDirection = Center - rectangle.Location;
+            centerDirection *= 0.2;
+            rectangle.Location.Offset(centerDirection);
+            centerDirection *= -1 / centerDirection.Length;
+            while (DoesIntersectWithPreviousRectangles(rectangle))
+                rectangle.Location.Offset(centerDirection);
+
+            return rectangle;
         }
+
+        private bool DoesIntersectWithPreviousRectangles(Rectangle rectangle) =>
+            rectangles.Any(rectangle.IntersectsWith);
+
+        public IEnumerable<Rectangle> PutNextRectangles(IEnumerable<Size> rectanglesSizes) =>
+            rectanglesSizes.Select(PutNextRectangle);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 
 namespace TagsCloudVisualization
 {
@@ -17,23 +16,17 @@ namespace TagsCloudVisualization
         {
             Point currentPoint;
             yield return center;
-            yield return new Point(center.X + 1, center.Y);
-            yield return currentPoint = new Point(center.X + 1, center.Y - 1);
+            yield return center + Point.UnaryX;
+            yield return currentPoint = center + Point.UnaryX - Point.UnaryY;
             var iteration = 1;
             while (true)
             {
-                var delta = iteration % 2 == 1 ? 1 : -1;
+                var sign = iteration % 2 == 1 ? 1 : -1;
                 for (var i = 0; i < iteration; i++)
-                {
-                    currentPoint = new Point(currentPoint.X - delta, currentPoint.Y);
-                    yield return currentPoint;
-                }
+                    yield return currentPoint = currentPoint - sign * Point.UnaryX;
 
                 for (var i = 0; i < iteration; i++)
-                {
-                    currentPoint = new Point(currentPoint.X, currentPoint.Y + delta);
-                    yield return currentPoint;
-                }
+                    yield return currentPoint = currentPoint + sign * Point.UnaryY;
 
                 iteration++;
             }

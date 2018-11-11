@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
+using System.IO;
 using System.Linq;
 
 namespace TagsCloudVisualization
@@ -9,36 +10,43 @@ namespace TagsCloudVisualization
     {
         public static void Main(string[] args)
         {
-            var layouter = new CircularCloudLayouter(new Point(1000, 1000));
-            layouter.PutNextRectangles(Enumerable.Range(50, 50).Select((n, i) => new Size(n * 2 + i, n + i)));
-            DrawRectangles(layouter.Rectangles, expandPercent: 1200);
+            var layouter = new CircularCloudLayouter(new Point(500, 500));
+            var rectangles = layouter.PutNextRectangles(GenerateRectangles())
+                                     .ToList();
+            Console.Out.WriteLine(rectangles.Count);
+            DrawRectangles(rectangles, layouter.Center, expandPercent: 200);
         }
 
-        public static void DrawRectangles(IEnumerable<Rectangle> rectangles, string path = @"../../../image.png", int expandPercent = 120)
+        public static IEnumerable<Size> GenerateRectangles()
         {
-            rectangles = rectangles.ToList();
-            var maxX = rectangles.Max(rect => rect.Right);
-            var minX = rectangles.Max(rect => rect.Left);
-            var maxY = rectangles.Max(rect => rect.Bottom);
-            var minY = rectangles.Max(rect => rect.Top);
+            return Enumerable.Range(50, 25)
+                             .Select((n, i) => new Size((125 - n * 2 + i) % 125 + 1, n % 50 + 1));
+        }
 
-            var width = maxX - minX;
-            var height = maxY - minY;
+        public static void DrawRectangles(
+            IEnumerable<Rectangle> rectangles,
+            Point center,
+            string name = "image",
+            int expandPercent = 100)
+        {
+            var path = Path.Combine("..", "..", name.Remove(Path.AltDirectorySeparatorChar) + ".png");
+
+            var rectangleList = rectangles.ToList();
+            var cloudSize = rectangleList.GetSize();
+            var width = cloudSize.Width;
+            var height = cloudSize.Height;
             width *= expandPercent / 100;
             height *= expandPercent / 100;
 
             var image = new Bitmap(width, height);
             var graphics = Graphics.FromImage(image);
 
-            foreach (var (i, rectangle) in rectangles.Select((rectangle, i) => (i, rectangle)))
+            foreach (var rectangle in rectangleList)
             {
-                var change = (i + 25) % 256;
-                var topColor = Color.FromArgb(change, Color.LimeGreen);
-                var bottomColor = Color.FromArgb(255 - change, Color.Yellow);
-
-                graphics.DrawRectangle(Pens.Blue, rectangle);
-                graphics.FillRectangle(new LinearGradientBrush(rectangle, bottomColor, topColor, LinearGradientMode.BackwardDiagonal),
-                                       rectangle);
+                var imageCenter = new Point(width / 2, height / 2) - center;
+                rectangle.Offset(imageCenter);
+                graphics.DrawRectangle(new Pen(Color.LimeGreen, 5), rectangle);
+                graphics.FillRectangle(Brushes.White, rectangle);
             }
 
             image.Save(path);

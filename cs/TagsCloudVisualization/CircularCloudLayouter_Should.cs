@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -42,9 +43,10 @@ namespace TagsCloudVisualization
         {
             if (!TestContext.CurrentContext.Result.Outcome.Status.Equals(TestStatus.Failed))
                 return;
-            var path = Path.GetDirectoryName(Path.GetDirectoryName(TestContext.CurrentContext.TestDirectory)) +
-                       $@"\{TestContext.CurrentContext.Test.Name}.png";
-            DrawRectangles(layouter.Rectangles, path);
+            var path = Path.GetDirectoryName(Path.GetDirectoryName(TestContext.CurrentContext.TestDirectory));
+            var name = $@"{TestContext.CurrentContext.Test.Name}.png";
+            path = Path.Combine(path, name);
+            DrawRectangles(layouter.Rectangles, layouter.Center, path);
         }
 
         private CircularCloudLayouter layouter;
@@ -62,10 +64,8 @@ namespace TagsCloudVisualization
                     .WithMessage("size has non positive parts");
         }
 
-        [TestCase(100, 1000, TestName = "N = 100, M = 1000 ms")]
-        [TestCase(100, 1000, TestName = "N = 1000, M = 1000 ms")]
+        [TestCase(100, 1000, TestName = "N = 100, M = 10 ms")]
         [TestCase(100, 1000, TestName = "N = 10000, M = 1000 ms")]
-        [TestCase(100, 1000, TestName = "N = 100000, M = 3500 ms")]
         public void AddNRectangles_FasterThanMms(int n, int m)
         {
             void Addition()
@@ -95,11 +95,37 @@ namespace TagsCloudVisualization
         [Test]
         public void AddSeveralRectanglesToRectangles()
         {
-            layouter.PutNextRectangles(Enumerable.Range(10, 10)
-                                                 .Select((n, i) => new Size(n, i + 1)));
-            layouter.Rectangles.Should()
-                    .NotContainNulls()
-                    .And.HaveCount(10);
+            var rectangles = layouter.PutNextRectangles(Enumerable.Range(10, 10)
+                                                                  .Select((n, i) => new Size(n, i + 1)))
+                                     .ToList();
+            rectangles.Should()
+                      .NotContainNulls()
+                      .And.HaveCount(10);
+        }
+
+        [Test]
+        public void HaveDenseWordCloud_WhenManyRectanglesWasAdded()
+        {
+            var rectangles = layouter.PutNextRectangles(GenerateRectangles())
+                                     .ToList();
+            var summaryArea = rectangles.Sum(r => r.Area());
+            var cloudSize = rectangles.GetSize();
+            var radius = Math.Min(cloudSize.Width, cloudSize.Height);
+            var circleArea = Math.PI * radius * radius;
+
+            summaryArea.Should()
+                       .BeLessOrEqualTo((int) circleArea);
+        }
+
+        [Test]
+        public void HaveZeroIntersections_WhenManyRectanglesWasAdded()
+        {
+            var rectangles = layouter.PutNextRectangles(GenerateRectangles())
+                                     .ToList();
+
+            rectangles.Aggregate(Rectangle.Intersect)
+                      .IsEmpty.Should()
+                      .BeTrue();
         }
 
         [Test]
@@ -119,6 +145,24 @@ namespace TagsCloudVisualization
             second.IntersectsWith(first)
                   .Should()
                   .BeFalse();
+        }
+    }
+
+    public static class RectangleExtensions
+    {
+        public static int Area(this Rectangle rectangle) => rectangle.Width * rectangle.Height;
+
+        public static Size GetSize(this IEnumerable<Rectangle> rectangles)
+        {
+            rectangles = rectangles.ToList();
+            var maxX = rectangles.Max(rect => rect.Right);
+            var minX = rectangles.Min(rect => rect.Left);
+            var maxY = rectangles.Max(rect => rect.Bottom);
+            var minY = rectangles.Min(rect => rect.Top);
+
+            var width = maxX - minX;
+            var height = maxY - minY;
+            return new Size(width, height);
         }
     }
 }
