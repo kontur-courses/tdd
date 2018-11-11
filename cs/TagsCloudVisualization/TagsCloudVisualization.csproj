@@ -62,6 +62,7 @@
     <Compile Include="Graphics.cs" />
     <Compile Include="CircularCloudLayouterTests.cs" />
     <Compile Include="CircularSpiral.cs" />
+    <Compile Include="ICoordinareSequence.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

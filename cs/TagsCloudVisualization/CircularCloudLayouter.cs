@@ -13,7 +13,7 @@ namespace TagsCloudVisualization
 		{
 			Center = center;
 			allRectangles = new List<Rectangle>();
-			spiral = new CircularSpiral(center, 0.1);
+			spiral = new CircularSpiral(center, 0.1, 0.01);
 		}
 
 		public Point Center { get; }
@@ -23,20 +23,19 @@ namespace TagsCloudVisualization
 		{
 			if (SizeHaveZeroOrNegativeValue(rectangleSize))
 				throw new ArgumentException("Size cannot be zero or negative");
-			var nextPointOnSpiral = GetCoordinateOnSpiral(rectangleSize);
-			var rectangle = CreateCenteredRectangle(rectangleSize, nextPointOnSpiral);
+			var rectangle = GetCoordinateOnSpiral(rectangleSize);
 			allRectangles.Add(rectangle);
 			return rectangle;
 		}
 
-		private Point GetCoordinateOnSpiral(Size rectangleSize)
+		private Rectangle GetCoordinateOnSpiral(Size rectangleSize)
 		{
 			while (true)
 			{
 				var newCoordinate = spiral.GetNextCoordinate();
 				var rectangle = CreateCenteredRectangle(rectangleSize, newCoordinate);
 				if (!IsIntersectWithExistingRectangles(rectangle))
-					return newCoordinate;
+					return rectangle;
 			}
 		}
 

@@ -45,7 +45,7 @@ namespace TagsCloudVisualization
 		}
 
 		[Test, Order(3)]
-		public void PutNextRectangle_AddSeveralRectangles_ReturnExactCountOfRectangles()
+		public void PutNextRectangle_AddManyRectangles_ReturnExactCountOfRectangles()
 		{
 			var rectangleCount = 12;
 			for (var i = 0; i < rectangleCount; i++)
@@ -56,23 +56,23 @@ namespace TagsCloudVisualization
 		[Test, Order(4)]
 		public void PutNextRectangle_AddManyRectangles_WithoutIntersection()
 		{
-			for (var i = 0; i < 100; i++)
+			for (var i = 0; i < 20; i++)
 				cloudLayouter.PutNextRectangle(GetRandomSize());
 			var intersection = AreRectanglesIntersect(cloudLayouter.Rectangles);
 			intersection.Should().BeFalse();
 		}
 
 		[Test, Order(5)]
-		public void PutNextRectangle_HaveCircleShape()
+		public void CircularCloudLayouter_HaveCircleShape()
 		{
-			for (var i = 0; i < 100; i++)
+			for (var i = 0; i < 20; i++)
 				cloudLayouter.PutNextRectangle(GetRandomSize());
 			var isCircleShape = IsCircleShape(cloudLayouter);
 			isCircleShape.Should().BeTrue();
 		}
 
 		[Test, Order(6)]
-		public void PutNextRectangle_CenterIsNotZero_HaveCircleShape()
+		public void CircularCloudLayouter_CenterIsNotZero_HaveCircleShape()
 		{
 			var center = new Point(-100, 200);
 			cloudLayouter = new CircularCloudLayouter(center);
@@ -85,7 +85,7 @@ namespace TagsCloudVisualization
 		[Test, Order(7)]
 		public void PutNextRectangle_FillRectanglesDensely()
 		{
-			for (var i = 0; i < 100; i++)
+			for (var i = 0; i < 20; i++)
 				cloudLayouter.PutNextRectangle(GetRandomSize());
 			var sumOfRectSquare = cloudLayouter.Rectangles.Select(x => x.Height * x.Width).Sum();
 			var averageRadius = GetAverageRadiusOfCircle(cloudLayouter);
@@ -171,7 +171,9 @@ namespace TagsCloudVisualization
 			radius[1] = boundingCoordinate.MaxY - cloud.Center.Y;
 			radius[2] = cloud.Center.X - boundingCoordinate.MinX;
 			radius[3] = cloud.Center.Y - boundingCoordinate.MinY;
-			return radius.Max() + 100;
+			int maxWidth = cloud.Rectangles.Max(x => x.Width);
+			var maxHeight = cloud.Rectangles.Max(y => y.Height);
+			return radius.Max() + Math.Max(maxHeight,maxWidth);
 		}
 
 		private int GetAverageRadiusOfCircle(CircularCloudLayouter cloud)
