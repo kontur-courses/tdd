@@ -61,7 +61,7 @@
     <Compile Include="ICloudLayouter.cs" />
     <Compile Include="Graphics.cs" />
     <Compile Include="CircularCloudLayouter_PutNextRectangleShould.cs" />
-    <Compile Include="MathematicalSpiral.cs" />
+    <Compile Include="CircularSpiral.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

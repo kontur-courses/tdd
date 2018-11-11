@@ -16,7 +16,7 @@ namespace TagsCloudVisualization
 		public int MaxY => allRectangles.Max(f => f.Y + f.Height);
 		public int MinX => allRectangles.Min(f => f.X);
 		public int MinY => allRectangles.Min(f => f.Y);
-				   
+
 		public int SizeX => MaxX - MinX;
 		public int SizeY => MaxY - MinY;
 	}

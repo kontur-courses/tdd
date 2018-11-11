@@ -53,7 +53,7 @@ namespace TagsCloudVisualization
 			cloudLayouter.Rectangles.Should().HaveCount(rectangleCount);
 
 		}
-		[Test, Order(3)]
+		[Test, Order(4)]
 		public void WhenAddingManyRectanglesPutThemWithoutIntersection()
 		{
 			for (var i = 0; i < 100; i++)
@@ -62,7 +62,7 @@ namespace TagsCloudVisualization
 			intersection.Should().BeFalse();
 		}
 
-		[Test, Order(4)]
+		[Test, Order(5)]
 		public void WhenAddingManyRectanglesHaveCircleShape()
 		{
 			for (var i = 0; i < 100; i++)
@@ -72,19 +72,19 @@ namespace TagsCloudVisualization
 		}
 
 		[Test]
-		[Order(5)]
+		[Order(6)]
 		public void WhenCenterIsNotZeroHaveCircleShape()
 		{
 			var center = new Point(-100, 200);
-			var cloud = new CircularCloudLayouter(center);
+			cloudLayouter = new CircularCloudLayouter(center);
 			for (var i = 0; i < 100; i++)
-				cloud.PutNextRectangle(GetRandomSize());
-			var isCircleShape = IsCircleShape(cloud);
+				cloudLayouter.PutNextRectangle(GetRandomSize());
+			var isCircleShape = IsCircleShape(cloudLayouter);
 			isCircleShape.Should().BeTrue();
 		}
 
 		[Test]
-		[Order(6)]
+		[Order(7)]
 		public void WhenAddingManyRectanglesFillThemDensely()
 		{
 			for (var i = 0; i < 100; i++)
@@ -148,8 +148,8 @@ namespace TagsCloudVisualization
 			var maxRadius = GetMaxRadius(cloud);
 			for (double angle = 0; angle <= 2 * Math.PI; angle += 0.01)
 			{
-				var x = (int) (maxRadius * Math.Cos(angle)) + cloud.center.X;
-				var y = (int) (maxRadius * Math.Sin(angle)) + cloud.center.Y;
+				var x = (int) (maxRadius * Math.Cos(angle)) + cloud.Center.X;
+				var y = (int) (maxRadius * Math.Sin(angle)) + cloud.Center.Y;
 				var point = new Point(x, y);
 				if (PointIntersectWithAnyRectangles(cloud.Rectangles, point))
 					return false;
@@ -169,10 +169,10 @@ namespace TagsCloudVisualization
 		{
 			var boundingCoordinate = new BoundingCoordinate(cloud.Rectangles);
 			var radius = new int[4];
-			radius[0] = boundingCoordinate.MaxX - cloud.center.X;
-			radius[1] = boundingCoordinate.MaxY - cloud.center.Y;
-			radius[2] = cloud.center.X - boundingCoordinate.MinX;
-			radius[3] = cloud.center.Y - boundingCoordinate.MinY;
+			radius[0] = boundingCoordinate.MaxX - cloud.Center.X;
+			radius[1] = boundingCoordinate.MaxY - cloud.Center.Y;
+			radius[2] = cloud.Center.X - boundingCoordinate.MinX;
+			radius[3] = cloud.Center.Y - boundingCoordinate.MinY;
 			return radius.Max() + 100;
 		}
 
