@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
@@ -6,7 +7,6 @@ using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
-using System.Numerics;
 
 namespace TagsCloudVisualizationTests
 {
@@ -72,15 +72,61 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void Rectangles_ShouldForm_CirleShape()
         {
-            var vector = new Vector2();
-            foreach (var rectangle in layouter.Rectangles)
+            var rectangles = layouter.Rectangles;
+            var centroid = GetCentroid(rectangles);
+            var coveringCircleRadius = rectangles.Max(r => r.DistanceTo(centroid));
+            var convexHull = GetConvexHull(rectangles);
+            const int acceptableDelta = 60;
+            foreach (var r in convexHull)
+                Math.Abs(coveringCircleRadius - r.DistanceTo(centroid)).Should().BeLessThan(acceptableDelta);
+
+        }
+
+        private Point GetCentroid(Rectangle[] rectangles)
+        {
+            var x = (int)rectangles.Sum(r => r.Center().X) / rectangles.Length;
+            var y = (int)rectangles.Sum(r => r.Center().Y) / rectangles.Length;
+            return new Point(x, y);
+        }
+
+        // алгоритм Джарвиса https://en.wikipedia.org/wiki/Gift_wrapping_algorithm
+        private Rectangle[] GetConvexHull(Rectangle[] rectangles)
+        {
+            var hull = new List<Rectangle>();
+            var minX = rectangles.Min(r => r.Center().X);
+            var rectInHull = rectangles.First(r => r.Center().X == minX);
+
+            while (true)
             {
-                var rectCenter = rectangle.Center();
-                vector += new Vector2(rectCenter.X - center.X, rectCenter.Y - center.Y);
-                TestContext.Out.WriteLine(vector);
+                hull.Add(rectInHull);
+                var lastRect = rectangles[0];
+                for (int i = 0; i < rectangles.Length; i++)
+                {
+                    if ((lastRect == rectInHull)
+                        || (GetOrientation(rectInHull.Center(), lastRect.Center(), rectangles[i].Center()) == 1))
+                    {
+                        lastRect = rectangles[i];
+                    }
+                }
+
+                rectInHull = lastRect;
+                if (lastRect == hull.First())
+                    break;
             }
 
-            vector.Length().Should().BeLessThan(0);
+            return hull.ToArray();
+        }
+
+        private int GetOrientation(PointF p, PointF q, PointF r)
+        {
+            float det = (q.X - p.X) * (r.Y - p.Y) - (r.X - p.X) * (q.Y - p.Y);
+
+            if (det > 0)
+                return -1;
+            if (det < 0)
+                return 1;
+
+            return 0;
         }
     }
 }

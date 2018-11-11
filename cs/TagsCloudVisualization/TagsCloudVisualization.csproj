@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\100rectangles.jpeg" />
+    <Content Include="Images\100rectangles_convexhull.jpeg" />
     <Content Include="Images\10rectangles.jpeg" />
     <Content Include="Images\50rectangles.jpeg" />
   </ItemGroup>
