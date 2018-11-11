@@ -9,76 +9,86 @@ namespace TagsCloudVisualization
         private static Rectangle[][] _overlappingRectangles =
         {
             new Rectangle[] {
-                new Rectangle(new Point(0, 0), new Size(100, 100)),
-                new Rectangle(new Point(0, 0), new Size(100, 100)),
+                new Rectangle(0, 0, 100, 100),
+                new Rectangle(0, 0, 100, 100),
             },
             
             new Rectangle[] {
-                new Rectangle(new Point(0, 0), new Size(100, 100)),
-                new Rectangle(new Point(50, 50), new Size(10, 10)),
+                new Rectangle(0, 0, 100, 100),
+                new Rectangle(50, 50, 10, 10),
             },
             
             new Rectangle[] {
-                new Rectangle(new Point(0, 0), new Size(100, 100)),
-                new Rectangle(new Point(50, 0), new Size(100, 100)),
+                new Rectangle(0, 0, 100, 100),
+                new Rectangle(50, 0, 100, 100),
             },
             
             new Rectangle[] {
-                new Rectangle(new Point(0, 0), new Size(100, 100)),
-                new Rectangle(new Point(-50, 0), new Size(100, 100)),
+                new Rectangle(0, 0, 100, 100),
+                new Rectangle(-50, 0, 100, 100),
             },
             
             new Rectangle[] {
-                new Rectangle(new Point(0, 0), new Size(100, 100)),   
-                new Rectangle(new Point(0, 50), new Size(100, 100)),
+                new Rectangle(0, 0, 100, 100),   
+                new Rectangle(0, 50, 100, 100),
             },
             
             new Rectangle[] {
-                new Rectangle(new Point(0, 0), new Size(100, 100)),   
-                new Rectangle(new Point(0, -50), new Size(100, 100)),
+                new Rectangle(0, 0, 100, 100),   
+                new Rectangle(0, -50, 100, 100),
             },
             
             new Rectangle[] {
-                new Rectangle(new Point(0, 0), new Size(100, 100)),   
-                new Rectangle(new Point(50, 50), new Size(100, 100)),
+                new Rectangle(0, 0, 100, 100),   
+                new Rectangle(0, 50, 100, 100),
             },
             
             new Rectangle[] {
-                new Rectangle(new Point(0, 0), new Size(100, 100)),   
-                new Rectangle(new Point(-50, 50), new Size(100, 100)),
+                new Rectangle(0, 0, 100, 100),   
+                new Rectangle(-50, 50, 100, 100),
             },
             
             new Rectangle[] {
-                new Rectangle(new Point(0, 0), new Size(100, 100)),   
-                new Rectangle(new Point(-50, -50), new Size(100, 100)),
+                new Rectangle(0, 0, 100, 100),   
+                new Rectangle(-50, -50, 100, 100),
             },
             
             new Rectangle[] {
-                new Rectangle(new Point(0, 0), new Size(100, 100)),   
-                new Rectangle(new Point(50, -50), new Size(100, 100)),
+                new Rectangle(0, 0, 100, 100),   
+                new Rectangle(50, -50, 100, 100),
+            },
+            
+            new Rectangle[] {
+                new Rectangle(0, 0, 10, 10),   
+                new Rectangle(-100, -100, 200, 200),
             }
         };
 
         private static Rectangle[][] _notOverlappingRectangles =
         {
             new Rectangle[] {
-                new Rectangle(new Point(0, 0), new Size(100, 100)),
-                new Rectangle(new Point(100, 100), new Size(100, 100))   
+                new Rectangle(0, 0, 100, 100),
+                new Rectangle(100, 100, 100, 100)   
+            },
+            
+            new Rectangle[] {
+                new Rectangle(0, 0, 100, 100),
+                new Rectangle(1000, 1000, 100, 100)   
             }
         };
         
         [Test, TestCaseSource(nameof(_overlappingRectangles))]
-        public void IsOverlap_ShouldBeTrue_When(Rectangle[] rects)
+        public void OverlapsWith_ShouldBeTrue_When(Rectangle[] rects)
         {
-            Rectangle.IsOverlap(rects[0], rects[1]).Should().BeTrue();
-            Rectangle.IsOverlap(rects[1], rects[0]).Should().BeTrue();
+            rects[0].OverlapsWith(rects[1]).Should().BeTrue();
+            rects[1].OverlapsWith(rects[0]).Should().BeTrue();
         }
         
         [Test, TestCaseSource(nameof(_notOverlappingRectangles))]
-        public void IsOverlap_ShouldBeFalse_When(Rectangle[] rects)
+        public void OverlapsWith_ShouldBeFalse_When(Rectangle[] rects)
         {
-            Rectangle.IsOverlap(rects[0], rects[1]).Should().BeFalse();
-            Rectangle.IsOverlap(rects[1], rects[0]).Should().BeFalse();
+            rects[0].OverlapsWith(rects[1]).Should().BeFalse();
+            rects[1].OverlapsWith(rects[0]).Should().BeFalse();
         }
 
         [Test]
@@ -86,11 +96,11 @@ namespace TagsCloudVisualization
         {
             var rects = new Rectangle[]
             {
-                new Rectangle(new Point(100, 100), new Size(100, 100)), 
-                new Rectangle(new Point(150, 150), new Size(100, 100)), 
+                new Rectangle(100, 100, 100, 100), 
+                new Rectangle(150, 150, 100, 100), 
             };
             
-            var expectedOuterRect = new Rectangle(new Point(100, 100), new Size(150, 150));
+            var expectedOuterRect = new Rectangle(100, 100, 150, 150);
             var actualOuterRect = Rectangle.GetOuterRect(rects);
 
             actualOuterRect.Should().BeEquivalentTo(expectedOuterRect);
@@ -101,11 +111,11 @@ namespace TagsCloudVisualization
         {
             var rects = new Rectangle[]
             {
-                new Rectangle(new Point(-200, -200), new Size(100, 100)), 
-                new Rectangle(new Point(-150, -150), new Size(100, 100)), 
+                new Rectangle(-200, -200, 100, 100), 
+                new Rectangle(-150, -150, 100, 100), 
             };
             
-            var expectedOuterRect = new Rectangle(new Point(-200, -200), new Size(150, 150));
+            var expectedOuterRect = new Rectangle(-200, -200, 150, 150);
             var actualOuterRect = Rectangle.GetOuterRect(rects);
 
             actualOuterRect.Should().BeEquivalentTo(expectedOuterRect);
@@ -116,14 +126,28 @@ namespace TagsCloudVisualization
         {
             var rects = new Rectangle[]
             {
-                new Rectangle(new Point(-100, -100), new Size(100, 100)), 
-                new Rectangle(new Point(0, 0), new Size(100, 100)), 
+                new Rectangle(-100, -100, 100, 100), 
+                new Rectangle(0, 0, 100, 100), 
             };
             
-            var expectedOuterRect = new Rectangle(new Point(-100, -100), new Size(200, 200));
+            var expectedOuterRect = new Rectangle(-100, -100, 200, 200);
             var actualOuterRect = Rectangle.GetOuterRect(rects);
 
             actualOuterRect.Should().BeEquivalentTo(expectedOuterRect);
+        }
+
+        [Test]
+        public void BottomRightPoint_ShouldBeCorrect()
+        {
+            var rect = new Rectangle(-100, -100, 100, 100);
+            rect.BottmRightPoint.Should().BeEquivalentTo(new Point(0, 0));
+        }
+
+        [Test]
+        public void CenterPoint_ShouldBeCorrect()
+        {
+            var rect = new Rectangle(-100, -100, 100, 100);
+            rect.CenterPoint.Should().BeEquivalentTo(new Point(-50, -50));
         }
     }
 }

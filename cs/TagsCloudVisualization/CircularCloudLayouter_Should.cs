@@ -35,7 +35,7 @@ namespace TagsCloudVisualization
         public void TearDown()
         {
             var filePath = Path.Combine(TestContext.CurrentContext.TestDirectory, Path.GetTempFileName());
-            CloudLayoutVisualizer.SaveAsPngImage(_layouter.Rects, filePath);
+            CloudLayoutVisualizer.SaveAsPngImage(_layouter.GetLayout(), filePath);
             Console.WriteLine($"Tag cloud visualization saved to file {filePath}");
         }
         
@@ -54,13 +54,15 @@ namespace TagsCloudVisualization
             {
                 _layouter.PutNextRectangle(rect);
             }
+
+            var layout = _layouter.GetLayout();
             
-            foreach (var rectA in _layouter.Rects)
+            foreach (var rectA in layout)
             {
-                foreach (var rectB in _layouter.Rects)
+                foreach (var rectB in layout)
                 {
                     if (rectA == rectB) break;
-                    Rectangle.IsOverlap(rectA, rectB).Should().BeFalse();
+                    rectA.OverlapsWith(rectB).Should().BeFalse();
                 }
             }
         }

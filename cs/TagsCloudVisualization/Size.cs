@@ -10,5 +10,11 @@ namespace TagsCloudVisualization
             Width = w;
             Height = h;
         }
+        
+
+        public override string ToString()
+        {
+            return $"Width: {Width}, Height: {Height}";
+        }
     }
 }

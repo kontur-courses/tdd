@@ -1,26 +1,38 @@
 using System.Collections.Generic;
 using System;
+using System.Collections;
+using System.Runtime.ConstrainedExecution;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter
+    public class CircularCloudLayouter : ICloudLayouter
     {
+        private static readonly Size InitialQuadTreeHalfSize = new Size(500, 500);
         private const int SpiralSize = 10;
         private double _currentAngle = Math.PI;
         private Point _currentPoint;
-        public readonly List<Rectangle> Rects = new List<Rectangle>();
-            
+        private Point _layoutCenter;
+        private QuadTree<Rectangle> _rectanglesQuadTree;
+
         public CircularCloudLayouter(Point center)
         {
+            _layoutCenter = center;
             _currentPoint = center;
+            
+            _rectanglesQuadTree = new QuadTree<Rectangle>(
+                new Rectangle(
+                    _layoutCenter.X - InitialQuadTreeHalfSize.Width,
+                    _layoutCenter.Y - InitialQuadTreeHalfSize.Height,
+                    InitialQuadTreeHalfSize.Width * 2,
+                    InitialQuadTreeHalfSize.Height * 2));
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var rect = new Rectangle(_currentPoint, rectangleSize);
+            var nextRect = new Rectangle(_currentPoint, rectangleSize);
 
             _currentAngle = Math.PI;
-            while (RectOverlapWithExistRects(rect))
+            while (_rectanglesQuadTree.HasNodesInside(nextRect))
             {
                 var r = SpiralSize * _currentAngle;
                 var x = (int)Math.Floor(r * Math.Cos(_currentAngle));
@@ -29,36 +41,17 @@ namespace TagsCloudVisualization
                 _currentPoint = new Point(x, y);
                 _currentAngle += 0.1;
                 
-                rect = new Rectangle(_currentPoint, rectangleSize);
+                nextRect = new Rectangle(_currentPoint, rectangleSize);
             }
             
-            Rects.Add(rect);
-
-            // CorrectLayout();
+            _rectanglesQuadTree.Insert(nextRect, nextRect);
             
-            return rect;
+            return nextRect;
         }
 
-        private void CorrectLayout()
+        public IEnumerable<Rectangle> GetLayout()
         {
-            foreach (var existRect in Rects)
-            {
-                var newPos = new Point(0, 0);
-                existRect.Pos = newPos;
-            }
-        }
-
-        private bool RectOverlapWithExistRects(Rectangle rect)
-        {
-            foreach (var existRect in Rects)
-            {
-                if (Rectangle.IsOverlap(existRect, rect))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return _rectanglesQuadTree.Nodes;
         }
     }
 }
