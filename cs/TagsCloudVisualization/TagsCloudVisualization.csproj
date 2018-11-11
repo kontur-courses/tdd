@@ -58,8 +58,10 @@
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="BoundingCoordinate.cs" />
+    <Compile Include="ICloudLayouter.cs" />
     <Compile Include="Graphics.cs" />
-    <Compile Include="CircularCloudLayouterShould.cs" />
+    <Compile Include="CircularCloudLayouter_PutNextRectangleShould.cs" />
+    <Compile Include="MathematicalSpiral.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
