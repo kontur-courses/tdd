@@ -106,7 +106,7 @@ namespace TagsCloudVisualization
         [Test]
         public void HaveDenseWordCloud_WhenManyRectanglesWasAdded()
         {
-            var rectangles = layouter.PutNextRectangles(GenerateRectangles())
+            var rectangles = layouter.PutNextRectangles(GenerateRectangles(SizeCreator_SlowDecreasing))
                                      .ToList();
             var summaryArea = rectangles.Sum(r => r.Area());
             var cloudSize = rectangles.GetSize();
@@ -120,7 +120,7 @@ namespace TagsCloudVisualization
         [Test]
         public void HaveZeroIntersections_WhenManyRectanglesWasAdded()
         {
-            var rectangles = layouter.PutNextRectangles(GenerateRectangles())
+            var rectangles = layouter.PutNextRectangles(GenerateRectangles(SizeCreator_SlowDecreasing))
                                      .ToList();
 
             rectangles.Aggregate(Rectangle.Intersect)
