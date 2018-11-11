@@ -16,7 +16,7 @@ namespace TagsCloudVisualization
             return x + y;
         }
 
-        public static bool IsCollinear(this Vector currentVector, Vector otherVector)
+        public static bool IsSameDirection(this Vector currentVector, Vector otherVector)
         {
             if (currentVector == otherVector)
                 return true;

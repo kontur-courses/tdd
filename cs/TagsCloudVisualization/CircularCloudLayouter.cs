@@ -42,7 +42,7 @@ namespace TagsCloudVisualization
             var directionToCenter = new Vector(rectangle.Center, origin).Normalized();
             var currentDirection = directionToCenter;
             var previousPosition = new Point(0, 0);
-            while (directionToCenter.IsCollinear(currentDirection) 
+            while (directionToCenter.IsSameDirection(currentDirection) 
                    && !rectangle.IsIntersectsWithAnyRect(rectanglesList))
             {
                 previousPosition = rectangle.Center;
@@ -54,10 +54,13 @@ namespace TagsCloudVisualization
             return rectangle;
         }
 
+        private double GetMax(double firstNumber, double secondNumber)
+            => firstNumber > secondNumber ? firstNumber : secondNumber;
+
         private void UpdateWidthAndHeight(Rectangle rectangle)
         {
-            var newWidth = Math.Abs(rectangle.RightXCoord) > Math.Abs(rectangle.LeftXCoord) ? Math.Abs(rectangle.RightXCoord) : Math.Abs(rectangle.LeftXCoord);
-            var newHeight = Math.Abs(rectangle.TopYCoord) > Math.Abs(rectangle.BottomYCoord) ? Math.Abs(rectangle.TopYCoord) : Math.Abs(rectangle.BottomYCoord);
+            var newWidth = GetMax(Math.Abs(rectangle.RightXCoord), Math.Abs(rectangle.LeftXCoord));
+            var newHeight = GetMax(Math.Abs(rectangle.TopYCoord), Math.Abs(rectangle.BottomYCoord));
             if (newWidth > width)
                 width = (int)newWidth;
             if (newHeight > height)
