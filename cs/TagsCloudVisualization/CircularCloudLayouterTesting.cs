@@ -46,13 +46,13 @@ namespace TagsCloudVisualization
         private class PutNextRectangle
         {
             private CircularCloudLayouter cloud;
-            private double stepAngle, paramArchimedesSpiral;
+            private double stepAngle;
             private CircularCloudVisualizer cloudVisualizer;
+
             [SetUp]
             public void Init()
             {
                 stepAngle = PointGenerator.StepAngle;
-                paramArchimedesSpiral = PointGenerator.ParameterArchimedesSpiral;
                 cloud = new CircularCloudLayouter(new Point(1000, 1000));
                 cloudVisualizer = new CircularCloudVisualizer(new Pen(Brushes.DarkOrchid, 1));
             }
@@ -69,6 +69,14 @@ namespace TagsCloudVisualization
                     var message = $"Tag cloud visualization saved to file<{path})";
                     Console.WriteLine(message);
                 }
+            }
+
+            [TestCase(-1, 7, TestName = "Width is negative")]
+            [TestCase(5, -7, TestName = "Height is negative")]
+            public void Should_ThrowArgumentException_When(int width, int height)
+            {
+                var size = new Size(width, height);
+                Assert.Throws<ArgumentException>(() => cloud.PutNextRectangle(size));
             }
 
             [Test]

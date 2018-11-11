@@ -27,6 +27,8 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size size)
         {
+            if (size.Height < 0 || size.Width < 0)
+                throw new ArgumentException("Size should be positive");
             var resultRect = RectangleGenerator.GetNextRectangle(size);
             resultRect = CloudCompactor.ShiftRectangleToTheNearest(resultRect);
             Rectangles.Add(resultRect);
