@@ -22,13 +22,9 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            CheckRectangleSize(rectangleSize);
-            var resRectangle = GetNewRectangle(rectangleSize);
-            return resRectangle;
-        }
+            if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
+                throw new ArgumentException("Width and height should be positive numbers");
 
-        private Rectangle GetNewRectangle(Size rectangleSize)
-        {
             Rectangle currentRectangle;
             do
             {
@@ -45,12 +41,6 @@ namespace TagsCloudVisualization
             var dx = (int)(Math.Cos(angle) * angle * spiralLengthMultiplier);
             var dy = (int)(Math.Sin(angle) * angle * spiralLengthMultiplier);
             return new Point(center.X + dx, center.Y + dy);
-        }
-
-        private static void CheckRectangleSize(Size rectangleSize)
-        {
-            if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
-                throw new ArgumentException("Width and height should be positive integer numbers");
         }
     }
 }
