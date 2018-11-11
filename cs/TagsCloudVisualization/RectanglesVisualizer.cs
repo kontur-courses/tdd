@@ -15,7 +15,7 @@ namespace TagsCloudVisualization
 
         public Bitmap RenderToBitmap()
         {
-            var size = DetermineBitmapSize();
+            var size = CalculateBitmapSize();
             var bitmap = new Bitmap(size.Width, size.Height);
             var graphics = Graphics.FromImage(bitmap);
             var pen = new Pen(Color.Black);
@@ -26,7 +26,7 @@ namespace TagsCloudVisualization
             return bitmap;
         }
 
-        private Size DetermineBitmapSize()
+        private Size CalculateBitmapSize()
         {
             if (rectangles.Any())
             {

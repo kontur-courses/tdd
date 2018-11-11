@@ -35,19 +35,14 @@ namespace TagsCloudVisualizationTests
             if (context.Result.Outcome.Status != TestStatus.Passed)
             {
                 var imageFormat = ImageFormat.Jpeg;
-                string filename = string.Format("{0}.{1}", context.Test.Name, imageFormat.ToString().ToLower());
-                var outputDir = context.WorkDirectory;
-                TestContext.Out.WriteLine(@"Tag cloud visualization saved to file {0}\{1}", outputDir, filename);
+                var fileName = string.Format("{0}.{1}", context.Test.Name, imageFormat.ToString().ToLower());
+                var outputDir = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                var fullPath = string.Format(@"{0}\{1}", outputDir, fileName);
+                TestContext.Out.WriteLine("Tag cloud visualization saved to file {0}", fullPath);
                 var visualizer = new RectanglesVisualizer(layouter.Rectangles);
                 var bitmap = visualizer.RenderToBitmap();
-                bitmap.Save(filename, imageFormat);
+                bitmap.Save(fullPath, imageFormat);
             }
-        }
-
-        [Test]
-        public void Should_HaveNoRectangles_AfterCreation()
-        {
-            new CircularCloudLayouter(center).Rectangles.Should().BeEmpty();
         }
 
         [Test]
@@ -66,9 +61,7 @@ namespace TagsCloudVisualizationTests
             var rectangles = layouter.Rectangles;
             var totalArea = rectangles.Sum(r => r.Width * r.Height);
             var radius = Math.Sqrt(totalArea / Math.PI); // радиус окружности с такой площадью
-            var rectanglesInside = rectangles.Count(r => GetDistanceToCloudCenter(r) <= radius);
-            TestContext.Out.WriteLine("Rectangles: {0}", rectangles.Length);
-            TestContext.Out.WriteLine("With center inside: {0}", rectanglesInside);
+            var rectanglesInside = rectangles.Count(r => r.DistanceTo(center) <= radius);
 
             // будем считать что прямоугольники расположены плотно, если
             // более чем для 80% их верно, что центр прямоугольника
@@ -76,31 +69,18 @@ namespace TagsCloudVisualizationTests
             rectanglesInside.Should().BeGreaterThan((int)(rectangles.Length * 0.8));
         }
 
-        private double GetDistanceToCloudCenter(Rectangle rectangle)
-        {
-            var rectCenter = FindCenterOfRectangle(rectangle);
-            return Math.Sqrt(Math.Pow(center.X - rectCenter.X, 2) + Math.Pow(center.Y - rectCenter.Y, 2));
-        }
-
         [Test]
-        public void TagCloud_ShouldHave_CirleShape()
+        public void Rectangles_ShouldForm_CirleShape()
         {
             var vector = new Vector2();
             foreach (var rectangle in layouter.Rectangles)
             {
-                var rectCenter = FindCenterOfRectangle(rectangle);
+                var rectCenter = rectangle.Center();
                 vector += new Vector2(rectCenter.X - center.X, rectCenter.Y - center.Y);
                 TestContext.Out.WriteLine(vector);
             }
 
-            vector.Length().Should().BeLessThan(int.MaxValue);
-        }
-
-        private PointF FindCenterOfRectangle(Rectangle rectangle)
-        {
-            var x = rectangle.Left + rectangle.Width / 2.0f;
-            var y = rectangle.Top + rectangle.Height / 2.0f;
-            return new PointF(x, y);
+            vector.Length().Should().BeLessThan(0);
         }
     }
 }
