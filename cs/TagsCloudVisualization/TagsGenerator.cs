@@ -12,7 +12,7 @@ namespace TagsCloudVisualization
             var rectangles = new List<Size>();
 
             for (var i = 0; i < count; i++)
-                rectangles.Add(new Size(random.Next(5, 50), random.Next(5, 50)));
+                rectangles.Add(new Size(random.Next(30, 50), random.Next(30, 50)));
 
             return rectangles;
         }
