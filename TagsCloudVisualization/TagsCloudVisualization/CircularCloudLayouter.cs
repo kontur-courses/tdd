@@ -78,6 +78,7 @@ namespace TagsCloudVisualization
 
             return CheckCollisionWithAll(changed) ? rectangle : changed;
         }
+
         private bool CheckCollisionWithAll(Rectangle rect)
         {
             foreach (var other in rectangles)
