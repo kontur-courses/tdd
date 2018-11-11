@@ -67,8 +67,8 @@ namespace TagsCloudVisualization
 		{
 			for (var i = 0; i < 40; i++)
 				cloudLayouter.PutNextRectangle(GetRandomSize());
-			var isCircleShape = IsCircleShape(cloudLayouter);
-			isCircleShape.Should().BeTrue();
+			var radius = GetRadiusFromRectanglesSquare();
+			cloudLayouter.Rectangles.All(rect => GetDistanceToCenter(rect) < radius).Should().BeTrue();
 		}
 
 		[Test, Order(6)]
@@ -78,8 +78,8 @@ namespace TagsCloudVisualization
 			cloudLayouter = new CircularCloudLayouter(center);
 			for (var i = 0; i < 20; i++)
 				cloudLayouter.PutNextRectangle(GetRandomSize());
-			var isCircleShape = IsCircleShape(cloudLayouter);
-			isCircleShape.Should().BeTrue();
+			var radius = GetRadiusFromRectanglesSquare();
+			cloudLayouter.Rectangles.All(rect => GetDistanceToCenter(rect) < radius).Should().BeTrue();
 		}
 
 		[Test, Order(7)]
@@ -128,6 +128,14 @@ namespace TagsCloudVisualization
 			return new Size(Random.Next(10, 50), Random.Next(10, 50));
 		}
 
+		private double GetDistanceToCenter(Rectangle rectangle)
+		{
+			var centerX = cloudLayouter.Center.X;
+			var centerY = cloudLayouter.Center.Y;
+			var x = rectangle.X - centerX;
+			var y = rectangle.Y - centerY;
+			return Math.Sqrt(x * x + y * y);
+		}
 		private bool AreRectanglesIntersect(IReadOnlyList<Rectangle> allRectangles)
 		{
 			for (var i = 0; i < allRectangles.Count; i++)
@@ -141,27 +149,10 @@ namespace TagsCloudVisualization
 			return false;
 		}
 
-		private bool IsCircleShape(CircularCloudLayouter cloud)
+		private int GetRadiusFromRectanglesSquare()
 		{
-			var sumOfRectSquare = cloud.Rectangles.Select(x => x.Height * x.Width).Sum();
-			var maxRadius = (int) Math.Sqrt(sumOfRectSquare * 2.5 / Math.PI);
-			for (double angle = 0; angle <= 2 * Math.PI; angle += 0.1)
-			{
-				var x = (int) (maxRadius * Math.Cos(angle)) + cloud.Center.X;
-				var y = (int) (maxRadius * Math.Sin(angle)) + cloud.Center.Y;
-				var point = new Point(x, y);
-				if (PointIntersectWithAnyRectangles(cloud.Rectangles, point))
-					return false;
-			}
-			return true;
-		}
-
-		private bool PointIntersectWithAnyRectangles(IReadOnlyList<Rectangle> rectangles, Point point)
-		{
-			foreach (var rectangle in rectangles)
-				if (rectangle.Contains(point))
-					return true;
-			return false;
+			var sumOfRectSquare = cloudLayouter.Rectangles.Select(x => x.Height * x.Width).Sum();
+			return (int) Math.Sqrt(sumOfRectSquare * 2.5 / Math.PI);
 		}
 
 		private int GetAverageRadius(CircularCloudLayouter cloud)

@@ -23,12 +23,12 @@ namespace TagsCloudVisualization
 		{
 			if (SizeHaveZeroOrNegativeValue(rectangleSize))
 				throw new ArgumentException("Size cannot be zero or negative");
-			var rectangle = GetCoordinateOnSpiral(rectangleSize);
+			var rectangle = GetNextRectangle(rectangleSize);
 			allRectangles.Add(rectangle);
 			return rectangle;
 		}
 
-		private Rectangle GetCoordinateOnSpiral(Size rectangleSize)
+		private Rectangle GetNextRectangle(Size rectangleSize)
 		{
 			while (true)
 			{
