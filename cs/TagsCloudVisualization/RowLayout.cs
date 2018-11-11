@@ -21,7 +21,6 @@ namespace TagsCloudVisualization
         
         public Rectangle Bounds { get; private set; }
         public IEnumerable<Rectangle> Body => body;
-        //public double Density => Body.Sum(x => x.Size.Area()) / (double)Bounds.Size.Area();
 
         public Rectangle Add(Size rectangleSize)
         {
