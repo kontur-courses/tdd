@@ -64,13 +64,13 @@ namespace TagsCloudVisualization
             {
                 var result = rectangle;
 
-                if (rectangle.Y > Center.Y)
+                if (GetRectangleCenter(rectangle).Y > Center.Y)
                     rectangle.Y--;
 
-                if (rectangle.Y < Center.Y)
+                if (GetRectangleCenter(rectangle).Y < Center.Y)
                     rectangle.Y++;
 
-                if (rectangle.Y == Center.Y || rectangles.Any(e => e.IntersectsWith(rectangle)))
+                if (GetRectangleCenter(rectangle).Y == Center.Y || rectangles.Any(e => e.IntersectsWith(rectangle)))
                     return result;
             }
         }
@@ -80,13 +80,13 @@ namespace TagsCloudVisualization
             {
                 var result = rectangle;
 
-                if (rectangle.X > Center.X)
+                if (GetRectangleCenter(rectangle).X > Center.X)
                     rectangle.X--;
 
-                if (rectangle.X < Center.X)
+                if (GetRectangleCenter(rectangle).X < Center.X)
                     rectangle.X++;
 
-                if(rectangle.X == Center.X || rectangles.Any(e => e.IntersectsWith(rectangle)))
+                if(GetRectangleCenter(rectangle).X == Center.X || rectangles.Any(e => e.IntersectsWith(rectangle)))
                     return result;
 
             }
