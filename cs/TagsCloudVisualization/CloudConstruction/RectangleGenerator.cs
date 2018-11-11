@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Linq;
 
 namespace TagsCloudVisualization.CloudConstruction
@@ -18,11 +17,11 @@ namespace TagsCloudVisualization.CloudConstruction
         public Rectangle GetNextRectangle(Size size)
         {
             var location = PointGenerator.GetNextPointArchimedesSpiral(size);
-            var rectangle = new Rectangle(location,size);
+            var rectangle = new Rectangle(location, size);
             while (!CheckLocation(rectangle))
             {
                 location = PointGenerator.GetNextPointArchimedesSpiral(size);
-                rectangle = new Rectangle(location,size);
+                rectangle = new Rectangle(location, size);
             }
             return rectangle;
         }

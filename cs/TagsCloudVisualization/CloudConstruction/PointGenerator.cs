@@ -17,7 +17,7 @@ namespace TagsCloudVisualization.CloudConstruction
         public Point GetNextPointArchimedesSpiral(Size size)
         {
             var distance = ParameterArchimedesSpiral * Angle;
-            var location =  new Point((int)(Cloud.Center.X + distance * Math.Cos(Angle))- size.Width/2,
+            var location = new Point((int)(Cloud.Center.X + distance * Math.Cos(Angle)) - size.Width / 2,
                 (int)(Cloud.Center.Y - distance * Math.Sin(Angle)) - size.Height / 2);
             Angle += StepAngle;
             return location;

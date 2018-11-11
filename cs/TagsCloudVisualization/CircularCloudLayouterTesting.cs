@@ -5,7 +5,6 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using Math = System.Math;
 using TagsCloudVisualization.CloudConstruction;
 
 namespace TagsCloudVisualization
@@ -66,7 +65,7 @@ namespace TagsCloudVisualization
                     var path = $"{AppDomain.CurrentDomain.BaseDirectory}/" +
                                $"{TestContext.CurrentContext.Test.FullName}.bmp";
                     bmp.Save(path);
-                    var message = $"Tag cloud visualization saved to file<{path})";
+                    var message = $"Tag cloud visualization saved to file<{path}>";
                     Console.WriteLine(message);
                 }
             }
@@ -97,7 +96,7 @@ namespace TagsCloudVisualization
             [Test]
             public void Should_CorrectlyPositionTwoRectangles()
             {
-                var sizes = new List<Size>() {new Size(10, 10), new Size(15, 15)};
+                var sizes = new List<Size>() { new Size(10, 10), new Size(15, 15) };
                 var rectangles = sizes.Select(size => cloud.PutNextRectangle(size));
                 var maxDistance = rectangles.SelectMany(GetDistanceFromCenterToRectangleTops).Max();
                 maxDistance.Should().BeLessThan(28.5);
@@ -144,7 +143,7 @@ namespace TagsCloudVisualization
                 }
 
                 var rectangles = sizes.Select(size => cloud.PutNextRectangle(size)).ToList();
-                var hasNeighbor = rectangles.All(rect => rectangles.Any(rect1 => IsTouchingOtherRectangle(rect,rect1)));
+                var hasNeighbor = rectangles.All(rect => rectangles.Any(rect1 => IsTouchingOtherRectangle(rect, rect1)));
 
                 hasNeighbor.Should().BeTrue();
             }

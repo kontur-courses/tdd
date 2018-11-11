@@ -19,7 +19,7 @@ namespace TagsCloudVisualization.CloudConstruction
             if (Cloud.Rectangles.Count == 0)
                 return rectangle;
             var yLevelRectangles = Cloud.Rectangles.Where(rect => !(rectangle.IsBelowAnother(rect)
-                                                                  ||rectangle.IsAboveAnother(rect))).ToList();
+                                                                  || rectangle.IsAboveAnother(rect))).ToList();
             rectangle = FindNearestRectangleHorizontally(rectangle, yLevelRectangles);
             var xLevelRectangles = Cloud.Rectangles.Where(rect => !(rectangle.ToRightOfAnother(rect)
                                                                   || rectangle.ToLeftOfAnother(rect))).ToList();

@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public  class CircularCloudVisualizer
+    public class CircularCloudVisualizer
     {
         public Pen Pen { get; set; }
 
@@ -11,7 +11,7 @@ namespace TagsCloudVisualization
         {
             Pen = pen;
         }
-        public  Bitmap DrawRandomRectanglesInBitmap(int minValue, int maxValue, Point center, int numberRectangles)
+        public Bitmap DrawRandomRectanglesInBitmap(int minValue, int maxValue, Point center, int numberRectangles)
         {
             var cloud = new CircularCloudLayouter(center);
             var bmp = new Bitmap(cloud.WindowSize.Width, cloud.WindowSize.Height);
@@ -28,12 +28,12 @@ namespace TagsCloudVisualization
             return bmp;
         }
 
-        public  Bitmap DrawCircularCloud(CircularCloudLayouter cloud)
+        public Bitmap DrawCircularCloud(CircularCloudLayouter cloud)
         {
             var bmp = new Bitmap(cloud.WindowSize.Width, cloud.WindowSize.Height);
             var gr = Graphics.FromImage(bmp);
             gr.Clear(Color.AliceBlue);
-            cloud.Rectangles.ForEach(rect => gr.DrawRectangle(Pen,rect));
+            cloud.Rectangles.ForEach(rect => gr.DrawRectangle(Pen, rect));
             return bmp;
         }
     }

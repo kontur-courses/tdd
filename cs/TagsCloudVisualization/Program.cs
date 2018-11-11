@@ -22,11 +22,11 @@ namespace TagsCloudVisualization
             inputStr = Console.ReadLine().Split();
             var x = int.Parse(inputStr[0]);
             var y = int.Parse(inputStr[1]);
-            var center = new Point(x,y);
+            var center = new Point(x, y);
             Console.WriteLine(@"Enter the number of rectangles");
             var numberRectangles = int.Parse(Console.ReadLine());
             var bmp = new CircularCloudVisualizer(new Pen(Brushes.DarkOrchid, 5))
-                .DrawRandomRectanglesInBitmap(minEdgeRectangle,maxEdgeRectangle,center,numberRectangles);
+                .DrawRandomRectanglesInBitmap(minEdgeRectangle, maxEdgeRectangle, center, numberRectangles);
             bmp.Save(folderPath ?? throw new InvalidOperationException("Folder path is null."));
         }
     }
