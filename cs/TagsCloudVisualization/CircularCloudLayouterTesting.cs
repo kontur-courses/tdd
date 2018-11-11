@@ -4,7 +4,9 @@ using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using Math = System.Math;
+using TagsCloudVisualization.CloudConstruction;
 
 namespace TagsCloudVisualization
 {
@@ -33,7 +35,7 @@ namespace TagsCloudVisualization
             }
 
             [Test]
-            public void Should_InitializeListRectangles()
+            public void Should_InitializeRectangles()
             {
                 var cloud = new CircularCloudLayouter(new Point(0, 0));
                 Assert.AreEqual(new List<Rectangle>(), cloud.Rectangles);
@@ -45,18 +47,28 @@ namespace TagsCloudVisualization
         {
             private CircularCloudLayouter cloud;
             private double stepAngle, paramArchimedesSpiral;
+            private CircularCloudVisualizer cloudVisualizer;
             [SetUp]
             public void Init()
             {
-                stepAngle = CircularCloudLayouter.StepAngle;
-                paramArchimedesSpiral = CircularCloudLayouter.ParameterArchimedesSpiral;
+                stepAngle = PointGenerator.StepAngle;
+                paramArchimedesSpiral = PointGenerator.ParameterArchimedesSpiral;
                 cloud = new CircularCloudLayouter(new Point(1000, 1000));
+                cloudVisualizer = new CircularCloudVisualizer(new Pen(Brushes.DarkOrchid, 1));
             }
 
             [TearDown]
-            public void Dispose()
+            public void TearDown()
             {
-                cloud = new CircularCloudLayouter(new Point(1000, 1000));
+                if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+                {
+                    var bmp = cloudVisualizer.DrawCircularCloud(cloud);
+                    var path = $"{AppDomain.CurrentDomain.BaseDirectory}/" +
+                               $"{TestContext.CurrentContext.Test.FullName}.bmp";
+                    bmp.Save(path);
+                    var message = $"Tag cloud visualization saved to file<{path})";
+                    Console.WriteLine(message);
+                }
             }
 
             [Test]
@@ -71,22 +83,16 @@ namespace TagsCloudVisualization
             public void Should_CorrectAngleChange()
             {
                 cloud.PutNextRectangle(new Size(5, 20));
-                Assert.AreEqual(stepAngle, cloud.Angle);
+                Assert.AreEqual(stepAngle, cloud.RectangleGenerator.PointGenerator.Angle);
             }
 
             [Test]
             public void Should_CorrectlyPositionTwoRectangles()
             {
-                var numberSteps = 38;
-                var distance = stepAngle * numberSteps * paramArchimedesSpiral;
-                var expectedLocation = new Point((int)(cloud.Center.X + distance * Math.Cos(stepAngle * numberSteps)),
-                    (int)(cloud.Center.Y - distance * Math.Sin(stepAngle * numberSteps)));
-                var expectedResult = new Rectangle(expectedLocation, new Size(4, 4));
-
-                cloud.PutNextRectangle(new Size(4, 4));
-                var nextRectangle = cloud.PutNextRectangle(new Size(4, 4));
-
-                Assert.AreEqual(expectedResult, nextRectangle);
+                var sizes = new List<Size>() {new Size(10, 10), new Size(15, 15)};
+                var rectangles = sizes.Select(size => cloud.PutNextRectangle(size));
+                var maxDistance = rectangles.SelectMany(GetDistanceFromCenterToRectangleTops).Max();
+                maxDistance.Should().BeLessThan(28.5);
             }
 
             [Test]
@@ -101,27 +107,23 @@ namespace TagsCloudVisualization
 
                 var area = lengthEdge * lengthEdge * sizes.Count;
                 var radius = Math.Sqrt(area / Math.PI);
-                var listRect = sizes.Select(size => cloud.PutNextRectangle(size)).ToList();
-                var maxDistance = listRect.SelectMany(GetListRectangleTops).Max();
+                var rectangles = sizes.Select(size => cloud.PutNextRectangle(size)).ToList();
+                var maxDistance = rectangles.SelectMany(GetDistanceFromCenterToRectangleTops).Max();
 
                 maxDistance.Should().BeLessThan(radius * 1.4);
             }
 
-            private List<double> GetListRectangleTops(Rectangle rect)
+            private List<double> GetDistanceFromCenterToRectangleTops(Rectangle rect)
             {
                 return new List<double>
                     {
-                        CalculateDistanceToPoint(rect.Location),
-                        CalculateDistanceToPoint(new Point(rect.X + rect.Width, rect.Y)),
-                        CalculateDistanceToPoint(new Point(rect.X, rect.Y + rect.Height)),
-                        CalculateDistanceToPoint(new Point(rect.X + rect.Width, rect.Y + rect.Height))
+                        cloud.Center.CalculateDistanceBetweenTwoPoints(rect.Location),
+                        cloud.Center.CalculateDistanceBetweenTwoPoints(new Point(rect.X + rect.Width, rect.Y)),
+                        cloud.Center.CalculateDistanceBetweenTwoPoints(new Point(rect.X, rect.Y + rect.Height)),
+                        cloud.Center.CalculateDistanceBetweenTwoPoints(new Point(rect.X + rect.Width, rect.Y + rect.Height))
                     };
             }
 
-            private double CalculateDistanceToPoint(Point point)
-            {
-                return Math.Sqrt(Math.Pow(point.X - cloud.Center.X, 2) + Math.Pow(point.Y - cloud.Center.Y, 2));
-            }
 
             [Test]
             public void Should_CompressCloud()
@@ -134,12 +136,12 @@ namespace TagsCloudVisualization
                 }
 
                 var rectangles = sizes.Select(size => cloud.PutNextRectangle(size)).ToList();
-                var hasNeighbor = rectangles.All(rect => rectangles.Any(rect1 => TwoRectanglesTouch(rect,rect1)));
+                var hasNeighbor = rectangles.All(rect => rectangles.Any(rect1 => IsTouchingOtherRectangle(rect,rect1)));
 
                 hasNeighbor.Should().BeTrue();
             }
 
-            private bool TwoRectanglesTouch(Rectangle rect, Rectangle rect1)
+            private bool IsTouchingOtherRectangle(Rectangle rect, Rectangle rect1)
             {
                 return rect.X == rect1.X + rect1.Width ||
                        rect.X + rect.Width == rect1.X ||

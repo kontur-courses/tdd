@@ -8,12 +8,11 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        public const double StepAngle = Math.PI / 36;
-        public const double ParameterArchimedesSpiral = 10 / (2 * Math.PI);
         public Size WindowSize { get; set; }
         public Point Center { get; set; }
-        public double Angle { get; set; }
         public List<Rectangle> Rectangles { get; set; }
+        public CloudCompactor CloudCompactor { get; set; }
+        public RectangleGenerator RectangleGenerator { get; set; }
 
         public CircularCloudLayouter(Point center)
         {
@@ -22,14 +21,14 @@ namespace TagsCloudVisualization
                 throw new ArgumentException("Center coordinates must not exceed the window size");
             Center = center;
             Rectangles = new List<Rectangle>();
+            CloudCompactor = new CloudCompactor(this);
+            RectangleGenerator = new RectangleGenerator(this);
         }
 
         public Rectangle PutNextRectangle(Size size)
         {
-            var rectangleGenerator= new RectangleGenerator(this);
-            var resultRect = rectangleGenerator.GetNextRectangle(size);
-            var cloudCompactor = new CloudCompactor(this);
-            resultRect = cloudCompactor.ShiftRectangleToTheNearest(resultRect);
+            var resultRect = RectangleGenerator.GetNextRectangle(size);
+            resultRect = CloudCompactor.ShiftRectangleToTheNearest(resultRect);
             Rectangles.Add(resultRect);
             return resultRect;
         }

@@ -7,31 +7,22 @@ namespace TagsCloudVisualization.CloudConstruction
     public class RectangleGenerator
     {
         public CircularCloudLayouter Cloud { get; set; }
+        public PointGenerator PointGenerator { get; set; }
 
         public RectangleGenerator(CircularCloudLayouter cloud)
         {
             Cloud = cloud;
+            PointGenerator = new PointGenerator(cloud);
         }
 
         public Rectangle GetNextRectangle(Size size)
         {
-            var parameterArchimedesSpiral = CircularCloudLayouter.ParameterArchimedesSpiral;
-            var stepAngle = CircularCloudLayouter.StepAngle;
-            Point location;
-            var rectangle = new Rectangle();
-            if (Cloud.Rectangles.Count == 0)
-            {
-                location = new Point(Cloud.Center.X - size.Width / 2, Cloud.Center.Y - size.Height / 2);
-                Cloud.Angle += stepAngle;
-                return new Rectangle(location, size);
-            }
+            var location = PointGenerator.GetNextPointArchimedesSpiral(size);
+            var rectangle = new Rectangle(location,size);
             while (!CheckLocation(rectangle))
             {
-                var distance = parameterArchimedesSpiral * Cloud.Angle;
-                location = new Point((int)(Cloud.Center.X + distance * Math.Cos(Cloud.Angle)),
-                    (int)(Cloud.Center.Y - distance * Math.Sin(Cloud.Angle)));
+                location = PointGenerator.GetNextPointArchimedesSpiral(size);
                 rectangle = new Rectangle(location,size);
-                Cloud.Angle += stepAngle;
             }
             return rectangle;
         }

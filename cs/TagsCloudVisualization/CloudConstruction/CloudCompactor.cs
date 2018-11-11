@@ -18,11 +18,11 @@ namespace TagsCloudVisualization.CloudConstruction
         {
             if (Cloud.Rectangles.Count == 0)
                 return rectangle;
-            var yLevelRectangles = Cloud.Rectangles.Where(rect => !(rectangle.Y > rect.Y + rect.Height
-                                                                  || rectangle.Y + rectangle.Height < rect.Y)).ToList();
+            var yLevelRectangles = Cloud.Rectangles.Where(rect => !(rectangle.IsBelowAnother(rect)
+                                                                  ||rectangle.IsAboveAnother(rect))).ToList();
             rectangle = FindNearestRectangleHorizontally(rectangle, yLevelRectangles);
-            var xLevelRectangles = Cloud.Rectangles.Where(rect => !(rectangle.X > rect.X + rect.Width
-                                                                  || rectangle.X + rectangle.Width < rect.X)).ToList();
+            var xLevelRectangles = Cloud.Rectangles.Where(rect => !(rectangle.ToRightOfAnother(rect)
+                                                                  || rectangle.ToLeftOfAnother(rect))).ToList();
             rectangle = FindNearestRectangleVertically(rectangle, xLevelRectangles);
 
             return rectangle;
@@ -34,18 +34,18 @@ namespace TagsCloudVisualization.CloudConstruction
             int distanceToNearestRectangle;
             if (rectangle.X <= Cloud.Center.X)
             {
-                var listCorrectRectangles = yLevelRectangles.Where(rec => rec.X >= rectangle.X + rectangle.Width).ToList();
-                distanceToNearestRectangle = listCorrectRectangles.Count == 0
+                var rectangles = yLevelRectangles.Where(rec => rec.ToRightOfAnother(rectangle)).ToList();
+                distanceToNearestRectangle = rectangles.Count == 0
                     ? 0
-                    : listCorrectRectangles
+                    : rectangles
                         .Min(rec => Math.Abs(rec.X - (rectangle.X + rectangle.Width)));
             }
             else
             {
-                var listCorrectRectangles = yLevelRectangles.Where(rec => rec.X + rec.Width <= rectangle.X).ToList();
-                distanceToNearestRectangle = listCorrectRectangles.Count == 0
+                var correctRectangles = yLevelRectangles.Where(rec => rec.ToLeftOfAnother(rectangle)).ToList();
+                distanceToNearestRectangle = correctRectangles.Count == 0
                     ? 0
-                    : -listCorrectRectangles
+                    : -correctRectangles
                         .Min(rec => Math.Abs(rec.X + rec.Width - rectangle.X));
             }
             var newLocation = new Point(rectangle.X + distanceToNearestRectangle, rectangle.Y);
@@ -60,19 +60,19 @@ namespace TagsCloudVisualization.CloudConstruction
             int distanceToNearestRectangle;
             if (rectangle.Y >= Cloud.Center.Y)
             {
-                var listCorrectRectangles = xLevelRectangles.Where(rec => rec.Y + rec.Height <= rectangle.Y).ToList();
-                distanceToNearestRectangle = listCorrectRectangles.Count == 0
+                var correctRectangles = xLevelRectangles.Where(rec => rec.IsAboveAnother(rectangle)).ToList();
+                distanceToNearestRectangle = correctRectangles.Count == 0
                     ? 0
-                    : -listCorrectRectangles
+                    : -correctRectangles
                         .Min(rec => Math.Abs(rec.Y + rec.Height - rectangle.Y));
             }
             else
             {
-                var listCorrectRectangles =
-                    xLevelRectangles.Where(rec => rec.Y >= rectangle.Y + rectangle.Height).ToList();
-                distanceToNearestRectangle = listCorrectRectangles.Count == 0
+                var correctRectangles =
+                    xLevelRectangles.Where(rec => rec.IsBelowAnother(rectangle)).ToList();
+                distanceToNearestRectangle = correctRectangles.Count == 0
                     ? 0
-                    : listCorrectRectangles
+                    : correctRectangles
                         .Min(rec => Math.Abs(rec.Y - rectangle.Y - rectangle.Height));
             }
             var newLocation = new Point(rectangle.X, rectangle.Y + distanceToNearestRectangle);
