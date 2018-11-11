@@ -10,7 +10,7 @@ using NUnit.Framework.Interfaces;
 namespace TagsCloudVisualization
 {
 	[TestFixture]
-	public class CircularCloudLayouter_PutNextRectangleShould
+	public class CircularCloudLayouterTests
 	{
 		[SetUp]
 		public void SetUp()
@@ -20,23 +20,23 @@ namespace TagsCloudVisualization
 		}
 
 		[Test, Order(0)]
-		public void ReturnExactRectangle()
+		public void PutNextRectangle_ReturnRectangleWithExactSize()
 		{
 			var size = new Size(29, 56);
 			cloudLayouter.PutNextRectangle(size);
 			var rectangle = cloudLayouter.Rectangles.First();
 			rectangle.Size.Should().Be(size);
-
 		}
+
 		[Test, Order(1)]
-		public void WhenAddingRectangleSaveIt()
+		public void PutNextRectangle_SaveRectangle()
 		{
 			cloudLayouter.PutNextRectangle(GetRandomSize());
 			cloudLayouter.Rectangles.Should().NotBeNullOrEmpty();
 		}
 
 		[Test, Order(2)]
-		public void WhenAddingSecondRectanglePutItWithoutIntersection()
+		public void PutNextRectangle_AddSecondRectangle_PutItWithoutIntersection()
 		{
 			cloudLayouter.PutNextRectangle(GetRandomSize());
 			cloudLayouter.PutNextRectangle(GetRandomSize());
@@ -45,7 +45,7 @@ namespace TagsCloudVisualization
 		}
 
 		[Test, Order(3)]
-		public void WhenAddSeveralRectanglesReturnExactCountOfRectangles()
+		public void PutNextRectangle_AddSeveralRectangles_ReturnExactCountOfRectangles()
 		{
 			var rectangleCount = 12;
 			for (var i = 0; i < rectangleCount; i++)
@@ -54,7 +54,7 @@ namespace TagsCloudVisualization
 
 		}
 		[Test, Order(4)]
-		public void WhenAddingManyRectanglesPutThemWithoutIntersection()
+		public void PutNextRectangle_AddManyRectangles_WithoutIntersection()
 		{
 			for (var i = 0; i < 100; i++)
 				cloudLayouter.PutNextRectangle(GetRandomSize());
@@ -63,7 +63,7 @@ namespace TagsCloudVisualization
 		}
 
 		[Test, Order(5)]
-		public void WhenAddingManyRectanglesHaveCircleShape()
+		public void PutNextRectangle_HaveCircleShape()
 		{
 			for (var i = 0; i < 100; i++)
 				cloudLayouter.PutNextRectangle(GetRandomSize());
@@ -71,9 +71,8 @@ namespace TagsCloudVisualization
 			isCircleShape.Should().BeTrue();
 		}
 
-		[Test]
-		[Order(6)]
-		public void WhenCenterIsNotZeroHaveCircleShape()
+		[Test, Order(6)]
+		public void PutNextRectangle_CenterIsNotZero_HaveCircleShape()
 		{
 			var center = new Point(-100, 200);
 			cloudLayouter = new CircularCloudLayouter(center);
@@ -83,9 +82,8 @@ namespace TagsCloudVisualization
 			isCircleShape.Should().BeTrue();
 		}
 
-		[Test]
-		[Order(7)]
-		public void WhenAddingManyRectanglesFillThemDensely()
+		[Test, Order(7)]
+		public void PutNextRectangle_FillRectanglesDensely()
 		{
 			for (var i = 0; i < 100; i++)
 				cloudLayouter.PutNextRectangle(GetRandomSize());
@@ -102,7 +100,7 @@ namespace TagsCloudVisualization
 		[TestCase(-10, 10, TestName = "Height are negative")]
 		[TestCase(10, -10, TestName = "Width are negative")]
 		[TestCase(-10, -10, TestName = "Height and width are negative")]
-		public void WhenZeroOrNegativeSizeThrowException(int width, int height)
+		public void PutNextRectangle_ZeroOrNegativeSize_ThrowException(int width, int height)
 		{
 			Action act = () => cloudLayouter.PutNextRectangle(new Size(width, height));
 			act.Should().Throw<ArgumentException>();
