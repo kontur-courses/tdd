@@ -8,7 +8,7 @@ namespace TagsCloudVisualization
 		private readonly Point center;
 		private readonly double width;
 		private double angle;
-		private double step;
+		private readonly double step;
 
 		public CircularSpiral(Point center, double width, double step)
 		{
