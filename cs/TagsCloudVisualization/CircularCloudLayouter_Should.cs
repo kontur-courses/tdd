@@ -74,7 +74,7 @@ namespace TagsCloudVisualization
         public void CreateFirstRectangle_InCenter()
         {
             var rectangle = layouter.PutNextRectangle(new Size(100, 50));
-            rectangle.Location.Should().Be(layouter.Center);
+            layouter.GetRectangleCenter(rectangle).Should().Be(layouter.Center);
         }
 
         [Test]
@@ -129,6 +129,17 @@ namespace TagsCloudVisualization
             Assert.That(containingRectangle.topBound, Is.EqualTo(containingRectangle.bottomBound).Within(150));
         }
 
+        [Test]
+        public void RenderRoundCloud_OfRandomGeneratedSizeRectangles()
+        {
+            var rectangles = CircularCloudLayouterGenerator.GenerateRectanglesSet(layouter, 50, 100, 150, 50, 75);
+
+            var containingRectangle = GetRelativeBoundsAbs(rectangles);
+
+            Assert.That(containingRectangle.rightBound, Is.EqualTo(containingRectangle.leftBound).Within(150));
+            Assert.That(containingRectangle.topBound, Is.EqualTo(containingRectangle.bottomBound).Within(150));
+        }
+
         private (int rightBound, int leftBound, int topBound, int bottomBound) GetRelativeBoundsAbs(IEnumerable<Rectangle> rectangles)
         {
             int leftBound = centerWidth, rightBound = centerWidth, topBound = centerHeight, bottomBound = centerHeight;
@@ -150,17 +161,6 @@ namespace TagsCloudVisualization
 
             return (Math.Abs(rightBound - centerWidth), Math.Abs(leftBound - centerWidth),
                 Math.Abs(topBound - centerHeight), Math.Abs(bottomBound - centerHeight));
-        }
-
-        [Test]
-        public void RenderRoundCloud_OfRandomGeneratedSizeRectangles()
-        {
-            var rectangles = CircularCloudLayouterGenerator.GenerateRectanglesSet(layouter, 50, 100, 150, 50, 75);
-
-            var containingRectangle = GetRelativeBoundsAbs(rectangles);
-
-            Assert.That(containingRectangle.rightBound, Is.EqualTo(containingRectangle.leftBound).Within(150));
-            Assert.That(containingRectangle.topBound, Is.EqualTo(containingRectangle.bottomBound).Within(150));
         }
     }
 }

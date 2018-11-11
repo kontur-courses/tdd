@@ -27,6 +27,14 @@ namespace TagsCloudVisualization
             if (rectangleSize.Height < 1 || rectangleSize.Width < 1)
                 throw new ArgumentException("Размер прямоугольника должен быть больше 0");
 
+            if (!rectangles.Any())
+            {
+                var firstRectangleLocation 
+                    = new Point(Center.X - rectangleSize.Width / 2, Center.Y - rectangleSize.Height / 2);
+                var firstRectangle = new Rectangle(firstRectangleLocation, rectangleSize);
+                rectangles.Add(firstRectangle);
+                return firstRectangle;
+            }
             var rectangle = CreateNewRectangle(rectangleSize);
 
             while (rectangles.Any(e => e.IntersectsWith(rectangle)))
@@ -39,6 +47,12 @@ namespace TagsCloudVisualization
             return rectangle;
         }
 
+        public Point GetRectangleCenter(Rectangle rect)
+        {
+            return new Point(rect.Left + rect.Width / 2,
+                rect.Top + rect.Height / 2);
+        }
+
         private Rectangle MoveRectangleCloserToCenter(Rectangle rectangle)
         {
             rectangle = MoveRectangleCloserToCenterByY(rectangle);
@@ -46,41 +60,36 @@ namespace TagsCloudVisualization
         }
         private Rectangle MoveRectangleCloserToCenterByY(Rectangle rectangle)
         {
-            var rect = rectangle;
-            while (!rectangles.Any(e => e.IntersectsWith(rect)))
+            while (true)
             {
-                if (rect.Y > Center.Y)
-                    rect.Y--;
+                var result = rectangle;
 
-                if (rect.Y < Center.Y)
-                    rect.Y++;
+                if (rectangle.Y > Center.Y)
+                    rectangle.Y--;
 
-                if(!rectangles.Any(e => e.IntersectsWith(rect)))
-                    rectangle = rect;
+                if (rectangle.Y < Center.Y)
+                    rectangle.Y++;
 
-                if (rectangle.Y == Center.Y)
-                    break;
+                if (rectangle.Y == Center.Y || rectangles.Any(e => e.IntersectsWith(rectangle)))
+                    return result;
             }
-            return rectangle;
         }
         private Rectangle MoveRectangleCloserToCenterByX(Rectangle rectangle)
         {
-            var rect = rectangle;
-            while (!rectangles.Any(e => e.IntersectsWith(rect)))
+            while (true)
             {
-                if (rect.X > Center.X)
-                    rect.X--;
+                var result = rectangle;
 
-                if (rect.X < Center.X)
-                    rect.X++;
+                if (rectangle.X > Center.X)
+                    rectangle.X--;
 
-                if(!rectangles.Any(e => e.IntersectsWith(rect)))
-                    rectangle = rect;
+                if (rectangle.X < Center.X)
+                    rectangle.X++;
 
-                if (rectangle.X == Center.X)
-                    break;
+                if(rectangle.X == Center.X || rectangles.Any(e => e.IntersectsWith(rectangle)))
+                    return result;
+
             }
-            return rectangle;
         }
 
         private Rectangle CreateNewRectangle(Size rectangleSize)

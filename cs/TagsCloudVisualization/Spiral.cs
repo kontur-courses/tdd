@@ -22,5 +22,7 @@ namespace TagsCloudVisualization
 
             return new Point(x,y);
         }
+
+        public double GetCurrentSpiralAngle() => spiralAngle;
     }
 }
