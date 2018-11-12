@@ -9,7 +9,7 @@ namespace TagsCloudVisualization
     {
         static void Main(string[] args)
         {
-
+            
         }
     }
 }

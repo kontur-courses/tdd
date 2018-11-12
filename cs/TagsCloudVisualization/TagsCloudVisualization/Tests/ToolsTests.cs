@@ -33,5 +33,18 @@ namespace TagsCloudVisualization.Tests
 
             result.Should().BeApproximately(expected, 0.00001F);
         }
+
+        [TestCase(0, ExpectedResult = Quadrant.First, TestName = "ReturnFirstOnAnglesFromFirstQuadrant1")]
+        [TestCase(1, ExpectedResult = Quadrant.First, TestName = "ReturnFirstOnAnglesFromFirstQuadrant2")]
+        [TestCase(Math.PI / 2, ExpectedResult = Quadrant.First, TestName = "ReturnFirstOnAnglesFromFirstQuadrant2")]
+        [TestCase(2, ExpectedResult = Quadrant.Second, TestName = "ReturnSecondOnAnglesFromSecondQuadrant1")]
+        [TestCase(Math.PI, ExpectedResult = Quadrant.Second, TestName = "ReturnSecondOnAnglesFromSecondQuadrant2")]
+        [TestCase(4.14, ExpectedResult = Quadrant.Third, TestName = "ReturnThirdOnAnglesFromThirdQuadrant1")]
+        [TestCase(3 * Math.PI / 2, ExpectedResult = Quadrant.Third, TestName = "ReturnThirdOnAnglesFromThirdQuadrant2")]
+        [TestCase(5, ExpectedResult = Quadrant.Fourth, TestName = "ReturnFourthOnAnglesFromFourthQuadrant")]
+        public Quadrant DetermineQuadrantByDirectionShould(double direction)
+        {
+            return Tools.DetermineQuadrantByDirection(direction);
+        }
     }
 }

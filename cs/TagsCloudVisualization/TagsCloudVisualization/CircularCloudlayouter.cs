@@ -9,7 +9,6 @@ namespace TagsCloudVisualization
     {
         public Point Center { get; set; }
         private readonly RectangleStorage _rectangleStorage;
-        private readonly Direction _direction;
         public List<Rectangle> Rectangles;
 
         public CircularCloudLayouter(Point center)
@@ -18,15 +17,13 @@ namespace TagsCloudVisualization
                 throw new ArgumentException("both center coordinates should be non-negative");
 
             Center = center;
-            _rectangleStorage = new RectangleStorage(Center);
-            _direction = new Direction();
+            _rectangleStorage = new RectangleStorage(Center, new Direction());
             Rectangles = new List<Rectangle>();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
-        {   
-            // В текущий момент подразумеваем 0 < direction < Math.PI / 2
-            var result = _rectangleStorage.PlaceNewRectangle(_direction.GetNextDirection(), rectangleSize);
+        {
+            var result = _rectangleStorage.PlaceNewRectangle(rectangleSize);
             Rectangles.Add(result);
 
             return result;

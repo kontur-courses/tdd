@@ -9,7 +9,7 @@ namespace TagsCloudVisualization.Tests
     [TestFixture]
     public class CircularCloudLayouterTests
     {
-        [TestCase(-2, -3,"both center coordinates should be non-negative",
+        [TestCase(-2, -3, "both center coordinates should be non-negative",
             TestName = "FallOn_NegativeCoordinates")]
         public void ConstructorIncorrectInput(int centerX, int centerY, string msg)
         {
@@ -34,7 +34,7 @@ namespace TagsCloudVisualization.Tests
         [Test]
         public void InsertNewPointsCreatedByRectangle()
         {
-            
+            // to do
         }
     }
 

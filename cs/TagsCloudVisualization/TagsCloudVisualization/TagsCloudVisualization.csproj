@@ -60,13 +60,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircularCloudlayouter.cs" />
+    <Compile Include="IDirection.cs" />
     <Compile Include="RectangleStorage.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sector.cs" />
     <Compile Include="Tests\CircularCloudLayouterTests.cs" />
     <Compile Include="Direction.cs" />
     <Compile Include="Tests\DirectionTests.cs" />
-    <Compile Include="Tests\RectangleStorageTests.cs" />
     <Compile Include="Tests\ToolsTests.cs" />
     <Compile Include="Tools.cs" />
   </ItemGroup>
