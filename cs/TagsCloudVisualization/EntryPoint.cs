@@ -11,10 +11,10 @@ namespace TagsCloudVisualization
         public static void Main(string[] args)
         {
             var layouter = new CircularCloudLayouter(new Point(500, 500));
-            var rectangles = layouter.PutNextRectangles(GenerateRectangles(SizeCreator_Decreasing, start: 200, count:100))
+            var rectangles = layouter.PutNextRectangles(GenerateRectangles(SizeCreator_Random, start: 200, count:100))
                                      .ToList();
             Console.Out.WriteLine(rectangles.Count);
-            DrawRectangles(rectangles, layouter.Center, expandPercent: 100, name: "decreasing");
+            DrawRectangles(rectangles, layouter.Center, expandPercent: 250, name: "random");
         }
 
         public static IEnumerable<Size> GenerateRectangles(Func<int, int, Size> sizeCreator, int start = 50, int count = 50)

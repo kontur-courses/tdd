@@ -42,14 +42,24 @@ namespace TagsCloudVisualization
 
         private Rectangle AdjustPosition(Rectangle rectangle)
         {
+            var oldRectangle = rectangle;
             var centerDirection = Center - rectangle.Location;
-            centerDirection *= 0.2;
-            rectangle.Location.Offset(centerDirection);
-            centerDirection *= -1 / centerDirection.Length;
-            while (DoesIntersectWithPreviousRectangles(rectangle))
-                rectangle.Location.Offset(centerDirection);
+            var shiftX = Point.UnaryX * Math.Sign(centerDirection.X);
+            var shiftY = Point.UnaryY * Math.Sign(centerDirection.Y);
+            var stepsAmount = 100;
+            while (stepsAmount > 0)
+            {
+                rectangle.Location += shiftX;
+                if (DoesIntersectWithPreviousRectangles(rectangle))
+                    rectangle.Location -= shiftX;
 
-            return rectangle;
+                rectangle.Location += shiftY;
+                if (DoesIntersectWithPreviousRectangles(rectangle))
+                    rectangle.Location += shiftY;
+                stepsAmount--;
+            }
+
+            return DoesIntersectWithPreviousRectangles(rectangle) ? oldRectangle : rectangle;
         }
 
         private bool DoesIntersectWithPreviousRectangles(Rectangle rectangle) =>
