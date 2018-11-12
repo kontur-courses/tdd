@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -8,28 +7,25 @@ namespace TagsCloudVisualization
 {
     public static class RectDrawer
     {
-        public static string DrawRectangles(Rectangle[] rectangles)
+        public static string DrawRectangles(Point center, Rectangle[] rectangles)
         {
-            var name = FindFreeFileName(DateTime.Now.ToString("DD-MM-yyyy_HH-mm-ss"), "png");
-            
-            return TrySaveRectImages(rectangles, name) ? name : null;
+            var name = FindFreeFileName(Constants.PngExtension);
+
+            return TrySaveRectImages(center, rectangles, name) ? name : null;
         }
 
-        private static string FindFreeFileName(string prefix, string extension)
+        private static string FindFreeFileName(string extension)
         {
-            var datetimeString = prefix;
-            var name = datetimeString;
-            var i = 0;
-            while (File.Exists($"{name}.{extension}"))
+            string name;
+            do
             {
-                name += $"({i})";
-                i++;
-            }
+                name = Guid.NewGuid().ToString();
+            } while (File.Exists($"{name}.{extension}"));
 
             return $"{name}.{extension}";
         }
 
-        private static bool TrySaveRectImages(Rectangle[] rectangles, string path)
+        private static bool TrySaveRectImages(Point center, Rectangle[] rectangles, string path)
         {
             if (!rectangles.Any())
             {
@@ -45,17 +41,30 @@ namespace TagsCloudVisualization
             var height = maxY - minY + 1;
 
             var offset = new Point(-minX, -minY);
+            center.Offset(offset);
 
             var bitmap = new Bitmap(width, height);
-            using (var g = Graphics.FromImage(bitmap))
+            var random = new Random();
+            using (var graphics = Graphics.FromImage(bitmap))
             {
-                g.FillRectangle(Brushes.White, 0, 0, width, height);
-                g.DrawRectangles(Pens.Red, rectangles.Select(r => r.Moved(offset)).ToArray());
+                graphics.FillRectangle(Brushes.White, 0, 0, width, height);
+                foreach (var rectangle in rectangles)
+                {
+                    graphics.FillRectangle(new SolidBrush(GetRandomColor(random)), rectangle.Moved(offset));
+                }
+
+                center.Offset(-5, -5);
+                graphics.FillEllipse(Brushes.Red, new Rectangle(center, new Size(10, 10)));
             }
 
             bitmap.Save(path);
 
             return true;
+        }
+
+        private static Color GetRandomColor(Random random)
+        {
+            return Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
         }
     }
 }

@@ -1,37 +1,32 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
-using static System.Linq.Enumerable;
 
 namespace TagsCloudVisualization
 {
     public static class SpiralPath
     {
-        public static IEnumerable<Direction> Clockwise(Direction startDirection)
+        private static PointF ArchimedeanSpiral(double spiralStepCoefficient, double angleRadians)
         {
-            return GetPath(startDirection, true);
+            var radius = spiralStepCoefficient / (2 * Math.PI) * angleRadians;
+            var x = (float) (radius * Math.Cos(angleRadians));
+            var y = (float) (radius * Math.Sin(angleRadians));
+
+            return new PointF(x, y);
         }
 
-        public static IEnumerable<Direction> CounterClockwise(Direction startDirection)
+        public static IEnumerable<PointF> GetSpiralPointsF(double spiralStepCoefficient, double angleStepRadians)
         {
-            return GetPath(startDirection, false);
-        }
-
-        private static IEnumerable<Direction> GetPath(Direction startDirection, bool isClockwise)
-        {
-            var cycle = isClockwise ? startDirection.ToClockwiseCycle() : startDirection.ToCounterClockwiseCycle();
-            for (var diameter = 3;; diameter += 2)
+            for (var angle = 0d; Math.Abs(angle) < double.MaxValue; angle += angleStepRadians)
             {
-                var step = diameter - 1;
-                yield return startDirection;
-                foreach (var d in Repeat(cycle[1], 1)
-                    .Concat(Repeat(cycle[2], step))
-                    .Concat(Repeat(cycle[3], step))
-                    .Concat(Repeat(cycle[0], step))
-                    .Concat(Repeat(cycle[1], step)))
-                {
-                    yield return d;
-                }
+                yield return ArchimedeanSpiral(spiralStepCoefficient, angle);
             }
+        }
+
+        public static IEnumerable<Point> GetSpiralPoints(double spiralStepCoefficient, double angleStepRadians)
+        {
+            return GetSpiralPointsF(spiralStepCoefficient, angleStepRadians).Select(pointF => new Point((int) pointF.X, (int) pointF.Y));
         }
     }
 }

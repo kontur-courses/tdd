@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    internal class CircularCloudLayouter
+    public class CircularCloudLayouter
     {
         private readonly Point center;
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
@@ -27,30 +27,27 @@ namespace TagsCloudVisualization
         {
             var rectangle = new Rectangle(center, size);
 
+            rectangle.X -= size.Width / 2;
+            rectangle.Y -= size.Height / 2;
+
             if (rectangles.Any())
-                FindSuitablePlaceFor(ref rectangle);
-            else
-            {
-                rectangle.X -= size.Width / 2;
-                rectangle.Y -= size.Height / 2;
-            }
+                rectangle = FindSuitablePlaceFor(rectangle);
 
             return rectangle;
         }
 
-        private void FindSuitablePlaceFor(ref Rectangle rectangle)
+        private Rectangle FindSuitablePlaceFor(Rectangle rectangle)
         {
-            foreach (var direction in SpiralPath.Clockwise(Direction.Down))
-            {
-                rectangle = rectangle.Moved(direction);
-                if (!IntersectsWithExistingRectangles(rectangle))
-                    break;
-            }
+            var placedRectangle = SpiralPath.GetSpiralPoints(Constants.SpiralStepCoefficient, Constants.AngleStepRadians)
+                .Select(p => rectangle.Moved(p))
+                .First(r => !IntersectsWithExistingRectangles(r));
+
+            return placedRectangle;
         }
 
-        private bool IntersectsWithExistingRectangles(Rectangle rect)
+        private bool IntersectsWithExistingRectangles(Rectangle rectangle)
         {
-            return rectangles.Any(r => r.IntersectsWith(rect));
+            return rectangles.Any(r => r.IntersectsWith(rectangle));
         }
     }
 }

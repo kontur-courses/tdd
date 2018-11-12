@@ -4,21 +4,12 @@ namespace TagsCloudVisualization
 {
     public static class RectangleExtensions
     {
-        public static Rectangle Moved(this Rectangle rect, Direction moveDirection)
+        public static Rectangle Moved(this Rectangle rectangle, Point offset)
         {
-            var (dx, dy) = moveDirection.GetOffset();
-            rect.X += dx;
-            rect.Y += dy;
+            rectangle.X += offset.X;
+            rectangle.Y += offset.Y;
 
-            return rect;
-        }
-
-        public static Rectangle Moved(this Rectangle rect, Point offset)
-        {
-            rect.X += offset.X;
-            rect.Y += offset.Y;
-
-            return rect;
+            return rectangle;
         }
     }
 }
