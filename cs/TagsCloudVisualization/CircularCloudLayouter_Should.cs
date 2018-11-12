@@ -2,6 +2,8 @@
 using System.IO;
 using NUnit.Framework;
 using FluentAssertions;
+using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal;
 
 namespace TagsCloudVisualization
 {
@@ -34,16 +36,14 @@ namespace TagsCloudVisualization
         [TearDown]
         public void TearDown()
         {
-            var filePath = Path.Combine(TestContext.CurrentContext.TestDirectory, Path.GetTempFileName());
-            CloudLayoutVisualizer.SaveAsPngImage(_layouter.GetLayout(), filePath);
-            Console.WriteLine($"Tag cloud visualization saved to file {filePath}");
+            SaveLayoutToImageIfCurrentTestFailed();
         }
         
         [Test]
         public void Should_PutFirstRectangleWithCorrectPos()
         {
             var rectSize = new Size(100, 10);
-            var expectedRect = new Rectangle(_layouterCenter, rectSize);
+            var expectedRect = new Rectangle(new Point(50, 5), rectSize);
             _layouter.PutNextRectangle(rectSize).Should().BeEquivalentTo(expectedRect);
         }
         
@@ -64,6 +64,19 @@ namespace TagsCloudVisualization
                     if (rectA == rectB) break;
                     rectA.OverlapsWith(rectB).Should().BeFalse();
                 }
+            }
+        }
+
+        private void SaveLayoutToImageIfCurrentTestFailed()
+        {
+            var testResult = TestContext.CurrentContext.Result.Outcome;
+
+            if (Equals(testResult, ResultState.Failure) || Equals(testResult == ResultState.Error))
+            {
+                var fileName = $"{TestContext.CurrentContext.Test.Name}_failed.png";
+                var filePath = Path.Combine(TestContext.CurrentContext.TestDirectory, fileName);
+                CloudLayoutVisualizer.SaveAsPngImage(_layouter.GetLayout(), filePath);
+                Console.WriteLine($"Tag cloud visualization saved to file {filePath}");
             }
         }
     }
