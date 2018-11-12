@@ -29,6 +29,11 @@ namespace TagsCloudVisualization
         [TearDown]
         public void TearDown()
         {
+            SaveIfFailTest();
+        }
+
+        private void SaveIfFailTest()
+        {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
                 var testMethodName = TestContext.CurrentContext.Test.MethodName;
@@ -171,10 +176,15 @@ namespace TagsCloudVisualization
                 .Sum();
             var circleRadius = 1.5 * Math.Sqrt(rectanglesArea / Math.PI);
 
-            Rectangles.Select(ToBoundaryPoints).SelectMany(point => point).Distinct()
-                .Where(x => Math.Pow(CenterPoint.X-x.X, 2) + Math.Pow(CenterPoint.Y - x.Y, 2) > circleRadius * circleRadius)
+            CountPoints_OutOfCircle(circleRadius, Rectangles, CenterPoint)
                 .Should()
                 .HaveCount(0);
+        }
+
+        private IEnumerable<Point> CountPoints_OutOfCircle(double circleRadius, List<Rectangle> rectangles, Point centerPoint)
+        {
+            return rectangles.Select(ToBoundaryPoints).SelectMany(point => point).Distinct()
+                .Where(x => Math.Pow(centerPoint.X - x.X, 2) + Math.Pow(centerPoint.Y - x.Y, 2) > circleRadius * circleRadius);
         }
 
         private Point[] ToBoundaryPoints(Rectangle rectangle)
