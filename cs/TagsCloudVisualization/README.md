@@ -2,12 +2,12 @@
 
 **image 1**
 
-![image1](.\images\1.png)
+![image1](/cs/TagsCloudVisualization/images/1.png?raw=true)
 
 **image 2**
 
-![image2](.\images\2.png)
+![image2](/cs/TagsCloudVisualization/images/2.png?raw=true)
 
 **image 3**
 
-![image3](.\images\3.png)
+![image3](/cs/TagsCloudVisualization/images/3.png?raw=true)
