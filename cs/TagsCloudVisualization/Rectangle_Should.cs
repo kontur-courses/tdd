@@ -140,7 +140,7 @@ namespace TagsCloudVisualization
         public void BottomRightPoint_ShouldBeCorrect()
         {
             var rect = new Rectangle(-100, -100, 100, 100);
-            rect.BottmRightPoint.Should().BeEquivalentTo(new Point(0, 0));
+            rect.BottomRightPoint.Should().BeEquivalentTo(new Point(0, 0));
         }
 
         [Test]

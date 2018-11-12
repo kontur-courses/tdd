@@ -36,37 +36,36 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            Rectangle resultRectLocation = null;
+            Rectangle currentRect = null;
 
-            // Search good location for rectangle
+            // Search rectangle location near base point
             foreach (var basePoint in _basePointsSortedByDistance)
             {
-                var basePointRect = CreateRectanglesByBasePoint(basePoint.Point, rectangleSize)
+                var basePointRect = CreateRectanglesAroundBasePoint(basePoint.Point, rectangleSize)
                     .Where(r => !_rectanglesQuadTree.HasNodesInside(r))
                     .OrderBy(r => Point.PowDistance(r.CenterPoint, _layoutCenter))
                     .FirstOrDefault();
 
                 if (basePointRect != null)
                 {
-                    resultRectLocation = basePointRect;
+                    currentRect = basePointRect;
                     break;
                 }
             }
             
-            // Result rect points
             var resultRectPoints = new Point[4]
             {
-                resultRectLocation.Pos,
-                resultRectLocation.BottmRightPoint,
-                new Point(resultRectLocation.Pos.X + resultRectLocation.Size.Width, resultRectLocation.Pos.Y),
-                new Point(resultRectLocation.Pos.X, resultRectLocation.Pos.Y + resultRectLocation.Size.Height)
+                currentRect.Pos,
+                currentRect.BottomRightPoint,
+                new Point(currentRect.Pos.X + currentRect.Size.Width, currentRect.Pos.Y),
+                new Point(currentRect.Pos.X, currentRect.Pos.Y + currentRect.Size.Height)
             }; 
             
             UpdateBasePoints(resultRectPoints);
             
-            _rectanglesQuadTree.Insert(resultRectLocation, resultRectLocation);
+            _rectanglesQuadTree.Insert(currentRect, currentRect);
 
-            return resultRectLocation;
+            return currentRect;
         }
 
         public IEnumerable<Rectangle> GetLayout()
@@ -129,7 +128,7 @@ namespace TagsCloudVisualization
             }
         }
 
-        private List<Rectangle> CreateRectanglesByBasePoint(Point basePoint, Size size)
+        private List<Rectangle> CreateRectanglesAroundBasePoint(Point basePoint, Size size)
         {
             var result = new List<Rectangle>();
             result.Add(new Rectangle(basePoint, size));

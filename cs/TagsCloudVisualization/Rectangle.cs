@@ -21,26 +21,24 @@ namespace TagsCloudVisualization
             Size = new Size(w, h);
         }
 
-        public Point BottmRightPoint => new Point(Pos.X + Size.Width, Pos.Y + Size.Height);
+        public Point BottomRightPoint => new Point(Pos.X + Size.Width, Pos.Y + Size.Height);
         public Point CenterPoint => new Point(Pos.X + Size.Width / 2, Pos.Y + Size.Height / 2);
 
         public bool OverlapsWith(Rectangle rect)
         {
-            var a = this;
-            var b = rect;
-            var aBottomRight = a.BottmRightPoint;
-            var bBottomRight = b.BottmRightPoint;
+            var aBottomRight = this.BottomRightPoint;
+            var bBottomRight = rect.BottomRightPoint;
 
-            return a.Pos.X < bBottomRight.X &&
-                   aBottomRight.X > b.Pos.X &&
-                   a.Pos.Y < bBottomRight.Y &&
-                   aBottomRight.Y > b.Pos.Y;
+            return this.Pos.X < bBottomRight.X &&
+                   this.Pos.Y < bBottomRight.Y &&
+                   aBottomRight.X > rect.Pos.X &&
+                   aBottomRight.Y > rect.Pos.Y;
         }
 
         public bool ContainsRect(Rectangle rect)
         {
-            var aBottomRight = this.BottmRightPoint;
-            var bBottomRight = rect.BottmRightPoint;
+            var aBottomRight = this.BottomRightPoint;
+            var bBottomRight = rect.BottomRightPoint;
             
             return (this.Pos.X <= rect.Pos.X &&
                     this.Pos.Y <= rect.Pos.Y &&
@@ -67,12 +65,12 @@ namespace TagsCloudVisualization
                     leftRect = rect;
                 }
 
-                if (rect.BottmRightPoint.Y > bottomRect.BottmRightPoint.Y)
+                if (rect.BottomRightPoint.Y > bottomRect.BottomRightPoint.Y)
                 {
                     bottomRect = rect;
                 }
 
-                if (rect.BottmRightPoint.X > rightRect.BottmRightPoint.X)
+                if (rect.BottomRightPoint.X > rightRect.BottomRightPoint.X)
                 {
                     rightRect = rect;
                 }
@@ -80,8 +78,8 @@ namespace TagsCloudVisualization
 
             var topLeftPoint = new Point(leftRect.Pos.X, topRect.Pos.Y);
             var totalSize = new Size(
-                Math.Abs(rightRect.BottmRightPoint.X - topLeftPoint.X), 
-                Math.Abs(bottomRect.BottmRightPoint.Y - topLeftPoint.Y)
+                Math.Abs(rightRect.BottomRightPoint.X - topLeftPoint.X), 
+                Math.Abs(bottomRect.BottomRightPoint.Y - topLeftPoint.Y)
             );
             
             return new Rectangle(topLeftPoint, totalSize);
