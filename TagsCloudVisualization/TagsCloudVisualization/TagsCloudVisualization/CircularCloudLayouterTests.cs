@@ -80,7 +80,7 @@ namespace TagsCloudVisualization
 		[TestCase(50)]
 		[TestCase(150)]
 		[TestCase(400)]
-		public void CloudLayouter_ShouldBePlacedRectanglesTightly(int number)
+		public void CloudLayouter_ShouldPlaceRectanglesTightly(int number)
 		{
 			for (var i = 0; i < number; i++)
 				cloud.PutNextRectangle(new Size(2 * (i + 1), i + 1));
@@ -95,7 +95,7 @@ namespace TagsCloudVisualization
 		}
 
 		[Test]
-		public void CloudLayouter_ShouldBePlacedRectanglesInCircle()
+		public void CloudLayouter_ShouldPlaceRectanglesInCircle()
 		{
 			for (var i = 0; i < 100; i++)
 				cloud.PutNextRectangle(new Size(2 * (i + 1), i + 1));
