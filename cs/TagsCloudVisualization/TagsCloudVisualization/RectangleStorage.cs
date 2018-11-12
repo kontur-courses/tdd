@@ -5,27 +5,43 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public class FirstSector
+    public enum Sector
+    {
+        First,
+        Second,
+        Third,
+        Fourth
+    }
+    public class RectangleStorage
     {
         private readonly List<Point> _points;
+        private readonly Point _center;
 
-        public FirstSector()
+        public RectangleStorage(Point center)
         {
             _points = new List<Point>();
-            AddPoint(0, 0);
+            _center = center;
+            AddPoint(center.X, center.Y);
         }
 
         public Rectangle PlaceNewRectangle(double direction, Size rectangleSize)
         {
-            var locationOfNewRectangle = FindAvailableLocationForRectangle(direction);
-            RecalculateFirstSector(locationOfNewRectangle, rectangleSize);
+            var locationForNewRectangle = FindLocation(direction);
+            RecalculateFirstSector(locationForNewRectangle, rectangleSize);
 
-            return new Rectangle(locationOfNewRectangle.X, locationOfNewRectangle.Y, rectangleSize.Width, rectangleSize.Height);
+            return new Rectangle(locationForNewRectangle.X, locationForNewRectangle.Y, rectangleSize.Width, rectangleSize.Height);
         }
 
-        public Point FindAvailableLocationForRectangle(double direction)
+        public Point FindLocation(double direction)
         {
             // y = x * tgAlpha. tgAlpha is direction.
+            var sector = DetermineSectorByDirection(direction);
+
+            return FindAvailablePoint(sector, direction);
+        }
+
+        private Point FindAvailablePoint(Sector sector, double direction)
+        {
             for (int index = 0; index < Count(); index++)
             {
                 var point = _points[index];
@@ -37,6 +53,19 @@ namespace TagsCloudVisualization
             }
 
             return _points[Count() - 1];
+        }
+
+        public static Sector DetermineSectorByDirection(double direction)
+        {
+            direction = Tools.AngleToStandardValue(direction);
+            if (direction >= 0 && direction <= Math.PI / 2)
+                return Sector.First;
+            if (direction > Math.PI / 2 && direction <= Math.PI)
+                return Sector.Second;
+            if (direction > Math.PI && direction <= 3 * Math.PI / 2)
+                return Sector.Third;
+
+            return Sector.Fourth;
         }
 
         public void RecalculateFirstSector(Point locationOfNewRectangle, Size rectangleSize)
