@@ -2,16 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 using TagsCloudVisualization;
 
-namespace TagClouVisualizationTest
+namespace TagCloudVisualizationTest
 {
     [TestFixture]
     class CircularCloudLayouterTest
@@ -19,7 +14,7 @@ namespace TagClouVisualizationTest
         private ICloudLayouter testLayouter;
         static IEnumerable<TestCaseData> GetTestCases()
         {
-            yield return new TestCaseData(new List<Size>()
+            yield return new TestCaseData(new List<Size>
             {
                 new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
                 new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
@@ -87,13 +82,13 @@ namespace TagClouVisualizationTest
                 new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
 
             }).SetName("LargeAmountSmollRectangles");
-            yield return new TestCaseData(new List<Size>()
+            yield return new TestCaseData(new List<Size>
             {
                 new Size(650, 650), new Size(400, 400), new Size(250, 250), new Size(100, 100),
                 new Size(50, 50), new Size(300, 300), new Size(200, 200), new Size(17, 17),
 
             }).SetName("Squares");
-            yield return new TestCaseData(new List<Size>()
+            yield return new TestCaseData(new List<Size>
             {
                 new Size(400, 70), new Size(370, 65), new Size(330, 65), new Size(270, 40),
                 new Size(250, 30), new Size(250, 25), new Size(230, 30), new Size(225, 25),
@@ -102,7 +97,7 @@ namespace TagClouVisualizationTest
                 new Size(100, 20), new Size(100, 20), new Size(100, 20), new Size(100, 20),
 
             }).SetName("SimpleTest");
-            yield return new TestCaseData(new List<Size>()
+            yield return new TestCaseData(new List<Size>
             {
                 new Size(250, 35), new Size(170, 27), new Size(160, 65), new Size(150, 23),
                 new Size(130, 20), new Size(120, 20), new Size(110, 20), new Size(100, 20),
@@ -147,7 +142,7 @@ namespace TagClouVisualizationTest
             testLayouter = new CircularCloudLayouter(center);
         }
 
-        [Test, TestCaseSource("GetTestCases")]
+        [Test, TestCaseSource(nameof(GetTestCases))]
         [Category("NotIntersects")]
         public void PutNextRectangle_ShouldNotCrossRectangles(List<Size> sizes)
         {
@@ -160,7 +155,7 @@ namespace TagClouVisualizationTest
             }
         }
 
-        [Test, TestCaseSource("GetTestCases")]
+        [Test, TestCaseSource(nameof(GetTestCases))]
         [Category("TagCloudHasCircleShape")]
         public void PutNextRectangle_ShouldCreateCircleShape(List<Size> sizes)
         {          
@@ -180,7 +175,7 @@ namespace TagClouVisualizationTest
             }                    
         }
 
-        [Test, TestCaseSource("GetTestCases")]
+        [Test, TestCaseSource(nameof(GetTestCases))]
         [Category("TagCloudIsDense")]
         public void PutNextRectangle_ShouldCreateDenseCircle(List<Size> sizes)
         {

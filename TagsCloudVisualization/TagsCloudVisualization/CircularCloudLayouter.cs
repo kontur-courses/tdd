@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
@@ -36,13 +33,9 @@ namespace TagsCloudVisualization
             var resultLocation = Point.Empty;
             while (true)
             {
-                if (TryFindLocation(circle.TopHalfPoints, -rectangleSize.Width/2, -rectangleSize.Height, rectangleSize, out resultLocation))
+                if (TryFindLocation(circle.CirclePoints, rectangleSize, out resultLocation))
                     return CreateRectangle(resultLocation, rectangleSize);
-                    
-                if (TryFindLocation(circle.BottomHalfPoints, -rectangleSize.Width/2, -rectangleSize.Height/2, rectangleSize, out resultLocation))
-                    return CreateRectangle(resultLocation, rectangleSize);
-
-                circle.IncrementRadius(5);
+                circle.IncrementRadius(1);
             }
         }
 
@@ -53,15 +46,15 @@ namespace TagsCloudVisualization
             return curRect;
         }
 
-        private bool TryFindLocation(List<Point> arc, int xOffset, int yOffset, Size sizeRect, out Point location)
-        {           
+        private bool TryFindLocation(IEnumerable<Point> arc, Size sizeRect, out Point location)
+        {
+            var yOffset = -sizeRect.Height / 2;
+            var xOffset = -sizeRect.Width / 2;
             foreach (var point in arc)
             {
-               
-                var startPoint = new Point(point.X + xOffset, point.Y + yOffset);
-                location = startPoint;
-                if (!IsIntersectOtherRectangles(startPoint, sizeRect))                                    
-                    return true;                 
+                location = new Point(point.X + xOffset, point.Y + yOffset);
+                if (!IsIntersectOtherRectangles(location, sizeRect))
+                    return true;
             }
             location = Point.Empty;
             return false;

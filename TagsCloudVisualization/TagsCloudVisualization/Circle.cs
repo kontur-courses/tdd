@@ -2,47 +2,35 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
     public class Circle
     {
         public Point Center { get; }
-        public List<Point> TopHalfPoints { get; private set; }
-        public List<Point> BottomHalfPoints { get; private set; }
+        public List<Point> CirclePoints { get; } = new List<Point>();
 
-        public int Radius { get; private set; } = 1;
+        public int Radius { get; private set; }
 
         public Circle(Point center)
         {
             Center = center;
-            Calculate();
+            Radius = 1;
+            CalculateCirclePoints();          
         }
 
-        private void Calculate()
+        private void CalculateCirclePoints()
         {
-            var quater = new List<Point>();
-            for (var i = 0; i <= Radius; i++)
-            {
-                var y = Math.Sqrt(Radius * Radius - (Center.X - i) * (Center.X - i)) + Center.Y;
-                quater.Add(new Point(i, (int)y));
-            }
-            TopHalfPoints = FlipLeft(quater);
-            BottomHalfPoints = VerticalFlip(TopHalfPoints);
+            CirclePoints.Clear();
+            var topArc = Enumerable.Range(-Radius, Radius*2)
+                .Select(i =>
+                    new Point(i, (int) Math.Sqrt(Radius * Radius - (Center.X - i) * (Center.X - i)) + Center.Y))
+                .ToList();
+            CirclePoints.AddRange(topArc);
+            CirclePoints.AddRange(VerticalFlip(topArc));
         }
 
-        private List<Point> FlipLeft(IEnumerable<Point> arc)
-        {
-            var result = new List<Point>();
-            result.AddRange(arc);
-            result.AddRange(arc.Select(point => new Point(-point.X, point.Y)).ToList());
-            return result;
-        }
-
-        private List<Point> VerticalFlip(IEnumerable<Point> arc)
+        private IEnumerable<Point> VerticalFlip(IEnumerable<Point> arc)
         {
             return arc.Select(point => new Point(point.X, -point.Y)).ToList();
         }
@@ -52,7 +40,7 @@ namespace TagsCloudVisualization
             if (value < 0)
                 throw new ArgumentException("Value cannot be negative.");
             Radius = Radius + value;
-            Calculate();
+            CalculateCirclePoints();
         }
 
     }
