@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -11,23 +10,6 @@ using static TagsCloudVisualization.EntryPoint;
 
 namespace TagsCloudVisualization
 {
-    [TestFixture]
-    public class CircularCloudConstructor_Should
-    {
-        [TestCase(0, 0, TestName = "is zero")]
-        [TestCase(100, 100, TestName = "is in I quarter")]
-        [TestCase(100, -100, TestName = "is in II quarter")]
-        [TestCase(-100, 100, TestName = "is in III quarter")]
-        [TestCase(-100, -100, TestName = "is in IV quarter")]
-        public void NotThrow_WhenCenter(int x, int y)
-        {
-            // ReSharper disable once ObjectCreationAsStatement
-            Action creation = () => new CircularCloudLayouter(new Point(x, y));
-            creation.Should()
-                    .NotThrow();
-        }
-    }
-
     [TestFixture]
     public class CircularCloudLayouter_Should
     {
@@ -46,7 +28,7 @@ namespace TagsCloudVisualization
             var path = Path.GetDirectoryName(Path.GetDirectoryName(TestContext.CurrentContext.TestDirectory));
             var name = $@"{TestContext.CurrentContext.Test.Name}.png";
             path = Path.Combine(path, name);
-            DrawRectangles(layouter.Rectangles, layouter.Center, path);
+            layouter.Rectangles.DrawRectangles(layouter.Center, path);
         }
 
         private CircularCloudLayouter layouter;
@@ -106,7 +88,7 @@ namespace TagsCloudVisualization
         [Test]
         public void HaveDenseWordCloud_WhenManyRectanglesWasAdded()
         {
-            var rectangles = layouter.PutNextRectangles(GenerateRectangles(SizeCreator_SlowDecreasing))
+            var rectangles = layouter.PutNextRectangles(GenerateRectangles(SizeSequenceCreators.SlowDecreasing))
                                      .ToList();
             var summaryArea = rectangles.Sum(r => r.Area());
             var cloudSize = rectangles.GetSize();
@@ -120,7 +102,7 @@ namespace TagsCloudVisualization
         [Test]
         public void HaveZeroIntersections_WhenManyRectanglesWasAdded()
         {
-            var rectangles = layouter.PutNextRectangles(GenerateRectangles(SizeCreator_SlowDecreasing))
+            var rectangles = layouter.PutNextRectangles(GenerateRectangles(SizeSequenceCreators.SlowDecreasing))
                                      .ToList();
 
             rectangles.Aggregate(Rectangle.Intersect)
@@ -145,24 +127,6 @@ namespace TagsCloudVisualization
             second.IntersectsWith(first)
                   .Should()
                   .BeFalse();
-        }
-    }
-
-    public static class RectangleExtensions
-    {
-        public static int Area(this Rectangle rectangle) => rectangle.Width * rectangle.Height;
-
-        public static Size GetSize(this IEnumerable<Rectangle> rectangles)
-        {
-            rectangles = rectangles.ToList();
-            var maxX = rectangles.Max(rect => rect.Right);
-            var minX = rectangles.Min(rect => rect.Left);
-            var maxY = rectangles.Max(rect => rect.Bottom);
-            var minY = rectangles.Min(rect => rect.Top);
-
-            var width = maxX - minX;
-            var height = maxY - minY;
-            return new Size(width, height);
         }
     }
 }

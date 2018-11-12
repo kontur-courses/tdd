@@ -10,6 +10,7 @@ namespace TagsCloudVisualization
         private readonly Point center;
         private readonly double k;
 
+        /// <param name="center">Центр спирали</param>
         /// <param name="k">Коэффициент размера в уравнении R = k * ф</param>
         public RoundSpiralGenerator(Point center, double k)
         {

@@ -18,25 +18,13 @@ namespace TagsCloudVisualization
         /// <summary>
         ///     Point {X = 1, Y = 0}
         /// </summary>
-        public static Point UnaryX => new Point(1, 0);
+        public static Point UnaryX => new Point(1);
 
         public override int GetHashCode() => X ^ Y;
 
         public static Point operator +(Point left, Point right) => new Point(left.X + right.X, left.Y + right.Y);
 
-        public static Point operator *(double left, Point right)
-        {
-            if (left < double.Epsilon)
-                return Zero;
-            var x = left * right.X;
-            var y = left * right.Y;
-            var signX = Math.Sign(x);
-            var signY = Math.Sign(y);
-            //Данная конструкция для избавления от неверного поведения координат при умножении на малые числа
-            return new Point((int) (signX * Math.Ceiling(Math.Abs(x))), (int) (signY * Math.Ceiling(Math.Abs(y))));
-        }
-
-        public static Point Zero => new Point();
+        public static Point operator *(double left, Point right) => new Point((int)(left * right.X), (int)(left * right.Y));
 
         public static Point operator *(Point left, double right) => right * left;
         public static Point operator -(Point left, Point right) => new Point(left.X - right.X, left.Y - right.Y);

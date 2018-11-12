@@ -56,6 +56,7 @@ namespace TagsCloudVisualization
                 rectangle.Location += shiftY;
                 if (DoesIntersectWithPreviousRectangles(rectangle))
                     rectangle.Location += shiftY;
+
                 stepsAmount--;
             }
 
