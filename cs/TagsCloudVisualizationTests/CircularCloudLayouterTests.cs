@@ -14,18 +14,22 @@ namespace TagsCloudVisualizationTests
     class CircularCloudLayouterTests
     {
         private Point center;
-        private CircularCloudLayouter layouter;
+        private Rectangle[] cloudRectangles;
         private readonly Random random = new Random(0);
 
         [SetUp]
         public void Init()
         {
             center = new Point(1920 / 2, 1080 / 2);
-            layouter = new CircularCloudLayouter(center);
+            var layouter = new CircularCloudLayouter(center);
+            var rectangles = new List<Rectangle>();
             for (var i = 0; i < 100; i++)
             {
-                layouter.PutNextRectangle(new Size(random.Next(60, 100), random.Next(20, 50)));
+                var rectangle = layouter.PutNextRectangle(new Size(random.Next(60, 100), random.Next(20, 50)));
+                rectangles.Add(rectangle);
             }
+
+            cloudRectangles = rectangles.ToArray();
         }
 
         [TearDown]
@@ -39,7 +43,7 @@ namespace TagsCloudVisualizationTests
                 var outputDir = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
                 var fullPath = string.Format(@"{0}\{1}", outputDir, fileName);
                 TestContext.Out.WriteLine("Tag cloud visualization saved to file {0}", fullPath);
-                var visualizer = new RectanglesVisualizer(layouter.Rectangles);
+                var visualizer = new RectanglesVisualizer(cloudRectangles);
                 var bitmap = visualizer.RenderToBitmap();
                 bitmap.Save(fullPath, imageFormat);
             }
@@ -48,9 +52,9 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void Should_HaveNoIntersectingRectangles()
         {
-            foreach (var rectangle in layouter.Rectangles)
+            foreach (var rectangle in cloudRectangles)
             {
-                var haveIntersections = layouter.Rectangles.Where(r => !r.Equals(rectangle)).Any(rectangle.IntersectsWith);
+                var haveIntersections = cloudRectangles.Where(r => !r.Equals(rectangle)).Any(rectangle.IntersectsWith);
                 haveIntersections.Should().BeFalse();
             }
         }
@@ -58,35 +62,37 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void Rectangles_ShouldBeClose_ToEachOther()
         {
-            var rectangles = layouter.Rectangles;
-            var totalArea = rectangles.Sum(r => r.Width * r.Height);
-            var radius = Math.Sqrt(totalArea / Math.PI); // радиус окружности с такой площадью
-            var rectanglesInside = rectangles.Count(r => r.DistanceTo(center) <= radius);
+            var totalArea = cloudRectangles.Sum(r => r.Width * r.Height);
+            var radius = Math.Sqrt(totalArea / Math.PI);
+            var rectanglesInside = cloudRectangles.Count(r => r.Center().DistanceTo(center) <= radius);
 
             // будем считать что прямоугольники расположены плотно, если
             // более чем для 80% их верно, что центр прямоугольника
             // лежит внутри круга вычисленного радиуса
-            rectanglesInside.Should().BeGreaterThan((int)(rectangles.Length * 0.8));
+            rectanglesInside.Should().BeGreaterThan((int)(cloudRectangles.Length * 0.8));
         }
 
         [Test]
         public void Rectangles_ShouldForm_CirleShape()
         {
-            var rectangles = layouter.Rectangles;
-            var centroid = GetCentroid(rectangles);
-            var coveringCircleRadius = rectangles.Max(r => r.DistanceTo(centroid));
-            var convexHull = GetConvexHull(rectangles);
+            var centroid = GetCentroid(cloudRectangles);
+            var coveringCircleRadius = cloudRectangles.Max(r => r.Center().DistanceTo(centroid));
+            var convexHull = GetConvexHull(cloudRectangles);
             const int acceptableDelta = 60;
-            foreach (var r in convexHull)
-                Math.Abs(coveringCircleRadius - r.DistanceTo(centroid)).Should().BeLessThan(acceptableDelta);
+            foreach (var rectangle in convexHull)
+            {
+                var distanceFromCoveringCircleToConvexHull =
+                    Math.Abs(coveringCircleRadius - rectangle.Center().DistanceTo(centroid));
 
+                distanceFromCoveringCircleToConvexHull.Should().BeLessThan(acceptableDelta);
+            }
         }
 
-        private Point GetCentroid(Rectangle[] rectangles)
+        private PointF GetCentroid(Rectangle[] rectangles)
         {
-            var x = (int)rectangles.Sum(r => r.Center().X) / rectangles.Length;
-            var y = (int)rectangles.Sum(r => r.Center().Y) / rectangles.Length;
-            return new Point(x, y);
+            var x = rectangles.Sum(r => r.Center().X) / rectangles.Length;
+            var y = rectangles.Sum(r => r.Center().Y) / rectangles.Length;
+            return new PointF(x, y);
         }
 
         // алгоритм Джарвиса https://en.wikipedia.org/wiki/Gift_wrapping_algorithm
