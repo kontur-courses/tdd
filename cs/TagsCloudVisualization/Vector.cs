@@ -11,7 +11,7 @@ namespace TagsCloudVisualization
         public Point Position { get; }
 
         public Vector(Point position)
-            => Position = (Point)position.Clone();
+            => Position = position;
 
         public Vector(Point startPoint, Point endPoint)
             => Position = endPoint - startPoint;

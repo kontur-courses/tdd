@@ -9,15 +9,16 @@ using NUnit.Framework.Interfaces;
 namespace TagsCloudVisualization
 {
     [TestFixture]
-    class TagsCloudPositioning_should
+    class TagsCloudVisualization_should
     {
         private readonly string currentTestFolderPath = TestContext.CurrentContext.TestDirectory;
         private CircularCloudLayouter currentCircularCloudLayouter;
 
-        [Test]
-        public void ReturnRectangleAtCenter_WhenAddFirstRectangle()
+        [TestCase(0, 0, TestName = "when origin is zero point")]
+        [TestCase(16.548, 8651.561, TestName = "when origin is random point")]
+        public void ReturnRectangleAtOrigin(double x, double y)
         {
-            var origin = new Point(0, 0);
+            var origin = new Point(x, y);
             currentCircularCloudLayouter = new CircularCloudLayouter(origin);
             var size = new Size(100, 100);
 
@@ -65,7 +66,6 @@ namespace TagsCloudVisualization
             var result = rectangles
                 .Select(r => r.Center)
                 .Select(p => Math.Pow(p.X - origin.X, 2) + Math.Pow(p.Y - origin.Y, 2))
-                .Select(Math.Abs)
                 .All(h => h <= radius);
             result.Should().BeTrue();
         }
@@ -104,7 +104,9 @@ namespace TagsCloudVisualization
                 var dateTime = DateTime.Today.ToString("dd.MM.yyyy HH.mm.ss");
                 var filename = $"[{dateTime}] {testName}.png";
                 var path = Path.Combine(currentTestFolderPath, filename);
-                currentCircularCloudLayouter.Visualize(path);
+                var width = currentCircularCloudLayouter.Width;
+                var height = currentCircularCloudLayouter.Height;
+                currentCircularCloudLayouter.GetCloud().VizualizeToFile(width, height, path);
                 Console.WriteLine($"Tag cloud visualization saved to file {path}");
             }
         }

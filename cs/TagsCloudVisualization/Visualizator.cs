@@ -17,26 +17,33 @@ namespace TagsCloudVisualization
         public static readonly Color ObjectsColor = Color.Blue;
 
         public static void VizualizeToFile(
-            IEnumerable<Rectangle> rectangles,
+            this IEnumerable<Rectangle> rectangles,
             int width,
             int height,
             string path)
         {
-            var bitmap = new Bitmap(width * 2 + 2, height * 2 + 2);
-            var rectsToDraw = rectangles
-                .Select(r => NormalizeToDrawing(r, width, height))
-                .Select(ConvertRectangleToRectangleF)
-                .ToArray();
+            using (var bitmap = new Bitmap(width * 2 + 2, height * 2 + 2))
+            {
+                var rectsToDraw = rectangles
+                    .Select(r => NormalizeToDrawing(r, width, height))
+                    .Select(ConvertRectangleToRectangleF)
+                    .ToArray();
+                
+                DrawRectangles(bitmap, rectsToDraw);
+                bitmap.Save(path, ImageFormat.Png);
+            }
+        }
+
+        private static void DrawRectangles(Bitmap bitmap, RectangleF[] rectangles)
+        {
             using (var graphics = Graphics.FromImage(bitmap))
             {
                 graphics.Clear(BackgroundColor);
                 using (var pen = new Pen(ObjectsColor))
                 {
-                    graphics.DrawRectangles(pen, rectsToDraw);
+                    graphics.DrawRectangles(pen, rectangles);
                 }
             }
-
-            bitmap.Save(path, ImageFormat.Png);
         }
 
         public static Rectangle NormalizeToDrawing(Rectangle rectangle, int width, int height)

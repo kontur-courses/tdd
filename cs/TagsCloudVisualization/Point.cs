@@ -2,7 +2,7 @@
 
 namespace TagsCloudVisualization
 {
-    public class Point : ICloneable
+    public class Point
     {
         public double X { get; }
         public double Y { get; }
@@ -43,8 +43,5 @@ namespace TagsCloudVisualization
 
         public override string ToString()
             => $"Point (X: {X}; Y: {Y})";
-
-        public object Clone()
-            => MemberwiseClone();
     }
 }

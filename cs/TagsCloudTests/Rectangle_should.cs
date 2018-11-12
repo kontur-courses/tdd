@@ -22,7 +22,7 @@ namespace TagsCloudVisualization
 
             var result = rect1.Intersects(rect2);
 
-            result.Should().Be(false);
+            result.Should().BeFalse();
         }
 
         [Test]
@@ -35,7 +35,7 @@ namespace TagsCloudVisualization
 
             var result = rect1.Intersects(rect2);
 
-            result.Should().Be(true);
+            result.Should().BeTrue();
         }
     }
 }

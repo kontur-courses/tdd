@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,12 +10,12 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         private const double SpiralAngleInterval = 0.1;
-        private const double MaxSpiralAngle = double.MaxValue;
         private const double SpiralTurnsInterval = 0.5;
 
         private Point origin;
         private List<Rectangle> rectanglesList;
-        private int width, height;
+        public int Width { get; private set; }
+        public int Height { get; private set; }
         private double currentSpiralAngle;
 
         public CircularCloudLayouter(Point origin)
@@ -22,6 +23,9 @@ namespace TagsCloudVisualization
             this.origin = origin;
             rectanglesList = new List<Rectangle>();
         }
+
+        public IReadOnlyCollection<Rectangle> GetCloud()
+            => rectanglesList;
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
@@ -33,9 +37,6 @@ namespace TagsCloudVisualization
             UpdateWidthAndHeight(rectangle);
             return rectangle;
         }
-
-        public void Visualize(string path)
-            => Visualizator.VizualizeToFile(rectanglesList, width, height, path);
 
         private Rectangle MakeCloserToCenter(Rectangle rectangle)
         {
@@ -54,38 +55,33 @@ namespace TagsCloudVisualization
             return rectangle;
         }
 
-        private double GetMax(double firstNumber, double secondNumber)
-            => firstNumber > secondNumber ? firstNumber : secondNumber;
-
         private void UpdateWidthAndHeight(Rectangle rectangle)
         {
-            var newWidth = GetMax(Math.Abs(rectangle.RightXCoord), Math.Abs(rectangle.LeftXCoord));
-            var newHeight = GetMax(Math.Abs(rectangle.TopYCoord), Math.Abs(rectangle.BottomYCoord));
-            if (newWidth > width)
-                width = (int)newWidth;
-            if (newHeight > height)
-                height = (int)newHeight;
+            var newWidth = Math.Max(Math.Abs(rectangle.RightXCoord), Math.Abs(rectangle.LeftXCoord));
+            var newHeight = Math.Max(Math.Abs(rectangle.TopYCoord), Math.Abs(rectangle.BottomYCoord));
+            if (newWidth > Width)
+                Width = (int)newWidth;
+            if (newHeight > Height)
+                Height = (int)newHeight;
         }
 
         private Rectangle PutOnSpiral(Size rectangleSize)
         {
             var newRectangle = new Rectangle(origin, origin, rectangleSize);
-            for (var angle = currentSpiralAngle; angle < MaxSpiralAngle; angle += SpiralAngleInterval)
+            while (newRectangle.IsIntersectsWithAnyRect(rectanglesList))
             {
                 currentSpiralAngle += SpiralAngleInterval;
-                var rectCenter = ArithmeticSpiral(angle, SpiralTurnsInterval);
+                var rectCenter = ArithmeticSpiral(currentSpiralAngle, SpiralTurnsInterval);
                 newRectangle.Center = rectCenter;
-                if (!newRectangle.IsIntersectsWithAnyRect(rectanglesList))
-                    return newRectangle;
             }
 
-            return null;
+            return newRectangle;
         }
 
         private Point ArithmeticSpiral(double angle, double turnsInterval)
         {
-            var x = (origin.X + turnsInterval * angle) * Math.Cos(angle);
-            var y = (origin.Y + turnsInterval * angle) * Math.Sin(angle);
+            var x = origin.X + (turnsInterval * angle) * Math.Cos(angle);
+            var y = origin.Y + (turnsInterval * angle) * Math.Sin(angle);
 
             return new Point(x, y);
         }
