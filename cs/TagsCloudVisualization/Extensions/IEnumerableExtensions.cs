@@ -59,7 +59,22 @@ namespace TagsCloudVisualization.Extensions
                 yield return act();
         }
 
-        public static IEnumerable<Tuple<T, int>> CountUnique<T>(this IEnumerable<T> eunmerable) =>
-            eunmerable.GroupBy(x => x).Select(x => Tuple.Create(x.Key, x.Count()));
+        public static IEnumerable<ValueTuple<T, int>> CountUnique<T>(this IEnumerable<T> enumerable) =>
+            enumerable.GroupBy(x => x).Select(x => (word:x.Key, count: x.Count()));
+
+        public static IEnumerable<IEnumerable<T>> SplitBy<T>(this IEnumerable<T> enumerable,Func<T,bool> predicate, bool removeEmpty = true)
+        {
+            var list = new List<T>();
+            using(var enumerator = enumerable.GetEnumerator())
+                while(enumerator.MoveNext())
+                    if (!predicate(enumerator.Current))
+                        list.Add(enumerator.Current);
+                    else
+                    {
+                        if (list.Count == 0 && removeEmpty) continue;
+                        yield return list.ToArray();
+                        list.Clear();
+                    }
+        }
     }
 }

@@ -42,9 +42,6 @@ namespace TagsCloudVisualization.Tests
                 TestContext.WriteLine($"Tag cloud visualization saved to file {path}");
             }
         } 
-
-        private Rectangle[] GenerateRectangles(int count)=>
-            count.Times(RandomSize).Select(layouter.PutNextRectangle).ToArray();
         
         [Test]
         public void HaveCorrectCenter()
@@ -97,27 +94,6 @@ namespace TagsCloudVisualization.Tests
         public void HaveSameLayoutAsReturnedRectangles()
         {
             GenerateRectangles(Hundred).ToArray().Should().BeEquivalentTo(layouter.Layout);
-        }
-
-        [Test]
-        public void MakeSquareFrom3Bricks1X3()
-        {
-            var square = 3.Times(() => layouter.PutNextRectangle(new Size(90, 30))).EnclosingRectangle();
-            square.Width.Should().Be(square.Height,
-                $"{layouter.Layout.First()} , {layouter.Layout.Skip(1).First()}, {layouter.Layout.Last()}");
-        }
-
-        [Test]
-        public void NotMoveCenter3Bricks1X3()
-        {
-            var square = 3.Times(() => layouter.PutNextRectangle(new Size(90, 30))).EnclosingRectangle();
-            square.Center().Should().Be(center);
-        }
-
-        [Test]
-        public void NotOverlap3Bricks1X3()
-        {
-            3.Times(() => layouter.PutNextRectangle(new Size(90, 30))).ForAllPairs(AssertDontIntersect);
         }
         
         [Test]
@@ -178,5 +154,9 @@ namespace TagsCloudVisualization.Tests
             var meanRadius = octogonEdgesDist.Sum() / octogonEdgesDist.Length; 
             octogonEdgesDist.All(x => Math.Abs(x - meanRadius) / meanRadius < dispersion).Should().BeTrue();
         }
+        
+        private Rectangle[] GenerateRectangles(int count)=>
+            count.Times(RandomSize).Select(layouter.PutNextRectangle).ToArray();
+
     }
 }

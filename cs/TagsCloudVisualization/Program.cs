@@ -15,26 +15,26 @@ namespace TagsCloudVisualization
     {
         static void Main(string[] args)
         {
+            const int maxFontSize = 120;
             var pictureSize = new Size(1000,1000);
-            Func<Size,Rectangle> putter = new CircularCloudLayouter(new Point(pictureSize)).PutNextRectangle;
+            Func<Size,Rectangle> putter = new CircularCloudLayouter(new Point(pictureSize.Divide(2))).PutNextRectangle;
             
-            var pairs = FileReadWords($"{Environment.SpecialFolder.Desktop.ToString()}\\hamlet.txt")
+            var pairs = ReadWordsFromFile($"C:\\Users\\Avel\\Desktop\\hamlet.txt")
                 .CountUnique()
                 .ToArray();
-            var denominator = pairs.Max(x => x.Item2);
             
-            pairs.Select(x=>Tuple.Create(x.Item1,120*x.Item2/denominator))
+            var denominator = pairs.Max(x => x.Item2);
+            pairs.Select(x=>(x.Item1, maxFontSize*x.Item2/denominator))
                 .Where(x=>x.Item2>5)
-                .OrderBy(x=>x.Item2)
-                .DrawCloud(pictureSize,putter)
+                .DrawCloud(pictureSize, putter)
                 .Save(".\\btm.png",ImageFormat.Png);
         }
 
-        private static IEnumerable<string> FileReadWords(string path) =>
+        private static IEnumerable<string> ReadWordsFromFile(string path) =>
             File.ReadAllText(path)
                 .ToLower()
-                .Split()
-                .Where(x => x != "")
-                .Select(x => x.Trim(',','.','\n','\t'));
+                .AsEnumerable()
+                .SplitBy(Char.IsPunctuation)
+                .Select(x => new string(x.ToArray()));
     }
 }
