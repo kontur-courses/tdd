@@ -34,19 +34,21 @@ namespace TagsCloudVisualization.Geom
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Height > CloudSize.Height || rectangleSize.Width > CloudSize.Width)
-                throw new ArgumentException("Should be less then CloudSize", nameof(rectangleSize));
+                throw new ArgumentException("Should be less than CloudSize", nameof(rectangleSize));
 
-            while (true)
+            var location = spiral.GetNextLocation();
+            var rectangle = new Rectangle((int)location.X, (int)location.Y, rectangleSize.Width,
+                rectangleSize.Height);
+
+            while (rectangles.Any(rectangle.IntersectsWith))
             {
-                var location = spiral.GetNextLocation();
-                var rectangle = new Rectangle((int)location.X, (int) location.Y, rectangleSize.Width, rectangleSize.Height);
-
-                if (!rectangles.Any(rectangle.IntersectsWith))
-                {
-                    rectangles.Add(rectangle);
-                    return rectangle;
-                }
+                location = spiral.GetNextLocation();
+                rectangle = new Rectangle((int)location.X, (int)location.Y, rectangleSize.Width,
+                    rectangleSize.Height);
             }
+
+            rectangles.Add(rectangle);
+            return rectangle;
         }
     }
 }

@@ -4,14 +4,14 @@ namespace TagsCloudVisualization.Extensions
 {
     public static class RectangleExtensions
     {
-        public static Point[] Vertices(this Rectangle r)
+        public static Point[] Vertices(this Rectangle rectangle)
         {
             return new[]
             {
-                r.Location,
-                new Point(r.Location.X + r.Width, r.Location.Y),
-                r.Location + r.Size,
-                new Point(r.Location.X, r.Location.Y + r.Height)
+                rectangle.Location,
+                new Point(rectangle.Location.X + rectangle.Width, rectangle.Location.Y),
+                rectangle.Location + rectangle.Size,
+                new Point(rectangle.Location.X, rectangle.Location.Y + rectangle.Height)
             };
         }
     }

@@ -65,6 +65,8 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Drawing\ImageWriter.cs" />
+    <Compile Include="Drawing\ILayouterWriter.cs" />
     <Compile Include="Extensions\RectangleExtensions.cs" />
     <Compile Include="Geom\CircularCloudLayouter.cs" />
     <Compile Include="EntryPoint.cs" />

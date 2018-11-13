@@ -13,7 +13,7 @@ namespace TagsCloudVisualizationTests
         {
             for (var i = 0; i < 15; i++)
             {
-                var size = new Size().SetRandom(-10, 11, -2, 13);
+                var size = new Size().GenerateRandom(-10, 11, -2, 13);
 
                 size.Width.Should().BeGreaterOrEqualTo(-10).And.BeLessThan(11);
                 size.Height.Should().BeGreaterOrEqualTo(-2).And.BeLessThan(13);

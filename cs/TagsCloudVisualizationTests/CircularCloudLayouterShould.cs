@@ -23,9 +23,9 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void NotConatinIntersectedRectangles()
         {
-            for (int i = 0; i < 100; i++)
+            for (var i = 0; i < 100; i++)
             {   
-                layouter.PutNextRectangle(new Size().SetRandom(3, 30, 3, 20));
+                layouter.PutNextRectangle(new Size().GenerateRandom(3, 30, 3, 20));
             }
 
             foreach (var r1 in layouter.Rectangles)

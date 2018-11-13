@@ -1,40 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 
 namespace TagsCloudVisualization.Geom
 {
     public class Spiral
     {
-        private const double ThetaDelta = 0.1;
+        private const double ThetaDelta = 0.01;
 
-        private IEnumerator<PointF> locations;
         public readonly Point Center;
+        private double theta;
 
         public Spiral(Point center)
         {
             Center = center;
-            locations = GetLocations();
-        }
-
-        private IEnumerator<PointF> GetLocations()
-        {
-            double theta = 0;
-            while (true)
-            {
-                float x = (float) (theta * Math.Cos(theta) + Center.X);
-                float y = (float) (theta * Math.Sin(theta) + Center.Y);
-
-                yield return new PointF(x, y);
-
-                theta += ThetaDelta;
-            }
         }
 
         public PointF GetNextLocation()
         {
-            locations.MoveNext();
-            return locations.Current;
+            var x = (float) (theta * Math.Cos(theta) + Center.X);
+            var y = (float) (theta * Math.Sin(theta) + Center.Y);
+
+            theta += ThetaDelta;
+
+            return new PointF(x, y);
         }
     }
 }

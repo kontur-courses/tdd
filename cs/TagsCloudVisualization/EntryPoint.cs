@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using TagsCloudVisualization.Drawing;
 using TagsCloudVisualization.Extensions;
 using TagsCloudVisualization.Geom;
 
@@ -17,15 +18,15 @@ namespace TagsCloudVisualization
             var simpleLayouter = SimpleLayouter();
             Console.WriteLine("Simple generated");
 
-            GenerateImage(randomLayouter, "random.png"); ;
-            GenerateImage(simpleLayouter, "simple.png");
+            new ImageWriter("random.png", DefaultImageWidth, DefaultImageHeight).WriteLayout(randomLayouter);
+            new ImageWriter("simple.png", DefaultImageWidth, DefaultImageHeight).WriteLayout(simpleLayouter);
         }
 
         private static CircularCloudLayouter LayouterWithRandomSizeRectangles()
         {
             var layouter = new CircularCloudLayouter(DefaultImageWidth / 2, DefaultImageHeight / 2, DefaultImageWidth, DefaultImageHeight);
-            for (var i = 0; i < 300; i++)
-                layouter.PutNextRectangle(new Size().SetRandom(3, 100, 3, 80));
+            for (var i = 0; i < 800; i++)
+                layouter.PutNextRectangle(new Size().GenerateRandom(3, 50, 3, 50));
 
             return layouter;
         }
@@ -37,34 +38,6 @@ namespace TagsCloudVisualization
                 layouter.PutNextRectangle(new Size(20, 10));
 
             return layouter;
-        }
-
-        private static void GenerateImage(CircularCloudLayouter layouter, string imageName)
-        {
-            var bitmap = new Bitmap(DefaultImageWidth, DefaultImageHeight);
-            var graphics = Graphics.FromImage(bitmap);
-
-            foreach (var r in layouter.Rectangles)
-            {
-                graphics.FillRectangle(Brushes.LightCoral, r);
-                graphics.DrawRectangle(Pens.Black, r);
-            }
-
-            bitmap.Save(imageName);
-        }
-
-        private static void GenerateImage(Spiral spiral, string imageName)
-        {
-            var bitmap = new Bitmap(DefaultImageWidth, DefaultImageHeight);
-            var graphics = Graphics.FromImage(bitmap);
-
-            for (var i = 0; i < 400000; i++)
-            {
-                var point = spiral.GetNextLocation();
-                graphics.FillRectangle(Brushes.Black, new RectangleF(point, new SizeF(1, 1)));
-            }
-
-            bitmap.Save(imageName);
         }
     }
 }
