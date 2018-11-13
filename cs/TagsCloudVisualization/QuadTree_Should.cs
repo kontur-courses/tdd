@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using System.Drawing;
 
 namespace TagsCloudVisualization
 {
@@ -155,7 +156,7 @@ namespace TagsCloudVisualization
                 
                 foreach (var node in nodes)
                 {
-                    if (node.Rectangle.OverlapsWith(rect))
+                    if (node.Rectangle.IntersectsWith(rect))
                     {
                         result.Add(node);
                     }

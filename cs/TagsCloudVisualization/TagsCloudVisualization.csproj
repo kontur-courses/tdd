@@ -54,16 +54,12 @@
     <Compile Include="ICloudLayouter_Should.cs" />
     <Compile Include="ICloudLayouter.cs" />
     <Compile Include="CloudLayoutVisualizer.cs" />
-    <Compile Include="Point.cs" />
+    <Compile Include="Helpers.cs" />
     <Compile Include="BasePointsCloudLayouter.cs" />
-    <Compile Include="Point_Should.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuadTree.cs" />
     <Compile Include="QuadTree_Should.cs" />
-    <Compile Include="Rectangle.cs" />
-    <Compile Include="Rectangle_Should.cs" />
-    <Compile Include="Size.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

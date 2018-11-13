@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
@@ -62,7 +63,7 @@ namespace TagsCloudVisualization
                 foreach (var rectB in layout)
                 {
                     if (rectA == rectB) break;
-                    rectA.OverlapsWith(rectB).Should().BeFalse();
+                    rectA.IntersectsWith(rectB).Should().BeFalse();
                 }
             }
         }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace TagsCloudVisualization
@@ -36,17 +37,17 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            Rectangle currentRect = null;
+            Rectangle currentRect;
 
             // Search rectangle location near base point
             foreach (var basePoint in _basePointsSortedByDistance)
             {
                 var basePointRect = CreateRectanglesAroundBasePoint(basePoint.Point, rectangleSize)
                     .Where(r => !_rectanglesQuadTree.HasNodesInside(r))
-                    .OrderBy(r => Point.PowDistance(r.CenterPoint, _layoutCenter))
+                    .OrderBy(r => Helpers.PowDistanceBetweenPoints(new Point(r.X + r.Width / 2, r.Y + r.Height / 2), _layoutCenter))
                     .FirstOrDefault();
 
-                if (basePointRect != null)
+                if (!basePointRect.IsEmpty)
                 {
                     currentRect = basePointRect;
                     break;
@@ -55,10 +56,10 @@ namespace TagsCloudVisualization
             
             var resultRectPoints = new Point[4]
             {
-                currentRect.Pos,
-                currentRect.BottomRightPoint,
-                new Point(currentRect.Pos.X + currentRect.Size.Width, currentRect.Pos.Y),
-                new Point(currentRect.Pos.X, currentRect.Pos.Y + currentRect.Size.Height)
+                currentRect.Location,
+                new Point(currentRect.Right, currentRect.Bottom),
+                new Point(currentRect.Right, currentRect.Y),
+                new Point(currentRect.X, currentRect.Bottom)
             }; 
             
             UpdateBasePoints(resultRectPoints);
@@ -76,7 +77,7 @@ namespace TagsCloudVisualization
         private void UpdateBasePoints (IEnumerable<Point> points)
         {
             var newPointsWithDistance = points
-                .Select(p => new PointWithDistance() { Distance = Point.PowDistance(p, _layoutCenter), Point = p })
+                .Select(p => new PointWithDistance() { Distance = Helpers.PowDistanceBetweenPoints(p, _layoutCenter), Point = p })
                 .OrderBy(p => p.Distance)
                 .ToList();
 

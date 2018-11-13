@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    class QuadTree<T> where T : class
+    class QuadTree<T>
     {
         private Rectangle _bounds; // overall bounds we are indexing.
         private Quadrant _root;
@@ -24,7 +25,7 @@ namespace TagsCloudVisualization
 
         public QuadTree(Rectangle initialBounds)
         {
-            if (initialBounds.Size.Width == 0 || initialBounds.Size.Height == 0)
+            if (initialBounds.Width == 0 || initialBounds.Height == 0)
             {
                 throw new ArgumentException("Bounds must be non zero");
             }
@@ -34,23 +35,23 @@ namespace TagsCloudVisualization
  
         public void Insert(T node, Rectangle bounds)
         {
-            if (bounds.Size.Width == 0 || bounds.Size.Height == 0)
+            if (bounds.Width == 0 || bounds.Height == 0)
             {
                 throw new ArgumentException("Bounds must be non zero");
             }
 
             // Increase bounds if rect bounds is outside current quad tree bounds
-            if (!this._bounds.ContainsRect(bounds))
+            if (!this._bounds.Contains(bounds))
             {
-                var outerRect = Rectangle.GetOuterRect(new Rectangle[2] { this._bounds, bounds });
+                var outerRect = Rectangle.Union(this._bounds, bounds);
                 
                 var newBoundsPos = new Point(
-                    outerRect.Pos.X - outerRect.Size.Width,
-                    outerRect.Pos.Y - outerRect.Size.Height);
+                    outerRect.X - outerRect.Width,
+                    outerRect.Y - outerRect.Height);
                 
                 var newBondsSize = new Size(
-                    outerRect.Pos.X + outerRect.Size.Width * 3,
-                    outerRect.Pos.Y + outerRect.Size.Height * 3);
+                    outerRect.X + outerRect.Width * 3,
+                    outerRect.Y + outerRect.Height * 3);
 
                 this._bounds = new Rectangle(newBoundsPos, newBondsSize);
                 
@@ -93,7 +94,7 @@ namespace TagsCloudVisualization
                 return false;                
             }
             
-            return _root.HasOverlappingNodes(bounds);
+            return _root.HasIntersectedNodes(bounds);
         }
  
         IEnumerable<QuadNode> GetNodes(Rectangle bounds)
@@ -102,7 +103,7 @@ namespace TagsCloudVisualization
             
             if (_root != null)
             {
-                _root.GetOverlappingNodes(result, bounds);
+                _root.GetOverlappedNodes(result, bounds);
             }
             
             return result;
@@ -194,7 +195,7 @@ namespace TagsCloudVisualization
             {
                 this._parent = parent;
 
-                if (bounds.Size.Width == 0 || bounds.Size.Height == 0)
+                if (bounds.Width == 0 || bounds.Height == 0)
                 {
                     throw new ArgumentException("Bounds must be non zero");
                 }
@@ -214,7 +215,7 @@ namespace TagsCloudVisualization
  
             internal Quadrant Insert(T node, Rectangle bounds)
             {
-                if (bounds.Size.Width == 0 || bounds.Size.Height == 0)
+                if (bounds.Width == 0 || bounds.Height == 0)
                 {
                     throw new ArgumentException("Bounds must be non zero");
                 }
@@ -222,27 +223,27 @@ namespace TagsCloudVisualization
                 Quadrant toInsert = this;
                 while (true)
                 {
-                    int w = toInsert._bounds.Size.Width / 2;
+                    int w = toInsert._bounds.Width / 2;
                     if (w < 1)
                     {
                         w = 1;
                     }
                     
-                    int h = toInsert._bounds.Size.Height / 2;
+                    int h = toInsert._bounds.Height / 2;
                     if (h < 1)
                     {
                         h = 1;
                     }
  
-                    Rectangle topLeft = new Rectangle(toInsert._bounds.Pos.X, toInsert._bounds.Pos.Y, w, h);
-                    Rectangle topRight = new Rectangle(toInsert._bounds.Pos.X + w, toInsert._bounds.Pos.Y, w, h);
-                    Rectangle bottomLeft = new Rectangle(toInsert._bounds.Pos.X, toInsert._bounds.Pos.Y + h, w, h);
-                    Rectangle bottomRight = new Rectangle(toInsert._bounds.Pos.X + w, toInsert._bounds.Pos.Y + h, w, h);
+                    Rectangle topLeft = new Rectangle(toInsert._bounds.X, toInsert._bounds.Y, w, h);
+                    Rectangle topRight = new Rectangle(toInsert._bounds.X + w, toInsert._bounds.Y, w, h);
+                    Rectangle bottomLeft = new Rectangle(toInsert._bounds.X, toInsert._bounds.Y + h, w, h);
+                    Rectangle bottomRight = new Rectangle(toInsert._bounds.X + w, toInsert._bounds.Y + h, w, h);
  
                     Quadrant child = null;
  
                     // See if any child quadrants completely contain this node.
-                    if (topLeft.ContainsRect(bounds))
+                    if (topLeft.Contains(bounds))
                     {
                         if (toInsert.topLeft == null)
                         {
@@ -250,7 +251,7 @@ namespace TagsCloudVisualization
                         }
                         child = toInsert.topLeft;
                     }
-                    else if (topRight.ContainsRect(bounds))
+                    else if (topRight.Contains(bounds))
                     {
                         if (toInsert.topRight == null)
                         {
@@ -258,7 +259,7 @@ namespace TagsCloudVisualization
                         }
                         child = toInsert.topRight;
                     }
-                    else if (bottomLeft.ContainsRect(bounds))
+                    else if (bottomLeft.Contains(bounds))
                     {
                         if (toInsert.bottomLeft == null)
                         {
@@ -266,7 +267,7 @@ namespace TagsCloudVisualization
                         }
                         child = toInsert.bottomLeft;
                     }
-                    else if (bottomRight.ContainsRect(bounds))
+                    else if (bottomRight.Contains(bounds))
                     {
                         if (toInsert.bottomRight == null)
                         {
@@ -299,44 +300,44 @@ namespace TagsCloudVisualization
                 }
             }
  
-            internal void GetOverlappingNodes(List<QuadNode> nodes, Rectangle bounds)
+            internal void GetOverlappedNodes(List<QuadNode> nodes, Rectangle bounds)
             {
-                int w = this._bounds.Size.Width / 2;
-                int h = this._bounds.Size.Height / 2;
+                int w = this._bounds.Width / 2;
+                int h = this._bounds.Height / 2;
  
                 // assumption that the Rect struct is almost as fast as doing the operations
                 // manually since Rect is a value type.
  
-                Rectangle topLeft = new Rectangle(this._bounds.Pos.X, this._bounds.Pos.Y, w, h);
-                Rectangle topRight = new Rectangle(this._bounds.Pos.X + w, this._bounds.Pos.Y, w, h);
-                Rectangle bottomLeft = new Rectangle(this._bounds.Pos.X, this._bounds.Pos.Y + h, w, h);
-                Rectangle bottomRight = new Rectangle(this._bounds.Pos.X + w, this._bounds.Pos.Y + h, w, h);
+                Rectangle topLeft = new Rectangle(this._bounds.X, this._bounds.Y, w, h);
+                Rectangle topRight = new Rectangle(this._bounds.X + w, this._bounds.Y, w, h);
+                Rectangle bottomLeft = new Rectangle(this._bounds.X, this._bounds.Y + h, w, h);
+                Rectangle bottomRight = new Rectangle(this._bounds.X + w, this._bounds.Y + h, w, h);
  
                 // See if any child quadrants completely contain this node.
-                if (topLeft.OverlapsWith(bounds) && this.topLeft != null)
+                if (topLeft.IntersectsWith(bounds) && this.topLeft != null)
                 {
-                    this.topLeft.GetOverlappingNodes(nodes, bounds);
+                    this.topLeft.GetOverlappedNodes(nodes, bounds);
                 }
  
-                if (topRight.OverlapsWith(bounds) && this.topRight != null)
+                if (topRight.IntersectsWith(bounds) && this.topRight != null)
                 {
-                    this.topRight.GetOverlappingNodes(nodes, bounds);
+                    this.topRight.GetOverlappedNodes(nodes, bounds);
                 }
  
-                if (bottomLeft.OverlapsWith(bounds) && this.bottomLeft != null)
+                if (bottomLeft.IntersectsWith(bounds) && this.bottomLeft != null)
                 {
-                    this.bottomLeft.GetOverlappingNodes(nodes, bounds);
+                    this.bottomLeft.GetOverlappedNodes(nodes, bounds);
                 }
  
-                if (bottomRight.OverlapsWith(bounds) && this.bottomRight != null)
+                if (bottomRight.IntersectsWith(bounds) && this.bottomRight != null)
                 {
-                    this.bottomRight.GetOverlappingNodes(nodes, bounds);
+                    this.bottomRight.GetOverlappedNodes(nodes, bounds);
                 }
  
-                GetOverlappingNodes(this.nodes, nodes, bounds);
+                GetOverlappedNodes(this.nodes, nodes, bounds);
             }
  
-            static void GetOverlappingNodes(QuadNode last, List<QuadNode> nodes, Rectangle bounds)
+            static void GetOverlappedNodes(QuadNode last, List<QuadNode> nodes, Rectangle bounds)
             {
                 if (last != null)
                 {
@@ -344,7 +345,7 @@ namespace TagsCloudVisualization
                     do
                     {
                         n = n.Next; // first node.
-                        if (n.Bounds.OverlapsWith(bounds))
+                        if (n.Bounds.IntersectsWith(bounds))
                         {
                             nodes.Add(n);
                         }
@@ -352,49 +353,49 @@ namespace TagsCloudVisualization
                 }
             }
  
-            internal bool HasOverlappingNodes(Rectangle bounds)
+            internal bool HasIntersectedNodes(Rectangle bounds)
             {
-                int w = this._bounds.Size.Width / 2;
-                int h = this._bounds.Size.Height / 2;
+                int w = this._bounds.Width / 2;
+                int h = this._bounds.Height / 2;
  
                 // assumption that the Rect struct is almost as fast as doing the operations
                 // manually since Rect is a value type.
  
-                Rectangle topLeft = new Rectangle(this._bounds.Pos.X, this._bounds.Pos.Y, w, h);
-                Rectangle topRight = new Rectangle(this._bounds.Pos.X + w, this._bounds.Pos.Y, w, h);
-                Rectangle bottomLeft = new Rectangle(this._bounds.Pos.X, this._bounds.Pos.Y + h, w, h);
-                Rectangle bottomRight = new Rectangle(this._bounds.Pos.X + w, this._bounds.Pos.Y + h, w, h);
+                Rectangle topLeft = new Rectangle(this._bounds.X, this._bounds.Y, w, h);
+                Rectangle topRight = new Rectangle(this._bounds.X + w, this._bounds.Y, w, h);
+                Rectangle bottomLeft = new Rectangle(this._bounds.X, this._bounds.Y + h, w, h);
+                Rectangle bottomRight = new Rectangle(this._bounds.X + w, this._bounds.Y + h, w, h);
  
                 bool found = false;
  
                 // See if any child quadrants completely contain this node.
-                if (topLeft.OverlapsWith(bounds) && this.topLeft != null)
+                if (topLeft.IntersectsWith(bounds) && this.topLeft != null)
                 {
-                    found = this.topLeft.HasOverlappingNodes(bounds);
+                    found = this.topLeft.HasIntersectedNodes(bounds);
                 }
  
-                if (!found && topRight.OverlapsWith(bounds) && this.topRight != null)
+                if (!found && topRight.IntersectsWith(bounds) && this.topRight != null)
                 {
-                    found = this.topRight.HasOverlappingNodes(bounds);
+                    found = this.topRight.HasIntersectedNodes(bounds);
                 }
  
-                if (!found && bottomLeft.OverlapsWith(bounds) && this.bottomLeft != null)
+                if (!found && bottomLeft.IntersectsWith(bounds) && this.bottomLeft != null)
                 {
-                    found = this.bottomLeft.HasOverlappingNodes(bounds);
+                    found = this.bottomLeft.HasIntersectedNodes(bounds);
                 }
  
-                if (!found && bottomRight.OverlapsWith(bounds) && this.bottomRight != null)
+                if (!found && bottomRight.IntersectsWith(bounds) && this.bottomRight != null)
                 {
-                    found = this.bottomRight.HasOverlappingNodes(bounds);
+                    found = this.bottomRight.HasIntersectedNodes(bounds);
                 }
                 if (!found)
                 {
-                    found = HasOverlappingNodes(this.nodes, bounds);
+                    found = HasIntersectedNodes(this.nodes, bounds);
                 }
                 return found;
             }
  
-            static bool HasOverlappingNodes(QuadNode last, Rectangle bounds)
+            static bool HasIntersectedNodes(QuadNode last, Rectangle bounds)
             {
                 if (last != null)
                 {
@@ -402,7 +403,7 @@ namespace TagsCloudVisualization
                     do
                     {
                         n = n.Next; // first node.
-                        if (n.Bounds.OverlapsWith(bounds))
+                        if (n.Bounds.IntersectsWith(bounds))
                         {
                             return true;
                         }
@@ -417,11 +418,11 @@ namespace TagsCloudVisualization
                 if (this.nodes != null)
                 {
                     QuadNode p = this.nodes;
-                    while (p.Next.Node != node && p.Next != this.nodes)
+                    while (!p.Next.Node.Equals(node) && p.Next != this.nodes)
                     {
                         p = p.Next;
                     }
-                    if (p.Next.Node == node)
+                    if (p.Next.Node.Equals(node))
                     {
                         rc = true;
                         QuadNode n = p.Next;

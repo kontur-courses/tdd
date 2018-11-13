@@ -15,7 +15,7 @@ namespace TagsCloudVisualization
         
         public static void SaveAsPngImage(IEnumerable<Rectangle> rects, string filePath)
         {
-            var outerRect = Rectangle.GetOuterRect(rects);
+            var outerRect = Helpers.GetOuterRectOfRects(rects);
 
             var imgWidth = outerRect.Size.Width + ImageBorders * 2;
             var imgHeight = outerRect.Size.Height + ImageBorders * 2;
@@ -31,23 +31,23 @@ namespace TagsCloudVisualization
             graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
             graphics.SmoothingMode = SmoothingMode.HighQuality;
             
-            var offsetX = outerRect.Pos.X * -1 + ImageBorders;
-            var offsetY = outerRect.Pos.Y * -1 + ImageBorders;
+            var offsetX = outerRect.X * -1 + ImageBorders;
+            var offsetY = outerRect.Y * -1 + ImageBorders;
 
             foreach (var rect in rects)
             {
                 graphics.FillRectangle(
                     new SolidBrush(Color.Bisque), 
-                    rect.Pos.X + offsetX,
-                    rect.Pos.Y + offsetY,
+                    rect.X + offsetX,
+                    rect.Y + offsetY,
                     rect.Size.Width,
                     rect.Size.Height
                 );
                 
                 graphics.DrawRectangle(
                     new Pen(Color.Black, 2),
-                    rect.Pos.X + offsetX,
-                    rect.Pos.Y + offsetY,
+                    rect.X + offsetX,
+                    rect.Y + offsetY,
                     rect.Size.Width,
                     rect.Size.Height
                 );
