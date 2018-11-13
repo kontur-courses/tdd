@@ -20,7 +20,6 @@ namespace TagsCloudVisualizationTests
             layouter = new CircularCloudLayouter(100, 100, 1024, 1024);
         }
 
-
         [Test]
         public void NotConatinIntersectedRectangles()
         {

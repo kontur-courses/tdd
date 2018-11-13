@@ -19,10 +19,6 @@ namespace TagsCloudVisualization
 
             GenerateImage(randomLayouter, "random.png"); ;
             GenerateImage(simpleLayouter, "simple.png");
-
-            var l = new CircularCloudLayouter(new Point(DefaultImageWidth / 2, DefaultImageHeight / 2), new Size(DefaultImageWidth, DefaultImageHeight));
-            l.PutNextRectangle(new Size(1029, 1029));
-
         }
 
         private static CircularCloudLayouter LayouterWithRandomSizeRectangles()

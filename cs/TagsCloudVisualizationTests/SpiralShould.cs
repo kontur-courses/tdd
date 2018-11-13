@@ -32,13 +32,11 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
-        public void NotReturnStarngeNumbers()
+        public void NotReturnStrangeNumbers()
         {
-            var s = new Spiral(new Point(0, 0));
-
             for (var i = 0; i < 10; i++)
             {
-                var location = s.GetNextLocation();
+                var location = spiral.GetNextLocation();
 
                 location.X.Should().BeLessThan(1).And.BeGreaterThan(-1);
                 location.Y.Should().BeLessThan(1).And.BeGreaterThan(-1);
