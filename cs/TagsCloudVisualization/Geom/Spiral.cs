@@ -6,7 +6,7 @@ namespace TagsCloudVisualization.Geom
 {
     public class Spiral
     {
-        private const double ThetaDelta = 0.001;
+        private const double ThetaDelta = 0.1;
 
         private IEnumerator<PointF> locations;
         public readonly Point Center;
@@ -19,15 +19,11 @@ namespace TagsCloudVisualization.Geom
 
         private IEnumerator<PointF> GetLocations()
         {
-            yield return Center;
-
             double theta = 0;
-            double a = 1;
-
             while (true)
             {
-                var y = (float) (a * theta * Math.Sin(theta) + Center.Y);
-                var x = (float) (a * theta * Math.Cos(theta) + Center.X);
+                float x = (float) (theta * Math.Cos(theta) + Center.X);
+                float y = (float) (theta * Math.Sin(theta) + Center.Y);
 
                 yield return new PointF(x, y);
 

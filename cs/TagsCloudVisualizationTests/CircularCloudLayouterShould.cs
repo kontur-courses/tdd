@@ -17,7 +17,7 @@ namespace TagsCloudVisualizationTests
         [SetUp]
         public void SetUp()
         {
-            layouter = new CircularCloudLayouter(new Point(100, 100));
+            layouter = new CircularCloudLayouter(100, 100, 1024, 1024);
         }
 
 
@@ -59,6 +59,22 @@ namespace TagsCloudVisualizationTests
             }
 
             actualMaxRadius.Should().BeLessOrEqualTo(expectedRadius);
+        }
+
+        [Test]
+        public void NotHaveInvalidCloudSize()
+        {
+            Action action = () => new CircularCloudLayouter(new Point(0, 0), new Size(-100, 12));
+
+            action.Should().Throw<ArgumentException>();
+        }
+
+        [Test]
+        public void NotPutBigSizeRectangles()
+        {
+            Action action = () => layouter.PutNextRectangle(new Size(1028, 10));
+
+            action.Should().Throw<ArgumentException>();
         }
     }
 }

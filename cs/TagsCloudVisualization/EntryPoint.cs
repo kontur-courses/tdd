@@ -7,9 +7,8 @@ namespace TagsCloudVisualization
 {
     public class EntryPoint
     {
-        private const int ImageWidth = 1024;
-        private const int ImageHeight = 1024;
-
+        private const int DefaultImageWidth = 1024;
+        private const int DefaultImageHeight = 1024;
 
         private static void Main(string[] args)
         {
@@ -18,13 +17,17 @@ namespace TagsCloudVisualization
             var simpleLayouter = SimpleLayouter();
             Console.WriteLine("Simple generated");
 
-            GenerateImage(randomLayouter, "random.png");;
+            GenerateImage(randomLayouter, "random.png"); ;
             GenerateImage(simpleLayouter, "simple.png");
+
+            var l = new CircularCloudLayouter(new Point(DefaultImageWidth / 2, DefaultImageHeight / 2), new Size(DefaultImageWidth, DefaultImageHeight));
+            l.PutNextRectangle(new Size(1029, 1029));
+
         }
 
         private static CircularCloudLayouter LayouterWithRandomSizeRectangles()
         {
-            var layouter = new CircularCloudLayouter(new Point(ImageWidth / 2, ImageHeight / 2));
+            var layouter = new CircularCloudLayouter(DefaultImageWidth / 2, DefaultImageHeight / 2, DefaultImageWidth, DefaultImageHeight);
             for (var i = 0; i < 300; i++)
                 layouter.PutNextRectangle(new Size().SetRandom(3, 100, 3, 80));
 
@@ -33,7 +36,7 @@ namespace TagsCloudVisualization
 
         private static CircularCloudLayouter SimpleLayouter()
         {
-            var layouter = new CircularCloudLayouter(new Point(ImageWidth / 2, ImageHeight / 2));
+            var layouter = new CircularCloudLayouter(DefaultImageWidth / 2, DefaultImageHeight / 2, DefaultImageWidth, DefaultImageHeight);
             for (var i = 0; i < 1000; i++)
                 layouter.PutNextRectangle(new Size(20, 10));
 
@@ -42,13 +45,27 @@ namespace TagsCloudVisualization
 
         private static void GenerateImage(CircularCloudLayouter layouter, string imageName)
         {
-            var bitmap = new Bitmap(ImageWidth, ImageHeight);
+            var bitmap = new Bitmap(DefaultImageWidth, DefaultImageHeight);
             var graphics = Graphics.FromImage(bitmap);
 
             foreach (var r in layouter.Rectangles)
             {
                 graphics.FillRectangle(Brushes.LightCoral, r);
                 graphics.DrawRectangle(Pens.Black, r);
+            }
+
+            bitmap.Save(imageName);
+        }
+
+        private static void GenerateImage(Spiral spiral, string imageName)
+        {
+            var bitmap = new Bitmap(DefaultImageWidth, DefaultImageHeight);
+            var graphics = Graphics.FromImage(bitmap);
+
+            for (var i = 0; i < 400000; i++)
+            {
+                var point = spiral.GetNextLocation();
+                graphics.FillRectangle(Brushes.Black, new RectangleF(point, new SizeF(1, 1)));
             }
 
             bitmap.Save(imageName);
