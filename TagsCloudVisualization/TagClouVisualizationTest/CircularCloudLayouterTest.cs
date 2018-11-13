@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization;
 
@@ -158,18 +159,16 @@ namespace TagCloudVisualizationTest
         [Test, TestCaseSource(nameof(GetTestCases))]
         [Category("TagCloudHasCircleShape")]
         public void PutNextRectangle_ShouldCreateCircleShape(List<Size> sizes)
-        {          
+        {
+            
             var rectangles = sizes.Select(size => testLayouter.PutNextRectangle(size)).ToList();
             var cloudSize = testLayouter.GetSizeTagCloud();
-            var delta = cloudSize.Height / 2;
-            var center = testLayouter.GetCenter();
-            var controlRects = GetControlRectangle(cloudSize, center, delta);
-            var shapeIsCircle = true;
-            foreach (var rect in controlRects)
-                shapeIsCircle = shapeIsCircle && AreIntersects(rect, rectangles);
-            var testName = TestContext.CurrentContext.Test.Name;
-            if (!shapeIsCircle)
+            var expectedArea = CalculateTotalExpectedArea(sizes);
+            var actualArea = cloudSize.Width / 2 * cloudSize.Width / 2 * Math.PI;
+            var delta = expectedArea / 2;            
+            if((actualArea - expectedArea) > delta)
             {
+                var testName = TestContext.CurrentContext.Test.Name;
                 SaveImage(testName, rectangles.ToArray(), cloudSize);
                 Assert.Fail($"TagCloud shape isn't a circle in test {testName}. Delta = {delta}");
             }                    
@@ -205,32 +204,14 @@ namespace TagCloudVisualizationTest
             bitmap.Save(fullFileName, ImageFormat.Bmp);
         }
 
-        private Rectangle[] GetControlRectangle(Size cloudSize, Point center, int delta)
+        private static int CalculateTotalExpectedArea(List<Size> sizes)
         {
-            return new[]
-            {
-                new Rectangle(center.X - delta / 2, center.Y + (cloudSize.Height - delta) / 2, delta, delta),
-                new Rectangle(center.X + (cloudSize.Width - delta) / 2,
-                    center.Y + (cloudSize.Height - delta) / 2,
-                    delta, delta),
-                new Rectangle(center.X + (cloudSize.Width - delta) / 2,
-                    center.Y - delta / 2,
-                    delta, delta),
-                new Rectangle(center.X + (cloudSize.Width - delta) / 2,
-                    center.Y - (cloudSize.Height - delta) / 2,
-                    delta, delta),
-                new Rectangle(center.X - delta / 2, center.Y - (cloudSize.Height - delta) / 2, delta * 2, delta * 2),
-                new Rectangle(center.X - (cloudSize.Width - delta) / 2,
-                center.Y - (cloudSize.Height - delta) / 2,
-                delta, delta),
-                new Rectangle(center.X - (cloudSize.Width - delta) / 2,
-                    center.Y - delta / 2,
-                    delta, delta),
-                new Rectangle(center.X - (cloudSize.Width - delta) / 2,
-                    center.Y + (cloudSize.Height - delta) / 2,
-                    delta, delta),
-            };
-        }
+            var area = 0;
+            foreach (var size in sizes)
+                area += size.Height * size.Width;
+
+            return area;
+        }        
 
         private bool AreIntersects(Rectangle rect, List<Rectangle> otherRectangles)
         {
