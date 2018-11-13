@@ -53,6 +53,8 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RectangleShould.cs" />
+    <Compile Include="SizeShould.cs" />
     <Compile Include="SpiralShould.cs" />
     <Compile Include="CircularCloudLayouterShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
