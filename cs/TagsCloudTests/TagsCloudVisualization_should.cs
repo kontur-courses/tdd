@@ -62,7 +62,9 @@ namespace TagsCloudVisualization
                 rectangles.Add(rectangle);
             }
 
-            var radius = Math.Max(currentCircularCloudLayouter.Width, currentCircularCloudLayouter.Height);
+            var width = rectangles.GetWidth();
+            var height = rectangles.GetHeight();
+            var radius = Math.Max(width, height);
             var circleSquare = Math.PI * Math.Pow(radius, 2);
             var rectsSquare = rectangles.Select(r => r.Size.Square).Sum();
 
@@ -87,8 +89,8 @@ namespace TagsCloudVisualization
                 var dateTime = DateTime.Today.ToString("dd.MM.yyyy HH.mm.ss");
                 var filename = $"[{dateTime}] {testName}.png";
                 var path = Path.Combine(currentTestFolderPath, filename);
-                var width = currentCircularCloudLayouter.Width;
-                var height = currentCircularCloudLayouter.Height;
+                var width = (int)currentCircularCloudLayouter.GetCloud().GetWidth();
+                var height = (int)currentCircularCloudLayouter.GetCloud().GetHeight();
                 currentCircularCloudLayouter.GetCloud().VizualizeToFile(width, height, path);
                 Console.WriteLine($"Tag cloud visualization saved to file {path}");
             }

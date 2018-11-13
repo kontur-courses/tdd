@@ -10,8 +10,6 @@ namespace TagsCloudVisualization
 
         private Point origin;
         private List<Rectangle> rectanglesList;
-        public int Width { get; private set; }
-        public int Height { get; private set; }
         private double currentSpiralAngle;
 
         public CircularCloudLayouter(Point origin)
@@ -30,7 +28,6 @@ namespace TagsCloudVisualization
                 return null;
             rectangle = MakeCloserToCenter(rectangle);
             rectanglesList.Add(rectangle);
-            UpdateWidthAndHeight(rectangle);
             return rectangle;
         }
 
@@ -49,16 +46,6 @@ namespace TagsCloudVisualization
 
             rectangle.Center = previousPosition;
             return rectangle;
-        }
-
-        private void UpdateWidthAndHeight(Rectangle rectangle)
-        {
-            var newWidth = Math.Max(Math.Abs(rectangle.RightXCoord), Math.Abs(rectangle.LeftXCoord));
-            var newHeight = Math.Max(Math.Abs(rectangle.TopYCoord), Math.Abs(rectangle.BottomYCoord));
-            if (newWidth > Width)
-                Width = (int)newWidth;
-            if (newHeight > Height)
-                Height = (int)newHeight;
         }
 
         private Rectangle PutOnSpiral(Size rectangleSize)

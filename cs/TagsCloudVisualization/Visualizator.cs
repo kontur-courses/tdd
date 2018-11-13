@@ -20,7 +20,7 @@ namespace TagsCloudVisualization
             {
                 var rectsToDraw = rectangles
                     .Select(TranslateCenterByHalfSize)
-                    .Select(r => r.ConvertRectangleToRectangleF())
+                    .Select(r => r.ToRectangleF())
                     .ToArray();
                 
                 DrawRectangles(bitmap, rectsToDraw, width, height);
