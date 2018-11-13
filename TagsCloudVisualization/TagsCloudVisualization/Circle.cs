@@ -8,7 +8,6 @@ namespace TagsCloudVisualization
     public class Circle
     {
         public Point Center { get; }
-        public List<Point> CirclePoints { get; } = new List<Point>();
 
         public int Radius { get; private set; }
 
@@ -16,31 +15,23 @@ namespace TagsCloudVisualization
         {
             Center = center;
             Radius = 1;
-            CalculateCirclePoints();          
         }
 
-        private void CalculateCirclePoints()
+        public IEnumerable<Point> GetCirclePoints()
         {
-            CirclePoints.Clear();
-            var topArc = Enumerable.Range(-Radius, Radius*2)
-                .Select(i =>
-                    new Point(i, (int) Math.Sqrt(Radius * Radius - (Center.X - i) * (Center.X - i)) + Center.Y))
-                .ToList();
-            CirclePoints.AddRange(topArc);
-            CirclePoints.AddRange(VerticalFlip(topArc));
+            foreach (var i in Enumerable.Range(-Radius, Radius * 2))
+            {
+                    yield return new Point(i,
+                        (int) Math.Sqrt(Radius * Radius - (Center.X - i) * (Center.X - i)) + Center.Y);
+            }           
         }
 
-        private IEnumerable<Point> VerticalFlip(IEnumerable<Point> arc)
-        {
-            return arc.Select(point => new Point(point.X, -point.Y)).ToList();
-        }
 
         public void IncrementRadius(int value)
         {
             if (value < 0)
                 throw new ArgumentException("Value cannot be negative.");
             Radius = Radius + value;
-            CalculateCirclePoints();
         }
 
     }

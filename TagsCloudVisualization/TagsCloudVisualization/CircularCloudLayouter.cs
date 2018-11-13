@@ -33,7 +33,7 @@ namespace TagsCloudVisualization
             var resultLocation = Point.Empty;
             while (true)
             {
-                if (TryFindLocation(circle.CirclePoints, rectangleSize, out resultLocation))
+                if (TryFindLocation(rectangleSize, out resultLocation))
                     return CreateRectangle(resultLocation, rectangleSize);
                 circle.IncrementRadius(1);
             }
@@ -46,13 +46,16 @@ namespace TagsCloudVisualization
             return curRect;
         }
 
-        private bool TryFindLocation(IEnumerable<Point> arc, Size sizeRect, out Point location)
+        private bool TryFindLocation(Size sizeRect, out Point location)
         {
             var yOffset = -sizeRect.Height / 2;
             var xOffset = -sizeRect.Width / 2;
-            foreach (var point in arc)
+            foreach (var point in circle.GetCirclePoints())
             {
                 location = new Point(point.X + xOffset, point.Y + yOffset);
+                if (!IsIntersectOtherRectangles(location, sizeRect))
+                    return true;
+                location = new Point(point.X + xOffset, -point.Y + yOffset);
                 if (!IsIntersectOtherRectangles(location, sizeRect))
                     return true;
             }
