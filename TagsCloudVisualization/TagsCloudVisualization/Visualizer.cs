@@ -21,7 +21,7 @@ namespace TagsCloudVisualization
             BorderColor = borderColor;
         }
 
-        public Bitmap RenderBitmapFromRectangles(IEnumerable<Rectangle> rectangles)
+        public Bitmap RenderToBitmap(IEnumerable<Rectangle> rectangles)
         {
             var cloudRange = Geometry.GetMaxDistanceToRectangles(new Point(), rectangles);
             var renderSize = (int)((cloudRange / Math.Sqrt(2)) * 1.1);

@@ -17,18 +17,15 @@ namespace TagsCloudVisualization
 
         public static double GetMaxDistanceToRectangle(Point point, Rectangle rectangle)
         {
-            var maxRadius = 0.0;
-            for (var x = rectangle.X; x <= rectangle.X + rectangle.Width; x += rectangle.Width)
-            {
-                for (var y = rectangle.Y; y <= rectangle.Y + rectangle.Height; y += rectangle.Height)
-                {
-                    var radius = GetDistanceBetweenPoints(point, new Point(x, y));
-                    if (radius > maxRadius)
-                        maxRadius = radius;
-                }
-            }
+            return GetVetexes(rectangle).Max(v => GetDistanceBetweenPoints(point, v));
+        }
 
-            return maxRadius;
+        public static IEnumerable<Point> GetVetexes(Rectangle rectangle)
+        {
+            yield return new Point(rectangle.Right, rectangle.Top);
+            yield return new Point(rectangle.Right, rectangle.Bottom);
+            yield return new Point(rectangle.Left, rectangle.Top);
+            yield return new Point(rectangle.Left, rectangle.Bottom);
         }
 
         public static double GetDistanceBetweenPoints(Point point, Point other)
