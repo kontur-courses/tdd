@@ -13,6 +13,7 @@ namespace TagsCloudVisualization.Geom
 
         public IReadOnlyCollection<Rectangle> Rectangles => new ReadOnlyCollection<Rectangle>(rectangles);
         public Point Center => spiral.Center;
+        public double Area => Math.Pow(spiral.Radius, 2) * Math.PI;
         public readonly Size CloudSize;
 
         public CircularCloudLayouter(int locationX, int locationY, int width, int height)

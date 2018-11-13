@@ -75,5 +75,19 @@ namespace TagsCloudVisualizationTests
 
             action.Should().Throw<ArgumentException>();
         }
+
+        [Test]
+        public void PlaceRectanglesTightly()
+        {
+            double rectanglesArea = 0;
+            for (var i = 0; i < 100; i++)
+            {
+                var size = new Size().GenerateRandom(3, 70, 3, 50);
+                layouter.PutNextRectangle(size);
+                rectanglesArea += size.Width * size.Height;
+            }
+
+            rectanglesArea.Should().BeLessOrEqualTo(0.7 * layouter.Area);
+        }
     }
 }

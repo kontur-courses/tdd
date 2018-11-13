@@ -8,7 +8,8 @@ namespace TagsCloudVisualization.Geom
         private const double ThetaDelta = 0.01;
 
         public readonly Point Center;
-        private double theta;
+        public double Angle { get; private set; }
+        public double Radius => Angle;
 
         public Spiral(Point center)
         {
@@ -17,10 +18,10 @@ namespace TagsCloudVisualization.Geom
 
         public PointF GetNextLocation()
         {
-            var x = (float) (theta * Math.Cos(theta) + Center.X);
-            var y = (float) (theta * Math.Sin(theta) + Center.Y);
+            var x = (float) (Radius * Math.Cos(Angle) + Center.X);
+            var y = (float) (Radius * Math.Sin(Angle) + Center.Y);
 
-            theta += ThetaDelta;
+            Angle += ThetaDelta;
 
             return new PointF(x, y);
         }
