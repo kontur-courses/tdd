@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
+using TagsCloudVisualization.Drawing;
 using TagsCloudVisualization.Extensions;
 using TagsCloudVisualization.Geom;
 
@@ -89,5 +93,19 @@ namespace TagsCloudVisualizationTests
 
             rectanglesArea.Should().BeLessOrEqualTo(0.7 * layouter.Area);
         }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome == ResultState.Failure)
+            {
+                var currentDirectory = Path.GetDirectoryName(Application.ExecutablePath);
+                var imagePath = Path.Combine(currentDirectory, $"{TestContext.CurrentContext.Test.Name}-fail.png");
+
+                new ImageWriter(imagePath).WriteLayout(layouter);
+                Console.WriteLine($"Tag cloud visualization saved to file {imagePath}");
+            }
+        }
+
     }
 }

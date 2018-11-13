@@ -9,7 +9,7 @@ namespace TagsCloudVisualization.Drawing
         public readonly int ImageWidth;
         public readonly int ImageHeight;
 
-        public ImageWriter(string imageName, int imageWidth, int imageHeight)
+        public ImageWriter(string imageName, int imageWidth=1024, int imageHeight=1024)
         {
             ImageName = imageName;
             ImageWidth = imageWidth;
