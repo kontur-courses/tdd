@@ -13,19 +13,19 @@ namespace TagsCloudVisualization
     public static class CircleCloudDrawer
     {
         
-        public static Bitmap DrawCloud(this IEnumerable<(string, int)> wordWeightPairs,Size bitmapSize,
-            Func<Size, Rectangle> rectanglePutter, string fontName = "NewTimesRoman", Brush brush = null)
+        public static Bitmap DrawCloud(this IEnumerable<(string word,int fontSize)> wordWeightPairs,Size bitmapSize,
+            ICloudLayouter layouter, string fontName = "NewTimesRoman", Brush brush = null)
         {
             brush = brush ?? Brushes.Black;
             var map = new Bitmap(bitmapSize.Width,bitmapSize.Height);
             using (var g = Graphics.FromImage(map))
             {
                 g.FillRegion(Brushes.White, g.Clip);
-                foreach ((string word,int count) t in wordWeightPairs)
+                foreach (var t in wordWeightPairs)
                 {
-                    var font = new Font(fontName, t.count);
+                    var font = new Font(fontName, t.fontSize);
                     var rectangleSize = g.MeasureString(t.word, font).ToSize();
-                    var rect = rectanglePutter(rectangleSize);
+                    var rect = layouter.PutNextRectangle(rectangleSize);
                     g.DrawString(t.word, font, brush, rect);
                 }
             }

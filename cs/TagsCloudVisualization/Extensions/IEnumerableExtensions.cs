@@ -32,8 +32,11 @@ namespace TagsCloudVisualization.Extensions
                     return;
                 var list = new List<TIn>{enumerator.Current};
                 while (enumerator.MoveNext())
+                {
                     foreach (var el in list)
                         func(enumerator.Current, el);
+                    list.Add(enumerator.Current);
+                }
             }
         }
 
@@ -59,22 +62,18 @@ namespace TagsCloudVisualization.Extensions
                 yield return act();
         }
 
-        public static IEnumerable<ValueTuple<T, int>> CountUnique<T>(this IEnumerable<T> enumerable) =>
-            enumerable.GroupBy(x => x).Select(x => (word:x.Key, count: x.Count()));
-
         public static IEnumerable<IEnumerable<T>> SplitBy<T>(this IEnumerable<T> enumerable,Func<T,bool> predicate, bool removeEmpty = true)
         {
             var list = new List<T>();
-            using(var enumerator = enumerable.GetEnumerator())
-                while(enumerator.MoveNext())
-                    if (!predicate(enumerator.Current))
-                        list.Add(enumerator.Current);
-                    else
-                    {
-                        if (list.Count == 0 && removeEmpty) continue;
-                        yield return list.ToArray();
-                        list.Clear();
-                    }
+            foreach (var el in enumerable)
+                if (!predicate(el))
+                    list.Add(el);
+                else
+                {
+                    if (list.Count == 0 && removeEmpty) continue;
+                    yield return list.ToArray();
+                    list.Clear();
+                }
         }
     }
 }

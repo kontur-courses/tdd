@@ -17,23 +17,23 @@ namespace TagsCloudVisualization
         {
             const int maxFontSize = 120;
             var pictureSize = new Size(1000,1000);
-            Func<Size,Rectangle> putter = new CircularCloudLayouter(new Point(pictureSize.Divide(2))).PutNextRectangle;
+            var layouter = new CircularCloudLayouter(new Point(pictureSize.Divide(2)));
             
             var pairs = ReadWordsFromFile($"C:\\Users\\Avel\\Desktop\\hamlet.txt")
-                .CountUnique()
+                .GroupBy(x => x)
+                .Select(x => (word:x.Key, count: x.Count()))
                 .ToArray();
             
             var denominator = pairs.Max(x => x.Item2);
             pairs.Select(x=>(x.Item1, maxFontSize*x.Item2/denominator))
                 .Where(x=>x.Item2>5)
-                .DrawCloud(pictureSize, putter)
+                .DrawCloud(pictureSize, layouter)
                 .Save(".\\btm.png",ImageFormat.Png);
         }
 
         private static IEnumerable<string> ReadWordsFromFile(string path) =>
             File.ReadAllText(path)
                 .ToLower()
-                .AsEnumerable()
                 .SplitBy(Char.IsPunctuation)
                 .Select(x => new string(x.ToArray()));
     }

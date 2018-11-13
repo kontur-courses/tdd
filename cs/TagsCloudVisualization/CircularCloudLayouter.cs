@@ -9,7 +9,7 @@ using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter
+    public class CircularCloudLayouter : ICloudLayouter
     {
         private readonly List<RowLayout> layout = new List<RowLayout>();
         private int firstIndex;
@@ -49,8 +49,8 @@ namespace TagsCloudVisualization
             }
 
             if (IsCaseForNewRow(rectangleSize.Height))
-            {
-                var heights = layout.Select(x => x.Bounds.Width).ToArray();
+            {    
+                var heights = layout.Select(x => x.Bounds.Height).ToArray();
                 rect =  heights.Take(firstIndex).Sum() > heights.Skip(firstIndex + 1).Sum() ?
                     AddFirstRow(rectangleSize) : AddLastRow(rectangleSize);
                 return true;
