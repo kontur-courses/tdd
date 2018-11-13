@@ -176,12 +176,12 @@ namespace TagsCloudVisualization
                 .Sum();
             var circleRadius = 1.5 * Math.Sqrt(rectanglesArea / Math.PI);
 
-            CountPoints_OutOfCircle(circleRadius, Rectangles, CenterPoint)
+            CountPointsOutOfCircle(circleRadius, Rectangles, CenterPoint)
                 .Should()
                 .HaveCount(0);
         }
 
-        private IEnumerable<Point> CountPoints_OutOfCircle(double circleRadius, List<Rectangle> rectangles, Point centerPoint)
+        private IEnumerable<Point> CountPointsOutOfCircle(double circleRadius, List<Rectangle> rectangles, Point centerPoint)
         {
             return rectangles.Select(ToBoundaryPoints).SelectMany(point => point).Distinct()
                 .Where(x => Math.Pow(centerPoint.X - x.X, 2) + Math.Pow(centerPoint.Y - x.Y, 2) > circleRadius * circleRadius);
