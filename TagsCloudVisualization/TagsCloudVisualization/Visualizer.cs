@@ -21,14 +21,11 @@ namespace TagsCloudVisualization
             BorderColor = borderColor;
         }
 
-        public Bitmap RenderToBitmap(IEnumerable<Rectangle> rectangles)
+        public Bitmap RenderToBitmap(IEnumerable<Rectangle> rectangles, int width, int height)
         {
-            var cloudRange = Geometry.GetMaxDistanceToRectangles(new Point(), rectangles);
-            var renderSize = (int)((cloudRange / Math.Sqrt(2)) * 1.1);
-
-            var bitmap = new Bitmap(renderSize, renderSize);
+            var bitmap = new Bitmap(width, height);
             var graphics = Graphics.FromImage(bitmap);
-            graphics.FillRectangle(new SolidBrush(BackColor), 0, 0, renderSize, renderSize);
+            graphics.FillRectangle(new SolidBrush(BackColor), 0, 0, width, height);
             foreach (var r in rectangles)
             {
                 graphics.FillRectangle(new SolidBrush(FillColor), r);

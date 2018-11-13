@@ -36,7 +36,7 @@ namespace TagsCloudVisualizationTests
 
             var path = $"C:\\Users\\{Environment.UserName}\\Desktop\\{TestContext.CurrentContext.Test.Name}";
             var visualizer = new Visualizer(Color.Blue, Color.Black, Color.Yellow);
-            var bitmap = visualizer.RenderToBitmap(result);
+            var bitmap = visualizer.RenderToBitmap(result, center.X * 2, center.Y * 2);
             ImageSaver.SaveBitmapToFile(path, bitmap);
             Console.WriteLine("Tag cloud visualization saved to file {0}.bmp", path);
         }

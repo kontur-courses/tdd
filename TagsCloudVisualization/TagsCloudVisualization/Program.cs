@@ -20,7 +20,7 @@ namespace TagsCloudVisualization
             }
             
             var visualizer = new Visualizer(Color.RoyalBlue, Color.DarkBlue, Color.LightBlue);
-            var bitmap = visualizer.RenderToBitmap(result);
+            var bitmap = visualizer.RenderToBitmap(result, 600, 600);
             ImageSaver.SaveBitmapToFile("r", bitmap);
         }
 
