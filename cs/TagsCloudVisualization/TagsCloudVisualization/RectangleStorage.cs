@@ -29,7 +29,7 @@ namespace TagsCloudVisualization
             return sector.PlaceRectangle(direction, rectangleSize);
         }
 
-        public Sector ChoseSectorByDirection(double direction)
+        private Sector ChoseSectorByDirection(double direction)
         {
             var quadrant = Tools.DetermineQuadrantByDirection(direction);
 

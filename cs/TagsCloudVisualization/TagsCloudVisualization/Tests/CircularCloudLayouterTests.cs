@@ -19,14 +19,14 @@ namespace TagsCloudVisualization.Tests
                 .WithMessage(msg);
         }
 
-        [TestCase(10, 5)]
+        [TestCase(10, 4)]
         public void PutNextRectangle(int width, int height)
         {
             var layout = new CircularCloudLayouter(new Point(0, 0));
             var rectangle = layout.PutNextRectangle(new Size(width, height));
 
-            rectangle.Location.X.Should().Be(0);
-            rectangle.Location.Y.Should().Be(0);
+            rectangle.Location.X.Should().Be(5);
+            rectangle.Location.Y.Should().Be(2);
             rectangle.Width.Should().Be(width);
             rectangle.Height.Should().Be(height);
         }

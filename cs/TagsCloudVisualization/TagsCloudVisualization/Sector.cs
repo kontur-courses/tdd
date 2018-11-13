@@ -55,7 +55,6 @@ namespace TagsCloudVisualization
 
         public Rectangle PlaceRectangle(double direction, Size rectangleSize)
         {
-            direction = MakeDirectionRelative(direction);
             var availablePoint = FindAvailablePoint(direction);
             RecalculatePointsInSector(availablePoint, rectangleSize);
 
@@ -66,11 +65,12 @@ namespace TagsCloudVisualization
 
         private double MakeDirectionRelative(double direction)
         {
-            return direction * _alphaCoefficient + _alphaShift;
+            return direction % (Math.PI / 2);
         }
 
         private Point FindAvailablePoint(double direction)
         {
+            direction = MakeDirectionRelative(direction);
             for (int index = 0; index < PointsNumber(); index++)
             {
                 var point = _points[index];
@@ -90,21 +90,68 @@ namespace TagsCloudVisualization
             var maxY = downLeftPoint.Y + rectangleSize.Height;
 
             var rangeToRemove = FindPointsRangeToRemove(_points, maxX, maxY);
+            var pointsToInsert = FindPointsToInsert(rectangleSize, _points, rangeToRemove, maxX, maxY);
 
             RemovePointsUnderNewRectangle(rangeToRemove);
-            InsertNewPointsCreatedByRectangle(rangeToRemove.Item1, maxX, maxY);
+            InsertNewPointsCreatedByRectangle(rangeToRemove.Item1, pointsToInsert);
         }
 
-        public void InsertNewPointsCreatedByRectangle(int index, int maxX, int maxY)
+        public void InsertNewPointsCreatedByRectangle(int index, List<Point> pointsToInsert)
         {
-            // Косяк. По факту от 1 до 3 новых точек. 3 в данном случае.
-            _points.Insert(index, new Point(maxX, maxY));
+            _points.InsertRange(index, pointsToInsert);
         }
+
+        public static List<Point> FindPointsToInsert(Size rectangleSize, 
+            List<Point> points, Tuple<int, int> rangeToRemove, int maxX, int maxY)
+        {
+            var pointsToInsert = new List<Point>();
+            pointsToInsert.InsertRange(0, HandleLeftBorder(rectangleSize, points, rangeToRemove, maxX, maxY));
+            pointsToInsert.InsertRange(pointsToInsert.Count, HandleRightBorder(rectangleSize, points, rangeToRemove, maxX, maxY));
+
+            return pointsToInsert;
+        }
+
+        public static List<Point> HandleLeftBorder(Size rectangleSize, List<Point> points,
+            Tuple<int, int> rangeToRemove, int maxX, int maxY)
+        {
+            var pointsToInsert = new List<Point>();
+            var leftIndex = rangeToRemove.Item1;
+
+            if (leftIndex == 0)
+                pointsToInsert.Add(new Point(0, maxY));
+            else
+            {
+                var firstPointToDelete = points[leftIndex];
+                pointsToInsert.Add(
+                    new Point(firstPointToDelete.X, firstPointToDelete.Y + rectangleSize.Height));
+            }
+
+            pointsToInsert.Add(new Point(maxX, maxY));
+
+            return pointsToInsert;
+        }
+
+        public static List<Point> HandleRightBorder(Size rectangleSize, List<Point> points,
+            Tuple<int, int> rangeToRemove, int maxX, int maxY)
+        {
+            var pointsToInsert = new List<Point>();
+            var leftIndex = rangeToRemove.Item1;
+            var rightIndex = rangeToRemove.Item2;
+
+            var pointsHadOneElement = (leftIndex == rightIndex) && leftIndex == 0;
+            if (pointsHadOneElement || rightIndex == points.Count)
+                pointsToInsert.Add(new Point(maxX, 0));
+            else
+                pointsToInsert.Add(new Point(maxX, points[rightIndex].Y));
+
+            return pointsToInsert;
+        }
+
 
         public static Tuple<int, int> FindPointsRangeToRemove(List<Point> points, int maxX, int maxY)
         {
             var rangeToRemove = new List<int>();
-
+            
             for (int index = 0; index < points.Count; index++)
             {
                 var point = points[index];
@@ -112,12 +159,12 @@ namespace TagsCloudVisualization
                     rangeToRemove.Add(index);
             }
 
-            return new Tuple<int, int>(rangeToRemove[0], rangeToRemove[rangeToRemove.Count - 1]);
+            return new Tuple<int, int>(rangeToRemove[0], rangeToRemove[rangeToRemove.Count - 1] + 1);
         }
         
         public void RemovePointsUnderNewRectangle(Tuple<int, int> rangeToRemove)
         {
-            _points.RemoveRange(rangeToRemove.Item1, rangeToRemove.Item2);
+            _points.RemoveRange(rangeToRemove.Item1, rangeToRemove.Item2 - rangeToRemove.Item1);
         }
 
         private Point FormatPoint(Point rectangleLocation, Size rectangleSize)

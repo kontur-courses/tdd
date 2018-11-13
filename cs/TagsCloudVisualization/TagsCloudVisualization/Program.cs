@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 
 
@@ -9,7 +8,11 @@ namespace TagsCloudVisualization
     {
         static void Main(string[] args)
         {
-            
+            var layout = new CircularCloudLayouter(new Point(0, 0));
+            layout.PutNextRectangle(new Size(8, 2));
+
+
+            Console.WriteLine();
         }
     }
 }
