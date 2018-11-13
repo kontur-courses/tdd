@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
-using System.Net.Mime;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace TagsCloudVisualization
 {
@@ -25,19 +19,24 @@ namespace TagsCloudVisualization
             using (var bitmap = new Bitmap(width * 2 + 2, height * 2 + 2))
             {
                 var rectsToDraw = rectangles
-                    .Select(r => NormalizeToDrawing(r, width, height))
-                    .Select(ConvertRectangleToRectangleF)
+                    .Select(TranslateCenterByHalfSize)
+                    .Select(r => r.ConvertRectangleToRectangleF())
                     .ToArray();
                 
-                DrawRectangles(bitmap, rectsToDraw);
+                DrawRectangles(bitmap, rectsToDraw, width, height);
                 bitmap.Save(path, ImageFormat.Png);
             }
         }
 
-        private static void DrawRectangles(Bitmap bitmap, RectangleF[] rectangles)
+        private static void DrawRectangles(
+            Bitmap bitmap, 
+            RectangleF[] rectangles,
+            int width,
+            int height)
         {
             using (var graphics = Graphics.FromImage(bitmap))
             {
+                graphics.TranslateTransform(width, height);
                 graphics.Clear(BackgroundColor);
                 using (var pen = new Pen(ObjectsColor))
                 {
@@ -46,28 +45,12 @@ namespace TagsCloudVisualization
             }
         }
 
-        public static Rectangle NormalizeToDrawing(Rectangle rectangle, int width, int height)
+        public static Rectangle TranslateCenterByHalfSize(Rectangle rectangle)
         {
             var size = rectangle.Size;
-            var origin = rectangle.Origin;
-            var center = rectangle.Center;
-            var centerOffset = new Point(width - size.Width / 2, height - size.Height / 2);
-            var newCenter = center - origin + centerOffset;
-            return new Rectangle(origin, newCenter, size);
+            var centerOffset = new Point(size.Width / 2, size.Height / 2);
+            var newCenter = rectangle.Center - centerOffset;
+            return new Rectangle(newCenter, size);
         }
-
-        public static RectangleF ConvertRectangleToRectangleF(Rectangle rectangle)
-        {
-            var location = ConvertPointToPointF(rectangle.Center);
-            var size = ConvertSizeToSizeF(rectangle.Size);
-
-            return new RectangleF(location, size);
-        }
-
-        public static PointF ConvertPointToPointF(Point point)
-            => new PointF((float)point.X, (float)point.Y);
-
-        public static SizeF ConvertSizeToSizeF(Size size)
-            => new SizeF((float)size.Width, (float)size.Height);
     }
 }

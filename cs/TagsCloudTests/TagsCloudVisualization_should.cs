@@ -49,47 +49,30 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void MustPositioningAsCircle()
+        public void MustPositioningAsDenseCircle()
         {
             var origin = new Point(0, 0);
             currentCircularCloudLayouter = new CircularCloudLayouter(origin);
-            var size = new Size(1, 1);
+            var size = new Size(3, 3);
             var rectangles = new List<Rectangle>();
-            const int radius = 11;
 
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 360; i++)
             {
                 var rectangle = currentCircularCloudLayouter.PutNextRectangle(size);
                 rectangles.Add(rectangle);
             }
 
-            var result = rectangles
+            var radius = Math.Max(currentCircularCloudLayouter.Width, currentCircularCloudLayouter.Height);
+            var circleSquare = Math.PI * Math.Pow(radius, 2);
+            var rectsSquare = rectangles.Select(r => r.Size.Square).Sum();
+
+            var areRectsWithinCircle = rectangles
                 .Select(r => r.Center)
-                .Select(p => Math.Pow(p.X - origin.X, 2) + Math.Pow(p.Y - origin.Y, 2))
-                .All(h => h <= radius);
-            result.Should().BeTrue();
-        }
+                .Select(rectCenter => Vector.GetLength(origin, rectCenter))
+                .All(radiusVector => radiusVector <= radius);
+            var isCircleDense = circleSquare - rectsSquare < circleSquare * 0.5;
+            var result = areRectsWithinCircle && isCircleDense;
 
-        [Test]
-        public void DenseCloudFormed()
-        {
-            var origin = new Point(0, 0);
-            currentCircularCloudLayouter = new CircularCloudLayouter(origin);
-            var size = new Size(1, 1);
-            var rectangles = new List<Rectangle>();
-            const int radius = 11;
-
-            for (var i = 0; i < 10; i++)
-            {
-                var rectangle = currentCircularCloudLayouter.PutNextRectangle(size);
-                rectangles.Add(rectangle);
-            }
-
-            var result = rectangles
-                .Select(r => r.Center)
-                .Select(p => Math.Pow(p.X - origin.X, 2) + Math.Pow(p.Y - origin.Y, 2))
-                .Select(Math.Abs)
-                .All(h => h <= radius);
             result.Should().BeTrue();
         }
 

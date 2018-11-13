@@ -60,8 +60,8 @@
     <Compile Include="RectangleExtensions.cs" />
     <Compile Include="Size.cs" />
     <Compile Include="Vector.cs" />
-    <Compile Include="VectorExtensions.cs" />
     <Compile Include="Visualizator.cs" />
+    <Compile Include="VisualizatorExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
