@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -9,12 +10,8 @@ namespace TagsCloudVisualization
         public static IEnumerable<Size> GenerateRectanglesSizes(int count)
         {
             var random = new Random();
-            var rectangles = new List<Size>();
 
-            for (var i = 0; i < count; i++)
-                rectangles.Add(new Size(random.Next(30, 50), random.Next(30, 50)));
-
-            return rectangles;
+            return Enumerable.Range(0, count).Select(x => new Size(random.Next(30, 50), random.Next(30, 50)));
         }
     }
 }
