@@ -45,16 +45,7 @@ namespace TagsCloudVisualization
         {
             var randomPart = Path.GetRandomFileName();
 
-            var builder = new StringBuilder();
-            builder.Append(randomPart);
-            builder.Append("count");
-            builder.Append(tagsCount);
-            builder.Append("x");
-            builder.Append(center.X);
-            builder.Append("y");
-            builder.Append(center.Y);
-
-            return builder.ToString();
+            return $"{randomPart}count{tagsCount}x{center.X}y{center.Y}";
         }
 
         private static IEnumerable<Rectangle> GetCircularCloudLayout(IEnumerable<Size> tags, Point center)
