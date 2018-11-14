@@ -6,7 +6,7 @@ namespace TagsCloudVisualization
 {
     public static class Drawer
     {
-        public static void DrawAndSaveRectangles(Size canvasSize, HashSet<Rectangle> rectangles, string name, string path = "")
+        public static void DrawAndSaveRectangles(Size canvasSize, List<Rectangle> rectangles, string name, string path = "")
         {
             var bitmap = new Bitmap(canvasSize.Height, canvasSize.Width);
             var graphics = Graphics.FromImage(bitmap);

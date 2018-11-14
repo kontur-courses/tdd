@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
+﻿using System.Drawing;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using NUnit.Framework.Internal;
 
 namespace TagsCloudVisualization
 {
@@ -29,12 +25,15 @@ namespace TagsCloudVisualization
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
                 subfolderName = "FailedTests";
-                TestContext.Error.WriteLine($"Tag cloud visualization saved to file {path}");
+                path = string.Format($@"{debugPath}\{subfolderName}\");
+                TestContext.Error.WriteLine($"Tag cloud visualization saved to file {path}{testName}.png");
             }
             else
+            {
                 subfolderName = "SuccessTests";
-
-            path = string.Format($@"{debugPath}\{subfolderName}\");
+                path = string.Format($@"{debugPath}\{subfolderName}\");
+            }
+            
             Drawer.DrawAndSaveRectangles(new Size(1000, 1000), layouter.Rectangles, testName + ".png", path);
         }
     }

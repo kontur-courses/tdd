@@ -2,19 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
 
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
         private readonly SpiralInfo spiralInfo;
-        private HashSet<Rectangle> rectangles;
-        public HashSet<Rectangle> Rectangles => new HashSet<Rectangle>(rectangles);
+        private List<Rectangle> rectangles;
+        public List<Rectangle> Rectangles => new List<Rectangle>(rectangles);
 
-        public CircularCloudLayouter(Point center, double radiusStep = 0.0001, double angleStep = 0.1)
+        public CircularCloudLayouter(Point center, double radiusStep = 0.00001, double angleStep = 0.01)
         {
-            rectangles = new HashSet<Rectangle>();
+            rectangles = new List<Rectangle>();
             spiralInfo = new SpiralInfo(radiusStep, angleStep, center);
         }
 
@@ -42,7 +41,7 @@ namespace TagsCloudVisualization
 
         public void ReplaceRectangles()
         {
-            var rectanglesCopy = new HashSet<Rectangle>(rectangles);
+            var rectanglesCopy = new List<Rectangle>(rectangles);
             rectangles.Clear();
 
             foreach (var rectangle in rectanglesCopy
@@ -98,7 +97,7 @@ namespace TagsCloudVisualization
 
         private bool IsPlacedInAnotherRectangle(Rectangle rectangle)
         {
-            return rectangles.Any(anotherRectangle => RectanglesChecker.IsNestedRectangle(rectangle, anotherRectangle) &&
+            return rectangles.Any(anotherRectangle => RectanglesChecker.IsNestedRectangle(rectangle, anotherRectangle) ||
                                                       RectanglesChecker.IsNestedRectangle(anotherRectangle, rectangle));
         }
     }
