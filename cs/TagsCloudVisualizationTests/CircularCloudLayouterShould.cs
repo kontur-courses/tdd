@@ -32,10 +32,10 @@ namespace TagsCloudVisualizationTests
                 layouter.PutNextRectangle(new Size().GenerateRandom(3, 30, 3, 20));
             }
 
-            foreach (var r1 in layouter.Rectangles)
-                foreach (var r2 in layouter.Rectangles)
-                    if (r1 != r2)
-                        r1.IntersectsWith(r2).Should().BeFalse();
+            foreach (var rectangle1 in layouter.Rectangles)
+                foreach (var rectangle2 in layouter.Rectangles)
+                    if (rectangle1 != rectangle2)
+                        rectangle1.IntersectsWith(rectangle2).Should().BeFalse();
         }
 
         [Test]
@@ -102,7 +102,7 @@ namespace TagsCloudVisualizationTests
                 var currentDirectory = Path.GetDirectoryName(Application.ExecutablePath);
                 var imagePath = Path.Combine(currentDirectory, $"{TestContext.CurrentContext.Test.Name}-fail.png");
 
-                new ImageWriter(imagePath).WriteLayout(layouter);
+                new ImageWriter().Write(new ImageDrawer().Draw(layouter), imagePath);
                 Console.WriteLine($"Tag cloud visualization saved to file {imagePath}");
             }
         }

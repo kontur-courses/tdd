@@ -18,8 +18,11 @@ namespace TagsCloudVisualization
             var simpleLayouter = SimpleLayouter();
             Console.WriteLine("Simple generated");
 
-            new ImageWriter("random.png", DefaultImageWidth, DefaultImageHeight).WriteLayout(randomLayouter);
-            new ImageWriter("simple.png", DefaultImageWidth, DefaultImageHeight).WriteLayout(simpleLayouter);
+            var imageWriter = new ImageWriter();
+            var imageDrawer = new ImageDrawer();
+
+            imageWriter.Write(imageDrawer.Draw(randomLayouter), "random.png");
+            imageWriter.Write(imageDrawer.Draw(simpleLayouter), "simple.png");
         }
 
         private static CircularCloudLayouter LayouterWithRandomSizeRectangles()
