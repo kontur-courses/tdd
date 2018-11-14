@@ -6,6 +6,9 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
+        private const double SpiralStepCoefficient = 1;
+        private const double RadiusStep = 0.001d;
+
         private readonly Point center;
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
 
@@ -38,8 +41,8 @@ namespace TagsCloudVisualization
 
         private Rectangle FindSuitablePlaceFor(Rectangle rectangle)
         {
-            var placedRectangle = SpiralPath.GetSpiralPoints(Constants.SpiralStepCoefficient, Constants.AngleStepRadians)
-                .Select(p => rectangle.Moved(p))
+            var placedRectangle = SpiralPath.GetSpiralPoints(SpiralStepCoefficient, RadiusStep)
+                .Select(p => rectangle.Move(p))
                 .First(r => !IntersectsWithExistingRectangles(r));
 
             return placedRectangle;

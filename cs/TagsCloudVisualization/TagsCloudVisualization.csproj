@@ -45,11 +45,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
-    <Compile Include="Constants.cs" />
+    <Compile Include="FileUtils.cs" />
+    <Compile Include="GraphicsWriter.cs" />
+    <Compile Include="IDrawer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RandomExtensions.cs" />
     <Compile Include="RectangleExtensions.cs" />
-    <Compile Include="RectDrawer.cs" />
     <Compile Include="SpiralPath.cs" />
+    <Compile Include="TagsCloudDrawer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />

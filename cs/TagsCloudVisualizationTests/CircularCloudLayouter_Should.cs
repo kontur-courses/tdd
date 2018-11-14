@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
@@ -24,9 +25,10 @@ namespace TagsCloudVisualizationTests
         public void TearDown()
         {
             if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure) return;
-            var imagePath = RectDrawer.DrawRectangles(Center, circularCloudLayouter.Rectangles.ToArray());
-            if (imagePath != null)
-                TestContext.Out.WriteLine("Result layout has been saved to " + Path.GetFullPath(imagePath));
+
+            var path = FileUtils.FindFreeFileName(FileUtils.PngExtension);
+            new GraphicsWriter(new TagsCloudDrawer(circularCloudLayouter.Rectangles.ToArray(), Center)).WriteToFile(path);
+                TestContext.Out.WriteLine("Result layout has been saved to " + Path.GetFullPath(path));
         }
 
         [Test]
@@ -55,6 +57,26 @@ namespace TagsCloudVisualizationTests
             for (var i = 0; i < rectangleAmount; i++)
             for (var j = i + 1; j < rectangleAmount; j++)
                 rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse();
+        }
+
+        [Test]
+        public void LayoutLooks_LikeCircle()
+        {
+            const int rectangleSideSize = 10;
+            const int rectanglesAmount = 200;
+
+            for (var i = 0; i < rectanglesAmount; i++)
+            {
+                circularCloudLayouter.PutNextRectangle(new Size(rectangleSideSize, rectangleSideSize));
+            }
+
+            var rectangles = circularCloudLayouter.Rectangles;
+            var circumscribedCircleRadius = rectangles
+                .SelectMany(rectangle => rectangle.Corners())
+                .Max(point => Math.Sqrt(Math.Pow(point.X, 2) + Math.Pow(point.Y, 2)));
+            var circleArea = Math.PI * Math.Pow(circumscribedCircleRadius, 2);
+
+            (rectanglesAmount * rectangleSideSize * rectangleSideSize / circleArea).Should().BeGreaterThan(0.8);
         }
     }
 }

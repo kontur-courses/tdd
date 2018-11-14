@@ -1,32 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 
 namespace TagsCloudVisualization
 {
     public static class SpiralPath
     {
-        private static PointF ArchimedeanSpiral(double spiralStepCoefficient, double angleRadians)
+        private static Point ArchimedeanSpiral(double spiralStepCoefficient, double radius)
         {
-            var radius = spiralStepCoefficient / (2 * Math.PI) * angleRadians;
-            var x = (float) (radius * Math.Cos(angleRadians));
-            var y = (float) (radius * Math.Sin(angleRadians));
+            var angleRadians = radius * (2 * Math.PI) / spiralStepCoefficient;
+            var x = (int) (radius * Math.Cos(angleRadians));
+            var y = (int) (radius * Math.Sin(angleRadians));
 
-            return new PointF(x, y);
+            return new Point(x, y);
         }
 
-        public static IEnumerable<PointF> GetSpiralPointsF(double spiralStepCoefficient, double angleStepRadians)
+        public static IEnumerable<Point> GetSpiralPoints(double spiralStepCoefficient, double radiusStep)
         {
-            for (var angle = 0d; Math.Abs(angle) < double.MaxValue; angle += angleStepRadians)
+            for (var radius = 0d; radius < double.MaxValue; radius += radiusStep)
             {
-                yield return ArchimedeanSpiral(spiralStepCoefficient, angle);
+                yield return ArchimedeanSpiral(spiralStepCoefficient, radius);
             }
-        }
-
-        public static IEnumerable<Point> GetSpiralPoints(double spiralStepCoefficient, double angleStepRadians)
-        {
-            return GetSpiralPointsF(spiralStepCoefficient, angleStepRadians).Select(pointF => new Point((int) pointF.X, (int) pointF.Y));
         }
     }
 }
