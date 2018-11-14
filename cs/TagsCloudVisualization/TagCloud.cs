@@ -1,44 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Console = System.Console;
+using Fclp;
 
 namespace TagsCloudVisualization
 {
     class TagCloud
     {
-        static void Main()
+        static void Main(string[] args)
         {
-            Console.Write("Enter tags count for visualize: ");
-            int.TryParse(Console.ReadLine(), out var tagsCount);
+            var configuration = ParseArguments(args);
 
-            var tagCloudCenter = ReadCloudCenter();
+            var tagCloudCenter = new Point(configuration.CenterX, configuration.CenterY);
 
-            var tags = TagsGenerator.GenerateRectanglesSizes(tagsCount);
+            var tags = TagsGenerator.GenerateRectanglesSizes(configuration.TagsCount);
             var circularCloudLayout = GetCircularCloudLayout(tags, tagCloudCenter);
 
-            var directoryToSave = GetDirectoryToSave();
-            var filename = GetFilename(tagsCount, tagCloudCenter);
-            const int imageWidth = 2048;
-            const int imageHeight = 1024;
+            var directoryToSave = Directory.CreateDirectory(configuration.DirectoryToSave);
+            var filename = GetFilename(configuration.TagsCount, tagCloudCenter);
 
-            TagCloudVisualizer.Visualize(circularCloudLayout, directoryToSave, filename, imageWidth, imageHeight);
+            TagCloudVisualizer.Visualize(circularCloudLayout, directoryToSave, filename,
+                configuration.ImageWidth, configuration.ImageHeight);
 
             Console.WriteLine("Visualization has been saved to " + Path.Combine(directoryToSave.FullName, filename));
 
             Console.ReadKey();
         }
 
-        private static DirectoryInfo GetDirectoryToSave()
+        private static TagCloudConfiguration ParseArguments(string[] args)
         {
-            var userPictureDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+            var parser = new FluentCommandLineParser<TagCloudConfiguration>();
 
-            var visualizationsDirectory = Directory.CreateDirectory(Path.Combine(userPictureDirectory, @"TagsCloud\Visualizations"));
+            parser.Setup(arg => arg.TagsCount)
+                .As('c', "tagsCount")
+                .Required();
 
-            return visualizationsDirectory;
+            parser.Setup(arg => arg.DirectoryToSave)
+                .As('d', "directory")
+                .Required();
+
+            parser.Setup(arg => arg.CenterX)
+                .As('x', "centerX")
+                .SetDefault(0);
+            parser.Setup(arg => arg.CenterY)
+                .As('y', "centerY")
+                .SetDefault(0);
+
+            parser.Setup(arg => arg.ImageWidth)
+                .As('w', "ImageWidth")
+                .SetDefault(2048);
+
+            parser.Setup(arg => arg.ImageHeight)
+                .As('h', "ImageHeight")
+                .SetDefault(1024);
+
+            parser.Parse(args);
+
+            return parser.Object;
         }
 
         private static string GetFilename(int tagsCount, Point center)
@@ -54,16 +74,15 @@ namespace TagsCloudVisualization
 
             return tags.Select(circularLayouter.PutNextRectangle);
         }
+    }
 
-        private static Point ReadCloudCenter()
-        {
-            Console.Write("Enter tag cloud center X coordinate: ");
-            int.TryParse(Console.ReadLine(), out var x);
-
-            Console.Write("Enter tag cloud center Y coordinate: ");
-            int.TryParse(Console.ReadLine(), out var y);
-
-            return new Point(x, y);
-        }
+    public class TagCloudConfiguration
+    {
+        public int TagsCount { get; set; }
+        public int CenterX { get; set; }
+        public int CenterY { get; set; }
+        public int ImageWidth { get; set; }
+        public int ImageHeight { get; set; }
+        public string DirectoryToSave { get; set; }
     }
 }
