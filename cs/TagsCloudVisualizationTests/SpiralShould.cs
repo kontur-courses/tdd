@@ -28,7 +28,7 @@ namespace TagsCloudVisualizationTests
             spiral.GetNextLocation();
 
             for (var i = 0; i < 100; i++)
-                spiral.GetNextLocation().Should().NotBe(new Point(0, 0));
+                spiral.GetNextLocation().Should().NotBe(new PointF(0, 0));
         }
 
         [Test]

@@ -21,15 +21,17 @@ namespace TagsCloudVisualizationTests
         [SetUp]
         public void SetUp()
         {
-            layouter = new CircularCloudLayouter(100, 100, 1024, 1024);
+            layouter = new CircularCloudLayouter(512, 512, 1024, 1024);
         }
 
         [Test]
         public void NotConatinIntersectedRectangles()
         {
+            var random = new Random();
             for (var i = 0; i < 100; i++)
-            {   
-                layouter.PutNextRectangle(new Size().GenerateRandom(3, 30, 3, 20));
+            {
+                var randomSize = new Size(random.Next(3, 30), random.Next(3, 20));
+                layouter.PutNextRectangle(randomSize);
             }
 
             foreach (var rectangle1 in layouter.Rectangles)
@@ -49,9 +51,9 @@ namespace TagsCloudVisualizationTests
 
             var actualMaxRadius = double.MinValue;
 
-            foreach (var rect in layouter.Rectangles)
+            foreach (var rectangle in layouter.Rectangles)
             {
-                var currentMaxRadius = rect
+                var currentMaxRadius = rectangle
                     .Vertices()
                     .Select(p =>
                         Math.Sqrt(Math.Pow(layouter.Center.X - p.X, 2) +
@@ -83,12 +85,13 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void PlaceRectanglesTightly()
         {
+            var random = new Random();
             double rectanglesArea = 0;
             for (var i = 0; i < 100; i++)
             {
-                var size = new Size().GenerateRandom(3, 70, 3, 50);
-                layouter.PutNextRectangle(size);
-                rectanglesArea += size.Width * size.Height;
+                var randomSize = new Size(random.Next(3, 70), random.Next(3, 50));
+                layouter.PutNextRectangle(randomSize);
+                rectanglesArea += randomSize.Width * randomSize.Height;
             }
 
             rectanglesArea.Should().BeLessOrEqualTo(0.7 * layouter.Area);
