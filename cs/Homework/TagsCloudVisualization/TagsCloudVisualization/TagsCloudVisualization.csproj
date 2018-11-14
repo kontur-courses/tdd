@@ -64,12 +64,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
-    <Compile Include="CircularCloudLayouterTests.cs" />
+    <Compile Include="PutNextRectangle_Should.cs" />
     <Compile Include="Drawer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectanglesChecker.cs" />
+    <Compile Include="RectanglesCheckerTests.cs" />
     <Compile Include="SpiralInfo.cs" />
+    <Compile Include="TestsHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

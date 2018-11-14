@@ -15,6 +15,7 @@ namespace TagsCloudVisualization
                 graphics.DrawRectangle(Pens.Black, rect);
 
             bitmap.Save($"{path}{name}", ImageFormat.Png);
+            bitmap.Dispose();
         }
     }
 }
