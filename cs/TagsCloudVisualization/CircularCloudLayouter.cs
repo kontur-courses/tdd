@@ -29,8 +29,15 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            if (TryAddNewRow(rectangleSize,out var rect))
+            if (layout.Count == 0)
+            {
+                var rect = rectangleSize.WithCenterIn(Center);
+                layout.Add(new RowLayout(rect));
                 return rect;
+            }
+
+            if (IsCaseForNewRow(rectangleSize.Height))
+                return TryAddNewRow(rectangleSize);
 
             return layout.Where(x => x.Bounds.Height >= rectangleSize.Height)
                             .OrderBy(x => x.Bounds.Width)
@@ -38,26 +45,11 @@ namespace TagsCloudVisualization
                             .Add(rectangleSize);
         }
 
-        private bool TryAddNewRow(Size rectangleSize,out Rectangle rect)
-        {
-            if (layout.Count == 0)
-            {
-                rect = rectangleSize.WithCenterIn(Center);
-                layout.Add(new RowLayout(rect));
-                firstIndex = 0;
-                return true;
-            }
-
-            if (IsCaseForNewRow(rectangleSize.Height))
-            {    
+        private Rectangle TryAddNewRow(Size rectangleSize)
+        {  
                 var heights = layout.Select(x => x.Bounds.Height).ToArray();
-                rect =  heights.Take(firstIndex).Sum() > heights.Skip(firstIndex + 1).Sum() ?
+                return heights.Take(firstIndex).Sum() > heights.Skip(firstIndex + 1).Sum() ?
                     AddFirstRow(rectangleSize) : AddLastRow(rectangleSize);
-                return true;
-            }
-
-            rect = default(Rectangle);
-            return false;
         }
 
         private bool IsCaseForNewRow(int height) =>

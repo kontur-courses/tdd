@@ -62,7 +62,7 @@ namespace TagsCloudVisualization.Extensions
                 yield return act();
         }
 
-        public static IEnumerable<IEnumerable<T>> SplitBy<T>(this IEnumerable<T> enumerable,Func<T,bool> predicate, bool removeEmpty = true)
+        public static IEnumerable<T[]> SplitBy<T>(this IEnumerable<T> enumerable,Func<T,bool> predicate, bool removeEmpty = true)
         {
             var list = new List<T>();
             foreach (var el in enumerable)

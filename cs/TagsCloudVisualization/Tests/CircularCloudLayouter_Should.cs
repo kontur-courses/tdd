@@ -93,7 +93,7 @@ namespace TagsCloudVisualization.Tests
         [Test]
         public void HaveSameLayoutAsReturnedRectangles()
         {
-            GenerateRectangles(Hundred).ToArray().Should().BeEquivalentTo(layouter.Layout);
+            GenerateRectangles(Hundred).Should().BeEquivalentTo(layouter.Layout);
         }
         
         [Test]
@@ -138,22 +138,23 @@ namespace TagsCloudVisualization.Tests
                     .SelectMany(x => x.Points())
                     .Select(x => x - centerSize)
                     .ToArray();
-            
-            var octogonEdgesDist = new[]
-            {
-                vectors.Max(x => x.X),
-                vectors.Max(x => -x.X),
-                vectors.Max(x => x.Y),
-                vectors.Max(x => -x.Y), 
-                vectors.MaxBy(x => x.X + x.Y).DistanceTo(Point.Empty),
-                vectors.MaxBy(x => x.X + x.Y).DistanceTo(Point.Empty),
-                vectors.MaxBy(x => x.X + x.Y).DistanceTo(Point.Empty),
-                vectors.MaxBy(x => x.X + x.Y).DistanceTo(Point.Empty)
-            };
+            var edgesDist = OctogonEdgesDist(vectors);
 
-            var meanRadius = octogonEdgesDist.Sum() / octogonEdgesDist.Length; 
-            octogonEdgesDist.All(x => Math.Abs(x - meanRadius) / meanRadius < dispersion).Should().BeTrue();
+            var meanRadius = edgesDist.Sum() / edgesDist.Length; 
+            edgesDist.All(x => Math.Abs(x - meanRadius) / meanRadius < dispersion).Should().BeTrue();
         }
+
+        private double[] OctogonEdgesDist(IEnumerable<Point> vectors) => new[]
+        {
+            vectors.Max(x => x.X),
+            vectors.Max(x => -x.X),
+            vectors.Max(x => x.Y),
+            vectors.Max(x => -x.Y),
+            vectors.MaxBy(x => x.X + x.Y).DistanceTo(Point.Empty),
+            vectors.MaxBy(x => x.X + x.Y).DistanceTo(Point.Empty),
+            vectors.MaxBy(x => x.X + x.Y).DistanceTo(Point.Empty),
+            vectors.MaxBy(x => x.X + x.Y).DistanceTo(Point.Empty)
+        };
         
         private Rectangle[] GenerateRectangles(int count)=>
             count.Times(RandomSize).Select(layouter.PutNextRectangle).ToArray();

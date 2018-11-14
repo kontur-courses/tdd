@@ -13,7 +13,7 @@ namespace TagsCloudVisualization
     public static class CircleCloudDrawer
     {
         
-        public static Bitmap DrawCloud(this IEnumerable<(string word,int fontSize)> wordWeightPairs,Size bitmapSize,
+        public static Bitmap Draw(IEnumerable<(string word,int fontSize)> wordWeightPairs,Size bitmapSize,
             ICloudLayouter layouter, string fontName = "NewTimesRoman", Brush brush = null)
         {
             brush = brush ?? Brushes.Black;

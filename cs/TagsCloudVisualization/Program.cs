@@ -19,22 +19,24 @@ namespace TagsCloudVisualization
             var pictureSize = new Size(1000,1000);
             var layouter = new CircularCloudLayouter(new Point(pictureSize.Divide(2)));
             
-            var pairs = ReadWordsFromFile($"C:\\Users\\Avel\\Desktop\\hamlet.txt")
+            var countedWords = ReadWordsFromFile($"C:\\Users\\Avel\\Desktop\\hamlet.txt")
                 .GroupBy(x => x)
                 .Select(x => (word:x.Key, count: x.Count()))
                 .ToArray();
             
-            var denominator = pairs.Max(x => x.Item2);
-            pairs.Select(x=>(x.Item1, maxFontSize*x.Item2/denominator))
-                .Where(x=>x.Item2>5)
-                .DrawCloud(pictureSize, layouter)
-                .Save(".\\btm.png",ImageFormat.Png);
+            var denominator = countedWords.Max(x => x.Item2);
+            var sizedWords = 
+                countedWords.Select(x => (x.Item1, maxFontSize * x.Item2 / denominator))
+                    .Where(x => x.Item2 > 5);
+            
+            using (var map = CircleCloudDrawer.Draw(sizedWords, pictureSize, layouter))
+                map.Save(".\\btm.png",ImageFormat.Png);
         }
 
         private static IEnumerable<string> ReadWordsFromFile(string path) =>
             File.ReadAllText(path)
                 .ToLower()
                 .SplitBy(Char.IsPunctuation)
-                .Select(x => new string(x.ToArray()));
+                .Select(x => new string(x));
     }
 }
