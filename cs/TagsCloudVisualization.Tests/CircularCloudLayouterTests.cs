@@ -31,7 +31,8 @@ namespace TagsCloudVisualization
 
             subTestFolder = Directory.CreateDirectory(Path.Combine(visualizationsFolder.FullName, currentTestName));
 
-            layouter = new CircularCloudLayouter(new Point(0, 0));
+            var rnd = new Random();
+            layouter = new CircularCloudLayouter(new Point(rnd.Next(-100, 100), rnd.Next(-100, 100)));
 
             rectangles = new List<Rectangle>();
         }
@@ -102,24 +103,6 @@ namespace TagsCloudVisualization
         [TestCase(50, TestName = "fifty rectangles")]
         [TestCase(100, TestName = "one hundred rectangles")]
         [TestCase(1000, TestName = "one thousand rectangles")]
-        public void PutNextRectangle_PlacedRectangles_FormCircle(int rectanglesCount)
-        {
-            PlaceRectangles(rectanglesCount);
-
-            var radius = GetDistanceToNearestEdge(rectangles);
-            var radiusDelta = rectangles.Max(r => Math.Max(r.Width, r.Height));
-
-            rectangles.All(r => (radius + radiusDelta) - GetDistanceFromOriginTo(r.Location) >= 0d)
-                .Should()
-                .BeTrue();
-        }
-
-        [TestCase(1, TestName = "one rectangle")]
-        [TestCase(2, TestName = "two rectangles")]
-        [TestCase(10, TestName = "ten rectangles")]
-        [TestCase(50, TestName = "fifty rectangles")]
-        [TestCase(100, TestName = "one hundred rectangles")]
-        [TestCase(1000, TestName = "one thousand rectangles")]
         public void PutNextRectangle_SeveralRectangles_NotIntersect(int rectanglesCount)
         {
             PlaceRectangles(rectanglesCount);
@@ -139,7 +122,7 @@ namespace TagsCloudVisualization
         {
             PlaceRectangles(rectanglesCount);
 
-            var radius = GetDistanceToNearestEdge(rectangles);
+            var radius = GetDistanceToNearestEdge(rectangles, layouter.Center);
 
             var circleArea = Math.PI * Math.Pow(radius, 2);
 
@@ -165,15 +148,15 @@ namespace TagsCloudVisualization
                 rectangles.Add(layouter.PutNextRectangle(rs));
         }
 
-        public static int GetDistanceToNearestEdge(IEnumerable<Rectangle> placedRectangles)
+        public static int GetDistanceToNearestEdge(IEnumerable<Rectangle> placedRectangles, Point center)
         {
             var mostDistanceFromOriginByOrdinate = 0;
             var mostDistanceFromOriginByAbscissa = 0;
 
             foreach (var r in placedRectangles)
             {
-                var distanceByOrdinate = Math.Abs(r.Location.Y);
-                var distanceByAbscissa = Math.Abs(r.Location.X);
+                var distanceByOrdinate = Math.Abs(Math.Abs(r.Location.Y) - Math.Abs(center.Y));
+                var distanceByAbscissa = Math.Abs(Math.Abs(r.Location.X) - Math.Abs(center.X));
 
                 mostDistanceFromOriginByOrdinate = Math.Max(mostDistanceFromOriginByOrdinate, distanceByOrdinate);
                 mostDistanceFromOriginByAbscissa = Math.Max(mostDistanceFromOriginByAbscissa, distanceByAbscissa);
