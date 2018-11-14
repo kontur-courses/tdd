@@ -52,5 +52,10 @@ namespace TagsCloudVisualization
             var dy = (b.Y - a.Y);
             return dx * dx + dy * dy;
         }
+
+        public static Size Multiply(this Size size, int multiplier)
+        {
+            return new Size((int)(size.Width * multiplier), (int)(size.Height * multiplier));
+        }
     }
 }

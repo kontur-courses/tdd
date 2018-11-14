@@ -1,25 +1,22 @@
 using System.Collections.Generic;
 using System;
-using System.Collections;
 using System.Drawing;
-using System.Runtime.ConstrainedExecution;
 
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter : ICloudLayouter
     {
         private static readonly Size InitialQuadTreeHalfSize = new Size(500, 500);
-        private const int SpiralSize = 10;
-        private double _currentAngle;
-        private Point _currentPoint;
+        private const double AngleStep = 0.1;
+        private const double SpiralStep = 3;
         private Point _layoutCenter;
+        private IEnumerator<Point> _pointsEnumerator;
         private QuadTree<Rectangle> _rectanglesQuadTree;
 
         public CircularCloudLayouter(Point center)
         {
+            _pointsEnumerator = GetSpiralPointsEnumerator();
             _layoutCenter = center;
-            _currentPoint = center;
-            
             _rectanglesQuadTree = new QuadTree<Rectangle>(
                 new Rectangle(
                     _layoutCenter.X - InitialQuadTreeHalfSize.Width,
@@ -30,29 +27,55 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var currentRect= new Rectangle(_currentPoint, rectangleSize);
-
-            _currentAngle = Math.PI;
-            while (_rectanglesQuadTree.HasNodesInside(currentRect))
+            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
             {
-                var radius = SpiralSize * _currentAngle;
-                var x = (int)Math.Floor(radius * Math.Cos(_currentAngle));
-                var y = (int)Math.Floor(radius * Math.Sin(_currentAngle));
-                
-                _currentPoint = new Point(x, y);
-                _currentAngle += 0.1;
-                
-                currentRect = new Rectangle(_currentPoint, rectangleSize);
+                throw new ArgumentException("Size should be positive");
             }
             
-            _rectanglesQuadTree.Insert(currentRect, currentRect);
+            Rectangle currentRect;
+            
+            while (true)
+            {
+                _pointsEnumerator.MoveNext();
+                var nextPoint = _pointsEnumerator.Current;
+                
+                var rectangleCenterPoint = new Point(
+                    nextPoint.X - rectangleSize.Width / 2,
+                    nextPoint.Y - rectangleSize.Height / 2);
+
+                currentRect = new Rectangle(rectangleCenterPoint, rectangleSize);
+                
+                if (!_rectanglesQuadTree.HasNodesInside(currentRect))
+                {
+                    _rectanglesQuadTree.Insert(currentRect, currentRect);
+                    break;
+                }
+            }
             
             return currentRect;
         }
-
+        
         public IEnumerable<Rectangle> GetLayout()
         {
             return _rectanglesQuadTree.Nodes;
+        }
+        
+        private IEnumerator<Point> GetSpiralPointsEnumerator()
+        {
+            yield return _layoutCenter;
+            
+            var angle = 0.0;
+            var radius = 0.0;
+            
+            while (true)
+            {
+                var x = _layoutCenter.X + (int)(radius * Math.Cos(angle));
+                var y = _layoutCenter.Y + (int)(radius * Math.Sin(angle));
+                angle += AngleStep;
+                radius += SpiralStep;
+
+                yield return new Point(x,y);
+            }
         }
     }
 }

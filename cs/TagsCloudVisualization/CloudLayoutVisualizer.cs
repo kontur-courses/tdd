@@ -40,16 +40,16 @@ namespace TagsCloudVisualization
                     new SolidBrush(Color.Bisque), 
                     rect.X + offsetX,
                     rect.Y + offsetY,
-                    rect.Size.Width,
-                    rect.Size.Height
+                    rect.Width,
+                    rect.Height
                 );
                 
                 graphics.DrawRectangle(
                     new Pen(Color.Black, 2),
                     rect.X + offsetX,
                     rect.Y + offsetY,
-                    rect.Size.Width,
-                    rect.Size.Height
+                    rect.Width,
+                    rect.Height
                 );
             }
 

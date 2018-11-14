@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -21,12 +22,6 @@ namespace TagsCloudVisualization
         {
             _layoutCenter = center;
             
-            _basePointsSortedByDistance.AddFirst(new PointWithDistance()
-            {
-                Distance = 0,
-                Point = center 
-            });
-            
             _rectanglesQuadTree = new QuadTree<Rectangle>(
                 new Rectangle(
                     _layoutCenter.X - InitialQuadTreeHalfSize.Width,
@@ -37,9 +32,24 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
+            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+            {
+                throw new ArgumentException("Size should be positive");
+            }
+            
             Rectangle currentRect;
 
-            // Search rectangle location near base point
+            if (_basePointsSortedByDistance.Count == 0)
+            {
+                _basePointsSortedByDistance.AddFirst(new PointWithDistance()
+                {
+                    Distance = 0,
+                    Point = new Point(_layoutCenter.X - rectangleSize.Width / 2, _layoutCenter.Y - rectangleSize.Height / 2) 
+                });
+            }
+
+            // Search rectangle that not intersected with other rects,
+            // located near base point and have min distance to layout center
             foreach (var basePoint in _basePointsSortedByDistance)
             {
                 var basePointRect = CreateRectanglesAroundBasePoint(basePoint.Point, rectangleSize)
@@ -103,12 +113,6 @@ namespace TagsCloudVisualization
                     continue;
                 }
 
-                if (newPointWithDistance.Point.Equals(_layoutCenter) && _rectanglesQuadTree.Nodes.Count() < 4)
-                {
-                    i++;
-                    continue;
-                }
-                 
                 if (currentBasePointNode.Value.Point.Equals(newPointWithDistance.Point))
                 {
                     var nextNode = currentBasePointNode.Next;
