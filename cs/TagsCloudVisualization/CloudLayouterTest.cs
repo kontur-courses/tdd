@@ -184,7 +184,12 @@ namespace TagsCloudVisualization
         private IEnumerable<Point> CountPoints_OutOfCircle(double circleRadius, List<Rectangle> rectangles, Point centerPoint)
         {
             return rectangles.Select(ToBoundaryPoints).SelectMany(point => point).Distinct()
-                .Where(x => Math.Pow(centerPoint.X - x.X, 2) + Math.Pow(centerPoint.Y - x.Y, 2) > circleRadius * circleRadius);
+                .Where(point => PointInRadius(circleRadius, centerPoint, point));
+        }
+
+        private bool PointInRadius(double circleRadius, Point centerPoint, Point point)
+        {
+            return Math.Pow(centerPoint.X - point.X, 2) + Math.Pow(centerPoint.Y - point.Y, 2) > circleRadius * circleRadius;
         }
 
         private Point[] ToBoundaryPoints(Rectangle rectangle)
