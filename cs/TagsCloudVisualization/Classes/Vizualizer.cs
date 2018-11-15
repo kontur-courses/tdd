@@ -16,7 +16,7 @@ namespace TagsCloudVisualization.Classes
             image = new Bitmap(sizeBackground.Width, sizeBackground.Height);
             pen = new Pen(Color.Black, 2);
             graphics = Graphics.FromImage(image);
-            graphics.FillRectangle(Brushes.Black, new Rectangle(new Point(0, 0), sizeBackground));
+            graphics.FillRectangle(Brushes.Wheat, new Rectangle(new Point(0, 0), sizeBackground));
             colors = new List<Brush>() { Brushes.Red, Brushes.Green, Brushes.Yellow };
         }
 
