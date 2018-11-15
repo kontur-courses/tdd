@@ -36,7 +36,7 @@ namespace TagsCloudVisualization
         {
             var rand = new Random();
             var rectCount = rand.Next(10, 100);
-            for (int i = 0; i < rectCount; i++)
+            for (var i = 0; i < rectCount; i++)
             {
                  cloud.PutNextRectangle(new Size(rand.Next(50, 100), rand.Next(10, 40)));
             }

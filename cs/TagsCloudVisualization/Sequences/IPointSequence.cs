@@ -5,7 +5,7 @@ namespace TagsCloudVisualization.Sequences
 {
     public interface IPointSequence
     {
-        int Step { get; }
+        int StepsCount { get; }
         IEnumerable<Point> GetPoints();
     }
 }

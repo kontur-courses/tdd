@@ -71,8 +71,8 @@ namespace TagsCloudVisualizationTest
         {
             var size = new Size(100, 100);
             var rectangles = new List<Rectangle>();
-            
-            for (var i = 0; i < 100; i++)
+            const int rectanglesCount = 100;
+            for (var i = 0; i < rectanglesCount; i++)
             {
                 rectangles.Add(cloud.PutNextRectangle(size));
             }
@@ -88,16 +88,17 @@ namespace TagsCloudVisualizationTest
         {
             var size = new Size(100, 100);
             var rectangles = new List<Rectangle>();
+            const int rectangleCount = 100;
             
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < rectangleCount; i++)
             {
                 rectangles.Add(cloud.PutNextRectangle(size));
             }
             var radius = CalculateRadius(rectangles.Last());
             var circleSquare = Math.PI * radius * radius;
-            var squareSum = rectangles.Aggregate(0.0, ((i, rectangle) => i + rectangle.Height * rectangle.Width));
+            var squareSum = rectangles.Aggregate(0.0, (i, rectangle) => i + rectangle.Height * rectangle.Width);
             
-            squareSum.Should().BeLessThan(circleSquare * 0.5);
+            squareSum.Should().BeLessThan(circleSquare * 0.7);
         }
 
         private double CalculateRadius(Rectangle rect)

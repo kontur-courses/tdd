@@ -27,13 +27,14 @@ namespace TagsCloudVisualizationTest
         public void GetPoints_ShouldReturnNotOnlyZeroPoints()
         {
             var spiral = new Spiral();
-            
             var actual = spiral
                 .GetPoints()
-                .Take(100)
                 .Where(p => p != Point.Empty);
             
-            actual.Any().Should().BeTrue();
+            actual
+                .Any()
+                .Should()
+                .BeTrue();
         }
         
         [Test]

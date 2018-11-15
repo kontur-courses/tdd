@@ -1,4 +1,3 @@
-using System;
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
@@ -9,13 +8,7 @@ namespace TagsCloudVisualizationTest
 {
     [TestFixture]
     public class CloudVisualizer_should
-    {
-        [Test]
-        public void Constructor_ShouldFail_OnNullCloudVisualizer()
-        {
-            Assert.Throws<ArgumentNullException>(() => new CloudVisualizer(Pens.Black, null));
-        }
-        
+    {       
         [Test]
         public void GenerateImage_ShouldReturnImage_WithSameSize()
         {
