@@ -18,7 +18,7 @@ namespace TagsCloudVisualization
 
         [TestCase(0, 0, 100, 100, TestName = "center equal (0,0)")]
         [TestCase(-10, 40, 100, 100, TestName = "center not equal (0,0)")]
-        public void PutNextRectangle_InCenter_WhenRectangleFirstAnd(int centerX, int centerY, 
+        public void PutNextRectangle_InCenter_When(int centerX, int centerY, 
             int rectangleWidth, int rectangleHeight)
         {
             var center = new Point(centerX, centerY);
