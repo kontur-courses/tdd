@@ -43,8 +43,8 @@ namespace TagsCloudVisualization
             rectanglesCopy
                 .OrderBy(rectangle => rectangle.Width * rectangle.Height)
                 .ToList()
-                .ForEach(
-                    rectangle => rectangles.Add(new Rectangle(GetAppropriatePlace(rectangle.Size), rectangle.Size)));
+                .ForEach(rectangle => rectangles
+                    .Add(new Rectangle(GetAppropriatePlace(rectangle.Size), rectangle.Size)));
         }
 
         public Point GetAppropriatePlace(Size rectangleSize)

@@ -12,20 +12,23 @@ namespace TagsCloudVisualization
         {
             using (var bitmap = new Bitmap(canvasSize.Height, canvasSize.Width))
             {
-                var graphics = Graphics.FromImage(bitmap);
-                graphics.FillRectangle(Brushes.White, 0, 0, 1000, 1000);
-                foreach (var rect in rectangles)
-                    graphics.DrawRectangle(Pens.Black, rect);
+                using (var graphics = Graphics.FromImage(bitmap))
+                {
+                    graphics.FillRectangle(Brushes.White, 0, 0, 1000, 1000);
+                    foreach (var rect in rectangles)
+                        graphics.DrawRectangle(Pens.Black, rect);
 
-                try
-                {
-                    bitmap.Save($"{path}{name}", ImageFormat.Png);
-                }
-                catch (ExternalException exception)
-                {
-                    Console.Error.WriteLine("Something gone wrong. Check the path correctness.");
+                    try
+                    {
+                        bitmap.Save($"{path}{name}", ImageFormat.Png);
+                    }
+                    catch (ExternalException exception)
+                    {
+                        Console.Error.WriteLine("Something gone wrong. Check the path correctness.");
+                    }
                 }
             }
         }
     }
+}
 }
