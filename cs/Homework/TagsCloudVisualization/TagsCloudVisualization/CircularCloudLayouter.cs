@@ -27,12 +27,8 @@ namespace TagsCloudVisualization
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException("Width and height should be integer positive numbers");
 
-            var newRectangle = default(Rectangle);
-
-            if (position == null)
-                newRectangle = new Rectangle(GetAppropriatePlace(rectangleSize), rectangleSize);
-            else
-                newRectangle = new Rectangle((Point)position, rectangleSize);
+            var newPosition = position ?? GetAppropriatePlace(rectangleSize);
+            var newRectangle = new Rectangle(newPosition, rectangleSize);
 
             rectangles.Add(newRectangle);
 
@@ -44,11 +40,10 @@ namespace TagsCloudVisualization
             var rectanglesCopy = new List<Rectangle>(rectangles);
             rectangles.Clear();
 
-            foreach (var rectangle in rectanglesCopy
-                .OrderBy(rectangle => rectangle.Height * rectangle.Width))
-            {
-                rectangles.Add(new Rectangle(GetAppropriatePlace(rectangle.Size), rectangle.Size));
-            }
+            rectangles = rectanglesCopy
+                .OrderBy(rectangle => rectangle.Height * rectangle.Width)
+                .Select(rectangle => new Rectangle(GetAppropriatePlace(rectangle.Size), rectangle.Size))
+                .ToList();
         }
 
         public Point GetAppropriatePlace(Size rectangleSize)
@@ -56,9 +51,7 @@ namespace TagsCloudVisualization
             if (rectangles.Count == 0)
                 return spiralInfo.Center;
 
-            var currentPosition = spiralInfo.Center;
-            var currentAngle = 0.0;
-            var currentRadius = 0.0;
+            var (currentPosition, currentAngle, currentRadius) = (spiralInfo.Center, 0.0, 0.0);
             var potentialRectangle = new Rectangle(currentPosition, rectangleSize);
 
             while (!CanBePlaced(potentialRectangle))
@@ -71,7 +64,7 @@ namespace TagsCloudVisualization
             return currentPosition;
         }
 
-        private ValueTuple<Point, double, double> NextStep(
+        private (Point, double, double) NextStep(
             Point currentPosition, double currentAngle, double currentRadius)
         {
             var sin = Math.Sin(currentAngle);

@@ -31,7 +31,7 @@ namespace TagsCloudVisualization
             else
             {
                 subfolderName = "SuccessTests";
-                path = string.Format($@"{debugPath}\{subfolderName}\");
+                path = $@"{debugPath}\{subfolderName}\";
             }
             
             Drawer.DrawAndSaveRectangles(new Size(1000, 1000), layouter.Rectangles, testName + ".png", path);
