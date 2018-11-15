@@ -8,5 +8,5 @@
 - Раскладка №3 - 150 прямоугольников с начальным размером 90 на 10
  ![alt 150 прямоугольников с начальным размером 90 на 10](cloud_3.bmp)
  - И рабочий Travis CI
- ![alt Travis CI](http://prntscr.com/liuk17)
+ ![alt TravisCI](travisCi.png)
  
