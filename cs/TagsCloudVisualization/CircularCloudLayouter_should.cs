@@ -51,19 +51,5 @@ namespace TagsCloudVisualization
                 .IntersectsWith(secondRectangleLocation)
                 .Should().BeFalse();
         }
-
-        //[Test]
-        //public void PutNextRectangle_Spirally()
-        //{
-        //    var firstRectangleSize = new Size(100, 100);
-        //    var secondRectangleSize = new Size(100, 100);
-        //    var spiralTrack = new SpiralTrack(new Point(0,0), 0.5);
-
-        //    var firstRectangleLocation = circularCloudLayouter
-        //        .PutNextRectangle(firstRectangleSize);
-        //    var secondRectangleLocation = circularCloudLayouter
-        //        .PutNextRectangle(secondRectangleSize);
-
-        //}
     }
 }
