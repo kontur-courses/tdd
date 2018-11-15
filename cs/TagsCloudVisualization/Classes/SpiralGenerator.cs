@@ -12,8 +12,8 @@ namespace TagsCloudVisualization.Classes
         private readonly Point center;
         private double Angle { get; set; }
         private double Radius { get; set; }
-        private int shiftAngle = 100;
-        private int shiftRadius = 5;
+        private double shiftAngle = 0.3;
+        private double shiftRadius = 0.003;
 
         public SpiralGenerator(Point center)
         {
