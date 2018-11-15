@@ -9,21 +9,22 @@ namespace TagsCloudVisualization
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
         private readonly Circle circle;
 
+        public Size Size
+        {
+            get { return new Size(circle.Radius * 2, circle.Radius * 2); }
+        }
 
         public CircularCloudLayouter(Point pointCenter)
         {
             circle = new Circle(pointCenter);
         }
 
+
         public Point GetCenter()
         {
             return circle.Center;
         }
 
-        public Size GetSizeTagCloud()
-        {
-            return new Size(circle.Radius*2, circle.Radius*2);
-        }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {

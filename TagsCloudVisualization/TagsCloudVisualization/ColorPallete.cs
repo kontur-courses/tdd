@@ -21,7 +21,7 @@ namespace TagsCloudVisualization
         };
         private static Random random = new Random();
 
-        public static Color GetColor()
+        public static Color GetRandomColor()
         {
             return colors[random.Next(0, colors.Length)];
         }

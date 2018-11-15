@@ -12,128 +12,15 @@ namespace TagCloudVisualizationTest
     [TestFixture]
     class CircularCloudLayouterTest
     {
-        private ICloudLayouter testLayouter;
+        private CircularCloudLayouter testLayouter;
+        private static Random random = new Random();
+
         static IEnumerable<TestCaseData> GetTestCases()
         {
-            yield return new TestCaseData(new List<Size>
-            {
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-                new Size(10,10), new Size(10,10), new Size(10,10), new Size(10,10),
-
-            }).SetName("LargeAmountSmollRectangles");
-            yield return new TestCaseData(new List<Size>
-            {
-                new Size(650, 650), new Size(400, 400), new Size(250, 250), new Size(100, 100),
-                new Size(50, 50), new Size(300, 300), new Size(200, 200), new Size(17, 17),
-
-            }).SetName("Squares");
-            yield return new TestCaseData(new List<Size>
-            {
-                new Size(400, 70), new Size(370, 65), new Size(330, 65), new Size(270, 40),
-                new Size(250, 30), new Size(250, 25), new Size(230, 30), new Size(225, 25),
-                new Size(225, 20), new Size(210, 20), new Size(190, 30), new Size(150, 20),
-                new Size(160, 20), new Size(140, 20), new Size(135, 20), new Size(120, 20),
-                new Size(100, 20), new Size(100, 20), new Size(100, 20), new Size(100, 20),
-
-            }).SetName("SimpleTest");
-            yield return new TestCaseData(new List<Size>
-            {
-                new Size(250, 35), new Size(170, 27), new Size(160, 65), new Size(150, 23),
-                new Size(130, 20), new Size(120, 20), new Size(110, 20), new Size(100, 20),
-                new Size(100, 20), new Size(100, 20), new Size(100, 20), new Size(100, 20),
-                new Size(100, 20), new Size(100, 20), new Size(100, 20), new Size(100, 20),
-                new Size(190, 20), new Size(10, 20), new Size(100, 20), new Size(100, 20),
-                new Size(100, 20), new Size(100, 30), new Size(120, 20), new Size(100, 20),
-                new Size(100, 20), new Size(100, 20), new Size(100, 20), new Size(100, 20),
-                new Size(100, 20), new Size(100, 20), new Size(100, 23), new Size(100, 20),
-                new Size(130, 20), new Size(130, 20), new Size(100, 20), new Size(100, 20),
-                new Size(100, 20), new Size(100, 20), new Size(200, 30), new Size(180, 20),
-                new Size(100, 30), new Size(100, 20), new Size(100, 20), new Size(100, 20),
-                new Size(100, 20), new Size(100, 20), new Size(100, 20), new Size(100, 20),
-                new Size(100, 20), new Size(170, 20), new Size(100, 20), new Size(100, 20),
-                new Size(150, 20), new Size(100, 20), new Size(100, 30), new Size(100, 20),
-                new Size(100, 20), new Size(100, 20), new Size(100, 20), new Size(100, 20),
-                new Size(100, 20), new Size(100, 20), new Size(100, 20), new Size(100, 20),
-                new Size(100, 20), new Size(60, 20), new Size(100, 20), new Size(100, 20),
-                new Size(100, 20), new Size(100, 20), new Size(140, 20), new Size(100, 20),
-                new Size(100, 20), new Size(100, 20), new Size(200, 20), new Size(70, 20),
-                new Size(100, 20), new Size(100, 20), new Size(100, 20), new Size(100, 20),
-                new Size(100, 20), new Size(100, 20), new Size(100, 20), new Size(100, 20),
-                new Size(100, 20), new Size(200, 30), new Size(100, 20), new Size(100, 20),
-                new Size(160, 20), new Size(100, 20), new Size(100, 20), new Size(100, 30),
-                new Size(100, 20), new Size(100, 20), new Size(120, 20), new Size(100, 20),
-                new Size(100, 20), new Size(100, 20), new Size(100, 30), new Size(100, 20),
-                new Size(170, 30), new Size(100, 20), new Size(50, 20), new Size(100, 20),
-                new Size(100, 20), new Size(100, 20), new Size(100, 20), new Size(100, 20),
-                new Size(100, 20), new Size(100, 30), new Size(156, 23), new Size(100, 20),
-                new Size(100, 40), new Size(100, 20), new Size(100, 20), new Size(100, 30),
-                new Size(100, 20), new Size(100, 20), new Size(100, 20), new Size(100, 20),
-                new Size(70, 10), new Size(100, 20), new Size(100, 20), new Size(100, 20),
-                new Size(100, 20), new Size(100, 20), new Size(100, 20), new Size(100, 20),
-
-            }).SetName("LargeNumberOfRectangles");
+            yield return new TestCaseData(Enumerable.Range(1, 100).Select(i => new Size(20,20)).ToList()).SetName("LargeAmountSmallRectangles");
+            yield return new TestCaseData(Enumerable.Range(10,50).Select(i => new Size(i*10, i*10)).ToList()).SetName("Squares");
+            yield return new TestCaseData(Enumerable.Range(1,20).Select(i => new Size(random.Next(5,9)*100, random.Next(3) * 100)).ToList()).SetName("SimpleTest");
+            yield return new TestCaseData(Enumerable.Range(1, 100).Select(i => new Size(random.Next(5,9) * 100, random.Next(3) * 100)).ToList()).SetName("LargeNumberOfRectangles");         
         }
 
         [SetUp]
@@ -147,31 +34,23 @@ namespace TagCloudVisualizationTest
         [Category("NotIntersects")]
         public void PutNextRectangle_ShouldNotCrossRectangles(List<Size> sizes)
         {
-            var rectangles = sizes.Select(size => testLayouter.PutNextRectangle(size)).ToList();
-            var testName = TestContext.CurrentContext.Test.Name;
-            if (ContainsIntersectsRectangles(rectangles))
-            {               
-                SaveImage(testName, rectangles.ToArray(), testLayouter.GetSizeTagCloud());
-                Assert.Fail($"Rectangles are intersect in test {testName}");
-            }
+            var rectangles = GetRectangles(sizes);
+            if (ContainsIntersectedRectangles(rectangles))
+                ActionThenTestFailed(rectangles.ToArray(), testLayouter.Size);
         }
 
         [Test, TestCaseSource(nameof(GetTestCases))]
         [Category("TagCloudHasCircleShape")]
         public void PutNextRectangle_ShouldCreateCircleShape(List<Size> sizes)
         {
-            
-            var rectangles = sizes.Select(size => testLayouter.PutNextRectangle(size)).ToList();
-            var cloudSize = testLayouter.GetSizeTagCloud();
+            var rectangles = GetRectangles(sizes);
+            var cloudSize = testLayouter.Size;
             var expectedArea = CalculateTotalExpectedArea(sizes);
             var actualArea = cloudSize.Width / 2 * cloudSize.Width / 2 * Math.PI;
-            var delta = expectedArea / 2;            
+            var delta = expectedArea * 0.2;            
             if((actualArea - expectedArea) > delta)
-            {
-                var testName = TestContext.CurrentContext.Test.Name;
-                SaveImage(testName, rectangles.ToArray(), cloudSize);
-                Assert.Fail($"TagCloud shape isn't a circle in test {testName}. Delta = {delta}");
-            }                    
+                ActionThenTestFailed(rectangles.ToArray(), cloudSize,
+                    $"TagCloud shape isn't a circle. Delta = {delta}");
         }
 
         [Test, TestCaseSource(nameof(GetTestCases))]
@@ -179,37 +58,40 @@ namespace TagCloudVisualizationTest
         public void PutNextRectangle_ShouldCreateDenseCircle(List<Size> sizes)
         {
             var delta = 0.5;
-            var rectangles = sizes.Select(size => testLayouter.PutNextRectangle(size)).ToList();
-            var cloudSize = testLayouter.GetSizeTagCloud();
+            var rectangles = GetRectangles(sizes);
+            var cloudSize = testLayouter.Size;
             var counterEmptySpaces = 0;
             for (var i = -cloudSize.Width / 2 ; i < cloudSize.Width/2; i += 10)
                 for (var j = -cloudSize.Height/2; j < cloudSize.Height/2; j +=10)
                     if (!AreIntersects(new Rectangle(i, j, 10, 10), rectangles))
-                        counterEmptySpaces++;
-            var testName = TestContext.CurrentContext.Test.Name;
+                        counterEmptySpaces++;         
             var totalAmaunt = (cloudSize.Width / 10 * cloudSize.Height / 10);
             double densityСoefficient = (double)counterEmptySpaces / totalAmaunt;
             if (densityСoefficient > delta)
-            {
-                SaveImage(testName, rectangles.ToArray(), cloudSize);
-                Assert.Fail($"TagCloud isn't dense in test {testName}. Required density = {delta}, but was {densityСoefficient}");
-            }
+                ActionThenTestFailed(rectangles.ToArray(), cloudSize,
+                    $"TagCloud isn't dense. Required density = {delta}, but was {densityСoefficient}");
         }
 
-        private static void SaveImage(string fileName, Rectangle[] rectangles, Size cloudSize)
+        private List<Rectangle> GetRectangles(List<Size> sizes)
+        {
+            return sizes.Select(size => testLayouter.PutNextRectangle(size)).ToList();
+        }
+
+        private void ActionThenTestFailed(Rectangle[] rectangles, Size cloudSize, string mes = "")
         {
             var bitmap = TagCloudImage.GenerateTagCloudBitmap(rectangles.ToArray(),
                 cloudSize);
-            var fullFileName = AppContext.BaseDirectory + $" {fileName} test was failed.bmp";
+            var testName = TestContext.CurrentContext.Test.Name;
+            var fullFileName = AppContext.BaseDirectory + $" {testName} test was failed.bmp";
             bitmap.Save(fullFileName, ImageFormat.Bmp);
-        }
+            Assert.Fail(mes);
+        }       
 
-        private static int CalculateTotalExpectedArea(List<Size> sizes)
+        private int CalculateTotalExpectedArea(List<Size> sizes)
         {
             var area = 0;
             foreach (var size in sizes)
                 area += size.Height * size.Width;
-
             return area;
         }        
 
@@ -217,8 +99,8 @@ namespace TagCloudVisualizationTest
         {
             return otherRectangles.Any(r => r.IntersectsWith(rect));
         }
-
-        private static bool ContainsIntersectsRectangles(List<Rectangle> rectangles)
+       
+        private static bool ContainsIntersectedRectangles(List<Rectangle> rectangles)
         {
             for (var i = 0; i < rectangles.Count; i++)
                 for (var j = i + 1; j < rectangles.Count; j++)
