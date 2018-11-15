@@ -24,7 +24,7 @@ namespace TagsCloudVisualization
 
             var rand = new Random(Guid.NewGuid().GetHashCode());
 
-            for (int i = 0; i < 500; i++)
+            for (int i = 0; i < 250; i++)
             {
                 rectangles.Add(layouter.PutNextRectangle(new Size(rand.Next(WIDTH_MIN, WIDTH_MAX), rand.Next(HEIGHT_MIN, HEIGHT_MAX))));
             }

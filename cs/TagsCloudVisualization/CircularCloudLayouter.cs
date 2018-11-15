@@ -17,10 +17,11 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var rectangle = new Rectangle();
-
-            rectangle.Size = rectangleSize;
-            rectangle.Location = FindEmptyLocation(rectangleSize);
+            var rectangle = new Rectangle
+            {
+                Size = rectangleSize,
+                Location = FindEmptyLocation(rectangleSize)
+            };
 
             Compact(ref rectangle);
 
@@ -56,36 +57,21 @@ namespace TagsCloudVisualization
             }
         }
 
-        private void shiftX(ref Rectangle rect, int dx)
+        private bool Shift(ref Rectangle rect, int shiftX, int shiftY)
         {
-            bool canMove = true;
-            while (canMove)
-            {
-                rect.X += dx;
-                foreach (var tag in cloudRectangles)
-                    if (tag.IntersectsWith(rect) || (rect.X + rect.Width / 2) == cloudCenter.X)
-                    {
-                        canMove = false;
-                        rect.X -= dx;
-                        break;
-                    }
-            }
-        }
+            if (shiftX == 0 && shiftY == 0)
+                return false;
 
-        private void shiftY(ref Rectangle rect, int dy)
-        {
-            bool canMove = true;
-            while (canMove)
+            rect.X += shiftX;
+            rect.Y += shiftY;
+
+            if (rect.IntersectsWithAny(cloudRectangles))
             {
-                rect.Y += dy;
-                foreach (var tag in cloudRectangles)
-                    if (tag.IntersectsWith(rect) || (rect.Y+ rect.Height / 2) == cloudCenter.Y)
-                    {
-                        canMove = false;
-                        rect.Y -= dy;
-                        break;
-                    }
+                rect.X -= shiftX;
+                rect.Y -= shiftY;
+                return false;
             }
+            return true;
         }
 
         private void Compact(ref Rectangle rect)
@@ -93,12 +79,8 @@ namespace TagsCloudVisualization
             if (cloudRectangles.Count == 0)
                 return;
 
-            var rectangleCenter = new Point(rect.X + rect.Width / 2, rect.Y + rect.Height / 2);
-            var dx = Math.Sign(cloudCenter.X - rectangleCenter.X);
-            var dy = Math.Sign(cloudCenter.Y - rectangleCenter.Y);
-
-            shiftX(ref rect, dx);
-            shiftY(ref rect, dy);
+            while (Shift(ref rect, Math.Sign(cloudCenter.X - rect.X), 0) ||
+                   Shift(ref rect, 0, Math.Sign(cloudCenter.Y - rect.Y))) ;
         }
     }
 }

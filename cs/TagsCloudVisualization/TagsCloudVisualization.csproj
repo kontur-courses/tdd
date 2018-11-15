@@ -39,6 +39,7 @@
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="CircularCloudLayouter_Should.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="RectangleExtension.cs" />
     <Compile Include="Visualizer.cs" />
   </ItemGroup>
   <ItemGroup>
