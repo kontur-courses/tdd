@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using FluentAssertions.Primitives;
 using NUnit.Framework;
 
 namespace TagsCloudVisualization
@@ -13,6 +14,7 @@ namespace TagsCloudVisualization
     {
         private CircularCloudLayouter cloud;
         private TestContext currentContext;
+        private const string filePath = "D://DebugFile.bmp";
 
         [SetUp]
         public void SetUp()
@@ -27,8 +29,8 @@ namespace TagsCloudVisualization
             if (currentContext.Result.FailCount != 0)
             {
                 var visualisator = new Visualiser(new Size(600, 600));
-                visualisator.ShowCurrentConfig(cloud, "D://DebugFile.bmp");
-                Console.WriteLine("Tag cloud visualization saved to file D://DebugFile.bmp");
+                visualisator.RenderCurrentConfig(cloud, filePath);
+                Console.WriteLine("Tag cloud visualization saved to file " + filePath);
             }
         }
 
@@ -54,6 +56,12 @@ namespace TagsCloudVisualization
             firstRectangle.IntersectsWith(secondRectangle).Should().BeFalse();
         }
 
+        [Test]
+        public void FirstRectangle_ShouldBeInCenter()
+        {
+            var rect = cloud.PutNextRectangle(new Size(10, 10));
+            rect.Location.Should().Be(new Point(0, 0));
+        }
         [Test]
         public void ArchimedesSpiralePointsMaker_ShouldReturnCenterAtFirst()
         {

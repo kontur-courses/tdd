@@ -11,16 +11,17 @@ namespace TagsCloudVisualization
     {
         public readonly Point center;
         private readonly IEnumerator<Point> pointMaker;
-        private List<Rectangle> Rectangles;
-        public List<Rectangle> rectangles
+        private IReadOnlyList<Rectangle> rectangles;
+        public List<Rectangle> Rectangles
         {
-            get { return Rectangles.ToList(); }
-            private set { Rectangles = value; }
+            get { return rectangles.ToList(); }
         }
 
         private void AddRectangle(Rectangle newRectangle)
         {
-            Rectangles.Add(newRectangle);
+            var list = rectangles.ToList();
+            list.Add(newRectangle);
+            rectangles = list.AsReadOnly();
         }
 
         public CircularCloudLayouter(Point center, double spiraleStep)
@@ -29,16 +30,18 @@ namespace TagsCloudVisualization
             pointMaker = ArchimedesSpiralePointsMaker
                 .GenerateNextPoint(center, spiraleStep)
                 .GetEnumerator();
-            rectangles = new List<Rectangle>();
+            rectangles = new List<Rectangle>().AsReadOnly();
         }
 
         private bool AreRectanglesIntersectWith(Rectangle newRectangle)
         {
-            return rectangles.Any((rectangle) => rectangle.IntersectsWith(newRectangle));
+            return Rectangles.Any((rectangle) => rectangle.IntersectsWith(newRectangle));
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
+            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+                throw new ArgumentException();
             while (true)
             {
                 pointMaker.MoveNext();

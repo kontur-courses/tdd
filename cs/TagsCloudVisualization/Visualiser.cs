@@ -22,11 +22,11 @@ namespace TagsCloudVisualization
             center = new Point(bitmapSize.Width / 2, bitmapSize.Height / 2);
         }
 
-        public void ShowCurrentConfig(CircularCloudLayouter cloud, string imageName)
+        public void RenderCurrentConfig(CircularCloudLayouter cloud, string imageName)
         {
-            Bitmap bitmap = new Bitmap(bitmapSize.Width, bitmapSize.Height);
-            Graphics graphics = Graphics.FromImage(bitmap);
-            foreach (var rect in cloud.rectangles)
+            var bitmap = new Bitmap(bitmapSize.Width, bitmapSize.Height);
+            var graphics = Graphics.FromImage(bitmap);
+            foreach (var rect in cloud.Rectangles)
             {
                 var replacedRect = new Rectangle(rect.Location.X + center.X,
                     rect.Location.Y + center.Y, rect.Size.Width, rect.Height);
@@ -54,7 +54,7 @@ namespace TagsCloudVisualization
                 var currentRectangleSize = GetNewRectangleSize(random);
                 cloud.PutNextRectangle(currentRectangleSize);
             }
-            ShowCurrentConfig(cloud, imageName);
+            RenderCurrentConfig(cloud, imageName);
         }
     }
 }
