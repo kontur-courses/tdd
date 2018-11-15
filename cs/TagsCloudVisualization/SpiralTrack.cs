@@ -29,13 +29,13 @@ namespace TagsCloudVisualization
             while (nextPoint == lastPoint)
             {
                 var vectorLength = angle * (step / (2 * Math.PI));
-                var vector = new Point(
-                    (int)Math.Ceiling(vectorLength * Math.Cos(angle)),
-                    (int)Math.Ceiling(vectorLength * Math.Sin(angle))
+                var radiusVector = (
+                    X: (int)Math.Ceiling(vectorLength * Math.Cos(angle)),
+                    Y: (int)Math.Ceiling(vectorLength * Math.Sin(angle))
                 );
 
                 lastPoint = nextPoint;
-                nextPoint = new Point(center.X + vector.X, center.Y + vector.Y);
+                nextPoint = new Point(center.X + radiusVector.X, center.Y + radiusVector.Y);
                 angle += 1;
             }
 
