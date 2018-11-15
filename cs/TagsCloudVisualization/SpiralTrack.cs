@@ -34,11 +34,15 @@ namespace TagsCloudVisualization
                     (int)Math.Ceiling(vectorLength * Math.Sin(angle))
                 );
 
+                lastPoint = nextPoint;
                 nextPoint = new Point(center.X + vector.X, center.Y + vector.Y);
                 angle += 1;
             }
 
-            return (Point) nextPoint;
+            if (nextPoint.HasValue)
+                return nextPoint.Value;
+
+            throw new NotImplementedException();
         }
     }
 }
