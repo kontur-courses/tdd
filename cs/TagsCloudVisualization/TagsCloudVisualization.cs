@@ -28,15 +28,15 @@ namespace TagsCloudVisualization
                 allSizes.Add(new Size(nextWidth, nextHeight));
             }
 
-
+            var rectangles = new List<Rectangle>();
             var circukarCloudLayouter = new CircularCloudLayouter(new Point(width / 2 - 100, height / 2));
             foreach (var r in allSizes)
             {
-                circukarCloudLayouter.PutNextRectangle(r);
+                rectangles.Add(circukarCloudLayouter.PutNextRectangle(r));
             }
 
             var render = new TagsCloudRenderer();
-            render.RenderIntoFile("img.png", circukarCloudLayouter.addedRectangles, new Size(width, height));
+            render.RenderIntoFile("img.png", rectangles, new Size(width, height));
         }
     }
 
@@ -44,7 +44,7 @@ namespace TagsCloudVisualization
     {
         private Point center;
         private IEnumerator<Point> spiralEnumerator;
-        public List<Rectangle> addedRectangles = new List<Rectangle>();
+        private List<Rectangle> addedRectangles = new List<Rectangle>();
 
         public CircularCloudLayouter(Point center)
         {
@@ -126,6 +126,8 @@ namespace TagsCloudVisualization
         {
             var rect1 = circularCloudLayouter.PutNextRectangle(new Size(50, 10));
             var rect2 = circularCloudLayouter.PutNextRectangle(new Size(70, 140));
+            puttedRectangles.Add(rect1);
+            puttedRectangles.Add(rect2);
             rect1.IntersectsWith(rect2).Should().BeFalse();
         }
 
@@ -157,6 +159,8 @@ namespace TagsCloudVisualization
         {
             var rect1 = circularCloudLayouter.PutNextRectangle(new Size(50, 10));
             var rect2 = circularCloudLayouter.PutNextRectangle(new Size(70, 140));
+            puttedRectangles.Add(rect1);
+            puttedRectangles.Add(rect2);
             rect1.Should().NotBe(rect2);
         }
 
@@ -193,8 +197,7 @@ namespace TagsCloudVisualization
                 var name = TestContext.CurrentContext.Test.FullName + ".png";
                 var path = AppDomain.CurrentDomain.BaseDirectory + name;
                 Console.WriteLine($"Tag cloud visualization saved to {path}");
-
-                renderer.RenderIntoFile("img.png", circularCloudLayouter.addedRectangles, new Size(Width, Height));
+                renderer.RenderIntoFile(path, puttedRectangles, new Size(Width, Height));
             }
         }
     }
