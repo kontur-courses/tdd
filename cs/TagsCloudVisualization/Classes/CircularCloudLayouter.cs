@@ -10,7 +10,6 @@ namespace TagsCloudVisualization.Classes
     public class CircularCloudLayouter
     {
         private Point Center { get; set; }
-        private RectangleF Surface { get; set; }
         private SpiralGenerator SpiralGenerator { get; set; }
         public List<Rectangle> Rectangles { get;}
       
@@ -26,23 +25,62 @@ namespace TagsCloudVisualization.Classes
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             var nextRectangle = SpiralGenerator.GetNextRectangleOnSpiral(rectangleSize);
-            
+
+            while (IntersectsWithRectangles(nextRectangle, this.Rectangles))
+                nextRectangle = SpiralGenerator.GetNextRectangleOnSpiral(rectangleSize);
+
+            nextRectangle = MoveToCenter(nextRectangle);
+
             Rectangles.Add(nextRectangle);
             return nextRectangle;
         }
 
         public List<Rectangle> GenerateTestLayout()
         {
-            var x = 53;
+            var x = 90;
             var y = 10;
-            for (var i = 1; i < 50; i++)
+
+            int downSize;
+
+            for (var i = 1; i < 150; i++)
             {
+                downSize = new Random().Next(0,5);
+                if (i % 20 == 0)
+                    x -= downSize;
                 var size = new Size(x, y);
                 Rectangles.Add(PutNextRectangle(size));
             }
 
             return Rectangles;
         }
-        
+
+        public Point GetRectangleCenter(Rectangle rectangle) => rectangle.Location + new Size(rectangle.Width / 2, rectangle.Height / 2);
+
+        public bool IntersectsWithRectangles(Rectangle rectangle, IEnumerable<Rectangle> rectangles) => rectangles.Any(r => r.IntersectsWith(rectangle));
+
+        private Rectangle MoveToCenter(Rectangle rectangle)
+        {
+            while (true)
+            {
+                var direction = Center - new Size(GetRectangleCenter(rectangle));
+                var offsetRectangle = MoveRectangleByOnePoint(rectangle, new Point(Math.Sign(direction.X), 0));
+                if (offsetRectangle == rectangle)
+                    break;
+
+                offsetRectangle = MoveRectangleByOnePoint(offsetRectangle, new Point(0, Math.Sign(direction.Y)));
+                if (offsetRectangle == rectangle)
+                    break;
+                rectangle = offsetRectangle;
+            }
+            return rectangle;
+        }
+
+        private Rectangle MoveRectangleByOnePoint(Rectangle rectangle, Point offset)
+        {
+            var offsetRectangle = new Rectangle(rectangle.Location + new Size(offset), rectangle.Size);
+            if (IntersectsWithRectangles(offsetRectangle, Rectangles))
+                return rectangle;
+            return offsetRectangle;
+        }
     }
 }
