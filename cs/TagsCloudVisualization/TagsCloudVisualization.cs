@@ -51,10 +51,11 @@ namespace TagsCloudVisualization
             var x = center.X;
             var y = center.Y;
             if (x < 0 || y < 0)
-                throw new ArgumentException();
-
-            var spiral = new ArchimedeanSpiral(0.5);
-            spiralEnumerator = spiral.GetIenumeratorDecart(0.05);
+                throw new ArgumentException("Center coordinates should not be negative");
+            var coefficients = 0.5;
+            var spiralStep = 0.05;
+            var spiral = new ArchimedeanSpiral(coefficients);
+            spiralEnumerator = spiral.GetIenumeratorDecart(spiralStep);
             this.center = center;
         }
 

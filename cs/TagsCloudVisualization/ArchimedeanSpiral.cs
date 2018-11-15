@@ -11,21 +11,21 @@ namespace TagsCloudVisualization
 {
     class ArchimedeanSpiral
     {
-        private double k;
+        private double coefficients;
 
-        public ArchimedeanSpiral(double k)
+        public ArchimedeanSpiral(double coefficients)
         {
-            if (k <= 0)
+            if (coefficients <= 0)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("coefficients should be a positive number");
             }
 
-            this.k = k;
+            this.coefficients = coefficients;
         }
 
         public double GetValuePolar(double angle)
         {
-            return k * angle;
+            return coefficients * angle;
         }
 
         private Point PolarToDecart(double angle, double distance)
@@ -37,6 +37,8 @@ namespace TagsCloudVisualization
 
         public IEnumerable<Point> GetIEnumerableDecart(double step)
         {
+            if (step <= 0)
+                throw new ArgumentException("Step should be a positive number");
             double currentAngle = 0;
             while (true)
             {
