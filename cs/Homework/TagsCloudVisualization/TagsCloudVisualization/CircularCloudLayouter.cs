@@ -40,10 +40,11 @@ namespace TagsCloudVisualization
             var rectanglesCopy = new List<Rectangle>(rectangles);
             rectangles.Clear();
 
-            rectangles = rectanglesCopy
-                .OrderBy(rectangle => rectangle.Height * rectangle.Width)
-                .Select(rectangle => new Rectangle(GetAppropriatePlace(rectangle.Size), rectangle.Size))
-                .ToList();
+            rectanglesCopy
+                .OrderBy(rectangle => rectangle.Width * rectangle.Height)
+                .ToList()
+                .ForEach(
+                    rectangle => rectangles.Add(new Rectangle(GetAppropriatePlace(rectangle.Size), rectangle.Size)));
         }
 
         public Point GetAppropriatePlace(Size rectangleSize)
