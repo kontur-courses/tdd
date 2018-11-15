@@ -24,7 +24,7 @@ namespace TagsCloudVisualization
                 .Select(x => (word:x.Key, count: x.Count()))
                 .ToArray();
             
-            var denominator = countedWords.Max(x => x.Item2);
+            var denominator = countedWords.Max(x => x.count);
             var sizedWords = 
                 countedWords.Select(x => (x.Item1, maxFontSize * x.Item2 / denominator))
                     .Where(x => x.Item2 > 5);
