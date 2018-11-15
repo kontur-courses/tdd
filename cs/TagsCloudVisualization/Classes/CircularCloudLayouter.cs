@@ -37,12 +37,13 @@ namespace TagsCloudVisualization.Classes
 
         public List<Rectangle> GenerateTestLayout()
         {
+            var rectangleCount = 150;
             var x = 90;
             var y = 10;
 
             int downSize;
 
-            for (var i = 1; i < 150; i++)
+            for (var i = 1; i < rectangleCount; i++)
             {
                 downSize = new Random().Next(0,5);
                 if (i % 20 == 0)
