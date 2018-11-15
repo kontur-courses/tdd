@@ -35,7 +35,8 @@ namespace TagsCloudVisualization
                 circukarCloudLayouter.PutNextRectangle(r);
             }
 
-            circukarCloudLayouter.VisualizeInPicture("img.png", new Size(width, height));
+            var render = new TagsCloudRenderer();
+            render.RenderIntoFile("img.png", circukarCloudLayouter.addedRectangles, new Size(width, height));
         }
     }
 
@@ -52,8 +53,8 @@ namespace TagsCloudVisualization
             if (x < 0 || y < 0)
                 throw new ArgumentException();
 
-            var spiral = new ArchimedeanSpiral(1);
-            spiralEnumerator = spiral.GetIenumeratorDecart(0.1);
+            var spiral = new ArchimedeanSpiral(0.5);
+            spiralEnumerator = spiral.GetIenumeratorDecart(0.05);
             this.center = center;
         }
 
@@ -92,18 +93,6 @@ namespace TagsCloudVisualization
             addedRectangles.Add(currentRectangle);
             return currentRectangle;
         }
-
-        public void VisualizeInPicture(string pictureName, Size pictureSize)
-        {
-            var btm = new Bitmap(pictureSize.Width, pictureSize.Height);
-            var obj = Graphics.FromImage(btm);
-            foreach (var r in addedRectangles)
-            {
-                obj.DrawRectangle(new Pen(Color.Brown), r);
-            }
-
-            btm.Save(pictureName);
-        }
     }
 
     [TestFixture]
@@ -114,7 +103,7 @@ namespace TagsCloudVisualization
         private Point center = new Point(500, 500);
         private readonly int Width = 1920;
         private readonly int Height = 1080;
-
+        private TagsCloudRenderer renderer = new TagsCloudRenderer();
 
         [SetUp]
         public void SetUp()
@@ -204,7 +193,7 @@ namespace TagsCloudVisualization
                 var path = AppDomain.CurrentDomain.BaseDirectory + name;
                 Console.WriteLine($"Tag cloud visualization saved to {path}");
 
-                circularCloudLayouter.VisualizeInPicture(path, new Size(Width, Height));
+                renderer.RenderIntoFile("img.png", circularCloudLayouter.addedRectangles, new Size(Width, Height));
             }
         }
     }
