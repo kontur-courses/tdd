@@ -9,12 +9,12 @@ namespace TagsCloudVisualization
     {
         private readonly Point center;
         private readonly SpiralTrack spiralTrack;
-        private readonly List<Rectangle> pastRectangles = new List<Rectangle>();
+        public readonly List<Rectangle> PastRectangles = new List<Rectangle>();
 
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
-            var step = 0.5;
+            const double step = 0.5;
             spiralTrack = new SpiralTrack(center, step);
         }
 
@@ -22,7 +22,7 @@ namespace TagsCloudVisualization
         {
             var nextRectangle = PutNextRectangleBySpiralTrack(rectangleSize);
             PullToCenter(nextRectangle);
-            pastRectangles.Add(nextRectangle);
+            PastRectangles.Add(nextRectangle);
             return nextRectangle;
         }
 
@@ -62,7 +62,7 @@ namespace TagsCloudVisualization
         }
 
         private bool NotIntersectWithPastRectangles(Rectangle rectangle) =>
-            !pastRectangles.Any(rect => rect.IntersectsWith(rectangle));
+            !PastRectangles.Any(rect => rect.IntersectsWith(rectangle));
 
         private Rectangle PutNextRectangleBySpiralTrack(Size rectangleSize)
         {

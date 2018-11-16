@@ -13,7 +13,8 @@ namespace TagsCloudVisualization
             var graphics = Graphics.FromImage(image);
 
             graphics.Clear(Color.White);
-            graphics.DrawRectangles(new Pen(Brushes.Black), layout);
+            if (layout.Length > 0)
+                graphics.DrawRectangles(new Pen(Brushes.Black), layout);
 
             return image;
         }
