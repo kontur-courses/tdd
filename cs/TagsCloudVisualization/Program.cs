@@ -1,4 +1,6 @@
-﻿using NUnit.Core;
+﻿using System;
+using System.Drawing;
+using System.IO;
 
 namespace TagsCloudVisualization
 {
@@ -6,7 +8,7 @@ namespace TagsCloudVisualization
     {
         public static void Main()
         {
-            
+
         }
     }
 }

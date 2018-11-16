@@ -10,11 +10,13 @@ namespace TagsCloudVisualization
             ShiftAboutImageCenter(layout, layoutCenter, imageCenter);
 
             var image = new Bitmap(size.Width, size.Height);
-            var graphics = Graphics.FromImage(image);
 
-            graphics.Clear(Color.White);
-            if (layout.Length > 0)
-                graphics.DrawRectangles(new Pen(Brushes.Black), layout);
+            using (var graphics = Graphics.FromImage(image))
+            {
+                graphics.Clear(Color.White);
+                if (layout.Length > 0)
+                    graphics.DrawRectangles(new Pen(Brushes.Black), layout);
+            }
 
             return image;
         }
