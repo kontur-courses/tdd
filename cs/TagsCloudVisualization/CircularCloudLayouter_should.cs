@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -50,6 +51,15 @@ namespace TagsCloudVisualization
             firstRectangleLocation
                 .IntersectsWith(secondRectangleLocation)
                 .Should().BeFalse();
+        }
+
+        [Test, MaxTime(1000)]
+        public void PutNextRectangle_ShouldNotCycle()
+        {
+            var rectangleLocations = Enumerable.Repeat(new Size(30, 30), 40);
+            var rectanglesLayout = rectangleLocations
+                .Select(circularCloudLayouter.PutNextRectangle)
+                .ToArray();
         }
     }
 }
