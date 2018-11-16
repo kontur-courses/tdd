@@ -20,6 +20,9 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
+            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+                throw new ArgumentException("rectangle size should be positive");
+
             var nextRectangle = PutNextRectangleBySpiralTrack(rectangleSize);
             PullToCenter(nextRectangle);
             PastRectangles.Add(nextRectangle);

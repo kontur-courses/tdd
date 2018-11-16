@@ -80,5 +80,25 @@ namespace TagsCloudVisualization
                 .Select(circularCloudLayouter.PutNextRectangle)
                 .ToArray();
         }
+
+        [Test]
+        public void PutNextRectangle_ShouldReturnRectangleWithPassedSize()
+        {
+            var rectangleSize = new Size(100, 10);
+
+            var rectangle = circularCloudLayouter.PutNextRectangle(rectangleSize);
+
+            rectangle.Size.Should().Be(rectangleSize);
+        }
+
+        [TestCase(0, 1, TestName = "width equal zero")]
+        [TestCase(1, 0, TestName = "height equal zero")]
+        [TestCase(1, -1, TestName = "height is negative")]
+        [TestCase(-1, 1, TestName = "width is negative")]
+        public void PutNextRectangle_ShouldThrowArgumentException_When(
+            int width, int height) =>
+            Assert.Throws<ArgumentException>(
+                () => circularCloudLayouter.PutNextRectangle(new Size(width, height)),
+                "rectangle size should be positive");
     }
 }
