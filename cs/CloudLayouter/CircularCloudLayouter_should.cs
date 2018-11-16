@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
+using NUnit.Framework.Internal;
 
 
 namespace CloudLayouter
@@ -22,8 +23,21 @@ namespace CloudLayouter
         [SetUp]
         public void Initalization()
         {
-            cloudLayouter = new CircularCloudLayouter(new Point(0,0));
+            cloudLayouter = new CircularCloudLayouter(new Point(250,250));
             random = new Random();
+        }
+        
+        [TearDown]
+        public void DrawFailedTest()
+        {
+            if (!Directory.Exists(directoryToSave))
+                Directory.CreateDirectory(directoryToSave);
+            using (Bitmap bmp = new Bitmap(500,500))
+            {
+                cloudLayouter.Draw(bmp);
+                bmp.Save(directoryToSave + Path.DirectorySeparatorChar + "faildeTest_" + Test.IdPrefix +".png", ImageFormat.Png); 
+            }
+            Console.WriteLine(string.Format("Saved to:{0}",directoryToSave));
         }
         
         [Test]
@@ -116,11 +130,11 @@ namespace CloudLayouter
         [TestCase("test3.png",200)]
         public void DrawingTest(string filename, int  tagCount)
         {
-            if (!System.IO.Directory.Exists(directoryToSave))
-                System.IO.Directory.CreateDirectory(directoryToSave);
+            if (!Directory.Exists(directoryToSave))
+                Directory.CreateDirectory(directoryToSave);
             using (Bitmap bmp = new Bitmap(500,500))
             {
-                CircularCloudLayouter cloudLayouter = new CircularCloudLayouter(new Point(250, 250));
+                var cloudLayouter = new CircularCloudLayouter(new Point(250, 250));
                 for (int i = 0; i < tagCount; i++)
                     cloudLayouter.PutNextRectangle(new Size(random.Next(20, 51), random.Next(10, 31)));
                 cloudLayouter.Draw(bmp);
@@ -129,24 +143,25 @@ namespace CloudLayouter
             Console.WriteLine(string.Format("Saved to:{0}",directoryToSave));
             
         }
-        
-        [TestCase("test1r.png",100)]
-        [TestCase("test2r.png",150)]
-        [TestCase("test3r.png",200)]
-        public void DrawingTestAfterReforming(string filename, int  tagCount)
+
+        [TestCase("test1r.png", 100)]
+        [TestCase("test2r.png", 150)]
+        [TestCase("test3r.png", 200)]
+        public void DrawingTestAfterReforming(string filename, int tagCount)
         {
             if (!Directory.Exists(directoryToSave))
                 Directory.CreateDirectory(directoryToSave);
-            using (Bitmap bmp = new Bitmap(500,500))
+            using (Bitmap bmp = new Bitmap(500, 500))
             {
-                CircularCloudLayouter cloudLayouter = new CircularCloudLayouter(new Point(250, 250));
+                var cloudLayouter = new CircularCloudLayouter(new Point(250, 250));
                 for (int i = 0; i < tagCount; i++)
                     cloudLayouter.PutNextRectangle(new Size(random.Next(20, 51), random.Next(10, 31)));
                 cloudLayouter.ReformTagCloud();
                 cloudLayouter.Draw(bmp);
-                bmp.Save(directoryToSave + Path.DirectorySeparatorChar + filename, ImageFormat.Png); 
+                bmp.Save(directoryToSave + Path.DirectorySeparatorChar + filename, ImageFormat.Png);
             }
-            Console.WriteLine("Saved to:{0}",directoryToSave);
+
+            Console.WriteLine("Saved to:{0}", directoryToSave);
         }
     }
 }
