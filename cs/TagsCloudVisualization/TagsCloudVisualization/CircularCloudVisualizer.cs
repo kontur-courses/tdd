@@ -5,7 +5,7 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudVisualizer
     {
-        private readonly Pen pen = new Pen(Brushes.BlueViolet, 1);
+        private readonly Pen pen = new Pen(Brushes.BlueViolet, 5);
 
         public Bitmap DrawRectangles(IEnumerable<Rectangle> rectangles, int radius = 500)
         {
