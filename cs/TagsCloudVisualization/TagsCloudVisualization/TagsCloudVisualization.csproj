@@ -72,6 +72,7 @@
     <Compile Include="Tests\SectorTests.cs" />
     <Compile Include="Tests\ToolsTests.cs" />
     <Compile Include="Tools.cs" />
+    <Compile Include="Visualizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

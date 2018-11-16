@@ -169,27 +169,47 @@ namespace TagsCloudVisualization
 
         private Point FormatPoint(Point rectangleLocation, Size rectangleSize)
         {
-            rectangleLocation = FindRectangleCenter(rectangleLocation, rectangleSize);
             rectangleLocation = MakeCoordinatesAbsolute(rectangleLocation);
+            rectangleLocation = FindUpperLeftPoint(rectangleLocation, rectangleSize);
+            rectangleLocation = AddCenterCoordinatesToPoint(rectangleLocation);
 
             return rectangleLocation;
         }
 
-        private static Point FindRectangleCenter(Point downLeftPoint, Size rectangleSize)
+        private Point FindUpperLeftPoint(Point firstToPlace, Size rectangleSize)
         {
-            var centerX = downLeftPoint.X + rectangleSize.Width / 2;
-            var centerY = downLeftPoint.Y + rectangleSize.Height / 2;
+            var deltaX = 0; var deltaY = 0;
 
-            return new Point(centerX, centerY);
+            if (_xCoefficient == 1 && _yCoefficient == 1)
+                deltaY = rectangleSize.Height;
+
+            if (_xCoefficient == -1 && _yCoefficient == 1)
+            {
+                deltaX = - rectangleSize.Width;
+                deltaY = rectangleSize.Height;
+            }
+
+            if (_xCoefficient == -1 && _yCoefficient == -1)
+                deltaX = - rectangleSize.Width;
+
+            var pointX = firstToPlace.X + deltaX;
+            var pointY = firstToPlace.Y + deltaY;
+
+            return new Point(pointX, pointY);
         }
 
         private Point MakeCoordinatesAbsolute(Point rectangleLocation)
         {
-            rectangleLocation.X += _center.X;
-            rectangleLocation.Y += _center.Y;
-
             rectangleLocation.X *= _xCoefficient;
             rectangleLocation.Y *= _yCoefficient;
+
+            return rectangleLocation;
+        }
+
+        private Point AddCenterCoordinatesToPoint(Point rectangleLocation)
+        {
+            rectangleLocation.X += _center.X;
+            rectangleLocation.Y += _center.Y;
 
             return rectangleLocation;
         }
@@ -207,11 +227,6 @@ namespace TagsCloudVisualization
         private void AddPoint(int x, int y)
         {
             _points.Add(new Point(x, y));
-        }
-
-        private void AddPoint(Point point)
-        {
-            _points.Add(point);
         }
 
         private int PointsNumber()
