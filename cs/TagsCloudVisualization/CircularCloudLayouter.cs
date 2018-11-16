@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -20,53 +21,44 @@ namespace TagsCloudVisualization
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             var nextRectangle = PutNextRectangleBySpiralTrack(rectangleSize);
-            //nextRectangle = PullToCenter(nextRectangle);
+            PullToCenter(nextRectangle);
             pastRectangles.Add(nextRectangle);
             return nextRectangle;
         }
 
-        public Rectangle PullToCenter(Rectangle rectangle)
+        public void PullToCenter(Rectangle rectangle)
         {
-            var pulledRectangle = rectangle;
+            ShiftRectangleAboutAxisBeforeIntersection(rectangle, Axis.OX);
+            ShiftRectangleAboutAxisBeforeIntersection(rectangle, Axis.OY);
+        }
+
+        public void ShiftRectangleAboutAxisBeforeIntersection(Rectangle rectangle, 
+            Axis axis)
+        {
+            var offset = GetRectangleOffsetAboutAxis(rectangle, axis);
+            var shiftedRectangle = rectangle.ShiftByAxis(Math.Sign(offset), axis);
+
+            while (offset != 0 && NotIntersectWithPastRectangles(shiftedRectangle))
+            {
+                shiftedRectangle = rectangle.ShiftByAxis(Math.Sign(offset), axis);
+                rectangle.Location = shiftedRectangle.Location;
+                offset = GetRectangleOffsetAboutAxis(rectangle, axis);
+            }
+        }
+
+        private int GetRectangleOffsetAboutAxis(Rectangle rectangle, Axis axis)
+        {
             var rectangleCenter = rectangle.GetCenter();
 
-            var dx = rectangleCenter.X - center.X;
-            while (TryHorizontalMove(pulledRectangle, dx))
-                dx = rectangleCenter.X - center.X;
-
-            var dy = rectangleCenter.Y - center.Y;
-            while (TryVerticalMove(pulledRectangle, dy))
-                dy = rectangleCenter.Y - center.Y;
-
-            return pulledRectangle;
-        }
-
-        public bool TryHorizontalMove(Rectangle rectangle, int dx)
-        {
-            var newRectangle = new Rectangle(rectangle.X + dx, rectangle.Y, 
-                rectangle.Width, rectangle.Height);
-
-            if (NotIntersectWithPastRectangles(newRectangle))
+            switch (axis)
             {
-                rectangle.X += dx;
-                return true;
+                case Axis.OX:
+                    return center.X - rectangleCenter.X;
+                case Axis.OY:
+                    return center.Y - rectangleCenter.Y;
+                default:
+                    throw new NotImplementedException();
             }
-
-            return false;
-        }
-
-        public bool TryVerticalMove(Rectangle rectangle, int dy)
-        {
-            var newRectangle = new Rectangle(rectangle.X, rectangle.Y + dy,
-                rectangle.Width, rectangle.Height);
-
-            if (NotIntersectWithPastRectangles(newRectangle))
-            {
-                rectangle.Y += dy;
-                return true;
-            }
-
-            return false;
         }
 
         private bool NotIntersectWithPastRectangles(Rectangle rectangle) =>

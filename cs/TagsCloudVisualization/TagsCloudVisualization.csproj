@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Axis.cs" />
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="CircularCloudLayouter_should.cs" />
     <Compile Include="ImageSaver.cs" />
