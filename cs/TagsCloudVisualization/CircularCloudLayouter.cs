@@ -24,7 +24,7 @@ namespace TagsCloudVisualization
                 Location = FindEmptyLocation(rectangleSize)
             };
 
-            Compact(rectangle);
+            Compact(ref rectangle);
 
             cloudRectangles.Add(rectangle);
             return rectangle;
@@ -56,7 +56,7 @@ namespace TagsCloudVisualization
             }
         }
 
-        private bool Shift(Rectangle rect, int shiftX, int shiftY)
+        private bool Shift(ref Rectangle rect, int shiftX, int shiftY)
         {
             if (shiftX == 0 && shiftY == 0)
                 return false;
@@ -73,13 +73,13 @@ namespace TagsCloudVisualization
             return true;
         }
 
-        private void Compact(Rectangle rect)
+        private void Compact(ref Rectangle rect)
         {
             if (cloudRectangles.Count == 0)
                 return;
 
-            while (Shift(rect, Math.Sign(cloudCenter.X - rect.X), 0) ||
-                   Shift(rect, 0, Math.Sign(cloudCenter.Y - rect.Y))) ;
+            while (Shift(ref rect, Math.Sign(cloudCenter.X - rect.X), 0) ||
+                   Shift(ref rect, 0, Math.Sign(cloudCenter.Y - rect.Y))) ;
         }
     }
 }
