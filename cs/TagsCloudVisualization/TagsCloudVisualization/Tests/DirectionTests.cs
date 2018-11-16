@@ -1,5 +1,4 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 
 namespace TagsCloudVisualization.Tests
@@ -19,9 +18,7 @@ namespace TagsCloudVisualization.Tests
             var direction = new Direction();
             direction.GetNextDirection();
 
-            var alpha = Math.Atan(direction.GetNextDirection());
-
-            return alpha;
+            return direction.GetNextDirection(); ;
         }
 
     }

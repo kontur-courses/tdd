@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace TagsCloudVisualization
+﻿namespace TagsCloudVisualization
 {
-    class Direction
+    public class Direction: IDirection<double>
     {
         private double _currentAlpha;
         private const double AngleShift = 1;
@@ -10,9 +8,9 @@ namespace TagsCloudVisualization
         public double GetNextDirection()
         {
             var oldAlpha = _currentAlpha;
-            _currentAlpha = (_currentAlpha + AngleShift) % (Math.PI * 2);
+            _currentAlpha = Tools.AngleToStandardValue(_currentAlpha + AngleShift);
 
-            return Math.Tan(oldAlpha);
+            return oldAlpha;
         }
     }
 }
