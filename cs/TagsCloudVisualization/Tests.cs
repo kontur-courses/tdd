@@ -56,6 +56,15 @@ namespace TagsCloudVisualization
             firstRectangle.IntersectsWith(secondRectangle).Should().BeFalse();
         }
 
+        [TestCase(-1, 1, TestName = "PutNextRectangle Should Throw Argument Exception With Negative Width")]
+        [TestCase(0, 1, TestName = "PutNextRectangle Should Throw Argument Exception With Zero Width")]
+        [TestCase(1, -1, TestName = "PutNextRectangle Should Throw Argument Exception With Negative Height")]
+        [TestCase(1, 0, TestName = "PutNextRectangle Should Throw Argument Exception With Zero Height")]
+        public void test(int width, int height)
+        {
+            var size = new Size(width, height);
+            Assert.Throws<ArgumentException>(() => cloud.PutNextRectangle(size));
+        }
         [Test]
         public void FirstRectangle_ShouldBeInCenter()
         {
