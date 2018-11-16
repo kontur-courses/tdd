@@ -8,8 +8,6 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter : ICloudLayouter
     {
         public Point Center { get; }
-        public int Width => Rectangles.Max(r => r.Right) - Rectangles.Min(r => r.Left);
-        public int Height => Rectangles.Max(r => r.Bottom) - Rectangles.Min(r => r.Top);
         public List<Rectangle> Rectangles { get; } = new List<Rectangle>();
 
         public CircularCloudLayouter(Point center)

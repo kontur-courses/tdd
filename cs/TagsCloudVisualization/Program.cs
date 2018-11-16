@@ -21,7 +21,7 @@ namespace TagsCloudVisualization
                 layouter.PutNextRectangle(new Size(int.Parse(values[0]), int.Parse(values[1])));
             }
 
-            new CloudVisualizer(layouter).CreateImage(options.ImagePath);
+            new CloudVisualizer(layouter.Rectangles).CreateImage(options.ImagePath);
         }
 
         private class Options

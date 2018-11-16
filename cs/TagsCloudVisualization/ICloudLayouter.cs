@@ -7,8 +7,6 @@ namespace TagsCloudVisualization
     {
         Point Center { get; }
         List<Rectangle> Rectangles { get; }
-        int Width { get; }
-        int Height { get; }
         Rectangle PutNextRectangle(Size rectangleSize);
     }
 }

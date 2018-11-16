@@ -1,23 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
 
 namespace TagsCloudVisualization
 {
-    public class CloudVisualizer
+    public class CloudVisualizer : ICloudVisualizer
     {
-        public ICloudLayouter Layouter { get; }
+        public IEnumerable<Rectangle> Rectangles { get; }
 
-        public CloudVisualizer(ICloudLayouter layouter)
+        public CloudVisualizer(IEnumerable<Rectangle> rectangles)
         {
-            Layouter = layouter;
+            Rectangles = rectangles;
         }
 
         public Bitmap CreateImage(string path)
         {
-            var width = Layouter.Width;
-            var height = Layouter.Height;
+            var width = Rectangles.Max(r => r.Right) - Rectangles.Min(r => r.Left);
+            var height = Rectangles.Max(r => r.Bottom) - Rectangles.Min(r => r.Top);
             var image = new Bitmap(width * 2, height * 2);
             var graphics = Graphics.FromImage(image);
             var newCenter = new Point(image.Width / 2, image.Height / 2);
@@ -27,7 +28,7 @@ namespace TagsCloudVisualization
                 .Select(pi => (Brush)pi.GetValue(null, null))
                 .ToList();
 
-            foreach (var rectangle in Layouter.Rectangles)
+            foreach (var rectangle in Rectangles)
             {
                 var movedRectangle = new Rectangle(
                     rectangle.X + newCenter.X, rectangle.Y + newCenter.Y, rectangle.Width, rectangle.Height);

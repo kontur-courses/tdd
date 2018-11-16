@@ -30,7 +30,7 @@ namespace TagsCloudTests
             var imagePath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
                 TestContext.CurrentContext.Test.Name + $"{DateTime.Now:yyyy-MM-dd_hh-mm-ss-fff}" + ".bmp");
-            new CloudVisualizer(layouter).CreateImage(imagePath);
+            new CloudVisualizer(layouter.Rectangles).CreateImage(imagePath);
             TestContext.Out.WriteLine("Tag cloud visualization saved to file " + imagePath);
         }
 
@@ -70,7 +70,7 @@ namespace TagsCloudTests
         {
             PopulateWithRandomRectangles(layouter);
 
-            new CloudVisualizer(layouter).CreateImage(@"D:\image.bmp");
+            new CloudVisualizer(layouter.Rectangles).CreateImage(@"D:\image.bmp");
 
             var rectanglesChecked = 1;
             foreach (var rectangle in layouter.Rectangles)
@@ -86,8 +86,11 @@ namespace TagsCloudTests
         public void PutNextRectangle_RectanglesHaveDenseDistribution()
         {
             PopulateWithRandomRectangles(layouter);
-            var rectanglesArea = layouter.Rectangles.Sum(r => r.Width * r.Height);
-            var radius = Math.Max(layouter.Width, layouter.Height) / 2;
+            var rectangles = layouter.Rectangles;
+            var rectanglesArea = rectangles.Sum(r => r.Width * r.Height);
+            var width = rectangles.Max(r => r.Right) - rectangles.Min(r => r.Left);
+            var height = rectangles.Max(r => r.Bottom) - rectangles.Min(r => r.Top);
+            var radius = Math.Max(width, height) / 2;
             var circleArea = Math.PI * Math.Pow(radius, 2);
             var density = rectanglesArea / circleArea;
 
@@ -98,9 +101,12 @@ namespace TagsCloudTests
         public void PutNextRectangle_CloudHasCircularShape()
         {
             PopulateWithRandomRectangles(layouter);
-            var radius = Math.Max(layouter.Width, layouter.Height) / 2;
+            var rectangles = layouter.Rectangles;
+            var width = rectangles.Max(r => r.Right) - rectangles.Min(r => r.Left);
+            var height = rectangles.Max(r => r.Bottom) - rectangles.Min(r => r.Top);
+            var radius = Math.Max(width, height) / 2;
             var circleArea = Math.PI * Math.Pow(radius, 2);
-            var rectangleArea = layouter.Width * layouter.Height;
+            var rectangleArea = width * height;
 
             circleArea.Should().BeLessThan(rectangleArea);
         }
