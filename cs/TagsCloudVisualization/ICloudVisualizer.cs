@@ -1,9 +1,11 @@
-﻿using System.Drawing;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace TagsCloudVisualization
 {
     public interface ICloudVisualizer
     {
-        Bitmap CreateImage(string path);
+        Bitmap CreateImage(IEnumerable<Rectangle> rectangles, string path);
     }
 }

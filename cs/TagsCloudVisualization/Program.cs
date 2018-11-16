@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using CommandLine;
 
 namespace TagsCloudVisualization
@@ -15,13 +16,11 @@ namespace TagsCloudVisualization
 
         private static void ProcessArguments(Options options)
         {
-            var layouter = new CircularCloudLayouter(new Point(0, 0));
-            foreach (var values in options.Rectangles.Select(s => s.Split(',')))
-            {
-                layouter.PutNextRectangle(new Size(int.Parse(values[0]), int.Parse(values[1])));
-            }
-
-            new CloudVisualizer(layouter.Rectangles).CreateImage(options.ImagePath);
+            var rectangles = options.Rectangles.Select(s => s.Split(',')).Select(x =>
+                new Size(int.Parse(x[0]), int.Parse(x[1])));
+            var layouter = new CircularCloudLayouter(new Point());
+            var visualizer = new CloudVisualizer();
+            new RectangleVisualizer(rectangles, layouter, visualizer).CreateCloudImage(options.ImagePath);
         }
 
         private class Options

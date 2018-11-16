@@ -21,49 +21,12 @@ namespace TagsCloudVisualization
                 throw new ArgumentException("Rectangle dimensions must be positive");
 
             var rectangle = new Rectangle(Center, rectangleSize);
-            rectangle = MoveToValidPosition(rectangle);
-            rectangle = TryMoveCloserToCenter(rectangle);
+            var spiralStrategy = new SpiralStrategy(Rectangles, Center);
+            var centerMoveStrategy = new CenterMoveStrategy(Rectangles, Center);
+
+            rectangle = spiralStrategy.PlaceRectangle(rectangle);
+            rectangle = centerMoveStrategy.PlaceRectangle(rectangle);
             Rectangles.Add(rectangle);
-            return rectangle;
-        }
-
-        private bool RectangleHasCollisions(Rectangle rectangle)
-        {
-            return Rectangles.Any(r => r.IntersectsWith(rectangle));
-        }
-
-        private Rectangle MoveToValidPosition(Rectangle rectangle)
-        {
-            for (var step = 1; RectangleHasCollisions(rectangle); step++)
-            {
-                var x = step * Math.Cos(step);
-                var y = step * Math.Sin(step);
-                rectangle.Location = new Point((int)x + Center.X, (int)y + Center.Y);
-            }
-
-            return rectangle;
-        }
-
-        private Rectangle TryMoveCloserToCenter(Rectangle rectangle)
-        {
-            var stepX = 1 * Math.Sign(Center.X - rectangle.Location.X);
-            var stepY = 1 * Math.Sign(Center.Y - rectangle.Location.Y);
-
-            var previousLocation = rectangle.Location;
-            while (!RectangleHasCollisions(rectangle) && rectangle.X != Center.X + stepX)
-            {
-                previousLocation = rectangle.Location;
-                rectangle = rectangle.Move(stepX, 0);
-            }
-            rectangle.Location = previousLocation;
-
-            while (!RectangleHasCollisions(rectangle) && rectangle.Y != Center.Y + stepY)
-            {
-                previousLocation = rectangle.Location;
-                rectangle = rectangle.Move(0, stepY);
-            }
-            rectangle.Location = previousLocation;
-
             return rectangle;
         }
     }

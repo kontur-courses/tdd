@@ -30,14 +30,15 @@ namespace TagsCloudTests
             var imagePath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
                 TestContext.CurrentContext.Test.Name + $"{DateTime.Now:yyyy-MM-dd_hh-mm-ss-fff}" + ".bmp");
-            new CloudVisualizer(layouter.Rectangles).CreateImage(imagePath);
+            new CloudVisualizer().CreateImage(layouter.Rectangles, imagePath);
             TestContext.Out.WriteLine("Tag cloud visualization saved to file " + imagePath);
         }
 
         [Test]
         public void Constructor_CreatesLayouterWithCenter()
         {
-            new CircularCloudLayouter(new Point(0, 0)).Center.Should().Be(new Point(0, 0));
+            var layouter = new CircularCloudLayouter(new Point(0, 0));
+            layouter.Center.Should().Be(new Point(0, 0));
         }
 
         [TestCase(0, 1, TestName = "has zero width")]
@@ -54,8 +55,8 @@ namespace TagsCloudTests
         [Test]
         public void PutNextRectangle_ReturnsCorrectRectangle()
         {
-            layouter.PutNextRectangle(size)
-                .Should().Be(new Rectangle(layouter.Center, size));
+            var returnedValue = layouter.PutNextRectangle(size);
+            returnedValue.Should().Be(new Rectangle(layouter.Center, size));
         }
 
         [Test]
@@ -70,7 +71,7 @@ namespace TagsCloudTests
         {
             PopulateWithRandomRectangles(layouter);
 
-            new CloudVisualizer(layouter.Rectangles).CreateImage(@"D:\image.bmp");
+            new CloudVisualizer().CreateImage(layouter.Rectangles, @"D:\image.bmp");
 
             var rectanglesChecked = 1;
             foreach (var rectangle in layouter.Rectangles)

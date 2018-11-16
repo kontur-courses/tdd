@@ -7,20 +7,24 @@ using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
-    public class RectangleVisualizer<Layouter, Visualizer> 
-        where Layouter : ICloudLayouter, new()
-        where Visualizer : ICloudVisualizer, new()
+    public class RectangleVisualizer
     {
         public IEnumerable<Size> Rectangles { get; }
+        public ICloudLayouter Layouter { get; }
+        public ICloudVisualizer Visualizer { get; }
 
-        public RectangleVisualizer(IEnumerable<Size> rectangles)
-		{
+        public RectangleVisualizer(IEnumerable<Size> rectangles,
+            ICloudLayouter layouter, ICloudVisualizer visualizer)
+        {
             Rectangles = rectangles;
+            Layouter = layouter;
+            Visualizer = visualizer;
         }
 
         public void CreateCloudImage(string path)
         {
-            
+            Rectangles.Select(Layouter.PutNextRectangle);
+            Visualizer.CreateImage(Layouter.Rectangles, path);
         }
     }
 }
