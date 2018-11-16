@@ -6,6 +6,7 @@ namespace TagsCloudVisualization
 {
     class CircularCloudLayouter
     {
+        private const double spiralStepCoiff = 1.5;
         private Point cloudCenter;
         private List<Rectangle> cloudRectangles;
 
@@ -23,7 +24,7 @@ namespace TagsCloudVisualization
                 Location = FindEmptyLocation(rectangleSize)
             };
 
-            Compact(ref rectangle);
+            Compact(rectangle);
 
             cloudRectangles.Add(rectangle);
             return rectangle;
@@ -37,7 +38,7 @@ namespace TagsCloudVisualization
             {
                 rectangle.Location = new Point(position.X - rectangle.Width / 2, position.Y - rectangle.Height / 2);
 
-                if (cloudRectangles.TrueForAll(rect => !rect.IntersectsWith(rectangle)))
+                if (!rectangle.IntersectsWithAny(cloudRectangles))
                     return rectangle.Location;
             }
             throw new Exception("Didn't find position for rectangle");
@@ -45,8 +46,6 @@ namespace TagsCloudVisualization
 
         private static IEnumerable<Point> SpiralPositions(Point center)
         {
-            double spiralStepCoiff = 1.5;
-
             for (double fi = 0; ; fi += Math.PI / 180)
             {
                 var r = spiralStepCoiff * fi;
@@ -57,7 +56,7 @@ namespace TagsCloudVisualization
             }
         }
 
-        private bool Shift(ref Rectangle rect, int shiftX, int shiftY)
+        private bool Shift(Rectangle rect, int shiftX, int shiftY)
         {
             if (shiftX == 0 && shiftY == 0)
                 return false;
@@ -74,13 +73,13 @@ namespace TagsCloudVisualization
             return true;
         }
 
-        private void Compact(ref Rectangle rect)
+        private void Compact(Rectangle rect)
         {
             if (cloudRectangles.Count == 0)
                 return;
 
-            while (Shift(ref rect, Math.Sign(cloudCenter.X - rect.X), 0) ||
-                   Shift(ref rect, 0, Math.Sign(cloudCenter.Y - rect.Y))) ;
+            while (Shift(rect, Math.Sign(cloudCenter.X - rect.X), 0) ||
+                   Shift(rect, 0, Math.Sign(cloudCenter.Y - rect.Y))) ;
         }
     }
 }
