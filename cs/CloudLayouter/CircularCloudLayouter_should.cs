@@ -4,10 +4,8 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
 using NUnit.Framework;
 using FluentAssertions;
-using NUnit.Framework.Interfaces;
 
 
 namespace CloudLayouter
@@ -59,13 +57,13 @@ namespace CloudLayouter
         [TestCase(20)]
         public void NextRectangleShouldNotIntersectWitPrevious(int count)
         {
-            Rectangle prevRect = cloudLayouter.PutNextRectangle(new Size(random.Next(100), random.Next(100)));
-            Rectangle nextRect = new Rectangle();
+            var previosRectangle = cloudLayouter.PutNextRectangle(new Size(random.Next(100), random.Next(100)));
+            var nextRectangle = new Rectangle();
             for (int i = 0; i < count; i++)
             {
-                nextRect = cloudLayouter.PutNextRectangle(new Size(random.Next(100), random.Next(100)));
-                prevRect.IntersectsWith(nextRect).Should().BeFalse();
-                prevRect = nextRect;
+                nextRectangle = cloudLayouter.PutNextRectangle(new Size(random.Next(100), random.Next(100)));
+                previosRectangle.IntersectsWith(nextRectangle).Should().BeFalse();
+                previosRectangle = nextRectangle;
             }
         }
 
@@ -74,7 +72,7 @@ namespace CloudLayouter
         [TestCase(20)]
         public void AllRectanglesShouldNotIntersectWithEachOther(int count)
         {
-            List<Rectangle> rectList = new List<Rectangle>();
+            var rectList = new List<Rectangle>();
             for (int i = 0; i < count; i++)
             {
                 rectList.Add(cloudLayouter.PutNextRectangle(new Size(random.Next(100), random.Next(100))));
@@ -85,12 +83,13 @@ namespace CloudLayouter
                 rect.IntersectsWith(rectList.Where(x => x != rect)).Should().BeFalse();
             }
         }
+        
         [TestCase(10)]
         [TestCase(15)]
         [TestCase(20)]
         public void AllRectanglesShouldNotIntersectWithEachOtherAfterReforming(int count)
         {
-            List<Rectangle> rectList = new List<Rectangle>();
+            var rectList = new List<Rectangle>();
             for (int i = 0; i < count; i++)
             {
                 rectList.Add(cloudLayouter.PutNextRectangle(new Size(random.Next(100), random.Next(100))));
@@ -136,8 +135,8 @@ namespace CloudLayouter
         [TestCase("test3r.png",200)]
         public void DrawingTestAfterReforming(string filename, int  tagCount)
         {
-            if (!System.IO.Directory.Exists(directoryToSave))
-                System.IO.Directory.CreateDirectory(directoryToSave);
+            if (!Directory.Exists(directoryToSave))
+                Directory.CreateDirectory(directoryToSave);
             using (Bitmap bmp = new Bitmap(500,500))
             {
                 CircularCloudLayouter cloudLayouter = new CircularCloudLayouter(new Point(250, 250));
@@ -147,7 +146,7 @@ namespace CloudLayouter
                 cloudLayouter.Draw(bmp);
                 bmp.Save(directoryToSave + Path.DirectorySeparatorChar + filename, ImageFormat.Png); 
             }
-            Console.WriteLine(string.Format("Saved to:{0}",directoryToSave));
+            Console.WriteLine("Saved to:{0}",directoryToSave);
         }
     }
 }

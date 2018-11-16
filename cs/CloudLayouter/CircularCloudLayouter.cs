@@ -31,7 +31,7 @@ namespace CloudLayouter
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
-            anchorpoints = new SortedSet<Point>(new PointDistanceCompaper(this.center));
+            anchorpoints = new SortedSet<Point>(new PointDistanceComparer(this.center));
             rectangles = new HashSet<Rectangle>();
             
             anchorpoints.Add(center);
@@ -50,7 +50,7 @@ namespace CloudLayouter
 
         private Rectangle SearchBestValidPlace(Size size)
         {
-            Rectangle newRectangle = new Rectangle(new Point(), size);
+            var newRectangle = new Rectangle(new Point(), size);
             
             foreach (var point in anchorpoints)
             {
@@ -120,11 +120,11 @@ namespace CloudLayouter
         }
     }
 
-    public class PointDistanceCompaper : IComparer<Point>
+    public class PointDistanceComparer : IComparer<Point>
     {
         private Point anchorPoint;
         
-        public PointDistanceCompaper(Point anchorPoint)
+        public PointDistanceComparer(Point anchorPoint)
         {
             this.anchorPoint = anchorPoint;
         }
