@@ -4,6 +4,13 @@ namespace TagsCloudVisualization
 {
     public static class RectangleExtensions
     {
+        public static Point GetRectangleCenter(this Rectangle rectangle)
+        {
+            return new Point(
+                rectangle.Location.X + rectangle.Width / 2,
+                rectangle.Location.Y + rectangle.Height / 2);
+        }
+
         public static Rectangle CenterRectangleLocation(this Rectangle rectangle)
         {
             var center = new Point(
