@@ -7,7 +7,9 @@ namespace TagsCloudVisualization
     {
         public static Rectangle ShiftCoordinatesToCenterRectangle(this Rectangle rectangle)
         {
-            var location = new Point(rectangle.X - rectangle.Width / 2, rectangle.Y - rectangle.Height / 2);
+            var location = rectangle.Location;
+            location.Offset(new Point(- rectangle.Width / 2, - rectangle.Height / 2));
+
             return new Rectangle(location, rectangle.Size);
         }
 
@@ -21,7 +23,10 @@ namespace TagsCloudVisualization
 
         public static Point GetCenter(this Rectangle rectangle)
         {
-            return new Point(rectangle.X + rectangle.Width / 2, rectangle.Y + rectangle.Height / 2);
+            var location = rectangle.Location;
+            location.Offset(new Point(rectangle.Width / 2, rectangle.Height / 2));
+
+            return location;
         }
     }
 }

@@ -7,16 +7,16 @@ using NUnit.Framework.Interfaces;
 namespace TagsCloudVisualization
 {
     [TestFixture]
-    class CircularCloudLayouterTests
+    class CloudLayouterTests
     {
         private static Point center;
-        private static CircularCloudLayouter cloudLayouter;
+        private static CloudLayouter cloudLayouter;
         [SetUp]
         public void InitializeTests()
         {
             center = new Point(1000, 1000);
             var spiral = new ArchimedesSpiral(center);
-            cloudLayouter = new CircularCloudLayouter(spiral, center);
+            cloudLayouter = new CloudLayouter(spiral, center);
         }
 
         [TestCase(0, 0, TestName = "CenterOfCloudAreEquivalentToLeftUpperBoundOfFirstRectangleOnZeroSize")]
@@ -93,7 +93,7 @@ namespace TagsCloudVisualization
         //[Test, TestCaseSource(nameof(TestCasesGeneratorFor_NextRectangleMustByFartherFromCenter))]
         //public void NextRectangleMustByFartherFromCenter(IEnumerable<Size> rectanglesSizes)
         //{
-        //    var cloud = new CircularCloudLayouter(new Point(0, 0));
+        //    var cloud = new CloudLayouter(new Point(0, 0));
         //    var lastDistance = 0.0;
 
         //    foreach (var rectangleSize in rectanglesSizes)

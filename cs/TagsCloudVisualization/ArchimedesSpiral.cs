@@ -13,7 +13,7 @@ namespace TagsCloudVisualization
         private readonly Point center;
         private double angle = 0;
 
-        private const double SpiralShift = 2;
+        private const double SpiralShift = 1;
         private const double AngleShift = 0.05;
 
         private Point GetCurrentPositionOnTheSpiral()
@@ -24,7 +24,7 @@ namespace TagsCloudVisualization
             return new Point((int)x, (int)y);
         }
 
-        public Rectangle GetRectangleInCurrentSpiralPosition(Size rectangleSize)
+        public Rectangle GetRectangleInNextLocation(Size rectangleSize)
         {
             angle += AngleShift;
             var rectangle = new Rectangle(GetCurrentPositionOnTheSpiral(), rectangleSize);

@@ -4,6 +4,6 @@ namespace TagsCloudVisualization
 {
     interface ISpiral
     {
-        Rectangle GetRectangleInCurrentSpiralPosition(Size rectangleSize);
+        Rectangle GetRectangleInNextLocation(Size rectangleSize);
     }
 }

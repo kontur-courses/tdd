@@ -7,8 +7,8 @@ namespace TagsCloudVisualization
 {
     class CircularCloudVisualization
     {
-        private const int CountOfRectangles = 1000;
-
+        private const int CountOfRectangles = 100;
+        
         private const int MinSizeOfRectangle = 50;
         private const int MaxSizeOfRectangle = 100;
 
@@ -21,7 +21,7 @@ namespace TagsCloudVisualization
             var center = new Point(BitmapWidth / 2, BitmapHeight / 2);
             var spiral = new ArchimedesSpiral(center);
 
-            var cloudLayouter = new CircularCloudLayouter(spiral, center);
+            var cloudLayouter = new CloudLayouter(spiral, center);
 
             FillCloudWithRectangles(cloudLayouter);
 
@@ -32,7 +32,7 @@ namespace TagsCloudVisualization
         }
 
 
-        public static Bitmap GetBitmapWithRectangles(CircularCloudLayouter cloudLayouter)
+        public static Bitmap GetBitmapWithRectangles(CloudLayouter cloudLayouter)
         {
             var bitmap = new Bitmap(BitmapWidth, BitmapHeight);
             var pen = new Pen(Color.Black);
@@ -66,13 +66,13 @@ namespace TagsCloudVisualization
             return Color.FromArgb(r, g, b);
         }
 
-        private static void FillCloudWithRectangles(CircularCloudLayouter cloud)
+        private static void FillCloudWithRectangles(CloudLayouter cloud)
         {
             var rnd = new Random();
 
             for (var i = 0; i < CountOfRectangles; i++)
             {
-                var width = rnd.Next(MinSizeOfRectangle, MaxSizeOfRectangle);
+                var width = rnd.Next(MinSizeOfRectangle * 10, MaxSizeOfRectangle * 10);
                 var height = rnd.Next(MinSizeOfRectangle, MaxSizeOfRectangle);
 
                 var size = new Size(width, height);
