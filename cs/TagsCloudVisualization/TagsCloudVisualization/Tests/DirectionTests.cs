@@ -1,10 +1,9 @@
 ﻿using NUnit.Framework;
 
-
 namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
-    class DirectionTests
+    internal class DirectionTests
     {
         [TestCase(ExpectedResult = 0, TestName = "BeZeroWhenTakeFirstValue")]
         public double DirectionShould()
@@ -18,8 +17,8 @@ namespace TagsCloudVisualization.Tests
             var direction = new Direction();
             direction.GetNextDirection();
 
-            return direction.GetNextDirection(); ;
+            return direction.GetNextDirection();
+            ;
         }
-
     }
 }

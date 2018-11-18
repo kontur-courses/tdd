@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
-
 
 namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
     public class CircularCloudLayouterTests
     {
-        private CircularCloudLayouter _layout;
-
         [SetUp]
         public void SetUp()
         {
@@ -25,7 +23,7 @@ namespace TagsCloudVisualization.Tests
             {
                 var testDir = TestContext.CurrentContext.TestDirectory;
                 var methodName = TestContext.CurrentContext.Test.Name;
-                var filePath = System.IO.Path.Combine(testDir, "..", "..", "Tests", "BadCases", "Case" + methodName + ".jpg");
+                var filePath = Path.Combine(testDir, "..", "..", "Tests", "BadCases", "Case" + methodName + ".jpg");
 
                 var visualizer = new Visualizer(_layout);
                 visualizer.DrawTagsCloud(filePath);
@@ -35,11 +33,13 @@ namespace TagsCloudVisualization.Tests
             _layout = null;
         }
 
+        private CircularCloudLayouter _layout;
+
         [TestCase(TestName = "ShouldFall_AndCreateFileReport")]
         public void PutNextRectangle_IncorrectPlacement()
         {
             _layout = GetIncorrectRectanglePlacement();
-            var result = CircularCloudLayouter.IsRectanglesIntersect(_layout.Rectangles[0], _layout.Rectangles[1]);
+            var result = IsRectanglesIntersect(_layout.Rectangles[0], _layout.Rectangles[1]);
 
             result.Should().BeFalse();
         }
@@ -50,7 +50,7 @@ namespace TagsCloudVisualization.Tests
             var rect1 = new Rectangle(new Point(0, 10), new Size(20, 10));
             var rect2 = new Rectangle(new Point(-10, 10), new Size(20, 10));
 
-            layout.Rectangles.AddRange(new List<Rectangle>() {rect1, rect2});
+            layout.Rectangles.AddRange(new List<Rectangle> {rect1, rect2});
 
             return layout;
         }
@@ -64,7 +64,7 @@ namespace TagsCloudVisualization.Tests
             _layout.PutNextRectangle(new Size(85, 53));
             _layout.PutNextRectangle(new Size(110, 46));
 
-            return CircularCloudLayouter.IsRectanglesIntersect(_layout.Rectangles);
+            return IsRectanglesIntersect(_layout.Rectangles);
         }
 
         [TestCase(ExpectedResult = false)]
@@ -83,7 +83,7 @@ namespace TagsCloudVisualization.Tests
                 _layout.PutNextRectangle(new Size(x, y));
             }
 
-            return CircularCloudLayouter.IsRectanglesIntersect(_layout.Rectangles);
+            return IsRectanglesIntersect(_layout.Rectangles);
         }
 
         [TestCase(10, 4)]
@@ -103,6 +103,31 @@ namespace TagsCloudVisualization.Tests
 
             act.Should().Throw<ArgumentException>()
                 .WithMessage(msg);
+        }
+
+        private static bool IsRectanglesIntersect(Rectangle first, Rectangle second)
+        {
+            if (first.X > second.X)
+            {
+                var tmp = new Rectangle(first.X, first.Y, first.Width, first.Height);
+                first = second;
+                second = tmp;
+            }
+
+            var xIntersects = first.X + first.Width > second.X;
+            var yIntersects = second.Y > first.Y - first.Height && second.Y - second.Height < first.Y;
+
+            return xIntersects && yIntersects;
+        }
+
+        private static bool IsRectanglesIntersect(List<Rectangle> rectangles)
+        {
+            for (var i = 0; i < rectangles.Count; i++)
+            for (var j = i + 1; j < rectangles.Count; j++)
+                if (IsRectanglesIntersect(rectangles[i], rectangles[j]))
+                    return true;
+
+            return false;
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace TagsCloudVisualization
 {
-    class Visualizer
+    internal class Visualizer
     {
         private readonly CircularCloudLayouter _layout;
         private Bitmap _bitmap;
@@ -58,7 +58,7 @@ namespace TagsCloudVisualization
             {
                 if (rectangle.X <= _minX)
                     _minX = rectangle.X;
-                if (rectangle.X + rectangle.Width>= _maxX)
+                if (rectangle.X + rectangle.Width >= _maxX)
                     _maxX = rectangle.X + rectangle.Width;
                 if (rectangle.Y - rectangle.Height <= _minY)
                     _minY = rectangle.Y - rectangle.Height;

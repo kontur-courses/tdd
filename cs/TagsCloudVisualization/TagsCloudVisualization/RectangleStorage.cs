@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 
-
 namespace TagsCloudVisualization
 {
     public class RectangleStorage
@@ -12,7 +11,7 @@ namespace TagsCloudVisualization
         public RectangleStorage(Point center, IDirection<double> direction)
         {
             _direction = direction;
-            _sectors = new List<Sector>()
+            _sectors = new List<Sector>
             {
                 new Sector(Quadrant.First, center),
                 new Sector(Quadrant.Second, center),
@@ -31,9 +30,9 @@ namespace TagsCloudVisualization
 
         private Sector ChoseSectorByDirection(double direction)
         {
-            var quadrant = Tools.DetermineQuadrantByDirection(direction);
+            var quadrant = direction.DetermineQuadrantByDirection();
 
-            return _sectors[(int)quadrant];
+            return _sectors[(int) quadrant];
         }
     }
 }
