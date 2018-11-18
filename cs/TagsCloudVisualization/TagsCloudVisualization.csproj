@@ -53,18 +53,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classes\CircularCloudLayouter.cs" />
-    <Compile Include="Classes\SpiralGenerator.cs" />
-    <Compile Include="Classes\Vizualizer.cs" />
+    <Compile Include="Layout generation\CircularCloudLayouter.cs" />
+    <Compile Include="Layout generation\SpiralGenerator.cs" />
+    <Compile Include="Layout vizualization\Vizualizer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Tests" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
