@@ -2,7 +2,7 @@
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
-using TagsCloudVisualization.Classes;
+using TagsCloudVisualization.Layout_generation;
 
 namespace TagCloudTests
 {

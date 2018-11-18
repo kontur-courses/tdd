@@ -4,7 +4,9 @@ using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using TagsCloudVisualization.Classes;
+using TagsCloudVisualization.Layout_generation;
+using TagsCloudVisualization.Layout_vizualization;
+
 namespace TagCloudTests
 {
     [TestFixture]
@@ -68,14 +70,16 @@ namespace TagCloudTests
         }
         
         [TearDown]
-        public void CreateImade_IfTestFail()
+        public void CreateImade_IfTestFails()
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
                 var path = Path.Combine(TestContext.CurrentContext.TestDirectory, TestContext.CurrentContext.Test.Name + ".bmp");
-                var vizualizer = new Vizualizer(new Size(1500, 900));
-                vizualizer.DrawRectangles(layouter.Rectangles);
-                vizualizer.SaveImage(path);
+                var vizualizer = new Vizualizer();
+                var area = new Size(1500, 900);
+                
+                var layout = vizualizer.GetLayoutImage(layouter.Rectangles, area);
+                vizualizer.SaveImage(path, layout);
                 Console.WriteLine($"Tag cloud visualization saved to file {path}");
             }
         }
