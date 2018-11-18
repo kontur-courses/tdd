@@ -24,13 +24,11 @@ namespace TagsCloudVisualization
         private void ShiftAboutImageCenter(Rectangle[] layout, Point layoutCenter,
             Point imageCenter)
         {
-            var offset = (X: imageCenter.X - layoutCenter.X,
-                Y: imageCenter.Y - layoutCenter.Y);
-            for(int i=0; i<layout.Length; i++)
-            {
-                layout[i].X += offset.X;
-                layout[i].Y += offset.Y;
-            }
+            var offset = new Size(imageCenter.X - layoutCenter.X,
+                imageCenter.Y - layoutCenter.Y);
+
+            for (int i = 0; i < layout.Length; i++)
+                layout[i].Location = Point.Add(layout[i].Location, offset);
         }
     }
 }
