@@ -36,14 +36,11 @@ namespace TagsCloudVisualization.Layout_generation
             var x = 90;
             var y = 20;
 
-            int downSize;
-
             var random = new Random();
             for (var i = 1; i < rectangleCount; i++)
             {
-                downSize = random.Next(0,5);
                 if (i % 20 == 0)
-                    x -= downSize;
+                    x -= random.Next(0,5);
                 var size = new Size(x, y);
                 Rectangles.Add(PutNextRectangle(size));
             }
