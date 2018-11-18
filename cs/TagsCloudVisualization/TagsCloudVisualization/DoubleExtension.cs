@@ -1,23 +1,15 @@
 ﻿using System;
 
-
 namespace TagsCloudVisualization
 {
-    public enum Quadrant
+    public static class DoubleExtension
     {
-        First,
-        Second,
-        Third,
-        Fourth
-    }
-    public static class Tools
-    {
-        public static double AngleToStandardValue(double angle)
+        public static double AngleToStandardValue(this double angle)
         {
-            return  angle % (Math.PI * 2);
+            return angle % (Math.PI * 2);
         }
 
-        public static Quadrant DetermineQuadrantByDirection(double direction)
+        public static Quadrant DetermineQuadrantByDirection(this double direction)
         {
             direction = AngleToStandardValue(direction);
             if (direction >= 0 && direction <= Math.PI / 2)

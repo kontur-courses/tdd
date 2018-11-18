@@ -1,14 +1,14 @@
 ﻿namespace TagsCloudVisualization
 {
-    public class Direction: IDirection<double>
+    public class Direction : IDirection<double>
     {
-        private double _currentAlpha;
         private const double AngleShift = 1;
+        private double _currentAlpha;
 
         public double GetNextDirection()
         {
             var oldAlpha = _currentAlpha;
-            _currentAlpha = Tools.AngleToStandardValue(_currentAlpha + AngleShift);
+            _currentAlpha = (_currentAlpha + AngleShift).AngleToStandardValue();
 
             return oldAlpha;
         }

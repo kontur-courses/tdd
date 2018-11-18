@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-
 namespace TagsCloudVisualization
 {
     public class Sector
     {
-        private readonly List<Point> _points;
         private readonly Point _center;
-        private  int _xCoefficient;
-        private  int _yCoefficient;
-        private  int _alphaCoefficient;
-        private  double _alphaShift;
+        private readonly List<Point> _points;
+        private int _alphaCoefficient;
+        private double _alphaShift;
+        private int _xCoefficient;
+        private int _yCoefficient;
 
         public Sector(Quadrant quadrant, Point center)
         {
@@ -22,6 +21,7 @@ namespace TagsCloudVisualization
 
             InitCoefficients(quadrant);
         }
+
         private void InitCoefficients(Quadrant quadrant)
         {
             switch (quadrant)
@@ -71,7 +71,7 @@ namespace TagsCloudVisualization
         private Point FindAvailablePoint(double direction)
         {
             direction = MakeDirectionRelative(direction);
-            for (int index = 0; index < PointsNumber(); index++)
+            for (var index = 0; index < PointsNumber(); index++)
             {
                 var point = _points[index];
                 if (IsPointOnDirectLine(point.X, point.Y, direction))
@@ -101,12 +101,13 @@ namespace TagsCloudVisualization
             _points.InsertRange(index, pointsToInsert);
         }
 
-        public static List<Point> FindPointsToInsert(Size rectangleSize, 
+        public static List<Point> FindPointsToInsert(Size rectangleSize,
             List<Point> points, Tuple<int, int> rangeToRemove, int maxX, int maxY)
         {
             var pointsToInsert = new List<Point>();
             pointsToInsert.InsertRange(0, HandleLeftBorder(rectangleSize, points, rangeToRemove, maxX, maxY));
-            pointsToInsert.InsertRange(pointsToInsert.Count, HandleRightBorder(rectangleSize, points, rangeToRemove, maxX, maxY));
+            pointsToInsert.InsertRange(pointsToInsert.Count,
+                HandleRightBorder(rectangleSize, points, rangeToRemove, maxX, maxY));
 
             return pointsToInsert;
         }
@@ -118,7 +119,9 @@ namespace TagsCloudVisualization
             var leftIndex = rangeToRemove.Item1;
 
             if (leftIndex == 0)
+            {
                 pointsToInsert.Add(new Point(0, maxY));
+            }
             else
             {
                 var firstPointToDelete = points[leftIndex];
@@ -138,7 +141,7 @@ namespace TagsCloudVisualization
             var leftIndex = rangeToRemove.Item1;
             var rightIndex = rangeToRemove.Item2;
 
-            var pointsHadOneElement = (leftIndex == rightIndex) && leftIndex == 0;
+            var pointsHadOneElement = leftIndex == rightIndex && leftIndex == 0;
             if (pointsHadOneElement || rightIndex == points.Count)
                 pointsToInsert.Add(new Point(maxX, 0));
             else
@@ -151,8 +154,8 @@ namespace TagsCloudVisualization
         public static Tuple<int, int> FindPointsRangeToRemove(List<Point> points, int maxX, int maxY)
         {
             var rangeToRemove = new List<int>();
-            
-            for (int index = 0; index < points.Count; index++)
+
+            for (var index = 0; index < points.Count; index++)
             {
                 var point = points[index];
                 if (point.X <= maxX && point.Y <= maxY)
@@ -161,7 +164,7 @@ namespace TagsCloudVisualization
 
             return new Tuple<int, int>(rangeToRemove[0], rangeToRemove[rangeToRemove.Count - 1] + 1);
         }
-        
+
         public void RemovePointsUnderNewRectangle(Tuple<int, int> rangeToRemove)
         {
             _points.RemoveRange(rangeToRemove.Item1, rangeToRemove.Item2 - rangeToRemove.Item1);
@@ -178,19 +181,20 @@ namespace TagsCloudVisualization
 
         private Point FindUpperLeftPoint(Point firstToPlace, Size rectangleSize)
         {
-            var deltaX = 0; var deltaY = 0;
+            var deltaX = 0;
+            var deltaY = 0;
 
             if (_xCoefficient == 1 && _yCoefficient == 1)
                 deltaY = rectangleSize.Height;
 
             if (_xCoefficient == -1 && _yCoefficient == 1)
             {
-                deltaX = - rectangleSize.Width;
+                deltaX = -rectangleSize.Width;
                 deltaY = rectangleSize.Height;
             }
 
             if (_xCoefficient == -1 && _yCoefficient == -1)
-                deltaX = - rectangleSize.Width;
+                deltaX = -rectangleSize.Width;
 
             var pointX = firstToPlace.X + deltaX;
             var pointY = firstToPlace.Y + deltaY;
