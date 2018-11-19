@@ -1,29 +1,34 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
-using NUnit.Framework;
 
 namespace TagsCloudVisualization
 {
-    class ArchimedeanSpiral
+    public class ArchimedeanSpiral : IEnumerable<Point>
     {
-        private double coefficients;
+        private readonly double coefficients;
+        private readonly double step;
+        private readonly Point center;
 
-        public ArchimedeanSpiral(double coefficients)
+        public ArchimedeanSpiral(Point center, double coefficients, double step)
         {
             if (coefficients <= 0)
             {
                 throw new ArgumentException("coefficients should be a positive number");
             }
 
+            if (step <= 0)
+            {
+                throw new ArgumentException("step should be a positive number");
+            }
+
+            this.step = step;
             this.coefficients = coefficients;
+            this.center = center;
         }
 
-        public double GetValuePolar(double angle)
+        private double GetValuePolar(double angle)
         {
             return coefficients * angle;
         }
@@ -32,14 +37,14 @@ namespace TagsCloudVisualization
         {
             var x = distance * Math.Cos(angle);
             var y = distance * Math.Sin(angle);
-            return new Point((int) x, (int) y);
+            return new Point((int) x + center.X, (int) y + center.Y);
         }
 
-        public IEnumerable<Point> GetIEnumerableDecart(double step)
+        private IEnumerable<Point> GetIEnumerableDecart()
         {
             if (step <= 0)
                 throw new ArgumentException("Step should be a positive number");
-            double currentAngle = 0;
+            var currentAngle = 0.0;
             while (true)
             {
                 yield return PolarToDecart(currentAngle, GetValuePolar(currentAngle));
@@ -47,20 +52,15 @@ namespace TagsCloudVisualization
             }
         }
 
-        public IEnumerator<Point> GetIenumeratorDecart(double step)
-        {
-            return GetIEnumerableDecart(step).GetEnumerator();
-        }
-    }
 
-    [TestFixture]
-    public class ArchimedeanSpiral_Tests
-    {
-        [Test]
-        public void Constructor_ShouldThrow_ArgumentException_When_notPositiveK()
+        public IEnumerator<Point> GetEnumerator()
         {
-            Action ctorInvokation = () => new ArchimedeanSpiral(-2);
-            ctorInvokation.Should().Throw<ArgumentException>();
+            return GetIEnumerableDecart().GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
