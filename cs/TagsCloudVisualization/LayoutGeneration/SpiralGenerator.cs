@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace TagsCloudVisualization.Layout_generation
+namespace TagsCloudVisualization.LayoutGeneration
 {
     public class SpiralGenerator: IEnumerable<Point>
     {

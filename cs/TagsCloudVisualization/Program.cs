@@ -5,8 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TagsCloudVisualization.Layout_generation;
-using TagsCloudVisualization.Layout_vizualization;
+using TagsCloudVisualization.LayoutGeneration;
+using TagsCloudVisualization.LayoutVizualization;
 
 namespace TagsCloudVisualization
 {
@@ -21,10 +21,10 @@ namespace TagsCloudVisualization
                 (int) (cloudAreaFrame.Y + cloudAreaSize.Height / 2));
             
             var layouter = new CircularCloudLayouter(cloudCenter);
-            var rectangles = layouter.GenerateTestLayout();
+            layouter.GenerateTestLayout();
             
             var visualizer = new Vizualizer();
-            var img = visualizer.GetLayoutImage(rectangles, cloudAreaSize);
+            var img = visualizer.GetLayoutImage(layouter, cloudAreaSize);
             visualizer.SaveImage(path,img);
         }
     }

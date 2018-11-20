@@ -4,8 +4,8 @@ using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using TagsCloudVisualization.Layout_generation;
-using TagsCloudVisualization.Layout_vizualization;
+using TagsCloudVisualization.LayoutGeneration;
+using TagsCloudVisualization.LayoutVizualization;
 
 namespace TagCloudTests
 {
@@ -55,7 +55,7 @@ namespace TagCloudTests
             var rectangle = layouter.PutNextRectangle(new Size(25, 25));
             var expectedCenter = new Point(100, 100);
 
-            var actual = layouter.GetRectangleCenter(rectangle);
+            var actual = CircularCloudLayouter.GetRectangleCenter(rectangle);
 
             actual.Should().BeEquivalentTo(expectedCenter);;
         }
@@ -66,7 +66,7 @@ namespace TagCloudTests
         {
             var rectangle = new Rectangle(x, y, width, height);
             var rectangles = new[] { new Rectangle(0, 0, 10, 10), new Rectangle(20, 20, 100, 50) };
-            return layouter.IntersectsWithRectangles(rectangle, rectangles);
+            return CircularCloudLayouter.IntersectsWithRectangles(rectangle, rectangles);
         }
         
         [TearDown]
@@ -78,7 +78,7 @@ namespace TagCloudTests
                 var vizualizer = new Vizualizer();
                 var area = new Size(1500, 900);
                 
-                var layout = vizualizer.GetLayoutImage(layouter.Rectangles, area);
+                var layout = vizualizer.GetLayoutImage(layouter, area);
                 vizualizer.SaveImage(path, layout);
                 Console.WriteLine($"Tag cloud visualization saved to file {path}");
             }

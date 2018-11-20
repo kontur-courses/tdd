@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace TagsCloudVisualization.Layout_generation
+namespace TagsCloudVisualization.LayoutGeneration
 {
-    public class CircularCloudLayouter
+    public class CircularCloudLayouter: ICloudLayouter, ITagsCloud
     {
         private readonly Point center;
         private readonly SpiralGenerator spiralGenerator;
@@ -30,9 +30,9 @@ namespace TagsCloudVisualization.Layout_generation
             return nextRectangle;
         }
 
-        public List<Rectangle> GenerateTestLayout()
+        public void GenerateTestLayout()
         {
-            var rectangleCount = 150;
+            var rectangleCount = 450;
             var x = 90;
             var y = 20;
 
@@ -44,14 +44,12 @@ namespace TagsCloudVisualization.Layout_generation
                 var size = new Size(x, y);
                 Rectangles.Add(PutNextRectangle(size));
             }
-
-            return Rectangles;
         }
 
-        public Point GetRectangleCenter(Rectangle rectangle) =>
+        public static Point GetRectangleCenter(Rectangle rectangle) =>
             rectangle.Location + new Size(rectangle.Width / 2, rectangle.Height / 2);
 
-        public bool IntersectsWithRectangles(Rectangle rectangle, IEnumerable<Rectangle> rectangles) =>
+        public static bool IntersectsWithRectangles(Rectangle rectangle, IEnumerable<Rectangle> rectangles) =>
             rectangles.Any(r => r.IntersectsWith(rectangle));
 
         private Rectangle MoveToCenter(Rectangle rectangle)
@@ -78,5 +76,15 @@ namespace TagsCloudVisualization.Layout_generation
                 return rectangle;
             return offsetRectangle;
         }
+    }
+
+    public interface ICloudLayouter
+    {
+        Rectangle PutNextRectangle(Size rectangleSize);
+    }
+
+    public interface ITagsCloud
+    {
+         List<Rectangle> Rectangles { get; }
     }
 }
