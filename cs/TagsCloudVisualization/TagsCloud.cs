@@ -4,10 +4,11 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public class TagsCloud
+    public class TagsCloud : ITagsCloud
     {
-        public readonly Point Center;
-        public readonly List<Rectangle> AddedRectangles = new List<Rectangle>();
+        public Point Center { get; }
+        public List<Rectangle> AddedRectangles { get; } = new List<Rectangle>();
+
 
         public TagsCloud(Point center)
         {
@@ -15,6 +16,7 @@ namespace TagsCloudVisualization
             var y = center.Y;
             if (x < 0 || y < 0)
                 throw new ArgumentException("Center coordinates should not be negative");
+
             Center = center;
         }
 

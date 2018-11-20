@@ -6,7 +6,8 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter : ITagsCloudLayouter
     {
-        public TagsCloud TagsCloud;
+        public ITagsCloud TagsCloud { get; set; }
+
         private readonly IEnumerator<Point> geometryEnumerator;
 
         public CircularCloudLayouter(Point center)
@@ -16,18 +17,6 @@ namespace TagsCloudVisualization
             const double spiralStep = 0.05;
             var geometryObject = new ArchimedeanSpiral(center, coefficients, spiralStep);
             geometryEnumerator = geometryObject.GetEnumerator();
-        }
-
-
-        private Point GetNextPoint()
-        {
-            geometryEnumerator.MoveNext();
-            return geometryEnumerator.Current;
-        }
-
-        private bool RectanglesAreIntersecting(Rectangle rectangle)
-        {
-            return TagsCloud.AddedRectangles.Any(rect => rect.IntersectsWith(rectangle));
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -44,6 +33,18 @@ namespace TagsCloudVisualization
 
             TagsCloud.AddRectangle(currentRectangle);
             return currentRectangle;
+        }
+
+
+        private Point GetNextPoint()
+        {
+            geometryEnumerator.MoveNext();
+            return geometryEnumerator.Current;
+        }
+
+        private bool RectanglesAreIntersecting(Rectangle rectangle)
+        {
+            return TagsCloud.AddedRectangles.Any(rect => rect.IntersectsWith(rectangle));
         }
     }
 }

@@ -21,11 +21,10 @@ namespace TagsCloudVisualization
                 allSizes.Add(new Size(nextWidth, nextHeight));
             }
 
-            var rectangles = new List<Rectangle>();
             var circularCloudLayouter = new CircularCloudLayouter(new Point(width / 2 - 100, height / 2));
             foreach (var r in allSizes)
             {
-                rectangles.Add(circularCloudLayouter.PutNextRectangle(r));
+                circularCloudLayouter.PutNextRectangle(r);
             }
 
             var render = new TagsCloudRenderer();

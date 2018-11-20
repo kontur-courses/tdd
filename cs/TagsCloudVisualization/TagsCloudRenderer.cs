@@ -4,7 +4,7 @@ namespace TagsCloudVisualization
 {
     public class TagsCloudRenderer
     {
-        public void RenderIntoFile(string filePath, TagsCloud tagsCloud, Size pictureSize)
+        public void RenderIntoFile(string filePath, ITagsCloud tagsCloud, Size pictureSize)
         {
             var btm = new Bitmap(pictureSize.Width, pictureSize.Height);
             var obj = Graphics.FromImage(btm);
