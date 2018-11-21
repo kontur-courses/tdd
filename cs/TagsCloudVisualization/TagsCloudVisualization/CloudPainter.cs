@@ -1,33 +1,61 @@
 using System.Drawing;
-using System.Linq;
+using System.Drawing.Imaging;
+using System.IO;
 
 namespace TagsCloudVisualization
 {
-    public static class CloudPainter
+    public class CloudPainter
     {
-        private static int bitmapWidth = 700;
-        private static int bitmapHeight = 700;
-        public static string Filename { get; private set; }
-        
-        public static Bitmap CreateNewTagCloud(CircularCloudLayouter cloudLayouter, string filename)
+        private const int DefaultBitmapWidth = 700;
+        private const int DefaultBitmapHeight = 700;
+        private string path;
+
+        public CloudPainter(string filename)
         {
-            Filename = filename;
-            bitmapWidth = bitmapWidth < cloudLayouter.GetWidth + 100
-                ? cloudLayouter.GetWidth + 100
-                : bitmapWidth;
-            bitmapHeight = bitmapHeight < cloudLayouter.GetHeight + 100
-                ? cloudLayouter.GetHeight + 100
-                : bitmapHeight;
-            var cloudImage = new Bitmap(bitmapWidth, bitmapHeight);
-            var shearCoordinates = new Point(cloudImage.Width / 2, cloudImage.Height / 2);
-            for (var i = 0; i < cloudLayouter.tags.Count; i++)
+            path = $"{Directory.GetCurrentDirectory()}\\..\\..\\TagClouds\\{filename}.png";
+        }
+
+        public CloudPainter()
+        {
+            
+        }
+        
+        public Bitmap CreateNewTagCloud(CircularCloudLayouter tagCloud)
+        {
+            var bitmapSize = CalculateBitmapSize(tagCloud);
+            var cloudImage = new Bitmap(bitmapSize.Width, bitmapSize.Height);
+            var shearCoordinates = new Point(bitmapSize.Width / 2, bitmapSize.Height / 2);
+            for (var i = 0; i < tagCloud.tags.Count; i++)
             {
-                cloudLayouter.tags[i] = cloudLayouter.tags[i].MakeShift(shearCoordinates);
+                tagCloud.tags[i] = tagCloud.tags[i].MoveOn(shearCoordinates);
             }
             var painter = Graphics.FromImage(cloudImage);
             painter.Clear(Color.White);
-            painter.DrawRectangles(new Pen(Color.RoyalBlue), cloudLayouter.tags.ToArray());
+            painter.DrawRectangles(new Pen(Color.RoyalBlue), tagCloud.tags.ToArray());
             return cloudImage;
+        }
+
+        private static Size CalculateBitmapSize(CircularCloudLayouter tagCloud)
+        {
+            var border = 100;
+                
+            var bitmapWidth = DefaultBitmapWidth < tagCloud.GetWidth + border
+                ? tagCloud.GetWidth + border
+                : DefaultBitmapWidth;
+            var bitmapHeight = DefaultBitmapHeight < tagCloud.GetHeight + border
+                ? tagCloud.GetHeight + border
+                : DefaultBitmapHeight;
+            return new Size(bitmapWidth, bitmapHeight);
+        }
+
+        public void SaveCloudImage(Bitmap image, string path)
+        {
+            image.Save(path, ImageFormat.Png);   
+        }
+        
+        public void SaveCloudImage(Bitmap image)
+        {
+            image.Save(path, ImageFormat.Png);   
         }
     }
 }

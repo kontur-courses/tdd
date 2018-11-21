@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -31,11 +30,11 @@ namespace TagsCloudVisualization
         {
             var location = spiral.GetNextPoint();
             var newTag = new Rectangle(new Point(), rectangleSize);
-            foreach (var point in location)
+            foreach (var nextPoint in location)
             {
-                newTag = new Rectangle(point, rectangleSize);
+                newTag = new Rectangle(nextPoint, rectangleSize);
                 
-                if (!IsThereIntersection(newTag))
+                if (!IsThereIntersectionWithAnyAnotherRectangle(newTag))
                 {       
                     tags.Add(MoveRectangleCloserToCenter(newTag));
                     left = (newTag.Left < left) ? newTag.Left : left;
@@ -48,36 +47,36 @@ namespace TagsCloudVisualization
             return newTag;
         }
 
-        private bool IsThereIntersection(Rectangle newTag)
+        private bool IsThereIntersectionWithAnyAnotherRectangle(Rectangle newTag)
         {
             return tags.Any(newTag.IntersectsWith);
         }
 
-        private Rectangle MoveRectangleCloserToCenter(Rectangle newTag)
+        private Rectangle MoveRectangleCloserToCenter(Rectangle tag)
         {
-            while (newTag.X != Center.X)
+            while (tag.X != Center.X)
             {
-                var oldX = newTag.X;
-                newTag.X += Center.X < newTag.X ? -1 : 1;
-                if (IsThereIntersection(newTag))
+                var oldX = tag.X;
+                tag.X += Center.X < tag.X ? -1 : 1;
+                if (IsThereIntersectionWithAnyAnotherRectangle(tag))
                 {
-                    newTag.X = oldX;
+                    tag.X = oldX;
                     break;
                 }
             }
         
-            while (newTag.Y != Center.Y)
+            while (tag.Y != Center.Y)
             {
-                var oldY = newTag.Y;
-                newTag.Y += Center.Y < newTag.Y ? -1 : 1;
-                if (IsThereIntersection(newTag))
+                var oldY = tag.Y;
+                tag.Y += Center.Y < tag.Y ? -1 : 1;
+                if (IsThereIntersectionWithAnyAnotherRectangle(tag))
                 {
-                    newTag.Y = oldY;
+                    tag.Y = oldY;
                     break;
                 }
             }
 
-            return newTag;
+            return tag;
         }
     }
 }

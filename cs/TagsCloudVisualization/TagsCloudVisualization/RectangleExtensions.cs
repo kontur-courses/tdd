@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace TagsCloudVisualization
@@ -14,9 +15,9 @@ namespace TagsCloudVisualization
             return new Point(rectangle.X + rectangle.Width / 2, rectangle.Y + rectangle.Height / 2);
         }
 
-        public static Point[] GetCornersCoordinates(this Rectangle rectangle)
+        public static IEnumerable<Point> GetCornersCoordinates(this Rectangle rectangle)
         {
-            Point[] cornersCoordinates = new Point[4]
+            var cornersCoordinates = new Point[4]
             {
                 rectangle.Location,
                 new Point(rectangle.X + rectangle.Width, rectangle.Y),
@@ -26,9 +27,10 @@ namespace TagsCloudVisualization
             return cornersCoordinates;
         }
 
-        public static Rectangle MakeShift(this Rectangle rectangle, Point shearCoordinates)
+        public static Rectangle MoveOn(this Rectangle rectangle, Point shearCoordinates)
         {
-            rectangle.Location += new Size(shearCoordinates);
+            rectangle.X += shearCoordinates.X;
+            rectangle.Y += shearCoordinates.Y;
             return rectangle;
         }
     }
