@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -11,7 +12,7 @@ namespace TagsCloudVisualization
         private int right;
         private int top;
         private int bottom;
-        private Spiral spiral;
+        private readonly Spiral spiral;
 
         public int GetWidth => right - left;
         public int GetHeight => bottom - top;
@@ -28,19 +29,18 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var location = spiral.GetNextPoint();
+            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+                throw new ArgumentException("Width and height must be positive");
+            var spiralPoints = spiral.GetNextPoint();
             var newTag = new Rectangle(new Point(), rectangleSize);
-            foreach (var nextPoint in location)
+            foreach (var nextPoint in spiralPoints)
             {
                 newTag = new Rectangle(nextPoint, rectangleSize);
                 
                 if (!IsThereIntersectionWithAnyAnotherRectangle(newTag))
                 {       
                     tags.Add(MoveRectangleCloserToCenter(newTag));
-                    left = (newTag.Left < left) ? newTag.Left : left;
-                    right = (newTag.Right > right) ? newTag.Right : right;
-                    top = (newTag.Top < top) ? newTag.Top : top;
-                    bottom = (newTag.Bottom > bottom) ? newTag.Bottom : bottom;
+                    ChangeCloudBoundaries(newTag);
                     break;
                 }
             }
@@ -77,6 +77,14 @@ namespace TagsCloudVisualization
             }
 
             return tag;
+        }
+
+        private void ChangeCloudBoundaries(Rectangle newTag)
+        {
+            left = (newTag.Left < left) ? newTag.Left : left;
+            right = (newTag.Right > right) ? newTag.Right : right;
+            top = (newTag.Top < top) ? newTag.Top : top;
+            bottom = (newTag.Bottom > bottom) ? newTag.Bottom : bottom;
         }
     }
 }
