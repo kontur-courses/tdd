@@ -20,8 +20,8 @@ namespace TagsCloudVisualization
         {
             while (true)
             {
-                var x = center.X + (int) (shift * currentAngle * Math.Cos(currentAngle));
-                var y = center.Y + (int) (shift * currentAngle * Math.Sin(currentAngle));
+                var x = GetXCoordinate();
+                var y = GetYCoordinate();
                 yield return new Point(x, y);
                 UpdateCurrentAngle();
             }
@@ -31,5 +31,8 @@ namespace TagsCloudVisualization
         {
             currentAngle += angleRotate;
         }
+
+        private int GetXCoordinate() => center.X + (int) (shift * currentAngle * Math.Cos(currentAngle));
+        private int GetYCoordinate() => center.Y + (int) (shift * currentAngle * Math.Sin(currentAngle));
     }
 }

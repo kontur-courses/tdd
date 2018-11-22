@@ -34,7 +34,17 @@ namespace TagsCloudTests
             tagCloud.PutNextRectangle(rectangleSize).Location.Should().BeEquivalentTo(tagCloud.Center);
         }
 
-        [Test, Description("")]
+        [TestCase(0, 1)]
+        [TestCase(1, 0)]
+        [TestCase(-1, 1)]
+        [TestCase(1, -1)]
+        public void PutNewRectangle_ThrowsArgumentException_IfSizeIsNotPositive(int width, int height)
+        {
+            Action putRectangle = () => tagCloud.PutNextRectangle(new Size(width, height));
+            putRectangle.Should().Throw<ArgumentException>().WithMessage("Width and height must be positive");
+        }
+
+        [Test]
         public void PutNewRectangle_ChangesCloudBoundaries_WhenAddingRectangle()
         {
             var rectangleSize = new Size(10, 5);
@@ -50,7 +60,7 @@ namespace TagsCloudTests
             firstRectangle.IntersectsWith(secondRectangle).Should().BeFalse();
         }
 
-        [TestCase(100, 0.55), Description("Check that the cloud is dense enough")]
+        [TestCase(100, 0.50), Description("Check that the cloud is dense enough")]
         [TestCase(500, 0.65)]
         [TestCase(1000, 0.7)]
         public void PutNewRectangle_MakeDenseCloud_WhenAddRectangle(int rectangleCount, double density)
@@ -86,7 +96,7 @@ namespace TagsCloudTests
             return squareOfAllRectangles;
         }
 
-        private double CalculateDistanceBetweenPoints(Point firstPoint, Point secondPoint)
+         public static double CalculateDistanceBetweenPoints(Point firstPoint, Point secondPoint)
         {
             return Math.Sqrt(Math.Pow(firstPoint.X - secondPoint.X, 2) + Math.Pow(firstPoint.Y - secondPoint.Y, 2));
         }
@@ -99,7 +109,7 @@ namespace TagsCloudTests
         }
         
         [TearDown]
-        public static void TearDown()
+        public void TearDown()
         {
             if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Passed)
             {

@@ -8,17 +8,14 @@ namespace TagsCloudVisualization
     {
         private const int DefaultBitmapWidth = 700;
         private const int DefaultBitmapHeight = 700;
-        private string path;
+        public string Path { get; }
 
         public CloudPainter(string filename)
         {
-            path = $"{Directory.GetCurrentDirectory()}\\..\\..\\TagClouds\\{filename}.png";
+            Path = $"{Directory.GetCurrentDirectory()}\\..\\..\\TagClouds\\{filename}.png";
         }
 
-        public CloudPainter()
-        {
-            
-        }
+        public CloudPainter() { }
         
         public Bitmap CreateNewTagCloud(CircularCloudLayouter tagCloud)
         {
@@ -55,7 +52,7 @@ namespace TagsCloudVisualization
         
         public void SaveCloudImage(Bitmap image)
         {
-            image.Save(path, ImageFormat.Png);   
+            image.Save(Path, ImageFormat.Png);   
         }
     }
 }
