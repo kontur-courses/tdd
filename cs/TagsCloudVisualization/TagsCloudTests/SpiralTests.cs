@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
 using TagsCloudVisualization;
@@ -16,7 +17,7 @@ namespace TagsCloudTests
         [SetUp]
         public void SetUp()
         {
-            center = new Point(20, 20);
+            center = new Point(0, 0);
             spiral = new Spiral(center);
             spiralEnumerator = spiral.GetNextPoint().GetEnumerator();
             spiralEnumerator.MoveNext();
@@ -33,13 +34,17 @@ namespace TagsCloudTests
         [Test]
         public void GetNextPoint_DistanceBetweenEveryNextPointAndCenter_ShouldBeLargerThanPrevious()
         {
-            var previousPoint = spiralEnumerator.Current;
-            for (int i = 0; i < 500; i++)
+            var maximumRadiusDifference = 2;
+            var pointsToCheck = spiral.GetNextPoint().Take(100).ToArray();
+            var previousPoint = pointsToCheck.First();
+
+            foreach (var point in pointsToCheck.Skip(1))
             {
-                spiralEnumerator.MoveNext();
-                var nextPoint = spiralEnumerator.Current;
-                CalculateDistanceToCenter(nextPoint).Should().BeGreaterOrEqualTo(CalculateDistanceToCenter(previousPoint));
-                previousPoint = nextPoint;
+                var currentDistanceToCenter = CalculateDistanceToCenter(point);
+                var previousDistanceToCenter = CalculateDistanceToCenter(previousPoint);
+                var radiusDifference = currentDistanceToCenter - previousDistanceToCenter;
+                radiusDifference.Should().BeLessThan(maximumRadiusDifference);
+                previousPoint = point;
             }
         }
 

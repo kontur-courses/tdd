@@ -13,25 +13,40 @@ namespace TagsCloudTests
     public class TagCloudTests
     {
         private static CircularCloudLayouter tagCloud;
+        private static Point center;
+        private static Size defaultSize;
         
         [SetUp]
         public void SetUp()
         {
-            var center = new Point(0, 0);
+            center = new Point(0, 0);
             tagCloud = new CircularCloudLayouter(center);
+            defaultSize = new Size(10,20);
         }
         
         [Test]
         public void CircularCloudLayouter_CreateLayouter_ShouldReturnEmptyLayouter()
         {
-            tagCloud.tags.Count.Should().Be(0);
+            tagCloud.tags.Should().BeEmpty();
+        }
+        
+        [Test, Description("The center must be located at the point we passed in the constructor")]
+        public void CircularCloudLayouter_CreateLayouter_ShouldReturnLayouterWithCorrectCenter()
+        {
+            tagCloud.Center.Should().BeEquivalentTo(center);
         }
         
         [Test, Description("Check on the correctness of the location of the first rectangle")]
         public void PutNewRectangle_ReturnsRectangleWithCenterCoordinates_ForFirstCall()
         {
-            var rectangleSize = new Size(10, 20);
-            tagCloud.PutNextRectangle(rectangleSize).Location.Should().BeEquivalentTo(tagCloud.Center);
+            tagCloud.PutNextRectangle(defaultSize).Location.Should().BeEquivalentTo(center);
+        }
+        
+        [Test, Description("The size of the rectangle should be the same as we passed in the constructor")]
+        public void PutNewRectangle_ReturnsRectangle_WithCorrectSize()
+        {
+            var newRectangle = tagCloud.PutNextRectangle(defaultSize);
+            newRectangle.Size.Should().BeEquivalentTo(defaultSize);
         }
 
         [TestCase(0, 1)]
@@ -47,16 +62,14 @@ namespace TagsCloudTests
         [Test]
         public void PutNewRectangle_ChangesCloudBoundaries_WhenAddingRectangle()
         {
-            var rectangleSize = new Size(10, 5);
-            tagCloud.PutNextRectangle(rectangleSize).Size.Should().BeEquivalentTo(new Size(tagCloud.GetWidth, tagCloud.GetHeight));
+            tagCloud.PutNextRectangle(defaultSize).Size.Should().BeEquivalentTo(new Size(tagCloud.GetWidth, tagCloud.GetHeight));
         }
 
         [Test, Description("Checking that none of the rectangles intersect with others when adding new rectangles")]
         public void PutNewRectangle_SetRectanglesWithoutIntersect_ForTwoRectangles()
         {
-            var rectangleSize = new Size(70, 50);
-            var firstRectangle = tagCloud.PutNextRectangle(rectangleSize);
-            var secondRectangle = tagCloud.PutNextRectangle(rectangleSize);
+            var firstRectangle = tagCloud.PutNextRectangle(defaultSize);
+            var secondRectangle = tagCloud.PutNextRectangle(defaultSize);
             firstRectangle.IntersectsWith(secondRectangle).Should().BeFalse();
         }
 

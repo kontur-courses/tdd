@@ -22,7 +22,8 @@ namespace TagsCloudVisualization
             {
                 var x = GetXCoordinate();
                 var y = GetYCoordinate();
-                yield return new Point(x, y);
+                var nextPointOnSpiral = new Point(x, y);
+                yield return nextPointOnSpiral;
                 UpdateCurrentAngle();
             }
         }
