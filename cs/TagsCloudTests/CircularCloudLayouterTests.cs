@@ -111,7 +111,7 @@ namespace TagsCloudTests
                 var name = TestContext.CurrentContext.Test.FullName + ".png";
                 var path = AppDomain.CurrentDomain.BaseDirectory + name;
                 Console.WriteLine($"Tag cloud visualization saved to {path}");
-                renderer.RenderIntoFile(path, circularCloudLayouter.TagsCloud, new Size(Width, Height));
+                renderer.RenderIntoFile(path, circularCloudLayouter.TagsCloud);
             }
         }
     }
