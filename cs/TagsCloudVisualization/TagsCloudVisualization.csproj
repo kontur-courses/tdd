@@ -54,7 +54,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LayoutGeneration\CircularCloudLayouter.cs" />
+    <Compile Include="LayoutGeneration\ICloudLayouter.cs" />
+    <Compile Include="LayoutGeneration\ITagsCloud.cs" />
+    <Compile Include="LayoutGeneration\RectangleExtensions.cs" />
     <Compile Include="LayoutGeneration\SpiralGenerator.cs" />
+    <Compile Include="LayoutGeneration\TagCloud.cs" />
+    <Compile Include="LayoutGeneration\TestingCircularLayoutGenerator.cs" />
     <Compile Include="LayoutVizualization\Vizualizer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -62,9 +67,6 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="NewFolder1\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

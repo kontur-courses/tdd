@@ -15,16 +15,17 @@ namespace TagsCloudVisualization
         static void Main(string[] args)
         {
             var path = Path.Combine(Directory.GetCurrentDirectory(), "cloud.bmp");
-            var cloudAreaSize = new Size(1400, 800);
+            /*var cloudAreaSize = new Size(2500, 2500);
             var cloudAreaFrame = new Rectangle(new Point(0, 0), cloudAreaSize);
             var cloudCenter = new Point((int) (cloudAreaFrame.X + cloudAreaSize.Width / 2),
                 (int) (cloudAreaFrame.Y + cloudAreaSize.Height / 2));
-            
-            var layouter = new CircularCloudLayouter(cloudCenter);
-            layouter.GenerateTestLayout();
+            */
+
+            var testingLayouter = new TestingCircularLayoutGenerator(new Point(500, 45));
+            var cloud = testingLayouter.GenerateTestLayout();
             
             var visualizer = new Vizualizer();
-            var img = visualizer.GetLayoutImage(layouter, cloudAreaSize);
+            var img = visualizer.GetLayoutImage(cloud);
             visualizer.SaveImage(path,img);
         }
     }

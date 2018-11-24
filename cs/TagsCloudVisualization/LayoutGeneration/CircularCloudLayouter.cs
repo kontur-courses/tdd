@@ -5,58 +5,56 @@ using System.Linq;
 
 namespace TagsCloudVisualization.LayoutGeneration
 {
-    public class CircularCloudLayouter: ICloudLayouter, ITagsCloud
+    public class CircularCloudLayouter: ICloudLayouter
     {
         private readonly Point center;
         private readonly SpiralGenerator spiralGenerator;
-        public List<Rectangle> Rectangles { get; }
-
+        public readonly ITagsCloud TagsCloud;
+        
+        
         public CircularCloudLayouter(Point center)
         {
             if (center.X < 0 || center.Y < 0)
                 throw new ArgumentException("Coordinates of the center must be positive numbers");
             this.center = center;
             spiralGenerator = new SpiralGenerator(this.center);
-            Rectangles = new List<Rectangle>();
+            TagsCloud = new TagCloud();
+        }
+        
+        
+        public CircularCloudLayouter(ITagsCloud tagsCloud)
+        {
+            if (!tagsCloud.Rectangles.Any())
+                throw new ArgumentException("Tags cloud could not be empty");
+
+            var firstRectangle = tagsCloud.Rectangles.First();
+
+            var firstRectangleCenter = firstRectangle.GetRectangleCenter();
+            
+            if (firstRectangleCenter.X < 0 || firstRectangleCenter.Y < 0)
+                throw new ArgumentException("Coordinates of the center must be positive numbers");
+            this.center = firstRectangleCenter;
+            this.TagsCloud = tagsCloud;
+            spiralGenerator = new SpiralGenerator(this.center);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             var nextRectangle = new Rectangle(spiralGenerator.GetNextPositionOnSpiral(), rectangleSize);
-            while (IntersectsWithRectangles(nextRectangle, this.Rectangles))
+            while (nextRectangle.IntersectsWithRectangles(this.TagsCloud.Rectangles))
                 nextRectangle = new Rectangle(spiralGenerator.GetNextPositionOnSpiral(), rectangleSize);
             nextRectangle = MoveToCenter(nextRectangle);
-            Rectangles.Add(nextRectangle);
+            this.TagsCloud.Rectangles.Add(nextRectangle);
             return nextRectangle;
         }
 
-        public void GenerateTestLayout()
-        {
-            var rectangleCount = 450;
-            var x = 90;
-            var y = 20;
-
-            var random = new Random();
-            for (var i = 1; i < rectangleCount; i++)
-            {
-                if (i % 20 == 0)
-                    x -= random.Next(0,5);
-                var size = new Size(x, y);
-                Rectangles.Add(PutNextRectangle(size));
-            }
-        }
-
-        public static Point GetRectangleCenter(Rectangle rectangle) =>
-            rectangle.Location + new Size(rectangle.Width / 2, rectangle.Height / 2);
-
-        public static bool IntersectsWithRectangles(Rectangle rectangle, IEnumerable<Rectangle> rectangles) =>
-            rectangles.Any(r => r.IntersectsWith(rectangle));
+       
 
         private Rectangle MoveToCenter(Rectangle rectangle)
         {
             while (true)
             {
-                var direction = center - new Size(GetRectangleCenter(rectangle));
+                var direction = center - new Size(rectangle.GetRectangleCenter());
                 var offsetRectangle = MoveRectangleByOnePoint(rectangle, new Point(Math.Sign(direction.X), 0));
                 if (offsetRectangle == rectangle)
                     break;
@@ -72,19 +70,13 @@ namespace TagsCloudVisualization.LayoutGeneration
         private Rectangle MoveRectangleByOnePoint(Rectangle rectangle, Point offset)
         {
             var offsetRectangle = new Rectangle(rectangle.Location + new Size(offset), rectangle.Size);
-            if (IntersectsWithRectangles(offsetRectangle, Rectangles))
+            if (offsetRectangle.IntersectsWithRectangles(this.TagsCloud.Rectangles))
                 return rectangle;
             return offsetRectangle;
         }
     }
 
-    public interface ICloudLayouter
-    {
-        Rectangle PutNextRectangle(Size rectangleSize);
-    }
+    
 
-    public interface ITagsCloud
-    {
-         List<Rectangle> Rectangles { get; }
-    }
+  
 }

@@ -24,7 +24,7 @@ namespace TagCloudTests
         [Test]
         public void LayouterIsEmpty_AfterCreation()
         {
-            layouter.Rectangles.Should().BeEmpty();
+            layouter.TagsCloud.Rectangles.Should().BeEmpty();
         }
 
         [Test]
@@ -55,7 +55,7 @@ namespace TagCloudTests
             var rectangle = layouter.PutNextRectangle(new Size(25, 25));
             var expectedCenter = new Point(100, 100);
 
-            var actual = CircularCloudLayouter.GetRectangleCenter(rectangle);
+            var actual = rectangle.GetRectangleCenter();
 
             actual.Should().BeEquivalentTo(expectedCenter);;
         }
@@ -66,7 +66,7 @@ namespace TagCloudTests
         {
             var rectangle = new Rectangle(x, y, width, height);
             var rectangles = new[] { new Rectangle(0, 0, 10, 10), new Rectangle(20, 20, 100, 50) };
-            return CircularCloudLayouter.IntersectsWithRectangles(rectangle, rectangles);
+            return rectangle.IntersectsWithRectangles(rectangles);
         }
         
         [TearDown]
@@ -76,9 +76,7 @@ namespace TagCloudTests
             {
                 var path = Path.Combine(TestContext.CurrentContext.TestDirectory, TestContext.CurrentContext.Test.Name + ".bmp");
                 var vizualizer = new Vizualizer();
-                var area = new Size(1500, 900);
-                
-                var layout = vizualizer.GetLayoutImage(layouter, area);
+                var layout = vizualizer.GetLayoutImage(layouter.TagsCloud.Rectangles);
                 vizualizer.SaveImage(path, layout);
                 Console.WriteLine($"Tag cloud visualization saved to file {path}");
             }
