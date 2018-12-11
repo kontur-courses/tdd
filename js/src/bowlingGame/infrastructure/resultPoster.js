@@ -1,12 +1,15 @@
 import * as firebase from "firebase";
 
 export default class ResultPoster {
+
     constructor() {
         const config = {
             databaseURL: "https://testing-challenge.firebaseio.com/"
         };
 
-        firebase.initializeApp(config);
+        if (!firebase.apps.length) {
+            firebase.initializeApp(config);
+        }
     }
 
     async writeAsync(author, data) {
@@ -17,7 +20,7 @@ export default class ResultPoster {
             time: new Date().toISOString(),
             lang: 'js',
         };
-
+        firebase.database().goOnline();
         const result = await firebase.database().ref(path).set(
             postData,
             err => { if (err) console.log("Error while submitting " + err); }
