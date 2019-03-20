@@ -7,10 +7,13 @@
 		h1 {text-align:center;}
 		.team-row { margin-top:0px;}
 		.testname {padding:5px;line-height: 2em;}
-		.failed {background-color: #FDD; font-size:1.2em}
-		.passed {background-color: #DFD;}
-		.unknown {background-color: #FFD;}
+		.failed {background-color: #F88; font-size:1.2em}
+		.passed {background-color: #8F8;}
+		.unknown {background-color: #FF8;}
 		.table td {padding:0.25rem;}
+        .strike {background-color: yellow;}
+        .spare {background-color: cyan;}
+        .both {font-weight: bold;}
 	</style>
 </head>
 <body>
@@ -77,6 +80,17 @@
 		html += "</td></tr>";
 		return html;
 	}
+    
+    function formatName(name){
+        const good = (name.indexOf("Spare") >=0 && name.indexOf("Strike") >=0);
+        name = name.
+            replace("Strike", "<span class='strike'>Strike</span>").
+            replace("Spare", "<span class='spare'>Spare</span>");
+            
+        if (good) return "<span class='both'>" + name + "</span>";    
+        return name;
+            
+    }
 
 	function getMaxLastRunTime(rawTests) {
 		var lastRunTimes = rawTests.map(test => new Date(test.LastRunTime));
@@ -100,7 +114,7 @@
 	
 	function formatTest(name, status){
 		return "<span title='" + status + "' class='testname " + status + "'>" +
-			htmlEscape(name) +
+			formatName(htmlEscape(name)) +
 			"</span> "; 
 	}
 </script>
