@@ -1,0 +1,6 @@
+﻿namespace TagsCloudVisualization
+{
+    class CircularCloudLayouter
+    {
+    }
+}
