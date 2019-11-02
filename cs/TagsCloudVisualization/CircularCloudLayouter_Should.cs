@@ -1,7 +1,9 @@
 ﻿using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 
 namespace TagsCloudVisualization
 {
@@ -46,6 +48,17 @@ namespace TagsCloudVisualization
         public void BeCompact()
         {
             Assert.IsTrue(false);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+            {
+                var filename = $"{Path.GetTempPath()}{TestContext.CurrentContext.Test.Name}-Failed.bmp";
+                ccl.SaveToFile(filename);
+                TestContext.WriteLine($"Tag cloud visualization saved to file {filename}");
+            }
         }
     }
 }

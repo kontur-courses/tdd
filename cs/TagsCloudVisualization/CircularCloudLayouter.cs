@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace TagsCloudVisualization
@@ -24,6 +25,26 @@ namespace TagsCloudVisualization
 
         private void ReallocRectangles()
         {
+        }
+
+        public void SaveToFile(string filename)
+        {
+            var left = int.MaxValue;
+            var right = int.MinValue;
+            var top = int.MaxValue;
+            var bottom = int.MinValue;
+            foreach (var r in Items)
+            {
+                left = Math.Min(left, r.Left);
+                right = Math.Max(right, r.Right);
+                top = Math.Min(top, r.Top);
+                bottom = Math.Max(bottom, r.Bottom);
+            }
+
+            var bmp = new Bitmap(right - left, bottom - top);
+            var gr = Graphics.FromImage(bmp);
+            gr.Clear(Color.RosyBrown);
+            bmp.Save(filename);
         }
     }
 }
