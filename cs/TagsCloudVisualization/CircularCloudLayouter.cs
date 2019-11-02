@@ -38,5 +38,18 @@ namespace TagsCloudVisualization
 
             throw new Exception("Something went wrong");
         }
+
+        public Bitmap Visualization(Bitmap bitmap)
+        {
+            var graphics = Graphics.FromImage(bitmap);
+            var rnd = new Random();
+            foreach (var rectangle in rectangles)
+            {
+                var color = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
+                graphics.FillRectangle(new SolidBrush(color), rectangle);
+            }
+
+            return bitmap;
+        }
     }
 }
