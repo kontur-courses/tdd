@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -35,7 +36,15 @@ namespace TagsCloudVisualization
         [Test]
         public void AllocateRectanglesWithoutIntersects()
         {
-            Assert.IsTrue(false);
+            for (int i = 0; i < ccl.Items.Count; i++)
+            {
+                for (int j = i + 1; j < ccl.Items.Count - 1; j++)
+                {
+                    var r1 = ccl.Items[i];
+                    var r2 = ccl.Items[j];
+                    r1.IntersectsWith(r2).Should().BeFalse();
+                }
+            }
         }
 
         [Test]
