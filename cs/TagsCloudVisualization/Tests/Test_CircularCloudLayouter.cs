@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using NUnit.Framework;
 using FluentAssertions;
 
@@ -10,11 +11,13 @@ namespace TagsCloudVisualization.Tests
     public class Test_CircularCloudLayouter
     {
         private CircularCloudLayouter cloudLayouter;
+        private Random random;
 
         [SetUp]
         public void SetUp()
         {
             cloudLayouter = new CircularCloudLayouter(new Point(450, 450));
+            random = new Random();
         }
 
         [Test]
@@ -59,13 +62,26 @@ namespace TagsCloudVisualization.Tests
         public void PutNextRectangle_AnyTwoRectanglesNotHaveIntersect(int count)
         {
             var rectangles = new List<Rectangle>();
-            var random = new Random();
             for (var i = 0; i < count; i++)
                 rectangles.Add(cloudLayouter.PutNextRectangle(new Size(random.Next(100), random.Next(100))));
 
             for (var i = 0; i < rectangles.Count; i++)
             for (var j = i + 1; j < rectangles.Count; j++)
                 rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse();
+        }
+
+        [TestCase("smallPicture.png", 20, 400)]
+        [TestCase("middlePicture.png", 40, 500)]
+        [TestCase("largePicture.png", 60, 700)]
+        public void VisualizationSomeImage(string name, int sizeOfRectangle, int size)
+        {
+            var cloudLayouter = new CircularCloudLayouter(new Point(size, size));
+            for (var i = 0; i < 1000; i++)
+                cloudLayouter.PutNextRectangle(new Size(random.Next(1, sizeOfRectangle), random.Next(1, sizeOfRectangle)));
+
+            var bitMap = new Bitmap(size * 2, size * 2);
+            bitMap = cloudLayouter.Visualization(bitMap);
+            bitMap.Save(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, name));// Как сохранть правильно? Или такой подход сойдёт? 
         }
     }
 }
