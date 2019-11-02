@@ -7,96 +7,108 @@ using NUnit.Framework;
 
 namespace TagCloud.Tests
 {
-    // todo: Выделить в группы и сделать ААА
-    // todo: задача 2 и задача 3
-    public class TetrisTests
+    // todo: задача 2
+    // todo: задача 3
+    public class OrientationTests
     {
-        private static readonly Size SingleSize = new Size(1, 1);
-        private static readonly Point CenterPoint = new Point(0, 0);
+        public static readonly Size SingleSize = new Size(1, 1);
+        public static readonly Point CenterPoint = new Point(0, 0);
         private CircularCloudLayouter _cloudLayouter;
+        private List<Rectangle> _rectangles;
         
         [SetUp]
         public void CreateInstance()
         {
             _cloudLayouter = new CircularCloudLayouter(CenterPoint);
+            _rectangles = Enumerable
+                .Range(0, 4)
+                .Select(num => _cloudLayouter.PutNextRectangle(SingleSize))
+                .ToList();
         }
         
-        [Test] 
-        public void Should_DontCreateRectangle_WhenItsDegenerate()
+        [TestCase(0, 1, TestName = "Zero width")]
+        [TestCase(1, 0, TestName = "Zero height")]
+        public void Should_DontCreateRectangle_WhenItsDegenerate(int width, int height)
         {
-            Action a = () => _cloudLayouter.PutNextRectangle(new Size(0, 0));
-            a.Should().Throw<ArgumentException>(
-                "Should throws exceptions when next rectangle is degenerate");
+            Action a = () => _cloudLayouter.PutNextRectangle(new Size(width, height));
+            a.Should().Throw<ArgumentException>();
         }
 
         [Test, Category("Simple Behaviour")]
         public void Should_CreateCenterRectangle_WhenItFirstCreated()
         {
-            var rect = _cloudLayouter.PutNextRectangle(SingleSize);
-            rect.Should().Be(new Rectangle(CenterPoint, SingleSize));
+            _rectangles
+                .First()
+                .Should()
+                .Be(new Rectangle(CenterPoint, SingleSize));
         }
 
         [Test, Category("Simple Behaviour")]
         public void Should_CreteSecondRectangle_LeftFromFirst()
         {
-            var rect1 = _cloudLayouter.PutNextRectangle(SingleSize);
-            var rect2 = _cloudLayouter.PutNextRectangle(SingleSize);
-            rect1
+            _rectangles[0]
                 .Should().BeOfType<Rectangle>().Which.Y
-                .Should().Be(rect2.Y);
-            rect1
+                .Should().Be(_rectangles[1].Y);
+            _rectangles[0]
                 .Should().BeOfType<Rectangle>().Which.X
-                .Should().BeGreaterThan(rect2.X);
+                .Should().BeGreaterThan(_rectangles[1].X);
         }
 
         [Test, Category("Simple Behaviour")]
         public void Should_CreateThirdRectangle_AboveFromFirst()
         {
-            var rect1 = _cloudLayouter.PutNextRectangle(SingleSize);
-            var rect2 = _cloudLayouter.PutNextRectangle(SingleSize);
-            var rect3 = _cloudLayouter.PutNextRectangle(SingleSize);
-            rect1
+            _rectangles[0]
                 .Should().BeOfType<Rectangle>().Which.Y
-                .Should().BeGreaterThan(rect3.Y);
-            rect1
+                .Should().BeGreaterThan(_rectangles[2].Y);
+            _rectangles[0]
                 .Should().BeOfType<Rectangle>().Which.X
-                .Should().Be(rect3.X);
+                .Should().Be(_rectangles[2].X);
+        }
+
+    }
+
+    public class TileTetrisTesting
+    {
+        private CircularCloudLayouter _cloudLayouter;
+        private List<Rectangle> _tiledRectagnles;
+        private const int ElementsAmount = 1000;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _cloudLayouter = new CircularCloudLayouter(OrientationTests.CenterPoint);
+            _tiledRectagnles = Enumerable
+                .Range(0, ElementsAmount)
+                .Select(number => _cloudLayouter.PutNextRectangle(OrientationTests.SingleSize))
+                .ToList();
         }
 
         [Test, Category("Simple Behaviour")]
         public void Should_TileSpace_WithNonEquivalentRectangles()
         {
-            const int elementsAmount = 100;
-            var rectangles = from number in Enumerable.Range(0, elementsAmount) select _cloudLayouter.PutNextRectangle(SingleSize);
-            rectangles
+            _tiledRectagnles
                 .Select(rectangle => rectangle.Location)
                 .Distinct()
                 .Count()
                 .Should()
-                .Be(elementsAmount) ;
+                .Be(ElementsAmount) ;
         }
-
+     
         [Test, Category("Simple Behaviour")]
         public void Should_GenerateNonOverlappingRectangles_AtLeastOn1000Requests()
         {
-            const int elementAmount = 1000;
-            var rectangles = from number in Enumerable.Range(0, elementAmount)
-                select _cloudLayouter.PutNextRectangle(SingleSize);
-            rectangles
+            _tiledRectagnles
                 .Select(rectangle => rectangle.Location)
                 .Distinct()
                 .Count()
                 .Should()
-                .Be(elementAmount);
+                .Be(ElementsAmount);
         }
 
         [Test, Category("Simple Behaviour")]
         public void Should_GenerateRectangles_WithSpecifiedSize()
         {
-            const int elementAmount = 1000;
-            var rectangles = from number in Enumerable.Range(0, elementAmount)
-                select _cloudLayouter.PutNextRectangle(SingleSize);
-            rectangles
+            _tiledRectagnles
                 .Select(rectangle => rectangle.Size)
                 .Distinct()
                 .Count()
@@ -107,8 +119,6 @@ namespace TagCloud.Tests
         [Test, Category("Simple Behaviour")]
         public void Should_TileCoordinateCenterIn1Depth_AtLeastOn10Rectangles()
         {
-            var rectangles = from number in Enumerable.Range(0, 10) 
-                select _cloudLayouter.PutNextRectangle(SingleSize);
             var setPoints = new HashSet<Point>
             {
                 new Point(0, 0),
@@ -116,13 +126,72 @@ namespace TagCloud.Tests
                 new Point(-1, -1),
                 new Point(0, -1)
             };
-            rectangles
+            _tiledRectagnles
+                .GetRange(0, 10)
                 .Where(rectangle => setPoints.Contains(rectangle.Location))
                 .Sum(rectangle => 1)
                 .Should()
                 .Be(4);
+        }       
+    }
+
+    public class DenseTetrisTesting
+    {
+        private CircularCloudLayouter _cloudLayouter;
+        
+        [SetUp]
+        public void CreateInstance()
+        {
+            _cloudLayouter = new CircularCloudLayouter(OrientationTests.CenterPoint);
+        }
+        
+        [TestCaseSource(nameof(_sizesForXDenseTesting))]
+        public void Should_DenseLocateRectanglesWithDifferentShape_ByXCoordinate(List<Size> sizes)
+        {
+            var rectangles = sizes.Select(size => _cloudLayouter.PutNextRectangle(size)).ToList();
+            var width = Math.Abs(rectangles.Select(rect => rect.X).Min() - rectangles.Select(rect => rect.X).Max());
+            width.Should().BeLessThan(rectangles.Select(rect => rect.Width).Sum());
+        }
+        
+        [TestCaseSource(nameof(_sizesForYDenseTesting))]
+        public void Should_DenseLocateRectanglesWithDifferentShape_ByYCoordinate(List<Size> sizes)
+        {
+            var rectangles = sizes.Select(size => _cloudLayouter.PutNextRectangle(size)).ToList();
+            var width = Math.Abs(rectangles.Select(rect => rect.X).Min() - rectangles.Select(rect => rect.X).Max());
+            width.Should().BeLessThan(rectangles.Select(rect => rect.Width).Sum());
         }
 
+        private static IEnumerable<TestCaseData> _sizesForYDenseTesting = new List<TestCaseData>
+        {
+            new TestCaseData(new List<Size>
+            {
+                new Size(4, 2),
+                new Size(3, 4),
+                new Size(5, 1),
+                new Size(2, 7)
+            }).SetName("4 rectangle near (0, 0) (y)"),
+            new TestCaseData(new List<Size>
+            {
+                new Size(3, 2),
+                new Size(9, 2)
+            }).SetName("2 rectangles along Y-axis")
+        };
+
+        private static IEnumerable<TestCaseData> _sizesForXDenseTesting = new List<TestCaseData>
+        {
+            new TestCaseData(new List<Size>
+            {
+                new Size(4, 2),
+                new Size(3, 4),
+                new Size(5, 1),
+                new Size(2, 7)
+            }).SetName("4 rectangle near (0, 0) (x)"),
+            new TestCaseData(new List<Size>
+            {
+                new Size(4, 2),
+                new Size(3, 4)
+            }).SetName("2 rectangles along X-axis")
+        };
     }
 
     public class CenterStarts
@@ -134,17 +203,40 @@ namespace TagCloud.Tests
             a.Should().NotThrow();
         }
 
+        [TestCaseSource(nameof(_nonCoordinateCenter))]
+        public void Should_LocateFirstRectangle_OnSpecifiedByCenterXCoord(Point center)
+        {
+            var layouter = new CircularCloudLayouter(center);
+            var rect = layouter.PutNextRectangle(new Size(2, 2));
+            (rect.X + rect.Width / 2)
+                .Should()
+                .Be(center.X);
+        }
+        
+        
+        [TestCaseSource(nameof(_nonCoordinateCenter))]
+        public void Should_LocateFirstRectangle_OnSpecifiedByCenterYCoord(Point center)
+        {
+            var layouter = new CircularCloudLayouter(center);
+            var rect = layouter.PutNextRectangle(new Size(2, 2));
+            (rect.Y + rect.Height / 2)
+                .Should()
+                .Be(center.Y);
+        }
+        
+
         private static IEnumerable<TestCaseData> _nonCoordinateCenter = new List<TestCaseData>
         {
-            new TestCaseData(new Point(-1, 0)).SetName("x: -1, y = 0"),
-            new TestCaseData(new Point(-1, 1)).SetName("x: -1, y = 1"),
-            new TestCaseData(new Point(-1, -1)).SetName("x: -1, y = -1"),
-            new TestCaseData(new Point(0, 0)).SetName("x: 0, y = 0"),
-            new TestCaseData(new Point(0, 1)).SetName("x: 0, y = 1"),
-            new TestCaseData(new Point(0, -1)).SetName("x: 0, y = -1"),
-            new TestCaseData(new Point(1, 0)).SetName("x: 1, y = 0"),
-            new TestCaseData(new Point(1, 1)).SetName("x: 1, y = 1"),
-            new TestCaseData(new Point(1, -1)).SetName("x: 1, y = -1"),
+            new TestCaseData(new Point(-1, 0)).SetName("{m}: x: -1, y = 0"),
+            new TestCaseData(new Point(-1, 1)).SetName("{m}: x: -1, y = 1"),
+            new TestCaseData(new Point(-1, -1)).SetName("{m}: x: -1, y = -1"),
+            new TestCaseData(new Point(0, 0)).SetName("{m}: x: 0, y = 0"),
+            new TestCaseData(new Point(0, 1)).SetName("{m}: x: 0, y = 1"),
+            new TestCaseData(new Point(0, -1)).SetName("{m}: x: 0, y = -1"),
+            new TestCaseData(new Point(1, 0)).SetName("{m}: x: 1, y = 0"),
+            new TestCaseData(new Point(1, 1)).SetName("{m}: x: 1, y = 1"),
+            new TestCaseData(new Point(1, -1)).SetName("{m}: x: 1, y = -1"),
         };
+
     }
 }

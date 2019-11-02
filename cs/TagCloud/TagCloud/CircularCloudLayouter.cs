@@ -7,33 +7,31 @@ namespace TagCloud
 {
     public class CircularCloudLayouter
     {
-        private static readonly Size _degenerateSize = new Size(0, 0);
-        
         // polar coordinates 
-        private double phi = 0;
-        private double ro = 0;
+        private double phi;
+        private double ro;
         
         // increase values
         private static double roEpsilon = 0.2;
         private static int phiRounds = 18;
-        private static double phiEpsilon = Math.PI / phiRounds;
+        private static readonly double PhiEpsilon = Math.PI / phiRounds;
 
+        private readonly Point _center;
         private readonly List<Rectangle> _rectangleMap;
-//        private readonly Point _center;
 
         public CircularCloudLayouter(Point center)
         {
-//            _center = center;
+            _center = center;
             _rectangleMap = new List<Rectangle>();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            if (rectangleSize == _degenerateSize)
+            if (rectangleSize.Width == 0 || rectangleSize.Height == 0)
                 throw new ArgumentException("rectangleSize is degenerate");
             // finding pos
-            OrientToPossibleCenter(rectangleSize);
-            var res = new Rectangle(FromPolar(phi, ro), rectangleSize);
+            var nonShiftedRect = CreateRectangleOnUnrolledSpirals(rectangleSize);
+            var res = new Rectangle(new Point(nonShiftedRect.X + _center.X, nonShiftedRect.Y + _center.Y), nonShiftedRect.Size);
             _rectangleMap.Add(res);
             return res;
         }
@@ -45,15 +43,19 @@ namespace TagCloud
                 (int)Math.Round(ro * Math.Sin(phi)));
         }
 
-        private void OrientToPossibleCenter(Size rectangleSize)
+        private Rectangle CreateRectangleOnUnrolledSpirals(Size rectangleSize)
         {
+            var shift = new Point(-rectangleSize.Width / 2, -rectangleSize.Height / 2);
             while (true) {
                 for (var i = 0; i < phiRounds; ++i)
                 {
-                    var checkRes = IsNonIntersects(new Rectangle(FromPolar(phi, ro), rectangleSize));
-                    if (checkRes)
-                        return;
-                    phi += phiEpsilon;
+                    // current spirals end locate to rectangle center
+                    var center = FromPolar(phi, ro);
+                    var leftTop = new Point(center.X + shift.X, center.Y + shift.Y);
+                    var rect = new Rectangle(leftTop, rectangleSize);
+                    if (IsNonIntersects(rect))
+                        return rect;
+                    phi += PhiEpsilon;
                 }
                 ro += roEpsilon;
             }
