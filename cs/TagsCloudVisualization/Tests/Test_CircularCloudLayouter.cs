@@ -70,18 +70,40 @@ namespace TagsCloudVisualization.Tests
                 rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse();
         }
 
+        [TestCase(10)]
+        [TestCase(20)]
+        [TestCase(30)]
+        public void CircularCloudLayout_AnyTwoRectanglesNotHaveIntersectAfterCentreings(int count)
+        {
+            for (var i = 0; i < count; i++)
+                cloudLayouter.PutNextRectangle(new Size(random.Next(100), random.Next(100)));
+
+            var rectanglesHash = cloudLayouter.Centreings();
+            var rectangles = new List<Rectangle>(rectanglesHash);
+
+            for (var i = 0; i < rectangles.Count; i++)
+            for (var j = i + 1; j < rectangles.Count; j++)
+                rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse();
+        }
+
         [TestCase("smallPicture.png", 20, 400)]
-        [TestCase("middlePicture.png", 40, 500)]
-        [TestCase("largePicture.png", 60, 700)]
+        [TestCase("middlePicture.png", 60, 1000)]
+        [TestCase("largePicture.png", 120, 1500)]
         public void VisualizationSomeImage(string name, int sizeOfRectangle, int size)
         {
             var cloudLayouter = new CircularCloudLayouter(new Point(size, size));
             for (var i = 0; i < 1000; i++)
-                cloudLayouter.PutNextRectangle(new Size(random.Next(1, sizeOfRectangle), random.Next(1, sizeOfRectangle)));
+                cloudLayouter.PutNextRectangle(new Size(random.Next(sizeOfRectangle / 3, sizeOfRectangle),
+                    random.Next(sizeOfRectangle / 3, sizeOfRectangle)));
 
             var bitMap = new Bitmap(size * 2, size * 2);
             bitMap = cloudLayouter.Visualization(bitMap);
-            bitMap.Save(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, name));// Как сохранть правильно? Или такой подход сойдёт? 
+            bitMap.Save(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
+                name)); // Как сохранть правильно? Или такой подход сойдёт? 
+            
+            bitMap = new Bitmap(size * 2, size * 2);
+            bitMap = cloudLayouter.Visualization(bitMap, cloudLayouter.Centreings());
+            bitMap.Save(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Centering{name}"));
         }
     }
 }

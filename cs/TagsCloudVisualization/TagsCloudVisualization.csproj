@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="PointRadiusComparer.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectanglesExtension.cs" />
     <Compile Include="Tests\Test_CircularCloudLayouter.cs" />
@@ -67,6 +68,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Img\CenteringlargePicture.png" />
+    <Content Include="Img\CenteringmiddlePicture.png" />
+    <Content Include="Img\CenteringsmallPicture.png" />
     <Content Include="Img\firsImage.png" />
     <Content Include="Img\largePicture.png" />
     <Content Include="Img\middlePicture.png" />

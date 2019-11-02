@@ -1,6 +1,7 @@
 using System.Drawing;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -15,6 +16,16 @@ namespace TagsCloudVisualization
             this.center = center;
             cornerPoints = new SortedSet<Point>(new PointRadiusComparer(center)) {center};
             rectangles = new HashSet<Rectangle>();
+        }
+
+        public HashSet<Rectangle> Centreings()
+        {
+            var centreingsCloudLayout = new CircularCloudLayouter(center);
+            var newRectangles = new HashSet<Rectangle>();
+            foreach (var rectangle in rectangles.OrderBy(x =>  -x.Width * x.Height))
+                newRectangles.Add(centreingsCloudLayout.PutNextRectangle(rectangle.Size));
+
+            return newRectangles;
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -39,7 +50,7 @@ namespace TagsCloudVisualization
             throw new Exception("Something went wrong");
         }
 
-        public Bitmap Visualization(Bitmap bitmap)
+        public Bitmap Visualization(Bitmap bitmap, HashSet<Rectangle> rectangles)
         {
             var graphics = Graphics.FromImage(bitmap);
             var rnd = new Random();
@@ -51,5 +62,8 @@ namespace TagsCloudVisualization
 
             return bitmap;
         }
+
+        public Bitmap Visualization(Bitmap bitmap) =>
+            Visualization(bitmap, rectangles);
     }
 }
