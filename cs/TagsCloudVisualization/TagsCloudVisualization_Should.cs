@@ -35,8 +35,8 @@ namespace TagsCloudVisualization
             var rectangle = tagsCloud.PutNextRectangle(rectangleSize);
             var deltaX = Math.Abs(rectangle.X - center.X);
             var deltaY = Math.Abs(rectangle.X - center.X);
-            deltaX.Should().BeLessOrEqualTo(100);
-            deltaY.Should().BeLessOrEqualTo(100);
+            deltaX.Should().BeInRange(-100, 100);
+            deltaY.Should().BeInRange(-100, 100);
         }
 
         [Test]
@@ -44,8 +44,27 @@ namespace TagsCloudVisualization
         {
             var rectangleSize = new Size(100, 100);
             var firstRectangle = tagsCloud.PutNextRectangle(rectangleSize);
-            var SecondRectangle = tagsCloud.PutNextRectangle(rectangleSize);
-            firstRectangle.IntersectsWith(SecondRectangle).Should().Be(false);
+            var secondRectangle = tagsCloud.PutNextRectangle(rectangleSize);
+            firstRectangle.IntersectsWith(secondRectangle).Should().Be(false);
+        }
+
+        [Test]
+        public void DifferentBetweenDeltaFirstAndLastYAndDeltaFirstAndLastX_Should_BeLessThanHalfSumHeightOrWidth()
+        {
+            var rectangleSize = new Size(100, 100);
+            var maxY = -1;
+            var minY = int.MaxValue;
+            var maxX = -1;
+            var minX = int.MaxValue;
+            for (var i = 0; i < 100; i++)
+            {
+                var rectangle = tagsCloud.PutNextRectangle(rectangleSize);
+                maxY = rectangle.Y > maxY ? rectangle.Y : maxY;
+                minY = rectangle.Y < minY ? rectangle.Y : minY;
+                maxX = rectangle.X > maxX ? rectangle.X : maxX;
+                minX = rectangle.X < minX ? rectangle.X : minX;
+            }
+            ((maxY - minY) - (maxX-minX)).Should().BeLessThan(100 * 50);
         }
     }
 }

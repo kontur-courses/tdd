@@ -27,7 +27,7 @@ namespace TagsCloudVisualization
             var rectangle = new Rectangle(center, rectangleSize);
             while (IntersectsWithPrevious(rectangle))
             {
-                rectangle.Move(1,0);
+                rectangle.Move(1,100);
             }
             rectangles.Add(rectangle);
             return rectangle;
