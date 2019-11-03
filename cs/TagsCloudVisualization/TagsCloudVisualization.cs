@@ -10,7 +10,7 @@ namespace TagsCloudVisualization
     public class TagsCloudVisualization
     {
         private readonly Point center;
-        private List<Rectangle> rectangles;
+        private readonly List<Rectangle> rectangles;
 
         public TagsCloudVisualization(Point center)
         {

@@ -27,5 +27,25 @@ namespace TagsCloudVisualization
             Action act = () => tagsCloud.PutNextRectangle(rectangleSize);
             act.Should().NotThrow();
         }
+
+        [Test]
+        public void FirstRectangle_MustBeNearCenter()
+        {
+            var rectangleSize = new Size(100, 100);
+            var rectangle = tagsCloud.PutNextRectangle(rectangleSize);
+            var deltaX = Math.Abs(rectangle.X - center.X);
+            var deltaY = Math.Abs(rectangle.X - center.X);
+            deltaX.Should().BeLessOrEqualTo(100);
+            deltaY.Should().BeLessOrEqualTo(100);
+        }
+
+        [Test]
+        public void Rectangles_Should_NotIntersect()
+        {
+            var rectangleSize = new Size(100, 100);
+            var firstRectangle = tagsCloud.PutNextRectangle(rectangleSize);
+            var SecondRectangle = tagsCloud.PutNextRectangle(rectangleSize);
+            firstRectangle.IntersectsWith(SecondRectangle).Should().Be(false);
+        }
     }
 }
