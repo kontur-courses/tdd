@@ -123,6 +123,31 @@ namespace TagsCloudVisualization
             IntersectionPoint = default;
             return false;
         }
+
+        /// <summary>
+        /// Длина отрезка под углом rayAngle из центра прямоугольника до пересечения со стороной
+        /// </summary>
+        /// <param name="rayAngle">Угол ПО ЧАСОВОЙ стрелке, т.к. ордината идет вниз, рад</param>
+        public static double GetRayLengthFromCenter(Rectangle rect, double rayAngle)
+        {
+            rect.X = -rect.Width / 2;
+            rect.Y = -rect.Height / 2;
+            if (IsRayIntersectsRectangle(rect, rayAngle, out Point point))
+                return Math.Sqrt(point.X * point.X + point.Y * point.Y);
+            else
+                throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Конвертация полярных координат в декартовы
+        /// </summary>
+        /// <param name="rayAngle">Угол ПО ЧАСОВОЙ стрелке, т.к. ордината идет вниз, рад</param>
+        /// <param name="dist">Расстояние</param>
+        /// <returns></returns>
+        public static Point GetPointByAngleAndDistance(double rayAngle, double dist)
+        {
+            return new Point((int)(dist * Math.Cos(rayAngle)), (int)(dist * Math.Sin(rayAngle)));
+        }
     }
 
     [TestFixture]
@@ -139,6 +164,21 @@ namespace TagsCloudVisualization
         public void IsRayIntersectsRectangle_ShouldReturnTrue(int rectX, int rectY, double rayAngle)
         {
             Utils.IsRayIntersectsRectangle(new Rectangle(rectX, rectY, 10, 10), rayAngle, out Point _).Should().BeTrue();
+        }
+
+        [TestCase(50, 20, 0, ExpectedResult = 25)]
+        [TestCase(10, 10, Math.PI / 4, ExpectedResult = 7)]
+        public int GetRayLengthFromCenter_CorrectCalculation(int width, int height, double rayAngle)
+        {
+            return (int)Utils.GetRayLengthFromCenter(new Rectangle(0, 0, width, height), rayAngle);
+        }
+
+        [TestCase(0, 10, 10, 0)]
+        [TestCase(Math.PI, 10, -10, 0)]
+        [TestCase(Math.PI / 4, 10, 7, 7)]
+        public void GetPointByAngleAndDistance_CorrectCalculation(double rayAngle, double dist, int x, int y)
+        {
+            Utils.GetPointByAngleAndDistance(rayAngle, dist).Should().Be(new Point(x, y));
         }
     }
 }
