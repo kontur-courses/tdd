@@ -151,7 +151,7 @@ namespace TagsCloudVisualization
             return new Point((int)(dist * Math.Cos(rayAngle)), (int)(dist * Math.Sin(rayAngle)));
         }
 
-        public static Point GetFathestPointFromCenter(Rectangle rect)
+        public static Point GetFathestPointFromCenter(Rectangle rect, out double dist)
         {
             var vLeftTop = new Point(rect.Left, rect.Top);
             var vRightTop = new Point(rect.Right, rect.Top);
@@ -169,6 +169,7 @@ namespace TagsCloudVisualization
             };
 
             double maxDistSquared = vertices.Max(kv => kv.Value);
+            dist = Math.Sqrt(maxDistSquared);
             return vertices.First(kv => kv.Value == maxDistSquared).Key;
         }
     }
@@ -210,7 +211,7 @@ namespace TagsCloudVisualization
         [TestCase(50, -50, 60, -50)]
         public void GetFathestPointFromCenter_CorrectCalculation(int rectX, int rectY, int pointX, int pointY)
         {
-            Utils.GetFathestPointFromCenter(new Rectangle(rectX, rectY, 10, 10)).Should().Be(new Point(pointX, pointY));
+            Utils.GetFathestPointFromCenter(new Rectangle(rectX, rectY, 10, 10), out double _).Should().Be(new Point(pointX, pointY));
         }
     }
 }
