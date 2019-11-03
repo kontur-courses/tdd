@@ -4,11 +4,11 @@ using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal;
 
 namespace TagCloud.Tests
 {
-    // todo: задача 2
-    // todo: задача 3
     public class OrientationTests
     {
         public static readonly Size SingleSize = new Size(1, 1);
@@ -82,6 +82,25 @@ namespace TagCloud.Tests
                 .Select(number => _cloudLayouter.PutNextRectangle(OrientationTests.SingleSize))
                 .ToList();
         }
+        
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
+            var drawer = new Drawer(new Size(120, 120));
+            var fname = $"{TestContext.CurrentContext.Test.FullName}.png";
+            foreach (var rectangle in _cloudLayouter.GetAllRectangles())
+                drawer.DrawRectangle(rectangle, drawer.pen);
+            drawer.SaveImg(fname);
+            TestContext.WriteLine($"Tag cloud visualisation saved to file: '{fname}'");
+        }
+
+        [Test, Category("Fall test")]
+        public void Should_Fall()
+        {
+//            Assert.Fail();
+        }
 
         [Test, Category("Simple Behaviour")]
         public void Should_TileSpace_WithNonEquivalentRectangles()
@@ -91,7 +110,7 @@ namespace TagCloud.Tests
                 .Distinct()
                 .Count()
                 .Should()
-                .Be(ElementsAmount) ;
+                .Be(ElementsAmount);
         }
      
         [Test, Category("Simple Behaviour")]
@@ -144,7 +163,19 @@ namespace TagCloud.Tests
         {
             _cloudLayouter = new CircularCloudLayouter(OrientationTests.CenterPoint);
         }
-        
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
+            var drawer = new Drawer(new Size(120, 120));
+            var fname = $"{TestContext.CurrentContext.Test.FullName}.png";
+            foreach (var rectangle in _cloudLayouter.GetAllRectangles())
+                drawer.DrawRectangle(rectangle, drawer.pen);
+            drawer.SaveImg(fname);
+            TestContext.WriteLine($"Tag cloud visualisation saved to file: '{fname}'");
+        }
+
         [TestCaseSource(nameof(_sizesForXDenseTesting))]
         public void Should_DenseLocateRectanglesWithDifferentShape_ByXCoordinate(List<Size> sizes)
         {
