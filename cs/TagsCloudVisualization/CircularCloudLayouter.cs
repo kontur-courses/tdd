@@ -44,6 +44,9 @@ namespace TagsCloudVisualization
             var bmp = new Bitmap(right - left, bottom - top);
             var gr = Graphics.FromImage(bmp);
             gr.Clear(Color.RosyBrown);
+            Brush br = new SolidBrush(Color.Green);
+            foreach (var item in Items)
+                gr.FillRectangle(br, item.X - left, item.Y - top, item.Width, item.Height);
             bmp.Save(filename);
         }
     }
