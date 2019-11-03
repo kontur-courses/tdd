@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -157,14 +158,18 @@ namespace TagsCloudVisualization
             var vRightBottom = new Point(rect.Right, rect.Bottom);
             var vLeftBottom = new Point(rect.Left, rect.Bottom);
 
-            List<Point> vertices = new List<Point>() { vLeftTop, vRightTop, vLeftBottom, vRightBottom };
-            vertices.Sort((v1, v2) =>
-            {
-                double distSquared(Point p) => p.X * p.X + p.Y * p.Y;
-                return distSquared(v2).CompareTo(distSquared(v1));
-            });
+            double distSquared(Point p) => p.X * p.X + p.Y * p.Y;
 
-            return vertices[0];
+            List<KeyValuePair<Point, double>> vertices = new List<KeyValuePair<Point, double>>()
+            {
+                new KeyValuePair<Point, double>(vLeftTop, distSquared(vLeftTop)),
+                new KeyValuePair<Point, double>(vRightTop, distSquared(vRightTop)),
+                new KeyValuePair<Point, double>(vLeftBottom, distSquared(vLeftBottom)),
+                new KeyValuePair<Point, double>(vRightBottom, distSquared(vRightBottom))
+            };
+
+            double maxDistSquared = vertices.Max(kv => kv.Value);
+            return vertices.First(kv => kv.Value == maxDistSquared).Key;
         }
     }
 
