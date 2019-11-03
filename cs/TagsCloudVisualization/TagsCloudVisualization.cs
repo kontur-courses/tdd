@@ -26,6 +26,10 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
+            if (rectangleSize.Width < 0 || rectangleSize.Height < 0)
+            {
+                throw new ArgumentException();
+            }
             var nextPosition = positionGenerator.Next();
             var rectangle = new Rectangle(nextPosition, rectangleSize);
             while (IntersectsWithPrevious(rectangle) || rectangle.X < 0 || rectangle.Y < 0)
