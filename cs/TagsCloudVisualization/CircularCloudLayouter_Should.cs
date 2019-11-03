@@ -19,12 +19,12 @@ namespace TagsCloudVisualization
         {
             var rnd = new Random();
 
-            sizes = new List<Size>();
             int count = rnd.Next(10, 50);
+            sizes = new List<Size>(count);
             for (int i = 0; i < count; i++)
             {
                 int h = rnd.Next(10, 20);
-                int w = h * (int)(2 + 8 * rnd.NextDouble());
+                int w = h * (int)(2 + 3 * rnd.NextDouble());
                 sizes.Add(new Size(w, h));
             }
 
