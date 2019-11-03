@@ -11,6 +11,7 @@ namespace TagsCloudVisualization
     {
         private readonly Point center;
         private readonly List<Rectangle> rectangles;
+        private RoundSpiralPositionGenerator positionGenerator;
 
         public TagsCloudVisualization(Point center)
         {
@@ -20,14 +21,15 @@ namespace TagsCloudVisualization
             }
             this.center = center;
             rectangles = new List<Rectangle>();
+            positionGenerator = new RoundSpiralPositionGenerator(center);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var rectangle = new Rectangle(center, rectangleSize);
+            var rectangle = new Rectangle(positionGenerator.Next(), rectangleSize);
             while (IntersectsWithPrevious(rectangle))
             {
-                rectangle.Move(1,100);
+                rectangle.MoveToPosition(positionGenerator.Next());
             }
             rectangles.Add(rectangle);
             return rectangle;
