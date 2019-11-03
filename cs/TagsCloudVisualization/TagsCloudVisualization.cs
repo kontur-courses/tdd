@@ -10,6 +10,7 @@ namespace TagsCloudVisualization
     public class TagsCloudVisualization
     {
         private readonly Point center;
+        private List<Rectangle> rectangles;
 
         public TagsCloudVisualization(Point center)
         {
@@ -18,11 +19,14 @@ namespace TagsCloudVisualization
                 throw new ArgumentException();
             }
             this.center = center;
+            rectangles = new List<Rectangle>();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            throw new NotImplementedException();
+            var rectangle = new Rectangle(center, rectangleSize);
+            rectangles.Add(rectangle);
+            return rectangle;
         }
 
         public Point GetCenter()

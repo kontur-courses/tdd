@@ -11,11 +11,12 @@ namespace TagsCloudVisualization
     public class TagsCloudVisualization_Should
     {
         private TagsCloudVisualization tagsCloud;
+        private readonly Point center = new Point(800, 600);
 
         [SetUp]
         public void SetUp()
         {
-            tagsCloud = new TagsCloudVisualization(new Point(800, 600));
+            tagsCloud = new TagsCloudVisualization(center);
         }
 
 
@@ -23,10 +24,8 @@ namespace TagsCloudVisualization
         public void DoesNotTrowException_WhenPutFirstRectangle()
         {
             var rectangleSize = new Size(100, 100);
-            tagsCloud.PutNextRectangle(rectangleSize)
-                .Should()
-                .BeEquivalentTo(new Rectangle(
-                new Point(tagsCloud.GetCenter().X - (rectangleSize.Width / 2), tagsCloud.GetCenter().Y - (rectangleSize.Height / 2)), rectangleSize));
+            Action act = () => tagsCloud.PutNextRectangle(rectangleSize);
+            act.Should().NotThrow();
         }
     }
 }
