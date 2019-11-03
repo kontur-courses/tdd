@@ -112,12 +112,13 @@ namespace TagsCloudVisualization
                     return true;
                 }
             }
-            else if ((rayAngle > Math.PI && vSeg.p1.Y < 0) || (rayAngle < Math.PI && vSeg.p1.Y > 0))
+            else if (((rayAngle > 0.5 * Math.PI || rayAngle < 1.5 * Math.PI) && vSeg.p1.X < 0) 
+                || ((rayAngle < 0.5 * Math.PI || rayAngle > 1.5 * Math.PI) && vSeg.p1.X > 0))
             {
-                double x = vSeg.p1.Y / Math.Tan(rayAngle);
-                if (x.IsApproximatelyMoreThan(vSeg.p1.X) && x.IsApproximatelyLessThan(vSeg.p2.X))
+                double y = Math.Tan(rayAngle) * vSeg.p1.X;
+                if (y.IsApproximatelyMoreThan(vSeg.p1.Y) && y.IsApproximatelyLessThan(vSeg.p2.Y))
                 {
-                    IntersectionPoint = new Point((int)x, vSeg.p1.Y);
+                    IntersectionPoint = new Point(vSeg.p1.X, (int)y);
                     return true;
                 }
             }
@@ -192,6 +193,7 @@ namespace TagsCloudVisualization
 
         [TestCase(50, 20, 0, ExpectedResult = 25)]
         [TestCase(10, 10, Math.PI / 4, ExpectedResult = 7)]
+        [TestCase(66, 11, 0.17453292519943295, ExpectedResult = 33)]
         public int GetRayLengthFromCenter_CorrectCalculation(int width, int height, double rayAngle)
         {
             return (int)Utils.GetRayLengthFromCenter(new Rectangle(0, 0, width, height), rayAngle);
