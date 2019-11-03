@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace TagsCloudVisualization
@@ -148,6 +149,23 @@ namespace TagsCloudVisualization
         {
             return new Point((int)(dist * Math.Cos(rayAngle)), (int)(dist * Math.Sin(rayAngle)));
         }
+
+        public static Point GetFathestPointFromCenter(Rectangle rect)
+        {
+            var vLeftTop = new Point(rect.Left, rect.Top);
+            var vRightTop = new Point(rect.Right, rect.Top);
+            var vRightBottom = new Point(rect.Right, rect.Bottom);
+            var vLeftBottom = new Point(rect.Left, rect.Bottom);
+
+            List<Point> vertices = new List<Point>() { vLeftTop, vRightTop, vLeftBottom, vRightBottom };
+            vertices.Sort((v1, v2) =>
+            {
+                double distSquared(Point p) => p.X * p.X + p.Y * p.Y;
+                return distSquared(v2).CompareTo(distSquared(v1));
+            });
+
+            return vertices[0];
+        }
     }
 
     [TestFixture]
@@ -179,6 +197,15 @@ namespace TagsCloudVisualization
         public void GetPointByAngleAndDistance_CorrectCalculation(double rayAngle, double dist, int x, int y)
         {
             Utils.GetPointByAngleAndDistance(rayAngle, dist).Should().Be(new Point(x, y));
+        }
+
+        [TestCase(50, 50, 60, 60)]
+        [TestCase(-50, 50, -50, 60)]
+        [TestCase(-50, -50, -50, -50)]
+        [TestCase(50, -50, 60, -50)]
+        public void GetFathestPointFromCenter_CorrectCalculation(int rectX, int rectY, int pointX, int pointY)
+        {
+            Utils.GetFathestPointFromCenter(new Rectangle(rectX, rectY, 10, 10)).Should().Be(new Point(pointX, pointY));
         }
     }
 }
