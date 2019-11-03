@@ -12,12 +12,37 @@ namespace TagsCloudVisualization.Tests
     {
         private CircularCloudLayouter cloudLayouter;
         private Random random;
+        private TestContext testContext { get; set; }
 
         [SetUp]
         public void SetUp()
         {
             cloudLayouter = new CircularCloudLayouter(new Point(450, 450));
             random = new Random();
+        }
+
+        [TearDown]
+        public void SaveImage()
+        {
+            testContext = TestContext.CurrentContext;
+            if (testContext.Result.FailCount == 0)
+                return;
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestBug");
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            path = Path.Combine(path, $"{testContext.Test.Name}.png");
+            cloudLayouter.Visualization(new Bitmap(1000, 1000))
+                .Save(path);
+            Console.WriteLine($"Tag cloud visualization saved to file {path}");
+        }
+
+        [Test]
+        public void TestSaveOfImageOnTearDown_ShouldFallenAnyTime()
+        {
+            for (var i = 0; i < 100; i++)
+                cloudLayouter.PutNextRectangle(new Size(random.Next(1, 100), random.Next(1, 100)));
+
+            false.Should().BeTrue();
         }
 
         [Test]
@@ -100,7 +125,7 @@ namespace TagsCloudVisualization.Tests
             bitMap = cloudLayouter.Visualization(bitMap);
             bitMap.Save(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
                 name)); // Как сохранть правильно? Или такой подход сойдёт? 
-            
+
             bitMap = new Bitmap(size * 2, size * 2);
             bitMap = cloudLayouter.Visualization(bitMap, cloudLayouter.Centreings());
             bitMap.Save(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Centering{name}"));
