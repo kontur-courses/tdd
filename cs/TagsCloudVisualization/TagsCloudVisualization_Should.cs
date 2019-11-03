@@ -29,6 +29,14 @@ namespace TagsCloudVisualization
         }
 
         [Test]
+        public void ThrowException_WhenSizeHaveNegativeNumber()
+        {
+            var rectangleSize = new Size(-1, 100);
+            Action act = () => tagsCloud.PutNextRectangle(rectangleSize);
+            act.Should().Throw<ArgumentException>();
+        }
+
+        [Test]
         public void FirstRectangle_MustBeNearCenter()
         {
             var rectangleSize = new Size(100, 100);

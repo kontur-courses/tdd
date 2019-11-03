@@ -11,7 +11,7 @@ namespace TagsCloudVisualization
     {
         private readonly Point center;
         private readonly List<Rectangle> rectangles;
-        private RoundSpiralPositionGenerator positionGenerator;
+        private readonly RoundSpiralPositionGenerator positionGenerator;
 
         public TagsCloudVisualization(Point center)
         {
@@ -26,10 +26,12 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var rectangle = new Rectangle(positionGenerator.Next(), rectangleSize);
-            while (IntersectsWithPrevious(rectangle))
+            var nextPosition = positionGenerator.Next();
+            var rectangle = new Rectangle(nextPosition, rectangleSize);
+            while (IntersectsWithPrevious(rectangle) || rectangle.X < 0 || rectangle.Y < 0)
             {
-                rectangle.MoveToPosition(positionGenerator.Next());
+                nextPosition = positionGenerator.Next();
+                rectangle.MoveToPosition(nextPosition);
             }
             rectangles.Add(rectangle);
             return rectangle;
@@ -38,11 +40,6 @@ namespace TagsCloudVisualization
         private bool IntersectsWithPrevious(Rectangle rectangle)
         {
             return rectangles.Any(previousRectangle => previousRectangle.IntersectsWith(rectangle));
-        }
-
-        public Point GetCenter()
-        {
-            return this.center;
         }
     }
 }
