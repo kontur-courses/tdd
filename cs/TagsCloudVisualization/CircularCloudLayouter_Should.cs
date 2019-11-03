@@ -64,7 +64,7 @@ namespace TagsCloudVisualization
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                var filename = $"{Path.GetTempPath()}{TestContext.CurrentContext.Test.Name}-Failed.bmp";
+                var filename = $"{Path.GetTempPath()}{TestContext.CurrentContext.Test.Name}-Failed_{(int)DateTime.Now.TimeOfDay.TotalSeconds}.bmp";
                 ccl.SaveToFile(filename);
                 TestContext.WriteLine($"Tag cloud visualization saved to file {filename}");
             }
