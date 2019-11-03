@@ -17,7 +17,7 @@ namespace TagsCloudVisualization
         private double GetRadius(Point point)
         {
             var pointDifference = point - (Size) centre;
-            return Math.Sqrt(pointDifference.X * pointDifference.X + pointDifference.Y * pointDifference.Y);
+            return pointDifference.X * pointDifference.X + pointDifference.Y * pointDifference.Y;
         }
     }
 }

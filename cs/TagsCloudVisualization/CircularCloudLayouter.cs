@@ -18,6 +18,10 @@ namespace TagsCloudVisualization
             rectangles = new HashSet<Rectangle>();
         }
 
+        public CircularCloudLayouter() : this(Point.Empty)
+        {
+        }
+
         public HashSet<Rectangle> Centreings()
         {
             var centreingsCloudLayout = new CircularCloudLayouter(center);
@@ -30,24 +34,25 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            if (rectangleSize.IsEmpty || rectangleSize.Width < 0 || rectangleSize.Height < 0)
-                throw new ArgumentException("Rectangle should exist in real world");
+            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+                throw new ArgumentException("rectangleSize");
+            
             foreach (var possibleLocation in cornerPoints)
             {
-                foreach (var rectangle in RectanglesExtension.GetAllPossibleRectanglePosition(possibleLocation,
+                foreach (var rectangle in RectanglesHelper.GetAllPossibleRectangles(possibleLocation,
                     rectangleSize))
                 {
-                    if (RectanglesExtension.HaveRectangleIntersectWithAnother(rectangle, rectangles))
+                    if (RectanglesHelper.HaveRectangleIntersectWithAnother(rectangle, rectangles))
                         continue;
                     rectangles.Add(rectangle);
-                    foreach (var corner in RectanglesExtension.CornersOfRectangles(rectangle))
+                    foreach (var corner in RectanglesHelper.GetCorners(rectangle))
                         cornerPoints.Add(corner);
 
                     return rectangle;
                 }
             }
 
-            throw new Exception("Something went wrong");
+            throw new Exception("UnExcepted Error");
         }
 
         public Bitmap Visualization(Bitmap bitmap, HashSet<Rectangle> rectangles)

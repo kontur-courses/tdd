@@ -17,13 +17,13 @@ namespace TagsCloudVisualization.Tests
         [TestCaseSource(nameof(rectangles))]
         public void CornersOfRectangles_ShouldReturnFourCornerOnDifferentRectangle(int x, int y, int width, int height)
         {
-            RectanglesExtension.CornersOfRectangles(new Rectangle(x, y, width, height)).Should().HaveCount(4);
+            RectanglesHelper.GetCorners(new Rectangle(x, y, width, height)).Should().HaveCount(4);
         }
 
         [TestCaseSource(nameof(rectangles))]
         public void CornersOfRectangles_ShouldReturnCorrectCorner(int x, int y, int width, int height)
         {
-            RectanglesExtension.CornersOfRectangles(new Rectangle(x, y, width, height))
+            RectanglesHelper.GetCorners(new Rectangle(x, y, width, height))
                 .Should().Contain(new Point(x, y))
                 .And.Contain(new Point(x + width, y + height))
                 .And.Contain(new Point(x, y + height))
@@ -33,14 +33,14 @@ namespace TagsCloudVisualization.Tests
         [TestCaseSource(nameof(rectangles))]
         public void GetAllPossiblePosition_ShouldReturnFourDifferentPosition(int x, int y, int width, int height)
         {
-            RectanglesExtension.GetAllPossibleRectanglePosition(new Point(x, y), new Size(width, height)).Should()
+            RectanglesHelper.GetAllPossibleRectangles(new Point(x, y), new Size(width, height)).Should()
                 .HaveCount(4).And.OnlyHaveUniqueItems();
         }
         
         [TestCaseSource(nameof(rectangles))]
         public void GetAllPossiblePosition_ShouldReturnPositionThatHaveCornerInLocation(int x, int y, int width, int height)
         {
-            RectanglesExtension.GetAllPossibleRectanglePosition(new Point(x, y), new Size(width, height))
+            RectanglesHelper.GetAllPossibleRectangles(new Point(x, y), new Size(width, height))
                 .Should().Contain(new Rectangle(x, y, width, height))
                 .And.Contain(new Rectangle(x - width, y, width, height))
                 .And.Contain(new Rectangle(x, y - height, width, height))

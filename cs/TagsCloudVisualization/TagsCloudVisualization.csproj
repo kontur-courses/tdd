@@ -59,7 +59,7 @@
     <Compile Include="PointRadiusComparer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RectanglesExtension.cs" />
+    <Compile Include="RectanglesHelper.cs" />
     <Compile Include="Tests\Test_CircularCloudLayouter.cs" />
     <Compile Include="Tests\Test_PointRadiusComparer.cs" />
     <Compile Include="Tests\Test_RectanglesExtension.cs" />
