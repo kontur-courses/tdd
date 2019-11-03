@@ -40,7 +40,7 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void Rectangles_Should_NotIntersect()
+        public void Rectangles_Should_NotIntersectWithPrevious()
         {
             var rectangleSize = new Size(100, 100);
             var firstRectangle = tagsCloud.PutNextRectangle(rectangleSize);

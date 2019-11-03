@@ -25,8 +25,17 @@ namespace TagsCloudVisualization
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             var rectangle = new Rectangle(center, rectangleSize);
+            while (IntersectsWithPrevious(rectangle))
+            {
+                rectangle.Move(1,0);
+            }
             rectangles.Add(rectangle);
             return rectangle;
+        }
+
+        private bool IntersectsWithPrevious(Rectangle rectangle)
+        {
+            return rectangles.Any(previousRectangle => previousRectangle.IntersectsWith(rectangle));
         }
 
         public Point GetCenter()
