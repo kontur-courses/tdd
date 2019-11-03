@@ -41,6 +41,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArchimedeanSpiral.cs" />
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="ImageCreater.cs" />
     <Compile Include="ISpiral.cs" />
