@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -39,7 +40,7 @@ namespace TagsCloudVisualization
 
         private bool rectangleIntersect(Rectangle rectangle)
         {
-            return Recatangles.Any(validRectangle => rectangle.IntersectsWith(validRectangle));
+            return Recatangles.Any(rectangle.IntersectsWith);
         }
 
         private Rectangle GetFirstRectangle(Size rectangleSize)
@@ -47,6 +48,31 @@ namespace TagsCloudVisualization
             var location = new Point(CenterCoordinates.X - rectangleSize.Width / 2,
                 CenterCoordinates.Y - rectangleSize.Height / 2);
             return new Rectangle(location, rectangleSize);
+        }
+
+        public void CreateCloudWithEqualRectangles(int rectanglesCount, int width = 15, int height = 15)
+        {
+            for (var i = 0; i < rectanglesCount; i++)
+            {
+                PutNextRectangle(new Size(width, height));
+            }
+        }
+
+        public void CreateCloudWithDifferentRectangles(int rectanglesCount, int minWidth, int maxWidth, 
+            int minHeight, int maxHeight)
+        {
+            for (var i = 0; i < rectanglesCount; i++)
+            {
+                PutNextRectangle(getRandomSize(minWidth, maxWidth, minHeight, maxHeight));
+            }
+        }
+        
+        private Size getRandomSize(int minWidth, int maxWidth, int minHeight, int maxHeight)
+        {
+            var random = new Random();
+            var width = random.Next(minWidth, maxWidth);
+            var height = random.Next(minHeight, maxHeight);
+            return new Size(width, height);
         }
     }
 }
