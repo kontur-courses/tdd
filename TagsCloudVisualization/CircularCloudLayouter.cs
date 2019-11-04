@@ -52,6 +52,12 @@ namespace TagsCloudVisualization
             return rect;
         }
 
+        public Bitmap DrawRectangles()
+        {
+            var visualizer = new Visualizer();
+            return visualizer.DrawRectangles(rectangles);
+        }
+
         private IEnumerable<Point> BuildPath(Point from, Point to)
         {
             var currentPoint = from;

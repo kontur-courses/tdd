@@ -1,19 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
     public class CircularCloudLayouterTests
     {
+        private CircularCloudLayouter layouter;
+
+
         [Test]
         public void PutNextRectangle_Throws_WhenNegativeSize()
         {
-            var layouter = new CircularCloudLayouter(new Point(0, 0));
+            layouter = new CircularCloudLayouter(new Point(0, 0));
             Action action = () => layouter.PutNextRectangle(new Size(-10, 0));
             action.Should().Throw<ArgumentException>();
         }
@@ -25,8 +30,7 @@ namespace TagsCloudVisualization.Tests
         public void PutNextRectangle_NotCausesIntersections(int centerX, int centerY, int amountOfRectangles)
         {
             var random = new Random();
-
-            var layouter = new CircularCloudLayouter(new Point(centerX, centerY));
+            layouter = new CircularCloudLayouter(new Point(centerX, centerY));
             var rectangles = new List<Rectangle>();
             for (var i = 0; i < amountOfRectangles; i++)
             {
@@ -43,9 +47,20 @@ namespace TagsCloudVisualization.Tests
         public void PutNextRectangle_PutsFirstRectangleInCenter(int centerX, int centerY, int width, int height)
         {
             var center = new Point(centerX, centerY);
-            var layouter = new CircularCloudLayouter(center);
+            layouter = new CircularCloudLayouter(center);
             var rect = layouter.PutNextRectangle(new Size(width, height));
             rect.Location.Should().Be(center);
+        }
+
+        [TearDown]
+        public void DrawPictureToDebug_OnFail()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+            {
+                var path = Directory.CreateDirectory($"{AppDomain.CurrentDomain.BaseDirectory}\\TestFailurePictures").FullName  + "\\" + Guid.NewGuid() + ".png";
+                layouter.DrawRectangles().Save(path);
+                Console.WriteLine($"Tag cloud visualization saved to file {path}");
+            }
         }
     }
 }
