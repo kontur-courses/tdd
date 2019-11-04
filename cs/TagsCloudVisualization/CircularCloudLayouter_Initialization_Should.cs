@@ -9,19 +9,19 @@ namespace TagsCloudVisualization
 {
 
     [TestFixture]
-    public class TagsCloudVisualization_Initialization_Should
+    public class CircularCloudLayouter_Initialization_Should
     {
         [Test]
         public void ThrowException_WhenXIsNegativeNumberCenter()
         {
-            Action act = () => new TagsCloudVisualization(new Point(-1, 20));
+            Action act = () => new CircularCloudLayouter(new Point(-1, 20));
             act.Should().Throw<ArgumentException>();
         }
 
         [Test]
         public void ThrowException_WhenYIsNegativeNumberCenter()
         {
-            Action act = () => new TagsCloudVisualization(new Point(20, -1));
+            Action act = () => new CircularCloudLayouter(new Point(20, -1));
             act.Should().Throw<ArgumentException>();
         }
     }

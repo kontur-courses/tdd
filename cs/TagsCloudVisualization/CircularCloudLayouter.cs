@@ -8,13 +8,13 @@ using Newtonsoft.Json.Bson;
 
 namespace TagsCloudVisualization
 {
-    public class TagsCloudVisualization
+    public class CircularCloudLayouter
     {
         private readonly Point center;
         private readonly List<Rectangle> rectangles;
         private readonly RoundSpiralPositionGenerator positionGenerator;
 
-        public TagsCloudVisualization(Point center)
+        public CircularCloudLayouter(Point center)
         {
             if (center.X < 0 || center.Y < 0)
             {
@@ -38,7 +38,8 @@ namespace TagsCloudVisualization
                 nextPosition = positionGenerator.Next();
                 rectangle.MoveToPosition(nextPosition);
             }
-            OptimizeLocation(ref rectangle);
+            if (rectangles.Count > 0)
+                OptimizeLocation(ref rectangle);
             rectangles.Add(rectangle);
             return rectangle;
         }
@@ -49,20 +50,32 @@ namespace TagsCloudVisualization
             OptimizeOneCoordinate(ref rectangle, (Rectangle rect) => center.Y - rect.Y, new Point(0, Math.Sign(rectangle.Y - center.Y) * -1));
         }
 
-        private void OptimizeOneCoordinate(ref Rectangle rectangle, Func<Rectangle, int> currentDifference, Point delta)
+        private void OptimizeOneCoordinate(ref Rectangle rectangle, Func<Rectangle, int> getDeltaByCenterCoordinate, Point deltaByStep)
         {
-            var previousLocation = rectangle.Location;
-            while (currentDifference(rectangle) != 0 && !IntersectsWithPrevious(rectangle))
+            var onCenter = false;
+            while (!IntersectsWithPrevious(rectangle))
             {
-                previousLocation = rectangle.Location;
-                rectangle.Move(delta.X, delta.Y);
+                if (getDeltaByCenterCoordinate(rectangle) == 0)
+                {
+                    onCenter = true;
+                    break;
+                }
+                rectangle.Move(deltaByStep.X, deltaByStep.Y);
             }
-            rectangle.Location = previousLocation;
+            if (!onCenter) 
+                rectangle.Move(-deltaByStep.X, -deltaByStep.Y);
         }
 
         private bool IntersectsWithPrevious(Rectangle rectangle)
         {
             return rectangles.Any(previousRectangle => previousRectangle.IntersectsWith(rectangle));
+        }
+
+        public Size GetSizeImage()
+        {
+            var maxX = rectangles.Max(rectangle => rectangle.Right);
+            var maxY = rectangles.Max(rectangle => rectangle.Bottom);
+            return new Size(maxX, maxY);
         }
     }
 }
