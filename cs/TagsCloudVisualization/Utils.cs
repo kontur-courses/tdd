@@ -173,6 +173,34 @@ namespace TagsCloudVisualization
             dist = Math.Sqrt(maxDistSquared);
             return vertices.First(kv => kv.Value == maxDistSquared).Key;
         }
+
+        /// <summary>
+        /// Из пересекаемых лучом прямоугольников возвращает самую дальнюю от начала координат точку пересечения
+        /// </summary>
+        /// <param name="endInd">До какого индекса прямоугольники просматривать</param>
+        /// <param name="rayAngle">Угол луча, рад.</param>      
+        public static Point GetFarthestRectanglePointIntersectedByRay(CircularCloudLayouter ccl, int endInd, double rayAngle)
+        {
+            var maxDistSquared = 0;
+            Point result = default;
+            for (int i = 0; i < endInd; i++)
+            {
+                if (IsRayIntersectsRectangle(ccl.Items[i].Rectangle, rayAngle, out Point intnPoint))
+                {
+                    var distSquared = intnPoint.X * intnPoint.X + intnPoint.Y * intnPoint.Y;
+                    if (distSquared > maxDistSquared)
+                    {
+                        result = intnPoint;
+                        maxDistSquared = distSquared;
+                    }
+                }
+            }
+
+            if (result == default)
+                throw new ArgumentException();
+
+            return result;
+        }
     }
 
     [TestFixture]
@@ -214,6 +242,16 @@ namespace TagsCloudVisualization
         public void GetFathestPointFromCenter_CorrectCalculation(int rectX, int rectY, int pointX, int pointY)
         {
             Utils.GetFathestPointFromCenter(new Rectangle(rectX, rectY, 10, 10), out double _).Should().Be(new Point(pointX, pointY));
+        }
+
+        public void GetFarthestRectanglePointIntersectsByRay_CorrectCalculation()
+        {
+            CircularCloudLayouter ccl = new CircularCloudLayouter(default);
+            ccl.PutNextRectangle(new Size(20, 20));
+            ccl.PutNextRectangle(new Size(10, 10));
+            var point = Utils.GetFarthestRectanglePointIntersectedByRay(ccl, 2, 1.5 * Math.PI);
+            point.X.Should().Be(0);
+            point.Y.Should().BeInRange(20, 30);
         }
     }
 }
