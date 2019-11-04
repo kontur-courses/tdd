@@ -61,12 +61,14 @@
     <Compile Include="RectangleExtension.cs" />
     <Compile Include="Tests\SpiralGenerator_should.cs" />
     <Compile Include="Tests\RectangleExtension_should.cs" />
-    <Compile Include="Visualizator.cs" />
+    <Compile Include="Visualizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="examples\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
