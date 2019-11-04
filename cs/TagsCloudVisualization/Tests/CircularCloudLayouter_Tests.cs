@@ -8,7 +8,8 @@ namespace TagsCloudVisualization.Tests
     [TestFixture]
     public class CircularCloudLayouter_Tests
     {
-        public CircularCloudLayouter cloud;
+        private CircularCloudLayouter cloud;
+        
         [SetUp]
         public void SetUp()
         {
@@ -58,6 +59,32 @@ namespace TagsCloudVisualization.Tests
             cloud.PutNextRectangle(new Size(170, 5));
             cloud.PutNextRectangle(new Size(10, 40));
             cloud.Recatangles.Count.Should().Be(5);
+        }
+        
+        
+        [TestCase(10, 15, 15, TestName = "10EqualRectangles")]
+        [TestCase(100, 15, 15, TestName = "100EqualRectangles")]
+        [TestCase(500, 15, 15, TestName = "500EqualRectangles")]
+        public void CreateCloudWithEqualRectangles_ValidValues_ShouldCreateCloud(int rectanglesCount, int width, int height)
+        {
+            cloud = new CircularCloudLayouter(new Point(500, 500));
+            
+            cloud.CreateCloudWithEqualRectangles(rectanglesCount, width, height);
+     
+            cloud.Recatangles.Count.Should().Be(rectanglesCount);
+        }
+        
+        [TestCase(10, 10, 50, 10, 50, TestName = "10DifferentRectangles")]
+        [TestCase(100, 10, 50, 10, 50, TestName = "100DifferentRectangles")]
+        [TestCase(500, 10, 50, 10, 50, TestName = "500DifferentRectangles")]
+        public void CreateCloudWithDifferentRectangles_ValidValues_ShouldCreateCloud(int rectanglesCount, int minWidth,
+            int maxWidth, int minHeight, int maxHeight)
+        {
+            cloud = new CircularCloudLayouter(new Point(500, 500));
+            
+            cloud.CreateCloudWithDifferentRectangles(rectanglesCount, minWidth, maxWidth, minHeight, maxHeight);
+
+            cloud.Recatangles.Count.Should().Be(rectanglesCount);
         }
     }
 }
