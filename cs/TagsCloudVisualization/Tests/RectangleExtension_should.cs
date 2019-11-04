@@ -1,20 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
+using System.Drawing;
 
 namespace TagsCloudVisualization.Tests
 {
     class RectangleExtension_should
     {
+        private static Point point;
+
+        [SetUp]
+        public void SetUp()
+        {
+            point = new Point(4, 4);
+
+        }
+
         [Test]
         public void GetCenter_WhenRectangleIsPoint_ReturnThisPoint()
         {
-            var point = new Point(5,5);
             var rectangle = new Rectangle(point, new Size(0, 0));
             rectangle.GetCenter().Should().Be(point);
         }
@@ -22,17 +25,16 @@ namespace TagsCloudVisualization.Tests
         [Test]
         public void GetCenter_WhenRectangle_ReturnCenter()
         {
-            var point = new Point(4, 4);
             var rectangle = new Rectangle(point, new Size(10, 10));
             rectangle.GetCenter().Should().Be(new Point(9, 9));
         }
 
-        [Test]
-        public void DoSomething_WhenSomething()
+        [TestCase(0, 10, 4, 9,TestName = "GetCenter_WhenRectangleIsVerticalLine_ReturnPointOnThisLine")]
+        [TestCase(10, 0, 9, 4, TestName = "GetCenter_WhenRectangleIsHorizontalLine_ReturnPointOnThisLine")]
+        public void GetCenter_WhenRectangleIsLine_ReturnPointOnThisLine(int width, int height, int x, int y)
         {
-            var point = new Point(4, 4);
-            var rectangle = new Rectangle(point, new Size(0, 10));
-            rectangle.GetCenter().Should().Be(new Point(4, 9));
+            var rectangle = new Rectangle(point, new Size(width, height));
+            rectangle.GetCenter().Should().Be(new Point(x, y));
         }
     }
 }
