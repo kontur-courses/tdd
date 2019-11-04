@@ -71,7 +71,7 @@ namespace TagsCloudVisualization
         [Test]
         public void Rectangles_Should_BeInCircle()
         {
-            var rectangleSize = new Size(100, 100);
+            var rectangleSize = new Size(123, 112);
             for (var i = 0; i < 100; i++)
             {
                 var rectangle = circularCloud.PutNextRectangle(rectangleSize);
@@ -81,7 +81,7 @@ namespace TagsCloudVisualization
             var minY = rectangles.Min(rect => rect.Top);
             var maxX = rectangles.Max(rect=> rect.Right);
             var minX = rectangles.Min(rect => rect.Left);
-            Math.Abs((maxY - minY) - (maxX-minX)).Should().BeLessThan(100*100/2);
+            Math.Abs((maxY - minY) - (maxX-minX)).Should().BeLessThan(100*(100/10));
         }
 
         [TearDown]
@@ -107,7 +107,6 @@ namespace TagsCloudVisualization
                 var path = Path.Join(Directory.GetParent(Directory.GetParent(environment).Parent.FullName).ToString(), TestContext.CurrentContext.Test.Name + ".jpg");
                 image.Save(path, ImageFormat.Jpeg);
                 TestContext.Out.WriteLine("Tag cloud visualization saved to file " + path);
-
             }
         }
 
