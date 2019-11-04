@@ -1,3 +1,10 @@
-![Прямоугольники, центр в правом нижнем углу](/cs/TagsCloudVisualization/images/result0.bmp)
+# Примеры работы CircularCloudLayouter
+
+**Прямоугольники, размер изображения 800x600, центр: (800, 600)**
+![Прямоугольники, размер изображения 800x600, центр: (800, 600)](/cs/TagsCloudVisualization/images/result0.bmp)
+
+**Квадраты, размер изображения 800x600, центр: (400, 300)**
 ![Квадраты, центр в середине](/cs/TagsCloudVisualization/images/result1.bmp)
-![Прямоугольники, центр смещён влево вверх, большое изображение](/cs/TagsCloudVisualization/images/result2.bmp)
+
+**Прямоугольники, размер изображения 1600x1200, центр: (400, 300)**
+![Прямоугольники, размер изображения 1600x1200, центр: (400, 300)](/cs/TagsCloudVisualization/images/result2.bmp)
