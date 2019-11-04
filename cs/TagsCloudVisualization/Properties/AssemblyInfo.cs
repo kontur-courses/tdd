@@ -1,12 +1,10 @@
 ﻿using System.Reflection;
-using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Windows;
 
 // Общие сведения об этой сборке предоставляются следующим набором
-// набор атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
-// связанные со сборкой.
+// набора атрибутов. Измените значения этих атрибутов для изменения сведений,
+// связанные с этой сборкой.
 [assembly: AssemblyTitle("TagsCloudVisualization")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
@@ -18,30 +16,13 @@ using System.Windows;
 
 // Установка значения False для параметра ComVisible делает типы в этой сборке невидимыми
 // для компонентов COM. Если необходимо обратиться к типу в этой сборке через
-// из модели COM, установите атрибут ComVisible для этого типа в значение true.
+// из модели COM задайте для атрибута ComVisible этого типа значение true.
 [assembly: ComVisible(false)]
 
-//Чтобы начать создание локализуемых приложений, задайте
-//<UICulture>CultureYouAreCodingWith</UICulture> в файле .csproj
-//в <PropertyGroup>. Например, при использовании английского (США)
-//в своих исходных файлах установите <UICulture> в en-US.  Затем отмените преобразование в комментарий
-//атрибута NeutralResourceLanguage ниже.  Обновите "en-US" в
-//строка внизу для обеспечения соответствия настройки UICulture в файле проекта.
+// Следующий GUID представляет идентификатор typelib, если этот проект доступен из модели COM
+[assembly: Guid("bd00eeca-a8ee-4c16-86df-95064537bd31")]
 
-//[assembly: NeutralResourcesLanguage("en-US", UltimateResourceFallbackLocation.Satellite)]
-
-
-[assembly: ThemeInfo(
-    ResourceDictionaryLocation.None, //где расположены словари ресурсов по конкретным тематикам
-                                     //(используется, если ресурс не найден на странице,
-                                     // или в словарях ресурсов приложения)
-    ResourceDictionaryLocation.SourceAssembly //где расположен словарь универсальных ресурсов
-                                              //(используется, если ресурс не найден на странице,
-                                              // в приложении или в каких-либо словарях ресурсов для конкретной темы)
-)]
-
-
-// Сведения о версии для сборки включают четыре следующих значения:
+// Сведения о версии сборки состоят из указанных ниже четырех значений:
 //
 //      Основной номер версии
 //      Дополнительный номер версии
