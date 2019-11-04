@@ -1,41 +1,43 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using ApprovalTests;
 using NUnit.Framework;
 using FluentAssertions;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
     public class Test_CircularCloudLayouter
     {
+        private ConcurrentDictionary<string, CircularCloudLayouter> dictionaryCloudLayouter =
+            new ConcurrentDictionary<string, CircularCloudLayouter>();
+
+        [SetUp]
+        public void AddInDictionary()
+        {
+            dictionaryCloudLayouter[TestContext.CurrentContext.Test.Name] =
+                new CircularCloudLayouter(new Point(450, 450));
+        }
+
         [TearDown]
         public void SaveImage()
         {
             var testContext = TestContext.CurrentContext;
-            if (testContext.Result.FailCount == 0)
+            if (testContext.Result.Outcome.Status != TestStatus.Failed)
                 return;
+
             var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestBug");
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
+
             path = Path.Combine(path, $"{testContext.Test.Name}.png");
-            var cloudLayouter = (CircularCloudLayouter) testContext.Test.Properties.Get("cloudLayouter");
-            cloudLayouter.Visualization(new Bitmap(1000, 1000))
-                .Save(path);
+            var cloudLayouter = dictionaryCloudLayouter[testContext.Test.Name];
+            cloudLayouter.Visualization().Save(path);
             Console.WriteLine($"Tag cloud visualization saved to file {path}");
-        }
-
-        [Test]
-        public void TestSaveOfImageOnTearDown_ShouldFallenAnyTime()
-        {
-            var cloudLayouter = new CircularCloudLayouter();
-            var testContext = TestContext.CurrentContext;
-            for (var i = 0; i < 100; i++)
-                cloudLayouter.PutNextRectangle(new Size(testContext.Random.Next(1, 100),
-                    testContext.Random.Next(1, 100)));
-
-            true.Should().BeFalse();
         }
 
         [TestCase(0, 0)]
@@ -64,7 +66,7 @@ namespace TagsCloudVisualization.Tests
             var random = TestContext.CurrentContext.Random;
             var rectangles = new List<Rectangle>();
 
-            for (var i = 0; i < 30; i++)
+            for (var i = 0; i < 50; i++)
                 rectangles.Add(cloudLayouter.PutNextRectangle(new Size(random.Next(1, 100), random.Next(1, 100))));
 
             for (var i = 0; i < rectangles.Count; i++)
@@ -77,7 +79,7 @@ namespace TagsCloudVisualization.Tests
         {
             var cloudLayouter = new CircularCloudLayouter(new Point(450, 450));
             var random = TestContext.CurrentContext.Random;
-            for (var i = 0; i < 30; i++)
+            for (var i = 0; i < 50; i++)
                 cloudLayouter.PutNextRectangle(new Size(random.Next(1, 100), random.Next(1, 100)));
 
             var rectanglesHash = cloudLayouter.Centreings();
@@ -88,24 +90,5 @@ namespace TagsCloudVisualization.Tests
                 rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse();
         }
 
-        [TestCase("smallPicture.png", 20, 400, 600)]
-        [TestCase("middlePicture.png", 60, 800, 400)]
-        [TestCase("largePicture.png", 300, 1500, 200)]
-        public void VisualizationSomeImage(string name, int sizeOfRectangle, int size, int count)
-        {
-            var cloudLayouter = new CircularCloudLayouter(new Point(size, size));
-            var random = new Random();
-            for (var i = 0; i < count; i++)
-                cloudLayouter.PutNextRectangle(new Size(random.Next(sizeOfRectangle / 3, sizeOfRectangle),
-                    random.Next(sizeOfRectangle / 3, sizeOfRectangle)));
-
-            var bitMap = new Bitmap(size * 2, size * 2);
-            bitMap = cloudLayouter.Visualization(bitMap);
-            bitMap.Save(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, name));
-            
-            bitMap = new Bitmap(size * 2, size * 2);
-            bitMap = cloudLayouter.Visualization(bitMap, cloudLayouter.Centreings());
-            bitMap.Save(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"Centering{name}"));
-        }
     }
 }

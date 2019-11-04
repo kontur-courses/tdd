@@ -55,20 +55,7 @@ namespace TagsCloudVisualization
             throw new Exception("UnExcepted Error");
         }
 
-        public Bitmap Visualization(Bitmap bitmap, HashSet<Rectangle> rectangles)
-        {
-            var graphics = Graphics.FromImage(bitmap);
-            var rnd = new Random();
-            foreach (var rectangle in rectangles)
-            {
-                var color = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
-                graphics.FillRectangle(new SolidBrush(color), rectangle);
-            }
-
-            return bitmap;
-        }
-
-        public Bitmap Visualization(Bitmap bitmap) =>
-            Visualization(bitmap, rectangles);
+        public Bitmap Visualization() =>
+            TagsCloudVisualization.Visualization.VisualizationFil(rectangles, center.X * 2, center.Y * 2);
     }
 }
