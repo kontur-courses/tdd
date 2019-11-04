@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Drawing;
+using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization.Tests
 {
@@ -85,6 +87,21 @@ namespace TagsCloudVisualization.Tests
             cloud.CreateCloudWithDifferentRectangles(rectanglesCount, minWidth, maxWidth, minHeight, maxHeight);
 
             cloud.Recatangles.Count.Should().Be(rectanglesCount);
+        }
+        
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+            {
+                var testName = TestContext.CurrentContext.Test.Name;
+                var painter = new Painter(new Size(1000, 1000), cloud);
+                painter.GetMultiColorCloud();
+                var fileName = new StringBuilder(testName).Append("FAILED").ToString();
+                painter.saveImageToDefaultDirectory(fileName);
+                var path = painter.GetImagesPath(fileName);
+                Console.WriteLine($"Tag cloud visualization saved to file {path}");
+            }
         }
     }
 }
