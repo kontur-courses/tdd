@@ -16,13 +16,20 @@ namespace TagCloud.Tests
         }
 
         [TestCaseSource(nameof(_nonCoordinateCenter))]
-        public void Should_LocateFirstRectangle_OnSpecifiedByCenter(Point center)
+        public void Should_LocateFirstRectangle_OnSpecifiedByYCenter(Point center)
         {
             var layouter = new CircularCloudLayouter(center);
             var rect = layouter.PutNextRectangle(new Size(2, 2));
             (rect.Y + rect.Height / 2)
                 .Should()
                 .Be(center.Y, "Y coords not equal");
+        }
+        
+        [TestCaseSource(nameof(_nonCoordinateCenter))]
+        public void Should_LocateFirstRectangle_OnSpecifiedByXCenter(Point center)
+        {
+            var layouter = new CircularCloudLayouter(center);
+            var rect = layouter.PutNextRectangle(new Size(2, 2));
             (rect.X + rect.Width / 2)
                 .Should()
                 .Be(center.X, "X coords not equal");

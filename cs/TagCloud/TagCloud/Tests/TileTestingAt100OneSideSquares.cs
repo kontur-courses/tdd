@@ -9,17 +9,17 @@ namespace TagCloud.Tests
 {
     internal class TileTestingAt100OneSideSquares
     {
-        private CircularCloudLayouter _cloudLayouter;
-        private List<Rectangle> _tiledRectagnles;
+        private CircularCloudLayouter cloudLayouter;
+        private List<Rectangle> tiledRectagnles;
         private const int ElementsAmount = 100;
 
         [SetUp]
         public void SetUp()
         {
-            _cloudLayouter = new CircularCloudLayouter(OrientationTestingOnOneSizeSquares.CenterPoint);
-            _tiledRectagnles = Enumerable
+            cloudLayouter = new CircularCloudLayouter(OrientationTestingOnOneSizeSquares.CenterPoint);
+            tiledRectagnles = Enumerable
                 .Range(0, ElementsAmount)
-                .Select(number => _cloudLayouter.PutNextRectangle(OrientationTestingOnOneSizeSquares.SingleSize))
+                .Select(number => cloudLayouter.PutNextRectangle(OrientationTestingOnOneSizeSquares.SingleSize))
                 .ToList();
         }
         
@@ -31,7 +31,7 @@ namespace TagCloud.Tests
             var fname = $"{TestContext.CurrentContext.Test.FullName}.png";
             OnFailDrawer.DrawOriginOrientedRectangles(
                 new Size(1200, 1200),
-                _cloudLayouter
+                cloudLayouter
                     .GetAllRectangles()
                     .Select(rect => new Rectangle(600 + rect.X * 45, 600 + rect.Y * 45, 40, 40)),
                 fname);
@@ -47,7 +47,7 @@ namespace TagCloud.Tests
         [Test, Category("Simple Behaviour")]
         public void Should_TileSpace_AndNotSkipRectangles()
         {
-            _tiledRectagnles
+            tiledRectagnles
                 .Select(rectangle => rectangle.Location)
                 .Distinct()
                 .Count()
@@ -58,7 +58,7 @@ namespace TagCloud.Tests
         [Test, Category("Simple Behaviour")]
         public void Should_GenerateNonOverlappingRectangles()
         {
-            _tiledRectagnles
+            tiledRectagnles
                 .Select(rectangle => rectangle.Location)
                 .Distinct()
                 .Count()
@@ -69,7 +69,7 @@ namespace TagCloud.Tests
         [Test, Category("Simple Behaviour")]
         public void Should_GenerateRectangles_WithSpecifiedSize()
         {
-            _tiledRectagnles
+            tiledRectagnles
                 .Select(rectangle => rectangle.Size)
                 .Distinct()
                 .Count()
@@ -84,7 +84,7 @@ namespace TagCloud.Tests
             for (var x=-1; x<=1; ++x)
             for (var y = -1; y <= 1; ++y)
                 setPoints.Add(new Point(x, y));
-            _tiledRectagnles
+            tiledRectagnles
                 .GetRange(0, 10)
                 .Where(rectangle => setPoints.Contains(rectangle.Location))
                 .Sum(rectangle => 1)

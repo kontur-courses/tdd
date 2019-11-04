@@ -10,12 +10,12 @@ namespace TagCloud.Tests
 {
         internal class DenseTesting
     {
-        private CircularCloudLayouter _cloudLayouter;
+        private CircularCloudLayouter cloudLayouter;
         
         [SetUp]
         public void CreateInstance()
         {
-            _cloudLayouter = new CircularCloudLayouter(OrientationTestingOnOneSizeSquares.CenterPoint);
+            cloudLayouter = new CircularCloudLayouter(OrientationTestingOnOneSizeSquares.CenterPoint);
         }
 
         [TearDown]
@@ -26,7 +26,7 @@ namespace TagCloud.Tests
             var fname = $"{TestContext.CurrentContext.Test.FullName}.png";
             OnFailDrawer.DrawOriginOrientedRectangles(
                 new Size(1200, 1200),
-                _cloudLayouter
+                cloudLayouter
                     .GetAllRectangles()
                     .Select(rect => new Rectangle(600 + rect.X  , 600 + rect.Y , rect.Width, rect.Height)),
                 fname);
@@ -36,7 +36,7 @@ namespace TagCloud.Tests
         [TestCaseSource(nameof(_sizesForXDenseTesting))]
         public void Should_DensePlaceRectanglesWithDifferentShape_ByXCoordinate(IEnumerable<Size> sizes)
         {
-            var rectangles = sizes.Select(size => _cloudLayouter.PutNextRectangle(size)).ToList();
+            var rectangles = sizes.Select(size => cloudLayouter.PutNextRectangle(size)).ToList();
             var width = Math.Abs(rectangles.Select(rect => rect.X).Min() - rectangles.Select(rect => rect.X).Max());
             width.Should().BeLessThan(rectangles.Select(rect => rect.Width).Sum());
         }
@@ -44,7 +44,7 @@ namespace TagCloud.Tests
         [TestCaseSource(nameof(_sizesForYDenseTesting))]
         public void Should_DensePlaceRectanglesWithDifferentShape_ByYCoordinate(IEnumerable<Size> sizes)
         {
-            var rectangles = sizes.Select(size => _cloudLayouter.PutNextRectangle(size)).ToList();
+            var rectangles = sizes.Select(size => cloudLayouter.PutNextRectangle(size)).ToList();
             var height = Math.Abs(rectangles.Select(rect => rect.Y).Min() - rectangles.Select(rect => rect.Y).Max());
             height.Should().BeLessThan(rectangles.Select(rect => rect.Height).Sum());
         }
@@ -52,7 +52,7 @@ namespace TagCloud.Tests
         [TestCaseSource(nameof(oneHundredSizesForCircularTesting))]
         public void Should_DensePlaceRectanglesWithDifferentShape_InCircle(IEnumerable<Size> sizes)
         {
-            var rectangles = sizes.Select(size => _cloudLayouter.PutNextRectangle(size)).ToList();
+            var rectangles = sizes.Select(size => cloudLayouter.PutNextRectangle(size)).ToList();
             var maxSide = rectangles
                 .SelectMany(rect => new List<int> {rect.Width, rect.Height})
                 .Max();
@@ -66,7 +66,7 @@ namespace TagCloud.Tests
         [TestCaseSource(nameof(oneHundredSizesForCircularTesting))]
         public void Should_Fall_AndCreateImgWith100Rectangles(IEnumerable<Size> sizes)
         {
-            sizes.Select(size => _cloudLayouter.PutNextRectangle(size)).ToList();
+            sizes.Select(size => cloudLayouter.PutNextRectangle(size)).ToList();
             Assert.Fail();
         }
 

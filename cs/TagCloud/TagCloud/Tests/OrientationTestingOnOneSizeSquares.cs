@@ -11,16 +11,16 @@ namespace TagCloud.Tests
     {
         public static readonly Size SingleSize = new Size(1, 1);
         public static readonly Point CenterPoint = new Point(0, 0);
-        private CircularCloudLayouter _cloudLayouter;
-        private List<Rectangle> _rectangles;
+        private CircularCloudLayouter cloudLayouter;
+        private List<Rectangle> rectangles;
         
         [SetUp]
         public void PlaceInstance()
         {
-            _cloudLayouter = new CircularCloudLayouter(CenterPoint);
-            _rectangles = Enumerable
+            cloudLayouter = new CircularCloudLayouter(CenterPoint);
+            rectangles = Enumerable
                 .Range(0, 5)
-                .Select(num => _cloudLayouter.PutNextRectangle(SingleSize))
+                .Select(num => cloudLayouter.PutNextRectangle(SingleSize))
                 .ToList();
         }
         
@@ -28,14 +28,14 @@ namespace TagCloud.Tests
         [TestCase(1, 0, TestName = "Zero height")]
         public void Should_ThrowException_WhenPlacedRectangleIsDegenerate(int width, int height)
         {
-            Action a = () => _cloudLayouter.PutNextRectangle(new Size(width, height));
+            Action a = () => cloudLayouter.PutNextRectangle(new Size(width, height));
             a.Should().Throw<ArgumentException>();
         }
 
         [Test, Category("Simple Behaviour")]
         public void Should_PlaceCenterRectangle_WhenItFirstPlaced()
         {
-            _rectangles
+            rectangles
                 .First()
                 .Should()
                 .Be(new Rectangle(CenterPoint, SingleSize));
@@ -44,53 +44,53 @@ namespace TagCloud.Tests
         [Test, Category("Simple Behaviour")]
         public void Should_PlaceSecondRectangle_RightFromFirst()
         {
-            _rectangles[0]
+            rectangles[0]
                 .X
                 .Should()
-                .BeLessThan(_rectangles[1].X);
-            _rectangles[0]
+                .BeLessThan(rectangles[1].X);
+            rectangles[0]
                 .Y
                 .Should()
-                .Be(_rectangles[1].Y);
+                .Be(rectangles[1].Y);
         }
 
         [Test, Category("Simple Behaviour")]
         public void Should_PlaceThirdRectangle_UnderFirst()
         {
-            _rectangles[0]
+            rectangles[0]
                 .X
                 .Should()
-                .Be(_rectangles[2].X);
-            _rectangles[0]
+                .Be(rectangles[2].X);
+            rectangles[0]
                 .Y
                 .Should()
-                .BeLessThan(_rectangles[2].Y);
+                .BeLessThan(rectangles[2].Y);
         }
         
         [Test, Category("Simple Behaviour")]
         public void Should_PlaceFourRectangle_LeftFromFirst()
         {
-            _rectangles[0]
+            rectangles[0]
                 .X
                 .Should()
-                .BeGreaterThan(_rectangles[3].X);
-            _rectangles[0]
+                .BeGreaterThan(rectangles[3].X);
+            rectangles[0]
                 .Y
                 .Should()
-                .Be(_rectangles[3].Y);
+                .Be(rectangles[3].Y);
         }
         
         [Test, Category("Simple Behaviour")]
         public void Should_PlaceFifthRectangle_AboveFromFirst()
         {
-            _rectangles[0]
+            rectangles[0]
                 .X
                 .Should()
-                .Be(_rectangles[4].X);
-            _rectangles[0]
+                .Be(rectangles[4].X);
+            rectangles[0]
                 .Y
                 .Should()
-                .BeGreaterThan(_rectangles[4].Y);
+                .BeGreaterThan(rectangles[4].Y);
         }
 
     }

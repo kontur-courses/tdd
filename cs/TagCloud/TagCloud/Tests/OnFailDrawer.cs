@@ -26,14 +26,16 @@ namespace TagCloud.Tests
         internal static void DrawOriginOrientedRectangles(Size drawerSize, IEnumerable<Rectangle> rectangles, string fname)
         {
             var rand = new Random();
-            var drawer = new Drawer(drawerSize);
-            foreach (var rectangle in rectangles)
+            using (var drawer = new Drawer(drawerSize))
             {
-                var randColorBrush = new SolidBrush(colors[rand.Next(0, colors.Count)]);
-                drawer.DrawRectangle(rectangle, randColorBrush);
-            }
+                foreach (var rectangle in rectangles)
+                {
+                    var randColorBrush = new SolidBrush(colors[rand.Next(0, colors.Count)]);
+                    drawer.DrawRectangle(rectangle, randColorBrush);
+                }
 
-            drawer.SaveImg(fname);
+                drawer.SaveImg(fname);
+            }
         }
     }
 }
