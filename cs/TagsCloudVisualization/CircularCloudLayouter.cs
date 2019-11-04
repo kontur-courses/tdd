@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -38,6 +39,63 @@ namespace TagsCloudVisualization
 
         private void ReallocRectangles()
         {
+            if (Items.Count == 0) return;
+
+            //сортируем прямоугольники по уменьшению площади
+            Items.Sort((i1, i2) =>
+            {
+                var s1 = i1.Rectangle.Width * i1.Rectangle.Height;
+                var s2 = i2.Rectangle.Width * i2.Rectangle.Height;
+                return s2.CompareTo(s1);
+            });
+
+            //самый большой ставим в центре
+            var biggestItem = Items[0];
+            biggestItem.Rectangle.X = -biggestItem.Rectangle.Width / 2;
+            biggestItem.Rectangle.Y = -biggestItem.Rectangle.Height / 2;
+            Items[0] = biggestItem;
+
+            //выбираем лучшее место куда поставить каждый последующий
+            //лучшее место - когда расстояние от центра до дальней вершины прямоугольника минимально
+            for (int i = 1; i < Items.Count; i++)
+            {
+                var size = Items[i].Rectangle.Size;
+                List<KeyValuePair<Rectangle, double>> variants = new List<KeyValuePair<Rectangle, double>>();
+                //рассматриваем разные направления от центра, шаг угла 10 градусов
+                for (double angle = 0; angle < 1.99 * Math.PI; angle += (Math.PI / 18))
+                {
+                    //пытаемся поставить на этом направлении за самым дальним прямоугольником
+                    Point farthestPoint = Utils.GetFarthestRectanglePointIntersectedByRay(this, i, angle);
+                    var r = Utils.GetRayLengthFromCenter(Items[i].Rectangle, angle);
+                    //подбираем расстояние, чтобы не пересекался с другими
+                    const int step = 2;
+                    double dist = Math.Sqrt(farthestPoint.X * farthestPoint.X + farthestPoint.Y * farthestPoint.Y) + r;
+                    Point location;
+                    Rectangle newRect;
+                    bool isIntersects;
+                    do
+                    {
+                        dist += step;
+                        location = Utils.GetPointByAngleAndDistance(angle, dist);
+                        location.Offset(-size.Width / 2, -size.Height / 2);
+                        newRect = new Rectangle(location, size);
+                        isIntersects = false;
+                        for (int j = 0; j < i && !isIntersects; j++)
+                        {
+                            isIntersects |= newRect.IntersectsWith(Items[j].Rectangle);
+                        }                       
+                    } while (isIntersects);
+
+                    Utils.GetFathestPointFromCenter(newRect, out double vertexDist);
+                    variants.Add(new KeyValuePair<Rectangle, double>(newRect, vertexDist));                    
+                }
+
+                //вибираем ближайший к центру вариант
+                var minVertexDist = variants.Min(kv => kv.Value);
+                Rectangle bestRect = variants.First(kv => kv.Value == minVertexDist).Key;
+
+                Items[i].Rectangle = bestRect;
+            }
         }
 
         public void SaveToFile(string filename)
