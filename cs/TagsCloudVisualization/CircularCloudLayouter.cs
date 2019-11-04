@@ -48,13 +48,7 @@ namespace TagsCloudVisualization
                 var direction = Center - (Size) rectangle.GetCenter();
 
                 var newRectangle = TryOffset(rectangle, new Point(Math.Sign(direction.X), 0));
-                if (newRectangle == rectangle)
-                {
-                    break;
-                }
-                rectangle = newRectangle;
-
-                newRectangle = TryOffset(rectangle, new Point(0, Math.Sign(direction.Y)));
+                newRectangle = TryOffset(newRectangle, new Point(0, Math.Sign(direction.Y)));
                 if (newRectangle == rectangle)
                 {
                     break;
