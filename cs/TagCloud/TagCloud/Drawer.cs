@@ -31,10 +31,10 @@ namespace TagCloud
             graphics.DrawString(word, font, brush, rect, stringFormat);
         }
 
-        public void DrawRectangle(Rectangle rectangle, Pen pen)
+        public void DrawRectangle(Rectangle rectangle, Brush brush)
         {
             var graphics = Graphics.FromImage(bitmap);
-            graphics.DrawRectangle(pen, rectangle);
+            graphics.FillRectangle(brush, rectangle);
         }
 
         public void SaveImg(string fname)

@@ -17,7 +17,7 @@ namespace TagCloud
                                       " Создать изображение new Bitmap(...). Получить объект Graphics для рисования " +
                                       "на изображении: Graphics.FromImage(bitmap). Сохранить изображение в" +
                                       " файл bitmap.Save(...;";
-        static void Main(string[] args)
+        static void Main1(string[] args)
         {
             CreateCircularTextImage(Text1, "image1.png");
             CreateCircularTextImage(Text2, "image2.png");

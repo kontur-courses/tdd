@@ -60,9 +60,9 @@ namespace TagCloud
             var shift = new Point(-rectangleSize.Width / 2, -rectangleSize.Height / 2);
             while (true)
             {
-                var phiEpsilon = Math.PI / ((int)ro * 18);
-                var phiRounds = (int)ro * 18;
-                for (var i = 0; i < phiRounds; ++i)
+                var sectors = Math.Max(Math.Round(ro * 18), 18);
+                var phiEpsilon = Math.PI / sectors;
+                for (var i = 0; i < 2 * sectors; ++i)
                 {
                     // current spirals end locate to rectangle center
                     var center = FromPolar(phi, ro);
