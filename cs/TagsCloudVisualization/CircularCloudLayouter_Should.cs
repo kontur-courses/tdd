@@ -67,7 +67,19 @@ namespace TagsCloudVisualization
         [Test]
         public void BeCompact()
         {
-            Assert.IsTrue(false);
+            List<double> dists = new List<double>();
+            for (double a = 0; a < 1.99 * Math.PI; a += Math.PI / 18)
+            {
+                var p = Utils.GetFarthestRectanglePointIntersectedByRay(ccl, ccl.Items.Count, a);
+                dists.Add(Math.Sqrt(p.X * p.X + p.Y * p.Y));
+            }
+            double mid = dists.Sum() / dists.Count;
+            double circleSquare = Math.PI * mid * mid;
+
+            double rectanglesSquare = ccl.Items.Sum(it => it.Rectangle.Width * it.Rectangle.Height);
+
+            double unusedPercent = (circleSquare - rectanglesSquare) / circleSquare * 100;
+            unusedPercent.Should().BeLessThan(40, "unused space should be less than 40% of circle square");
         }
 
         [TearDown]
