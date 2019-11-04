@@ -20,6 +20,13 @@ namespace TagsCloudVisualization
             rectangles = new List<Rectangle>();
         }
 
+        public CircularCloudLayouter(Point center, float thickness)
+        {
+            Center = center;
+            spiralPoints = new ArchimedesSpiral(thickness, center).GetEnumerator();
+            rectangles = new List<Rectangle>();
+        }
+
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if(rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
@@ -27,9 +34,9 @@ namespace TagsCloudVisualization
             var rect = new Rectangle(Center, rectangleSize);
             while (rectangles.Any(x => x.IntersectsWith(rect)))
             {
+                spiralPoints.MoveNext();
                 rect.X = (int) spiralPoints.Current.X;
                 rect.Y = (int) spiralPoints.Current.Y;
-                spiralPoints.MoveNext();
             }
             if (ArchimedesSpiral.TryFindPreviousSpinPoint(rect.Location, Thickness, out var previousSpinPointF))
             {

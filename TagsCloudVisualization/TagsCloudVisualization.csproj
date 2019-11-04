@@ -56,7 +56,7 @@
   <ItemGroup>
     <Compile Include="ArchimedesSpiral.cs" />
     <Compile Include="CircularCloudLayouter.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Visualizer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\ArchimedesSpiralTests.cs" />
     <Compile Include="Tests\CircularCloudLayouterTests.cs" />
