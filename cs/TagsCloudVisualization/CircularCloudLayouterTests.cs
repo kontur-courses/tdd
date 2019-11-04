@@ -30,7 +30,7 @@ namespace TagsCloudVisualization
         public void PutNextRectangle_OneSimpleRectangle_RectangleInCenter()
         {
             var cloud = new CircularCloudLayouter(new Point(0, 0));
-            cloud.PutNextRectangle(new Size(10, 20)).Should().Be(new Rectangle(0, 0, 10, 20));
+            cloud.PutNextRectangle(new Size(10, 20)).Should().Be(new Rectangle(-5, -10, 10, 20));
         }
 
         [Test]
