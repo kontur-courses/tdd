@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -50,7 +51,17 @@ namespace TagsCloudVisualization
         [Test]
         public void BeLikeCircle()
         {
-            Assert.IsTrue(false);
+            List<double> dists = new List<double>();
+            for (double a = 0; a < 1.99 * Math.PI; a += Math.PI / 18)
+            {
+                var p = Utils.GetFarthestRectanglePointIntersectedByRay(ccl, ccl.Items.Count, a);
+                dists.Add(Math.Sqrt(p.X * p.X + p.Y * p.Y));
+            }
+            double mid = dists.Sum() / dists.Count;
+            double maxDif = dists.Max(dist => Math.Abs(dist - mid));
+            double difPercent = maxDif / mid * 100;
+
+            maxDif.Should().BeLessThan(50, "deviation of rectangles distance should be less than 50% of circle radius");
         }
 
         [Test]
