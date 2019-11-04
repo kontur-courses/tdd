@@ -40,8 +40,8 @@ namespace TagsCloudVisualization
             {
                 for (int j = i + 1; j < ccl.Items.Count - 1; j++)
                 {
-                    var r1 = ccl.Items[i];
-                    var r2 = ccl.Items[j];
+                    var r1 = ccl.Items[i].Rectangle;
+                    var r2 = ccl.Items[j].Rectangle;
                     r1.IntersectsWith(r2).Should().BeFalse();
                 }
             }

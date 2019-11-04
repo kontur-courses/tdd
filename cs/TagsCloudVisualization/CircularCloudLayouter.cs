@@ -4,23 +4,36 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    class CircularCloudLayouter
+    public class LayoutItem
+    {
+        public string Title;
+        public Rectangle Rectangle;
+
+        public LayoutItem() { }
+        public LayoutItem(string title, Rectangle rectangle)
+        {
+            Title = title;
+            Rectangle = rectangle;
+        }
+    }
+
+    public class CircularCloudLayouter
     {
         private readonly Point center;
-        public readonly List<Rectangle> Items;
+        public readonly List<LayoutItem> Items;
 
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
-            Items = new List<Rectangle>();
+            Items = new List<LayoutItem>();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var newItem = new Rectangle(default, rectangleSize);
+            var newItem = new LayoutItem(Items.Count.ToString(), new Rectangle(default, rectangleSize));
             Items.Add(newItem);
             ReallocRectangles();
-            return newItem;
+            return newItem.Rectangle;
         }
 
         private void ReallocRectangles()
@@ -33,12 +46,12 @@ namespace TagsCloudVisualization
             var right = int.MinValue;
             var top = int.MaxValue;
             var bottom = int.MinValue;
-            foreach (var r in Items)
+            foreach (var item in Items)
             {
-                left = Math.Min(left, r.Left);
-                right = Math.Max(right, r.Right);
-                top = Math.Min(top, r.Top);
-                bottom = Math.Max(bottom, r.Bottom);
+                left = Math.Min(left, item.Rectangle.Left);
+                right = Math.Max(right, item.Rectangle.Right);
+                top = Math.Min(top, item.Rectangle.Top);
+                bottom = Math.Max(bottom, item.Rectangle.Bottom);
             }
 
             var bmp = new Bitmap(right - left, bottom - top);
@@ -46,7 +59,7 @@ namespace TagsCloudVisualization
             gr.Clear(Color.RosyBrown);
             Brush br = new SolidBrush(Color.Green);
             foreach (var item in Items)
-                gr.FillRectangle(br, item.X - left, item.Y - top, item.Width, item.Height);
+                gr.FillRectangle(br, item.Rectangle.X - left, item.Rectangle.Y - top, item.Rectangle.Width, item.Rectangle.Height);
             bmp.Save(filename);
         }
     }
