@@ -37,6 +37,16 @@ namespace TagsCloudVisualization
             return newItem.Rectangle;
         }
 
+        public void PutRectangles(IEnumerable<Size> sizes)
+        {
+            foreach (var size in sizes)
+            {
+                var newItem = new LayoutItem(Items.Count.ToString(), new Rectangle(default, size));
+                Items.Add(newItem);
+            }
+            ReallocRectangles();
+        }
+
         private void ReallocRectangles()
         {
             if (Items.Count == 0) return;
@@ -62,7 +72,7 @@ namespace TagsCloudVisualization
                 var size = Items[i].Rectangle.Size;
                 List<KeyValuePair<Rectangle, double>> variants = new List<KeyValuePair<Rectangle, double>>();
                 //рассматриваем разные направления от центра, шаг угла 10 градусов
-                for (double angle = 0; angle < 1.99 * Math.PI; angle += (Math.PI / 18))
+                for (double angle = new Random().NextDouble() * Math.PI / 18; angle < 1.99 * Math.PI; angle += (Math.PI / 18))
                 {
                     //пытаемся поставить на этом направлении за самым дальним прямоугольником
                     Point farthestPoint = Utils.GetFarthestRectanglePointIntersectedByRay(this, i, angle);
