@@ -30,7 +30,7 @@ namespace TagsCloudVisualization
                 newRectangle = PutRectangleOnSpiral(rectangleSize);
             }
 
-            newRectangle = MoveToCenter(newRectangle);
+            newRectangle = MoveRectangleToCenter(newRectangle);
             Rectangles.Add(newRectangle);
             return newRectangle;
         }
@@ -41,26 +41,35 @@ namespace TagsCloudVisualization
             return new Rectangle(new Point(point.X - rectangleSize.Width / 2, point.Y - rectangleSize.Height / 2), rectangleSize);
         }
 
-        private Rectangle MoveToCenter(Rectangle rectangle)
+        private Rectangle MoveRectangleToCenter(Rectangle rectangle)
         {
             while (true)
             {
-                var direction = Center - (Size)rectangle.GetCenter();
+                var direction = Center - (Size) rectangle.GetCenter();
 
-                var offsetRectangle = new Rectangle(rectangle.Location + new Size(Math.Sign(direction.X), 0), rectangle.Size);
-                if (Rectangles.Any(el => el.IntersectsWith(offsetRectangle)) || offsetRectangle.GetCenter() == Center)
+                var newRectangle = TryOffset(rectangle, new Point(Math.Sign(direction.X), 0));
+                if (newRectangle == rectangle)
+                {
                     break;
+                }
+                rectangle = newRectangle;
 
-                rectangle = offsetRectangle;
-
-                offsetRectangle = new Rectangle(rectangle.Location + new Size(0, Math.Sign(direction.Y)), rectangle.Size);
-                if (Rectangles.Any(el => el.IntersectsWith(offsetRectangle)))
+                newRectangle = TryOffset(rectangle, new Point(0, Math.Sign(direction.Y)));
+                if (newRectangle == rectangle)
+                {
                     break;
-
-                rectangle = offsetRectangle;
+                }
+                rectangle = newRectangle;
             }
 
             return rectangle;
+        }
+
+        private Rectangle TryOffset(Rectangle rectangle, Point direction)
+        {
+            var newRectangle = new Rectangle(rectangle.Location, rectangle.Size);
+            newRectangle.Offset(direction);
+            return Rectangles.Any(el => el.IntersectsWith(newRectangle)) ? rectangle : newRectangle;
         }
     }
 }

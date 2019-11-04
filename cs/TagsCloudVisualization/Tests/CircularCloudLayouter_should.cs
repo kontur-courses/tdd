@@ -64,7 +64,7 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void DoSomething_WhenSomething()
+        public void PutNextRectangle_WhenPutTwoRectangle_RectanglesDosntIntersects()
         {
             var size = new Size(5, 5);
 
