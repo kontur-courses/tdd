@@ -42,6 +42,9 @@ namespace TagsCloudVisualization
 
         public void SaveToFile(string filename)
         {
+            if (Items.Count == 0)
+                throw new ArgumentException("There are no items.");
+
             var left = int.MaxValue;
             var right = int.MinValue;
             var top = int.MaxValue;
@@ -58,8 +61,14 @@ namespace TagsCloudVisualization
             var gr = Graphics.FromImage(bmp);
             gr.Clear(Color.RosyBrown);
             Brush br = new SolidBrush(Color.Green);
+            Pen pen = new Pen(Color.Black);
+            Brush textBrush = new SolidBrush(Color.Black);
             foreach (var item in Items)
+            {
                 gr.FillRectangle(br, item.Rectangle.X - left, item.Rectangle.Y - top, item.Rectangle.Width, item.Rectangle.Height);
+                gr.DrawRectangle(pen, item.Rectangle.X - left, item.Rectangle.Y - top, item.Rectangle.Width, item.Rectangle.Height);
+                gr.DrawString(item.Title, new Font("Tahoma", item.Rectangle.Height, GraphicsUnit.Pixel), textBrush, item.Rectangle.X - left, item.Rectangle.Y - top - 1);
+            }
             bmp.Save(filename);
         }
     }
