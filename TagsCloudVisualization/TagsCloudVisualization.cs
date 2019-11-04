@@ -79,7 +79,9 @@ namespace TagsCloudVisualization
                     }
                     return rectangle;
                 }
-            throw new Exception();
+            
+            throw new Exception(String.Format("We can't find the place to add your rectangle :(. " +
+                "Your width was: {0} and height was: {1}", rectangleSize.Width, rectangleSize.Height));
         }
     }
 }   
