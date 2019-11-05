@@ -56,7 +56,7 @@ namespace TagsCloudVisualization.Tests // TODO: remove redundant tests.
             origin.GetDistanceToPoint(firstRectangle.Location)
                   .Should().BeApproximately(firstRectangle.GetCircumscribedCircleRadius(), Precision);
         }
-        
+
         [TestCase(0, 0, TestName = "WhenOriginAsCenter")]
         [TestCase(11, 57, TestName = "WhenCenterWithDifferentCoordinates")]
         [TestCase(250, 250, TestName = "WhenCenterWithSameCoordinates")]
@@ -64,7 +64,7 @@ namespace TagsCloudVisualization.Tests // TODO: remove redundant tests.
         {
             var center = new Point(xCenter, yCenter);
             var firstRectangle = new CircularCloudLayouter(center).PutNextRectangle(new Size(100, 50));
-            
+
             firstRectangle.Contains(center).Should().BeTrue();
             center.GetDistanceToPoint(firstRectangle.Location)
                   .Should().BeApproximately(firstRectangle.GetCircumscribedCircleRadius(), Precision);
