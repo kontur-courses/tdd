@@ -1,10 +1,12 @@
-﻿namespace BowlingGame
+﻿using  System;
+namespace BowlingGame
 {
     public static class YourName
     {
         /// <summary>
         /// Ваши фамилии через пробел. Например, "Egorov Shagalina"
         /// </summary>
-        public const string Authors = "";
+        public const string Authors = "Balandin Malyshev";
+
     }
 }
