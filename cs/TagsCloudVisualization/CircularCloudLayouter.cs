@@ -38,7 +38,7 @@ namespace TagsCloudVisualization
             rectangles.Add(newRectangle);
             polarSpiral.Azimuth += AzimuthDelta;
 
-            return newRectangle.Move(centralOffset + firstRectangleOffset);
+            return newRectangle.Move(centralOffset - firstRectangleOffset);
         }
 
         private static Point ConvertPointFromPolarToCartesian(double radius, double azimuth)

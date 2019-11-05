@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 // ReSharper disable ObjectCreationAsStatement
 
-namespace TagsCloudVisualization.Tests
+namespace TagsCloudVisualization.Tests // TODO: remove redundant tests.
 {
     public class Tests
     {
@@ -45,14 +45,28 @@ namespace TagsCloudVisualization.Tests
                              .BeApproximately(centeredRectangle.GetCircumscribedCircleRadius(), Precision);
         }
 
-        [TestCase(12, 8, TestName = "OnEvenWidthAndHeight_ReturnsWithZeroPrecision")]
-        [TestCase(10, 5, TestName = "OnEvenWidthAndOddHeight_ReturnsPrecision")]
-        [TestCase(1, 1, TestName = "OnOddWidthAndHeight_ReturnsWithPrecision")]
-        public void PutNextRectangle_OnFirstSize_ReturnsRectangleInCenter(int width, int height)
+        [TestCase(12, 8, TestName = "OnEvenWidthAndHeight")]
+        [TestCase(100, 5555, TestName = "OnEvenWidthAndOddHeight")]
+        [TestCase(1, 1, TestName = "OnOddWidthAndHeight")]
+        public void PutNextRectangle_OnFirstSize(int width, int height) // TODO: delegate to func
         {
             var firstRectangle = new CircularCloudLayouter(origin).PutNextRectangle(new Size(width, height));
 
+            firstRectangle.Contains(origin).Should().BeTrue();
             origin.GetDistanceToPoint(firstRectangle.Location)
+                  .Should().BeApproximately(firstRectangle.GetCircumscribedCircleRadius(), Precision);
+        }
+        
+        [TestCase(0, 0, TestName = "WhenOriginAsCenter")]
+        [TestCase(11, 57, TestName = "WhenCenterWithDifferentCoordinates")]
+        [TestCase(250, 250, TestName = "WhenCenterWithSameCoordinates")]
+        public void PutNextRectangle_OnFirstSize_ReturnsRectangleWithCenterInSpecifiedPoint(int xCenter, int yCenter)
+        {
+            var center = new Point(xCenter, yCenter);
+            var firstRectangle = new CircularCloudLayouter(center).PutNextRectangle(new Size(100, 50));
+            
+            firstRectangle.Contains(center).Should().BeTrue();
+            center.GetDistanceToPoint(firstRectangle.Location)
                   .Should().BeApproximately(firstRectangle.GetCircumscribedCircleRadius(), Precision);
         }
 
