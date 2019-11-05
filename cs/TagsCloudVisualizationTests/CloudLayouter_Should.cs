@@ -4,9 +4,10 @@ using System.Linq;
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
+using TagsCloudVisualization;
 
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualizationTests
 {
     [TestFixture]
     public class CloudLayouter_Should
@@ -32,8 +33,8 @@ namespace TagsCloudVisualization
 
         [TestCase(0, 0)]
         [TestCase(0, 10)]
-        [TestCase(10, 0)]
-        public void ThrowArgumentException_OnZeroSize(int width, int height)
+        [TestCase(-10, 0)]
+        public void ThrowArgumentException_OnNonPositiveSize(int width, int height)
         {
             Action act = () => layouter.PutNextRectangle(new Size(width, height));
             act.Should().Throw<ArgumentException>();
@@ -62,6 +63,35 @@ namespace TagsCloudVisualization
                 $"rectangles\n" +
                 $"{firstRectangle.ToString()}, {secondRectangle.ToString()}\n" +
                 $"should not intersect");
+        }
+
+        [TestCase(0, 0)]
+        [TestCase(100, -100)]
+        public void PutRectangles_CloseToCenter(int x, int y)
+        {
+            var center = new Point(x, y);
+            var layouter = new CircularCloudLayouter(center);
+
+            var farthestCenterPoint = new PointF(x, y);
+            var maxSquaredDistance = 0.0;
+            var totalMass = 0.0;
+            var amountOfRectangles = rnd.Next(25, 50);
+            while(amountOfRectangles-- > 0)
+            {
+                var nextRectangle = layouter.PutNextRectangle(GetRandomSize());
+                totalMass += nextRectangle.Width * nextRectangle.Height;
+                var distanceToCenter = nextRectangle
+                    .GetCenter().GetSquaredDistanceTo(center);
+                if(distanceToCenter > maxSquaredDistance)
+                    maxSquaredDistance = distanceToCenter;
+            }
+
+            var circleSize = Math.PI * maxSquaredDistance;
+            var emptyArea = circleSize - totalMass;
+            emptyArea.Should().NotBeInRange(circleSize / 2, double.MaxValue, 
+                "more than half of the minimum circular area containing all" +
+                "of the rectangles should not be empty");
+
         }
 
         public Size GetRandomSize()

@@ -16,5 +16,11 @@ namespace TagsCloudVisualization
                 rect.Top + (float)rect.Height / 2);
         }
 
+        public static Rectangle OffsetByMassCenter(this Rectangle rect)
+        {
+            rect.Offset(-rect.Width / 2, -rect.Height / 2);
+            return rect;
+        }
+
     }
 }
