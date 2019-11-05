@@ -55,36 +55,9 @@ namespace TagsCloudVisualization
             return rectangle;
         }
 
-        private Rectangle GetSize()
+        public Rectangle[] GetRectangles()
         {
-            if (rectangles.Count == 0)
-                return new Rectangle(0, 0, 0, 0);
-            var minTop = rectangles[0].Top;
-            var maxBottom = rectangles[0].Bottom;
-            var minLeft = rectangles[0].Left;
-            var maxRight = rectangles[0].Right;
-
-            foreach (var r in rectangles)
-            {
-                minTop = minTop > r.Top ? r.Top : minTop;
-                maxBottom = maxBottom < r.Bottom ? r.Bottom : maxBottom;
-                minLeft = minLeft > r.Left ? r.Left : minLeft;
-                maxRight = maxRight < r.Right ? r.Right : maxRight;
-            }
-            return new Rectangle(minLeft, minTop, maxRight - minLeft, maxBottom - minTop);
-        }
-
-        public void SaveImage()
-        {
-            var size = GetSize();
-            var bitmap = new Bitmap(size.Width + 1, size.Height + 1);
-            var graphics = Graphics.FromImage(bitmap);
-            var pen = new Pen(Color.Red);
-            foreach (var r in rectangles)
-            {
-                graphics.DrawRectangle(pen, r.X - size.X, r.Y - size.Y, r.Width, r.Height);
-            }
-            bitmap.Save("image.bmp");
+            return rectangles.ToArray();
         }
     }
 }

@@ -80,6 +80,23 @@ namespace TagsCloudVisualization
                 }
             }
         }
+
+        [Test]
+        public void GetRectangles_5Rectangles_ArraysShoudBeEqual()
+        {
+            var center = new Point(10, 10);
+            var cloud = new CircularCloudLayouter(center);
+            var count = 5;
+            var rectangles = new Rectangle[count];
+
+            for (var i = 0; i < count; i++)
+            {
+                var rectangle = cloud.PutNextRectangle(new Size(10, 20));
+                rectangles[i] = rectangle;
+            }
+
+            cloud.GetRectangles().Should().Equal(rectangles);
+        }
     }
 }
 

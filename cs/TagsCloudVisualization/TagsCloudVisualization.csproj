@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="CircularCloudLayouterTests.cs" />
+    <Compile Include="Converter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
