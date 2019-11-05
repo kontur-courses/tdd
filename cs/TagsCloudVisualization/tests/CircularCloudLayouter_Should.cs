@@ -16,13 +16,11 @@ namespace TagsCloudVisualization
     {
         private CircularCloudLayouter circularCloud;
         private readonly Point center = new Point(800, 600);
-        private List<Rectangle> rectangles;
 
         [SetUp]
         public void SetUp()
         {
             circularCloud = new CircularCloudLayouter(center);
-            rectangles = new List<Rectangle>();
         }
 
 
@@ -48,17 +46,17 @@ namespace TagsCloudVisualization
             var rectangleSize = new Size(100, 100);
             var rectangle = circularCloud.PutNextRectangle(rectangleSize);
             var deltaX = Math.Abs(rectangle.X - center.X);
-            var deltaY = Math.Abs(rectangle.X - center.X);
-            deltaX.Should().BeInRange(-100, 100);
-            deltaY.Should().BeInRange(-100, 100);
+            var deltaY = Math.Abs(rectangle.Y - center.Y);
+            deltaX.Should().BeLessThan(100);
+            deltaY.Should().BeLessThan(100);
         }
 
-        [Test]
         [TestCase(2)]
         [TestCase(20)]
         [TestCase(200)]
         public void Rectangles_Should_NotIntersectWithPrevious(int countRectangles)
         {
+            var rectangles = new List<Rectangle>();
             var rectangleSize = new Size(100, 100);
             for (var i = 0; i < countRectangles; i++)
             {
@@ -71,6 +69,7 @@ namespace TagsCloudVisualization
         [Test]
         public void Rectangles_Should_BeInCircle()
         {
+            var rectangles = new List<Rectangle>();
             var rectangleSize = new Size(123, 112);
             for (var i = 0; i < 100; i++)
             {
@@ -88,25 +87,19 @@ namespace TagsCloudVisualization
         public void TearDown()
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
-            {;
-                var size = circularCloud.GetSizeImage();
-                var image = new Bitmap(size.Width+10, size.Height+10);
-                var drawImage = Graphics.FromImage(image);
-                drawImage.Clear(Color.White);
-
-                foreach (var rectangle in rectangles)
+            {
+                var image = CloudPainter.DrawCloud(circularCloud, 100);
+                var mainDirOfProject = Path.GetFullPath($"..\\..\\..");
+                var pathToFailedTestImageDirectory = Path.Combine(mainDirOfProject, "testFailedImage");
+                if (!Directory.Exists(pathToFailedTestImageDirectory))
                 {
-                    var rand = new Random();
-                    var r = rand.Next(0, 255);
-                    var g = rand.Next(0, 255);
-                    var b = rand.Next(0, 255);
-                    drawImage.FillRectangle(new SolidBrush(Color.FromArgb(255, r, g, b)), rectangle);
+                    Directory.CreateDirectory(pathToFailedTestImageDirectory);
                 }
 
-                var environment = System.Environment.CurrentDirectory;
-                var path = Path.Join(Directory.GetParent(Directory.GetParent(environment).Parent.FullName).ToString(), TestContext.CurrentContext.Test.Name + ".jpg");
-                image.Save(path, ImageFormat.Jpeg);
-                TestContext.Out.WriteLine("Tag cloud visualization saved to file " + path);
+                var pathToImageFailedTest = Path.Combine(pathToFailedTestImageDirectory,
+                    TestContext.CurrentContext.Test.Name + ".jpg");
+                image.Save(pathToImageFailedTest, ImageFormat.Jpeg);
+                TestContext.Out.WriteLine("Tag cloud visualization saved to file " + pathToImageFailedTest);
             }
         }
 

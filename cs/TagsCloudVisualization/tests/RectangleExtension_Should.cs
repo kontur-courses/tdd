@@ -10,15 +10,7 @@ namespace TagsCloudVisualization
     [TestFixture]
     public class RectangleExtension_Should
     {
-        [Test]
-        public void ChangeLocation_WhenMoveRectangle()
-        {
-            var rectangle = new Rectangle(Point.Empty, new Size(1, 1));
-            rectangle.Move(1, 0);
-            rectangle.Location.Should().NotBeEquivalentTo(Point.Empty);
-        }
 
-        [Test]
         [TestCase(1, 0)]
         [TestCase(0, 0)]
         [TestCase(0, 1)]
@@ -33,7 +25,6 @@ namespace TagsCloudVisualization
             rectangle.Location.Y.Should().Be(Point.Empty.Y + deltaYAfterMove);
         }
 
-        [Test]
         [TestCase(1, 0)]
         [TestCase(0, 0)]
         [TestCase(0, 1)]

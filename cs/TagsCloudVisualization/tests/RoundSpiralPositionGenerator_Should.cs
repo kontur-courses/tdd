@@ -38,7 +38,7 @@ namespace TagsCloudVisualization
             }
 
             var currentPoint = spiralGenerator.Next();
-            Math.Abs(Math.Sqrt(Math.Pow(currentPoint.X- center.X, 2) + Math.Pow(currentPoint.Y - center.Y, 2))).Should().BeGreaterThan((int)spiralGenerator.RadiusBetweenTurns);
+            Math.Abs(Math.Sqrt(Math.Pow(currentPoint.X- center.X, 2) + Math.Pow(currentPoint.Y - center.Y, 2))).Should().BeGreaterThan((int)spiralGenerator.DeltaRadiusBetweenTurns);
         }
     }
 }

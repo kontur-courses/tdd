@@ -29,11 +29,11 @@ namespace TagsCloudVisualization
         {
             if (rectangleSize.Width < 0 || rectangleSize.Height < 0)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("Rectangle cannot have negative size");
             }
             var nextPosition = positionGenerator.Next();
             var rectangle = new Rectangle(nextPosition, rectangleSize);
-            while (IntersectsWithPrevious(rectangle) || rectangle.X < 0 || rectangle.Y < 0)
+            while (IntersectsWithPrevious(rectangle))
             {
                 nextPosition = positionGenerator.Next();
                 rectangle.MoveToPosition(nextPosition);
@@ -46,11 +46,16 @@ namespace TagsCloudVisualization
 
         private void OptimizeLocation(ref Rectangle rectangle)
         {
-            OptimizeOneCoordinate(ref rectangle, (Rectangle rect) => center.X - rect.X, new Point(Math.Sign(rectangle.X - center.X) * -1, 0));
-            OptimizeOneCoordinate(ref rectangle, (Rectangle rect) => center.Y - rect.Y, new Point(0, Math.Sign(rectangle.Y - center.Y) * -1));
+            Func<Rectangle, int> getDeltaYByCenterCoordinate = (Rectangle rect) => center.Y - rect.Y;
+            Func<Rectangle, int> getDeltaXByCenterCoordinate = (Rectangle rect) => center.X - rect.X;
+            for (var i = 0; i < 5; i++)
+            {
+                OptimizeOneCoordinate(ref rectangle, getDeltaYByCenterCoordinate, 0, Math.Sign(rectangle.Y - center.Y) * -1);
+                OptimizeOneCoordinate(ref rectangle, getDeltaXByCenterCoordinate, Math.Sign(rectangle.X - center.X) * -1, 0);
+            }
         }
 
-        private void OptimizeOneCoordinate(ref Rectangle rectangle, Func<Rectangle, int> getDeltaByCenterCoordinate, Point deltaByStep)
+        private void OptimizeOneCoordinate(ref Rectangle rectangle, Func<Rectangle, int> getDeltaByCenterCoordinate, int deltaXByStep, int deltaYByStep)
         {
             var onCenter = false;
             while (!IntersectsWithPrevious(rectangle))
@@ -60,10 +65,10 @@ namespace TagsCloudVisualization
                     onCenter = true;
                     break;
                 }
-                rectangle.Move(deltaByStep.X, deltaByStep.Y);
+                rectangle.Move(deltaXByStep, deltaYByStep);
             }
             if (!onCenter) 
-                rectangle.Move(-deltaByStep.X, -deltaByStep.Y);
+                rectangle.Move(-deltaXByStep, -deltaYByStep);
         }
 
         private bool IntersectsWithPrevious(Rectangle rectangle)
@@ -71,11 +76,18 @@ namespace TagsCloudVisualization
             return rectangles.Any(previousRectangle => previousRectangle.IntersectsWith(rectangle));
         }
 
-        public Size GetSizeImage()
+        public Rectangle GetSizeOfImage()
         {
             var maxX = rectangles.Max(rectangle => rectangle.Right);
             var maxY = rectangles.Max(rectangle => rectangle.Bottom);
-            return new Size(maxX, maxY);
+            var minX = rectangles.Min(rectangle => rectangle.Left);
+            var minY = rectangles.Min(rectangle => rectangle.Top);
+            return new Rectangle(minX, minY, maxX - minX, maxY - minY);
+        }
+
+        public List<Rectangle> GetRectangles()
+        {
+            return this.rectangles;
         }
     }
 }
