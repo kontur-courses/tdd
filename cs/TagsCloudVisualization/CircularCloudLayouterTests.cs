@@ -16,21 +16,23 @@ namespace TagsCloudVisualization
         [Test]
         public void Generator_NotThrow_WhenEmptyPoint()
         {
-            new Action(() => new CircularCloudLayouter(new Point())).Should().NotThrow();
+            var generator = new Action(() => new CircularCloudLayouter(new Point()));
+            generator.Should().NotThrow();
         }
 
         [Test]
         public void PutNextRectangle_NotThrow_WhenEmptySize()
         {
             var cloud = new CircularCloudLayouter(new Point());
-            new Action(() => cloud.PutNextRectangle(new Size())).Should().NotThrow();
+            var putNextRectangle = new Action(() => cloud.PutNextRectangle(new Size()));
+            putNextRectangle.Should().NotThrow();
         }
 
         [Test]
         public void PutNextRectangle_OneSimpleRectangle_RectangleInCenter()
         {
             var cloud = new CircularCloudLayouter(new Point(0, 0));
-            cloud.PutNextRectangle(new Size(10, 20)).Should().Be(new Rectangle(-5, -10, 10, 20));
+            cloud.PutNextRectangle(new Size(10, 20)).Should().Be(new Rectangle(0, 0, 10, 20));
         }
 
         [Test]
@@ -50,10 +52,12 @@ namespace TagsCloudVisualization
             var cloud = new CircularCloudLayouter(center);
             cloud.PutNextRectangle(new Size(10, 20));
             var rectangle = cloud.PutNextRectangle(new Size(20, 20));
-            GetRadiusByCoordinates(
-                rectangle.X + rectangle.Width / 2 - center.X,
-                rectangle.Y + rectangle.Height / 2 - center.Y)
-                .Should().BeLessThan(30);
+            var radius =
+                Math.Sqrt(
+                    Math.Pow(rectangle.X - center.X, 2) +
+                    Math.Pow(rectangle.Y - center.Y, 2));
+            radius.Should().BeLessThan(30);
+
         }
 
         [Test]
@@ -65,17 +69,16 @@ namespace TagsCloudVisualization
             for (var i = 0; i < 100; i++)
             {
                 var rectangle = cloud.PutNextRectangle(new Size(10, 20));
-                foreach (var r in rectangles)
-                {
-                    rectangle.IntersectsWith(r).Should().BeFalse();
-                }
                 rectangles.Append(rectangle);
             }
-        }
-
-        private double GetRadiusByCoordinates(int x, int y)
-        {
-            return Math.Sqrt(x * x + y * y);
+            foreach (var rectangle1 in rectangles)
+            {
+                foreach (var rectangle2 in rectangles)
+                {
+                    if (rectangle1 != rectangle2)
+                        rectangle1.IntersectsWith(rectangle2).Should().BeFalse();
+                }
+            }
         }
     }
 }
