@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BowlingGame", "BowlingGame\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.csproj", "{B5108E20-2ACF-4ED9-84FE-2A718050FC94}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{77DB36EF-FE18-4FF6-A1B1-AF318C91435A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,8 +23,15 @@ Global
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77DB36EF-FE18-4FF6-A1B1-AF318C91435A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77DB36EF-FE18-4FF6-A1B1-AF318C91435A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77DB36EF-FE18-4FF6-A1B1-AF318C91435A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77DB36EF-FE18-4FF6-A1B1-AF318C91435A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AA5AD09D-9124-4FF3-A65B-87E8892B55F3}
 	EndGlobalSection
 EndGlobal
