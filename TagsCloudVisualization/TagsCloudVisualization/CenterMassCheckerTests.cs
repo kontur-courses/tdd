@@ -22,7 +22,7 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void CheckCircleForm_ShouldReturn_RightVector()
+        public void CheckCircleForm_ShouldReturnCenter_When_FourSameRectanglesAdded()
         {
             var centre = new Point(0, 0);
             var tagCloud = new CircularCloudLayouter(centre);
