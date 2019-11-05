@@ -5,7 +5,7 @@ using System.Text;
 
 namespace TagsCloudVisualization
 {
-    interface ITagsCloud
+    interface ICircularCloudLayouter
     {
         Rectangle PutNextRectangle(Size rectangleSize);
     }
