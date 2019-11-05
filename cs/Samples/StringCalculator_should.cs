@@ -1,4 +1,5 @@
 ﻿using System;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace Samples
@@ -28,6 +29,7 @@ namespace Samples
         public int sum_ComaSeparatedNumbers(string numbers)
         {
             return calc.Add(numbers);
+
         }
 
         [TestCase("1\n2\n3", ExpectedResult = 6)]
