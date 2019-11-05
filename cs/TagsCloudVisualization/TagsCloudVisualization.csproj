@@ -47,8 +47,10 @@
         <Reference Include="System.Data" />
         <Reference Include="System.Drawing" />
         <Reference Include="System.Xml" />
+        <Reference Include="System.Xml.Linq" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="ArchimedesSpiral.cs" />
         <Compile Include="CircularCloudLayouter.cs" />
         <Compile Include="CircularCloudLayouter_should.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
