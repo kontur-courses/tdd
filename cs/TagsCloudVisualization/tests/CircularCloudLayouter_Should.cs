@@ -69,13 +69,12 @@ namespace TagsCloudVisualization
         [Test]
         public void Rectangles_Should_BeInCircle()
         {
-            var rectangles = new List<Rectangle>();
             var rectangleSize = new Size(123, 112);
             for (var i = 0; i < 100; i++)
             {
                 var rectangle = circularCloud.PutNextRectangle(rectangleSize);
-                rectangles.Add(rectangle);
             }
+            var rectangles = circularCloud.GetRectangles();
             var maxY = rectangles.Max(rect => rect.Bottom);
             var minY = rectangles.Min(rect => rect.Top);
             var maxX = rectangles.Max(rect=> rect.Right);
@@ -88,7 +87,7 @@ namespace TagsCloudVisualization
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                var image = CloudPainter.DrawCloud(circularCloud, 100);
+                var image = CloudPainter.GetImageOfCloud(circularCloud, 100);
                 var mainDirOfProject = Path.GetFullPath($"..\\..\\..");
                 var pathToFailedTestImageDirectory = Path.Combine(mainDirOfProject, "testFailedImage");
                 if (!Directory.Exists(pathToFailedTestImageDirectory))

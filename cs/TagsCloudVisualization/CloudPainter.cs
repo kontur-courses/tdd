@@ -7,9 +7,9 @@ namespace TagsCloudVisualization
 {
     public static class CloudPainter
     {
-        public static Bitmap DrawCloud(CircularCloudLayouter cloud, int widthOfBorder=0)
+        public static Bitmap GetImageOfCloud(CircularCloudLayouter cloud, int widthOfBorder=0)
         {
-            var cloudBorders = cloud.GetSizeOfImage();
+            var cloudBorders = cloud.GetImageSize();
             var image = new Bitmap(cloudBorders.Width + widthOfBorder * 2, cloudBorders.Height + widthOfBorder * 2);
             var canvas = Graphics.FromImage(image);
             canvas.Clear(Color.White);

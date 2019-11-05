@@ -18,7 +18,7 @@ namespace TagsCloudVisualization
         {
             if (center.X < 0 || center.Y < 0)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("Center out of range");
             }
             this.center = center;
             rectangles = new List<Rectangle>();
@@ -29,7 +29,7 @@ namespace TagsCloudVisualization
         {
             if (rectangleSize.Width < 0 || rectangleSize.Height < 0)
             {
-                throw new ArgumentException("Rectangle cannot have negative size");
+                throw new ArgumentException("The rectangle cannot have a negative length side");
             }
             var nextPosition = positionGenerator.Next();
             var rectangle = new Rectangle(nextPosition, rectangleSize);
@@ -76,7 +76,7 @@ namespace TagsCloudVisualization
             return rectangles.Any(previousRectangle => previousRectangle.IntersectsWith(rectangle));
         }
 
-        public Rectangle GetSizeOfImage()
+        public Rectangle GetImageSize()
         {
             var maxX = rectangles.Max(rectangle => rectangle.Right);
             var maxY = rectangles.Max(rectangle => rectangle.Bottom);
@@ -85,7 +85,7 @@ namespace TagsCloudVisualization
             return new Rectangle(minX, minY, maxX - minX, maxY - minY);
         }
 
-        public List<Rectangle> GetRectangles()
+        public IReadOnlyCollection<Rectangle> GetRectangles()
         {
             return this.rectangles;
         }

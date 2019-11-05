@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Numerics;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
@@ -36,9 +37,8 @@ namespace TagsCloudVisualization
             {
                 spiralGenerator.Next();
             }
-
             var currentPoint = spiralGenerator.Next();
-            Math.Abs(Math.Sqrt(Math.Pow(currentPoint.X- center.X, 2) + Math.Pow(currentPoint.Y - center.Y, 2))).Should().BeGreaterThan((int)spiralGenerator.DeltaRadiusBetweenTurns);
+            currentPoint.GetDistance(center).Should().BeGreaterThan((int)spiralGenerator.DeltaRadiusBetweenTurns);
         }
     }
 }

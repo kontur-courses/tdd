@@ -36,8 +36,22 @@ namespace TagsCloudVisualization
             var newLocation = new Point(newX, newY);
             var rectangle = new Rectangle(Point.Empty, new Size(1, 1));
             rectangle.MoveToPosition(newLocation);
-            rectangle.Location.X.Should().Be(newLocation.X);
-            rectangle.Location.Y.Should().Be(newLocation.Y);
+            rectangle.Location.Should().BeEquivalentTo(newLocation);
+        }
+
+        [TestCase(5, 4, 1, 0)]
+        [TestCase(1, 3, 0, 0)]
+        [TestCase(9, 7, 0, 1)]
+        [TestCase(10, 4, -1, 0)]
+        [TestCase(6, 9, 0, -1)]
+        [TestCase(3, 5, 100, 100)]
+        public void RectangleSize_Should_StayUnchanged(int width, int height, int newX, int newY)
+        {
+            var newLocation = new Point(newX, newY);
+            var rectangle = new Rectangle(Point.Empty, new Size(width, height));
+            var oldSize = rectangle.Size;
+            rectangle.MoveToPosition(newLocation);
+            rectangle.Size.Should().Be(oldSize);
         }
     }
 }

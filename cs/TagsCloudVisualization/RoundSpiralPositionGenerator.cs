@@ -10,7 +10,7 @@ namespace TagsCloudVisualization
         private Point center;
         private double angle = 0;
         public readonly double DeltaRadiusBetweenTurns = 10;
-        public readonly double Delta = 0.5;
+        public readonly double DeltaAngle = 0.5;
 
         public RoundSpiralPositionGenerator(Point center)
         {
@@ -23,7 +23,7 @@ namespace TagsCloudVisualization
 
         public Point Next()
         {
-            angle += Delta;
+            angle += DeltaAngle;
             var dist = DeltaRadiusBetweenTurns * angle / 2 / Math.PI;
             var X = (int)(center.X + (dist * Math.Cos(angle)));
             var Y = (int)(center.Y + (dist * Math.Sin(angle)));
