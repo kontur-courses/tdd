@@ -31,20 +31,10 @@ namespace TagsCloudVisualization
 
         private Rectangle GetSizeBitmapFromRectangles(Rectangle[] rectangles)
         {
-            if (rectangles.Length == 0)
-                return new Rectangle(0, 0, 0, 0);
-            var minTop = rectangles[0].Top;
-            var maxBottom = rectangles[0].Bottom;
-            var minLeft = rectangles[0].Left;
-            var maxRight = rectangles[0].Right;
-
-            foreach (var r in rectangles)
-            {
-                minTop = minTop > r.Top ? r.Top : minTop;
-                maxBottom = maxBottom < r.Bottom ? r.Bottom : maxBottom;
-                minLeft = minLeft > r.Left ? r.Left : minLeft;
-                maxRight = maxRight < r.Right ? r.Right : maxRight;
-            }
+            var minTop = rectangles.Min((Rectangle r) => r.Top);
+            var maxBottom = rectangles.Max((Rectangle r) => r.Bottom);
+            var minLeft = rectangles.Min((Rectangle r) => r.Left);
+            var maxRight = rectangles.Max((Rectangle r) => r.Right);
             return new Rectangle(minLeft, minTop, maxRight - minLeft, maxBottom - minTop);
         }
     }
