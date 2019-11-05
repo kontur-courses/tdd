@@ -7,14 +7,14 @@ namespace TagCloud
 {
     public class CircularCloudLayouter
     {
-        private ISpiralLayouter internalLayouter;
+        private ISpiral _internal;
         private readonly Point center;
         private readonly List<Rectangle> rectangleMap;
 
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
-            internalLayouter = new СoncentricCircles();
+            _internal = new СoncentricCircles();
             rectangleMap = new List<Rectangle>();
         }
 
@@ -22,12 +22,17 @@ namespace TagCloud
         {
             if (rectangleSize.Width == 0 || rectangleSize.Height == 0)
                 throw new ArgumentException("rectangleSize is degenerate");
-            // прямоугольники не сдвинуты, потому что ISpiralsLayouter рассчитывает,
-            // что центр находится в начале координат
-            var rect = internalLayouter.PutNextRectangle(rectangleSize, IsIntersects);
-            rectangleMap.Add(rect);
-            // lower ro
-            return rect.CenterShift(center);
+            var centerShift = new Point(-rectangleSize.Width / 2, - rectangleSize.Height / 2);
+            foreach (var spiralPoint in _internal.IterateBySpiralPoints())
+            {
+                var rect = new Rectangle(new Point(spiralPoint.X + centerShift.X, spiralPoint.Y + centerShift.Y), rectangleSize).CenterShift(center);
+                if (!IsIntersects(rect))
+                {
+                    rectangleMap.Add(rect);
+                    return rect;
+                }
+            }
+            throw new ArgumentException("Spiral doesn't return appropriate points");
         }
 
         public IEnumerable<Rectangle> GetAllRectangles()
