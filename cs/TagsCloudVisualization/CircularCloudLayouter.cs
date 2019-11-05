@@ -7,35 +7,41 @@ using NUnit.Framework;
 
 namespace TagsCloudVisualization
 {
-    class CircularCloudLayouter
+    public class CircularCloudLayouter
     {
-        private const int SpiralCoefficient = 8;
-        private Point centerPosition;
-        public List<Rectangle> layout = new List<Rectangle>();
-
         private int spiralCounter = 0;
 
         public CircularCloudLayouter(Point center)
         {
-            centerPosition = center;
+            CenterPosition = center;
         }
+
+        public Point CenterPosition { get; }
+        public List<Rectangle> Layout { get; } = new List<Rectangle>();
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            Rectangle rect = new Rectangle(GetNextPointOnSpiral(centerPosition) - rectangleSize / 2, rectangleSize);
-            while (layout.Any(r => r.IntersectsWith(rect)))
-                rect = new Rectangle(GetNextPointOnSpiral(centerPosition) - rectangleSize / 2, rectangleSize);
-            layout.Add(rect);
+            var rect = GetNextEmptyRectangleAtSpiral(rectangleSize);
+            Layout.Add(rect);
             return rect;
         }
 
-        public Point GetNextPointOnSpiral(Point center)
+        private Rectangle GetNextEmptyRectangleAtSpiral(Size rectangleSize)
         {
-            int x = (int) (SpiralCoefficient * MathF.Pow(spiralCounter, 1 / 2f) * MathF.Cos(spiralCounter)) + center.X;
-            int y = (int) (SpiralCoefficient * MathF.Pow(spiralCounter, 1 / 2f) * MathF.Sin(spiralCounter)) + center.Y;
-            Point pos = new Point(x, y);
-            spiralCounter++;
-            return pos;
+            return GetPointsOnSpiral()
+                .Select(p => new Rectangle(p - rectangleSize / 2, rectangleSize))
+                .SkipWhile(r => Layout.Any(r.IntersectsWith)).First();
+        }
+
+        private IEnumerable<Point> GetPointsOnSpiral()
+        {
+            while (true)
+            {
+                float distanceFromCenter = MathF.Sqrt(spiralCounter);
+                int x = (int) (distanceFromCenter * MathF.Cos(spiralCounter)) + CenterPosition.X;
+                int y = (int) (distanceFromCenter * MathF.Sin(spiralCounter++)) + CenterPosition.Y;
+                yield return new Point(x, y);
+            }
         }
     }
 }
