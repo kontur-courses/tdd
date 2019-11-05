@@ -65,7 +65,7 @@ namespace TagsCloudVisualization
             var initialDensity = Spiral.CalculateDensity(rectangleSize);
             var expectedSpiral = new Spiral(angleStep, firstLayerRadius, initialDensity, new Point());
             
-            _circularCloudLayouter.PutNextRectangle(rectangleSize);
+            _circularCloudLayouter.InitializeSpiral(rectangleSize);
             var actualSpiral = _circularCloudLayouter._spiral;
             actualSpiral.Should().Be(expectedSpiral);
         }
@@ -87,6 +87,31 @@ namespace TagsCloudVisualization
                     .Skip(i + 1)
                     .Select(area.IntersectsWith));
             actualResult.Should().BeEquivalentTo(expectedResult);
+        }
+
+        [TestCase(0, 0, -2, 0, 2, 2, -3, -1, TestName = "Square at (-2, 0) when center at (0, 0)")]
+        [TestCase(0, 0, 0, 2, 2, 2, 1, 3, TestName = "Square at (0, 2) when center at (0, 0)")]
+        [TestCase(0, 0, -1, 1, 2, 2, -2, 0, TestName = "Square at (-1, 1) when center at (0, 0)")]
+        [TestCase(1, 1, 1, 3, 2, 2, 2, 4, TestName = "Square at (1, 3) when center at (1, 1)")]
+        [TestCase(1, 1, -1, 1, 2, 2, -2, 0, TestName = "Square at (-1, 1) when center at (1, 1)")]
+        [TestCase(0, 0, 0, 2, 3, 2, 1, 3, TestName = "Rectangle(3,2) at (0, 2) when center at (0, 0)")]
+        [TestCase(0, 0, -3, 2, 5, 3, -4, 3, TestName = "Rectangle(5,3) at (-3, 2) when center at (0, 0)")]
+        [TestCase(1, 1, -1, 3, 6, 4, 0, 2, TestName = "Rectangle(6,4) at (-1, 3) when center at (1, 1)")]
+        public void MoveFromCenter_ReturnsCorrectValue(int centerX,
+                                                        int centerY,
+                                                        int xPos, 
+                                                        int yPos, 
+                                                        int width,
+                                                        int height,
+                                                        int expectedX,
+                                                        int expectedY)
+        {
+            var rectangle = new Rectangle(xPos, yPos, width, height);
+            var center = new Point(centerX, centerY);
+            var expectedLocation = new Point(expectedX, expectedY);
+            
+            var actualRectangle = CircularCloudLayouter.MoveFromCenter(rectangle, 1, center);
+            actualRectangle.Location.Should().Be(expectedLocation);
         }
     }
 }

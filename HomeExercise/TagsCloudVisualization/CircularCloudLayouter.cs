@@ -59,7 +59,7 @@ namespace TagsCloudVisualization
         private bool CheckIntersections(Rectangle rectangle) => 
             Rectangles.Where(rectangle.IntersectsWith).ToList().Any();
 
-        private static Rectangle MoveFromCenter(Rectangle rectangle, int moveDistance, Point center)
+        internal static Rectangle MoveFromCenter(Rectangle rectangle, int moveDistance, Point center)
         {
             var rectCenterX = rectangle.X + rectangle.Width / 2;
             var rectCenterY = rectangle.Y - rectangle.Height / 2;
