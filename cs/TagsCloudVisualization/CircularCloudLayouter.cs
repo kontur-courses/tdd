@@ -23,6 +23,8 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
+            if (rectangleSize.Width < 0 || rectangleSize.Height < 0)
+                throw new ArgumentException("The dimensions of the rectangle must be greater than or equal to zero");
             var rectangle = GetNextRectangle(rectangleSize);
             rectangles.Add(rectangle);
             return rectangle;

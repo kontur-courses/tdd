@@ -97,6 +97,17 @@ namespace TagsCloudVisualization
 
             cloud.GetRectangles().Should().Equal(rectangles);
         }
+
+        [TestCase(-1, 1)]
+        [TestCase(1, -1)]
+        public void PutNextRectangle_NegativeSize_ArgumentException(int width, int height)
+        {
+            var center = new Point(10, 10);
+            var cloud = new CircularCloudLayouter(center);
+            var putNextRectangle = new Action(() => cloud.PutNextRectangle(new Size(width, height)));
+            var message = "The dimensions of the rectangle must be greater than or equal to zero";
+            putNextRectangle.Should().Throw<ArgumentException>().WithMessage(message);
+        }
     }
 }
 
