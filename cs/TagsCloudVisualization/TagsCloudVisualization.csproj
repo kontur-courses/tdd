@@ -51,8 +51,9 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="ArchimedesSpiral.cs" />
+        <Compile Include="ArchimedesSpiralTests.cs" />
         <Compile Include="CircularCloudLayouter.cs" />
-        <Compile Include="CircularCloudLayouter_should.cs" />
+        <Compile Include="CircularCloudLayouterTests.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>
     <ItemGroup>
