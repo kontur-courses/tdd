@@ -79,16 +79,19 @@ namespace TagsCloudVisualization
             var rectangles = new List<Rectangle>();
 
             for (int stage = 0; stage < 50; stage++) // каждое countRectabgle проверяется в 50 проходов
+            {
                 for (int i = 0; i < countRectangles; i++)
                 {
                     var size = new Size(random.Next(10, 20), random.Next(10, 20));
                     rectangles.Add(cloudLayouter.PutNextRectangle(size));
                 }
 
-            for (int i = 0; i < rectangles.Count; i++)
-                for (int j = i + 1; j < rectangles.Count; j++)
-                    if (rectangles[i].IntersectsWith(rectangles[j]))
-                        Assert.Fail($"rectangle: {rectangles[i]} is intersect with rectangle {rectangles[j]}");
+                for (int i = 0; i < rectangles.Count; i++)
+                    for (int j = i + 1; j < rectangles.Count; j++)
+                        if (rectangles[i].IntersectsWith(rectangles[j]))
+                            Assert.Fail($"rectangle: {rectangles[i]} is intersect with rectangle {rectangles[j]}");
+            }
+            
         }
     }
 }
