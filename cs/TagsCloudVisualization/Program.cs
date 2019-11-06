@@ -22,7 +22,7 @@ namespace TagsCloudVisualization
 
             var circularCloudLayouter = new CircularCloudLayouter(center);
 
-            Random random = new Random(3);
+            Random random = new Random();
             var shuffledTagStrings = TagCloudsContent.WebCloudStrings.Take(1)
                                                      .Concat(
                                                          TagCloudsContent.WebCloudStrings.Skip(1)

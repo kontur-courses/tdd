@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -25,9 +24,18 @@ namespace TagsCloudVisualization
             {
                 var currentArchimedeanSpiralPoint = ConvertPointFromPolarToCartesian(polarSpiral.Radius,
                                                                                      polarSpiral.Azimuth);
-                newRectangle = new Rectangle(currentArchimedeanSpiralPoint, rectangleSize);
-                if (rectangles.All(rectangle => !rectangle.IntersectsWith(newRectangle)))
-                    break;
+                Point newRectangleLocation = currentArchimedeanSpiralPoint;
+
+                newRectangle = new Rectangle(newRectangleLocation, rectangleSize);
+
+                if (newRectangle.IntersectsWith(rectangles)) break;
+
+                if (currentArchimedeanSpiralPoint.X <= 0)
+                {
+                    newRectangle.Offset(new Point(-rectangleSize.Width, -rectangleSize.Height));
+
+                    if (newRectangle.IntersectsWith(rectangles)) break;
+                }
 
                 polarSpiral.Azimuth += AzimuthDelta;
             }
