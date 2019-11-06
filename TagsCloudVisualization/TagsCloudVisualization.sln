@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization.csproj", "{9A02B088-32C0-490D-838B-E1D405227100}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{B0491BF2-46CC-4DD4-8AD4-5B32B6A107C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -8,9 +8,9 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9A02B088-32C0-490D-838B-E1D405227100}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9A02B088-32C0-490D-838B-E1D405227100}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9A02B088-32C0-490D-838B-E1D405227100}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9A02B088-32C0-490D-838B-E1D405227100}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0491BF2-46CC-4DD4-8AD4-5B32B6A107C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0491BF2-46CC-4DD4-8AD4-5B32B6A107C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0491BF2-46CC-4DD4-8AD4-5B32B6A107C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0491BF2-46CC-4DD4-8AD4-5B32B6A107C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
