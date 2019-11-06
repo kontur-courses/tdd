@@ -6,7 +6,7 @@ namespace TagsCloudVisualization
 {
     public static class UsageExamples
     {
-        public static void GenerateTagCloud(Size imageSize, Dictionary<string, Font> wordsWithFonts, string filename)
+        public static void GenerateTagCloud(Size imageSize, List<Tuple<string, Font>> wordsWithFonts, string filename)
         {
             var cloudLayouter = new CircularCloudLayouter(
                 new Point(imageSize.Width / 2, imageSize.Height / 2),
@@ -14,7 +14,7 @@ namespace TagsCloudVisualization
             var cloudDrawer = new CircularCloudDrawer(imageSize, cloudLayouter);
             foreach (var pair in wordsWithFonts)
             {
-                cloudDrawer.DrawWord(pair.Key, pair.Value);
+                cloudDrawer.DrawWord(pair.Item1, pair.Item2);
             }
 
             cloudDrawer.Save(filename);
@@ -22,45 +22,37 @@ namespace TagsCloudVisualization
 
         public static void GenerateFirstTagCloud()
         {
-            var wordsWithFonts = new Dictionary<string, Font>()
+            var wordsWithFonts = new List<Tuple<string, Font>>();
+            for (var i = 1; i <= 25; i++)
             {
-                ["TDD"] = new Font("Calibri", 40),
-                ["Code"] = new Font("Calibri", 15),
-                ["Shpora"] = new Font("Calibri", 30),
-                ["Cloud"] = new Font("Calibri", 50),
-                ["Homework"] = new Font("Calibri", 15),
-                ["Tests"] = new Font("Calibri", 10),
-                ["Tags"] = new Font("Calibri", 25),
-                ["Kontur"] = new Font("Calibri", 10),
-                ["Experience"] = new Font("Calibri", 10),
-                ["Lessons"] = new Font("Calibri", 30),
-                ["Practice"] = new Font("Calibri", 30),
-                ["Theory"] = new Font("Calibri", 25)
-            };
-            GenerateTagCloud(new Size(1000, 1000), wordsWithFonts,
+                wordsWithFonts.Add(new Tuple<string, Font>($"word{i.ToString()}",
+                    new Font("Arial", i * 3)));
+            }
+
+            GenerateTagCloud(new Size(1200, 1200), wordsWithFonts,
                 Environment.CurrentDirectory + @"\Examples\first.png");
         }
 
         public static void GenerateSecondTagCloud()
         {
-            var wordsWithFonts = new Dictionary<string, Font>();
-            for (var i = 1; i <= 25; i++)
+            var wordsWithFonts = new List<Tuple<string, Font>>();
+            for (var i = 1; i <= 50; i++)
             {
-                wordsWithFonts.Add($"word{i.ToString()}",
-                    new Font("Arial", i * 3));
+                wordsWithFonts.Add(new Tuple<string, Font>(i.ToString(),
+                    new Font("Arial", i * 2)));
             }
 
             GenerateTagCloud(new Size(1200, 1200), wordsWithFonts,
                 Environment.CurrentDirectory + @"\Examples\second.png");
         }
-
+        
         public static void GenerateThirdTagCloud()
         {
-            var wordsWithFonts = new Dictionary<string, Font>();
-            for (var i = 1; i <= 50; i++)
+            var wordsWithFonts = new List<Tuple<string, Font>>();
+            for (var i = 1; i <= 75; i++)
             {
-                wordsWithFonts.Add(i.ToString(),
-                    new Font("Arial", i * 2));
+                wordsWithFonts.Add(new Tuple<string, Font>("25",
+                    new Font("Arial", 30)));
             }
 
             GenerateTagCloud(new Size(1200, 1200), wordsWithFonts,
