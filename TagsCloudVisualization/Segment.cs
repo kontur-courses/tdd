@@ -19,15 +19,47 @@ namespace TagsCloudVisualization
         }
         public Segment(Point start, Point end, Type type)
         {
-            this.start = start;
-            this.end = end;
-            this.type = type;
+            if (type == Type.Bottom || type == Type.Top)
+            {
+                if (start.Y != end.Y)
+                    throw new ArgumentException();
+                else
+                {
+                    if (start.X < end.X)
+                    {
+                        this.start = start;
+                        this.end = end;
+                    }
+                    else
+                    {
+                        this.start = end;
+                        this.end = start;
+                    }
+                    this.type = type;
+                }
+            }
+            else
+            {
+                if (start.X != end.X)
+                    throw new ArgumentException();
+                else
+                {
+                    if (start.Y < end.Y)
+                    {
+                        this.start = start;
+                        this.end = end;
+                    }
+                    else
+                    {
+                        this.start = end;
+                        this.end = start;
+                    }
+                    this.type = type;
+                }
+            }
         }
-        public Segment(int startX, int startY, int endX, int endY, Type type)
+        public Segment(int startX, int startY, int endX, int endY, Type type):this(new Point(startX, startY), new Point(endX, endY), type)
         {
-            this.start = new Point(startX, startY);
-            this.end = new Point(endX, endY);
-            this.type = type;
         }
 
         public static Segment operator -(Segment obj1, Segment obj2)

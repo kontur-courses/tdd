@@ -64,147 +64,98 @@ namespace TagsCloudVisualization
                     continue;
                 if (segment.type == Segment.Type.Top)
                 {
-                    Point startAngleCoord = new Point(segment.start.X, segment.start.Y - rectangleSize.Height);
-                    double startDist = Distance(GetRectangleCenter(new Rectangle(startAngleCoord, rectangleSize)), center);
-                    if (startDist < minDistance)
-                    {
-                        minDistance = startDist;
-                        minSegment = segment;
-                        minCoord = startAngleCoord;
-                    }
-                    Point endAngleCoord = new Point(segment.end.X - rectangleSize.Width, segment.start.Y - rectangleSize.Height);
-                    double endDist = Distance(GetRectangleCenter(new Rectangle(startAngleCoord, rectangleSize)), center);
-                    if (endDist < minDistance)
-                    {
-                        minDistance = endDist;
-                        minSegment = segment;
-                        minCoord = endAngleCoord;
-                    }
+                    SearchMinDistanceTop(ref minSegment, ref minDistance, ref minCoord, segment, rectangleSize);
                 }
                 if (segment.type == Segment.Type.Bottom)
                 {
-                    Point startAngleCoord = new Point(segment.start.X, segment.start.Y);
-                    double startDist = Distance(GetRectangleCenter(new Rectangle(startAngleCoord, rectangleSize)), center);
-                    if (startDist < minDistance)
-                    {
-                        minDistance = startDist;
-                        minSegment = segment;
-                        minCoord = startAngleCoord;
-                    }
-                    Point endAngleCoord = new Point(segment.end.X - rectangleSize.Width, segment.start.Y);
-                    double endDist = Distance(GetRectangleCenter(new Rectangle(startAngleCoord, rectangleSize)), center);
-                    if (endDist < minDistance)
-                    {
-                        minDistance = endDist;
-                        minSegment = segment;
-                        minCoord = endAngleCoord;
-                    }
+                    SearchMinDistanceBottom(ref minSegment, ref minDistance, ref minCoord, segment, rectangleSize);
                 }
                 if (segment.type == Segment.Type.Left)
                 {
-                    Point startAngleCoord = new Point(segment.start.X-rectangleSize.Width, segment.start.Y);
-                    double startDist = Distance(GetRectangleCenter(new Rectangle(startAngleCoord, rectangleSize)), center);
-                    if (startDist < minDistance)
-                    {
-                        minDistance = startDist;
-                        minSegment = segment;
-                        minCoord = startAngleCoord;
-                    }
-                    Point endAngleCoord = new Point(segment.end.X - rectangleSize.Width, segment.start.Y-rectangleSize.Height);
-                    double endDist = Distance(GetRectangleCenter(new Rectangle(startAngleCoord, rectangleSize)), center);
-                    if (endDist < minDistance)
-                    {
-                        minDistance = endDist;
-                        minSegment = segment;
-                        minCoord = endAngleCoord;
-                    }
+                    SearchMinDistanceLeft(ref minSegment, ref minDistance, ref minCoord, segment, rectangleSize);
                 }
                 if (segment.type == Segment.Type.Right)
                 {
-                    Point startAngleCoord = new Point(segment.start.X, segment.start.Y);
-                    double startDist = Distance(GetRectangleCenter(new Rectangle(startAngleCoord, rectangleSize)), center);
-                    if (startDist < minDistance)
-                    {
-                        minDistance = startDist;
-                        minSegment = segment;
-                        minCoord = startAngleCoord;
-                    }
-                    Point endAngleCoord = new Point(segment.end.X, segment.start.Y - rectangleSize.Height);
-                    double endDist = Distance(GetRectangleCenter(new Rectangle(startAngleCoord, rectangleSize)), center);
-                    if (endDist < minDistance)
-                    {
-                        minDistance = endDist;
-                        minSegment = segment;
-                        minCoord = endAngleCoord;
-                    }
+                    SearchMinDistanceRight(ref minSegment, ref minDistance, ref minCoord, segment, rectangleSize);
                 }
             }
-            if (minSegment.type == Segment.Type.Top)
-            {
-                Segments.Remove(minSegment);
-                //adding rectangle top side
-                Segments.Add(new Segment(minCoord.X, minCoord.Y, minCoord.X + rectangleSize.Width, minCoord.Y, Segment.Type.Top));
-                //adding rest part of previous segment
-                if (minCoord.X==minSegment.start.X)  //this case:  |_|_____
-                    Segments.Add(new Segment(minCoord.X + rectangleSize.Width, minSegment.end.Y, minSegment.end.X, minSegment.end.Y, Segment.Type.Top));
-                else  //this case:  _____|_|
-                    Segments.Add(new Segment(minSegment.start.X, minSegment.start.Y, minSegment.end.X-rectangleSize.Width, minSegment.end.Y, Segment.Type.Top));
-                //adding rectangle left side
-                Segments.Add(new Segment(minCoord, minSegment.start, Segment.Type.Left));
-                //adding rectangle right side
-                Segments.Add(new Segment(minCoord.X + rectangleSize.Width, minCoord.Y, minSegment.end.X, minCoord.Y, Segment.Type.Right));
-                return new Rectangle(minCoord, rectangleSize);
-            }
-            if (minSegment.type == Segment.Type.Bottom)
-            {
-                Segments.Remove(minSegment);
-                //adding rectangle bottom side
-                Segments.Add(new Segment(minCoord.X, minCoord.Y+rectangleSize.Height, minCoord.X + rectangleSize.Width, minCoord.Y + rectangleSize.Height, Segment.Type.Bottom));
-                //adding rest part of previous segment
-                if (minCoord.X == minSegment.start.X)  //this case:  |‾|‾‾‾‾‾‾‾
-                    Segments.Add(new Segment(minCoord.X + rectangleSize.Width, minSegment.end.Y, minSegment.end.X, minSegment.end.Y, Segment.Type.Bottom));
-                else  //this case:  ‾‾‾‾‾‾‾|‾|
-                    Segments.Add(new Segment(minSegment.start.X, minSegment.start.Y, minSegment.end.X - rectangleSize.Width, minSegment.end.Y, Segment.Type.Bottom));
-                //adding rectangle left side
-                Segments.Add(new Segment(minCoord, new Point(minCoord.X, minCoord.Y+rectangleSize.Height), Segment.Type.Left));
-                //adding rectangle right side
-                Segments.Add(new Segment(minCoord.X + rectangleSize.Width, minCoord.Y, minCoord.X+rectangleSize.Width, minCoord.Y+rectangleSize.Height, Segment.Type.Right));
-                return new Rectangle(minCoord, rectangleSize);
-            }
-            if (minSegment.type == Segment.Type.Left)
-            {
-                Segments.Remove(minSegment);
-                //adding rectangle left side
-                Segments.Add(new Segment(minCoord.X, minCoord.Y, minCoord.X, minCoord.Y + rectangleSize.Height, Segment.Type.Left));
-                //adding rest part of previous segment
-                if (minCoord.Y == minSegment.start.Y)  //this case:  ‾|  возможно здесь косяк
-                    Segments.Add(new Segment(minCoord.X + rectangleSize.Width, minSegment.start.Y+rectangleSize.Height, minSegment.end.X, minSegment.end.Y, Segment.Type.Left));
-                else  //this case: _|
-                    Segments.Add(new Segment(minSegment.start.X, minSegment.start.Y, minSegment.end.X - rectangleSize.Width, minSegment.end.Y, Segment.Type.Left));
-                //adding rectangle top side
-                Segments.Add(new Segment(minCoord, new Point(minCoord.X+rectangleSize.Width, minCoord.Y), Segment.Type.Top));
-                //adding rectangle bottom side
-                Segments.Add(new Segment(minCoord.X, minCoord.Y+rectangleSize.Height, minCoord.X + rectangleSize.Width, minCoord.Y + rectangleSize.Height, Segment.Type.Bottom));
-                return new Rectangle(minCoord, rectangleSize);
-            }
-            if (minSegment.type == Segment.Type.Right)
-            {
-                Segments.Remove(minSegment);
-                //adding rectangle right side
-                Segments.Add(new Segment(minCoord.X+rectangleSize.Width, minCoord.Y, minCoord.X + rectangleSize.Width, minCoord.Y + rectangleSize.Height, Segment.Type.Right));
-                //adding rest part of previous segment
-                if (minCoord.Y == minSegment.start.Y)  //this case:  |‾
-                    Segments.Add(new Segment( minCoord.X, minCoord.Y+rectangleSize.Height, minSegment.end.X, minSegment.end.Y, Segment.Type.Right));
-                else  //this case: |_
-                    Segments.Add(new Segment( minSegment.start, minCoord, Segment.Type.Right));
-                //adding rectangle top side
-                Segments.Add(new Segment(minCoord, new Point(minCoord.X + rectangleSize.Width, minCoord.Y), Segment.Type.Top));
-                //adding rectangle bottom side
-                Segments.Add(new Segment(minCoord.X, minCoord.Y + rectangleSize.Height, minCoord.X + rectangleSize.Width, minCoord.Y + rectangleSize.Height, Segment.Type.Bottom));
-                return new Rectangle(minCoord, rectangleSize);
-            }
-            return new Rectangle(center, rectangleSize);
+
+            Segments.Add(new Segment(minCoord.X, minCoord.Y, minCoord.X + rectangleSize.Width, minCoord.Y, Segment.Type.Top));
+            Segments.Add(new Segment(minCoord.X, minCoord.Y+rectangleSize.Height, minCoord.X + rectangleSize.Width, minCoord.Y + rectangleSize.Height, Segment.Type.Bottom));
+            Segments.Add(new Segment(minCoord.X, minCoord.Y, minCoord.X, minCoord.Y + rectangleSize.Height, Segment.Type.Left));
+            Segments.Add(new Segment(minCoord.X+rectangleSize.Width, minCoord.Y, minCoord.X + rectangleSize.Width, minCoord.Y + rectangleSize.Height, Segment.Type.Right));
+            StackSegments();
+            return new Rectangle(minCoord, rectangleSize);
         }
+
+
+        private void SearchMinDistanceTop(ref Segment minSegment, ref double minDistance, ref Point minCoord, Segment segment, Size rectangleSize)
+        {
+            if (segment.start.X < center.X && segment.end.X > center.X)
+            {
+                Point midAngleCoord = new Point(center.X - rectangleSize.Width / 2, segment.start.Y - rectangleSize.Height);
+                CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, midAngleCoord, rectangleSize);
+            }
+            Point startAngleCoord = new Point(segment.start.X, segment.start.Y - rectangleSize.Height);
+            CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, startAngleCoord, rectangleSize);
+            Point endAngleCoord = new Point(segment.end.X - rectangleSize.Width, segment.start.Y - rectangleSize.Height);
+            CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, endAngleCoord, rectangleSize);
+        }
+
+        private void SearchMinDistanceBottom(ref Segment minSegment, ref double minDistance, ref Point minCoord, Segment segment, Size rectangleSize)
+        {
+            if (segment.start.X < center.X && segment.end.X > center.X)
+            {
+                Point midAngleCoord = new Point(center.X - rectangleSize.Width / 2, segment.start.Y);
+                CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, midAngleCoord, rectangleSize);
+            }
+
+            Point startAngleCoord = new Point(segment.start.X, segment.start.Y);
+            CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, startAngleCoord, rectangleSize);
+            Point endAngleCoord = new Point(segment.end.X - rectangleSize.Width, segment.start.Y);
+            CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, endAngleCoord, rectangleSize);
+        }
+
+        private void SearchMinDistanceLeft(ref Segment minSegment, ref double minDistance, ref Point minCoord, Segment segment, Size rectangleSize)
+        {
+            if (segment.start.Y < center.Y && segment.end.Y > center.Y)
+            {
+                Point midAngleCoord = new Point(segment.start.X - rectangleSize.Width, center.Y - rectangleSize.Height/2);
+                CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, midAngleCoord, rectangleSize);
+            }
+
+
+            Point startAngleCoord = new Point(segment.start.X - rectangleSize.Width, segment.start.Y);
+            CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, startAngleCoord, rectangleSize);
+            Point endAngleCoord = new Point(segment.end.X - rectangleSize.Width, segment.end.Y - rectangleSize.Height);
+            CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, endAngleCoord, rectangleSize);
+        }
+
+        private void SearchMinDistanceRight(ref Segment minSegment, ref double minDistance, ref Point minCoord, Segment segment, Size rectangleSize)
+        {
+            if (segment.start.Y < center.Y && segment.end.Y > center.Y)
+            {
+                Point midAngleCoord = new Point(segment.start.X, center.Y - rectangleSize.Height / 2);
+                CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, midAngleCoord, rectangleSize);
+            }
+
+            Point startAngleCoord = new Point(segment.start.X, segment.start.Y);
+            CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, startAngleCoord, rectangleSize);
+            Point endAngleCoord = new Point(segment.end.X, segment.end.Y - rectangleSize.Height);
+            CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, endAngleCoord, rectangleSize);
+        }
+
+        private void CheckDistance(ref Segment minSegment, ref double minDistance, Segment segment, ref Point minCoord, Point coord, Size rectangleSize)
+        {
+            double dist = Distance(GetRectangleCenter(new Rectangle(coord, rectangleSize)), center);
+            if (dist < minDistance)
+            {
+                minDistance = dist;
+                minSegment = segment;
+                minCoord = coord;
+            }
+        }
+
 
         private Point GetSizeCenter(Size size)
         {
@@ -222,6 +173,57 @@ namespace TagsCloudVisualization
             return Math.Sqrt(Math.Pow((a.X - b.X), 2) + Math.Pow((a.Y - center.Y), 2));
         }
 
+        // возможно сюда стоит кидать только новые отрезки и проверять только их а не все
+        private void StackSegments()//здесь будут убираться пересекающиеся сегменты, думаю это будет долго поэтому вызывать стоит только иногда
+        {
+            var toDelete = new HashSet<Segment>();
+            var toAdd = new HashSet<Segment>();
+            foreach(var segment1 in Segments)
+            {
+                foreach(var segment2 in Segments)
+                {
+                    if (segment1.end==segment2.start && segment1.type==segment2.type)
+                    {
+                        toDelete.Add(segment1);
+                        toDelete.Add(segment2);
+                        toAdd.Add(new Segment(segment1.start, segment2.end, segment1.type));
+                    }
+                    if (segment1.start == segment2.start 
+                        && segment1.end == segment2.end 
+                        && (segment1.type==Segment.Type.Top && segment2.type==Segment.Type.Bottom// bot-top will be when segment2-segment1
+                        || segment1.type == Segment.Type.Left && segment2.type == Segment.Type.Right))
+                    {
+                        toDelete.Add(segment1);
+                        toDelete.Add(segment2);
+                    }
+                    //вложенный отрезок
+                    if (((segment1.type == Segment.Type.Right && segment2.type == Segment.Type.Left)
+                        || (segment1.type == Segment.Type.Left && segment2.type == Segment.Type.Right))
+                        && segment1.start.X == segment2.start.X
+                        && segment1.start.Y < segment2.start.Y
+                        && segment1.end.Y > segment2.end.Y)
+                    {
+                        toDelete.Add(segment1);
+                        toDelete.Add(segment2);
+                        toAdd.Add(new Segment(segment1.start, segment2.start, segment1.type));
+                        toAdd.Add(new Segment(segment2.end, segment1.end, segment1.type));
+                    }
+                    if (((segment1.type == Segment.Type.Top && segment2.type == Segment.Type.Bottom)
+                        || (segment1.type == Segment.Type.Bottom && segment2.type == Segment.Type.Top))
+                        && segment1.start.Y == segment2.start.Y
+                        && segment1.start.X < segment2.start.X
+                        && segment1.end.X > segment2.end.X)
+                    {
+                        toDelete.Add(segment1);
+                        toDelete.Add(segment2);
+                        toAdd.Add(new Segment(segment1.start, segment2.start, segment1.type));
+                        toAdd.Add(new Segment(segment2.end, segment1.end, segment1.type));
+                    }
+                }
+            }
+            Segments.ExceptWith(toDelete);
+            Segments.UnionWith(toAdd);
+        }
 
     }
 }
