@@ -7,7 +7,7 @@ using FluentAssertions;
 namespace TagsCloudVisualization
 {
     [TestFixture]
-    class TagsCloudVisualization_should
+    class CircularCloudLayouter_should
     {
         static CircularCloudLayouter cloudLayouter;
 

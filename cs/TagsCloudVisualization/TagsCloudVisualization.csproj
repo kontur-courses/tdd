@@ -48,7 +48,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="RectangularSpiral.cs" />
     <Compile Include="RectangularSpiral_should.cs" />
-    <Compile Include="TagsCloudVisualization_should.cs" />
+    <Compile Include="CircularCloudLayouter_should.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FluentAssertions, Version=5.9.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
