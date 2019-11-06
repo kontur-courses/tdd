@@ -11,7 +11,13 @@ namespace TagsCloudVisualization
         ISpiral spiral;
         IEnumerator<Point> spiralPoints;
 
-        public CircularCloudLayouter(Point center) => new CircularCloudLayouter(center, new ArchimedeanSpiral());
+        public CircularCloudLayouter(Point center)
+        {
+            this.center = center;
+            rectangles = new List<Rectangle>();
+            this.spiral = new ArchimedeanSpiral();
+            spiralPoints = spiral.GetPoints().GetEnumerator();
+        }
 
         public CircularCloudLayouter(Point center, ISpiral spiral)
         {
