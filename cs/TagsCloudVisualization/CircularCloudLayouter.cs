@@ -14,6 +14,8 @@ namespace TagsCloudVisualization
         ISpiral spiral;
         IEnumerator<Point> spiralPoints;
 
+        public CircularCloudLayouter(Point center) => new CircularCloudLayouter(center, new ArchimedeanSpiral());
+
         public CircularCloudLayouter(Point center, ISpiral spiral)
         {
             this.center = center;
@@ -44,8 +46,8 @@ namespace TagsCloudVisualization
 
         bool TryAddRectangle(Rectangle rectangle)
         {
-            foreach (var rec in rectangles)
-                if (rec.IntersectsWith(rectangle)) return false;
+            if (rectangles.Exists(rec => rec.IntersectsWith(rectangle))) 
+                return false;
 
             rectangles.Add(rectangle);
             return true;
