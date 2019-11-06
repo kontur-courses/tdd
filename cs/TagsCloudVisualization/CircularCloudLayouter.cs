@@ -56,27 +56,27 @@ namespace TagsCloudVisualization
 
         private Rectangle SnuggleRectangle(Rectangle rectangle)
         {
-            var tempRectangle = rectangle;
-            var additionalLoop = true;
-            while (additionalLoop)
+            var deltaX = Math.Sign(center.Width - rectangle.X);
+            var deltaY = Math.Sign(center.Height - rectangle.Y);
+            while (deltaX != 0 || deltaY != 0)
             {
-                var deltaX = Math.Sign(center.Width - rectangle.X);
-                var deltaY = Math.Sign(center.Height - rectangle.Y);
-                while (deltaX != 0 && !rectangles.Any(rect => rect.IntersectsWith(tempRectangle)))
+                rectangle.X += deltaX;
+                if (deltaX != 0 && !rectangles.Any(rect => rect.IntersectsWith(rectangle)))
                 {
-                    rectangle = tempRectangle;
-                    tempRectangle.X += deltaX;
                     deltaX = Math.Sign(center.Width - rectangle.X);
+                    continue;
                 }
-                additionalLoop = false;
 
-                while (deltaY != 0 && !rectangles.Any(rect => rect.IntersectsWith(tempRectangle)))
+                rectangle.X -= deltaX;
+                rectangle.Y += deltaY;
+                if (deltaY != 0 && !rectangles.Any(rect => rect.IntersectsWith(rectangle)))
                 {
-                    rectangle = tempRectangle;
-                    tempRectangle.Y += deltaY;
                     deltaY = Math.Sign(center.Height - rectangle.Y);
-                    additionalLoop = true;
+                    continue;
                 }
+
+                rectangle.Y -= deltaY;
+                break;
             }
 
             return rectangle;
