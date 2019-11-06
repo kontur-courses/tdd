@@ -24,9 +24,9 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void PutNextRectangle_ThrowArgumentException_WhenSizeIsEmpty()
+        public void PutNextRectangle_ThrowArgumentException_WhenSizeIsZero()
         {
-            Action act = () => cloudLayouter.PutNextRectangle(Size.Empty);
+            Action act = () => cloudLayouter.PutNextRectangle(new Size(0, 0));
             act.Should().Throw<ArgumentException>();
         }
 
@@ -43,9 +43,9 @@ namespace TagsCloudVisualization
         [TestCase(0, 0)]
         [TestCase(2, 3)]
         [TestCase(-4, 1)]
-        public void PutNextRectangle_ShouldBePutFirstRectangle_InCenter(int x, int y)
+        public void PutNextRectangle_ShouldBePutFirstRectangle_InCenter(int centerX, int centerY)
         {
-            var center = new Point(x, y);
+            var center = new Point(centerX, centerY);
             var cloudLayouter = new CircularCloudLayouter(center, new RectangularSpiral());
 
             var firstRectangle = cloudLayouter.PutNextRectangle(new Size(1, 1));
@@ -53,15 +53,22 @@ namespace TagsCloudVisualization
             firstRectangle.Location.Should().Be(center);
         }
 
-        [Test]
-        public void PutNextRectangle_FirstAndSecondRectangles_Should_NotIntersect()
+        [TestCase(1,1,1,1)]
+        [TestCase(5,10,10,5)]
+        [TestCase(10,5,5,10)]
+        [TestCase(100,100,1,1)]
+        [TestCase(1,1,100,100)]
+        public void PutNextRectangle_FirstAndSecondRectangles_Should_NotIntersect(int rect1Width, int rect1Height, int rect2Width, int rect2Height)
         {
-            var firstRectangle = cloudLayouter.PutNextRectangle(new Size(3, 4));
-            var secondRectangle = cloudLayouter.PutNextRectangle(new Size(10, 6));
+            var firstRectangle = cloudLayouter.PutNextRectangle(new Size(rect1Width, rect1Height));
+            var secondRectangle = cloudLayouter.PutNextRectangle(new Size(rect2Width, rect2Height));
 
-            firstRectangle.IntersectsWith(secondRectangle).Should().BeFalse();
+            //firstRectangle.IntersectsWith(secondRectangle).Should().BeFalse();.
+            if (firstRectangle.IntersectsWith(secondRectangle))
+                Assert.Fail($"rectangle: {firstRectangle} is intersect with rectangle {secondRectangle}");
         }
 
+        [Category("long tests")]
         [TestCase(10)]
         [TestCase(25)]
         [TestCase(50)]
@@ -71,15 +78,17 @@ namespace TagsCloudVisualization
             var random = new Random();
             var rectangles = new List<Rectangle>();
 
-            for (int i = 0; i < countRectangles; i++)
-            {
-                var size = new Size(random.Next(10, 20), random.Next(10, 20));
-                rectangles.Add(cloudLayouter.PutNextRectangle(size));
-            }
+            for (int stage = 0; stage < 50; stage++) // каждое countRectabgle проверяется в 50 проходов
+                for (int i = 0; i < countRectangles; i++)
+                {
+                    var size = new Size(random.Next(10, 20), random.Next(10, 20));
+                    rectangles.Add(cloudLayouter.PutNextRectangle(size));
+                }
 
             for (int i = 0; i < rectangles.Count; i++)
                 for (int j = i + 1; j < rectangles.Count; j++)
-                    rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse();
+                    if (rectangles[i].IntersectsWith(rectangles[j]))
+                        Assert.Fail($"rectangle: {rectangles[i]} is intersect with rectangle {rectangles[j]}");
         }
     }
 }
