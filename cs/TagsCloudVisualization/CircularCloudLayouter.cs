@@ -12,10 +12,10 @@ namespace TagsCloudVisualization
         private readonly List<Rectangle> rectangles;
 
         public CircularCloudLayouter(Point center, 
-            double stepLength=0.1, int amountOfSubsteps=1000)
+            double stepLength=0.1, double angleDelta = 2 * Math.PI / 1000)
         {
             this.center = center;
-            spiral = new ArchimedeanSpiral(center, stepLength, amountOfSubsteps);
+            spiral = new ArchimedeanSpiral(center, stepLength, angleDelta);
             rectangles = new List<Rectangle>();
         }
 

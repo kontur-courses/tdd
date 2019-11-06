@@ -14,17 +14,18 @@ namespace TagsCloudVisualizationTests
     {
         private readonly Point center = new Point(0, 0);
         private readonly double stepLength = 0.1;
+        private readonly double angleDelta = 2 * Math.PI / 1000;
         private readonly int amountOfSubsteps = 1000;
 
-        [TestCase(0, 1, TestName = "{m}ZeroStepLength")]
-        [TestCase(1, 0, TestName = "{m}ZeroAmountOfSubsteps")]
-        [TestCase(-1, 1, TestName = "{m}NegativeStepLength")]
-        [TestCase(1, -1, TestName = "{m}NegativeAmountOfSubsteps")]
+        [TestCase(0, 0.1, TestName = "{m}ZeroStepLength")]
+        [TestCase(1, 0, TestName = "{m}ZeroAngleDelta")]
+        [TestCase(-1, 0.1, TestName = "{m}NegativeStepLength")]
+        [TestCase(1, -0.1, TestName = "{m}NegativeAngleDelta")]
         public void ThrowArgumentException_On(double stepLength,
-            int amountOfSubsteps)
+            double angleDelta)
         {
             Action act = () => new ArchimedeanSpiral(center, 
-                stepLength, amountOfSubsteps);
+                stepLength, angleDelta);
             act.Should().Throw<ArgumentException>();
         }
 
@@ -33,20 +34,21 @@ namespace TagsCloudVisualizationTests
         public void ReturnCenter_AsFirstPoint(int x, int y)
         {
             var center = new Point(x, y);
-            var spiral = new ArchimedeanSpiral(center, stepLength, amountOfSubsteps);
+            var spiral = new ArchimedeanSpiral(center, stepLength, angleDelta);
 
             spiral.CalculateNextPoint().Should().BeEquivalentTo(center, 
                 "first point must be the center of the spiral");
         }
 
-        [TestCase(5, 1)]
-        [TestCase(0.1, 1000)]
-        public void PutPointsOnStepLengthDistance_AfterAmountOfSteps(
-            double stepLength, int amountOfSubsteps)
+        [TestCase(5, 2 * Math.PI)]
+        [TestCase(0.1, 2 * Math.PI/ 1000)]
+        public void PutPointsOnStepLengthDistance_AfterFullCircle(
+            double stepLength, double deltaAngle)
         {
-            var spiral = new ArchimedeanSpiral(center, stepLength, amountOfSubsteps);
-
+            var spiral = new ArchimedeanSpiral(center, stepLength, deltaAngle);
             var firstPoint = spiral.CalculateNextPoint();
+
+            var amountOfSubsteps = 2 * Math.PI / deltaAngle;
             Point secondPoint = new Point();
             while (amountOfSubsteps-- > 0)
                 secondPoint = spiral.CalculateNextPoint();
