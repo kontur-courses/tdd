@@ -128,5 +128,16 @@ namespace TagsCloudVisualization
             layouter.PutNextRectangle(new Size(10, 30)).Should().Be(new Rectangle(new Point(-15, -15), new Size(10, 30)));
         }
 
+        [Test]
+        public void AddingSquareAndBiggerSquare_ShouldNotIntersect()
+        {
+            var center = new Point(0, 0);
+            var squareSize = new Size(10, 10);
+            var layouter = new CircularCloudLayouter(center);
+            var rect1=layouter.PutNextRectangle(squareSize);
+            var rect2 = layouter.PutNextRectangle(new Size(20,20));
+            rect1.IntersectsWith(rect2).Should().Be(false);
+        }
+
     }
 }

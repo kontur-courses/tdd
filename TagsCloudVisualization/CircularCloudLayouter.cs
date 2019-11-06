@@ -12,8 +12,6 @@ namespace TagsCloudVisualization
         
 
         private Point center;
-        private List<Rectangle> rectangles = new List<Rectangle>();
-        //private HashSet<Angle> angles;
         private HashSet<Segment> Segments;
         private bool isFirstRectangle;
         public CircularCloudLayouter(Point center)
@@ -60,8 +58,46 @@ namespace TagsCloudVisualization
             Point minCoord = new Point();
             foreach (var segment in Segments)
             {
-                if (segment.Length < rectangleSize.Width)// на самом деле есть и другие варианты но пока так
-                    continue;
+                if (((segment.type==Segment.Type.Top || segment.type == Segment.Type.Bottom) && segment.Length < rectangleSize.Width)
+                    || ((segment.type == Segment.Type.Left || segment.type == Segment.Type.Right) && segment.Length < rectangleSize.Height))
+                {//здесь обрабатываются случаи когда прямоугольник вылезает за пределы отрезка, будет реализовано позднее
+                    //continue;//stub
+                    if (segment.type == Segment.Type.Top)//аналогичные проверки будут для всех типов
+                    {
+                        var leftBorder = Segments
+                            .Select(a => a)
+                            .Where(b =>
+                            b.type == Segment.Type.Right
+                            && b.start.X < segment.start.X
+                            && ((b.start.Y > segment.start.Y-rectangleSize.Height && b.start.Y< segment.start.Y)
+                            || (b.end.Y > segment.start.Y - rectangleSize.Height && b.end.Y<segment.start.Y)
+                            ||(b.start.Y< segment.start.Y - rectangleSize.Height && b.end.Y>= segment.start.Y)))
+                            .OrderBy(c=>c.start.X)
+                            .FirstOrDefault();
+                        int leftBorderX;
+                        if (leftBorder == null)
+                            leftBorderX = int.MinValue;
+                        else
+                            leftBorderX = leftBorder.start.X;
+                        var rightBorder = Segments
+                            .Select(a => a)
+                            .Where(b =>
+                            b.type == Segment.Type.Left
+                            && b.start.X > segment.end.X
+                            && ((b.start.Y > segment.end.Y - rectangleSize.Height && b.start.Y < segment.end.Y)
+                            || (b.end.Y > segment.end.Y - rectangleSize.Height && b.end.Y < segment.end.Y)
+                            || (b.start.Y < segment.end.Y - rectangleSize.Height && b.end.Y >= segment.start.Y)))
+                            .OrderByDescending(c => c.start.X)
+                            .FirstOrDefault();
+                        int rightBorderX;
+                        if (rightBorder == null)
+                            rightBorderX = int.MaxValue;
+                        else
+                            rightBorderX = rightBorder.start.X;
+                        var updatedSegment = new Segment(leftBorderX, segment.start.Y, rightBorderX, segment.end.Y, segment.type);
+                        SearchMinDistanceTop(ref minSegment, ref minDistance, ref minCoord, updatedSegment, rectangleSize);
+                    }
+                }
                 if (segment.type == Segment.Type.Top)
                 {
                     SearchMinDistanceTop(ref minSegment, ref minDistance, ref minCoord, segment, rectangleSize);
@@ -85,6 +121,8 @@ namespace TagsCloudVisualization
             Segments.Add(new Segment(minCoord.X, minCoord.Y, minCoord.X, minCoord.Y + rectangleSize.Height, Segment.Type.Left));
             Segments.Add(new Segment(minCoord.X+rectangleSize.Width, minCoord.Y, minCoord.X + rectangleSize.Width, minCoord.Y + rectangleSize.Height, Segment.Type.Right));
             StackSegments();
+            if (minSegment == null)
+                throw new ArgumentException("Place for appending not found");
             return new Rectangle(minCoord, rectangleSize);
         }
 
