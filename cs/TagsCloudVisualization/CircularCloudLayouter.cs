@@ -1,24 +1,18 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using NUnit.Framework;
 
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private double Alpha { get; set; }
-        public List<Rectangle> Rectangles { get;}
-        public Point Center { get;}
+        public List<Rectangle> Rectangles { get; }
+        public Point Center { get; }
         public CircularCloudLayouter(Point center)
         {
             Center = center;
             Rectangles = new List<Rectangle>();
-            Alpha = 0.0;
         }
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
@@ -32,29 +26,48 @@ namespace TagsCloudVisualization
                 Rectangles.Add(rectangle);
                 return rectangle;
             }
+
+            var spiral = new ArchimedeanSprial(0, Math.PI / 12, Math.PI / 12, 0.4, Center, rectangleSize);
             while (true)
             {
-                Alpha += Math.PI / 12;
-                var intersected = false;
-                var r = Alpha*0.4;
-                var x = (int)(r * Math.Cos(Alpha)) - rectangleSize.Width / 2 + Center.X;
-                var y = (int)(r * Math.Sin(Alpha)) + rectangleSize.Height / 2 + Center.Y;
-                var rectangle = new Rectangle(new Point(x, y), rectangleSize);
-                foreach (var rec in Rectangles)
-                    if (AreIntersected(rec, rectangle))
-                        intersected = true;
-                if (!intersected)
+                var rectangle = new Rectangle(spiral.GetNextCoordinate(), rectangleSize);
+                var intersect = Rectangles.Any(rec => rec.IntersectsWith(rectangle));
+                if (!intersect)
                 {
                     Rectangles.Add(rectangle);
                     return rectangle;
                 }
             }
         }
+    }
 
-        public bool AreIntersected(Rectangle r1, Rectangle r2)
+    public class ArchimedeanSprial
+    {
+        public double A { get; }
+        public double Alpha { get; private set; }
+        public double Step { get; }
+        public double DensityCoefficient { get; }
+        public Point Center { get; }
+        private double RadiusVector { get; set; }
+        private Size RectangleSize { get; }
+
+        public ArchimedeanSprial(double a, double alpha, double step, double densityCoefficient, Point center, Size rectangleSize)
         {
-            return r1.Width + r2.Width >= Math.Max(r2.Left + r2.Width - r1.Left, r1.Left + r1.Width - r2.Left) &&
-                   (r1.Height + r2.Height >= Math.Max(r2.Height + r2.Top - r1.Top, r1.Height + r1.Top - r2.Top));
+            A = a;
+            Alpha = alpha;
+            Step = step;
+            DensityCoefficient = densityCoefficient;
+            Center = center;
+            RectangleSize = rectangleSize;
+        }
+
+        public Point GetNextCoordinate()
+        {
+            Alpha += Step;
+            RadiusVector = Alpha * DensityCoefficient;
+            var x = (int)(RadiusVector * Math.Cos(Alpha)) - RectangleSize.Width / 2 + Center.X;
+            var y = (int)(RadiusVector * Math.Sin(Alpha)) + RectangleSize.Height / 2 + Center.Y;
+            return new Point(x, y);
         }
     }
 }

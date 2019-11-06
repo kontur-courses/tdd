@@ -1,27 +1,28 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
 namespace TagsCloudVisualization
 {
     [TestFixture]
-    class TagsCloudShould
+    class ArchitectureOfTagsCloudShould
     {
         private CircularCloudLayouter basicLayouter;
-
-        [TestCase(0, 0)]
-        public void ShouldCorrectlyCreated_When_Create(int x, int y)
-        {
-            var circularLayouter = new CircularCloudLayouter(new Point(x, y));
-            circularLayouter.Center.Should().Be(new Point(x, y));
-
-        }
 
         [SetUp]
         public void SetUp()
         {
             basicLayouter = new CircularCloudLayouter(new Point(0, 0));
+        }
+
+        [TestCase(0, 0)]
+        public void ShouldHaveCorrectCenterCoordinates_When_Create(int x, int y)
+        {
+            var circularLayouter = new CircularCloudLayouter(new Point(x, y));
+            circularLayouter.Center.Should().Be(new Point(x, y));
+
         }
 
         [Test]
@@ -49,14 +50,6 @@ namespace TagsCloudVisualization
             basicLayouter.PutNextRectangle(new Size(w, h)).Location.Should().Be(new Point(x, y));
         }
 
-        [TestCase(-5,5,10,10,-5,-6,10,10,ExpectedResult = false)]
-        [TestCase(-5,5,10,10,-4,4,2,2,ExpectedResult = true)]
-        [TestCase(-5,5,10,10,-10,3,30,2,ExpectedResult = true)]
-        [TestCase(-5,5,10,10,5,-5,10,10,ExpectedResult = true)]
-        public bool MethodAreIntersected_Should_WorkCorrectly(int x1,int y1,int w1,int h1,int x2,int y2,int w2,int h2)
-        {
-            return basicLayouter.AreIntersected(new Rectangle(x1, y1, w1, h1), new Rectangle(x2, y2, w2, h2));
-        }
         [Test]
         public void AllRectangles_Should_BeInRectanglesList()
         {
@@ -74,10 +67,13 @@ namespace TagsCloudVisualization
         {
             for (int i = 0; i < 50; i++)
                 basicLayouter.PutNextRectangle(new Size(10, 10));
-            for (int i = 0; i < basicLayouter.Rectangles.Count; i++)
-                for (int j = 0; j < basicLayouter.Rectangles.Count; j++)
-                    if (i != j)
-                        Assert.IsFalse(basicLayouter.AreIntersected(basicLayouter.Rectangles[i], basicLayouter.Rectangles[j]));
+            basicLayouter.Rectangles
+                .Select(rec =>
+                    basicLayouter.Rectangles
+                        .Where(r => r != rec)
+                        .Any(a => rec.IntersectsWith(a)))
+                .Any(rec => rec).Should().BeFalse();
+
         }
 
         [Test]
@@ -86,10 +82,12 @@ namespace TagsCloudVisualization
             Random random = new Random();
             for (int i = 0; i < 50; i++)
                 basicLayouter.PutNextRectangle(new Size(random.Next(1, 50), random.Next(1, 50)));
-            for (int i = 0; i < basicLayouter.Rectangles.Count; i++)
-                for (int j = 0; j < basicLayouter.Rectangles.Count; j++)
-                    if (i != j)
-                        Assert.IsFalse(basicLayouter.AreIntersected(basicLayouter.Rectangles[i], basicLayouter.Rectangles[j]));
+            basicLayouter.Rectangles
+                .Select(rec =>
+                    basicLayouter.Rectangles
+                        .Where(r => r != rec)
+                        .Any(a => rec.IntersectsWith(a)))
+                .Any(rec => rec).Should().BeFalse();
         }
     }
 }
