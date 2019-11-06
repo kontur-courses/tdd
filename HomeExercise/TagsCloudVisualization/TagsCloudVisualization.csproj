@@ -54,10 +54,13 @@
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="CircularCloudLayouter_Tests.cs" />
+    <Compile Include="ExMath.cs" />
+    <Compile Include="ExMath_Tests.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RectangleExtensions_Tests.cs" />
+    <Compile Include="RectangleExtentions.cs" />
     <Compile Include="Spiral.cs" />
-    <Compile Include="Spiral_Tests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

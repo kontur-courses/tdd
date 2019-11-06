@@ -5,20 +5,8 @@ using NUnit.Framework;
 
 namespace TagsCloudVisualization
 {
-	[TestFixture]
-	public class Spiral_Tests
+	public class ExMath_Tests
 	{
-		[TestCase(0, 0, 0.0, TestName = "Zero size")]
-		[TestCase(2, 2, 0.1592, TestName = "Square")]
-		[TestCase(5, 3, 0.4775, TestName = "Horizontal rectangle")]
-		[TestCase(3, 5, 0.4775, TestName = "Vertical rectangle")]
-		public void CalculateDensity_ReturnsCorrectDensity(int width, int height, double expectedDensity)
-		{
-			var actualDensity = Spiral.CalculateDensity(new Size(width, height));
-			actualDensity = Math.Round(actualDensity, 4);
-			actualDensity.Should().Be(expectedDensity);
-		}
-
 		[TestCase(1.1, 0, 2, TestName = "Positive value and center at 0")]
 		[TestCase(-1.1, 0, -2, TestName = "Negative value and center at 0")]
 		[TestCase(0, 0, 0, TestName = "Zero value and center at 0")]
@@ -32,7 +20,7 @@ namespace TagsCloudVisualization
 		[TestCase(-5.0, -5, -5, TestName = "Negative value equals to center when center at -5")]
 		public void RoundCoordinate_RoundsFromCenter(double value, int centerCoordinate, int expectedValue)
 		{
-			var actualValue = Spiral.RoundCoordinate(value, centerCoordinate);
+			var actualValue = ExMath.RoundCoordinate(value, centerCoordinate);
 			actualValue.Should().Be(expectedValue);
 		}
 
@@ -49,9 +37,9 @@ namespace TagsCloudVisualization
 																	int expectedY)
 		{
 			var expectedLocation = new Point(expectedX, expectedY);
-			var center = new Point(centerX, centerX);
+			var center = new Point(centerX, centerY);
 			
-			var actualValue = Spiral.ToCartesianCoordinateSystem(radius, angle, center);
+			var actualValue = ExMath.ToCartesianCoordinateSystem(radius, angle, center);
 			actualValue.Should().Be(expectedLocation);
 		}
 	}

@@ -12,7 +12,7 @@ namespace TagsCloudVisualization
         private CircularCloudLayouter _circularCloudLayouter;
 
         [SetUp]
-        public void StartUp() => _circularCloudLayouter = new CircularCloudLayouter(new Point());
+        public void StartUp() => _circularCloudLayouter = new CircularCloudLayouter();
 
         [Test]
         public void PutNextRectangle_SavesPutRectangles()
@@ -29,23 +29,23 @@ namespace TagsCloudVisualization
         [TestCase(1, 1, 2, 2, 0, 2, TestName = "Center at (1, 1)")]
         [TestCase(0, 0, 3, 5, -1, 2, TestName = "Odd width and height")]
         [TestCase(0, 0, 0, 0, 0, 0, TestName = "Zero size")]
-        public void PutNextRectangle_PutsFirstRectangleInCenter(int xCenter, 
-                                                                int yCenter,
+        public void PutNextRectangle_PutsFirstRectangleInCenter(int centerX, 
+                                                                int centerY,
                                                                 int width,
                                                                 int height,
                                                                 int expectedX,
                                                                 int expectedY)
         {
-            var circularCloudLayouter = new CircularCloudLayouter(new Point(xCenter, yCenter));
+            var circularCloudLayouter = new CircularCloudLayouter(new Point(centerX, centerY));
             var rectangleSize = new Size(width, height);
             var expectedLocation = new Point(expectedX, expectedY);
             var actualRectangle = circularCloudLayouter.PutNextRectangle(rectangleSize);
             actualRectangle.Location.Should().Be(expectedLocation);
         }
 
-        [TestCase(-1, 0, TestName = "Negative width")]
-        [TestCase(0, -1, TestName = "Negative height")]
-        [TestCase(-1, -1, TestName = "Negative width and height")]
+        [TestCase(-1, 0, TestName = "Negative rectangle width")]
+        [TestCase(0, -1, TestName = "Negative rectangle height")]
+        [TestCase(-1, -1, TestName = "Negative rectangle width and height")]
         public void PutNextRectangle_ThrowsExceptionOnNegativeSizeValues(int width, int height)
         {
             var firstRectangleSize = new Size(width, height);
@@ -53,23 +53,6 @@ namespace TagsCloudVisualization
             action.Should().Throw<ArgumentException>();
         }
 
-        [TestCase(0, 0, TestName = "Zero size")]
-        [TestCase(2, 2, TestName = "Square")]
-        [TestCase(5, 3, TestName = "Horizontal rectangle")]
-        [TestCase(3, 5, TestName = "Vertical rectangle")]
-        public void InitializeSpiral_InitSpiralWithCorrectData(int width, int height)
-        {
-            var rectangleSize = new Size(width, height);
-            const double angleStep = Math.PI / 4;
-            var firstLayerRadius = rectangleSize.Width / 2 + 1;
-            var initialDensity = Spiral.CalculateDensity(rectangleSize);
-            var expectedSpiral = new Spiral(angleStep, firstLayerRadius, initialDensity, new Point());
-            
-            _circularCloudLayouter.InitializeSpiral(rectangleSize);
-            var actualSpiral = _circularCloudLayouter._spiral;
-            actualSpiral.Should().Be(expectedSpiral);
-        }
-        
         [TestCase(2, 2, TestName = "Squares")]
         [TestCase(5, 3, TestName = "Horizontal rectangles")]
         [TestCase(3, 5, TestName = "Vertical rectangles")]
@@ -77,9 +60,9 @@ namespace TagsCloudVisualization
         public void RectanglesShouldNotIntersect(int width, int height)
         {
             var rectangleSize = new Size(width, height);
-            for (var i = 0; i < 20; i++)
+            for (var i = 0; i < 5; i++)
                 _circularCloudLayouter.PutNextRectangle(rectangleSize);
-            var expectedResult = new bool[190];
+            var expectedResult = new bool[10];
 
             var filledAreas = _circularCloudLayouter.Rectangles;
             var actualResult = filledAreas
@@ -89,29 +72,18 @@ namespace TagsCloudVisualization
             actualResult.Should().BeEquivalentTo(expectedResult);
         }
 
-        [TestCase(0, 0, -2, 0, 2, 2, -3, -1, TestName = "Square at (-2, 0) when center at (0, 0)")]
-        [TestCase(0, 0, 0, 2, 2, 2, 1, 3, TestName = "Square at (0, 2) when center at (0, 0)")]
-        [TestCase(0, 0, -1, 1, 2, 2, -2, 0, TestName = "Square at (-1, 1) when center at (0, 0)")]
-        [TestCase(1, 1, 1, 3, 2, 2, 2, 4, TestName = "Square at (1, 3) when center at (1, 1)")]
-        [TestCase(1, 1, -1, 1, 2, 2, -2, 0, TestName = "Square at (-1, 1) when center at (1, 1)")]
-        [TestCase(0, 0, 0, 2, 3, 2, 1, 3, TestName = "Rectangle(3,2) at (0, 2) when center at (0, 0)")]
-        [TestCase(0, 0, -3, 2, 5, 3, -4, 3, TestName = "Rectangle(5,3) at (-3, 2) when center at (0, 0)")]
-        [TestCase(1, 1, -1, 3, 6, 4, 0, 2, TestName = "Rectangle(6,4) at (-1, 3) when center at (1, 1)")]
-        public void MoveFromCenter_ReturnsCorrectValue(int centerX,
-                                                        int centerY,
-                                                        int xPos, 
-                                                        int yPos, 
-                                                        int width,
-                                                        int height,
-                                                        int expectedX,
-                                                        int expectedY)
+        [TestCase(1, 0, 0, 1, TestName = "Position1 grater than position2 when center at 0 => 1")]
+        [TestCase(-1, 0, 0, -1, TestName = "Position1 less than position2 when center at 0 => -1")]
+        [TestCase(0, 0, 1, 1, TestName = "Position1 and position2 are 0 when center at 1 => 1")]
+        [TestCase(0, 0, -1, -1, TestName = "Position1 and position2 are 0 when center at -1 => -1")]
+        public void GetDirectionFromCenter_ReturnsCorrectValue(int coordinate1, 
+                                                                int coordinate2, 
+                                                                int centerCoordinate,
+                                                                int expectedValue)
         {
-            var rectangle = new Rectangle(xPos, yPos, width, height);
-            var center = new Point(centerX, centerY);
-            var expectedLocation = new Point(expectedX, expectedY);
-            
-            var actualRectangle = CircularCloudLayouter.MoveFromCenter(rectangle, 1, center);
-            actualRectangle.Location.Should().Be(expectedLocation);
+            var actualValue = CircularCloudLayouter.GetDirectionFromCenter(coordinate1, coordinate2, centerCoordinate);
+            actualValue.Should().Be(expectedValue);
         }
+           
     }
 }

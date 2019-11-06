@@ -8,14 +8,19 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         private const double AngleStep = Math.PI / 4;
-        private const int CorrectionMoveDistance = 1;
 
-        internal Spiral _spiral;
+        private Spiral _spiral { get; }
         private readonly Point _center;
 
-        public readonly List<Rectangle> Rectangles = new List<Rectangle>();
-        
-        public CircularCloudLayouter(Point center) => _center = center;
+        public List<Rectangle> Rectangles { get; } = new List<Rectangle>();
+
+        public CircularCloudLayouter(Point center)
+        {
+            _center = center;
+            _spiral = new Spiral(AngleStep, _center);
+        }
+
+        public CircularCloudLayouter() => _spiral = new Spiral(AngleStep, _center);
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
@@ -24,21 +29,14 @@ namespace TagsCloudVisualization
 
             var nextLocation = MoveFromItselfCenter(_center, rectangleSize);
             if (Rectangles.Count == 0)
-                InitializeSpiral(rectangleSize);
+                _spiral.FirstLayerRadius = rectangleSize.Width / 2 + 1;
             else
                 nextLocation = CorrectLocation(_spiral.GetNextLocation(), rectangleSize);
 
             var newRectangle = new Rectangle(nextLocation, rectangleSize);
-            _spiral.UpdateDensity(rectangleSize);
+            _spiral.CurrentDensity = Math.Round(rectangleSize.GetDiagonalLength() / 2);
             Rectangles.Add(newRectangle);
             return newRectangle;
-        }
-
-        internal void InitializeSpiral(Size rectangleSize)
-        {
-            var firstLayerRadius = rectangleSize.Width / 2 + 1;
-            var density = Spiral.CalculateDensity(rectangleSize);
-            _spiral = new Spiral(AngleStep, firstLayerRadius, density, _center);
         }
 
         private static Point MoveFromItselfCenter(Point location, Size rectangleSize)
@@ -51,25 +49,52 @@ namespace TagsCloudVisualization
         private Point CorrectLocation(Point location, Size size)
         {
             var rectangle = new Rectangle(location, size);
-            while (CheckIntersections(rectangle))
-                rectangle = MoveFromCenter(rectangle, CorrectionMoveDistance, _center);
-            return rectangle.Location;
+            if (!CheckIntersections(rectangle, out var intersectedRectangles))
+                return location;
+            foreach (var intersectedRectangle in intersectedRectangles)
+            {
+                var correctionOffset = GetCorrectionOffset(intersectedRectangle, rectangle);
+                location.Offset(correctionOffset);
+            }
+
+            return location;
         }
 
-        private bool CheckIntersections(Rectangle rectangle) => 
-            Rectangles.Where(rectangle.IntersectsWith).ToList().Any();
-
-        internal static Rectangle MoveFromCenter(Rectangle rectangle, int moveDistance, Point center)
+        private bool CheckIntersections(Rectangle rectangle, 
+                                        out List<Rectangle> intersectedRectangles)
         {
-            var rectCenterX = rectangle.X + rectangle.Width / 2;
-            var rectCenterY = rectangle.Y - rectangle.Height / 2;
-            var xOffset = moveDistance * GetMoveDirection(rectCenterX, center.X);
-            var yOffset = moveDistance * GetMoveDirection(rectCenterY, center.Y);
-            rectangle.Offset(xOffset, yOffset);
-            return rectangle;
+            intersectedRectangles = Rectangles.Where(rectangle.IntersectsWith).ToList();
+            return intersectedRectangles.Any();
         }
 
-        private static int GetMoveDirection(int coordinate, int centerCoordinate) => 
-            coordinate > centerCoordinate ? 1 : -1;
+        private Point GetCorrectionOffset(Rectangle oldRectangle, Rectangle newRectangle)
+        {
+            var offsetDirection = GetOffsetDirection(oldRectangle, newRectangle, _center);
+            int xOffset, yOffset;
+            
+            if (offsetDirection.X >= 0) xOffset = oldRectangle.Right - newRectangle.Left;
+            else xOffset = newRectangle.Right - oldRectangle.Left;
+            if (offsetDirection.Y >= 0) yOffset = oldRectangle.Top - newRectangle.Bottom;
+            else yOffset = newRectangle.Top - oldRectangle.Bottom;
+            
+            xOffset = Math.Abs(xOffset) * offsetDirection.X;
+            yOffset = Math.Abs(yOffset) * offsetDirection.Y;
+            return new Point(xOffset, yOffset);
+        }
+
+        private static Point GetOffsetDirection(Rectangle oldRectangle, Rectangle newRectangle, Point center)
+        {
+            var oldRectCenter = oldRectangle.GetCenter();
+            var newRectCenter = newRectangle.GetCenter();
+            var xDirection = GetDirectionFromCenter(newRectCenter.X, oldRectCenter.X, center.X);
+            var yDirection = GetDirectionFromCenter(newRectCenter.Y, oldRectCenter.Y, center.Y);
+            return new Point(xDirection, yDirection);
+        }
+
+        internal static int GetDirectionFromCenter(int coordinate1, int coordinate2, int centerCoordinate)
+        {
+            var direction = Math.Sign(coordinate1 - coordinate2);
+            return direction == 0 ? Math.Sign(centerCoordinate - coordinate1) : direction;
+        }
     }
 }
