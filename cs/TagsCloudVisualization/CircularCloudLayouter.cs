@@ -10,7 +10,7 @@ namespace TagsCloudVisualization
     class CircularCloudLayouter
     {
         private Point center_cloud;
-        private List<Rectangle> rectangles;
+        public List<Rectangle> rectangles { get; }
         private const double radiusStep = 1;
         private const double angleStep = 1;
         private double angle = 1;
@@ -50,16 +50,15 @@ namespace TagsCloudVisualization
 
         private Rectangle GetRectangle(Size rectangleSize)
         {
-            var x = (int)(Math.Cos(angle) * radiusStep * angle + center_cloud.X);
-            var y = (int)(Math.Sin(angle) * radiusStep * angle + center_cloud.Y);
-            var rectangle = new Rectangle(new Point(x, y), rectangleSize);
-            angle += angleStep / angle;
-            return rectangle;
+            return new Rectangle(GetNextPoint(), rectangleSize);
         }
 
-        public Rectangle[] GetRectangles()
+        private Point GetNextPoint()
         {
-            return rectangles.ToArray();
+            var x = (int)(Math.Cos(angle) * radiusStep * angle + center_cloud.X);
+            var y = (int)(Math.Sin(angle) * radiusStep * angle + center_cloud.Y);
+            angle += angleStep / angle;
+            return new Point(x, y);
         }
     }
 }

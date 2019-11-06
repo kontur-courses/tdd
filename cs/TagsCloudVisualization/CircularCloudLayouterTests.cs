@@ -71,6 +71,7 @@ namespace TagsCloudVisualization
                 var rectangle = cloud.PutNextRectangle(new Size(10, 20));
                 rectangles.Append(rectangle);
             }
+
             foreach (var rectangle1 in rectangles)
             {
                 foreach (var rectangle2 in rectangles)
@@ -81,31 +82,16 @@ namespace TagsCloudVisualization
             }
         }
 
-        [Test]
-        public void GetRectangles_5Rectangles_ArraysShoudBeEqual()
-        {
-            var center = new Point(10, 10);
-            var cloud = new CircularCloudLayouter(center);
-            var count = 5;
-            var rectangles = new Rectangle[count];
-
-            for (var i = 0; i < count; i++)
-            {
-                var rectangle = cloud.PutNextRectangle(new Size(10, 20));
-                rectangles[i] = rectangle;
-            }
-
-            cloud.GetRectangles().Should().Equal(rectangles);
-        }
-
         [TestCase(-1, 1)]
         [TestCase(1, -1)]
         public void PutNextRectangle_NegativeSize_ArgumentException(int width, int height)
         {
             var center = new Point(10, 10);
             var cloud = new CircularCloudLayouter(center);
-            var putNextRectangle = new Action(() => cloud.PutNextRectangle(new Size(width, height)));
             var message = "The dimensions of the rectangle must be greater than or equal to zero";
+
+            var putNextRectangle = new Action(() => cloud.PutNextRectangle(new Size(width, height)));
+            
             putNextRectangle.Should().Throw<ArgumentException>().WithMessage(message);
         }
     }
