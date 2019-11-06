@@ -6,16 +6,16 @@ using NUnit.Framework;
 
 namespace TagCloud.Tests
 {
-    internal class CenterTesting
+    internal class CenterTesting : OnFailDrawer
     {
-        [TestCaseSource(nameof(_nonCoordinateCenter))]
+        [TestCaseSource(nameof(coordinateCenter))]
         public void Should_CorrectPlaceInstance_WithDifferentCenterPoints(Point center)
         {
             Action a = () => new CircularCloudLayouter(center);
             a.Should().NotThrow();
         }
 
-        [TestCaseSource(nameof(_nonCoordinateCenter))]
+        [TestCaseSource(nameof(coordinateCenter))]
         public void Should_LocateFirstRectangle_OnSpecifiedByYCenter(Point center)
         {
             var layouter = new CircularCloudLayouter(center);
@@ -25,7 +25,7 @@ namespace TagCloud.Tests
                 .Be(center.Y, "Y coords not equal");
         }
         
-        [TestCaseSource(nameof(_nonCoordinateCenter))]
+        [TestCaseSource(nameof(coordinateCenter))]
         public void Should_LocateFirstRectangle_OnSpecifiedByXCenter(Point center)
         {
             var layouter = new CircularCloudLayouter(center);
@@ -36,7 +36,7 @@ namespace TagCloud.Tests
         }
         
 
-        private static IEnumerable<TestCaseData> _nonCoordinateCenter = new List<TestCaseData>
+        private static IEnumerable<TestCaseData> coordinateCenter = new List<TestCaseData>
         {
             new TestCaseData(new Point(-1, 0)).SetName("{m}: x: -1, y = 0"),
             new TestCaseData(new Point(-1, 1)).SetName("{m}: x: -1, y = 1"),

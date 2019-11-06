@@ -7,7 +7,7 @@ using NUnit.Framework.Interfaces;
 
 namespace TagCloud.Tests
 {
-    internal class TileTestingAt100OneSideSquares
+    internal class TileTestingAt100OneSideSquares : OnFailDrawer
     {
         private CircularCloudLayouter cloudLayouter;
         private List<Rectangle> tiledRectagnles;
@@ -16,32 +16,11 @@ namespace TagCloud.Tests
         [SetUp]
         public void SetUp()
         {
-            cloudLayouter = new CircularCloudLayouter(OrientationTestingOnOneSizeSquares.CenterPoint);
+            cloudLayouter = new CircularCloudLayouter(TestingDegenerateSize.CenterPoint);
             tiledRectagnles = Enumerable
                 .Range(0, ElementsAmount)
-                .Select(number => cloudLayouter.PutNextRectangle(OrientationTestingOnOneSizeSquares.SingleSize))
+                .Select(number => cloudLayouter.PutNextRectangle(TestingDegenerateSize.SingleSize))
                 .ToList();
-        }
-        
-        [TearDown]
-        public void TearDown()
-        {
-            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
-                return;
-            var fname = $"{TestContext.CurrentContext.Test.FullName}.png";
-            OnFailDrawer.DrawOriginOrientedRectangles(
-                new Size(1200, 1200),
-                cloudLayouter
-                    .GetAllRectangles()
-                    .Select(rect => new Rectangle(600 + rect.X * 45, 600 + rect.Y * 45, 40, 40)),
-                fname);
-            TestContext.WriteLine($"Tag cloud visualisation saved to file: '{fname}'");
-        }
-
-        [Test, Category("Fall test")]
-        public void Should_Fall_AndCreateImgWith100OneSidedSquares()
-        {
-            Assert.Fail();
         }
 
         [Test, Category("Simple Behaviour")]

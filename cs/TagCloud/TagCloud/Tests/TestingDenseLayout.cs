@@ -8,51 +8,28 @@ using NUnit.Framework.Interfaces;
 
 namespace TagCloud.Tests
 {
-        internal class DenseTesting
+    internal class TestingDenseLayout: OnFailDrawer
     {
-        private CircularCloudLayouter cloudLayouter;
-        
-        [SetUp]
-        public void CreateInstance()
+        [TestCaseSource(nameof(sizesForXDenseTesting))]
+        public void Should_DenselyPlaceRectanglesWithDifferentShape_ByXCoordinate(IEnumerable<Size> sizes)
         {
-            cloudLayouter = new CircularCloudLayouter(OrientationTestingOnOneSizeSquares.CenterPoint);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
-                return;
-            var fname = $"{TestContext.CurrentContext.Test.FullName}.png";
-            OnFailDrawer.DrawOriginOrientedRectangles(
-                new Size(1200, 1200),
-                cloudLayouter
-                    .GetAllRectangles()
-                    .Select(rect => new Rectangle(600 + rect.X  , 600 + rect.Y , rect.Width, rect.Height)),
-                fname);
-            TestContext.WriteLine($"Tag cloud visualisation saved to file: '{fname}'");
-        }
-
-        [TestCaseSource(nameof(_sizesForXDenseTesting))]
-        public void Should_DensePlaceRectanglesWithDifferentShape_ByXCoordinate(IEnumerable<Size> sizes)
-        {
-            var rectangles = sizes.Select(size => cloudLayouter.PutNextRectangle(size)).ToList();
+            var rectangles = cloudLayouter.PutNextRectangles(sizes).ToList();
             var width = Math.Abs(rectangles.Select(rect => rect.X).Min() - rectangles.Select(rect => rect.X).Max());
             width.Should().BeLessThan(rectangles.Select(rect => rect.Width).Sum());
         }
         
-        [TestCaseSource(nameof(_sizesForYDenseTesting))]
-        public void Should_DensePlaceRectanglesWithDifferentShape_ByYCoordinate(IEnumerable<Size> sizes)
+        [TestCaseSource(nameof(sizesForYDenseTesting))]
+        public void Should_DenselyPlaceRectanglesWithDifferentShape_ByYCoordinate(IEnumerable<Size> sizes)
         {
-            var rectangles = sizes.Select(size => cloudLayouter.PutNextRectangle(size)).ToList();
+            var rectangles = cloudLayouter.PutNextRectangles(sizes).ToList();
             var height = Math.Abs(rectangles.Select(rect => rect.Y).Min() - rectangles.Select(rect => rect.Y).Max());
             height.Should().BeLessThan(rectangles.Select(rect => rect.Height).Sum());
         }
 
         [TestCaseSource(nameof(oneHundredSizesForCircularTesting))]
-        public void Should_DensePlaceRectanglesWithDifferentShape_InCircle(IEnumerable<Size> sizes)
+        public void Should_DenselyPlaceRectanglesWithDifferentShape_InCircle(IEnumerable<Size> sizes)
         {
-            var rectangles = sizes.Select(size => cloudLayouter.PutNextRectangle(size)).ToList();
+            var rectangles = cloudLayouter.PutNextRectangles(sizes).ToList();
             var maxSide = rectangles
                 .SelectMany(rect => new List<int> {rect.Width, rect.Height})
                 .Max();
@@ -63,15 +40,7 @@ namespace TagCloud.Tests
             Math.Abs(yHeight - maxSide).Should().BeLessOrEqualTo(xWidth, "Y greatly less then X");
         }
 
-        [TestCaseSource(nameof(oneHundredSizesForCircularTesting))]
-        public void Should_Fall_AndCreateImgWith100Rectangles(IEnumerable<Size> sizes)
-        {
-            sizes.Select(size => cloudLayouter.PutNextRectangle(size)).ToList();
-            Assert.Fail();
-        }
-
-
-        private static IEnumerable<TestCaseData> _sizesForYDenseTesting = new List<TestCaseData>
+        private static IEnumerable<TestCaseData> sizesForYDenseTesting = new List<TestCaseData>
         {
             new TestCaseData(new List<Size>
             {
@@ -87,7 +56,7 @@ namespace TagCloud.Tests
             }).SetName("{m}: 2 rectangles along Y-axis")
         };
 
-        private static IEnumerable<TestCaseData> _sizesForXDenseTesting = new List<TestCaseData>
+        private static IEnumerable<TestCaseData> sizesForXDenseTesting = new List<TestCaseData>
         {
             new TestCaseData(new List<Size>
             {
