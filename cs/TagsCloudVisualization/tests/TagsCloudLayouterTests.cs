@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 
 namespace TagsCloudVisualization
@@ -13,6 +16,7 @@ namespace TagsCloudVisualization
         private Point center;
         private CircularCloudLayouter layouter;
         private Size rectangleSize;
+        private CloudVisualizer visualizer = new CloudVisualizer(5000, 5000);
 
 
         [SetUp]
@@ -22,7 +26,26 @@ namespace TagsCloudVisualization
             layouter = new CircularCloudLayouter(center);
             rectangleSize = new Size(6, 3);
         }
-        
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
+                return;
+
+            if (layouter.Cloud.Rectangles.Count < 1)
+                return;
+
+            var format = ImageFormat.Png;
+            var fileName = $"{TestContext.CurrentContext.Test.Name}.{format}";
+            var bitmap = visualizer.Draw(layouter.Cloud);
+            var savePath = Path.Combine(TestContext.CurrentContext.TestDirectory, fileName);
+
+            bitmap.Save(savePath, format);
+
+            Console.WriteLine($"Tag cloud visualization saved to file \"{savePath}\"");
+        }
+
         [Test]
         public void GetTagsCloud_ShouldNotNull()
         {
@@ -65,17 +88,17 @@ namespace TagsCloudVisualization
             var count = new Random().Next(50, 100);
             var rectangles = layouter.Cloud.Rectangles;
 
-            PutNextRectangleCountTime(count, rectangleSize);
+            RepeatPutNextRectangle(rectangleSize, count);
 
             rectangles.All(x => !rectangles.Any(y => y != x && y.IntersectsWith(x))).Should().BeTrue();
         }
 
         [Test]
-        [Timeout(200)]
+        [Timeout(300)]
         public void PutNextRectangle_Put1000BigRectangles_ShouldNotThrowException()
         {
             var size = new Size(100, 50);
-            PutNextRectangleCountTime(1000, size);
+            RepeatPutNextRectangle(size, 1000);
         }
 
         [Test]
@@ -91,8 +114,8 @@ namespace TagsCloudVisualization
         public void PutNextRectangle_AfterPutNRectangles_CloudShouldContainsNRectangles()
         {
             var n = new Random().Next(50, 100);
-            PutNextRectangleCountTime(n, rectangleSize);
-           layouter.Cloud.Rectangles.Count.Should().Be(n);
+            RepeatPutNextRectangle(rectangleSize, n);
+            layouter.Cloud.Rectangles.Count.Should().Be(n);
         }
 
         [Test]
@@ -100,8 +123,8 @@ namespace TagsCloudVisualization
         {
             var n = 8;
             var rectangles = layouter.Cloud.Rectangles;
-            
-            PutNextRectangleCountTime(15, rectangleSize);
+
+            RepeatPutNextRectangle(rectangleSize, 15);
 
             for (var i = 0; i < rectangles.Count - 1; i++)
             {
@@ -123,12 +146,11 @@ namespace TagsCloudVisualization
 //            rectangles.All(x => x.)
         }
 
-        private void PutNextRectangleCountTime(int count, Size rectanglesSize)
+        private void RepeatPutNextRectangle(Size rectanglesSize, int count)
         {
             for (var i = 0; i < count; i++)
             {
-                var r = layouter.PutNextRectangle(rectanglesSize);
-                Console.WriteLine(r.Location);
+                layouter.PutNextRectangle(rectanglesSize);
             }
         }
     }
