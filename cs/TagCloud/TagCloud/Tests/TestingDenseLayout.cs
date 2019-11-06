@@ -14,30 +14,30 @@ namespace TagCloud.Tests
         public void Should_DenselyPlaceRectanglesWithDifferentShape_ByXCoordinate(IEnumerable<Size> sizes)
         {
             var rectangles = cloudLayouter.PutNextRectangles(sizes).ToList();
-            var width = Math.Abs(rectangles.Select(rect => rect.X).Min() - rectangles.Select(rect => rect.X).Max());
-            width.Should().BeLessThan(rectangles.Select(rect => rect.Width).Sum());
+            var width = Math.Abs(rectangles.Min(rect => rect.X) - rectangles.Max(rect => rect.X + rect.Width));
+            width.Should().BeLessOrEqualTo(rectangles.Select(rect => rect.Width).Sum());
         }
         
         [TestCaseSource(nameof(sizesForYDenseTesting))]
         public void Should_DenselyPlaceRectanglesWithDifferentShape_ByYCoordinate(IEnumerable<Size> sizes)
         {
             var rectangles = cloudLayouter.PutNextRectangles(sizes).ToList();
-            var height = Math.Abs(rectangles.Select(rect => rect.Y).Min() - rectangles.Select(rect => rect.Y).Max());
-            height.Should().BeLessThan(rectangles.Select(rect => rect.Height).Sum());
+            var height = Math.Abs(rectangles.Min(rect => rect.Y) - rectangles.Max(rect => rect.Y + rect.Height));
+            height.Should().BeLessOrEqualTo(rectangles.Select(rect => rect.Height).Sum());
         }
 
         [TestCaseSource(nameof(oneHundredSizesForCircularTesting))]
         public void Should_DenselyPlaceRectanglesWithDifferentShape_InCircle(IEnumerable<Size> sizes)
         {
             var rectangles = cloudLayouter.PutNextRectangles(sizes).ToList();
-            var maxSide = rectangles
-                .SelectMany(rect => new List<int> {rect.Width, rect.Height})
-                .Max();
-            var xWidth = rectangles.Select(rect => rect.X).Max() - rectangles.Select(rect => rect.X).Min();
-            var yHeight = rectangles.Select(rect => rect.Y).Max() - rectangles.Select(rect => rect.Y).Min();
-            
-            Math.Abs(xWidth - maxSide).Should().BeLessOrEqualTo(yHeight, "X greatly less then Y");
-            Math.Abs(yHeight - maxSide).Should().BeLessOrEqualTo(xWidth, "Y greatly less then X");
+            var outerXWidth = Math.Abs(rectangles.Min(rect => rect.X) - rectangles.Max(rect => rect.X + rect.Width));
+            var outerYHeight = Math.Abs(rectangles.Min(rect => rect.Y) - rectangles.Max(rect => rect.Y + rect.Height));
+            var minOuterCircle = Math.PI * Math.Pow(Math.Min(outerXWidth, outerYHeight) / 2, 2);
+            var maxOuterCircle = Math.PI * Math.Pow(Math.Max(outerXWidth, outerYHeight) / 2, 2);
+            var rectSpace = rectangles.Select(rect => rect.Width * rect.Height).Sum();
+            Math.Abs(minOuterCircle - rectSpace)
+                .Should()
+                .BeLessThan(Math.Abs(maxOuterCircle - minOuterCircle));
         }
 
         private static IEnumerable<TestCaseData> sizesForYDenseTesting = new List<TestCaseData>
