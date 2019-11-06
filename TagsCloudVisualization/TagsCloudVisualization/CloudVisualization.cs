@@ -18,11 +18,13 @@ namespace TagsCloudVisualization
         public Bitmap DrawRectangles(List<Rectangle> rectangles)
         {
             var random = new Random();
-            var drowPlace = Graphics.FromImage(image);
-            foreach(var rectangle in rectangles)
+            using (var drowPlace = Graphics.FromImage(image))
             {
-                Color color = Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
-                drowPlace.FillRectangle(new SolidBrush(color), rectangle);
+                foreach (var rectangle in rectangles)
+                {
+                    Color color = Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
+                    drowPlace.FillRectangle(new SolidBrush(color), rectangle);
+                }
             }
             return image;
         }

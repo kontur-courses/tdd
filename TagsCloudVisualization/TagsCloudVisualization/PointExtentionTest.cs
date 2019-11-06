@@ -20,7 +20,6 @@ namespace TagsCloudVisualization
         }
 
         [TestCase(1, 0, 1, 0, 0)]
-        [TestCase(1, 0, 1, 1, 1)]
         [TestCase(6, 0, 0, 8, 10)]
         public void DistanceTo_Should_ReturnRightDistance(int x1, int y1, int x2, int y2, double distance)
         {

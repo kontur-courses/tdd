@@ -38,7 +38,7 @@ namespace TagsCloudVisualization
         [TestCase(1, 21, 3, 432)]
         [TestCase(12, 2, 33, 14)]
 
-        public void GetRectangleCorners_Should_ReturnRightRectangles(int x, int y, int width, int height)
+        public void GetRectangleCorners_Should_ReturnRightCorners(int x, int y, int width, int height)
         {
             var expectedPoints = new List<Point>()
             {

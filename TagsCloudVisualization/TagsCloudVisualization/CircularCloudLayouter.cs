@@ -28,8 +28,8 @@ namespace TagsCloudVisualization
                     return rectangle;
                 }
 
-            throw new Exception("We can't find the place to add your rectangle :(. " +
-                $"Your width was: {rectangleSize.Width} and height was: {rectangleSize.Height}");
+            throw new Exception("We can't find the place to add your rectangle, because rectangle location " +
+                $"was out of range :(. Your width was: {rectangleSize.Width} and height was: {rectangleSize.Height}");
         }
 
         private void AddPointsIntoList(IEnumerable<Point> points)

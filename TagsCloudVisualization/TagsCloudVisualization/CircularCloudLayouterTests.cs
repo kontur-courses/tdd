@@ -52,7 +52,7 @@ namespace TagsCloudVisualization
         [TestCase(4)]
         [TestCase(10)]
         [TestCase(15)]
-        public void RectanglesShouldNotIntersect(int rectanglesCount)
+        public void RectanglesShouldNotIntersectWithEachOther(int rectanglesCount)
         {
             var random = new Random();
             var rectangles = Enumerable
@@ -68,7 +68,7 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-            public void Should_ReturnPositionClosestToCenter_When_CanNotBeConnectedWithCenter()
+        public void Should_ReturnPositionClosestToCenter_When_CanNotBeConnectedWithCenter()
         {
             var sizesWithLocations = SizeGenerator();
             sizesWithLocations
