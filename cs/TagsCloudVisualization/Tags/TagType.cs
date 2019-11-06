@@ -1,4 +1,4 @@
-﻿namespace TagsCloudVisualization
+﻿namespace TagsCloudVisualization.Tags
 {
     public enum TagType
     {

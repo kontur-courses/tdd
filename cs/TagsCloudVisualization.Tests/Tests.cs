@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-
-// ReSharper disable ObjectCreationAsStatement
+using TagsCloudVisualization.CloudLayouters;
+using TagsCloudVisualization.Tests.Extensions;
 
 namespace TagsCloudVisualization.Tests // TODO: remove redundant tests.
 {
@@ -14,6 +15,7 @@ namespace TagsCloudVisualization.Tests // TODO: remove redundant tests.
         private static readonly Point origin = Point.Empty;
 
         [Test]
+        [SuppressMessage("ReSharper", "ObjectCreationAsStatement")]
         public void CircularCloudLayouterConstructor_GetCenterPoint() =>
             Assert.DoesNotThrow(() => new CircularCloudLayouter(origin));
 

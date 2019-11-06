@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Tests.Extensions
 {
-    public static class RectangleExtensions // TODO: move
+    public static class RectangleExtensions
     {
         public static Point GetRectangleCenter(this Rectangle rectangle)
         {
@@ -19,11 +17,5 @@ namespace TagsCloudVisualization
             Math.Sqrt(rectangle.Width * rectangle.Width + rectangle.Height * rectangle.Height);
 
         public static double GetCircumscribedCircleRadius(this Rectangle rectangle) => rectangle.GetDiagonal() / 2;
-
-        public static Rectangle CreateMovedCopy(this Rectangle rectangle, Size offset) =>
-            new Rectangle(rectangle.Location + offset, rectangle.Size);
-
-        public static bool IntersectsWith(this Rectangle rectangle, IEnumerable<Rectangle> otherRectangles) =>
-            otherRectangles.All(otherRectangle => !otherRectangle.IntersectsWith(rectangle));
     }
 }

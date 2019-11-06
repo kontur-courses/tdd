@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using TagsCloudVisualization.Extensions;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.CloudLayouters
 {
-    public class CircularCloudLayouter
+    public class CircularCloudLayouter : ICloudLayouter
     {
         private const double AzimuthDelta = Math.PI / 18;
 

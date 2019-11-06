@@ -1,66 +1,39 @@
 ﻿using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Text;
 using System.Linq;
+using TagsCloudVisualization.CloudFactories;
+using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization
 {
     static class Program
     {
-        private const string Filename =
-            @"C:\Users\Night\Desktop\Languages\C#\Shpora\2.tdd\cs\TagsCloudVisualization\\image.bmp";
+        private const string WebCloudFilename = "WebTagCloud.bmp";
+        private const string CommonWordsCloudFilename = "CommonWordsTagCloud.bmp";
 
-        private static readonly Size bitmapSize = new Size(800, 600);
-        private static readonly Color bitmapBackgroundColor = Color.FromArgb(0, 34, 43);
-
-        private static void Main() => Visualize();
-
-        private static void Visualize()
+        private static readonly TagCloudContext[] cloudFactoryByImageName =
         {
-            var center = new Point(bitmapSize.Width / 2, bitmapSize.Height / 2);
+            new TagCloudContext(WebCloudFilename, TagCloudContent.WebCloudStrings, new WebCloudFactory()),
+            new TagCloudContext(CommonWordsCloudFilename, TagCloudContent.CommonWordsCloudStrings,
+                                new CommonWordsCloudFactory())
+        };
 
-            var circularCloudLayouter = new CircularCloudLayouter(center);
-
-            Random random = new Random();
-            var shuffledTagStrings = TagCloudsContent.WebCloudStrings.Take(1)
-                                                     .Concat(
-                                                         TagCloudsContent.WebCloudStrings.Skip(1)
-                                                                         .OrderBy(tagText => random.Next()))
-                                                     .ToArray();
-
-            var bitmap = TagCloudBitmapCreator.CreateBitmap(shuffledTagStrings, bitmapSize, bitmapBackgroundColor,
-                                                            circularCloudLayouter, new TagFactory());
-            bitmap.Save(Filename);
+        private static void Main()
+        {
+            foreach (var cloudContext in cloudFactoryByImageName)
+                CreateTagCloudImage(cloudContext);
         }
 
-        private static void DrawBlocks()
+        private static void CreateTagCloudImage(TagCloudContext cloudContext)
         {
-            var center = new Point(bitmapSize.Width / 2, bitmapSize.Height / 2);
+            var shuffledContentStrings = cloudContext.TagCloudContent.Take(1)
+                                                     .Concat(cloudContext.TagCloudContent.Skip(1)
+                                                                         .SequenceShuffle(new Random()))
+                                                     .ToArray();
 
-            var circularCloudLayouter = new CircularCloudLayouter(center);
-            var random = new Random();
-            var rectangles = Enumerable.Range(0, 100)
-                                       .Select(i => circularCloudLayouter.PutNextRectangle(
-                                                   i > 0
-                                                       ? new Size(random.Next(50, 100), random.Next(30, 80))
-                                                       : new Size(250, 100)))
-                                       .ToArray();
-
-            var bitmap = new Bitmap(bitmapSize.Width, bitmapSize.Height);
-            var graphics = Graphics.FromImage(bitmap);
-
-            graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-            graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
-
-            graphics.FillRectangle(new SolidBrush(bitmapBackgroundColor), new Rectangle(Point.Empty, bitmapSize));
-
-            graphics.FillRectangle(Brushes.Black, rectangles[0]);
-            graphics.FillRectangles(Brushes.Aquamarine, rectangles.Skip(1).ToArray());
-
-            bitmap.Save(Filename);
+            var bitmap = TagCloudBitmapCreator.CreateBitmap(shuffledContentStrings,
+                                                            cloudContext.CircularCloudLayouter,
+                                                            cloudContext.CloudFactory);
+            bitmap.Save(cloudContext.ImageName);
         }
     }
 }

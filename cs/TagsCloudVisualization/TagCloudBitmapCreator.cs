@@ -1,39 +1,26 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Text;
+﻿using System.Drawing;
+using TagsCloudVisualization.CloudFactories;
+using TagsCloudVisualization.CloudLayouters;
 
 namespace TagsCloudVisualization
 {
     public static class TagCloudBitmapCreator
     {
-        public static Bitmap CreateBitmap(string[] cloudStrings, Size bitmapSize, Color bitmapBackgroundColor,
-                                          CircularCloudLayouter cloudLayouter, ITagFactory tagFactory)
+        public static Bitmap CreateBitmap(string[] cloudStrings, ICloudLayouter cloudLayouter,
+                                          TagCloudFactory cloudFactory)
         {
-            var brushByColor = new Dictionary<Color, Brush>();
+            var bitmap = new Bitmap(cloudFactory.CanvasSize.Width, cloudFactory.CanvasSize.Height);
+            var graphics = cloudFactory.GetGraphics(bitmap);
 
-            var bitmap = new Bitmap(bitmapSize.Width, bitmapSize.Height);
-            var graphics = Graphics.FromImage(bitmap);
+            graphics.FillRectangle(new SolidBrush(cloudFactory.BackgroundColor),
+                                   new Rectangle(Point.Empty, cloudFactory.CanvasSize));
 
-            graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-            graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+            var tagDrawer = cloudFactory.GetTagDrawer(graphics);
 
-            graphics.FillRectangle(new SolidBrush(bitmapBackgroundColor), new Rectangle(Point.Empty, bitmapSize));
-
-            foreach (var tag in tagFactory.GetTags(cloudStrings, graphics, cloudLayouter))
-                graphics.DrawString(tag.Text, tag.Style.Font, GetBrush(tag.Style.TextColor),
-                                    tag.TagBox, TagStyle.TextFormat);
+            foreach (var tag in cloudFactory.GetTags(cloudStrings, graphics, cloudLayouter))
+                tagDrawer(tag);
 
             return bitmap;
-
-            Brush GetBrush(Color color)
-            {
-                if (brushByColor.TryGetValue(color, out var brush))
-                    return brush;
-                return brushByColor[color] = new SolidBrush(color);
-            }
         }
     }
 }

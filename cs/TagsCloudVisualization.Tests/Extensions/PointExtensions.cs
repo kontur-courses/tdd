@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Drawing;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Tests.Extensions
 {
-    public static class PointExtensions // TODO: move
+    public static class PointExtensions
     {
         public static Rectangle GetRectangleWithCenterInThePoint(this Point centerPoint, Size rectangleSize)
         {
