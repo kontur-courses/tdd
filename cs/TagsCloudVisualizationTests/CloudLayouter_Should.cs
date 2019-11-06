@@ -28,6 +28,7 @@ namespace TagsCloudVisualizationTests
         [TestCase(25, 25)]
         public void PutNextRectangle_WithoutChangingSize(int width, int height)
         {
+            var size = new Size(width, height);
             layouter.PutNextRectangle(size).Size.Should().BeEquivalentTo(size);
         }
 
@@ -53,21 +54,23 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
-        public void PutNextRectangle_NotIntersectingWithPrevious()
+        public void PutRectanglesOnLayout_WithoutIntersection()
         {
-            var secondSize = GetRandomSize();
-            var firstRectangle = layouter.PutNextRectangle(size);
-            var secondRectangle = layouter.PutNextRectangle(secondSize);
+            var amountOfRectangles = rnd.Next(2, 25);
+            var rectangles = new List<Rectangle>();
+            while (amountOfRectangles-- > 0)
+            {
+                var nextRectangle = layouter.PutNextRectangle(GetRandomSize());
+                rectangles.Any(rect => rect.IntersectsWith(nextRectangle))
+                    .Should().BeFalse("rectangles should not intersect!");
+                rectangles.Add(nextRectangle);
+            }
 
-            firstRectangle.IntersectsWith(secondRectangle).Should().BeFalse(
-                $"rectangles\n" +
-                $"{firstRectangle.ToString()}, {secondRectangle.ToString()}\n" +
-                $"should not intersect");
         }
 
         [TestCase(0, 0)]
         [TestCase(100, -100)]
-        public void PutRectangles_CloseToCenter(int x, int y)
+        public void PutRectangles_DenselyAroundCenter(int x, int y)
         {
             var center = new Point(x, y);
             var layouter = new CircularCloudLayouter(center);
