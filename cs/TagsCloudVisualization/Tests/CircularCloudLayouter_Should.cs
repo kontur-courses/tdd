@@ -16,26 +16,29 @@ namespace TagsCloudVisualization.Tests
         [SetUp]
         public void SetUp()
         {
-            defaultLayouter = new CircularCloudLayouter(Point.Empty);
+            defaultLayouter = new CircularCloudLayouter(Point.Empty, new Size(1000, 1000));
         }
 
 
-        [Test]
-        public void PutNextRectangle_ShouldReturnInCenter_WhenPutOnlyOne()
+        [TestCaseSource(nameof(PutNextRectangleShouldReturnInCenterTestCases))]
+        public Point PutNextRectangle_ShouldReturnInCenter_WhenPutOnlyOne(Point center, Size size)
         {
-            var rectangle = defaultLayouter.PutNextRectangle(new Size(2, 2));
+            var layouter = new CircularCloudLayouter(center, new Size(1000, 1000));
 
-            rectangle.Location.ShouldBeEquivalentTo(new Point(-1, 1));
+            var rectangle = layouter.PutNextRectangle(size);
+
+            return rectangle.Location;
         }
 
-        [Test]
-        public void PutNextRectangle_ShouldReturnInCenter_WhenCenterIsShifted()
+        public static IEnumerable PutNextRectangleShouldReturnInCenterTestCases
         {
-            var layouter = new CircularCloudLayouter(new Point(1, 1));
-
-            var rectangle = layouter.PutNextRectangle(new Size(1, 1));
-
-            rectangle.Location.ShouldBeEquivalentTo(new Point(1, 1));
+            get
+            {
+                yield return new TestCaseData(Point.Empty, new Size(2, 2)).Returns(new Point(-1, 1))
+                    .SetName("when center is default");
+                yield return new TestCaseData(new Point(1, 1), new Size(1, 1)).Returns(new Point(1, 1))
+                    .SetName("when center is shifted");
+            }
         }
 
         [TestCaseSource(nameof(PutNextRectangleShouldThrowTestCases))]
@@ -43,7 +46,7 @@ namespace TagsCloudVisualization.Tests
         {
             Action put = () => defaultLayouter.PutNextRectangle(size);
 
-            put.ShouldThrowExactly<ArgumentException>($"size {size} is incorrect");
+            put.ShouldThrowExactly<ArgumentException>();
         }
 
         public static IEnumerable PutNextRectangleShouldThrowTestCases
@@ -74,13 +77,34 @@ namespace TagsCloudVisualization.Tests
             get
             {
                 yield return new TestCaseData(new[] { new Size(1, 1), new Size(1, 1) }).SetName("when put two rectangles");
-                yield return new TestCaseData(new[] { new Size(1000, 1000), new Size(500, 500), new Size(1250, 1250) })
+                yield return new TestCaseData(new[] { new Size(100, 100), new Size(500, 500), new Size(125, 125) })
                     .SetName("when put big rectangles");
                 yield return new TestCaseData(Enumerable.Repeat(new Size(1, 1), 200).ToArray())
                     .SetName("when put many unit squares");
                 yield return new TestCaseData(Enumerable.Range(1, 10).CartesianProduct(Enumerable.Range(1, 10))
                     .Select(p => new Size(p.Item1, p.Item2)).ToArray()).SetName(
                     "when put many different rectangles");
+            }
+        }
+
+        [TestCaseSource(nameof(PutNextRectangleShouldThrowWhenRectangleCannotBePlacedTestCases))]
+        public void PutNextRectangle_ShouldThrow_WhenRectangleCannotBePlaced(Size[] sizes)
+        {
+            Action put = () => PutMultipleRectangles(sizes).ToArray();
+
+            put.ShouldThrowExactly<ArgumentException>();
+        }
+
+        public static IEnumerable PutNextRectangleShouldThrowWhenRectangleCannotBePlacedTestCases
+        {
+            get
+            {
+                yield return new TestCaseData(new[] {new Size(2000, 2000)}).SetName("one big rectangle");
+                yield return new TestCaseData(new[]
+                        {new Size(500, 500), new Size(600, 600), new Size(500, 500), new Size(500, 500),})
+                    .SetName("some big rectangles");
+                yield return new TestCaseData(Enumerable.Repeat(50, 600).Select(x => new Size(x, x)).ToArray()).SetName(
+                    "many little rectangles");
             }
         }
 

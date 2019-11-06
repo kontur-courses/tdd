@@ -1,29 +1,34 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace TagsCloudVisualization
 {
     public class Spiral
     {
-        public double Step { get; set; }
         private double angle;
+        private readonly double step;
         private readonly double angleDelta;
         private readonly Point center;
 
-        public Spiral(double angleDelta, Point center)
+        public Spiral(Point center, double step = 1, double angleDelta = Math.PI / 6)
         {
+            this.step = step;
             this.angleDelta = angleDelta;
             this.center = center;
         }
 
-        public Point GetNextPoint()
+        public IEnumerable<Point> GetPoints()
         {
-            var x = Convert.ToInt32(Step / (Math.PI * 2) * angle * Math.Cos(angle));
-            var y = Convert.ToInt32(Step / (Math.PI * 2) * angle * Math.Sin(angle));
-            angle += angleDelta;
-            x += center.X;
-            y += center.Y;
-            return new Point(x, y);
+            while (true)
+            {
+                var x = Convert.ToInt32(step / (Math.PI * 2) * angle * Math.Cos(angle));
+                var y = Convert.ToInt32(step / (Math.PI * 2) * angle * Math.Sin(angle));
+                angle += angleDelta;
+                x += center.X;
+                y += center.Y;
+                yield return new Point(x, y);
+            }
         }
     }
 }

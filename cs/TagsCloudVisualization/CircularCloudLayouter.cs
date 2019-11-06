@@ -7,36 +7,44 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private const double DefaultAngleDelta = Math.PI / 6;
-        private readonly Spiral spiral;
+        private readonly Size pictureSize;
+        private readonly IEnumerable<Point> spiralPoints;
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
+        private int sumRectangleSquare;
 
-        public CircularCloudLayouter(Point center)
+        public CircularCloudLayouter(Point center, Size pictureSize)
         {
-            spiral = new Spiral(DefaultAngleDelta, center);
+            this.pictureSize = pictureSize;
+            spiralPoints = new Spiral(center).GetPoints();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
+            CheckRectangleSize(rectangleSize);
+
+            var rectangle = FindSuitableRectangle(rectangleSize);
+
+            rectangles.Add(rectangle);
+            sumRectangleSquare += GeometryHelper.GetSquare(rectangleSize);
+            return rectangle;
+        }
+
+        private void CheckRectangleSize(Size rectangleSize)
+        {
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException($"{nameof(rectangleSize)} was incorrect");
 
-            if (spiral.Step < Math.Max(rectangleSize.Height, rectangleSize.Width))
+            if (sumRectangleSquare + GeometryHelper.GetSquare(rectangleSize) > GeometryHelper.GetSquare(pictureSize))
             {
-                spiral.Step = Math.Max(rectangleSize.Height, rectangleSize.Width);
+                throw new ArgumentException("rectangle can not be placed, sum size was too big");
             }
+        }
 
-            var nextRectCenter = spiral.GetNextPoint();
-            var rectangle = nextRectCenter.GetRectangleFromCenterPoint(rectangleSize);
-
-            while (rectangles.Any(r => r.IntersectsWith(rectangle)))
-            {
-                nextRectCenter = spiral.GetNextPoint();
-                rectangle = nextRectCenter.GetRectangleFromCenterPoint(rectangleSize);
-            }
-
-            rectangles.Add(rectangle);
-            return rectangle;
+        private Rectangle FindSuitableRectangle(Size rectangleSize)
+        {
+            return spiralPoints
+                .Select(p => GeometryHelper.GetRectangleFromCenterPoint(p, rectangleSize))
+                .First(current => !rectangles.Any(r => r.IntersectsWith(current)));
         }
     }
 }

@@ -41,9 +41,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
+    <Compile Include="GeometryHelper.cs" />
     <Compile Include="Tests\CircularCloudLayouter_Should.cs" />
     <Compile Include="EnumerableExtensions.cs" />
-    <Compile Include="PointExtensions.cs" />
     <Compile Include="Spiral.cs" />
   </ItemGroup>
   <ItemGroup>
