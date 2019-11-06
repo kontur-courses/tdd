@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
 using NUnit.Framework.Interfaces;
@@ -31,6 +32,16 @@ namespace TagsCloudVisualization
             for (var i = 1; i < count; i++)
                 rectangles.Add(layouter.PutNextRectangle(new Size(i, i)));
             IsDisjointRectangles(rectangles).Should().BeTrue();
+        }
+
+        [TestCase(5, TestName = "WhenPut5Rectangles")]
+        [TestCase(55, TestName = "WhenPut55Rectangles")]
+        [TestCase(100, TestName = "WhenPut100Rectangles")]
+        public void PutNextRectangle_ShouldIncreaseRectanglesCount(int count)
+        {
+            for (var i = 0; i < count; i++)
+                layouter.PutNextRectangle(new Size(10, 10));
+            layouter.Rectangles().ToList().Count.Should().Be(count);
         }
 
         [Test]

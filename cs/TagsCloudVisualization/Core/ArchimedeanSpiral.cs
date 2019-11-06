@@ -22,7 +22,7 @@ namespace TagsCloudVisualization
             var nextPoint = new PointF(rho, phi);
             phi += StepPhi;
             rho = k * phi;
-            return PointExtensions.FromPolar(rho, phi);
+            return PointUtils.FromPolar(rho, phi);
         }
     }
 }

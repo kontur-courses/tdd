@@ -45,7 +45,7 @@ namespace TagsCloudVisualization
             GenerateTagCloud(new Size(1200, 1200), wordsWithFonts,
                 Environment.CurrentDirectory + @"\Examples\second.png");
         }
-        
+
         public static void GenerateThirdTagCloud()
         {
             var wordsWithFonts = new List<Tuple<string, Font>>();

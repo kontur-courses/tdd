@@ -33,14 +33,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CircularCloudDrawer.cs" />
-    <Compile Include="CircularCloudLayouter.cs" />
-    <Compile Include="CircularCloudLayouter_Tests.cs" />
-    <Compile Include="ISpiral.cs" />
-    <Compile Include="PointExtensions.cs" />
+    <Compile Include="Core\ArchimedeanSpiral.cs" />
+    <Compile Include="Core\CircularCloudLayouter.cs" />
+    <Compile Include="Core\ISpiral.cs" />
+    <Compile Include="Infrastructure\PointUtils.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="ArchimedeanSpiral.cs" />
+    <Compile Include="Tests\CircularCloudLayouter_Tests.cs" />
     <Compile Include="UsageExamples.cs" />
+    <Compile Include="Visualization\CircularCloudDrawer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FluentAssertions, Version=5.9.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a">
@@ -67,6 +67,7 @@
     <Content Include="Examples\first.png" />
     <Content Include="Examples\second.png" />
     <Content Include="Examples\third.png" />
+    <Content Include="README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

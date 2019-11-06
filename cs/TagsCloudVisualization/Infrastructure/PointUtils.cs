@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public static class PointExtensions
+    public static class PointUtils
     {
         private const double RadiansInOneDegree = Math.PI / 180;
 
