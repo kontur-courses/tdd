@@ -39,23 +39,30 @@ namespace TagsCloudVisualizationTests
                 "first point must be the center of the spiral");
         }
 
-        [TestCase(5, 2 * Math.PI)]
-        [TestCase(0.1, 2 * Math.PI/ 1000)]
+        [TestCase(5, 2 * Math.PI, 1)]
+        [TestCase(5, 2 * Math.PI, 2)]
+        [TestCase(0.1, 2 * Math.PI/ 1000, 10)]
         public void PutPointsOnStepLengthDistance_AfterFullCircle(
-            double stepLength, double angleShiftForEachPoint)
+            double stepLength, 
+            double angleShiftForEachPoint, int amountOfFullCircles)
         {
-            var spiral = new ArchimedeanSpiral(center, stepLength, angleShiftForEachPoint);
+            var spiral = new ArchimedeanSpiral(center, stepLength, 
+                angleShiftForEachPoint);
             var firstPoint = spiral.CalculateNextPoint();
-
             var amountOfSubsteps = 2 * Math.PI / angleShiftForEachPoint;
+            amountOfSubsteps *= amountOfFullCircles;
+
             Point secondPoint = new Point();
             while (amountOfSubsteps-- > 0)
                 secondPoint = spiral.CalculateNextPoint();
 
+            var expectedSquaredDistance = 
+                stepLength * stepLength * 
+                amountOfFullCircles * amountOfFullCircles;
             firstPoint.GetSquaredDistanceTo(secondPoint)
-                .Should().BeApproximately(stepLength*stepLength, 0.5,
-                "two points differed by 2Pi angle must be " +
-                "distanced by length of spiral step");
+                .Should().BeApproximately(expectedSquaredDistance, 0.0005,
+                $"two points differed by {amountOfFullCircles}*2PI must be " +
+                $"distanced by {amountOfFullCircles} lengths of spiral step");
         }
     }
 }
