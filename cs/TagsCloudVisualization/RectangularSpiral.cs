@@ -25,7 +25,7 @@ namespace TagsCloudVisualization
                 var curentDirection = directions[stepNumber % 4];
                 for (int i = 0; i < countStepsInCurentDirection; i++)
                 {
-                    curentPosition = new Point(curentPosition.X + curentDirection.X, curentPosition.Y + curentDirection.Y);
+                    curentPosition += new Size(curentDirection);
                     yield return curentPosition;
                 }
                 stepNumber += 1;
