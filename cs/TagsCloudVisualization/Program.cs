@@ -6,7 +6,7 @@ namespace TagsCloudVisualization
 {
     public class Program
     {
-        public void Main()
+        public static void Main(String[] arg)
         {
             VisualizationSomeImage("smallPicture.png", 20, 400, 600);
             VisualizationSomeImage("middlePicture.png", 60, 800, 400);
