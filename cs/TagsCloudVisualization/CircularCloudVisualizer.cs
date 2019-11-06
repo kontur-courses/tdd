@@ -12,12 +12,12 @@ namespace TagsCloudVisualization
         private string fileName;
         public string FilePath => Directory.GetCurrentDirectory() + directory + fileName + ".png";
 
-        private Pen rectangleBorderPen = new Pen(Color.Black);
-        private Brush rectangleFillBrush = new SolidBrush(Color.Gray);
-        private Brush backgroundBrush = new SolidBrush(Color.White);
-        private Brush textBrush = new SolidBrush(Color.Blue);
+        private readonly Pen rectangleBorderPen = new Pen(Color.Black);
+        private readonly Brush rectangleFillBrush = new SolidBrush(Color.Gray);
+        private readonly Brush backgroundBrush = new SolidBrush(Color.White);
+        private readonly Brush textBrush = new SolidBrush(Color.Blue);
 
-        public CircularCloudVisualizer(CircularCloudLayouter layouter, string fileName , string directory = null)
+        public CircularCloudVisualizer(CircularCloudLayouter layouter, string fileName, string directory = null)
         {
             this.layouter = layouter;
             this.fileName = fileName;
@@ -30,7 +30,7 @@ namespace TagsCloudVisualization
             {
                 return;
             }
-            var image = new Bitmap(layouter.RightBorder + layouter.LeftBorder,layouter.BottomBorder + layouter.TopBorder);
+            var image = new Bitmap(layouter.RightBorder + layouter.LeftBorder, layouter.BottomBorder + layouter.TopBorder);
             var imageRectangle = new Rectangle(0, 0, layouter.RightBorder + layouter.LeftBorder, layouter.BottomBorder + layouter.TopBorder);
             using (Graphics graphics = Graphics.FromImage(image))
             {
@@ -40,13 +40,11 @@ namespace TagsCloudVisualization
                 {
                     rectangleNumber++;
                     graphics.FillRectangle(rectangleFillBrush, rectangle);
-                    graphics.DrawRectangle(rectangleBorderPen,rectangle);
+                    graphics.DrawRectangle(rectangleBorderPen, rectangle);
                     graphics.DrawString(rectangleNumber.ToString(), new Font(FontFamily.GenericSansSerif, rectangle.Height / 3), textBrush, rectangle);
                 }
             }
 
-            image.Save(@"D:\repos\tdd\cs\TagsCloudVisualization\visualization\" + fileName + ".png", ImageFormat.Png);
-            
             if (!Directory.Exists(Directory.GetCurrentDirectory() + this.directory))
             {
                 Directory.CreateDirectory(Directory.GetCurrentDirectory() + this.directory);

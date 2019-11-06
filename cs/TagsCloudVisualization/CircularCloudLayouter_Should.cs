@@ -10,13 +10,10 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter_Should
     {
         private CircularCloudLayouter layouter;
-        private CircularCloudVisualizer visualizer;
 
-
-        public void SetUp(Point center)
+        public void InitializeLayouter(Point center)
         {
             layouter = new CircularCloudLayouter(center);
-            visualizer = new CircularCloudVisualizer(layouter, TestContext.CurrentContext.Test.FullName);
         }
 
         [TearDown]
@@ -24,6 +21,7 @@ namespace TagsCloudVisualization
         {
             if (TestContext.CurrentContext.Result.Outcome == ResultState.Failure)
             {
+                var visualizer = new CircularCloudVisualizer(layouter, TestContext.CurrentContext.Test.FullName);
                 visualizer.VisualizeLayout();
                 TestContext.WriteLine($"Tag cloud visualization saved to file {visualizer.FilePath}");
             }
@@ -32,14 +30,14 @@ namespace TagsCloudVisualization
         [Test]
         public void BeEmpty_WhenCreated()
         {
-            SetUp(new Point(0, 0));
+            InitializeLayouter(new Point(0, 0));
             layouter.GetRectangles().Should().BeEquivalentTo(new List<Rectangle>());
         }
 
         [Test]
         public void PutInCenter_OnSingleRectangle()
         {
-            SetUp(new Point(500, 500));
+            InitializeLayouter(new Point(500, 500));
             layouter.PutNextRectangle(new Size(200, 100)).Should().Be(new Rectangle(500, 500, 200, 100));
         }
 
@@ -53,7 +51,7 @@ namespace TagsCloudVisualization
         public void PutRectanglesCorrectly(int centerX, int centerY, int count, int startWidth, int startHeight, int step)
         {
             var center = new Point(centerX, centerY);
-            SetUp(center);
+            InitializeLayouter(center);
             var sizes = CreateSizeList(count, startWidth, startHeight, step);
             foreach (var size in sizes)
             {
@@ -72,7 +70,7 @@ namespace TagsCloudVisualization
 
         public void HaveCorrectTime_OnManyRectangles(int count)
         {
-            SetUp(new Point(500, 500));
+            InitializeLayouter(new Point(500, 500));
             for (var i = 0; i < count; i++)
             {
                 layouter.PutNextRectangle(new Size(40, 20));

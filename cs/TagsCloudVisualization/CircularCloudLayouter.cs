@@ -36,17 +36,18 @@ namespace TagsCloudVisualization
                 point = spiral.GetNextPoint();
                 checkedRectangle = new Rectangle(point, rectangleSize);
             }
-
             var adjustedRectangle = AdjustRectangle(checkedRectangle);
-
-            RightBorder = Math.Max(RightBorder, adjustedRectangle.X + adjustedRectangle.Width);
-            LeftBorder = Math.Min(LeftBorder, adjustedRectangle.X);
-            BottomBorder = Math.Max(BottomBorder, adjustedRectangle.Y + adjustedRectangle.Height);
-            TopBorder = Math.Min(TopBorder, adjustedRectangle.Y);
+            UpdateBorders(adjustedRectangle);
             rectangles.Add(adjustedRectangle);
-
             return adjustedRectangle;
 
+        }
+        private void UpdateBorders(Rectangle newRectangle)
+        {
+            RightBorder = Math.Max(RightBorder, newRectangle.X + newRectangle.Width);
+            LeftBorder = Math.Min(LeftBorder, newRectangle.X);
+            BottomBorder = Math.Max(BottomBorder, newRectangle.Y + newRectangle.Height);
+            TopBorder = Math.Min(TopBorder, newRectangle.Y);
         }
 
         private Rectangle AdjustRectangle(Rectangle rectangle)
