@@ -7,9 +7,9 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudVisualizer
     {
-        private string directory;
-        private CircularCloudLayouter layouter;
-        private string fileName;
+        private readonly string directory;
+        private readonly CircularCloudLayouter layouter;
+        private readonly string fileName;
         public string FilePath => Directory.GetCurrentDirectory() + directory + fileName + ".png";
 
         private readonly Pen rectangleBorderPen = new Pen(Color.Black);
@@ -32,7 +32,7 @@ namespace TagsCloudVisualization
             }
             var image = new Bitmap(layouter.RightBorder + layouter.LeftBorder, layouter.BottomBorder + layouter.TopBorder);
             var imageRectangle = new Rectangle(0, 0, layouter.RightBorder + layouter.LeftBorder, layouter.BottomBorder + layouter.TopBorder);
-            using (Graphics graphics = Graphics.FromImage(image))
+            using (var graphics = Graphics.FromImage(image))
             {
                 graphics.FillRectangle(backgroundBrush, imageRectangle);
                 var rectangleNumber = 0;

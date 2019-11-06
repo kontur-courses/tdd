@@ -110,7 +110,5 @@ namespace TagsCloudVisualization
 
             return false;
         }
-
-
     }
 }
