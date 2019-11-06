@@ -12,16 +12,13 @@ namespace TagsCloudVisualization
         private readonly Size centralOffset;
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
         private readonly ArchimedeanSpiral polarSpiral = new ArchimedeanSpiral();
-        private Size firstRectangleOffset = Size.Empty;
 
         public CircularCloudLayouter(Point center) => centralOffset = new Size(center);
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.IsEmpty) throw new ArgumentException();
-            if (firstRectangleOffset.IsEmpty)
-                firstRectangleOffset = new Size(rectangleSize.Width / 2,
-                                                rectangleSize.Height / 2);
+
             Rectangle newRectangle;
 
             while (true)
@@ -35,10 +32,17 @@ namespace TagsCloudVisualization
                 polarSpiral.Azimuth += AzimuthDelta;
             }
 
+            if (rectangles.Count == 0)
+            {
+                var firstRectangleOffset = new Point(-rectangleSize.Width / 2,
+                                                     -rectangleSize.Height / 2);
+                newRectangle.Offset(firstRectangleOffset);
+            }
+
             rectangles.Add(newRectangle);
             polarSpiral.Azimuth += AzimuthDelta;
 
-            return newRectangle.Move(centralOffset - firstRectangleOffset);
+            return newRectangle.CreateMovedCopy(centralOffset);
         }
 
         private static Point ConvertPointFromPolarToCartesian(double radius, double azimuth)

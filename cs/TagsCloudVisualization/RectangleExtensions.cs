@@ -18,7 +18,7 @@ namespace TagsCloudVisualization
 
         public static double GetCircumscribedCircleRadius(this Rectangle rectangle) => rectangle.GetDiagonal() / 2;
 
-        public static Rectangle Move(this Rectangle rectangle, Size offset) =>
+        public static Rectangle CreateMovedCopy(this Rectangle rectangle, Size offset) =>
             new Rectangle(rectangle.Location + offset, rectangle.Size);
     }
 }

@@ -22,11 +22,12 @@ namespace TagsCloudVisualization
 
             var circularCloudLayouter = new CircularCloudLayouter(center);
 
-            Random rnd = new Random(3);
-            var shuffledTagStrings = TagCloudsContent
-                                     .WebCloudStrings.Take(1)
-                                     .Concat(TagCloudsContent.WebCloudStrings.Skip(1).OrderBy(x => rnd.Next()))
-                                     .ToArray();
+            Random random = new Random(3);
+            var shuffledTagStrings = TagCloudsContent.WebCloudStrings.Take(1)
+                                                     .Concat(
+                                                         TagCloudsContent.WebCloudStrings.Skip(1)
+                                                                         .OrderBy(tagText => random.Next()))
+                                                     .ToArray();
 
             var bitmap = TagCloudBitmapCreator.CreateBitmap(shuffledTagStrings, bitmapSize, bitmapBackgroundColor,
                                                             circularCloudLayouter, new TagFactory());

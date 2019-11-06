@@ -7,6 +7,8 @@ namespace TagsCloudVisualization
     public class TagFactory : ITagFactory
     {
         private const string MutualFont = "Bahnschrift SemiLight";
+        private const int LargeTagsFrequency = 8;
+        private const int MediumTagsFrequency = 3;
 
         private static readonly Dictionary<TagType, TagStyle> tagStyleByTagType = new Dictionary<TagType, TagStyle>
         {
@@ -22,7 +24,7 @@ namespace TagsCloudVisualization
             for (var i = 0; i < cloudStrings.Length; i++)
             {
                 var text = cloudStrings[i];
-                var tagType = i == 0 ? TagType.Central : (TagType)(i % 3);
+                var tagType = GetTagType(i);
                 var tagStyle = tagStyleByTagType[tagType];
 
                 var sizeF = graphics.MeasureString(text, tagStyle.Font);
@@ -31,6 +33,14 @@ namespace TagsCloudVisualization
                 var tagBox = circularCloudLayouter.PutNextRectangle(size);
 
                 yield return new Tag(text, tagStyle, tagBox);
+
+                static TagType GetTagType(int tagIndex)
+                {
+                    if (tagIndex == 0) return TagType.Central;
+                    if (tagIndex % LargeTagsFrequency == 0) return TagType.Large;
+
+                    return tagIndex % MediumTagsFrequency == 0 ? TagType.Medium : TagType.Small;
+                }
             }
         }
     }
