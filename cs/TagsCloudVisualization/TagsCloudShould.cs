@@ -14,7 +14,7 @@ namespace TagsCloudVisualization
         [SetUp]
         public void SetUp()
         {
-            basicLayouter = new CircularCloudLayouter(new Point(0, 0));
+            basicLayouter = new CircularCloudLayouter(new Point(100, 100));
         }
 
         [TestCase(0, 0)]
@@ -43,11 +43,11 @@ namespace TagsCloudVisualization
             action.Should().Throw<ArgumentException>();
         }
 
-        [TestCase(20, 20, -10, 10)]
-        [TestCase(13, 13, -6, 6)]
+        [TestCase(20, 20, -10, -10)]
+        [TestCase(13, 13, -6, -6)]
         public void GetCenterOfFirstRectangle(int w, int h, int x, int y)
         {
-            basicLayouter.PutNextRectangle(new Size(w, h)).Location.Should().Be(new Point(x, y));
+            basicLayouter.PutNextRectangle(new Size(w, h)).Location.Should().Be(new Point(100 + x, 100 + y));
         }
 
         [Test]
@@ -63,31 +63,41 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void RectanglesOfSameSize_ShouldNot_Intersect()
+        [TestCaseSource(typeof(LayouterSource), "TestCases")]
+        public void Rectangles_ShouldNot_Intersect(CircularCloudLayouter layouter)
         {
-            for (int i = 0; i < 50; i++)
-                basicLayouter.PutNextRectangle(new Size(10, 10));
-            basicLayouter.Rectangles
-                .Select(rec =>
-                    basicLayouter.Rectangles
-                        .Where(r => r != rec)
-                        .Any(a => rec.IntersectsWith(a)))
-                .Any(rec => rec).Should().BeFalse();
-
+            layouter.Rectangles
+                .Select(first =>
+                    layouter.Rectangles.Any(second => second != first && first.IntersectsWith(second)))
+                .Any(isIntersect => isIntersect).Should().BeFalse();
         }
 
-        [Test]
-        public void RectanglesOfDifferentSize_ShouldNot_Intersect()
+        public static class LayouterSource
         {
-            Random random = new Random();
-            for (int i = 0; i < 50; i++)
-                basicLayouter.PutNextRectangle(new Size(random.Next(1, 50), random.Next(1, 50)));
-            basicLayouter.Rectangles
-                .Select(rec =>
-                    basicLayouter.Rectangles
-                        .Where(r => r != rec)
-                        .Any(a => rec.IntersectsWith(a)))
-                .Any(rec => rec).Should().BeFalse();
+            private static readonly CircularCloudLayouter LayouterWithSameSizeRectangles =
+                LayouterWithTheSameSizeRectangles();
+            private static readonly CircularCloudLayouter LayouterWithDifferentSizeRectangles =
+                LayouterWithTheDifferentSizeRectangles();
+
+            public static CircularCloudLayouter LayouterWithTheSameSizeRectangles()
+            {
+                var layouter = new CircularCloudLayouter(new Point(100, 100));
+                for (int i = 0; i < 50; i++)
+                    layouter.PutNextRectangle(new Size(5, 5));
+                return layouter;
+            }
+
+            public static CircularCloudLayouter LayouterWithTheDifferentSizeRectangles()
+            {
+                var layouter = new CircularCloudLayouter(new Point(100, 100));
+                Random random = new Random();
+                for (int i = 0; i < 50; i++)
+                    layouter.PutNextRectangle(new Size(random.Next(1, 10), random.Next(1, 10)));
+                return layouter;
+            }
+
+            private static readonly CircularCloudLayouter[] TestCases =
+                {LayouterWithSameSizeRectangles, LayouterWithDifferentSizeRectangles};
         }
     }
 }

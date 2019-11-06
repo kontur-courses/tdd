@@ -21,18 +21,16 @@ namespace TagsCloudVisualization
             if (Rectangles.Count == 0)
             {
                 var x = Center.X - rectangleSize.Width / 2;
-                var y = Center.Y + rectangleSize.Height / 2;
+                var y = Center.Y - rectangleSize.Height / 2;
                 var rectangle = new Rectangle(new Point(x, y), rectangleSize);
                 Rectangles.Add(rectangle);
                 return rectangle;
             }
-
             var spiral = new ArchimedeanSprial(0, Math.PI / 12, Math.PI / 12, 0.4, Center, rectangleSize);
             while (true)
             {
                 var rectangle = new Rectangle(spiral.GetNextCoordinate(), rectangleSize);
-                var intersect = Rectangles.Any(rec => rec.IntersectsWith(rectangle));
-                if (!intersect)
+                if (!Rectangles.Any(rec => rec.IntersectsWith(rectangle)))
                 {
                     Rectangles.Add(rectangle);
                     return rectangle;
@@ -66,7 +64,7 @@ namespace TagsCloudVisualization
             Alpha += Step;
             RadiusVector = Alpha * DensityCoefficient;
             var x = (int)(RadiusVector * Math.Cos(Alpha)) - RectangleSize.Width / 2 + Center.X;
-            var y = (int)(RadiusVector * Math.Sin(Alpha)) + RectangleSize.Height / 2 + Center.Y;
+            var y = (int)(RadiusVector * Math.Sin(Alpha)) - RectangleSize.Height / 2 + Center.Y;
             return new Point(x, y);
         }
     }
