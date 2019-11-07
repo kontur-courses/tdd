@@ -39,6 +39,7 @@ namespace TagsCloudVisualization
             var fullPath = Directory.GetCurrentDirectory() + ExamplesDirectory + fileName;
             image.Save(fullPath, ImageFormat.Png);
         }
+
         private static void MakeExample1()
         {
             var layouter = GetLayout(new Point(1000, 1000), 30, 20, 10, 10);
@@ -68,6 +69,7 @@ namespace TagsCloudVisualization
                 var height = random.Next(40, 90);
                 layouter.PutNextRectangle(new Size(width, height));
             }
+
             SaveRectangles(layouter, "Example4.png");
         }
     }
