@@ -24,7 +24,7 @@ namespace TagsCloudVisualization
             return Generator.Current;
         }
 
-        public IEnumerable<Point> GetNextPoints()
+        private IEnumerable<Point> GetNextPoints()
         {
             float angle = 0;
             const float offsetAngle = (float)(5 * Math.PI / 180);
