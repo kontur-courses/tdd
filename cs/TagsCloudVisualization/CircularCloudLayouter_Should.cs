@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -13,37 +12,26 @@ namespace TagsCloudVisualization
     class CircularCloudLayouter_Should
     {
         private CircularCloudLayouter layouter;
-        private List<Size> sizes;
 
         [OneTimeSetUp]
-        public void SetUpFixture()
+        public void OneTimeSetUp()
         {
             var rnd = new Random();
-
-            int count = rnd.Next(10, 50);
-            sizes = new List<Size>(count);
-            for (int i = 0; i < count; i++)
-            {
-                int h = rnd.Next(10, 20);
-                int w = h * (int)(2 + 3 * rnd.NextDouble());
-                sizes.Add(new Size(w, h));
-            }
-
             var center = new Point(rnd.Next(-100, 100), rnd.Next(-100, 100));
+            var count = rnd.Next(10, 50);
             layouter = new CircularCloudLayouter(center);
-            layouter.PutRectangles(sizes);
+            layouter.PutRectangles(Enumerable.Range(0, count).Select(_ => rnd.GenerateRandomSize()));
         }
 
         [Test]
         public void AllocateRectanglesWithoutIntersects()
         {
-            for (int i = 0; i < layouter.Items.Count; i++)
+            var rectangles = layouter.GetRectangles().ToList();
+            for (var i = 0; i < rectangles.Count - 1; i++)
             {
-                for (int j = i + 1; j < layouter.Items.Count - 1; j++)
+                for (var j = i + 1; j < rectangles.Count; j++)
                 {
-                    var r1 = layouter.Items[i].Rectangle;
-                    var r2 = layouter.Items[j].Rectangle;
-                    r1.IntersectsWith(r2).Should().BeFalse();
+                    rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse();
                 }
             }
         }
@@ -51,32 +39,32 @@ namespace TagsCloudVisualization
         [Test]
         public void BeLikeCircle()
         {
-            List<double> dists = new List<double>();
-            for (double a = 0; a < 1.99 * Math.PI; a += Math.PI / 18)
-            {
-                var p = Utils.GetFarthestRectanglePointIntersectedByRay(layouter, layouter.Items.Count, a);
-                dists.Add(Math.Sqrt(p.X * p.X + p.Y * p.Y));
-            }
-            double mid = dists.Sum() / dists.Count;
-            double maxDif = dists.Max(dist => Math.Abs(dist - mid));
-            double difPercent = maxDif / mid * 100;
+            var rectangles = layouter.GetRectangles();
 
-            maxDif.Should().BeLessThan(50, "deviation of rectangles distance should be less than 50% of circle radius");
+            const int rayCount = 72;
+            var dists = Enumerable
+                .Range(0, rayCount)
+                .Select(i => i * Math.PI / 36)
+                .Select(angle => rectangles.Select(r => r.IsIntersectsByRay(angle, out double intersectionPointDistance) ? intersectionPointDistance : 0).Max());
+            var mid = dists.Sum() / rayCount;
+
+            dists.Any(dist => Math.Abs(dist - mid) / mid > 0.5)
+                .Should().BeFalse("deviation of rectangles distance and circle radius should be less than 50% of circle radius");
         }
 
         [Test]
         public void BeCompact()
         {
-            List<double> dists = new List<double>();
-            for (double a = 0; a < 1.99 * Math.PI; a += Math.PI / 18)
-            {
-                var p = Utils.GetFarthestRectanglePointIntersectedByRay(layouter, layouter.Items.Count, a);
-                dists.Add(Math.Sqrt(p.X * p.X + p.Y * p.Y));
-            }
-            double mid = dists.Sum() / dists.Count;
-            double circleSquare = Math.PI * mid * mid;
+            var rectangles = layouter.GetRectangles();
 
-            double rectanglesSquare = layouter.Items.Sum(it => it.Rectangle.Width * it.Rectangle.Height);
+            const int rayCount = 72;
+            var dists = Enumerable
+                .Range(0, rayCount)
+                .Select(i => i * Math.PI / 36)
+                .Select(angle => rectangles.Select(r => r.IsIntersectsByRay(angle, out double intersectionPointDistance) ? intersectionPointDistance : 0).Max());
+            var mid = dists.Sum() / rayCount;
+            var circleSquare = Math.PI * mid * mid;
+            var rectanglesSquare = rectangles.Sum(r => r.Square());
 
             double unusedPercent = (circleSquare - rectanglesSquare) / circleSquare * 100;
             unusedPercent.Should().BeLessThan(40, "unused space should be less than 40% of circle square");

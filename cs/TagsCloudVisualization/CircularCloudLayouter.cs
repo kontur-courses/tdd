@@ -5,15 +5,14 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class LayoutItem
+    internal class LayoutItem
     {
-        public string Title;
         public Rectangle Rectangle;
 
         public LayoutItem() { }
-        public LayoutItem(string title, Rectangle rectangle)
+
+        public LayoutItem(Rectangle rectangle)
         {
-            Title = title;
             Rectangle = rectangle;
         }
     }
@@ -21,7 +20,7 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         private readonly Point center;
-        public readonly List<LayoutItem> Items;
+        private readonly List<LayoutItem> Items;
 
         public CircularCloudLayouter(Point center)
         {
@@ -31,7 +30,7 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var newItem = new LayoutItem(Items.Count.ToString(), new Rectangle(default, rectangleSize));
+            var newItem = new LayoutItem(new Rectangle(default, rectangleSize));
             Items.Add(newItem);
             ReallocRectangles();
             return newItem.Rectangle;
@@ -39,11 +38,7 @@ namespace TagsCloudVisualization
 
         public void PutRectangles(IEnumerable<Size> sizes)
         {
-            foreach (var size in sizes)
-            {
-                var newItem = new LayoutItem(Items.Count.ToString(), new Rectangle(default, size));
-                Items.Add(newItem);
-            }
+            Items.AddRange(sizes.Select(size => new LayoutItem(new Rectangle(default, size))));
             ReallocRectangles();
         }
 
@@ -51,69 +46,53 @@ namespace TagsCloudVisualization
         {
             if (Items.Count == 0) return;
 
-            //сортируем прямоугольники по уменьшению площади
-            Items.Sort((i1, i2) =>
-            {
-                var s1 = i1.Rectangle.Width * i1.Rectangle.Height;
-                var s2 = i2.Rectangle.Width * i2.Rectangle.Height;
-                return s2.CompareTo(s1);
-            });
+            Items.Sort((i1, i2) => i2.Rectangle.Square().CompareTo(i1.Rectangle.Square()));
 
-            //самый большой ставим в центре
             var biggestItem = Items[0];
             biggestItem.Rectangle.X = -biggestItem.Rectangle.Width / 2;
             biggestItem.Rectangle.Y = -biggestItem.Rectangle.Height / 2;
-            Items[0] = biggestItem;
 
-            //выбираем лучшее место куда поставить каждый последующий
-            //лучшее место - когда расстояние от центра до дальней вершины прямоугольника минимально
-            for (int i = 1; i < Items.Count; i++)
+            var rnd = new Random();
+            for (var i = 1; i < Items.Count; i++)
             {
                 var size = Items[i].Rectangle.Size;
-                List<KeyValuePair<Rectangle, double>> variants = new List<KeyValuePair<Rectangle, double>>();
-                //рассматриваем разные направления от центра, шаг угла 10 градусов
-                for (double angle = new Random().NextDouble() * Math.PI / 18; angle < 1.99 * Math.PI; angle += (Math.PI / 18))
+                var positionVariants = new List<KeyValuePair<Rectangle, double>>();
+                for (var angle = rnd.NextDouble() * Math.PI / 18; angle < 1.99 * Math.PI; angle += (Math.PI / 18))
                 {
-                    //пытаемся поставить на этом направлении за самым дальним прямоугольником
-                    Point farthestPoint = Utils.GetFarthestRectanglePointIntersectedByRay(this, i, angle);
-                    var r = Utils.GetRayLengthFromCenter(Items[i].Rectangle, angle);
-                    //подбираем расстояние, чтобы не пересекался с другими
+                    var farthestIntersectionPointDistance = Items
+                        .Take(i)
+                        .Select(it => it.Rectangle.IsIntersectsByRay(angle, out double intersectionPointDistance) ? intersectionPointDistance : 0)
+                        .Max();
+                    var r = Utils.LengthOfRayFromCenterOfRectangle(Items[i].Rectangle, angle);
                     const int step = 2;
-                    double dist = Math.Sqrt(farthestPoint.X * farthestPoint.X + farthestPoint.Y * farthestPoint.Y) + r;
-                    Point location;
+                    var dist = farthestIntersectionPointDistance + r;
                     Rectangle newRect;
-                    bool isIntersects;
                     do
                     {
                         dist += step;
-                        location = Utils.GetPointByAngleAndDistance(angle, dist);
+                        var location = new Point().FromPolar(angle, dist);
                         location.Offset(-size.Width / 2, -size.Height / 2);
                         newRect = new Rectangle(location, size);
-                        isIntersects = false;
-                        for (int j = 0; j < i && !isIntersects; j++)
-                        {
-                            isIntersects |= newRect.IntersectsWith(Items[j].Rectangle);
-                        }                       
-                    } while (isIntersects);
+                    } while (Items.Take(i).Select(it => it.Rectangle).Any(rect => newRect.IntersectsWith(rect)));
 
-                    Utils.GetFathestPointFromCenter(newRect, out double vertexDist);
-                    variants.Add(new KeyValuePair<Rectangle, double>(newRect, vertexDist));                    
+                    positionVariants.Add(new KeyValuePair<Rectangle, double>(newRect, newRect.GetDistanceOfFathestFromCenterVertex()));
                 }
 
-                //вибираем ближайший к центру вариант
-                var minVertexDist = variants.Min(kv => kv.Value);
-                Rectangle bestRect = variants.First(kv => kv.Value == minVertexDist).Key;
+                var minVertexDist = positionVariants.Min(kv => kv.Value);
+                var bestRect = positionVariants.First(kv => kv.Value == minVertexDist).Key;
 
                 Items[i].Rectangle = bestRect;
             }
         }
+
+        public IEnumerable<Rectangle> GetRectangles() => Items.Select(it => it.Rectangle);
 
         public void SaveToFile(string filename)
         {
             if (Items.Count == 0)
                 throw new ArgumentException("There are no items.");
 
-            var left = int.MaxValue;
+            var left = int.MaxValue;//TODO Linq
             var right = int.MinValue;
             var top = int.MaxValue;
             var bottom = int.MinValue;
@@ -128,14 +107,14 @@ namespace TagsCloudVisualization
             var bmp = new Bitmap(right - left, bottom - top);
             var gr = Graphics.FromImage(bmp);
             gr.Clear(Color.RosyBrown);
-            Brush br = new SolidBrush(Color.Green);
-            Pen pen = new Pen(Color.Black);
-            Brush textBrush = new SolidBrush(Color.Black);
+            var brush = new SolidBrush(Color.Green);
+            var pen = new Pen(Color.Black);
+            var textBrush = new SolidBrush(Color.Black);
             foreach (var item in Items)
             {
-                gr.FillRectangle(br, item.Rectangle.X - left, item.Rectangle.Y - top, item.Rectangle.Width, item.Rectangle.Height);
+                gr.FillRectangle(brush, item.Rectangle.X - left, item.Rectangle.Y - top, item.Rectangle.Width, item.Rectangle.Height);
                 gr.DrawRectangle(pen, item.Rectangle.X - left, item.Rectangle.Y - top, item.Rectangle.Width, item.Rectangle.Height);
-                gr.DrawString(item.Title, new Font("Tahoma", item.Rectangle.Height, GraphicsUnit.Pixel), textBrush, item.Rectangle.X - left, item.Rectangle.Y - top - 1);
+                gr.DrawString("Title", new Font("Tahoma", item.Rectangle.Height, GraphicsUnit.Pixel), textBrush, item.Rectangle.X - left, item.Rectangle.Y - top - 1);
             }
             bmp.Save(filename);
         }
