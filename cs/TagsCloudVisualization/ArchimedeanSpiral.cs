@@ -6,15 +6,28 @@ namespace TagsCloudVisualization
 {
     class ArchimedeanSpiral : ISpiral
     {
+        const int stepSize = 2;
+        const double stepValueInRadians = 0.05;
+        const double eccentricity = 1.5;
+
         public IEnumerable<Point> GetPoints()
         {
-            double defaultStep = 0.05;
-            double t = 0;
-            double r = 1;
+            double angle = 0;
+            Point curentPosition = new Point(0, 0);
+
             while (true)
             {
-                t += defaultStep * 2 * r;
-                yield return new Point((int)(1.5 * t * Math.Cos(t)), (int)(t * Math.Sin(t)));
+                angle += stepValueInRadians * stepSize * -1;
+
+                int x = (int)(eccentricity * angle * Math.Cos(angle));
+                int y = (int)(angle * Math.Sin(angle));
+
+                var nextPosition = new Point(x, y);
+
+                if (nextPosition == curentPosition) continue;
+                else curentPosition = nextPosition;
+
+                yield return curentPosition;
             }
         }
     }
