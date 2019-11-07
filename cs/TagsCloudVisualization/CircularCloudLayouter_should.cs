@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using NUnit.Framework;
 using FluentAssertions;
+using NUnit.Framework.Interfaces;
+using System.IO;
 
 namespace TagsCloudVisualization
 {
@@ -12,7 +14,20 @@ namespace TagsCloudVisualization
         static CircularCloudLayouter cloudLayouter;
 
         [SetUp]
-        public void SetUp() => cloudLayouter = new CircularCloudLayouter(new Point(0, 0), new RectangularSpiral());
+        public void SetUp() => cloudLayouter = new CircularCloudLayouter(new Point(50, 50), new RectangularSpiral());
+
+        [TearDown]
+        public void CreateDebugImage()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
+
+            var imagePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"{TestContext.CurrentContext.Test.Name}.png");
+
+            var canvas = new Canvas(100,100);
+            foreach (var rec in cloudLayouter.GetAllRectangles())
+                canvas.Draw(rec, new SolidBrush(Color.DarkRed));
+            canvas.Save(imagePath);
+        }
 
         [TestCase(-1, 1)]
         [TestCase(1, -1)]
