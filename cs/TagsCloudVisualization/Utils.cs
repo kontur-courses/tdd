@@ -179,13 +179,13 @@ namespace TagsCloudVisualization
         /// </summary>
         /// <param name="endInd">До какого индекса прямоугольники просматривать</param>
         /// <param name="rayAngle">Угол луча, рад.</param>      
-        public static Point GetFarthestRectanglePointIntersectedByRay(CircularCloudLayouter ccl, int endInd, double rayAngle)
+        public static Point GetFarthestRectanglePointIntersectedByRay(CircularCloudLayouter layouter, int endInd, double rayAngle)
         {
             var maxDistSquared = 0;
             Point result = default;
             for (int i = 0; i < endInd; i++)
             {
-                if (IsRayIntersectsRectangle(ccl.Items[i].Rectangle, rayAngle, out Point intnPoint))
+                if (IsRayIntersectsRectangle(layouter.Items[i].Rectangle, rayAngle, out Point intnPoint))
                 {
                     var distSquared = intnPoint.X * intnPoint.X + intnPoint.Y * intnPoint.Y;
                     if (distSquared > maxDistSquared)
@@ -244,12 +244,15 @@ namespace TagsCloudVisualization
             Utils.GetFathestPointFromCenter(new Rectangle(rectX, rectY, 10, 10), out double _).Should().Be(new Point(pointX, pointY));
         }
 
+        [Test]
         public void GetFarthestRectanglePointIntersectsByRay_CorrectCalculation()
         {
-            CircularCloudLayouter ccl = new CircularCloudLayouter(default);
-            ccl.PutNextRectangle(new Size(20, 20));
-            ccl.PutNextRectangle(new Size(10, 10));
-            var point = Utils.GetFarthestRectanglePointIntersectedByRay(ccl, 2, 1.5 * Math.PI);
+            var layouter = new CircularCloudLayouter(default);
+            layouter.PutNextRectangle(new Size(20, 20));
+            layouter.PutNextRectangle(new Size(10, 10));
+
+            var point = Utils.GetFarthestRectanglePointIntersectedByRay(layouter, 2, 0.5 * Math.PI);
+
             point.X.Should().Be(0);
             point.Y.Should().BeInRange(20, 30);
         }

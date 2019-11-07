@@ -12,7 +12,7 @@ namespace TagsCloudVisualization
     [TestFixture]
     class CircularCloudLayouter_Should
     {
-        private CircularCloudLayouter ccl;
+        private CircularCloudLayouter layouter;
         private List<Size> sizes;
 
         [OneTimeSetUp]
@@ -30,19 +30,19 @@ namespace TagsCloudVisualization
             }
 
             var center = new Point(rnd.Next(-100, 100), rnd.Next(-100, 100));
-            ccl = new CircularCloudLayouter(center);
-            ccl.PutRectangles(sizes);
+            layouter = new CircularCloudLayouter(center);
+            layouter.PutRectangles(sizes);
         }
 
         [Test]
         public void AllocateRectanglesWithoutIntersects()
         {
-            for (int i = 0; i < ccl.Items.Count; i++)
+            for (int i = 0; i < layouter.Items.Count; i++)
             {
-                for (int j = i + 1; j < ccl.Items.Count - 1; j++)
+                for (int j = i + 1; j < layouter.Items.Count - 1; j++)
                 {
-                    var r1 = ccl.Items[i].Rectangle;
-                    var r2 = ccl.Items[j].Rectangle;
+                    var r1 = layouter.Items[i].Rectangle;
+                    var r2 = layouter.Items[j].Rectangle;
                     r1.IntersectsWith(r2).Should().BeFalse();
                 }
             }
@@ -54,7 +54,7 @@ namespace TagsCloudVisualization
             List<double> dists = new List<double>();
             for (double a = 0; a < 1.99 * Math.PI; a += Math.PI / 18)
             {
-                var p = Utils.GetFarthestRectanglePointIntersectedByRay(ccl, ccl.Items.Count, a);
+                var p = Utils.GetFarthestRectanglePointIntersectedByRay(layouter, layouter.Items.Count, a);
                 dists.Add(Math.Sqrt(p.X * p.X + p.Y * p.Y));
             }
             double mid = dists.Sum() / dists.Count;
@@ -70,13 +70,13 @@ namespace TagsCloudVisualization
             List<double> dists = new List<double>();
             for (double a = 0; a < 1.99 * Math.PI; a += Math.PI / 18)
             {
-                var p = Utils.GetFarthestRectanglePointIntersectedByRay(ccl, ccl.Items.Count, a);
+                var p = Utils.GetFarthestRectanglePointIntersectedByRay(layouter, layouter.Items.Count, a);
                 dists.Add(Math.Sqrt(p.X * p.X + p.Y * p.Y));
             }
             double mid = dists.Sum() / dists.Count;
             double circleSquare = Math.PI * mid * mid;
 
-            double rectanglesSquare = ccl.Items.Sum(it => it.Rectangle.Width * it.Rectangle.Height);
+            double rectanglesSquare = layouter.Items.Sum(it => it.Rectangle.Width * it.Rectangle.Height);
 
             double unusedPercent = (circleSquare - rectanglesSquare) / circleSquare * 100;
             unusedPercent.Should().BeLessThan(40, "unused space should be less than 40% of circle square");
@@ -88,7 +88,7 @@ namespace TagsCloudVisualization
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
                 var filename = $"{Path.GetTempPath()}{TestContext.CurrentContext.Test.Name}-Failed_{(int)DateTime.Now.TimeOfDay.TotalSeconds}.bmp";
-                ccl.SaveToFile(filename);
+                layouter.SaveToFile(filename);
                 TestContext.WriteLine($"Tag cloud visualization saved to file {filename}");
             }
         }

@@ -5,9 +5,9 @@ using System.IO;
 
 namespace TagsCloudVisualization
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var rnd = new Random();
 
@@ -21,11 +21,11 @@ namespace TagsCloudVisualization
             }
 
             var center = new Point(rnd.Next(-100, 100), rnd.Next(-100, 100));
-            CircularCloudLayouter ccl = new CircularCloudLayouter(center);
-            ccl.PutRectangles(sizes);
+            var layouter = new CircularCloudLayouter(center);
+            layouter.PutRectangles(sizes);
 
             var filename = $"{Path.GetTempPath()}CCL_{(int)DateTime.Now.TimeOfDay.TotalSeconds}.bmp";
-            ccl.SaveToFile(filename);
+            layouter.SaveToFile(filename);
         }
     }
 }
