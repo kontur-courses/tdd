@@ -105,7 +105,7 @@ namespace TagsCloudVisualizationTests
         [TearDown]
         public void TearDown()
         {
-            var testContext = new TestContext(TestExecutionContext.CurrentContext);
+            var testContext = TestContext.CurrentContext;
             if (testContext.Result.Outcome.Status == TestStatus.Passed)
                 return;
             var bitmap = CloudLayouterUtilities.GetCenteredBitmapFromRectangles(center, rectangles);
