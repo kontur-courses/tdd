@@ -12,26 +12,25 @@ namespace TagsCloudVisualization.Tests
         public void SetUp()
         {
             point = new Point(4, 4);
-
         }
 
-        [Test]
-        public void GetCenter_WhenRectangleIsPoint_ReturnThisPoint()
-        {
-            var rectangle = new Rectangle(point, new Size(0, 0));
-            rectangle.GetCenter().Should().Be(point);
-        }
-
-        [Test]
-        public void GetCenter_WhenRectangle_ReturnCenter()
-        {
-            var rectangle = new Rectangle(point, new Size(10, 10));
-            rectangle.GetCenter().Should().Be(new Point(9, 9));
-        }
-
-        [TestCase(0, 10, 4, 9,TestName = "GetCenter_WhenRectangleIsVerticalLine_ReturnPointOnThisLine")]
+        [TestCase(0, 0, 4, 4, TestName = "GetCenter_WhenRectangleIsPoint_ReturnThisPoint")]
+        [TestCase(10, 10, 9, 9, TestName = "GetCenter_WhenRectangleWithEvenSize_ReturnCorrectCenter")]
+        [TestCase(-10, -10, -1, -1, TestName = "GetCenter_WhenRectangleWithEvenNegativeSize_ReturnCenterAsIfRectangleIsInverted")]
+        [TestCase(-11, -11, -1, -1, TestName = "GetCenter_WhenRectangleWithOddNegativeSize_ReturnCenterAsIfRectangleIsInverted")]
+        [TestCase(-11, 11, -1, 9, TestName = "GetCenter_WhenRectangleWithNegativeWidth_ReturnCenterAsIfRectangleIsInverted")]
+        [TestCase(11, -11, 9, -1, TestName = "GetCenter_WhenRectangleWithNegativeHeight_ReturnCenterAsIfRectangleIsInverted")]
+        [TestCase(11, 11, 9, 9, TestName = "GetCenter_WhenRectangleWithOddSize_ReturnCenterWithRoundingDownCoordinates")]
+        [TestCase(11, 10, 9, 9, TestName = "GetCenter_WhenRectangleWithOddWidth_ReturnCenterWithRoundingDownCoordinates")]
+        [TestCase(10, 11, 9, 9, TestName = "GetCenter_WhenRectangleWithOddHeight_ReturnCenterWithRoundingDownCoordinates")]
+        [TestCase(0, 10, 4, 9, TestName = "GetCenter_WhenRectangleIsVerticalLine_ReturnPointOnThisLine")]
         [TestCase(10, 0, 9, 4, TestName = "GetCenter_WhenRectangleIsHorizontalLine_ReturnPointOnThisLine")]
-        public void GetCenter_WhenRectangleIsLine_ReturnPointOnThisLine(int width, int height, int x, int y)
+        public void GetCenter_WhenRectangleIsLine_ReturnPointOnThisLine(int actualWidth, int actualHeight, int centerExpectedX, int centerExpectedY)
+        {
+            var rectangle = new Rectangle(point, new Size(actualWidth, actualHeight));
+            rectangle.GetCenter().Should().Be(new Point(centerExpectedX, centerExpectedY));
+        }
+
         [TestCase(0, 50, 50, 50, ExpectedResult = false, TestName = "IntersectsWith_WhenRectanglesIntersectsOnEdge_ReturnFalse")]
         [TestCase(50, 50, 50, 50, ExpectedResult = false, TestName = "IntersectsWith_WhenRectanglesIntersectsOnPoint_ReturnFalse")]
         [TestCase(0, 0, 50, 50, ExpectedResult = true, TestName = "IntersectsWith_WhenRectangleEqualOneRectangle_ReturnTrue")]
