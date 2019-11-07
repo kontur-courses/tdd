@@ -58,9 +58,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.md" />
-    <Content Include="Results\1.bmp" />
-    <Content Include="Results\2.bmp" />
-    <Content Include="Results\3.bmp" />
+    <Content Include="Results\1.png" />
+    <Content Include="Results\2.png" />
+    <Content Include="Results\3.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
