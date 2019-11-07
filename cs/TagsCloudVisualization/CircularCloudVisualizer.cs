@@ -20,6 +20,14 @@ namespace TagsCloudVisualization
             graphics = Graphics.FromImage(bitmap);
         }
 
+        public void DrawPositionedRectangles()
+        {
+            foreach (var rectangle in layouter.Rectangles)
+            {
+                DrawRectangle(rectangle);
+            }
+        }
+
         public void DrawText(string text, Font font)
         {
             var textSize = graphics.MeasureString(text, font) + new SizeF(1, 1);
@@ -30,8 +38,7 @@ namespace TagsCloudVisualization
         public Rectangle DrawRectangle(Size size)
         {
             var rectangle = layouter.PutNextRectangle(size);
-            graphics.FillRectangle(RectangleFillBrush, rectangle);
-            graphics.DrawRectangle(RectangleBorderPen, rectangle);
+            DrawRectangle(rectangle);
             return rectangle;
         }
 
@@ -44,6 +51,12 @@ namespace TagsCloudVisualization
         {
             graphics.Dispose();
             bitmap.Dispose();
+        }
+
+        private void DrawRectangle(Rectangle rectangle)
+        {
+            graphics.FillRectangle(RectangleFillBrush, rectangle);
+            graphics.DrawRectangle(RectangleBorderPen, rectangle);
         }
     }
 }

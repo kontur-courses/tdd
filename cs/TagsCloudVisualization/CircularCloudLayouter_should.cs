@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization
 {
@@ -84,6 +86,25 @@ namespace TagsCloudVisualization
             Assert.IsEmpty(rectanglesOutsideRadius);
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            var context = TestContext.CurrentContext;
+            if (context.Result.Outcome.Status != TestStatus.Failed)
+            {
+                return;
+            }
+            var dir = Directory.CreateDirectory($".{Path.DirectorySeparatorChar}Failed").FullName;
+            var path = $"{dir}{Path.DirectorySeparatorChar}{context.Test.Name}.png";
+            var size = GetLayoutSize(layouter.Rectangles);
+            using (var visualizer = new CircularCloudVisualizer(layouter, size))
+            {
+                visualizer.DrawPositionedRectangles();
+                visualizer.Save(path);
+            }
+            TestContext.WriteLine($"Tag cloud visualization saved to file {path}");
+        }
+
         private static double GetSquaredDistanceBetweenCenters(Rectangle first, Rectangle second)
         {
             var firstCenter = GetCenter(first);
@@ -109,6 +130,22 @@ namespace TagsCloudVisualization
                 var height = random.Next(maxHeight) + 1;
                 yield return new Size(width, height);
             }
+        }
+
+        private static Size GetLayoutSize(IEnumerable<Rectangle> rectangles)
+        {
+            var minX = int.MaxValue;
+            var minY = int.MaxValue;
+            var maxX = 0;
+            var maxY = 0;
+            foreach (var rectangle in rectangles)
+            {
+                minX = Math.Min(minX, rectangle.X);
+                minY = Math.Min(minY, rectangle.Y);
+                maxX = Math.Max(maxX, rectangle.Right);
+                maxY = Math.Max(maxY, rectangle.Bottom);
+            }
+            return new Size(maxX - minX, maxY - minY);
         }
     }
 }

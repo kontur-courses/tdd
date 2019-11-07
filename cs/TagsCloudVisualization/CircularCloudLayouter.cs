@@ -13,6 +13,8 @@ namespace TagsCloudVisualization
         private readonly CoordinateGenerator generator;
         private readonly Stack<Rectangle> rectangles;
 
+        public IEnumerable<Rectangle> Rectangles => rectangles;
+
         public CircularCloudLayouter(Point center) :
             this(center, new ArchimedeanSpiralGenerator(DefaultDistance))
         { }
