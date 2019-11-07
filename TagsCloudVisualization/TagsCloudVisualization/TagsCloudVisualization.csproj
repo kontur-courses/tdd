@@ -54,6 +54,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spiral.cs" />
+    <Compile Include="Tests\CircularCloudLayouterTests.cs" />
     <Compile Include="Tests\SpiralTests.cs" />
   </ItemGroup>
   <ItemGroup>
