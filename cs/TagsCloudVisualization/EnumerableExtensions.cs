@@ -6,9 +6,10 @@ namespace TagsCloudVisualization
 {
     public static class EnumerableExtensions
     {
-        public static IEnumerable<Tuple<T1, T2>> CartesianProduct<T1, T2>(this IEnumerable<T1> enumerable, IEnumerable<T2> otherEnumerable)
+        public static IEnumerable<Tuple<T, T>> CartesianSquare<T>(this IEnumerable<T> enumerable)
         {
-            return enumerable.SelectMany(x => otherEnumerable, Tuple.Create);
+            var list = enumerable.ToList();
+            return list.SelectMany(x => list, Tuple.Create);
         }
     }
 }

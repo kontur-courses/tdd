@@ -7,14 +7,18 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private readonly Size pictureSize;
+        private readonly Rectangle pictureRectangle;
         private readonly IEnumerable<Point> spiralPoints;
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
-        private int sumRectangleSquare;
 
         public CircularCloudLayouter(Point center, Size pictureSize)
         {
-            this.pictureSize = pictureSize;
+            if (CheckIfSizeIsIncorrect(pictureSize))
+            {
+                throw new ArgumentException($"{nameof(pictureSize)} was incorrect");
+            }
+
+            pictureRectangle = GeometryHelper.GetRectangleFromCenterPoint(center, pictureSize);
             spiralPoints = new Spiral(center).GetPoints();
         }
 
@@ -24,20 +28,23 @@ namespace TagsCloudVisualization
 
             var rectangle = FindSuitableRectangle(rectangleSize);
 
-            rectangles.Add(rectangle);
-            sumRectangleSquare += GeometryHelper.GetSquare(rectangleSize);
+            HandleFoundRectangle(rectangle);
             return rectangle;
+        }
+
+        private void HandleFoundRectangle(Rectangle rectangle)
+        {
+            if (!pictureRectangle.Contains(rectangle))
+            {
+                throw new ArgumentException("rectangle can not be placed in picture");
+            }
+            rectangles.Add(rectangle);
         }
 
         private void CheckRectangleSize(Size rectangleSize)
         {
-            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+            if (CheckIfSizeIsIncorrect(rectangleSize))
                 throw new ArgumentException($"{nameof(rectangleSize)} was incorrect");
-
-            if (sumRectangleSquare + GeometryHelper.GetSquare(rectangleSize) > GeometryHelper.GetSquare(pictureSize))
-            {
-                throw new ArgumentException("rectangle can not be placed, sum size was too big");
-            }
         }
 
         private Rectangle FindSuitableRectangle(Size rectangleSize)
@@ -46,5 +53,7 @@ namespace TagsCloudVisualization
                 .Select(p => GeometryHelper.GetRectangleFromCenterPoint(p, rectangleSize))
                 .First(current => !rectangles.Any(r => r.IntersectsWith(current)));
         }
+
+        private bool CheckIfSizeIsIncorrect(Size size) => size.Width <= 0 || size.Height <= 0;
     }
 }

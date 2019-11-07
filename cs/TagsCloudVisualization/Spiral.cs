@@ -11,7 +11,7 @@ namespace TagsCloudVisualization
         private readonly double angleDelta;
         private readonly Point center;
 
-        public Spiral(Point center, double step = 1, double angleDelta = Math.PI / 6)
+        public Spiral(Point center, double step = 0.5, double angleDelta = Math.PI / 36)
         {
             this.step = step;
             this.angleDelta = angleDelta;

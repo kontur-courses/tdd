@@ -40,6 +40,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConvexHull.cs" />
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="GeometryHelper.cs" />
     <Compile Include="Tests\CircularCloudLayouter_Should.cs" />
