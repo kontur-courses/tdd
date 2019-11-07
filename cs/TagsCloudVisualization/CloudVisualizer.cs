@@ -24,10 +24,10 @@ namespace TagsCloudVisualization
             var random = new Random();
             foreach (var rectangle in cloudLayouter.GetRectangles())
             {
-                var pen = new Pen(Color.FromArgb(random.Next(255), random.Next(255), random.Next(255)));
+                var brush = new SolidBrush(Color.FromArgb(random.Next(255), random.Next(255), random.Next(255)));
                 rectangle.Offset(offsetPoint);
 
-                graphics.DrawRectangle(pen, rectangle);
+                graphics.FillRectangle(brush, rectangle);
             }
 
             graphics.Dispose();

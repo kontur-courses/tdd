@@ -3,22 +3,26 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using FluentAssertions;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization
 {
     [TestFixture]
     class CircularCloudLayouter_Should
     {
+        private CircularCloudLayouter cloudLayouter;
+
         [TestCase(-2, 5, TestName = "Negative width")]
         [TestCase(2, -5, TestName = "Negative height")]
         [TestCase(0, 5, TestName = "Zero width")]
         [TestCase(2, 0, TestName = "Zero height")]
         public void PutNextRectangle_ThrowArgumentException_WhenIncorrectDirectionsOfRectangle(int width, int height)
         {
-            var cloudlayouter = new CircularCloudLayouter(new Point(0, 0));
-            Action action = () => cloudlayouter.PutNextRectangle(new Size(width, height));
+            cloudLayouter = new CircularCloudLayouter(new Point(0, 0));
+            Action action = () => cloudLayouter.PutNextRectangle(new Size(width, height));
 
             action.Should().Throw<ArgumentException>();
         }
@@ -31,7 +35,7 @@ namespace TagsCloudVisualization
             var rectangleSize = new Size(20, 10);
             var expectedRectangle = new Rectangle(cloudCenter, rectangleSize);
 
-            var cloudLayouter = new CircularCloudLayouter(cloudCenter);
+            cloudLayouter = new CircularCloudLayouter(cloudCenter);
             var actualRectangle = cloudLayouter.PutNextRectangle(rectangleSize);
 
             actualRectangle.Should().Be(expectedRectangle);
@@ -42,7 +46,7 @@ namespace TagsCloudVisualization
         [TestCase(100, 100, 100, TestName = "Many Rectangles")]
         public void PutNextRectangle_HaveNoIntersections(int maxWidth, int maxHeight, int rectanglesCount)
         {
-            var cloudLayouter = new CircularCloudLayouter(new Point(0, 0));
+            cloudLayouter = new CircularCloudLayouter(new Point(0, 0));
             var rectangles = new List<Rectangle>();
             var random = new Random();
             for (var i = 0; i < rectanglesCount; i++)
@@ -58,7 +62,7 @@ namespace TagsCloudVisualization
         [TestCase(100, 100, 100, TestName = "Many Rectangles")]
         public void PutNextRectangle_PlaceTightly(int maxWidth, int maxHeight, int rectanglesCount)
         {
-            var cloudLayouter = new CircularCloudLayouter(new Point(0, 0));
+            cloudLayouter = new CircularCloudLayouter(new Point(0, 0));
             var rectangles = new List<Rectangle>();
             var random = new Random();
             for (var i = 0; i < rectanglesCount; i++)
@@ -84,7 +88,7 @@ namespace TagsCloudVisualization
         public void CloudRectangleProperty_ShouldCoverAllRectangles(int centerX, int centerY, int maxWidth,
             int maxHeight, int rectanglesCount)
         {
-            var cloudLayouter = new CircularCloudLayouter(new Point(0, 0));
+            var cloudLayouter = new CircularCloudLayouter(new Point(centerX, centerY));
             var random = new Random();
             for (var i = 0; i < rectanglesCount; i++)
             {
@@ -92,6 +96,20 @@ namespace TagsCloudVisualization
 
                 cloudLayouter.GetRectangles().All(rect => cloudLayouter.CloudRectangle.Contains(rect)).Should()
                     .BeTrue();
+            }
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+            {
+                var visualizer = new CloudVisualizer(cloudLayouter);
+                var path = Directory.CreateDirectory($"{AppDomain.CurrentDomain.BaseDirectory}\\Tests").FullName;
+                Directory.CreateDirectory(path);
+                path += $"\\ID-{TestContext.CurrentContext.Test.ID}.png";
+                visualizer.GetAndSaveImage(path);
+                Console.WriteLine($"Tag cloud visualization saved to file {path}");
             }
         }
     }
