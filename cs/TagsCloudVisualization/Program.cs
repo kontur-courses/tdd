@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -16,7 +15,7 @@ namespace TagsCloudVisualization
             var layouter = new CircularCloudLayouter(center);
             layouter.PutRectangles(Enumerable.Range(0, count).Select(__ => rnd.GenerateRandomSize()));
 
-            var filename = $"{Path.GetTempPath()}CCL_{(int)DateTime.Now.TimeOfDay.TotalSeconds}.png";
+            var filename = $"{Path.GetTempPath()}CCL-{Utils.GetTimeStringCompatibleWithFileName(DateTime.Now)}.png";
             Utils.SaveRectanglesToPngFile(layouter.GetRectangles(), filename);
         }
     }
