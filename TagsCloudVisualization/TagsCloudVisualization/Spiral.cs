@@ -29,7 +29,6 @@ namespace TagsCloudVisualization
                         yield return new Point(i + _center.X, j + _center.Y);
                     }
                 }
-
                 _radius++;
             }
         }

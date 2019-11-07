@@ -28,7 +28,7 @@ namespace TagsCloudVisualization
 
         public void DrawStrings(string str, Font font)
         {
-            var sizeStr = (_graphics.MeasureString(str, font) + new SizeF(2, 2)).ToSize();
+            var sizeStr = (_graphics.MeasureString(str, font) + new SizeF(1, 1)).ToSize();
             var rectangleStr = _layouter.PutNextRectangle(sizeStr);
             _graphics.DrawString(str, font, _brush, rectangleStr, _stringFormat);
         }
