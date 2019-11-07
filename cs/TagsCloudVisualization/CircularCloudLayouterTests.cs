@@ -53,69 +53,30 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        [TestCase(0, 0)]
-        [TestCase(10, 10)]
-        public void PutNextRectangle_ShouldChooseNextCornerPointCloserToCenter_IfThereIsFreeSpace(int centerX, int centerY)
-        {
-            var center = new Point(centerX, centerY);
-            layouter = new CircularCloudLayouter(center);
-            var size = new Size(centerX, centerY);
-            var firstRectangleSize = new Size(10, 10);
-
-            layouter.PutNextRectangle(firstRectangleSize);
-            var location1 = layouter.PutNextRectangle(new Size(7, 7)).Location;
-            var location2 = layouter.PutNextRectangle(new Size(5, 3)).Location;
-            var location3 = layouter.PutNextRectangle(new Size(5, 3)).Location;
-            var location4 = layouter.PutNextRectangle(new Size(7, 2)).Location;
-            var location5 = layouter.PutNextRectangle(new Size(10, 1)).Location;
-
-            location1.Should().Be(new Point(-5, -12) + size);
-            location2.Should().Be(new Point(2, -8) + size);
-            location3.Should().Be(new Point(-10, -5) + size);
-            location4.Should().Be(new Point(-12, -2) + size);
-            location5.Should().Be(new Point(-15, 0) + size);
-        }
-
-        [Test]
         public void PutNextRectangle_RectanglesShouldBeArrangedAsCircle()
         {
-            var rectangleSize = new Size(5, 2);
+            var sizes = Generator.GetRandomSizesList(1, 10, 1, 10, 500, new Random(100));
+            var rectangelsArea = 0;
 
-            for (var i = 0; i < 100; i++)
-                layouter.PutNextRectangle(rectangleSize);
-
-            var minTop = layouter.Rectangles.Min(rect => rect.Top);
-            var maxBottom = layouter.Rectangles.Max(rect => rect.Bottom);
-            var maxRight = layouter.Rectangles.Max(rect => rect.Right);
-            var minLeft = layouter.Rectangles.Min(rect => rect.Left);
-
-            var maxRadius = 18;
-            minTop.Should().BeGreaterOrEqualTo(-maxRadius);
-            maxBottom.Should().BeLessOrEqualTo(maxRadius);
-            maxRight.Should().BeLessOrEqualTo(maxRadius);
-            minLeft.Should().BeGreaterOrEqualTo(-maxRadius);
-        }
-
-        private List<Size> GetRandomSizesList(int minWidth, int maxWidth, int minHeight, int maxHeight, int numberOfSizes)
-        {
-            var random = new Random();
-            var sizes = new List<Size>();
-
-            for (var i = 0; i < numberOfSizes; i++)
+            foreach (var size in sizes)
             {
-                var width = random.Next(minWidth, maxWidth);
-                var height = random.Next(minHeight, maxHeight);
-                sizes.Add(new Size(width, height));
+                var rectangle = layouter.PutNextRectangle(size);
+                rectangelsArea += rectangle.Width * rectangle.Height;
             }
 
-            return sizes;
+            var squaredMaxRadius = (int)Math.Ceiling(rectangelsArea / Math.PI);
+            squaredMaxRadius += squaredMaxRadius / 4;
+            var corners = layouter.Rectangles
+                .SelectMany(rectangle => rectangle.GetCorners()).ToList();
+            foreach (var corner in corners)
+                corner.SquaredDistanceTo(layouter.Center).Should().BeLessThan(squaredMaxRadius);
         }
 
         [Test]
         [Repeat(5)]
         public void PutNextRectangle_RectanglesShouldNotIntersect()
         {
-            var sizes = GetRandomSizesList(1, 10, 1, 10, 100);
+            var sizes = Generator.GetRandomSizesList(1, 10, 1, 10, 100, new Random());
 
             foreach (var size in sizes)
                 layouter.PutNextRectangle(size);

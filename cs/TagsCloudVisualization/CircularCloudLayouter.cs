@@ -20,20 +20,20 @@ namespace TagsCloudVisualization
             corners = new SortedSet<Point>(new PointsRadiusComparer(center));
         }
 
-        private List<Point> GetCorners(Rectangle rectangle)
-        {
-            return new List<Point>
-            {
-                rectangle.Location,
-                new Point(rectangle.Right, rectangle.Top),
-                new Point(rectangle.Right, rectangle.Bottom),
-                new Point(rectangle.Left, rectangle.Bottom)
-            };
-        }
+        //private List<Point> GetCorners(Rectangle rectangle)
+        //{
+        //    return new List<Point>
+        //    {
+        //        rectangle.Location,
+        //        new Point(rectangle.Right, rectangle.Top),
+        //        new Point(rectangle.Right, rectangle.Bottom),
+        //        new Point(rectangle.Left, rectangle.Bottom)
+        //    };
+        //}
 
         private void AddCorners(Rectangle rectangle)
         {
-            foreach (var corner in GetCorners(rectangle))
+            foreach (var corner in rectangle.GetCorners())
                 corners.Add(corner);
         }
 
@@ -50,17 +50,12 @@ namespace TagsCloudVisualization
 
         private bool IsRectangleIntersectsWithOtherRectangles(Rectangle rectangle)
         {
-            foreach (var otherRectangle in Rectangles)
-            {
-                if (rectangle.IntersectsWith(otherRectangle))
-                    return true;
-            }
-            return false;
+            return Rectangles.Any(rectangle.IntersectsWith);
         }
 
         private int GetSuitabilityCoefficient(Rectangle rectangle)
         {
-            var corners = GetCorners(rectangle);
+            var corners = rectangle.GetCorners();
             return corners.Sum(point => point.SquaredDistanceTo(Center));
         }
 
@@ -109,6 +104,13 @@ namespace TagsCloudVisualization
             Rectangles.Add(rectangle);
             AddCorners(rectangle);
             return rectangle;
+        }
+
+        public List<Rectangle> PutNextRectangles(List<Size> sizes)
+        {
+            foreach (var size in sizes)
+                PutNextRectangle(size);
+            return Rectangles;
         }
     }
 }
