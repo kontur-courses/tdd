@@ -55,5 +55,7 @@ namespace TagsCloudVisualization
             rectangles.Add(rectangle);
             return true;
         }
+
+        public IEnumerable<Rectangle> GetAllRectangles() => rectangles;
     }
 }

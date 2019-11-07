@@ -8,6 +8,7 @@ namespace TagsCloudVisualization
     {
         Random random;
         Bitmap bitmap;
+        Graphics graphics;
 
         public Canvas(int width, int height)
         {
@@ -16,13 +17,15 @@ namespace TagsCloudVisualization
 
             random = new Random();
             bitmap = new Bitmap(height, width);
+            graphics = Graphics.FromImage(bitmap);
         }
 
         public void Draw(Rectangle rectangle, Brush brush = null)
         {
-            var g = Graphics.FromImage(bitmap);
-            if (brush == null) g.FillRectangle(RandomBrush(), rectangle);
-            else g.FillRectangle(brush, rectangle);
+            if (brush == null) graphics.FillRectangle(RandomBrush(), rectangle);
+            else graphics.FillRectangle(brush, rectangle);
+
+            graphics.DrawRectangle(new Pen(Color.White), rectangle);
         }
 
         Brush RandomBrush()
