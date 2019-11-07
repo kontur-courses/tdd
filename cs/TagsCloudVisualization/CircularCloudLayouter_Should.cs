@@ -42,7 +42,6 @@ namespace TagsCloudVisualization
         [TestCase(0, 0, 10, 30, 30, 0, TestName = "onZeroCenter")]
         [TestCase(1000, 1000, 10, 60, 30, 0, TestName = "onSameHorizontalRectangles")]
         [TestCase(1000, 1000, 10, 30, 60, 0, TestName = "onSameVerticalRectangles")]
-        [Test]
         public void PutRectanglesCorrectly(int centerX, int centerY, int count, int startWidth, int startHeight,
             int step)
         {
@@ -58,7 +57,6 @@ namespace TagsCloudVisualization
             ContainsIntersectedRectangles(layouter).Should().Be(false);
         }
 
-        [Test]
         [Timeout(1000)]
         [TestCase(200, TestName = "on 200 rectangles")]
         [TestCase(500, TestName = "on 500 rectangles")]

@@ -8,7 +8,7 @@ namespace TagsCloudVisualization
     public class Program
     {
         private const string ExamplesDirectory = @"\..\..\Examples\";
-        private static readonly CircularCloudVisualizer visualizer = new CircularCloudVisualizer();
+        private static readonly CircularCloudVisualizer Visualizer = new CircularCloudVisualizer();
 
         public static void Main(string[] args)
         {
@@ -18,7 +18,8 @@ namespace TagsCloudVisualization
             MakeExample4();
         }
 
-        private static CircularCloudLayouter GetLayout(Point center, int count, int startWidth, int startHeight, int step)
+        private static CircularCloudLayouter GetLayout(Point center, int count, int startWidth, int startHeight,
+            int step)
         {
             var layouter = new CircularCloudLayouter(center);
             var width = startWidth;
@@ -35,7 +36,7 @@ namespace TagsCloudVisualization
 
         private static void SaveRectangles(CircularCloudLayouter layouter, string fileName)
         {
-            var image = visualizer.VisualizeLayout(layouter);
+            var image = Visualizer.VisualizeLayout(layouter);
             var fullPath = Directory.GetCurrentDirectory() + ExamplesDirectory + fileName;
             image.Save(fullPath, ImageFormat.Png);
         }
