@@ -28,6 +28,20 @@ namespace TagsCloudVisualization
             {
                 BaseLayouter = CreateBaseLayouter();
             }
+
+            public bool AreIntersecting(List<Rectangle> rectangles)
+            {
+                var areIntersecting = false;
+                for (int i = 0; i < rectangles.Count; ++i)
+                    for (int j = 0; j < rectangles.Count; ++j)
+                    {
+                        var rectangleX = rectangles[i];
+                        var rectangleY = rectangles[j];
+                        if (i != j && rectangleX.IntersectsWith(rectangleY))
+                            areIntersecting = true;
+                    }
+                return areIntersecting;
+            }
         }
 
         public class ConstructorShould : TestBase
@@ -57,8 +71,8 @@ namespace TagsCloudVisualization
             public void PutFirstRectangleInCenter()
             {
                 var rectangle = BaseLayouter.PutNextRectangle(BasicSize);
-                rectangle.X.Should().Be(BasicCenter.X);
-                rectangle.Y.Should().Be(BasicCenter.Y);
+                rectangle.X.Should().Be(BasicCenter.X - BasicSize.Width / 2);
+                rectangle.Y.Should().Be(BasicCenter.Y - BasicSize.Height / 2);
             }
 
             [TestCase(2, 2)]
@@ -72,10 +86,7 @@ namespace TagsCloudVisualization
                 {
                     rectangles.Add(BaseLayouter.PutNextRectangle(size));
                 }
-                rectangles
-                    .Any(rectangleX => rectangles
-                        .Any(rectangleY => rectangleX != rectangleY && rectangleX.IntersectsWith(rectangleY)))
-                    .Should().BeFalse();
+                AreIntersecting(rectangles).Should().BeFalse();
             }
 
             [Test]
@@ -89,14 +100,11 @@ namespace TagsCloudVisualization
                     size.Height++;
                     size.Width++;
                 }
-                rectangles
-                    .Any(rectangleX => rectangles
-                        .Any(rectangleY => rectangleX != rectangleY && rectangleX.IntersectsWith(rectangleY)))
-                    .Should().BeFalse();
+                AreIntersecting(rectangles).Should().BeFalse();
             }
 
             [Test]
-            public void NotPlaceRectanglesOnNegativeCoordinates()
+            public void NotPlaceRectangles_OnNegativeCoordinates()
             {
                 var rectangles = new List<Rectangle>();
                 var layouter = new CircularCloudLayouter(new Point(0, 0));
