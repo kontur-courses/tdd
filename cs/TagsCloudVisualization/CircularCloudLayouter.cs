@@ -8,15 +8,15 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter : ICloudLayouter
     {
         public readonly Size center;
-        private readonly List<Rectangle> rectangles;
-        private readonly IEnumerator<Point> spiralEnumerator;
+        public List<Rectangle> Rectangles { get; }
+        private readonly Spiral spiral;
         private Rectangle cloudRectangle;
 
         public CircularCloudLayouter(Point center)
         {
-            rectangles = new List<Rectangle>();
+            Rectangles = new List<Rectangle>();
             this.center = new Size(center);
-            spiralEnumerator = new Spiral(5).GetNextPointOnSpiral();
+            spiral = new Spiral(5);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -24,30 +24,20 @@ namespace TagsCloudVisualization
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException("Directions should be non-negative");
 
-            Rectangle rectangle = new Rectangle(spiralEnumerator.Current + center, rectangleSize);
+            Rectangle rectangle = new Rectangle(spiral.GetNextPointOnSpiral() + center, rectangleSize);
 
-            while (spiralEnumerator.MoveNext())
+            while (Rectangles.Any(rect => rect.IntersectsWith(rectangle)))
             {
-                rectangle = new Rectangle(spiralEnumerator.Current + center, rectangleSize);
-                if (rectangles.Count == 0 || !rectangles.Any(rect => rect.IntersectsWith(rectangle)))
-                    break;
+                rectangle = new Rectangle(spiral.GetNextPointOnSpiral() + center, rectangleSize);
             }
 
             rectangle = SnuggleRectangle(rectangle);
 
-            rectangles.Add(rectangle);
+            Rectangles.Add(rectangle);
             
             UpdateCloudRectangle(rectangle);
 
             return rectangle;
-        }
-
-        public IEnumerable<Rectangle> GetRectangles()
-        {
-            foreach (var rectangle in rectangles)
-            {
-                yield return rectangle;
-            }
         }
 
         public Rectangle CloudRectangle => cloudRectangle;
@@ -59,7 +49,7 @@ namespace TagsCloudVisualization
             while (deltaX != 0 || deltaY != 0)
             {
                 rectangle.X += deltaX;
-                if (deltaX != 0 && !rectangles.Any(rect => rect.IntersectsWith(rectangle)))
+                if (deltaX != 0 && !Rectangles.Any(rect => rect.IntersectsWith(rectangle)))
                 {
                     deltaX = Math.Sign(center.Width - rectangle.X);
                     continue;
@@ -67,7 +57,7 @@ namespace TagsCloudVisualization
 
                 rectangle.X -= deltaX;
                 rectangle.Y += deltaY;
-                if (deltaY != 0 && !rectangles.Any(rect => rect.IntersectsWith(rectangle)))
+                if (deltaY != 0 && !Rectangles.Any(rect => rect.IntersectsWith(rectangle)))
                 {
                     deltaY = Math.Sign(center.Height - rectangle.Y);
                     continue;

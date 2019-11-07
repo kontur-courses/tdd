@@ -22,7 +22,7 @@ namespace TagsCloudVisualization
             var image = new Bitmap(cloud.Width, cloud.Height);
             var graphics = Graphics.FromImage(image);
             var random = new Random();
-            foreach (var rectangle in cloudLayouter.GetRectangles())
+            foreach (var rectangle in cloudLayouter.Rectangles)
             {
                 var brush = new SolidBrush(Color.FromArgb(random.Next(255), random.Next(255), random.Next(255)));
                 rectangle.Offset(offsetPoint);

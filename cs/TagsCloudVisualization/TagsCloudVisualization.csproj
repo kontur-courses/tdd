@@ -63,7 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
-    <Compile Include="CircularCloudLayouter_Should.cs" />
+    <Compile Include="CircularCloudLayouterTests.cs" />
     <Compile Include="CloudVisualizer.cs" />
     <Compile Include="ICloudLayouter.cs" />
     <Compile Include="Program.cs" />

@@ -5,13 +5,12 @@ using FluentAssertions;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization
 {
     [TestFixture]
-    class CircularCloudLayouter_Should
+    class CircularCloudLayouterTests
     {
         private CircularCloudLayouter cloudLayouter;
 
@@ -94,7 +93,7 @@ namespace TagsCloudVisualization
             {
                 var rectangle = cloudLayouter.PutNextRectangle(new Size(random.Next(1, maxWidth), random.Next(1, maxHeight)));
 
-                cloudLayouter.GetRectangles().All(rect => cloudLayouter.CloudRectangle.Contains(rect)).Should()
+                cloudLayouter.Rectangles.All(rect => cloudLayouter.CloudRectangle.Contains(rect)).Should()
                     .BeTrue();
             }
         }
@@ -102,7 +101,7 @@ namespace TagsCloudVisualization
         [TearDown]
         public void TearDown()
         {
-            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Passed)
             {
                 var visualizer = new CloudVisualizer(cloudLayouter);
                 var path = Directory.CreateDirectory($"{AppDomain.CurrentDomain.BaseDirectory}\\Tests").FullName;

@@ -11,6 +11,7 @@ namespace TagsCloudVisualization
     {
         private readonly double turnsDistance;
         private readonly double deltaAngle;
+        private double angle;
 
         public Spiral() : this(1, 10)
         {
@@ -28,17 +29,14 @@ namespace TagsCloudVisualization
         {
             this.turnsDistance = turnsDistance / 2 / Math.PI;
             this.deltaAngle = deltaAngle * Math.PI / 180;
+            angle = -deltaAngle;
         }
 
-        public IEnumerator<Point> GetNextPointOnSpiral()
+        public Point GetNextPointOnSpiral()
         {
-            var angle = 0d;
-            while (true)
-            {
-                var distance = turnsDistance * angle;
-                yield return getPointFromPolarCoordinates(distance, angle);
-                angle += deltaAngle;
-            }
+            angle += deltaAngle;
+            var distance = turnsDistance * angle;
+            return getPointFromPolarCoordinates(distance, angle);
         }
 
         private Point getPointFromPolarCoordinates(double r, double angle)
