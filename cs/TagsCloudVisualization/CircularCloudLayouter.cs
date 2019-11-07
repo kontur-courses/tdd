@@ -8,46 +8,53 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
-        private Point center;
-        private readonly Spiral spiral;
-        public int RightBorder { get; private set; }
-        public int BottomBorder { get; private set; }
-        public int LeftBorder { get; private set; }
-        public int TopBorder { get; private set; }
+        private readonly Point center;
+        private readonly ArchimedeanSpiral archimedeanSpiral;
+        public int CloudRightBorder { get; private set; }
+        public int CloudBottomBorder { get; private set; }
+        public int CloudLeftBorder { get; private set; }
+        public int CloudTopBorder { get; private set; }
 
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
-            spiral = new Spiral(center);
-            RightBorder = 0;
-            TopBorder = 0;
-            LeftBorder = int.MaxValue;
-            TopBorder = int.MaxValue;
+            archimedeanSpiral = new ArchimedeanSpiral(center);
+            CloudRightBorder = 0;
+            CloudTopBorder = 0;
+            CloudLeftBorder = int.MaxValue;
+            CloudTopBorder = int.MaxValue;
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var point = spiral.GetNextPoint();
+            var point = archimedeanSpiral.GetNextPoint();
             var checkedRectangle = new Rectangle(point, rectangleSize);
             while (!IsCorrectToPlace(checkedRectangle))
             {
-                point = spiral.GetNextPoint();
+                point = archimedeanSpiral.GetNextPoint();
                 checkedRectangle = new Rectangle(point, rectangleSize);
             }
+
             var adjustedRectangle = AdjustRectangle(checkedRectangle);
             UpdateBorders(adjustedRectangle);
             rectangles.Add(adjustedRectangle);
             return adjustedRectangle;
-
         }
+
+        public List<Rectangle> GetRectangles()
+        {
+            return rectangles
+                .Select(rectangle => new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height))
+                .ToList();
+        }
+
         private void UpdateBorders(Rectangle newRectangle)
         {
-            RightBorder = Math.Max(RightBorder, newRectangle.X + newRectangle.Width);
-            LeftBorder = Math.Min(LeftBorder, newRectangle.X);
-            BottomBorder = Math.Max(BottomBorder, newRectangle.Y + newRectangle.Height);
-            TopBorder = Math.Min(TopBorder, newRectangle.Y);
+            CloudRightBorder = Math.Max(CloudRightBorder, newRectangle.Right);
+            CloudLeftBorder = Math.Min(CloudLeftBorder, newRectangle.X);
+            CloudBottomBorder = Math.Max(CloudBottomBorder, newRectangle.Bottom);
+            CloudTopBorder = Math.Min(CloudTopBorder, newRectangle.Y);
         }
 
         private Rectangle AdjustRectangle(Rectangle rectangle)
@@ -56,6 +63,7 @@ namespace TagsCloudVisualization
             rectangle = MoveRectangleVertically(rectangle);
             return rectangle;
         }
+
         private Rectangle MoveRectangleHorizontally(Rectangle rectangle)
         {
             var stepSize = rectangle.X < center.X ? 1 : -1;
@@ -64,6 +72,7 @@ namespace TagsCloudVisualization
             {
                 checkedRectangle.X += stepSize;
             }
+
             if (!IsCorrectToPlace(checkedRectangle))
             {
                 checkedRectangle.X -= stepSize;
@@ -89,7 +98,6 @@ namespace TagsCloudVisualization
             return checkedRectangle;
         }
 
-
         private bool IsCorrectToPlace(Rectangle checkedRectangle)
         {
             if (checkedRectangle.X < 0 || checkedRectangle.Y < 0)
@@ -99,12 +107,5 @@ namespace TagsCloudVisualization
 
             return rectangles.All(rectangle => !rectangle.IntersectsWith(checkedRectangle));
         }
-
-
-        public List<Rectangle> GetRectangles()
-        {
-            return rectangles.Select(rectangle => new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height)).ToList();
-        }
     }
-
 }

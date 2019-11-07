@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
@@ -9,35 +11,28 @@ namespace TagsCloudVisualization
     [TestFixture]
     public class CircularCloudLayouter_Should
     {
+        private readonly CircularCloudVisualizer visualizer = new CircularCloudVisualizer();
         private CircularCloudLayouter layouter;
-
-        public void InitializeLayouter(Point center)
-        {
-            layouter = new CircularCloudLayouter(center);
-        }
+        private static string TestDirectoryPath => Path.Combine(Directory.GetCurrentDirectory(), @"\visualization\");
 
         [TearDown]
         public void TearDown()
         {
-            if (TestContext.CurrentContext.Result.Outcome == ResultState.Failure)
+            if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure)
             {
-                var visualizer = new CircularCloudVisualizer(layouter, TestContext.CurrentContext.Test.FullName);
-                visualizer.VisualizeLayout();
-                TestContext.WriteLine($"Tag cloud visualization saved to file {visualizer.FilePath}");
+                return;
             }
-        }
 
-        [Test]
-        public void BeEmpty_WhenCreated()
-        {
-            InitializeLayouter(new Point(0, 0));
-            layouter.GetRectangles().Should().BeEquivalentTo(new List<Rectangle>());
+            var fullPath = Path.Combine(TestDirectoryPath, TestContext.CurrentContext.Test.FullName + ".png");
+            var image = visualizer.VisualizeLayout(layouter);
+            image.Save(fullPath, ImageFormat.Png);
+            TestContext.WriteLine($"Tag cloud visualization saved to file {fullPath}");
         }
 
         [Test]
         public void PutInCenter_OnSingleRectangle()
         {
-            InitializeLayouter(new Point(500, 500));
+            layouter = new CircularCloudLayouter(new Point(500, 500));
             layouter.PutNextRectangle(new Size(200, 100)).Should().Be(new Rectangle(500, 500, 200, 100));
         }
 
@@ -48,10 +43,11 @@ namespace TagsCloudVisualization
         [TestCase(1000, 1000, 10, 60, 30, 0, TestName = "onSameHorizontalRectangles")]
         [TestCase(1000, 1000, 10, 30, 60, 0, TestName = "onSameVerticalRectangles")]
         [Test]
-        public void PutRectanglesCorrectly(int centerX, int centerY, int count, int startWidth, int startHeight, int step)
+        public void PutRectanglesCorrectly(int centerX, int centerY, int count, int startWidth, int startHeight,
+            int step)
         {
             var center = new Point(centerX, centerY);
-            InitializeLayouter(center);
+            layouter = new CircularCloudLayouter(center);
             var sizes = CreateSizeList(count, startWidth, startHeight, step);
             foreach (var size in sizes)
             {
@@ -67,10 +63,9 @@ namespace TagsCloudVisualization
         [TestCase(200, TestName = "on 200 rectangles")]
         [TestCase(500, TestName = "on 500 rectangles")]
         [TestCase(1000, TestName = "on 1000 rectangles")]
-
         public void HaveCorrectTime_OnManyRectangles(int count)
         {
-            InitializeLayouter(new Point(500, 500));
+            layouter = new CircularCloudLayouter(new Point(500, 500));
             for (var i = 0; i < count; i++)
             {
                 layouter.PutNextRectangle(new Size(40, 20));
@@ -79,7 +74,7 @@ namespace TagsCloudVisualization
             layouter.GetRectangles().Count.Should().Be(count);
         }
 
-        private List<Size> CreateSizeList(int count, int startWidth, int startHeight, int step)
+        private static List<Size> CreateSizeList(int count, int startWidth, int startHeight, int step)
         {
             var sizeList = new List<Size>();
             var width = startWidth;
@@ -94,7 +89,7 @@ namespace TagsCloudVisualization
             return sizeList;
         }
 
-        private bool ContainsIntersectedRectangles(CircularCloudLayouter layouter)
+        private static bool ContainsIntersectedRectangles(CircularCloudLayouter layouter)
         {
             var rectangles = layouter.GetRectangles();
             foreach (var firstRectangle in rectangles)
