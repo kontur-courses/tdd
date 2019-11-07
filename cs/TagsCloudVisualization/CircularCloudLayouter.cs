@@ -11,13 +11,13 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private ArchimedesSpiral archimedesSpiral;
+        public ArchimedesSpiral ArchimedesSpiral { get; }
 
         public List<Rectangle> Rectangles { get; }
 
         public CircularCloudLayouter(Point center)
         {
-            archimedesSpiral = new ArchimedesSpiral(center, 1);
+            ArchimedesSpiral = new ArchimedesSpiral(center, 1);
             Rectangles = new List<Rectangle>();
         }
         
@@ -27,16 +27,16 @@ namespace TagsCloudVisualization
             if(rectangleSize.IsEmpty)
                 throw new ArgumentException();
             var rect = new Rectangle(Point.Empty, rectangleSize);
-            var rectangleLocation = GetNextRectanglLocation(rectangleSize);
+            var rectangleLocation = GetNextRectangleLocation(rectangleSize);
             var centeredLocation = rect.GetRectangleCenteredLocation(rectangleLocation);
             rect.Location = centeredLocation;
             Rectangles.Add(rect);
             return rect;
         }
 
-        private Point GetNextRectanglLocation(Size rectangleSize)
+        private Point GetNextRectangleLocation(Size rectangleSize)
         {
-            foreach (var point in archimedesSpiral.GetSpiralPoints())
+            foreach (var point in ArchimedesSpiral.GetSpiralPoints())
             {
                 var rectangleToPlace = new Rectangle(Point.Empty, rectangleSize);
                 var centeredLocation = rectangleToPlace.GetRectangleCenteredLocation(point);
