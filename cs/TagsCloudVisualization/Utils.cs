@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 
 namespace TagsCloudVisualization
@@ -159,6 +160,36 @@ namespace TagsCloudVisualization
             var tmpRect = new Rectangle(-rect.Width / 2, -rect.Height / 2, rect.Width, rect.Height);
             tmpRect.IsIntersectsByRay(rayAngle, out double intersectionPointDistance);
             return intersectionPointDistance;
+        }
+
+        public static void SaveRectanglesToPngFile(IEnumerable<Rectangle> rectangles, string filename)
+        {
+            if (rectangles.Count() == 0)
+                throw new ArgumentException("There are no items.");
+
+            var left = rectangles.Min(r => r.Left);
+            var right = rectangles.Max(r => r.Right);
+            var top = rectangles.Min(r => r.Top);
+            var bottom = rectangles.Max(r => r.Bottom);
+
+            using (var bmp = new Bitmap(right - left, bottom - top))
+            {
+                using (var graphics = Graphics.FromImage(bmp))
+                {
+                    graphics.Clear(Color.RosyBrown);
+                    var brush = new SolidBrush(Color.Green);
+                    var pen = new Pen(Color.Black);
+                    var textBrush = new SolidBrush(Color.Black);
+                    var i = 0;
+                    foreach (var rect in rectangles)
+                    {
+                        graphics.FillRectangle(brush, rect.X - left, rect.Y - top, rect.Width, rect.Height);
+                        graphics.DrawRectangle(pen, rect.X - left, rect.Y - top, rect.Width, rect.Height);
+                        graphics.DrawString((++i).ToString(), new Font("Tahoma", rect.Height, GraphicsUnit.Pixel), textBrush, rect.X - left, rect.Y - top - 1);
+                    }
+                }
+                bmp.Save(filename, ImageFormat.Png);
+            }
         }
     }
 }
