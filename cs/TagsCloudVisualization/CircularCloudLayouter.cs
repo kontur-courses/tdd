@@ -24,8 +24,9 @@ namespace TagsCloudVisualization
         {
             if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
                 throw new ArgumentException();
+
             var newRectangle = PutRectangleOnSpiral(rectangleSize);
-            while (Rectangles.Any(x => x.IntersectsWith(newRectangle)))
+            while (newRectangle.IntersectsWith(Rectangles))
             {
                 newRectangle = PutRectangleOnSpiral(rectangleSize);
             }
@@ -63,7 +64,7 @@ namespace TagsCloudVisualization
         {
             var newRectangle = new Rectangle(rectangle.Location, rectangle.Size);
             newRectangle.Offset(direction);
-            return Rectangles.Any(el => el.IntersectsWith(newRectangle)) ? rectangle : newRectangle;
+            return newRectangle.IntersectsWith(Rectangles) ? rectangle : newRectangle;
         }
     }
 }
