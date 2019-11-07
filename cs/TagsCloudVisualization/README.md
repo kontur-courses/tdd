@@ -1,13 +1,13 @@
-# Немного визуализаций облака #
+# ГЌГҐГ¬Г­Г®ГЈГ® ГўГЁГ§ГіГ Г«ГЁГ§Г Г¶ГЁГ© Г®ГЎГ«Г ГЄГ  #
+ 
 
-
-## Облако из одного прямоугольника ##
+## ГЋГЎГ«Г ГЄГ® ГЁГ§ Г®Г¤Г­Г®ГЈГ® ГЇГ°ГїГ¬Г®ГіГЈГ®Г«ГјГ­ГЁГЄГ  ##
 ![TagCloud1](https://github.com/hariton27sy/tdd/raw/master/cs/TagsCloudVisualization/Tests/ID-0-1007.png)
 
 
-## Облако из 10 прямоугольников ##
+## ГЋГЎГ«Г ГЄГ® ГЁГ§ 10 ГЇГ°ГїГ¬Г®ГіГЈГ®Г«ГјГ­ГЁГЄГ®Гў ##
 ![TagCloud2](https://github.com/hariton27sy/tdd/raw/master/cs/TagsCloudVisualization/Tests/ID-0-1014.png)
 
 
-## Облако из 100 прямоугольников ##
+## ГЋГЎГ«Г ГЄГ® ГЁГ§ 100 ГЇГ°ГїГ¬Г®ГіГЈГ®Г«ГјГ­ГЁГЄГ®Гў ##
 ![TagCloud3](https://github.com/hariton27sy/tdd/raw/master/cs/TagsCloudVisualization/Tests/ID-0-1015.png)
