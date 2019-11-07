@@ -63,10 +63,41 @@ namespace TagsCloudVisualization
         [TestCaseSource(nameof(LocationTestCases))]
         public void PutNextRectangle_RectanglesAreLocatedAroundTheCenter_AfterPuttingRectangles(Func<Rectangle, bool> checkSide)
         {
-            var rectangles = GenerateRandomRectangleSizes(10, 10, 10)
+            var rectangles = GenerateRandomRectangleSizes(20, 20, 20)
                 .Select(layouter.PutNextRectangle);
 
             Assert.IsNotEmpty(rectangles.Where(checkSide));
+        }
+
+        [Test]
+        public void PutNextRectangle_UsesOptimalPlace_OnPuttingRectangles()
+        {
+            var size = new Size(5, 5);
+            var maxDistance = 3 * (Math.Pow(size.Width, 2) + Math.Pow(size.Height, 2));
+            var centerRectangle = layouter.PutNextRectangle(size);
+
+            var rectangles = GenerateRandomRectangleSizes(8, size.Width, size.Height)
+                .Select(layouter.PutNextRectangle);
+
+            var rectanglesOutsideRadius = rectangles
+                .Where(r => GetSquaredDistanceBetweenCenters(centerRectangle, r) > maxDistance);
+            Assert.IsEmpty(rectanglesOutsideRadius);
+        }
+
+        private static double GetSquaredDistanceBetweenCenters(Rectangle first, Rectangle second)
+        {
+            var firstCenter = GetCenter(first);
+            var secondCenter = GetCenter(second);
+            return Math.Pow(firstCenter.X - secondCenter.X, 2) +
+                   Math.Pow(firstCenter.Y - secondCenter.Y, 2);
+        }
+
+        private static Point GetCenter(Rectangle rectangle)
+        {
+            return new Point(
+                rectangle.X + rectangle.Width / 2,
+                rectangle.Y + rectangle.Width / 2
+            );
         }
 
         private static IEnumerable<Size> GenerateRandomRectangleSizes(int count, int maxWidth, int maxHeight)

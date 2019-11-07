@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -33,14 +34,60 @@ namespace TagsCloudVisualization
             {
                 var location = point.Add(shiftPoint);
                 var rectangle = new Rectangle(location, rectangleSize);
-                if (rectangles.Any(rectangle.IntersectsWith))
+                if (IntersectsWithOthers(rectangle))
                 {
                     continue;
+                }
+                if (rectangles.Count > 0)
+                {
+                    rectangle = MoveToCenter(rectangle);
                 }
                 rectangles.Push(rectangle);
                 return rectangle;
             }
             return Rectangle.Empty;
         }
+
+        private Rectangle MoveToCenter(Rectangle rectangle)
+        {
+            Rectangle result;
+            var next = rectangle;
+            do
+            {
+                result = next;
+                next = MoveToCenterByHorizontally(next);
+                next = MoveToCenterByVertically(next);
+            } while (result != next);
+            return result;
+        }
+
+        private Rectangle MoveToCenterByHorizontally(Rectangle rectangle)
+        {
+            var next = rectangle;
+            var dx = Math.Sign(center.X - rectangle.X);
+            do
+            {
+                rectangle = next;
+                next.X += dx;
+            } while (next.X != center.X && !IntersectsWithOthers(next));
+
+            return rectangle;
+        }
+
+        private Rectangle MoveToCenterByVertically(Rectangle rectangle)
+        {
+            var next = rectangle;
+            var dy = Math.Sign(center.Y - rectangle.Y);
+            do
+            {
+                rectangle = next;
+                next.Y += dy;
+            } while (next.Y != center.Y && !IntersectsWithOthers(next));
+
+            return rectangle;
+        }
+
+        private bool IntersectsWithOthers(Rectangle rectangle) =>
+            rectangles.Any(rectangle.IntersectsWith);
     }
 }
