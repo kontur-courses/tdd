@@ -21,9 +21,9 @@ namespace TagsCloudVisualization
         {
             if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
                 throw new ArgumentException("Tags Cloud rectangle size parameters should be positive.");
-            var tempRect = new Rectangle(spiral.GetNextCoordinates(), rectangleSize);
-            while (arrangedRectangles.Any(r => r.IntersectsWith(tempRect)))
-                tempRect.Location = spiral.GetNextCoordinates();
+            var tempRect = new Rectangle(spiral.Current, rectangleSize);
+            while (arrangedRectangles.Any(r => r.IntersectsWith(tempRect)) && spiral.MoveNext())
+                tempRect.Location = spiral.Current;
             arrangedRectangles.Add(tempRect);
             return tempRect;
         }

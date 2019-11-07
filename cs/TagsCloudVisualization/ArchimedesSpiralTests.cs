@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace TagsCloudVisualization
 {
     [TestFixture]
-    public class ArchimedesSpiralConstructor_Should
+    public class ArchimedesSpiralConstructorTests
     {
         [TestCase(0, 10, TestName = "radius is zero")]
         [TestCase(10, 0, TestName = "increment is zero")]
@@ -20,7 +20,7 @@ namespace TagsCloudVisualization
     }
 
     [TestFixture]
-    public class ArchimedesSpiralGetNextCoordinates_Should
+    public class ArchimedesSpiralTests
     {
         private ArchimedesSpiral archimedesSpiral;
         private Point spiralCenter = new Point(500, 500);
@@ -34,18 +34,31 @@ namespace TagsCloudVisualization
         [Test]
         public void FirstCoordinateEqualToCenter()
         {
-            var coordinates = archimedesSpiral.GetNextCoordinates();
+            var coordinates = archimedesSpiral.Current;
 
             coordinates.Should().BeEquivalentTo(spiralCenter);
         }
 
         [Test]
-        public void IncrementCoordinatesAutomatically()
+        public void MoveNextIncrementsCoordinates()
         {
-            var firstCoordinates = archimedesSpiral.GetNextCoordinates();
-            var nextCoordinates = archimedesSpiral.GetNextCoordinates();
+            var firstCoordinates = archimedesSpiral.Current;
+            archimedesSpiral.MoveNext();
+            var nextCoordinates = archimedesSpiral.Current;
 
             firstCoordinates.Should().NotBeEquivalentTo(nextCoordinates);
+        }
+        
+        [Test]
+        public void ResetResetsAllSpiralChangedValues()
+        {
+            var startSpiral =  new ArchimedesSpiral(spiralCenter, 1, 1);
+            
+            for(var i= 0; i<10;i++)
+                archimedesSpiral.MoveNext();
+            archimedesSpiral.Reset();
+            
+            archimedesSpiral.Should().BeEquivalentTo(startSpiral);
         }
     }
 }

@@ -20,6 +20,14 @@ namespace TagsCloudVisualization
 
             action.Should().Throw<ArgumentException>();
         }
+
+        [Test]
+        public void CreateNewInstance_WhenCenterCoordinatesArePositive()
+        {
+            Action action = () => new CircularCloudLayouter(new Point(150, 250));
+
+            action.Should().NotThrow<Exception>();
+        }
     }
 
     [TestFixture]
@@ -47,21 +55,17 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void AddRectangle_When_SizeIsPositive()
+        public void NotChangeRectangleSize()
         {
-            var checkList = new List<Rectangle>();
+            var addedRectangle = circularCloudLayouter.PutNextRectangle(new Size(100, 200));
 
-            checkList.Add(circularCloudLayouter.PutNextRectangle(new Size(100, 200)));
-
-            checkList.Count.Should().Be(1);
+            addedRectangle.Size.Should().BeEquivalentTo(new Size(100, 200));
         }
 
         [Test]
         public void AddFirstRectangleInTheCloudCenter()
         {
-            Rectangle addedRectangle;
-
-            addedRectangle = circularCloudLayouter.PutNextRectangle(new Size(100, 200));
+            var addedRectangle = circularCloudLayouter.PutNextRectangle(new Size(100, 200));
 
             addedRectangle.Location.Should().BeEquivalentTo(layouterCenter);
         }
@@ -69,11 +73,8 @@ namespace TagsCloudVisualization
         [Test]
         public void AddNextRectangle_That_DoesntIntersectWithFirst()
         {
-            Rectangle firstRectangle;
-            Rectangle secondRectangle;
-
-            firstRectangle = circularCloudLayouter.PutNextRectangle(new Size(100, 200));
-            secondRectangle = circularCloudLayouter.PutNextRectangle(new Size(50, 100));
+            var firstRectangle = circularCloudLayouter.PutNextRectangle(new Size(100, 200));
+            var secondRectangle = circularCloudLayouter.PutNextRectangle(new Size(50, 100));
 
             secondRectangle.IntersectsWith(firstRectangle).Should().BeFalse();
         }
@@ -81,14 +82,62 @@ namespace TagsCloudVisualization
         [Test]
         public void AddMultipleRectangles_That_DontIntersectWithEachOther()
         {
-            List<Rectangle> checkList = new List<Rectangle>();
-
-            checkList.Add(circularCloudLayouter.PutNextRectangle(new Size(100, 200)));
-            checkList.Add(circularCloudLayouter.PutNextRectangle(new Size(130, 250)));
-            checkList.Add(circularCloudLayouter.PutNextRectangle(new Size(210, 160)));
-            checkList.Add(circularCloudLayouter.PutNextRectangle(new Size(120, 115)));
+            var checkList = new List<Rectangle>
+            {
+                circularCloudLayouter.PutNextRectangle(new Size(100, 200)),
+                circularCloudLayouter.PutNextRectangle(new Size(130, 250)),
+                circularCloudLayouter.PutNextRectangle(new Size(210, 160)),
+                circularCloudLayouter.PutNextRectangle(new Size(120, 115))
+            };
 
             checkList.Any(r1 => checkList.Any(r2 => r1.IntersectsWith(r2) && r1 != r2)).Should().BeFalse();
+        }
+
+        [Test]
+        public void PlaceTwoRectanglesCloseToEachOther()
+        {
+            var acceptableXAxisShift = 50;
+            var firstRectangle = circularCloudLayouter.PutNextRectangle(new Size(100, 100));
+            var secondRectangle = circularCloudLayouter.PutNextRectangle(new Size(20, 102));
+
+            secondRectangle.Y.Should().Be(firstRectangle.Top);
+            secondRectangle.X.Should().BeInRange(firstRectangle.Left - acceptableXAxisShift,
+                firstRectangle.Right + acceptableXAxisShift);
+        }
+
+        [Test]
+        public void AddMultipleRectangles_That_FormACircleLikeShape()
+        {
+            var acceptableRatio = 60;
+            var furthestDistance = 0d;
+            var rectanglesSquare = 0d;
+
+            var checkList = new List<Rectangle>
+            {
+                circularCloudLayouter.PutNextRectangle(new Size(100, 200)),
+                circularCloudLayouter.PutNextRectangle(new Size(130, 250)),
+                circularCloudLayouter.PutNextRectangle(new Size(210, 160)),
+                circularCloudLayouter.PutNextRectangle(new Size(120, 115))
+            };
+            foreach (var rectangle in checkList)
+            {
+                var distance = GetDistanceBetweenRectangleAndPoint(rectangle, layouterCenter);
+                if (distance > furthestDistance)
+                    furthestDistance = distance;
+                rectanglesSquare += rectangle.Width * rectangle.Height;
+            }
+
+            var circleSquare = furthestDistance * furthestDistance * Math.PI;
+            var squareRatio = rectanglesSquare / circleSquare * 100;
+            squareRatio.Should().Be(acceptableRatio);
+        }
+
+        private static double GetDistanceBetweenRectangleAndPoint(Rectangle rectangle, Point point)
+        {
+            var rectangleCentre = new Point(rectangle.Location.X + rectangle.Width / 2,
+                rectangle.Location.Y + rectangle.Height / 2);
+
+            return Math.Sqrt(Math.Pow(rectangleCentre.X - point.X, 2) + Math.Pow(rectangleCentre.Y - point.Y, 2));
         }
     }
 }
