@@ -12,6 +12,7 @@ namespace TagsCloudVisualization
     [TestFixture]
     class CircularCloudLayouterTests
     {
+        // Избавился от Should и в названии класса и в названиях методов)
         private CircularCloudLayouter cloudLayouter;
 
         [TestCase(-2, 5, TestName = "Negative width")]
@@ -28,7 +29,7 @@ namespace TagsCloudVisualization
 
         [TestCase(0, 0, TestName = "Zero center")]
         [TestCase(10, 20, TestName = "Non-zero center")]
-        public void AddingOneRectangle_ShouldBeInCenter(int cloudCenterX, int cloudCenterY)
+        public void AddingOneRectangle_PlaceInCenter(int cloudCenterX, int cloudCenterY)
         {
             var cloudCenter = new Point(cloudCenterX, cloudCenterY);
             var rectangleSize = new Size(20, 10);
@@ -84,7 +85,7 @@ namespace TagsCloudVisualization
         [TestCase(0, 0, 100, 100, 20, TestName = "Zero center")]
         [TestCase(50, 50, 100, 100, 20, TestName = "Positive center")]
         [TestCase(-50, -50, 100, 100, 20, TestName = "Negative center")]
-        public void CloudRectangleProperty_ShouldCoverAllRectangles(int centerX, int centerY, int maxWidth,
+        public void CloudRectangleProperty_CoverAllRectangles(int centerX, int centerY, int maxWidth,
             int maxHeight, int rectanglesCount)
         {
             var cloudLayouter = new CircularCloudLayouter(new Point(centerX, centerY));
@@ -101,7 +102,7 @@ namespace TagsCloudVisualization
         [TearDown]
         public void TearDown()
         {
-            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Passed)
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
                 var visualizer = new CloudVisualizer(cloudLayouter);
                 var path = Directory.CreateDirectory($"{AppDomain.CurrentDomain.BaseDirectory}\\Tests").FullName;

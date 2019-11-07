@@ -8,8 +8,11 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter : ICloudLayouter
     {
         public readonly Size center;
-        public List<Rectangle> Rectangles { get; }
-        private readonly Spiral spiral;
+        public List<Rectangle> Rectangles { get; } // Перевел GetRectangles в проперти,
+                                                   // Изначально делал IEnumerable чтобы он не передавал текущий список
+                                                   // чтобы его нельзя было изменять. А если передатвать копию всего листа
+                                                   // то памяти уйдет больше.
+        private readonly Spiral spiral; // теперь в классе Spiral метод возвращает просто следующую точку
         private Rectangle cloudRectangle;
 
         public CircularCloudLayouter(Point center)
