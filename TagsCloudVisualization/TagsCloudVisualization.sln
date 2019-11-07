@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.779
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{DB0947A0-6568-4921-9B1F-C0BFA161E69C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DB0947A0-6568-4921-9B1F-C0BFA161E69C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB0947A0-6568-4921-9B1F-C0BFA161E69C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB0947A0-6568-4921-9B1F-C0BFA161E69C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB0947A0-6568-4921-9B1F-C0BFA161E69C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {18763844-16DC-43BE-9E6E-7C247828FD6A}
+	EndGlobalSection
+EndGlobal
