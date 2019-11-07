@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+//пришлось скачивать через нугет так как на нетКоре не было битмапа)
 using System.Drawing;
-using System.Linq;
-using System.Text;
-
 
 namespace TagCloud
 {
@@ -25,8 +23,8 @@ namespace TagCloud
             var height = layouter.SizeOfCloud.Height + border;
             var bitmap = new Bitmap(width, height);
             var graphics = Graphics.FromImage(bitmap);
-            var whiteRectangle =new Rectangle(0, 0, width, height);
 
+            var whiteRectangle =new Rectangle(0, 0, width, height);
             graphics.FillRegion(new SolidBrush(Color.White), new Region(whiteRectangle));
 
             var penTeration = 0;
@@ -40,5 +38,3 @@ namespace TagCloud
         }
     }
 }
-
-

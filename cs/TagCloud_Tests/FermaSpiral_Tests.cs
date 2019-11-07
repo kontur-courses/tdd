@@ -10,8 +10,9 @@ namespace TagCloud_Tests
 {
     class FermaSpiral_Tests
     {
-        [Test]
-        public void CountOfPointsInQuartersAlmostEqual()
+        [TestCase(100, 5, TestName = "AtHundredPoints")]
+        [TestCase(1000, 3, TestName = "AtThousandPoints")]
+        public void ContainsCountOfPointsInQuartersThatAlmostEqual(int countPoints, int accuracy)
         {
             var points = new List<Point>();
             var spiral = new FermaSpiral(1, new Point(0, 0));

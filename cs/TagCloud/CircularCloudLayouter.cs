@@ -10,15 +10,10 @@ namespace TagCloud
         public readonly Point Center;
         private readonly FermaSpiral spiralPointer;
         public readonly List<Rectangle> Rectangles;
-        public Size SizeOfCloud
-        {
-            get
-            {
-                if (Rectangles.Count == 0) return new Size(0, 0);
-                return new Size(RightUpperPointOfCloud.X - LeftDownPointOfCloud.X,
-                    RightUpperPointOfCloud.Y - LeftDownPointOfCloud.Y);
-            }
-        }
+        public Size SizeOfCloud =>
+            new Size(RightUpperPointOfCloud.X - LeftDownPointOfCloud.X,
+                RightUpperPointOfCloud.Y - LeftDownPointOfCloud.Y);
+
         public Point LeftDownPointOfCloud
         {
             get
@@ -43,6 +38,7 @@ namespace TagCloud
         {
             Rectangles = new List<Rectangle>();
             Center = center;
+            //Нужно как-то объяснить почему именно такой коэффицент?
             spiralPointer = new FermaSpiral(1, center);
 
         }
@@ -58,6 +54,9 @@ namespace TagCloud
                 rect.X = currentPoint.X;
                 rect.Y = currentPoint.Y;
             }
+            //Проблема: обновляет много раз подряд из-за приведения типов, искал функцию что будет все реже и реже перезапускать спираль
+            //чем больше точек добавлено
+            //попробую исправить, найдя другую, или использовав сравнение флоата
             if((int)Math.Log(Rectangles.Count)%4==0)
                 spiralPointer.Reset();
             Rectangles.Add(rect);

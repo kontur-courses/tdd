@@ -9,7 +9,11 @@ using TagCloud;
 
 namespace TagCloud_Tests
 {
-
+    //за основу конфенции именования взято
+    //TestMethod_Condition_ExpectedResult
+    // в силу тест кейсов изменено на 
+    // TestMethod_ExpectedResult_AtCondition
+    //для того чтобы последняя часть менялась в зависимости от названия кейса
     public class CircularCloudLayouter_Tests
     {
         public static CircularCloudLayouter cloudLayouter;
@@ -21,7 +25,7 @@ namespace TagCloud_Tests
         }
 
         [Test]
-        public void SizeOfCloud_ReturnsSameSizeAsParameterAfterOneRectangle()
+        public void SizeOfCloud_ReturnsSameSize_AtPositiveSize()
         {
             var size = new Size(10, 5);
 
@@ -33,9 +37,41 @@ namespace TagCloud_Tests
                 .Be(size);
         }
 
+        [TestCase(10, 10, TestName = "WithMaxHeightAndWidth10")]
+        [TestCase(50, 50, TestName = "WithMaxHeightAndWidth50")]
+        public void ContainsRectanglesThatNotIntersectEachOther_AtAddingRectanglesList(int widthMax, int heightMax)
+        {
+            var sizes = new List<Size>();
+            for (var width = 5; width < widthMax; width += 2)
+                for (var height = 5; height < heightMax; height += 2)
+                    sizes.Add(new Size(width, height));
+            var rectangles = cloudLayouter.Rectangles;
+
+            sizes.ForEach(s => cloudLayouter.PutNextRectangle(s));
+            var isAnyIntersects = rectangles.Any(r1 => rectangles.Any(r2 => (r1 != r2 && r1.IntersectsWith(r2))));
+
+            isAnyIntersects.Should().BeFalse();
+        }
+
+        [Test]
+        public void ContainsTheSameSizes_AtAddingRectanglesList()
+        {
+
+            var sizes = new List<Size>();
+            for (var width = 5; width < 50; width += 2)
+                for (var height = 5; height < 50; height += 2)
+                    sizes.Add(new Size(width, height));
+
+            sizes.ForEach(s => cloudLayouter.PutNextRectangle(s));
+            var rectangles = cloudLayouter.Rectangles.Select(rect => new Size(rect.Width, rect.Height));
+
+            rectangles
+                .Should()
+                .BeEquivalentTo(sizes);
+        }
 
         [TestFixture]
-        public class RectanglesAfterPutting
+        public class PutNextRectangle
         {
             [SetUp]
             public void Setup()
@@ -43,20 +79,11 @@ namespace TagCloud_Tests
                 var center = new Point(0, 0);
                 cloudLayouter = new CircularCloudLayouter(center);
             }
-            public static IEnumerable TestCases
-            {
-                get
-                {
-                    var testName = "ThrowsException_When";
-                    yield return new TestCaseData(new Size(0, 10)).SetName(testName + "ZeroWidth");
-                    yield return new TestCaseData(new Size(10, 0)).SetName(testName + "ZeroHeight");
-                    yield return new TestCaseData(Size.Empty).SetName(testName + "EmptySize");
-                }
-            }
+
             //Тест находит после того как запустил остальные, приходится запускать в ручную
             [TestCase(5, 5)]
             [TestCase(20, 20)]
-            public void Has_SameSizeAsParameter(int width, int height)
+            public void ReturnSameSizeRectangle_AtPositiveSizes(int width, int height)
             {
                 var size = new Size(width, height);
 
@@ -67,42 +94,20 @@ namespace TagCloud_Tests
                     .Be(size);
             }
 
-            [Test]
-            public void Contains_TheSameSizesAfterFewRectangles()
+            public static IEnumerable TestCases
             {
-
-                var sizes = new List<Size>();
-                for (var width = 5; width < 50; width += 2)
-                    for (var height = 5; height < 50; height += 2)
-                        sizes.Add(new Size(width, height));
-
-                sizes.ForEach(s => cloudLayouter.PutNextRectangle(s));
-                var rectangles = cloudLayouter.Rectangles.Select(rect => new Size(rect.Width, rect.Height));
-
-                rectangles
-                    .Should()
-                    .BeEquivalentTo(sizes);
+                get
+                {
+                    var testName = "ThrowsExceptionAt_";
+                    yield return new TestCaseData(new Size(0, 10)).SetName(testName + "ZeroWidth");
+                    yield return new TestCaseData(new Size(10, 0)).SetName(testName + "ZeroHeight");
+                    yield return new TestCaseData(Size.Empty).SetName(testName + "EmptySize");
+                }
             }
-
-            [TestCase(10, 10)]
-            [TestCase(50, 50)]
-            public void DoNot_IntersectEachOther(int widthMax, int heightMax)
-            {
-                var sizes = new List<Size>();
-                for (var width = 5; width < widthMax; width += 2)
-                    for (var height = 5; height < heightMax; height += 2)
-                        sizes.Add(new Size(width, height));
-                var rectangles = cloudLayouter.Rectangles;
-
-                sizes.ForEach(s => cloudLayouter.PutNextRectangle(s));
-                var isAnyIntersects = rectangles.Any(r1 => rectangles.Any(r2 => (r1 != r2 && r1.IntersectsWith(r2))));
-
-                isAnyIntersects.Should().BeFalse();
-            }
-
             //С тест кейс соурс не отображается название основного теста, не нашел как исправить
+            //Но сам тест отображается и светится не запущеным
             [TestCaseSource(nameof(TestCases))]
-            public void PutRectangle_ThrowsException(Size size)
+            public void ThrowsException(Size size)
             {
                 Action rectAdding = () => cloudLayouter.PutNextRectangle(size);
 
