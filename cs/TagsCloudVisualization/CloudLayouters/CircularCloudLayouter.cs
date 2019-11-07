@@ -11,7 +11,7 @@ namespace TagsCloudVisualization.CloudLayouters
 
         private readonly Size centralOffset;
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
-        private readonly ArchimedeanSpiral polarSpiral = new ArchimedeanSpiral();
+        private readonly ArchimedeanSpiral spiral = new ArchimedeanSpiral();
 
         public CircularCloudLayouter(Point center) => centralOffset = new Size(center);
 
@@ -23,8 +23,7 @@ namespace TagsCloudVisualization.CloudLayouters
 
             while (true)
             {
-                var currentArchimedeanSpiralPoint = ConvertPointFromPolarToCartesian(polarSpiral.Radius,
-                                                                                     polarSpiral.Azimuth);
+                var currentArchimedeanSpiralPoint = ConvertPointFromPolarToCartesian(spiral.Radius, spiral.Azimuth);
                 Point newRectangleLocation = currentArchimedeanSpiralPoint;
 
                 newRectangle = new Rectangle(newRectangleLocation, rectangleSize);
@@ -38,7 +37,7 @@ namespace TagsCloudVisualization.CloudLayouters
                     if (newRectangle.IntersectsWith(rectangles)) break;
                 }
 
-                polarSpiral.Azimuth += AzimuthDelta;
+                spiral.Azimuth += AzimuthDelta;
             }
 
             if (rectangles.Count == 0)
@@ -49,7 +48,7 @@ namespace TagsCloudVisualization.CloudLayouters
             }
 
             rectangles.Add(newRectangle);
-            polarSpiral.Azimuth += AzimuthDelta;
+            spiral.Azimuth += AzimuthDelta;
 
             return newRectangle.CreateMovedCopy(centralOffset);
         }

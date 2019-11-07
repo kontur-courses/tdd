@@ -8,7 +8,7 @@ namespace TagsCloudVisualization.Tests.Extensions
         public static Rectangle GetRectangleWithCenterInThePoint(this Point centerPoint, Size rectangleSize)
         {
             var xTopLeft = (int)Math.Round(centerPoint.X - rectangleSize.Width / 2.0, MidpointRounding.AwayFromZero);
-            var yTopLeft = (int)Math.Round(centerPoint.Y + rectangleSize.Height / 2.0, MidpointRounding.AwayFromZero);
+            var yTopLeft = (int)Math.Round(centerPoint.Y - rectangleSize.Height / 2.0, MidpointRounding.AwayFromZero);
 
             return new Rectangle(new Point(xTopLeft, yTopLeft), rectangleSize);
         }

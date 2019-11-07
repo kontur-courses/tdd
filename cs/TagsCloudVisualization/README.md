@@ -1,6 +1,6 @@
 ﻿#### Web cloud
-![WebTagCloud](WebTagCloud.bmp)
+![WebTagCloud](Images/WebTagCloud.bmp)
 <br />
 <br />
 #### Most commonly words cloud
-![CommonWordsTagCloud](CommonWordsTagCloud.bmp)
+![CommonWordsTagCloud](Images/CommonWordsTagCloud.bmp)
