@@ -13,5 +13,10 @@ namespace TagsCloudVisualization
         {
             return new Point(rectangle.Left + rectangle.Width/2, rectangle.Top + rectangle.Height / 2);
         }
+
+        public static bool IntersectsWith(this Rectangle rectangles, IEnumerable<Rectangle> othRectangles)
+        {
+            return othRectangles.Any(x => x.IntersectsWith(rectangles));
+        }
     }
 }
