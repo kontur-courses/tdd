@@ -18,7 +18,6 @@ namespace TagsCloudVisualization.Tests
             generator = new SpiralGenerator(center);
         }
 
-
         [Test]
         public void GetNextPoint_WhenGetOnePoint_ReturnCenterPoint()
         {
@@ -26,14 +25,7 @@ namespace TagsCloudVisualization.Tests
         }
 
         [Test]
-        public void GetNextPoint_WhenGetTwoPoint_ReturnDifferentPoints()
-        {
-            var first = generator.GetNextPoint();
-            generator.GetNextPoint().Should().NotBe(first);
-        }
-
-        [Test]
-        public void GetNextPoint_WhenGetAnyPoint_ReturnDifferentPoints()
+        public void GetNextPoint_WhenGetPoints_ReturnDifferentPoints()
         {
             var hash = new HashSet<Point>();
             for (var i = 0; i < 20; i++)
