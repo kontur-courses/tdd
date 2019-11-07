@@ -139,5 +139,17 @@ namespace TagsCloudVisualization
             rect1.IntersectsWith(rect2).Should().Be(false);
         }
 
+        [Test]
+        public void Adding_9_Recatangles_temp()
+        {
+            var layouter = new CircularCloudLayouter(new Point(0, 0));
+            var actualRect = new List<Rectangle>();
+            for (int i=0; i<8;i++)
+                actualRect.Add(layouter.PutNextRectangle(new Size(10, 20)));
+            var rect = layouter.PutNextRectangle(new Size(10, 20));
+            foreach (var rectangle in actualRect)
+                rect.IntersectsWith(rectangle).Should().Be(false);
+        }
+
     }
 }
