@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization
 {
@@ -65,6 +66,19 @@ namespace TagsCloudVisualization
                     .Select(rectSecond => rectFirst.IntersectsWith(rectSecond) && rectFirst != rectSecond)
                     .Any(value => value))
                 .Any(value => value);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            var currentContext = TestContext.CurrentContext;
+            if (currentContext.Result.Outcome.Status == TestStatus.Failed)
+            {
+                var visualizer = new CircularCloudLayouterVisualizer();
+                var path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + currentContext.Test.Name +".png";
+                Console.WriteLine("Tag cloud visualization saved to file " + path);
+                visualizer.SaveImage(circularCloudLayouter.Rectangles, path);
+            }
         }
     }
 
