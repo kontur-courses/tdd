@@ -5,22 +5,27 @@ using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization;
-
+using NUnit.Framework.Internal;
+using NUnit.Framework.Interfaces;
+using System.IO;
 
 namespace TagsCloudVisualizationTests
 {
     [TestFixture]
     public class CloudLayouter_Should
     {
-        private readonly Point center = new Point(0, 0);
-        private CircularCloudLayouter layouter;
         private Random rnd = new Random();
+        private Point center;
+        private CircularCloudLayouter layouter;
+        private List<Rectangle> rectangles;
         private Size size;
 
         [SetUp]
         public void SetUp()
         {
+            center = new Point(0, 0);
             layouter = new CircularCloudLayouter(center);
+            rectangles = new List<Rectangle>();
             size = GetRandomSize();
         }
 
@@ -29,7 +34,9 @@ namespace TagsCloudVisualizationTests
         public void PutNextRectangle_WithoutChangingSize(int width, int height)
         {
             var size = new Size(width, height);
-            layouter.PutNextRectangle(size).Size.Should().BeEquivalentTo(size);
+            var rectangle = layouter.PutNextRectangle(size);
+            rectangles.Add(rectangle);
+            rectangle.Size.Should().BeEquivalentTo(size);
         }
 
         [TestCase(0, 0)]
@@ -46,8 +53,10 @@ namespace TagsCloudVisualizationTests
         [TestCase(-1001, 1001)]
         public void PutFirstRectangle_NearCenter(int x, int y)
         {
-            var layouter = new CircularCloudLayouter(new Point(x, y));
+            center = new Point(x, y);
+            layouter = new CircularCloudLayouter(center);
             var rectangle = layouter.PutNextRectangle(size);
+            rectangles.Add(rectangle);
 
             rectangle.GetCenter().X.Should().BeApproximately(x, (float)size.Width / 2);
             rectangle.GetCenter().Y.Should().BeApproximately(y, (float)size.Height / 2);
@@ -57,13 +66,13 @@ namespace TagsCloudVisualizationTests
         public void PutRectanglesOnLayout_WithoutIntersection()
         {
             var amountOfRectangles = rnd.Next(2, 25);
-            var rectangles = new List<Rectangle>();
+
             while (amountOfRectangles-- > 0)
             {
                 var nextRectangle = layouter.PutNextRectangle(GetRandomSize());
-                rectangles.Any(rect => rect.IntersectsWith(nextRectangle))
-                    .Should().BeFalse("rectangles should not intersect!");
+                var isIntersecting = rectangles.Any(rect => rect.IntersectsWith(nextRectangle));
                 rectangles.Add(nextRectangle);
+                isIntersecting.Should().BeFalse("rectangles should not intersect!");
             }
 
         }
@@ -72,29 +81,40 @@ namespace TagsCloudVisualizationTests
         [TestCase(100, -100)]
         public void PutRectangles_DenselyAroundCenter(int x, int y)
         {
-            var center = new Point(x, y);
-            var layouter = new CircularCloudLayouter(center);
+            center = new Point(x, y);
+            layouter = new CircularCloudLayouter(center);
 
-            var farthestCenterPoint = new PointF(x, y);
-            var maxSquaredDistance = 0.0;
             var totalMass = 0.0;
             var amountOfRectangles = rnd.Next(25, 50);
             while(amountOfRectangles-- > 0)
             {
                 var nextRectangle = layouter.PutNextRectangle(GetRandomSize());
                 totalMass += nextRectangle.Width * nextRectangle.Height;
-                var distanceToCenter = nextRectangle
-                    .GetCenter().GetSquaredDistanceTo(center);
-                if(distanceToCenter > maxSquaredDistance)
-                    maxSquaredDistance = distanceToCenter;
+                rectangles.Add(nextRectangle);
             }
 
+            var maxSquaredDistance = center.GetMaxSquaredDistanceTo(rectangles);
             var circleSize = Math.PI * maxSquaredDistance;
             var emptyArea = circleSize - totalMass;
             emptyArea.Should().NotBeInRange(circleSize / 2, double.MaxValue, 
                 "more than half of the minimum circular area containing all" +
                 "of the rectangles should not be empty");
 
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            var testContext = new TestContext(TestExecutionContext.CurrentContext);
+            if (testContext.Result.Outcome.Status == TestStatus.Passed)
+                return;
+            var bitmap = CloudLayouterUtilities.GetCenteredBitmapFromRectangles(center, rectangles);
+            var testImageDirectory = Path.Combine(testContext.WorkDirectory, "failed");
+            var testImagePath = Path.Combine(testImageDirectory, $"{testContext.Test.FullName}.bmp");
+            Directory.CreateDirectory(testImageDirectory);
+            bitmap.Save(testImagePath);
+
+            TestContext.WriteLine($"Tag cloud visualization saved to file {testImagePath}");
         }
 
         public Size GetRandomSize()

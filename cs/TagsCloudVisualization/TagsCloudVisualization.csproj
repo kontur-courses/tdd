@@ -46,7 +46,7 @@
     <Compile Include="ArchimedeanSpiral.cs" />
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="PointExtensions.cs" />
-    <Compile Include="RandomLayoutGenerator.cs" />
+    <Compile Include="CloudLayouterUtilities.cs" />
     <Compile Include="RectangleExtensions.cs" />
     <Compile Include="Program.cs" />
   </ItemGroup>
