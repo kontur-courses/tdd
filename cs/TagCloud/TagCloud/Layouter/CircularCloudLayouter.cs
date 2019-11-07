@@ -27,11 +27,10 @@ namespace TagCloud
             foreach (var spiralPoint in spiral.IterateBySpiralPoints())
             {
                 var rect = new Rectangle(new Point(spiralPoint.X + centerShift.X, spiralPoint.Y + centerShift.Y), rectangleSize).Shift(center);
-                if (!IsIntersects(rect))
-                {
-                    rectangleMap.Add(rect);
-                    return rect;
-                }
+                if (IsIntersects(rect)) 
+                    continue;
+                rectangleMap.Add(rect);
+                return rect;
             }
             throw new ArgumentException("Spiral doesn't return appropriate points");
         }
@@ -39,11 +38,6 @@ namespace TagCloud
         public IEnumerable<Rectangle> GetAllRectangles()
         {
             return rectangleMap.Select(rect => rect.Shift(center));
-        }
-
-        public IEnumerable<Rectangle> PutNextRectangles(IEnumerable<Size> rectangleSizes)
-        {
-            return rectangleSizes.Select(PutNextRectangle);
         }
 
         private bool IsIntersects(Rectangle target)

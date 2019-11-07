@@ -10,14 +10,14 @@ namespace TagCloud.Tests
     internal class TileTestingAt100OneSideSquares : OnFailDrawer
     {
         private CircularCloudLayouter cloudLayouter;
-        private List<Rectangle> tiledRectagnles;
+        private List<Rectangle> tiledRectangles;
         private const int ElementsAmount = 100;
 
         [SetUp]
         public void SetUp()
         {
             cloudLayouter = new CircularCloudLayouter(TestingDegenerateSize.CenterPoint);
-            tiledRectagnles = Enumerable
+            tiledRectangles = Enumerable
                 .Range(0, ElementsAmount)
                 .Select(number => cloudLayouter.PutNextRectangle(TestingDegenerateSize.SingleSize))
                 .ToList();
@@ -26,7 +26,7 @@ namespace TagCloud.Tests
         [Test, Category("Simple Behaviour")]
         public void Should_TileSpace_AndNotSkipRectangles()
         {
-            tiledRectagnles
+            tiledRectangles
                 .Select(rectangle => rectangle.Location)
                 .Distinct()
                 .Count()
@@ -37,7 +37,7 @@ namespace TagCloud.Tests
         [Test, Category("Simple Behaviour")]
         public void Should_GenerateNonOverlappingRectangles()
         {
-            tiledRectagnles
+            tiledRectangles
                 .Select(rectangle => rectangle.Location)
                 .Distinct()
                 .Count()
@@ -48,7 +48,7 @@ namespace TagCloud.Tests
         [Test, Category("Simple Behaviour")]
         public void Should_GenerateRectangles_WithSpecifiedSize()
         {
-            tiledRectagnles
+            tiledRectangles
                 .Select(rectangle => rectangle.Size)
                 .Distinct()
                 .Count()
@@ -63,7 +63,7 @@ namespace TagCloud.Tests
             for (var x=-1; x<=1; ++x)
             for (var y = -1; y <= 1; ++y)
                 setPoints.Add(new Point(x, y));
-            tiledRectagnles
+            tiledRectangles
                 .GetRange(0, 10)
                 .Where(rectangle => setPoints.Contains(rectangle.Location))
                 .Sum(rectangle => 1)

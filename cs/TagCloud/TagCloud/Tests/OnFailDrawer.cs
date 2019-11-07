@@ -49,7 +49,7 @@ namespace TagCloud.Tests
             Color.DeepPink
         };
         
-        internal static void DrawOriginOrientedRectangles(Size drawerSize, IEnumerable<Rectangle> rectangles, string fname)
+        public static void DrawOriginOrientedRectangles(Size drawerSize, IEnumerable<Rectangle> rectangles, string fname)
         {
             var rand = new Random();
             using (var drawer = new Drawer(drawerSize))

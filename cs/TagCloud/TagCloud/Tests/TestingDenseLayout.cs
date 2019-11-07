@@ -1,85 +1,97 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal;
 
 namespace TagCloud.Tests
 {
-    internal class TestingDenseLayout: OnFailDrawer
+    internal class TestingDenseLayout : OnFailDrawer
     {
-        [TestCaseSource(nameof(sizesForXDenseTesting))]
-        public void Should_DenselyPlaceRectanglesWithDifferentShape_ByXCoordinate(IEnumerable<Size> sizes)
+        private static bool IsSymmetricOverAxis(IReadOnlyCollection<Rectangle> rectangles, 
+            Func<Rectangle, int> coordinateSelector,
+            Func<Rectangle, int> sideSelector)
         {
-            var rectangles = cloudLayouter.PutNextRectangles(sizes).ToList();
-            var width = Math.Abs(rectangles.Min(rect => rect.X) - rectangles.Max(rect => rect.X + rect.Width));
-            width.Should().BeLessOrEqualTo(rectangles.Select(rect => rect.Width).Sum());
-        }
-        
-        [TestCaseSource(nameof(sizesForYDenseTesting))]
-        public void Should_DenselyPlaceRectanglesWithDifferentShape_ByYCoordinate(IEnumerable<Size> sizes)
-        {
-            var rectangles = cloudLayouter.PutNextRectangles(sizes).ToList();
-            var height = Math.Abs(rectangles.Min(rect => rect.Y) - rectangles.Max(rect => rect.Y + rect.Height));
-            height.Should().BeLessOrEqualTo(rectangles.Select(rect => rect.Height).Sum());
+            var min = rectangles.Min(coordinateSelector);
+            var max = rectangles.Select(rect => coordinateSelector(rect) + sideSelector(rect)).Max();
+
+            return Math.Abs(Math.Abs(max) - Math.Abs(min)) < (rectangles.Sum(sideSelector) / rectangles.Count);
         }
 
-        [TestCaseSource(nameof(oneHundredSizesForCircularTesting))]
-        public void Should_DenselyPlaceRectanglesWithDifferentShape_InCircle(IEnumerable<Size> sizes)
+        [Test]
+        public void Should_DenselyPlaceRectangles_SymmetricByCoordinates()
         {
-            var rectangles = cloudLayouter.PutNextRectangles(sizes).ToList();
-            var outerXWidth = Math.Abs(rectangles.Min(rect => rect.X) - rectangles.Max(rect => rect.X + rect.Width));
-            var outerYHeight = Math.Abs(rectangles.Min(rect => rect.Y) - rectangles.Max(rect => rect.Y + rect.Height));
-            var minOuterCircle = Math.PI * Math.Pow(Math.Min(outerXWidth, outerYHeight) / 2, 2);
-            var maxOuterCircle = Math.PI * Math.Pow(Math.Max(outerXWidth, outerYHeight) / 2, 2);
-            var rectSpace = rectangles.Select(rect => rect.Width * rect.Height).Sum();
-            Math.Abs(minOuterCircle - rectSpace)
+            // This test also checks that figure inscribes in square
+            var rectangles = RandomTestRectangles.ToList();
+
+            IsSymmetricOverAxis(rectangles, rect => rect.X, rect => rect.Width)
                 .Should()
-                .BeLessThan(Math.Abs(maxOuterCircle - minOuterCircle));
+                .BeTrue("Figure don't symmetric over x axis");
+            IsSymmetricOverAxis(rectangles, rect => rect.Y, rect => rect.Height)
+                .Should()
+                .BeTrue("Figure don't symmetric over y axis");
         }
 
-        private static IEnumerable<TestCaseData> sizesForYDenseTesting = new List<TestCaseData>
-        {
-            new TestCaseData(new List<Size>
-            {
-                new Size(4, 2),
-                new Size(3, 4),
-                new Size(5, 1),
-                new Size(2, 7)
-            }).SetName("{m}: 4 rectangle near (0, 0) (y)"),
-            new TestCaseData(new List<Size>
-            {
-                new Size(3, 2),
-                new Size(9, 2)
-            }).SetName("{m}: 2 rectangles along Y-axis")
-        };
+        private static int ScaledCircleArea(int radius, int decimalMultiplier)
+            => radius * radius * (int) (Math.PI * decimalMultiplier);
 
-        private static IEnumerable<TestCaseData> sizesForXDenseTesting = new List<TestCaseData>
+        private static int GetSuitableAbsCoordinateByAxis(IReadOnlyCollection<Rectangle> rectangles,
+            Func<Rectangle, int> coordinateSelector,
+            Func<Rectangle, int> sideSelector,
+            Func<int, int, int> compareSelector)
         {
-            new TestCaseData(new List<Size>
-            {
-                new Size(4, 2),
-                new Size(3, 4),
-                new Size(5, 1),
-                new Size(2, 7)
-            }).SetName("{m}: 4 rectangle near (0, 0) (x)"),
-            new TestCaseData(new List<Size>
-            {
-                new Size(4, 2),
-                new Size(3, 4)
-            }).SetName("{m}: 2 rectangles along X-axis")
-        };
-        
-        private static Random circularRandomGenerator = new Random();
-        private static IEnumerable<TestCaseData> oneHundredSizesForCircularTesting = new List<TestCaseData>
+            return compareSelector(
+                Math.Abs(rectangles.Min(coordinateSelector)), 
+                rectangles.Max(rect => coordinateSelector(rect) + sideSelector(rect)));
+        }
+
+        [Test]
+        public void Should_DenselyPlaceRectangles_InCircleArea()
         {
-            new TestCaseData(Enumerable
+            var rectangles = RandomTestRectangles.ToList();
+
+            var innerCircleRadius = Math.Min(
+                GetSuitableAbsCoordinateByAxis(rectangles, rect => rect.X, rect => rect.Width, Math.Min),
+                GetSuitableAbsCoordinateByAxis(rectangles, rect => rect.Y, rect => rect.Height, Math.Min));
+            var actualRectanglesAres = rectangles.Sum(rect => rect.Width * rect.Height);
+
+            ScaledCircleArea(innerCircleRadius, 100)
+                .Should()
+                .BeGreaterThan(100 * actualRectanglesAres, "Figure area should overlap inner circle area");
+        }
+
+        [Test]
+        public void Should_DenselyPlaceRectangles_InShapeLikeSquare()
+        {
+            var rectangles = RandomTestRectangles.ToList();
+
+            var innerSquareHalfSide = Math.Max(
+                    GetSuitableAbsCoordinateByAxis(rectangles, rect => rect.X, rect => rect.Width, Math.Min),
+                    GetSuitableAbsCoordinateByAxis(rectangles, rect => rect.Y, rect => rect.Height, Math.Min));
+            
+            var square = new Rectangle(
+                -innerSquareHalfSide, 
+                -innerSquareHalfSide, 
+                2 * innerSquareHalfSide, 
+                2 * innerSquareHalfSide);
+
+            // check if we have outliers
+            rectangles
+                .All(rect => square.IntersectsWith(rect))
+                .Should()
+                .BeTrue("Inner square should intersect with every rectangle");
+        }
+
+        private IEnumerable<Rectangle> RandomTestRectangles =>
+            Enumerable
                 .Range(0, 100)
-                .Select(num => new Size(circularRandomGenerator.Next(1, 30), circularRandomGenerator.Next(1, 30)))
-                .ToList()
-            ).SetName("{m}: random generated 100 rectangles")
-        };
+                .Select(num => new Size(Random.Next(1, 30), Random.Next(1, 30)))
+                .Select(size => cloudLayouter.PutNextRectangle(size));
+
+        private static readonly Random Random = new Random();
     }
 }

@@ -19,7 +19,8 @@ namespace TagCloud
 
         public IEnumerable<Point> IterateBySpiralPoints()
         {
-            ro /= 2;
+            // productivity enhancing
+            // ro /= 2;
             while (true)
             {
                 var sectors = Math.Max(Math.Round(ro * 18), 18);

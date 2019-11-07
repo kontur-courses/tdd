@@ -27,9 +27,26 @@ namespace TagCloud.Tests
             {
                 var rnd = new Random();
                 foreach (var word in text.Split(' ', '.', ',', ':').Where(s => !string.IsNullOrEmpty(s)))
-                    drawer.DrawWord(word, new Font("Courier New", rnd.Next(10, 40)));
+                    if (word.Length > 0)
+                        drawer.DrawWord(word, new Font("Courier New", rnd.Next(10, 40)));
                 drawer.SaveImg(fname);
             }
+        }
+
+        [TestCase("image3.png")]
+        [TestCase("image4.png")]
+        public void Should_CreateCircleShape_With1000RandomGeneratedRectangles(string fname)
+        {
+            var cloudLayouter = new CircularCloudLayouter(new Point(600, 600));
+            var rnd = new Random();
+            OnFailDrawer.DrawOriginOrientedRectangles(
+                new Size(1200, 1200), 
+                Enumerable
+                    .Range(0, 100)
+                    .Select(num => new Size(rnd.Next(30, 100), rnd.Next(30, 100)))
+                    .Select(size => cloudLayouter.PutNextRectangle(size)),
+                fname
+                );
         }
     }
 }
