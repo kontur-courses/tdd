@@ -9,6 +9,7 @@ namespace TagsCloudVisualization
         private Point _center;
         private List<Rectangle> _rectangles = new List<Rectangle>();
         private Spiral _spiral;
+        private HashSet<Point> _takenPoints = new HashSet<Point>();
         public CircularCloudLayouter(Point center)
         {
             this._center = center;
@@ -19,8 +20,10 @@ namespace TagsCloudVisualization
         {
             foreach (var point in _spiral.GetPoints())
             {
-                if (point != null)
+                if (point != null && !_takenPoints.Contains(point.GetValueOrDefault()))
                 {
+                    if (!IsNonoverlappingRectangle(new Rectangle(point.GetValueOrDefault(), Size.Empty )))
+                        _takenPoints.Add(point.GetValueOrDefault());
                     var rectangle = new Rectangle(new Point(point.Value.X - rectangleSize.Width / 2, point.Value.Y - rectangleSize.Height / 2), rectangleSize);
                     if (IsNonoverlappingRectangle(rectangle))
                     {
