@@ -20,7 +20,7 @@ namespace TagsCloudVisualization
             _brush = Brushes.Cyan;
             _sizeImage = sizeImage;
             _layouter = new CircularCloudLayouter(new Point(sizeImage.Width / 2, sizeImage.Height / 2));
-            _pen = new Pen(Brushes.MediumBlue);
+            _pen = new Pen(Brushes.Brown);
             _stringFormat = new StringFormat()
             {
                 LineAlignment = StringAlignment.Center
@@ -32,6 +32,11 @@ namespace TagsCloudVisualization
             var sizeStr = (_graphics.MeasureString(str, font) + new SizeF(1, 1)).ToSize();
             var rectangleStr = _layouter.PutNextRectangle(sizeStr);
             _graphics.DrawString(str, font, _brush, rectangleStr, _stringFormat);
+        }
+        
+        public void DrawRectangle(Rectangle rectangle)
+        {
+            _graphics.DrawRectangle(_pen, rectangle);
         }
         
         public void SaveImage(string filename)

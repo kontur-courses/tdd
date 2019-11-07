@@ -1,14 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization.Tests
 {
-     public class CircularCloudLayouterTests 
-    { 
+     public class CircularCloudLayouterTests
+     {
+         private List<Rectangle> _rectangles;
+        [SetUp]
+        public void SetUp()
+        {
+            _rectangles = new List<Rectangle>();
+        }
+        
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure) return;
+            if (!Directory.Exists( Environment.CurrentDirectory + @"\TagCloudTests"))
+                Directory.CreateDirectory(Environment.CurrentDirectory + @"\TagCloudTests");
+            var circularCloudDrawing = new CircularCloudDrawing(new Size(2000, 2000));
+            foreach (var rectangle in _rectangles) 
+                circularCloudDrawing.DrawRectangle(rectangle);
+            var testName = TestContext.CurrentContext.Test.FullName;
+            var path = Environment.CurrentDirectory + @"\TagCloudTests\{testName}.png";
+            circularCloudDrawing.SaveImage(path);
+        }
         [TestCaseSource(nameof(_coordinateCenter))] 
         public void Constructor_DoesNotThrow_WithСorrectСenter(Point center) 
         { 
