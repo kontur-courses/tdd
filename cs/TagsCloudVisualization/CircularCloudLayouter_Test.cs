@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -24,26 +25,34 @@ namespace TagsCloudVisualization
             rectangle.Location.Should().Be(new Point(-15, -10));
         }
 
-        [Test]
-        public void PutNextRectangle_Should_NotIntersectRectangles_When_TwoRectangles()
+        [TestCaseSource(nameof(DifferentTypesOfTwoRectangles))]
+        public void PutNextRectangle_Should_NotIntersectRectangles_When_TwoRectangles(Size firstSize, Size secondSize)
         {
-            var firstRectangle = circularCloudLayouter.PutNextRectangle(new Size(30, 20));
-            var secondRectangle = circularCloudLayouter.PutNextRectangle(new Size(30, 20));
+            var firstRectangle = circularCloudLayouter.PutNextRectangle(firstSize);
+            var secondRectangle = circularCloudLayouter.PutNextRectangle(secondSize);
             secondRectangle.IntersectsWith(firstRectangle).Should().BeFalse();
         }
-
-        [Test]
-        public void PutNextRectangle_Should_NotIntersectRectangles_When_TwoRectanglesWithDifferentSizes()
+        
+        private static IEnumerable<TestCaseData> DifferentTypesOfTwoRectangles
         {
-            var firstRectangle = circularCloudLayouter.PutNextRectangle(new Size(30, 20));
-            var secondRectangle = circularCloudLayouter.PutNextRectangle(new Size(40, 80));
-            secondRectangle.IntersectsWith(firstRectangle).Should().BeFalse();
+            get
+            {
+                yield return new TestCaseData(new Size(30, 20), new Size(30, 20)).SetName("have equal size");
+                yield return new TestCaseData(new Size(30, 20), new Size(40, 10)).SetName("have different size");
+                yield return new TestCaseData(new Size(10, 60), new Size(40, 10)).SetName("have different proportions");
+                yield return new TestCaseData(new Size(10, 60), new Size(400, 100)).SetName("have big size difference");
+            }
         }
 
         [Test]
         public void PutNextRectangle_Should_ThrowArgumentException_When_SizeIsEmpty()
         {
             Following.Code(() => circularCloudLayouter.PutNextRectangle(Size.Empty)).ShouldThrow<ArgumentException>();
+        }
+
+        private int CalculateRectanglesSquaresSum(IEnumerable<Rectangle> rectangles)
+        {
+            return rectangles.Select(rect => rect.Height * rect.Width).Sum();
         }
     }
 
