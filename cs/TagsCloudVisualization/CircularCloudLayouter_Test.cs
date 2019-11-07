@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
@@ -9,12 +10,13 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter_Test
     {
         private CircularCloudLayouter circularCloudLayouter;
+
         [SetUp]
         public void SetUp()
         {
-            circularCloudLayouter = new CircularCloudLayouter(new Point(0,0));
+            circularCloudLayouter = new CircularCloudLayouter(new Point(0, 0));
         }
-        
+
         [Test]
         public void PutNextRectangle_Should_PutRectangleInTheCenter_When_FirstRectangle()
         {
@@ -23,15 +25,7 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void PutNextRectangle_Should_PutSecondRectangleOnTheRightUpperCornerOfFirst_When_AddedSecondRectangle()
-        {
-            var firstRectangle = circularCloudLayouter.PutNextRectangle(new Size(30, 20));
-            var secondRectangle = circularCloudLayouter.PutNextRectangle(new Size(30, 20));
-            secondRectangle.Location.Should().Be(new Point(firstRectangle.Right, firstRectangle.Top));
-        }
-
-        [Test]
-        public void PutNextRectangle_Should_NotIntersect_When_TwoRectanglesAreAdded()
+        public void PutNextRectangle_Should_NotIntersectRectangles_When_TwoRectangles()
         {
             var firstRectangle = circularCloudLayouter.PutNextRectangle(new Size(30, 20));
             var secondRectangle = circularCloudLayouter.PutNextRectangle(new Size(30, 20));
@@ -39,36 +33,25 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void PutNextRectangle_ShouldPutThirdRectangleOnTheLeftBottomCorner_When_AddedThirdRectangle()
+        public void PutNextRectangle_Should_NotIntersectRectangles_When_TwoRectanglesWithDifferentSizes()
         {
-            circularCloudLayouter.PutNextRectangle(new Size(30, 20));
-            var secondRectangle = circularCloudLayouter.PutNextRectangle(new Size(30, 20));
-            var thirdRectangle = circularCloudLayouter.PutNextRectangle(new Size(30, 20));
-            thirdRectangle.Location.Should().Be(new Point(secondRectangle.Left, secondRectangle.Bottom));
+            var firstRectangle = circularCloudLayouter.PutNextRectangle(new Size(30, 20));
+            var secondRectangle = circularCloudLayouter.PutNextRectangle(new Size(40, 80));
+            secondRectangle.IntersectsWith(firstRectangle).Should().BeFalse();
         }
-        
-        [Test]
-        public void PutNextRectangle_Should_NotIntersectAnyOfRectangles_When_AddedThirdRectangle()
-        {
-            var rectangles = new List<Rectangle>();
-            for (var i = 0; i < 3; i++)
-            {
-                var rect = circularCloudLayouter.PutNextRectangle(new Size(30, 20));
-                rectangles.Add(rect);
-            }
 
-            var anyIntersect = false;
-            foreach (var firstRectangle in rectangles)
-            {
-                foreach (var secondRectangle in rectangles)
-                {
-                    if(firstRectangle == secondRectangle)
-                        continue;
-                    if (firstRectangle.IntersectsWith(secondRectangle))
-                        anyIntersect = true;
-                }
-            }
-            anyIntersect.Should().Be(false);
+        [Test]
+        public void PutNextRectangle_Should_ThrowArgumentException_When_SizeIsEmpty()
+        {
+            Following.Code(() => circularCloudLayouter.PutNextRectangle(Size.Empty)).ShouldThrow<ArgumentException>();
+        }
+    }
+
+    public static class Following
+    {
+        public static Action Code(Action action)
+        {
+            return action;
         }
     }
 }
