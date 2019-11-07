@@ -12,7 +12,7 @@ namespace TagsCloudVisualization
             var circularCloudDrawing = new CircularCloudDrawing(size);
             foreach (var (str, font) in strings) 
                 circularCloudDrawing.DrawStrings(str, font);
-            circularCloudDrawing.SaveImage( filename);
+            circularCloudDrawing.SaveImage(filename);
         }
 
         public void GenerateFirstTagCloud()
