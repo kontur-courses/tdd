@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -28,13 +29,13 @@ namespace TagsCloudVisualization
         [SetUp]
         public void Init()
         {
-            archimedesSpiral = new ArchimedesSpiral(spiralCenter, 1, 1);
+            archimedesSpiral = new ArchimedesSpiral(spiralCenter, 1, 1, 1);
         }
 
         [Test]
         public void FirstCoordinateEqualToCenter()
         {
-            var coordinates = archimedesSpiral.Current;
+            var coordinates = archimedesSpiral.GetEnumerator().Current;
 
             coordinates.Should().BeEquivalentTo(spiralCenter);
         }
@@ -42,23 +43,17 @@ namespace TagsCloudVisualization
         [Test]
         public void MoveNextIncrementsCoordinates()
         {
-            var firstCoordinates = archimedesSpiral.Current;
-            archimedesSpiral.MoveNext();
-            var nextCoordinates = archimedesSpiral.Current;
+            var coordinatesArray = archimedesSpiral.Take(2).ToArray();
 
-            firstCoordinates.Should().NotBeEquivalentTo(nextCoordinates);
+            coordinatesArray[0].Should().NotBeEquivalentTo(coordinatesArray[1]);
         }
-        
+
         [Test]
-        public void ResetResetsAllSpiralChangedValues()
+        public void SpiralStopsReturningCoordinates_WhenSpiralParametersOverflow()
         {
-            var startSpiral =  new ArchimedesSpiral(spiralCenter, 1, 1);
-            
-            for(var i= 0; i<10;i++)
-                archimedesSpiral.MoveNext();
-            archimedesSpiral.Reset();
-            
-            archimedesSpiral.Should().BeEquivalentTo(startSpiral);
+            var coordinatesCollection = new ArchimedesSpiral(new Point(100, 100), 1, 1, float.MaxValue).Take(1);
+
+            coordinatesCollection.Should().BeEmpty();
         }
     }
 }

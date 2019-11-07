@@ -82,7 +82,7 @@ namespace TagsCloudVisualization
         [Test]
         public void AddMultipleRectangles_That_DontIntersectWithEachOther()
         {
-            var checkList = new List<Rectangle>
+            var rectangles = new List<Rectangle>
             {
                 circularCloudLayouter.PutNextRectangle(new Size(100, 200)),
                 circularCloudLayouter.PutNextRectangle(new Size(130, 250)),
@@ -90,7 +90,7 @@ namespace TagsCloudVisualization
                 circularCloudLayouter.PutNextRectangle(new Size(120, 115))
             };
 
-            checkList.Any(r1 => checkList.Any(r2 => r1.IntersectsWith(r2) && r1 != r2)).Should().BeFalse();
+            rectangles.Any(r1 => rectangles.Any(r2 => r1.IntersectsWith(r2) && r1 != r2)).Should().BeFalse();
         }
 
         [Test]
@@ -112,14 +112,14 @@ namespace TagsCloudVisualization
             var furthestDistance = 0d;
             var rectanglesSquare = 0d;
 
-            var checkList = new List<Rectangle>
+            var rectangles = new List<Rectangle>
             {
                 circularCloudLayouter.PutNextRectangle(new Size(100, 200)),
                 circularCloudLayouter.PutNextRectangle(new Size(130, 250)),
                 circularCloudLayouter.PutNextRectangle(new Size(210, 160)),
                 circularCloudLayouter.PutNextRectangle(new Size(120, 115))
             };
-            foreach (var rectangle in checkList)
+            foreach (var rectangle in rectangles)
             {
                 var distance = GetDistanceBetweenRectangleAndPoint(rectangle, layouterCenter);
                 if (distance > furthestDistance)
@@ -129,7 +129,7 @@ namespace TagsCloudVisualization
 
             var circleSquare = furthestDistance * furthestDistance * Math.PI;
             var squareRatio = rectanglesSquare / circleSquare * 100;
-            squareRatio.Should().Be(acceptableRatio);
+            squareRatio.Should().BeGreaterThan(acceptableRatio);
         }
 
         private static double GetDistanceBetweenRectangleAndPoint(Rectangle rectangle, Point point)

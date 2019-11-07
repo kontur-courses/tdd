@@ -5,19 +5,12 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public class ArchimedesSpiral : IEnumerator<Point>
+    public class ArchimedesSpiral : IEnumerable<Point>
     {
         private readonly Point center;
         private readonly float radius;
-        private float angle;
-        private float increment;
-        private float startIncrement;
-        private float startAngle;
-
-
-        public Point Current { get; private set; }
-
-        object IEnumerator.Current => Current;
+        private readonly float increment;
+        private readonly float angle;
 
         public ArchimedesSpiral(Point center, float radius, float increment, float angle = 0)
         {
@@ -29,33 +22,69 @@ namespace TagsCloudVisualization
             this.radius = radius;
             this.increment = increment;
             this.angle = angle;
-            startIncrement = increment;
+        }
+
+        public IEnumerator<Point> GetEnumerator() => new ArchimedesSpiralEnumerator(center, radius, increment, angle);
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    public class ArchimedesSpiralEnumerator : IEnumerator<Point>
+    {
+        private readonly Point center;
+        private readonly float radius;
+        private float angle;
+        private readonly float increment;
+        private readonly float startAngle;
+
+        public Point Current { get; private set; }
+
+        object IEnumerator.Current => Current;
+
+        public ArchimedesSpiralEnumerator(Point center, float radius, float increment, float angle = 0)
+        {
+            if (Math.Abs(radius) < float.Epsilon)
+                throw new ArgumentException("Archimedes spiral radius can't be zero");
+            if (Math.Abs(increment) < float.Epsilon)
+                throw new ArgumentException("Archimedes spiral increment can't be zero");
+            this.center = center;
+            this.radius = radius;
+            this.increment = increment;
+            this.angle = angle;
             startAngle = angle;
             Current = center;
         }
 
-        private Point GetNextCoordinates()
-        {
-            angle += increment;
-            var x = center.X + (int) Math.Round(Math.Cos(angle) * (angle * radius));
-            var y = center.Y + (int) Math.Round(Math.Sin(angle) * (angle * radius));
-            return new Point(x, y);
-        }
-
         public bool MoveNext()
         {
-            Current = GetNextCoordinates();
-            return true;
+            var isOverFlown = false;
+            try
+            {
+                checked
+                {
+                    angle += increment;
+                    var x = center.X + (int) Math.Round(Math.Cos(angle) * (angle * radius));
+                    var y = center.Y + (int) Math.Round(Math.Sin(angle) * (angle * radius));
+                    Current = new Point(x, y);
+                }
+            }
+            catch (OverflowException e)
+            {
+                Console.WriteLine(e);
+                isOverFlown = true;
+            }
+
+            return !isOverFlown;
         }
 
         public void Reset()
         {
             Current = center;
             angle = startAngle;
-            increment = startIncrement;
         }
-        
+
         public void Dispose()
-        { }
+        {
+        }
     }
 }
