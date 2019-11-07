@@ -20,17 +20,6 @@ namespace TagsCloudVisualization
             corners = new SortedSet<Point>(new PointsRadiusComparer(center));
         }
 
-        //private List<Point> GetCorners(Rectangle rectangle)
-        //{
-        //    return new List<Point>
-        //    {
-        //        rectangle.Location,
-        //        new Point(rectangle.Right, rectangle.Top),
-        //        new Point(rectangle.Right, rectangle.Bottom),
-        //        new Point(rectangle.Left, rectangle.Bottom)
-        //    };
-        //}
-
         private void AddCorners(Rectangle rectangle)
         {
             foreach (var corner in rectangle.GetCorners())
