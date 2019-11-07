@@ -8,20 +8,6 @@ namespace TagsCloudVisualization.Tests
 {
     class SpiralGenerator_should
     {
-        [TestCase(-1, -1)]
-        [TestCase(1, -1)]
-        [TestCase(-1, 1)]
-        public void Constructor_WhenPointWithNegativeCord_ThrowArgumentException(int x, int y)
-        {
-            var center = new Point(x, y);
-            Action action = () =>
-            {
-                // ReSharper disable once ObjectCreationAsStatement
-                new SpiralGenerator(center);
-            };
-            action.ShouldThrow<ArgumentException>();
-        }
-
         private static Point center;
         private static SpiralGenerator generator;
 

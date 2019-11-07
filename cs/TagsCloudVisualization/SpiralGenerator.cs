@@ -12,8 +12,6 @@ namespace TagsCloudVisualization
 
         public SpiralGenerator(Point center)
         {
-            if (center.X < 0 || center.Y < 0)
-                throw new ArgumentException();
             Center = center;
             Generator = GetNextPoints().GetEnumerator();
         }
