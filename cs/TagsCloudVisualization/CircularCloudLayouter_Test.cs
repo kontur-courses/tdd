@@ -45,14 +45,26 @@ namespace TagsCloudVisualization
         }
 
         [Test]
+        public void PutNextRectangle_Should_NotIntersect_1000Rectangles()
+        {
+            for (var i = 0; i < 1000; i++)
+                circularCloudLayouter.PutNextRectangle(new Size(30, 20));
+            CheckIfAnyRectanglesIntersect(circularCloudLayouter.Rectangles).Should().Be(false);
+        }
+
+        [Test]
         public void PutNextRectangle_Should_ThrowArgumentException_When_SizeIsEmpty()
         {
             Following.Code(() => circularCloudLayouter.PutNextRectangle(Size.Empty)).ShouldThrow<ArgumentException>();
         }
 
-        private int CalculateRectanglesSquaresSum(IEnumerable<Rectangle> rectangles)
+        private bool CheckIfAnyRectanglesIntersect(IEnumerable<Rectangle> rectangles)
         {
-            return rectangles.Select(rect => rect.Height * rect.Width).Sum();
+            return rectangles
+                .Select(rectFirst => rectangles
+                    .Select(rectSecond => rectFirst.IntersectsWith(rectSecond) && rectFirst != rectSecond)
+                    .Any(value => value))
+                .Any(value => value);
         }
     }
 
