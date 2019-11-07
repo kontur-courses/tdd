@@ -47,7 +47,7 @@
     <Compile Include="ISpiral.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="RectangularSpiral.cs" />
-    <Compile Include="RectangularSpiral_should.cs" />
+    <Compile Include="Spiral_should.cs" />
     <Compile Include="CircularCloudLayouter_should.cs" />
   </ItemGroup>
   <ItemGroup>
