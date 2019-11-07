@@ -55,20 +55,5 @@ namespace TagCloud.Tests
                 .Should()
                 .Be(1);
         }
-
-        [Test, Category("Simple Behaviour")]
-        public void Should_TileCoordinateCenterIn1Depth_WithNoMoreThen9Rectangles()
-        {
-            var setPoints = new HashSet<Point>();
-            for (var x=-1; x<=1; ++x)
-            for (var y = -1; y <= 1; ++y)
-                setPoints.Add(new Point(x, y));
-            tiledRectangles
-                .GetRange(0, 10)
-                .Where(rectangle => setPoints.Contains(rectangle.Location))
-                .Sum(rectangle => 1)
-                .Should()
-                .Be(setPoints.Count);
-        }       
     }
 }
