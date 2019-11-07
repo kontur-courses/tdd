@@ -17,7 +17,7 @@ namespace TagsCloudVisualization
 
         public CircularCloudLayouter(Point center)
         {
-            ArchimedesSpiral = new ArchimedesSpiral(center, 1);
+            ArchimedesSpiral = new ArchimedesSpiral(center, 0.1);
             Rectangles = new List<Rectangle>();
         }
         
