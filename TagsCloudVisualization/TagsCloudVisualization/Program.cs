@@ -37,7 +37,7 @@ namespace TagsCloudVisualization
                 new Tuple<string, Font>("Ирбит", new Font("Arial", 16)),
                 new Tuple<string, Font>("Екб", new Font("Arial", 20)),
                 new Tuple<string, Font>("Сон", new Font("Arial", 40))
-            }, new Size(1600, 1600), "1.png");
+            }, new Size(600, 600), "1.png");
         }
         
         public void GenerateSecondTagCloud()
@@ -45,7 +45,7 @@ namespace TagsCloudVisualization
             var list = new List<Tuple<string, Font>>();
             for (var i = 1; i < 31; i++) 
                 list.Add(new Tuple<string, Font>((i * 10).ToString(), new Font("Arial", i)));
-            GenerateTagCloud(list, new Size(1600, 900), "2.png");
+            GenerateTagCloud(list, new Size(600, 600), "2.png");
         }
     }
     internal class Program

@@ -16,6 +16,7 @@ namespace TagsCloudVisualization
         {
             _bitmap = new Bitmap(sizeImage.Width, sizeImage.Height);
             _graphics = Graphics.FromImage(_bitmap);
+            _graphics.Clear(Color.DarkBlue);
             _brush = Brushes.Cyan;
             _sizeImage = sizeImage;
             _layouter = new CircularCloudLayouter(new Point(sizeImage.Width / 2, sizeImage.Height / 2));
@@ -32,7 +33,7 @@ namespace TagsCloudVisualization
             var rectangleStr = _layouter.PutNextRectangle(sizeStr);
             _graphics.DrawString(str, font, _brush, rectangleStr, _stringFormat);
         }
-
+        
         public void SaveImage(string filename)
         {
             _bitmap.Save(filename);
