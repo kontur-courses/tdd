@@ -1,36 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Security.Cryptography.X509Certificates;
 
 namespace TagsCloudVisualization
 {
     public class Spiral
     {
-        private readonly Point _center;
-        private int _radius = 0;
-        private HashSet<Point> _points = new HashSet<Point>();
+        private readonly Point center;
+        private double radius = 0;
+        private double angle = 0;
+        private HashSet<Point> points = new HashSet<Point>();
         
         public Spiral(Point center)
         {
-            _center = center;
+            this.center = center;
         }
         
-        public IEnumerable<Point?> GetPoints()
+        public IEnumerable<Point> GetPoints()
         {
             while (true)
             {
-                for (var i = _radius; i >= - _radius; i--)
-                for (var j = _radius; j >= - _radius; j--)
+                var point = ConvertingBetweenPolarToCartesianCoordinates(radius, angle);
+                if (! points.Contains(point))
                 {
-                    var point = new Point(i, j);
-                    if (Math.Pow(i, 2) + Math.Pow(j, 2) <= Math.Pow(_radius, 2) && !_points.Contains(point))
-                    {
-                        _points.Add(point);
-                        yield return new Point(i + _center.X, j + _center.Y);
-                    }
+                    points.Add(point);
+                    point.Offset(center);
+                    yield return point;
                 }
-                _radius++;
+                radius = angle > Math.PI * 2 ? radius + 1: radius;
+                angle = angle > Math.PI * 2 ? angle - Math.PI * 2 : angle + 0.1;
             }
+        }
+
+        public static Point ConvertingBetweenPolarToCartesianCoordinates(double radius, double angle)
+        {
+            var x = (int) Math.Round(radius * Math.Cos(angle));
+            var y = (int) Math.Round(radius * Math.Sin(angle));
+            return new Point(x,y);
         }
     }
 }
