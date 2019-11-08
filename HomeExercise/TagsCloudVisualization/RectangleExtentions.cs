@@ -14,5 +14,7 @@ namespace TagsCloudVisualization
 			var centerY = rectangle.Y - rectangle.Height / 2;
 			return new Point(centerX, centerY);
 		}
+
+		public static int GetBottom(this Rectangle rectangle) => rectangle.Y - rectangle.Height;
 	}
 }

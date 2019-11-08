@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="CircularCloudLayouter_Tests.cs" />
+    <Compile Include="CloudVisualizator.cs" />
     <Compile Include="ExMath.cs" />
     <Compile Include="ExMath_Tests.cs" />
     <Compile Include="Program.cs" />
