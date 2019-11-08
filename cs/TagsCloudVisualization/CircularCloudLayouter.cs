@@ -8,8 +8,8 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        readonly Point center;
-        readonly List<IFigure> figures;
+        private readonly Point center;
+        private readonly List<IFigure> figures;
 
         public CircularCloudLayouter(Point center)
         {
@@ -17,57 +17,39 @@ namespace TagsCloudVisualization
             figures = new List<IFigure>();
         }
 
-        IEnumerator<Point> GetPointsOnCircular()
-        {
-            var maxAngle = 2 * Math.PI;
-            var radius = 0;
-            while (true)
-            {
-                var step = Math.PI / Math.Pow(radius + 1, 0.7);
-                for (var angle = 0.0; angle < maxAngle; angle += step)
-                {
-                    var x = (int)(radius * Math.Cos(angle));
-                    var y = (int)(radius * Math.Sin(angle));
-
-                    yield return new Point(x, y);
-                }
-                radius++;
-            }
-        }
-
-        IEnumerator<Point> pointsOnCircular = null;
-        Point FindNextFreePoint()
-        {
-            if (pointsOnCircular == null)
-                pointsOnCircular = GetPointsOnCircular();
-            pointsOnCircular.MoveNext();
-            while (figures.Any(rec => rec.Contains(pointsOnCircular.Current)))
-                pointsOnCircular.MoveNext();
-            return pointsOnCircular.Current;
-        }
-
-        Point FindFreeLocationForFigure(IFigure figure)
-        {
-            while (true)
-            {
-                var freePoint = FindNextFreePoint();
-                figure.Center = freePoint;
-                if (!figures.Any(f => f.IntersectsWith(figure)))
-                    return figure.Location;
-            }
-        }
-
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Width < 0 || rectangleSize.Height < 0)
                 throw new ArgumentOutOfRangeException();
 
-            var rectLocalLocation = FindFreeLocationForFigure(new Figures.Rectangle() { Size = rectangleSize });
+            var rectangle = new Figures.Rectangle { Size = rectangleSize };
+            rectangle.Location = FindFreeLocationForFigure(rectangle);
+            figures.Add(rectangle);
 
-            figures.Add(new Figures.Rectangle(rectLocalLocation, rectangleSize));
+            return rectangle.BaseRectangle;
+        }
 
-            var rectGlobalLocation = new Point(center.X + rectLocalLocation.X, center.Y + rectLocalLocation.Y);
-            return new Rectangle(rectGlobalLocation, rectangleSize);
+        private (int radius, double angle, double step) parameters = (0, 0, 1);
+        private Point FindNextPoint()
+        {
+            const double maxAngle = 2 * Math.PI;
+
+            if ((parameters.angle += parameters.step) >= maxAngle)
+            {
+                parameters.radius++;
+                parameters.angle = 0;
+                parameters.step = Math.PI / Math.Pow(parameters.radius + 1, 0.7);
+            }
+            return new Point(
+                x: center.X + (int)(parameters.radius * Math.Cos(parameters.angle)),
+                y: center.Y + (int)(parameters.radius * Math.Sin(parameters.angle)));
+        }
+
+        private Point FindFreeLocationForFigure(IFigure figure)
+        {
+            do figure.Center = FindNextPoint();
+            while (figures.Any(f => f.IntersectsWith(figure)));
+            return figure.Location;
         }
     }
 }
