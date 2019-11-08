@@ -35,7 +35,7 @@ namespace TagsCloudVisualization
         /// </summary>
         /// <param name="rectangleSize">Размер прямоугольника</param>
         /// <returns>Добавленный прямоугольник</returns>
-        public RectangleF PutNextRectangle(Size rectangleSize)
+        public Rectangle PutNextRectangle(Size rectangleSize)
         {
             var rectangle = new Rectangle();
             foreach (var point in spiral.GetPoints(50))

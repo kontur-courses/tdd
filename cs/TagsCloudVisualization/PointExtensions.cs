@@ -3,7 +3,7 @@
 
 namespace TagsCloudVisualization
 {
-    static class PointExtension
+    static class PointExtensions
     {
         public static int SelectCoordinatePointAlongAxis(this Point point, Axis axis) => axis == Axis.X ? point.X : point.Y;
 
