@@ -61,13 +61,6 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void PutNextRectangle_ShouldReturnRectangle()
-        {
-            var rectangle = layouter.PutNextRectangle(rectangleSize);
-            rectangle.Should().NotBeNull();
-        }
-
-        [Test]
         public void PutNextRectangle_WithValidSize_ShouldReturnRectangleWithThisSize()
         {
             var rectangle = layouter.PutNextRectangle(rectangleSize);
@@ -90,7 +83,7 @@ namespace TagsCloudVisualization
 
             RepeatPutNextRectangle(rectangleSize, count);
 
-            rectangles.All(x => !rectangles.Any(y => y != x && y.IntersectsWith(x))).Should().BeTrue();
+            rectangles.All(x => rectangles.Count(y => y.IntersectsWith(x)) == 1).Should().BeTrue();
         }
 
         [Test]
@@ -121,14 +114,19 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_DistanceOfAdjacentRectanglesShouldNotExceedN()
         {
-            var n = 8;
+            var maxDistance = 10;
             var rectangles = layouter.Cloud.Rectangles;
 
             RepeatPutNextRectangle(rectangleSize, 15);
 
             for (var i = 0; i < rectangles.Count - 1; i++)
             {
-                (rectangles[i].Location.X - rectangles[i + 1].Location.X).Should().BeLessOrEqualTo(n);
+                var dx = rectangles[i].Location.X - rectangles[i + 1].Location.X;
+                var dy = rectangles[i].Location.Y - rectangles[i + 1].Location.Y;
+
+                var distance = Math.Sqrt(dx * dx + dy * dy);
+
+                distance.Should().BeLessOrEqualTo(maxDistance);
             }
         }
 

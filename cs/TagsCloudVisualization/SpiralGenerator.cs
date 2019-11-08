@@ -18,7 +18,7 @@ namespace TagsCloudVisualization
 
                 yield return new Point((int) x, (int) y);
 
-                angle += angleStep;
+                angle += angle < 500 ? angleStep : angleStep / 2;
             }
         }
     }

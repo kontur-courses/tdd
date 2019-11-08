@@ -9,6 +9,7 @@ namespace TagsCloudVisualization
     {
         public Cloud Cloud { get; }
         private readonly IEnumerator<Point> spiralEnumerator;
+        private Size currentRectangleSize;
 
         public CircularCloudLayouter(Point center)
         {
@@ -18,32 +19,44 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var corner = GetUpperLeftCorner(rectangleSize);
-            var rectangle = new Rectangle(corner, rectangleSize);
+            currentRectangleSize = rectangleSize;
 
+            var position = GetRectanglePosition();
+            var rectangle = new Rectangle(position, rectangleSize);
             Cloud.Rectangles.Add(rectangle);
 
             return rectangle;
         }
 
-        private Point GetUpperLeftCorner(Size rectangleSize)
+        private Point GetRectanglePosition()
         {
-            while (true)
+            Point location;
+
+            while (!TryGetNextLocation(out location))
             {
-                if (TryGetNextLocation(rectangleSize, out var location))
-                {
-                    return location;
-                }
+                //Should be empty
             }
+
+            return location;
         }
 
-        private bool TryGetNextLocation(Size rectangleSize, out Point location)
+        private bool TryGetNextLocation(out Point location)
         {
             spiralEnumerator.MoveNext();
-            location = spiralEnumerator.Current;
-            var rectangle = new Rectangle(location, rectangleSize);
+            var upperLeftCorner = spiralEnumerator.Current;
+            
+            location = GetCenterPosition(upperLeftCorner);
+            var rectangle = new Rectangle(location, currentRectangleSize);
 
             return Cloud.Rectangles.All(r => !r.IntersectsWith(rectangle));
+        }
+
+        private Point GetCenterPosition(Point corner)
+        {
+            var xOffset = currentRectangleSize.Width / 2;
+            var yOffset = currentRectangleSize.Height / 2;
+
+            return new Point(corner.X - xOffset, corner.Y - yOffset);
         }
     }
 }

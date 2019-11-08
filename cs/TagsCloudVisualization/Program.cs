@@ -13,24 +13,24 @@ namespace TagsCloudVisualization
 
             var parameters = new List<ImageParameters>()
             {
-                new ImageParameters(new Point(0, 0), 20, 100, 100),
-                new ImageParameters(new Point(50, 100), 50, 800, 300),
-                new ImageParameters(new Point(500, -300), 100, 300, 100),
-                new ImageParameters(new Point(500, -300), 500, 300, 100)
+                new ImageParameters(new Point(0, 0), 20, 100, 200),
+                new ImageParameters(new Point(50, 100), 50, 300, 800),
+                new ImageParameters(new Point(500, -300), 100, 100, 300),
+                new ImageParameters(new Point(500, -300), 500, 100, 300)
             };
 
             for (var i = 0; i < parameters.Count; i++)
             {
-                var layouter = CreateCloud(parameters[i]);
+                var cloud = CreateCloud(parameters[i]);
                 var format = ImageFormat.Png;
                 var fileName = $"image{i}.{format}";
 
-                var bitmap = visualizer.Draw(layouter.Cloud);
+                var bitmap = visualizer.Draw(cloud);
                 bitmap.Save(fileName, format);
             }
         }
 
-        private static CircularCloudLayouter CreateCloud(ImageParameters parameters)
+        private static Cloud CreateCloud(ImageParameters parameters)
         {
             var layouter = new CircularCloudLayouter(parameters.Center);
             var rand = new Random();
@@ -40,12 +40,12 @@ namespace TagsCloudVisualization
             for (var i = 0; i < parameters.RectanglesCount; i++)
                 layouter.PutNextRectangle(new Size(rand.Next(min, max), rand.Next(min, max)));
 
-            return layouter;
+            return layouter.Cloud;
         }
 
         private class ImageParameters
         {
-            public ImageParameters(Point center, int rectanglesCount, int maxSide, int minSide)
+            public ImageParameters(Point center, int rectanglesCount, int minSide, int maxSide)
             {
                 Center = center;
                 RectanglesCount = rectanglesCount;
