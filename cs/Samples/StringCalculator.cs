@@ -12,7 +12,8 @@ namespace Samples
             var parsedNumbers = ParseNumbers(expr, delimiters);
             FailOnNegatives(parsedNumbers);
             return parsedNumbers.Any()
-                ? parsedNumbers.Sum() : 0;
+                ? parsedNumbers.Sum()
+                : 0;
         }
 
         public static List<int> ParseNumbers(string expr, char[] delimiters)
@@ -24,10 +25,10 @@ namespace Samples
         public static char[] ParseDelimiters(ref string expr)
         {
             if (!expr.StartsWith("//") || expr.Length <= 2)
-                return new[] { ',', '\n' };
+                return new[] {',', '\n'};
             var delimiter = expr[2];
             expr = expr.Split('\n')[1];
-            return new[] { delimiter };
+            return new[] {delimiter};
         }
 
         public static void FailOnNegatives(List<int> numbers)

@@ -39,6 +39,7 @@ namespace BowlingGame.Infrastructure
                 testStatus.Succeeded = succeeded;
             }
             else
+            {
                 tests.Add(new TestCaseStatus
                 {
                     FirstRunTime = DateTime.Now,
@@ -47,6 +48,7 @@ namespace BowlingGame.Infrastructure
                     TestMethod = test.MethodName,
                     Succeeded = succeeded
                 });
+            }
         }
 
         private static void SaveResults(List<TestCaseStatus> tests)
@@ -89,7 +91,7 @@ namespace BowlingGame.Infrastructure
 
             using (var client = Firebase.CreateClient())
             {
-                string authorsKey = MakeFirebaseSafe(YourName.Authors);
+                var authorsKey = MakeFirebaseSafe(YourName.Authors);
                 client.Set(authorsKey, new
                 {
                     tests,
@@ -97,13 +99,14 @@ namespace BowlingGame.Infrastructure
                     lang = "cs"
                 });
             }
+
             Console.WriteLine("reported");
         }
 
         private static string MakeFirebaseSafe(string s)
         {
-            var badChars = Enumerable.Range(0, 32).Select(code => (char)code)
-                .Concat(".$#[]/" + (char)127);
+            var badChars = Enumerable.Range(0, 32).Select(code => (char) code)
+                .Concat(".$#[]/" + (char) 127);
             foreach (var badChar in badChars)
                 s = s.Replace(badChar, '_');
             return s;
