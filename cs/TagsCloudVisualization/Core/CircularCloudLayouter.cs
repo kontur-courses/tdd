@@ -28,8 +28,8 @@ namespace TagsCloudVisualization
 
         public int GetMaxOffsetFromCenterAlongAxis(Axis axis)
         {
-            return axis == Axis.X 
-                ? GetMaxValueAlongAxis(Axis.X) - center.X 
+            return axis == Axis.X
+                ? GetMaxValueAlongAxis(Axis.X) - center.X
                 : GetMaxValueAlongAxis(Axis.Y) - center.Y;
         }
 
@@ -42,18 +42,8 @@ namespace TagsCloudVisualization
             return new Size(width, height);
         }
 
-        /// <summary>
-        /// Определяет пересекается ли rectangle с уже добавленными прямоугольниками
-        /// </summary>
-        /// <param name="rectangle">Проверяемый прямоугольник</param>
-        /// <returns>true, если пересекается, иначе false</returns>
         public bool DoesItIntersectWithSome(Rectangle rectangle) => rectangles.Any(r => r.IntersectsWith(rectangle));
 
-        /// <summary>
-        /// Добавляет прямоугольник в облако тегов.
-        /// </summary>
-        /// <param name="rectangleSize">Размер прямоугольника</param>
-        /// <returns>Добавленный прямоугольник</returns>
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             var rectangle = new Rectangle();
@@ -71,13 +61,6 @@ namespace TagsCloudVisualization
             return rectangle;
         }
 
-        /// <summary>
-        /// Возвращает нормированный вектор, который мы должны применить к second, чтобы добраться до first
-        /// </summary>
-        /// <param name="first"></param>
-        /// <param name="second"></param>
-        /// <param name="axis">Ось</param>
-        /// <returns>Нормированный вектор</returns>
         private Point GetOffset(Point first, Point second, Axis axis)
         {
             switch (axis)
@@ -91,12 +74,6 @@ namespace TagsCloudVisualization
             }
         }
 
-        /// <summary>
-        /// Сдвигает прямоугольник до упора к остальным примоугольникам по заданной оси.
-        /// </summary>
-        /// <param name="rectangle">Прямоугольник, который сдвигаем</param>
-        /// <param name="axis">Ось.</param>
-        /// <returns>Сдвинутый прямоугольник</returns>
         private Rectangle ShiftToCenterAlongOneAxis(Rectangle rectangle, Axis axis)
         {
             var offset = GetOffset(center, rectangle.Location, axis);
@@ -115,11 +92,6 @@ namespace TagsCloudVisualization
             return oldRectangle;
         }
 
-        /// <summary>
-        /// Сдвигаем прямоугольник к центру по всем осям
-        /// </summary>
-        /// <param name="rectangle">Прямоугольник, который сдвигаем</param>
-        /// <returns>Сдвинутый прямоугольник</returns>
         private Rectangle ShiftToCenter(Rectangle rectangle)
         {
             rectangle = ShiftToCenterAlongOneAxis(rectangle, Axis.X);

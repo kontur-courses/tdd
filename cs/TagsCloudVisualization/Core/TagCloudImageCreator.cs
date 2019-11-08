@@ -20,10 +20,6 @@ namespace TagsCloudVisualization
             directory = @"C:\\TagCloud";
         }
 
-        /// <summary>
-        /// Сохраняет облако тегов в файл.
-        /// </summary>
-        /// <param name="filename">Имя файла, с которым сохранится облако тегов</param>
         public void Save(string filename = "tmp.jpg")
         {
             if (!filename.EndsWith(".jpg")) filename = $"{filename}.jpg";
