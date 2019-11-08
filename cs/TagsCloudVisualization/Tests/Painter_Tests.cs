@@ -14,8 +14,7 @@ namespace TagsCloudVisualization.Tests
         [Test]
         public void PainterCtor_ValidSize_ShouldNotThrowException()
         {
-            Action act = () => new Painter(new Size(100, 100),
-                new CircularCloudLayouter(new Point(150, 150)));
+            Action act = () => new Painter(new Size(100, 100));
             act.Should().NotThrow();
         }
     }

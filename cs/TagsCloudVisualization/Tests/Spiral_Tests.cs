@@ -8,7 +8,8 @@ namespace TagsCloudVisualization
     [TestFixture]
     public class Spriral_Tests
     {
-        public Spiral spiral;
+        private Spiral spiral;
+        
         [SetUp]
         public void SetUp()
         {
@@ -32,9 +33,9 @@ namespace TagsCloudVisualization
         [Test]
         public void GetNextPoint_SpiralRadius_ShouldBeGreaterThanBefore()
         {
-            var previousRadius = spiral.radius;
+            var previousRadius = spiral.Radius;
             spiral.GetNextPoint();
-            var currentRadius = spiral.radius;
+            var currentRadius = spiral.Radius;
             var difference = currentRadius - previousRadius;
             difference.Should().BePositive();
         }
@@ -42,9 +43,9 @@ namespace TagsCloudVisualization
         [Test]
         public void GetNextPoint_SpiralAngle_ShouldBeGreaterThanBefore()
         {
-            var previousAngle = spiral.angle;
+            var previousAngle = spiral.Angle;
             spiral.GetNextPoint();
-            var currentAngle = spiral.angle;
+            var currentAngle = spiral.Angle;
             var difference = currentAngle - previousAngle;
             difference.Should().BePositive();
         }
