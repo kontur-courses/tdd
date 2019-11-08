@@ -5,12 +5,12 @@ namespace TagsCloudVisualization.Figures
 {
     class Rectangle : IFigure
     {
-        System.Drawing.Rectangle rect;
+        private System.Drawing.Rectangle rect;
 
         public Rectangle(Point location, Size size) => rect = new System.Drawing.Rectangle(location, size);
         public Rectangle() => rect = new System.Drawing.Rectangle();
 
-
+        public System.Drawing.Rectangle BaseRectangle { get => rect; }
         public Size Size { get => rect.Size; set => rect.Size = value; }
         public Point Center
         {
@@ -24,7 +24,7 @@ namespace TagsCloudVisualization.Figures
         public bool IntersectsWith(IFigure figure)
         {
             if (figure is Rectangle rect)
-                return this.rect.IntersectsWith(rect.rect);
+                return this.rect.IntersectsWith(rect.BaseRectangle);
 
             for (var y = this.rect.Top; y <= this.rect.Bottom; y++)
                 for (var x = this.rect.Left; x <= this.rect.Right; x++)
