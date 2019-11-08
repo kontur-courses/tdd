@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Core
 {
     class TagCloudImageCreator
     {
