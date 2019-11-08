@@ -5,7 +5,7 @@ using FluentAssertions;
 
 namespace TagsCloudVisualization.Tests
 {
-    public class CircularCloudLayouter_Should
+    public class CircularCloudLayouterTests
     {
         [Test]
         public void PutNextRectangle_ShouldPutRectangleInCenter_WhenOneRectangle()
@@ -59,6 +59,32 @@ namespace TagsCloudVisualization.Tests
                 .SelectMany((x, i) => rectangles.Skip(i + 1), GeometryUtils.RectanglesAreIntersected)
                 .Should()
                 .AllBeEquivalentTo(false);
+        }
+
+        [TestCase(2, TestName = "2 rectangles")]
+        [TestCase(3, TestName = "3 rectangles")]
+        [TestCase(5, TestName = "5 rectangles")]
+        [TestCase(10, TestName = "10 rectangles")]
+        public void PutNextRectangle_ShouldPlaceRectanglesTightly_WhenManyRectangles(int rectanglesCount)
+        {
+            var center = new Point(0, 0);
+            var size = new Size(2, 1);
+            var layouter = new CircularCloudLayouter(center);
+
+            var rectangles = Enumerable.Range(0, rectanglesCount)
+                .Select(n => layouter.PutNextRectangle(size)).ToList();
+
+            foreach (var rectangle in rectangles)
+            {
+                foreach (var closerRectangle in GeometryUtils.GetRectanglesThatCloserToPoint(
+                    center, rectangle, 1))
+                {
+                    rectangles
+                        .Select(r => GeometryUtils.RectanglesAreIntersected(r, closerRectangle))
+                        .Should()
+                        .Contain(true);
+                }
+            }
         }
     }
 }

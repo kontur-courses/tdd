@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace TagsCloudVisualization
 {
-    public class Segment_Should
+    public class SegmentTests
     {
         [Test]
         public void SegmentGetCenter_ShouldReturnCenter_WhenItIsInteger()
@@ -45,6 +45,17 @@ namespace TagsCloudVisualization
         {
             var firstSegment = new Segment(1, 3);
             var secondSegment = new Segment(4, 5);
+
+            Segment.SegmentsAreIntersected(firstSegment, secondSegment)
+                .Should()
+                .BeFalse();
+        }
+
+        [Test]
+        public void SegmentsAreIntersected_ShouldReturnFalse_WhenSegmentsAreTouching()
+        {
+            var firstSegment = new Segment(1, 3);
+            var secondSegment = new Segment(3, 5);
 
             Segment.SegmentsAreIntersected(firstSegment, secondSegment)
                 .Should()

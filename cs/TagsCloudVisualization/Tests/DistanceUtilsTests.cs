@@ -5,8 +5,10 @@ using NUnit.Framework;
 
 namespace TagsCloudVisualization.Tests
 {
-    public class DistanceUtils_Should
+    public class DistanceUtilsTests
     {
+        private const double Precision = 1e-5;
+
         [Test]
         public void GetDistanceFromPointToPoint_ShouldReturnDistance_WhenPointsOnOneLine()
         {
@@ -15,18 +17,7 @@ namespace TagsCloudVisualization.Tests
 
             var distance = DistanceUtils.GetDistanceFromPointToPoint(firstPoint, secondPoint);
 
-            distance.Should().BeApproximately(2, 1e-5);
-        }
-
-        [Test]
-        public void GetDistanceFromPointToPoint_ShouldReturnIrrationalDistance_WhenPointsOnDiagonal()
-        {
-            var firstPoint = new Point(1, 1);
-            var secondPoint = new Point(2, 2);
-
-            var distance = DistanceUtils.GetDistanceFromPointToPoint(firstPoint, secondPoint);
-
-            distance.Should().BeApproximately(Math.Sqrt(2), 1e-5);
+            distance.Should().BeApproximately(2, Precision);
         }
 
         [TestCase(3, 4, 5)]
@@ -40,7 +31,7 @@ namespace TagsCloudVisualization.Tests
 
             var distance = DistanceUtils.GetDistanceFromPointToPoint(firstPoint, secondPoint);
 
-            distance.Should().BeApproximately(expectedResult, 1e-5);
+            distance.Should().BeApproximately(expectedResult, Precision);
         }
 
         [Test]
@@ -51,7 +42,7 @@ namespace TagsCloudVisualization.Tests
 
             var distance = DistanceUtils.GetDistanceFromSegmentToPoint(point, segment);
 
-            distance.Should().BeApproximately(1, 1e-5);
+            distance.Should().BeApproximately(1, Precision);
         }
 
         [Test]
@@ -62,7 +53,7 @@ namespace TagsCloudVisualization.Tests
 
             var distance = DistanceUtils.GetDistanceFromSegmentToPoint(point, segment);
 
-            distance.Should().BeApproximately(Math.Sqrt(5), 1e-5);
+            distance.Should().BeApproximately(Math.Sqrt(5), Precision);
         }
 
         [Test]
@@ -73,7 +64,7 @@ namespace TagsCloudVisualization.Tests
 
             var distance = DistanceUtils.GetDistanceFromRectangleToPoint(point, rectangle);
 
-            distance.Should().BeApproximately(1, 1e-5);
+            distance.Should().BeApproximately(1, Precision);
         }
 
         [Test]
@@ -84,7 +75,7 @@ namespace TagsCloudVisualization.Tests
 
             var distance = DistanceUtils.GetDistanceFromRectangleToPoint(point, rectangle);
 
-            distance.Should().BeApproximately(Math.Sqrt(18), 1e-5);
+            distance.Should().BeApproximately(Math.Sqrt(18), Precision);
         }
 
         [Test]
@@ -116,6 +107,16 @@ namespace TagsCloudVisualization.Tests
                 point, new[] { firstRectangle, secondRectangle, thirdRectangle });
 
             result.Should().Be(secondRectangle);
+        }
+
+        [Test]
+        public void GetClosestToThePointRectangle_ShouldThrow_WhenNoRectangles()
+        {
+            var point = new Point(0, 0);
+
+            Action action = () => DistanceUtils.GetClosestToThePointRectangle(point, new Rectangle[0]);
+
+            action.Should().Throw<ArgumentException>();
         }
     }
 }

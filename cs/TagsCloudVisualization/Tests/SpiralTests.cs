@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
 
 namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
-    public class Spiral_Should
+    public class SpiralTests
     {
         [TestCase(1)]
         [TestCase(2)]
@@ -20,7 +19,9 @@ namespace TagsCloudVisualization.Tests
                 stepInRadians * expectedPointShift);
             var spiral = new Spiral(parameter, 30);
 
-            var pointFromSpiral = spiral.GetNextPoint().Take(expectedPointShift + 1).Last();
+            for (var i = 0; i < expectedPointShift; i++)
+                spiral.GetNextPoint();
+            var pointFromSpiral = spiral.GetNextPoint();
 
             pointFromSpiral.Should().Be(expectedPoint);
         }

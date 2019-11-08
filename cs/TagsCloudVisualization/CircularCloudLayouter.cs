@@ -7,27 +7,26 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         public Point Center { get; }
-        private Spiral spiral;
-        private readonly IEnumerator<Point> spiralEnumerator;
+        private readonly Spiral spiral;
         private readonly List<Rectangle> rectangles;
 
         public CircularCloudLayouter(Point center)
         {
             Center = center;
             rectangles = new List<Rectangle>();
-            spiral = new Spiral(2, 10);
-            spiralEnumerator = spiral.GetNextPoint().GetEnumerator();
-            spiralEnumerator.MoveNext();
+            spiral = new Spiral(1, 10);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             while (true)
             {
-                var currentPoint = spiralEnumerator.Current;
-                spiralEnumerator.MoveNext();
+                var currentPoint = spiral.GetNextPoint();
                 var possibleRectangles = GeometryUtils.GetPossibleRectangles(currentPoint, rectangleSize);
+                var closerPossibleRectangles = possibleRectangles
+                    .SelectMany(r => GeometryUtils.GetRectanglesThatCloserToPoint(Center, r, 1));
                 var acceptableRectangles = possibleRectangles
+                    .Concat(closerPossibleRectangles)
                     .Where(possibleRectangle =>
                         !rectangles.Any(r =>
                             GeometryUtils.RectanglesAreIntersected(r, possibleRectangle)))

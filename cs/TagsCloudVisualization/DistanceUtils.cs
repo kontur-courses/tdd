@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -26,20 +27,15 @@ namespace TagsCloudVisualization
                 .Min(s => GetDistanceFromSegmentToPoint(point, s));
         }
 
-        public static Rectangle GetClosestToThePointRectangle(Point point, Rectangle[] rectangles)
+        public static Rectangle GetClosestToThePointRectangle(Point point, IEnumerable<Rectangle> rectangles)
         {
-            var closestRectangle = rectangles[0];
-            var shortestDistance = GetDistanceFromRectangleToPoint(point, closestRectangle);
-            foreach (var rectangle in rectangles)
-            {
-                var distance = GetDistanceFromRectangleToPoint(point, rectangle);
-                if (distance >= shortestDistance)
-                    continue;
-                shortestDistance = distance;
-                closestRectangle = rectangle;
-            }
+            if (!rectangles.Any())
+                throw new ArgumentException("There is no rectangles");
 
-            return closestRectangle;
+            return rectangles.Aggregate((closestRectangle, nextRectangle) =>
+                GetDistanceFromRectangleToPoint(point, closestRectangle) < GetDistanceFromRectangleToPoint(point, nextRectangle)
+                    ? closestRectangle
+                    : nextRectangle);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace TagsCloudVisualization
 
         public static bool SegmentsAreIntersected(Segment firstSegment, Segment secondSegment)
         {
-            return Math.Max(firstSegment.Left.X, secondSegment.Left.X) <=
+            return Math.Max(firstSegment.Left.X, secondSegment.Left.X) <
                    Math.Min(firstSegment.Right.X, secondSegment.Right.X);
         }
     }

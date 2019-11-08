@@ -44,15 +44,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
-    <Compile Include="Tests\CircularCloudLayouter_Should.cs" />
+    <Compile Include="Tests\CircularCloudLayouterTests.cs" />
     <Compile Include="DistanceUtils.cs" />
-    <Compile Include="Tests\DistanceUtils_Should.cs" />
+    <Compile Include="Tests\DistanceUtilsTests.cs" />
     <Compile Include="GeometryUtils.cs" />
-    <Compile Include="Tests\GeometryUtils_Should.cs" />
+    <Compile Include="Tests\GeometryUtilsTests.cs" />
     <Compile Include="Segment.cs" />
-    <Compile Include="Tests\Segment_Should.cs" />
+    <Compile Include="Tests\SegmentTests.cs" />
     <Compile Include="Spiral.cs" />
-    <Compile Include="Tests\Spiral_Should.cs" />
+    <Compile Include="Tests\SpiralTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FluentAssertions, Version=5.9.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">

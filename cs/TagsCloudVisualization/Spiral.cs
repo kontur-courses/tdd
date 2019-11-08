@@ -8,6 +8,7 @@ namespace TagsCloudVisualization
     {
         private readonly int parameter;
         private readonly double stepInRadians;
+        private double phi;
 
         public Spiral(int parameter, int stepInDegrees)
         {
@@ -15,13 +16,12 @@ namespace TagsCloudVisualization
             stepInRadians = stepInDegrees * Math.PI / 180;
         }
 
-        public IEnumerable<Point> GetNextPoint()
+        public Point GetNextPoint()
         {
-            for (double phi = 0; ; phi += stepInRadians)
-            {
-                var r = parameter * phi;
-                yield return GeometryUtils.ConvertPolarToIntegerCartesian(r, phi);
-            }
+            var r = parameter * phi;
+            var point =  GeometryUtils.ConvertPolarToIntegerCartesian(r, phi);
+            phi += stepInRadians;
+            return point;
         }
     }
 }

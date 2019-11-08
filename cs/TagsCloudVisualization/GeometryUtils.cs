@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -13,15 +14,14 @@ namespace TagsCloudVisualization
             return new Point(x, y);
         }
 
-        public static Rectangle[] GetPossibleRectangles(Point point, Size size)
+        public static IEnumerable<Rectangle> GetPossibleRectangles(Point point, Size size)
         {
             var delta = new[] { 1, 0 };
-            return delta
-                .SelectMany(dx =>
-                    delta.Select(dy =>
-                        new Point(point.X - dx * size.Width, point.Y - dy * size.Height)))
-                .Select(p => new Rectangle(p, size)).ToArray();
-
+            foreach (var dx in delta)
+            foreach (var dy in delta)
+                yield return new Rectangle(
+                    new Point(point.X - dx * size.Width, point.Y - dy * size.Height), 
+                    size);
         }
 
         public static bool RectanglesAreIntersected(Rectangle firstRectangle, Rectangle secondRectangle)
@@ -50,5 +50,33 @@ namespace TagsCloudVisualization
                 new Segment(bottomLeft, bottomRight)
             };
         }
+
+        public static IEnumerable<Rectangle> GetRectanglesThatCloserToPoint(Point point, Rectangle rectangle, int delta)
+        {
+            if (rectangle.Contains(point))
+                yield break;
+
+            var dx = Math.Sign(rectangle.X - point.X) * -delta;
+            var dy = Math.Sign(rectangle.Y - point.Y) * -delta;
+
+            var dxRectangle = new Rectangle(new Point(rectangle.X + dx, rectangle.Y), rectangle.Size);
+            var dyRectangle = new Rectangle(new Point(rectangle.X, rectangle.Y + dy), rectangle.Size);
+            var dxdyRectangle = new Rectangle(new Point(rectangle.X + dx, rectangle.Y + dy), rectangle.Size);
+
+            if (ShiftedRectangleIsCloserToPoint(point, rectangle, dxRectangle))
+                yield return dxRectangle;
+            if (ShiftedRectangleIsCloserToPoint(point, rectangle, dyRectangle))
+                yield return dyRectangle;
+            if (ShiftedRectangleIsCloserToPoint(point, rectangle, dxdyRectangle))
+                yield return dxdyRectangle;
+        }
+
+        public static bool ShiftedRectangleIsCloserToPoint(Point point, Rectangle originalRectangle, Rectangle shiftedRectangle)
+        {
+            return DistanceUtils.GetDistanceFromRectangleToPoint(point, shiftedRectangle) <
+                   DistanceUtils.GetDistanceFromRectangleToPoint(point, originalRectangle);
+        }
+
+
     }
 }
