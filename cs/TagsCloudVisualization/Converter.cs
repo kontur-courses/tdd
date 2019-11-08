@@ -16,7 +16,7 @@ namespace TagsCloudVisualization
             pen = new Pen(Color.Red);
         }
 
-        public Bitmap GetBitmapFromRectangles(List<Rectangle> rectangles)
+        public void GetBitmapFromRectangles(List<Rectangle> rectangles, string fileName)
         {
             var size = GetSizeBitmapFromRectangles(rectangles);
             var bitmap = new Bitmap(size.Width + 1, size.Height + 1);
@@ -25,7 +25,7 @@ namespace TagsCloudVisualization
             rectangles
                 .AsParallel()
                 .ForAll(r => graphics.DrawRectangle(pen, r.X - size.X, r.Y - size.Y, r.Width, r.Height));
-            return bitmap;
+            bitmap.Save(fileName);
         }
 
         private Rectangle GetSizeBitmapFromRectangles(List<Rectangle> rectangles)
