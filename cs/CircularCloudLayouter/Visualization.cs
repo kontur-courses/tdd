@@ -16,10 +16,9 @@ namespace TagsCloudVisualization
         {
             var random = new Random();
             var drowPlace = Graphics.FromImage(image);
-            Color color;
             foreach (var rectangle in rectangles)
             {
-                color = Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
+                var color = Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
                 drowPlace.FillRectangle(new SolidBrush(color), rectangle);
             }
             return image;

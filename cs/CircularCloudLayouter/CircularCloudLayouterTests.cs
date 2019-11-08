@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 
 namespace TagsCloudVisualization
 
@@ -76,11 +77,11 @@ namespace TagsCloudVisualization
         public static class LayouterSource
         {
             private static readonly CircularCloudLayouter LayouterWithSameSizeRectangles =
-                LayouterWithTheSameSizeRectangles();
+                GetSameSizeRectnagles();
             private static readonly CircularCloudLayouter LayouterWithDifferentSizeRectangles =
-                LayouterWithTheDifferentSizeRectangles();
+                GetDifferentSizeRectangles();
 
-            public static CircularCloudLayouter LayouterWithTheSameSizeRectangles()
+            public static CircularCloudLayouter GetSameSizeRectnagles()
             {
                 var layouter = new CircularCloudLayouter(new Point(100, 100));
                 for (int i = 0; i < 50; i++)
@@ -88,7 +89,7 @@ namespace TagsCloudVisualization
                 return layouter;
             }
 
-            public static CircularCloudLayouter LayouterWithTheDifferentSizeRectangles()
+            public static CircularCloudLayouter GetDifferentSizeRectangles()
             {
                 var layouter = new CircularCloudLayouter(new Point(100, 100));
                 Random random = new Random();
@@ -97,8 +98,11 @@ namespace TagsCloudVisualization
                 return layouter;
             }
 
-            private static readonly CircularCloudLayouter[] TestCases =
-                {LayouterWithSameSizeRectangles, LayouterWithDifferentSizeRectangles};
+            private static TestCaseData DiffrenetSizeData = 
+                    new TestCaseData(LayouterWithDifferentSizeRectangles).SetName("DiffetentSizeRectanglesTest");
+            private static TestCaseData SameSizeData = 
+                    new TestCaseData(LayouterWithSameSizeRectangles).SetName("SameSizeRectanglesTest");
+            private static TestCaseData[] TestCases = { DiffrenetSizeData, SameSizeData };
         }
     }
 }
