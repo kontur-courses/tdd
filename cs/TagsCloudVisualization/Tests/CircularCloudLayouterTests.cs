@@ -63,7 +63,7 @@ namespace TagsCloudVisualization
         {
             AddSameRectangles(countRectangles, 50);
 
-            circularCloudLayouter.Rectangles.Should().HaveCount(1);
+            circularCloudLayouter.Rectangles.Should().HaveCount(countRectangles);
         }
 
         [TestCase(1, Description = "it is expected that after adding the rectangle the maximum values along the X and Y axes will be relatively close to the center",
@@ -73,9 +73,8 @@ namespace TagsCloudVisualization
         public void PutNextRectangle_RectanglesShouldBeTightlyCentered(int countRectangles)
         {
             AddSameRectangles(countRectangles, 1);
-
-            var centerOffsetX = circularCloudLayouter.MaxX - center.X;
-            var centerOffsetY = circularCloudLayouter.MaxY - center.Y;
+            var centerOffsetX = circularCloudLayouter.GetMaxOffsetFromCenterAlongAxis(Axis.X);
+            var centerOffsetY = circularCloudLayouter.GetMaxOffsetFromCenterAlongAxis(Axis.Y);
 
             centerOffsetX.Should().BeLessThan(10);
             centerOffsetY.Should().BeLessThan(10);

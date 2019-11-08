@@ -31,10 +31,7 @@ namespace TagsCloudVisualization
             if (!Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
 
-            var imageSize = new Size(
-                2 * circularCloudLayouter.MaxX,
-                2 * circularCloudLayouter.MaxY
-            );
+            var imageSize = circularCloudLayouter.GetLayoutSize();
 
             var bitmap = new Bitmap(imageSize.Width, imageSize.Height);
             var graphics = Graphics.FromImage(bitmap);

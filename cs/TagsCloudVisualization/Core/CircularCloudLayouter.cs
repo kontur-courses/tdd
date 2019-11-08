@@ -10,10 +10,6 @@ namespace TagsCloudVisualization
         private readonly Point center;
         private readonly List<Rectangle> rectangles;
         private readonly ArchimedeanSpiral spiral;
-
-        public int MaxX { get; private set; }
-        public int MaxY { get; private set; }
-
         public IEnumerable<Rectangle> Rectangles => rectangles;
 
         public CircularCloudLayouter(Point center)
@@ -21,6 +17,29 @@ namespace TagsCloudVisualization
             this.center = center;
             rectangles = new List<Rectangle>();
             spiral = new ArchimedeanSpiral(this.center);
+        }
+
+        public int GetMaxValueAlongAxis(Axis axis)
+        {
+            return axis == Axis.X
+                ? rectangles.Select(rectangle => rectangle.Right).Max()
+                : rectangles.Select(rectangle => rectangle.Bottom).Max();
+        }
+
+        public int GetMaxOffsetFromCenterAlongAxis(Axis axis)
+        {
+            return axis == Axis.X 
+                ? GetMaxValueAlongAxis(Axis.X) - center.X 
+                : GetMaxValueAlongAxis(Axis.Y) - center.Y;
+        }
+
+        public Size GetLayoutSize()
+        {
+            var maxOffsetFromCenterAlongAxisX = GetMaxOffsetFromCenterAlongAxis(Axis.X);
+            var maxOffsetFromCenterAlongAxisY = GetMaxOffsetFromCenterAlongAxis(Axis.Y);
+            var width = 2 * Math.Max(center.X, maxOffsetFromCenterAlongAxisX);
+            var height = 2 * Math.Max(center.Y, maxOffsetFromCenterAlongAxisY);
+            return new Size(width, height);
         }
 
         /// <summary>
@@ -47,7 +66,6 @@ namespace TagsCloudVisualization
 
             if (rectangles.Count > 0)
                 rectangle = ShiftToCenter(rectangle);
-            UpdateMaximumValues(rectangle);
 
             rectangles.Add(rectangle);
             return rectangle;
@@ -93,6 +111,7 @@ namespace TagsCloudVisualization
                 rectangle = new Rectangle(newLocation, rectangle.Size);
                 axisRectangleValue = rectangle.Location.SelectCoordinatePointAlongAxis(axis);
             }
+
             return oldRectangle;
         }
 
@@ -105,16 +124,6 @@ namespace TagsCloudVisualization
         {
             rectangle = ShiftToCenterAlongOneAxis(rectangle, Axis.X);
             return ShiftToCenterAlongOneAxis(rectangle, Axis.Y);
-        }
-
-        /// <summary>
-        /// Обновляем значения максимальных значений по осям
-        /// </summary>
-        /// <param name="rectangle">Прямоугольник, который добавили</param>
-        private void UpdateMaximumValues(Rectangle rectangle)
-        {
-            MaxX = Math.Max(MaxX, rectangle.Right);
-            MaxY = Math.Max(MaxY, rectangle.Bottom);
         }
     }
 }
