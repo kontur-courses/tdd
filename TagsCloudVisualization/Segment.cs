@@ -62,6 +62,44 @@ namespace TagsCloudVisualization
         {
         }
 
+        public bool Parallel(Segment segment)
+        {
+            if (segment.type == Segment.Type.Top && type == Segment.Type.Top
+                || segment.type == Segment.Type.Bottom && type == Segment.Type.Top
+                || segment.type == Segment.Type.Top && type == Segment.Type.Bottom
+                || segment.type == Segment.Type.Bottom && type == Segment.Type.Bottom)
+                return true;
+            if (segment.type == Segment.Type.Left && type == Segment.Type.Left
+                || segment.type == Segment.Type.Right && type == Segment.Type.Left
+                || segment.type == Segment.Type.Left && type == Segment.Type.Right
+                || segment.type == Segment.Type.Right && type == Segment.Type.Right)
+                return true;
+            return false;
+        }
+
+        public bool Horizontal()
+        {
+            if (type == Type.Bottom || type == Type.Top)
+                return true;
+            return false;
+        }
+
+        public bool Contains(Segment segment)
+        {
+            if (!this.Parallel(segment))
+                return false;
+            if (segment.Horizontal())
+                if (this.start.X < segment.start.X && this.end.X > segment.end.X)
+                    return true;
+                else
+                    return false;
+            else
+                if (this.start.Y < segment.start.Y && this.end.Y > segment.end.Y)
+                return true;
+            else
+                return false;
+        }
+
 
         public enum Type
         {

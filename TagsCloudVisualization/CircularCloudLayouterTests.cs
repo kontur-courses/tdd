@@ -151,5 +151,18 @@ namespace TagsCloudVisualization
                 rect.IntersectsWith(rectangle).Should().Be(false);
         }
 
+        [Test]
+        public void AddingThreeDifferentSquares_ShouldNotIntersect()
+        {
+            var layouter = new CircularCloudLayouter(new Point(0, 0));
+            var actualRect = new List<Rectangle>();
+            actualRect.Add(layouter.PutNextRectangle(new Size(20, 20)));
+            actualRect.Add(layouter.PutNextRectangle(new Size(10, 10)));
+            actualRect.Add(layouter.PutNextRectangle(new Size(15, 15)));
+            foreach (var rectangle1 in actualRect)
+                foreach (var rectangle2 in actualRect)
+                    rectangle1.IntersectsWith(rectangle2).Should().Be(false);
+        }
+
     }
 }
