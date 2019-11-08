@@ -54,33 +54,21 @@ namespace TagsCloudVisualization.Tests
             rectangle.Y.Should().Be(center.Y - 42 / 2);
         }
         
-        [Test]
-        public void PutNextRectangle_TwoRectangleMustNotIntersect()
+        [TestCase(2, TestName = "TwoRectangles")]
+        [TestCase(10, TestName = "TenRectangles")]
+        [TestCase(20, TestName = "TwentyRectangles")]
+        public void PutNextRectangle_RectanglesMustNotIntersect(int countRectangles)
         {
-            var circularCloudLayouter = new CircularCloudLayouter(new Point(1, 1));
-            var rectangles = new List<Rectangle>
+            var circularCloudLayouter = new CircularCloudLayouter(new Point(0, 0));
+            for (int i = 10; i < countRectangles + 10; i++)
             {
-                circularCloudLayouter.PutNextRectangle(new Size(31, 42)),
-                circularCloudLayouter.PutNextRectangle(new Size(10, 23))
-            };
-            IsNonoverlappingRectangle(rectangles).Should().BeFalse();
-        }
-        
-        [Test]
-        public void PutNextRectangle_TenRectangleMustNotIntersect()
-        {
-            var circularCloudLayouter = new CircularCloudLayouter(new Point(1, 1));
-            var rectangles = new List<Rectangle>();
-
-            for (var i = 11; i < 22; i+= 1)
-            {
-                rectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(i * 3, i)));
-
+                _rectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(i * 3, i))); 
             }
-            IsNonoverlappingRectangle(rectangles).Should().BeFalse();
+
+            IsNonoverlappingRectangle(_rectangles).Should().BeFalse();
         }
-        
-        
+
+
         private static bool IsNonoverlappingRectangle(List<Rectangle> rectangles)
         {
             return rectangles.Any(i => rectangles.Any(j => i != j && i.IntersectsWith(j)));
