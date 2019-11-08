@@ -7,16 +7,10 @@ namespace TagsCloudVisualization
 {
     class Segment
     {
-        public Point start;
-        public Point end;
-        public Type type;
-        public double Length
-        {
-            get
-            {
-                return Math.Sqrt(Math.Pow((start.X - end.X), 2) + Math.Pow((start.Y - end.Y), 2));
-            }
-        }
+        public readonly Point start;
+        public readonly Point end;
+        public readonly Type type;
+        public double Length {get => Math.Sqrt(Math.Pow((start.X - end.X), 2) + Math.Pow((start.Y - end.Y), 2)); }
         public Segment(Point start, Point end, Type type)
         {
             if (type == Type.Bottom || type == Type.Top)
@@ -73,6 +67,17 @@ namespace TagsCloudVisualization
                 || segment.type == Segment.Type.Right && type == Segment.Type.Left
                 || segment.type == Segment.Type.Left && type == Segment.Type.Right
                 || segment.type == Segment.Type.Right && type == Segment.Type.Right)
+                return true;
+            return false;
+        }
+
+        public bool Opposite(Segment segment)
+        {
+            if (segment.type == Segment.Type.Bottom && type == Segment.Type.Top
+                || segment.type == Segment.Type.Top && type == Segment.Type.Bottom)
+                return true;
+            if (segment.type == Segment.Type.Right && type == Segment.Type.Left
+                || segment.type == Segment.Type.Left && type == Segment.Type.Right)
                 return true;
             return false;
         }

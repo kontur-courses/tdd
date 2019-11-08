@@ -10,19 +10,20 @@ using System.Linq;
 namespace TagsCloudVisualization
 {
     [TestFixture]
-    class CircularCloudLayouterTests
+    public class CircularCloudLayouterTests
     {
         [Test]
-        public void Constructor_shouldNotThrowArgumentExceptionOnProperInput()
+        public void ConstructorProperInput_shouldNotThrowArgumentException()
         {
             Action LayouterCreation = () => new CircularCloudLayouter(new Point(0, 0));
             LayouterCreation.Should().NotThrow<Exception>();
         }
+
         [Test]
-        public void PutNextRectangle_shouldNotThrowArgumentExceptionOnProperInput()
+        public void PutNextRectangleProperInput_shouldNotThrowArgumentException()
         {
             var layouter = new CircularCloudLayouter(new Point(0, 0));
-            Action putNext = ()=>layouter.PutNextRectangle(new Size(1, 1));
+            Action putNext = () => layouter.PutNextRectangle(new Size(1, 1));
             putNext.Should().NotThrow<Exception>();
         }
 
@@ -35,9 +36,8 @@ namespace TagsCloudVisualization
             rect.Location.Should().Be(new Point(-5, -5));
         }
 
-
         [Test]
-        public void AddingTwoRectangles_ShouldNotIntersect()
+        public void AddingTwoRectangles_RectanglesShouldNotIntersect()
         {
             var center = new Point(0, 0);
             var layouter = new CircularCloudLayouter(center);
@@ -45,14 +45,17 @@ namespace TagsCloudVisualization
             var rect2 = layouter.PutNextRectangle(new Size(10, 10));
             rect1.IntersectsWith(rect2).Should().BeFalse();
         }
+
         [Test]
         public void AddingTwoRectangles_Should()
         {
             var center = new Point(0, 0);
             var squareSize = new Size(10, 10);
             var layouter = new CircularCloudLayouter(center);
-            layouter.PutNextRectangle(squareSize).Should().Be(new Rectangle(new Point(-5, -5), squareSize));
-            layouter.PutNextRectangle(squareSize).Should().Be(new Rectangle(new Point(-5, -15), squareSize));
+            var rect1 = layouter.PutNextRectangle(squareSize);
+            var rect2 = layouter.PutNextRectangle(squareSize);
+            rect1.Should().Be(new Rectangle(new Point(-5, -5), squareSize));
+            rect2.Should().Be(new Rectangle(new Point(-5, -15), squareSize));
 
         }
 
@@ -76,7 +79,8 @@ namespace TagsCloudVisualization
             var layouter = new CircularCloudLayouter(center);
             layouter.PutNextRectangle(squareSize);
             layouter.PutNextRectangle(squareSize);
-            layouter.PutNextRectangle(squareSize).Should().Be(new Rectangle(new Point(-5, 5), squareSize));
+            var rect = layouter.PutNextRectangle(squareSize);
+            rect.Should().Be(new Rectangle(new Point(-5, 5), squareSize));
 
         }
 
@@ -93,9 +97,9 @@ namespace TagsCloudVisualization
             rect4.IntersectsWith(rect2).Should().BeFalse();
             rect4.IntersectsWith(rect1).Should().BeFalse();
         }
-        // единственный случай добавления не в угол это когда координата центра раскладки совпадает с координатой центра прямоугольника
-        [Test]//падает потому, что не умеет добавлять посередине отрезка а только в углы
-        public void AddingFiveEqualSquares_ShouldMakeACross()//надо переделать на parametrized
+
+        [Test]
+        public void AddingFiveEqualSquares_ShouldMakeACross()
         {
             var center = new Point(0, 0);
             var squareSize = new Size(10, 10);
@@ -125,30 +129,19 @@ namespace TagsCloudVisualization
             layouter.PutNextRectangle(squareSize);
             layouter.PutNextRectangle(squareSize);
             layouter.PutNextRectangle(squareSize);
-            layouter.PutNextRectangle(new Size(10, 30)).Should().Be(new Rectangle(new Point(-15, -15), new Size(10, 30)));
+            var rect = layouter.PutNextRectangle(new Size(10, 30));
+            rect.Should().Be(new Rectangle(new Point(-15, -15), new Size(10, 30)));
         }
 
         [Test]
-        public void AddingSquareAndBiggerSquare_ShouldNotIntersect()
+        public void AddingSquareAndBiggerSquare_SquaresShouldNotIntersect()
         {
             var center = new Point(0, 0);
             var squareSize = new Size(10, 10);
             var layouter = new CircularCloudLayouter(center);
-            var rect1=layouter.PutNextRectangle(squareSize);
-            var rect2 = layouter.PutNextRectangle(new Size(20,20));
+            var rect1 = layouter.PutNextRectangle(squareSize);
+            var rect2 = layouter.PutNextRectangle(new Size(20, 20));
             rect1.IntersectsWith(rect2).Should().Be(false);
-        }
-
-        [Test]
-        public void Adding_9_Recatangles_temp()
-        {
-            var layouter = new CircularCloudLayouter(new Point(0, 0));
-            var actualRect = new List<Rectangle>();
-            for (int i=0; i<8;i++)
-                actualRect.Add(layouter.PutNextRectangle(new Size(10, 20)));
-            var rect = layouter.PutNextRectangle(new Size(10, 20));
-            foreach (var rectangle in actualRect)
-                rect.IntersectsWith(rectangle).Should().Be(false);
         }
 
         [Test]
@@ -161,7 +154,8 @@ namespace TagsCloudVisualization
             actualRect.Add(layouter.PutNextRectangle(new Size(15, 15)));
             foreach (var rectangle1 in actualRect)
                 foreach (var rectangle2 in actualRect)
-                    rectangle1.IntersectsWith(rectangle2).Should().Be(false);
+                    if (rectangle1 != rectangle2)
+                        rectangle1.IntersectsWith(rectangle2).Should().Be(false);
         }
 
     }
