@@ -25,7 +25,7 @@ namespace TagsCloudVisualization
             if (rectangles.Count == 0)
             {
                 var location = new Point(Center.X - rectangleSize.Width / 2,
-                    Center.Y - rectangleSize.Height / 2);
+                                         Center.Y - rectangleSize.Height / 2);
                 rectangle = new Rectangle(location, rectangleSize);
             }
             else
