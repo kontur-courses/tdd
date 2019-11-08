@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -12,23 +14,31 @@ namespace TagsCloudVisualization
         public Bitmap VisualizeLayout(CircularCloudLayouter layouter)
         {
             var rectangles = layouter.GetRectangles();
-            if (layouter.CloudBottomBorder == 0 && layouter.CloudRightBorder == 0)
+            var imageSize = GetImageSize(rectangles);
+            if (imageSize.Width == 0 && imageSize.Height == 0)
             {
                 return null;
             }
 
-            var image = new Bitmap(
-                layouter.CloudRightBorder + layouter.CloudLeftBorder,
-                layouter.CloudBottomBorder + layouter.CloudTopBorder);
+            return GetImage(imageSize, rectangles);
+        }
 
-            var backgroundRectangle = new Rectangle(
-                0,
-                0,
-                layouter.CloudRightBorder + layouter.CloudLeftBorder,
-                layouter.CloudBottomBorder + layouter.CloudTopBorder);
+        private static Size GetImageSize(List<Rectangle> rectangles)
+        {
+            var cloudRightBorder = rectangles.Max(rect => rect.Right);
+            var cloudBottomBorder = rectangles.Max(rect => rect.Bottom);
+            var cloudLeftBorder = rectangles.Min(rect => rect.Left);
+            var cloudTopBorder = rectangles.Min(rect => rect.Top);
+            return new Size(cloudRightBorder + cloudLeftBorder, cloudBottomBorder + cloudTopBorder);
+        }
+
+        private Bitmap GetImage(Size imageSize, List<Rectangle> rectangles)
+        {
+            var image = new Bitmap(imageSize.Width, imageSize.Height);
 
             using (var graphics = Graphics.FromImage(image))
             {
+                var backgroundRectangle = new Rectangle(0, 0, imageSize.Width, imageSize.Height);
                 graphics.FillRectangle(backgroundBrush, backgroundRectangle);
                 var rectangleNumber = 0;
                 foreach (var rectangle in rectangles)

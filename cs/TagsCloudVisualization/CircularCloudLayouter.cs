@@ -11,19 +11,11 @@ namespace TagsCloudVisualization
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
         private readonly Point center;
         private readonly ArchimedeanSpiral archimedeanSpiral;
-        public int CloudRightBorder { get; private set; }
-        public int CloudBottomBorder { get; private set; }
-        public int CloudLeftBorder { get; private set; }
-        public int CloudTopBorder { get; private set; }
 
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
             archimedeanSpiral = new ArchimedeanSpiral(center);
-            CloudRightBorder = 0;
-            CloudTopBorder = 0;
-            CloudLeftBorder = int.MaxValue;
-            CloudTopBorder = int.MaxValue;
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -37,7 +29,6 @@ namespace TagsCloudVisualization
             }
 
             var adjustedRectangle = AdjustRectangle(checkedRectangle);
-            UpdateBorders(adjustedRectangle);
             rectangles.Add(adjustedRectangle);
             return adjustedRectangle;
         }
@@ -47,14 +38,6 @@ namespace TagsCloudVisualization
             return rectangles
                 .Select(rectangle => new Rectangle(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height))
                 .ToList();
-        }
-
-        private void UpdateBorders(Rectangle newRectangle)
-        {
-            CloudRightBorder = Math.Max(CloudRightBorder, newRectangle.Right);
-            CloudLeftBorder = Math.Min(CloudLeftBorder, newRectangle.X);
-            CloudBottomBorder = Math.Max(CloudBottomBorder, newRectangle.Bottom);
-            CloudTopBorder = Math.Min(CloudTopBorder, newRectangle.Y);
         }
 
         private Rectangle AdjustRectangle(Rectangle rectangle)
