@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BowlingGame.Infrastructure;
 using FluentAssertions;
 using NUnit.Framework;
+using System.Drawing;
 
 namespace BowlingGame
 {

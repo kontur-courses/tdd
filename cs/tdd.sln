@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BowlingGame", "BowlingGame\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.csproj", "{B5108E20-2ACF-4ED9-84FE-2A718050FC94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{A595CAD7-9E14-4FEE-80AB-2095E96D620F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization1", "CircularCloudLayouter\TagsCloudVisualization1.csproj", "{03F59575-9DC6-42E0-BA78-A31B525C1A68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A595CAD7-9E14-4FEE-80AB-2095E96D620F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A595CAD7-9E14-4FEE-80AB-2095E96D620F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A595CAD7-9E14-4FEE-80AB-2095E96D620F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A595CAD7-9E14-4FEE-80AB-2095E96D620F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03F59575-9DC6-42E0-BA78-A31B525C1A68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03F59575-9DC6-42E0-BA78-A31B525C1A68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03F59575-9DC6-42E0-BA78-A31B525C1A68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03F59575-9DC6-42E0-BA78-A31B525C1A68}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
