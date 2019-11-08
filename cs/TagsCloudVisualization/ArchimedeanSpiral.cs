@@ -22,9 +22,7 @@ namespace TagsCloudVisualization
         /// <param name="deltaAngle">Значение угла, на которое будет происходит смещение каждую итерацию</param>
         /// <param name="step">Расстояние между витками</param>
         /// <returns></returns>
-        public IEnumerable<Point> GetPoints(int numberOfTurns,
-            double deltaAngle = TwoPi / 360,
-            int step = 20)
+        public IEnumerable<Point> GetPoints(int numberOfTurns, double deltaAngle = TwoPi / 360, int step = 20)
         {
             for (var angle = 0.0; angle < numberOfTurns * Math.PI; angle += deltaAngle)
             {

@@ -10,7 +10,6 @@ namespace TagsCloudVisualization
         private readonly CircularCloudLayouter circularCloudLayouter;
         private readonly Brush brush;
         private readonly Pen pen;
-
         private readonly string directory;
 
         public TagCloudImageCreator(CircularCloudLayouter circularCloudLayouter)
