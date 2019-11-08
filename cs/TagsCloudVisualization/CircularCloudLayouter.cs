@@ -11,11 +11,11 @@ namespace TagsCloudVisualization
         private readonly List<Rectangle> Rectangles;
         private readonly Spiral spiral;
 
-        public CircularCloudLayouter(Point center)
+        public CircularCloudLayouter(Point center, Spiral.SpiralDensity density = Spiral.SpiralDensity.dense)
         {
             CenterCoordinates = center;
             Rectangles = new List<Rectangle>();
-            spiral = new Spiral(center);
+            spiral = new Spiral(center, density);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
