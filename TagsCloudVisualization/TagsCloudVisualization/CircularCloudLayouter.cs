@@ -7,23 +7,27 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        readonly Point center;
-        private List<Rectangle> rectangles = new List<Rectangle>();
-        private SortedList<double, HashSet<Point>> corners = new SortedList<double, HashSet<Point>>();
+        private readonly Point _center;
+        private readonly List<Rectangle> _rectangles = new List<Rectangle>();
+        private readonly SortedList<double, HashSet<Point>> _corners = new SortedList<double, HashSet<Point>>();
 
         public CircularCloudLayouter(Point center)
         {
-            this.center = center;
-            corners.Add(0, new HashSet<Point> { center });
+            this._center = center;
+            _corners.Add(0, new HashSet<Point> { center });
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            foreach (var corner in corners.Values)
+            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+                throw new ArgumentException($"Width and height should be greater than 0. " +
+                                    $"Your width was: {rectangleSize.Width} and height was: {rectangleSize.Height}");
+
+            foreach (var corner in _corners.Values)
                 foreach (var rectangle in RectangleGeometry.GetCornerRectangles(rectangleSize, corner))
                 {
-                    if (rectangles.Any(rec => rec.IntersectsWith(rectangle))) continue; 
-                    rectangles.Add(rectangle);
+                    if (_rectangles.Any(rec => rec.IntersectsWith(rectangle))) continue; 
+                    _rectangles.Add(rectangle);
                     AddPointsIntoList(rectangle.GetCorners());
                     return rectangle;
                 }
@@ -36,9 +40,9 @@ namespace TagsCloudVisualization
         {
             foreach (var point in points)
             {
-                var distance = point.DistanceTo(center);
-                if (corners.ContainsKey(distance)) corners[distance].Add(point);
-                else corners.Add(distance, new HashSet<Point>() { point });
+                var distance = point.DistanceTo(_center);
+                if (_corners.ContainsKey(distance)) _corners[distance].Add(point);
+                else _corners.Add(distance, new HashSet<Point>() { point });
             }
         }
     }

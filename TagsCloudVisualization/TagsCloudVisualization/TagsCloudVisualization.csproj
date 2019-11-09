@@ -34,6 +34,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="FluentAssertions, Version=5.9.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentAssertions.5.9.0\lib\net47\FluentAssertions.dll</HintPath>
@@ -55,18 +58,21 @@
   <ItemGroup>
     <Compile Include="CenterMassChecker.cs" />
     <Compile Include="CloudVisualization.cs" />
-    <Compile Include="CircularCloudLayouterTests.cs" />
-    <Compile Include="CenterMassCheckerTests.cs" />
+    <Compile Include="tests\CircularCloudLayouterTests.cs" />
+    <Compile Include="tests\CenterMassCheckerTests.cs" />
+    <Compile Include="DebugVisualization.cs" />
+    <Compile Include="iVisualization.cs" />
     <Compile Include="PointExtention.cs" />
-    <Compile Include="PointExtentionTest.cs" />
+    <Compile Include="tests\PointExtentionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectangleGeometry.cs" />
     <Compile Include="CircularCloudLayouter.cs" />
-    <Compile Include="RectangleGeometryTests.cs" />
+    <Compile Include="tests\RectangleGeometryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

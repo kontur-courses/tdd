@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace TagsCloudVisualization
 {
@@ -16,9 +13,10 @@ namespace TagsCloudVisualization
             float allY = 0;
             foreach (var rectangle in rectangles)
             {
-                allSquares += rectangle.Width * rectangle.Height;
-                allX += (rectangle.X + rectangle.Width / 2) * rectangle.Width * rectangle.Height;
-                allY += (rectangle.Y + rectangle.Height / 2) * rectangle.Width * rectangle.Height;
+                var square = rectangle.Width * rectangle.Height;
+                allSquares += square;
+                allX += (rectangle.X + rectangle.Width / 2) * square;
+                allY += (rectangle.Y + rectangle.Height / 2) * square;
             }
             return new PointF(allX / allSquares, allY / allSquares);
         }

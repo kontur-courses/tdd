@@ -1,21 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    class CloudVisualization : IVisualization
+    class DebugVisualization : IVisualization
     {
         public Bitmap DrawRectangles(List<Rectangle> rectangles)
         {
             var image = new Bitmap(900, 900);
-            var random = new Random();
             using (var drawPlace = Graphics.FromImage(image))
             {
+                var color = Color.Black;
                 foreach (var rectangle in rectangles)
                 {
-                    var color = Color.FromArgb(random.Next(0, 255), random.Next(0, 255), random.Next(0, 255));
-                    drawPlace.FillRectangle(new SolidBrush(color), rectangle);
+                    if (rectangle == rectangles.Last())
+                        color = Color.Red;
+                    drawPlace.DrawRectangle(new Pen(new SolidBrush(color), 3), rectangle);
                 }
             }
             return image;
