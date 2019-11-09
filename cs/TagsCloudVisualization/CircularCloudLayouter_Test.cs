@@ -59,10 +59,46 @@ namespace TagsCloudVisualization
             Following.Code(() => circularCloudLayouter.PutNextRectangle(Size.Empty)).ShouldThrow<ArgumentException>();
         }
 
+        [Test]
+        public void PutNextRectangle_Should_PutRectanglesDenseEnough()
+        {
+            for (var i = 0; i < 100; i++)
+                circularCloudLayouter.PutNextRectangle(new Size(30, 20));
+            var circumscribedCircleArea = GetCircumscribedCircleArea();
+            var rectangleAreaSum = GetRectanglesAreaSum(circularCloudLayouter.Rectangles);
+            var isRatioSmallEnough = rectangleAreaSum / circumscribedCircleArea >= 0.6;
+            isRatioSmallEnough.Should().Be(true);
+        }
+
+        [Test]
+        public void PutNextRectangle_Should_PutRectanglesInCircleShape()
+        {
+            for (var i = 0; i < 100; i++)
+                            circularCloudLayouter.PutNextRectangle(new Size(30, 20));
+            var verticalLength = circularCloudLayouter.GetCloudVerticalLength();
+            var horizontalLength = circularCloudLayouter.GetCloudHorizontalLength();
+            var ratio = verticalLength / horizontalLength;
+            ratio.Should().BeInRange(0.9, 1.1);
+        }
+
+        private double GetCircumscribedCircleArea()
+        {
+            var verticalLength = circularCloudLayouter.GetCloudVerticalLength();
+            var horizontalLength = circularCloudLayouter.GetCloudHorizontalLength();
+            var radius = horizontalLength > verticalLength ? horizontalLength / 2 : verticalLength / 2;
+            return Math.PI * radius * radius;
+        }
+
+        private double GetRectanglesAreaSum(IEnumerable<Rectangle> rectangles)
+        {
+            return rectangles.Select(rect => rect.Width * rect.Height).Sum();
+        }
+
         private bool CheckIfAnyRectanglesIntersect(IEnumerable<Rectangle> rectangles)
         {
-            return rectangles
-                .Select(rectFirst => rectangles
+            var enumerable = rectangles.ToList();
+            return enumerable
+                .Select(rectFirst => enumerable
                     .Select(rectSecond => rectFirst.IntersectsWith(rectSecond) && rectFirst != rectSecond)
                     .Any(value => value))
                 .Any(value => value);
