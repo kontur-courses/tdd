@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -9,11 +10,11 @@ namespace TagsCloudVisualization
         private readonly ArchimedesSpiral archimedesSpiral;
 
         public List<Rectangle> Rectangles { get; }
-        private Point center;
+        public Point Center { get; }
 
         public CircularCloudLayouter(Point center)
         {
-            this.center = center;
+            this.Center = center;
             archimedesSpiral = new ArchimedesSpiral(center, 0.1);
             Rectangles = new List<Rectangle>();
         }
@@ -45,14 +46,32 @@ namespace TagsCloudVisualization
             var rectangleCenter = rectangle.GetCenter();
             var xDirection = 0;
             var yDirection = 0;
-            while (!rectangle.IntersectsWithAny(Rectangles) && center.GetDistanceTo(rectangleCenter) > 10)
+            while (!rectangle.IntersectsWithAny(Rectangles) && Center.GetDistanceTo(rectangleCenter) > 10)
             {
-                xDirection = rectangleCenter.X >= center.X ? rectangleCenter.X == center.X ? 0 : -1 : 1;
-                yDirection = rectangleCenter.Y >= center.Y ? rectangleCenter.Y == center.Y ? 0 : -1 : 1;
+                xDirection = rectangleCenter.X >= Center.X ? rectangleCenter.X == Center.X ? 0 : -1 : 1;
+                yDirection = rectangleCenter.Y >= Center.Y ? rectangleCenter.Y == Center.Y ? 0 : -1 : 1;
                 rectangle.Offset(xDirection, yDirection);
             }
             rectangle.Offset(-xDirection, -yDirection);
             return rectangle;
+        }
+        
+        public double GetCloudHorizontalLength()
+        {
+            var minX = Rectangles.OrderBy(rect => rect.X).First().X;
+            var leftMostPoint = new Point(minX, Center.Y);
+            var maxX = Rectangles.OrderBy(rect => rect.Right).Last().Right;
+            var rightMostPoint = new Point(maxX, Center.Y);
+            return leftMostPoint.GetDistanceTo(rightMostPoint);
+        }
+        
+        public double GetCloudVerticalLength()
+        {
+            var minY = Rectangles.OrderBy(rect => rect.Y).First().Y;
+            var topMostPoint = new Point(Center.X, minY); ;
+            var maxY = Rectangles.OrderBy(rect => rect.Bottom).Last().Bottom;
+            var bottomMostPoint = new Point(Center.X, maxY);
+            return topMostPoint.GetDistanceTo(bottomMostPoint);
         }
     }
 }
