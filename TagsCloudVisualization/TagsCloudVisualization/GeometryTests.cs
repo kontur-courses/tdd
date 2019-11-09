@@ -15,8 +15,9 @@ namespace TagsCloudVisualization
         [TestCase(40, -8, -5, -39)]
         public void PolarToCartesian_ReturnsCorrectPoint_OnDifferentPolarValues(double ro, double phi, int x, int y)
         {
-            Geometry.PolarToCartesion(ro, phi).Should().Be(new Point(x, y));
+            Geometry.PolarToCartesian(ro, phi).Should().Be(new Point(x, y));
         }
+
 
         [TestCase(-1, 1)]
         [TestCase(1, -1)]
@@ -43,14 +44,14 @@ namespace TagsCloudVisualization
         [TestCase(0, 0, 10, 10, 15, 15, 7.071)]
         [TestCase(9, 3, 2, 2, 8, 1, 1.118)]
         [TestCase(0, 0, 20, 20, 15, 30, 11.180)]
-        public void GetLengthFromRectCenterToBorder_ReturnsCorrectLength_OndifferentValues(
+        public void GetLengthFromRectCenterToBorderOnVector_ReturnsCorrectLength_OnDifferentValues(
             int rectX, int rectY, int width, int height, int endX, int endY, double expectedLength)
         {
             var epsilon = 0.001;
-            var rect = new Rectangle(rectX, rectY, width, height);
+            var rectangle = new Rectangle(rectX, rectY, width, height);
             var endPoint = new Point(endX, endY);
 
-            var length = Geometry.GetLengthFromRectCenterToBorder(rect, endPoint);
+            var length = Geometry.GetLengthFromRectCenterToBorderOnVector(rectangle, endPoint);
 
             length.Should().BeInRange(expectedLength - epsilon, expectedLength + epsilon);
         }
@@ -58,10 +59,10 @@ namespace TagsCloudVisualization
         [TestCase(-1, 1)]
         [TestCase(1, -1)]
         [TestCase(int.MinValue, int.MinValue)]
-        public void GetLengthFromRectCenterToBorder_ThrowsException_IfSizeHasNegativeParameter(int width, int height)
+        public void GetLengthFromRectangleCenterToBorderOnVector_ThrowsException_IfSizeHasNegativeValue(int width, int height)
         {
             Action action = () =>
-                Geometry.GetLengthFromRectCenterToBorder(new Rectangle(0, 0, width, height), Point.Empty);
+                Geometry.GetLengthFromRectCenterToBorderOnVector(new Rectangle(0, 0, width, height), Point.Empty);
 
             action.Should().Throw<ArgumentException>();
         }
@@ -69,13 +70,13 @@ namespace TagsCloudVisualization
         [TestCase(0, 0, 10, 10, 0, 0)]
         [TestCase(0, 0, 10, 10, 3, -3)]
         [TestCase(10, -40, 20, 20, 5, -35)]
-        public void GetLengthFromRectCenterToBorder_ReturnsZero_IfPointIsInsideRectangle(
+        public void GetLengthFromRectCenterToBorderOnVector_ReturnsZero_IfPointIsInsideRectangle(
             int rectX, int rectY, int width, int height, int endX, int endY)
         {
-            var rect = new Rectangle(rectX, rectY, width, height);
+            var rectangle = new Rectangle(rectX, rectY, width, height);
             var endPoint = new Point(endX, endY);
 
-            var length = Geometry.GetLengthFromRectCenterToBorder(rect, endPoint);
+            var length = Geometry.GetLengthFromRectCenterToBorderOnVector(rectangle, endPoint);
 
             length.Should().Be(0);
         }

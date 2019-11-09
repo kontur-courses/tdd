@@ -7,47 +7,73 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
+        public Point Center => spiral.Center;
+
+        private readonly Spiral spiral;
+
+        private readonly List<Rectangle> rectangleMap;
+
+        public CircularCloudLayouter(Point center)
+        {
+            rectangleMap = new List<Rectangle>();
+            spiral = new Spiral(center);
+        }
+
+        public IEnumerable<Rectangle> GetRectangles()
+        {
+            return rectangleMap;
+        }
+
+        public Rectangle PutNextRectangle(Size rectangleSize)
+        {
+            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+                throw new ArgumentException();
+            var rectangle = CreateRectangleOnSpiral(rectangleSize);
+            rectangleMap.Add(rectangle);
+            return rectangle;
+        }
+
+        private Rectangle CreateRectangleOnSpiral(Size rectangleSize)
+        {
+            var shiftedCenter = Geometry.ShiftPointBySizeOffsets(spiral.Center, rectangleSize);
+            var rectangle = new Rectangle(shiftedCenter, rectangleSize);
+            while (rectangleMap.Any(r => r.IntersectsWith(rectangle)))
+            {
+                var spiralPoint = spiral.GetNextSpiralPoint();
+                rectangle.X = shiftedCenter.X + spiralPoint.X;
+                rectangle.Y = shiftedCenter.Y + spiralPoint.Y;
+            }
+            spiral.AlignDirection(rectangle);
+            return rectangle;
+        }
+    }
+
+    internal class Spiral
+    {
         public readonly Point Center;
 
         private const double spiralRatio = 0.1;
 
         private double angle;
-        private double length;
 
-        private readonly List<Rectangle> tagRectangles;
+        private double distanceFromCenter;
 
-        public CircularCloudLayouter(Point center)
+        public Spiral(Point center)
         {
-            tagRectangles = new List<Rectangle>();
             Center = center;
         }
 
-        public Rectangle PutNextRectangle(Size rectangleSize)
+        public Point GetNextSpiralPoint()
         {
-            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0) throw new ArgumentException();
-            var rect = CreateRectangleOnSpiral(rectangleSize);
-            tagRectangles.Add(rect);
-            return rect;
+            angle += spiralRatio;
+            distanceFromCenter += spiralRatio;
+            return Geometry.PolarToCartesian(distanceFromCenter, angle);
         }
 
-        private Rectangle CreateRectangleOnSpiral(Size rectangleSize)
+        public void AlignDirection(Rectangle rectangle)
         {
-            var shiftedCenter = Geometry.ShiftPointBySizeOffsets(Center, rectangleSize);
-            var rect = new Rectangle(shiftedCenter, rectangleSize);
-
-            while (tagRectangles.Any(r => r.IntersectsWith(rect)))
-            {
-                angle += spiralRatio;
-                length += spiralRatio;
-                var spiralPoint = Geometry.PolarToCartesion(length, angle);
-                rect.X = shiftedCenter.X + spiralPoint.X;
-                rect.Y = shiftedCenter.Y + spiralPoint.Y;
-            }
-
-            length -= Math.Max(length / 2, Geometry.GetLengthFromRectCenterToBorder(rect, Center));
-            return rect;
+            distanceFromCenter -= Math.Max(distanceFromCenter / 2,
+                Geometry.GetLengthFromRectCenterToBorderOnVector(rectangle, Center));
         }
-
-        public IEnumerable<Rectangle> GetRectangles() => tagRectangles;
     }
 }

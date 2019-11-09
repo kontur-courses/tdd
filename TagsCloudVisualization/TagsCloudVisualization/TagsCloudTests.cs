@@ -37,21 +37,20 @@ namespace TagsCloudVisualization
         [TestCase(0, 1)]
         [TestCase(-1, 1)]
         [TestCase(1, -1)]
-        public void PutNextRectangle_ThrowsArgumentException_IfRectangleSizeHasNonPositiveParameter(int width,
-            int height)
+        public void PutNextRectangle_ThrowsArgumentException_IfRectangleSizeHasNonPositiveParameter(int width, int height)
         {
             Func<Rectangle> act = () => layouter.PutNextRectangle(new Size(width, height));
             act.Should().Throw<ArgumentException>();
         }
 
         [Test]
-        public void PutNextRectange_ReturnsRectangleWithPositionShiftedByOffsets()
+        public void PutNextRectangle_ReturnsRectangleWithPositionShiftedByOffsets()
         {
             var recSize = new Size(10, 10);
             var expectedShiftedCenter =
                 new Point(layouter.Center.X - recSize.Width / 2, layouter.Center.Y - recSize.Height / 2);
-            var rect = layouter.PutNextRectangle(recSize);
-            new Point(rect.X, rect.Y).Should().Be(expectedShiftedCenter);
+            var rectangle = layouter.PutNextRectangle(recSize);
+            new Point(rectangle.X, rectangle.Y).Should().Be(expectedShiftedCenter);
         }
 
         [TestCase(1, 1)]
@@ -70,16 +69,15 @@ namespace TagsCloudVisualization
         {
             var center = new Point(x, y);
             var customLayouter = new CircularCloudLayouter(center);
-            var rect = customLayouter.PutNextRectangle(new Size(10, 10));
-            rect.X.Should().Be(center.X - rect.Width / 2);
-            rect.Y.Should().Be(center.Y - rect.Height / 2);
+            var rectangle = customLayouter.PutNextRectangle(new Size(10, 10));
+            rectangle.X.Should().Be(center.X - rectangle.Width / 2);
+            rectangle.Y.Should().Be(center.Y - rectangle.Height / 2);
         }
 
         [TestCase(2)]
         [TestCase(10)]
         [TestCase(100)]
-        public void PutNextRectangles_ShouldNotReturnCrossingRectangles_AfterPassingSetOfRectangleSizes(
-            int rectanglesAmount)
+        public void PutNextRectangles_ShouldNotReturnCrossingRectangles_AfterPassingSetOfRectangleSizes(int rectanglesAmount)
         {
             var rectangles = new List<Rectangle>();
             for (var i = 1; i < rectanglesAmount; i++)
