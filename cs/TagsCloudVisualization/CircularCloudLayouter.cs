@@ -55,23 +55,5 @@ namespace TagsCloudVisualization
             rectangle.Offset(-xDirection, -yDirection);
             return rectangle;
         }
-        
-        public double GetCloudHorizontalLength()
-        {
-            var minX = Rectangles.OrderBy(rect => rect.X).First().X;
-            var leftMostPoint = new Point(minX, Center.Y);
-            var maxX = Rectangles.OrderBy(rect => rect.Right).Last().Right;
-            var rightMostPoint = new Point(maxX, Center.Y);
-            return leftMostPoint.GetDistanceTo(rightMostPoint);
-        }
-        
-        public double GetCloudVerticalLength()
-        {
-            var minY = Rectangles.OrderBy(rect => rect.Y).First().Y;
-            var topMostPoint = new Point(Center.X, minY); ;
-            var maxY = Rectangles.OrderBy(rect => rect.Bottom).Last().Bottom;
-            var bottomMostPoint = new Point(Center.X, maxY);
-            return topMostPoint.GetDistanceTo(bottomMostPoint);
-        }
     }
 }
