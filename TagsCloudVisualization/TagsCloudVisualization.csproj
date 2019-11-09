@@ -62,13 +62,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CircularCloudLayouterTests.cs" />
-    <Compile Include="CircularCloudLayouter.cs" />
-    <Compile Include="PointExtensions.cs" />
+    <Compile Include="Tests\CircularCloudLayouterTests.cs" />
+    <Compile Include="Core\CircularCloudLayouter.cs" />
+    <Compile Include="Extensions\PointExtensions.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="RectangleExtensions.cs" />
-    <Compile Include="SizeGenerator.cs" />
-    <Compile Include="Visualizer.cs" />
+    <Compile Include="Extensions\RectangleExtensions.cs" />
+    <Compile Include="Core\SizeGenerator.cs" />
+    <Compile Include="Exceptions\SpiralPointGeneratorException.cs" />
+    <Compile Include="Core\Visualizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

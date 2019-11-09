@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
@@ -38,7 +36,7 @@ namespace TagsCloudVisualization
         {
             for(var i = 0; i < Bitmaps.Count;i++)
             {
-                Bitmaps[i].Save(String.Format(@"cloud{0}.jpg",i), ImageFormat.Jpeg);
+                Bitmaps[i].Save($@"cloud{i}.jpg", ImageFormat.Jpeg);
             }
         }
 
