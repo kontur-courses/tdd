@@ -7,17 +7,11 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    class Converter
+    static class Converter
     {
-        private Pen pen;
-
-        public Converter()
+        public static void GetBitmapFromRectangles(List<Rectangle> rectangles, string fileName)
         {
-            pen = new Pen(Color.Red);
-        }
-
-        public void GetBitmapFromRectangles(List<Rectangle> rectangles, string fileName)
-        {
+            var pen = new Pen(Color.Red);
             var size = GetSizeBitmapFromRectangles(rectangles);
             var bitmap = new Bitmap(size.Width + 1, size.Height + 1);
             var graphics = Graphics.FromImage(bitmap);
@@ -28,7 +22,7 @@ namespace TagsCloudVisualization
             bitmap.Save(fileName);
         }
 
-        private Rectangle GetSizeBitmapFromRectangles(List<Rectangle> rectangles)
+        private static Rectangle GetSizeBitmapFromRectangles(List<Rectangle> rectangles)
         {
             var minTop = rectangles.Min((r) => r.Top);
             var maxBottom = rectangles.Max((r) => r.Bottom);

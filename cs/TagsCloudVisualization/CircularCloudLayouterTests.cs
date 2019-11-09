@@ -21,24 +21,21 @@ namespace TagsCloudVisualization
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                var converter = new Converter();
                 var fileName = $"{TestContext.CurrentContext.Test.Name}_layout.bmp";
-                converter.GetBitmapFromRectangles(cloud.rectangles, fileName);
+                Converter.GetBitmapFromRectangles(cloud.rectangles, fileName);
                 Console.Error.WriteLine($"Tag cloud visualization saved to file {fileName}");
             }
         }
 
-        [Test]
-        public void Generator_NotThrow_WhenEmptyPoint()
+        [SetUp]
+        public void SetUp()
         {
-            var generator = new Action(() => new CircularCloudLayouter(new Point()));
-            generator.Should().NotThrow();
+            cloud = new CircularCloudLayouter(new Point());
         }
 
         [Test]
         public void PutNextRectangle_NotThrow_WhenEmptySize()
         {
-            cloud = new CircularCloudLayouter(new Point());
             var putNextRectangle = new Action(() => cloud.PutNextRectangle(new Size()));
             putNextRectangle.Should().NotThrow();
         }
@@ -46,15 +43,12 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_OneSimpleRectangle_RectangleInCenter()
         {
-            cloud = new CircularCloudLayouter(new Point(0, 0));
             cloud.PutNextRectangle(new Size(10, 20)).Should().Be(new Rectangle(0, 0, 10, 20));
         }
 
         [Test]
         public void PutNextRectangle_TwoRectangle_DoNotIntersect()
         {
-            var center = new Point(0, 0);
-            cloud = new CircularCloudLayouter(center);
             var rectangle1 = cloud.PutNextRectangle(new Size(10, 20));
             var rectangle2 = cloud.PutNextRectangle(new Size(20, 20));
             rectangle1.IntersectsWith(rectangle2).Should().BeFalse();
@@ -63,23 +57,18 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_TwoRectangle_RadiusLessThenMaxAmount()
         {
-            var center = new Point(0, 0);
-            cloud = new CircularCloudLayouter(center);
             cloud.PutNextRectangle(new Size(10, 20));
             var rectangle = cloud.PutNextRectangle(new Size(20, 20));
             var radius =
                 Math.Sqrt(
-                    Math.Pow(rectangle.X - center.X, 2) +
-                    Math.Pow(rectangle.Y - center.Y, 2));
+                    Math.Pow(rectangle.X, 2) +
+                    Math.Pow(rectangle.Y, 2));
             radius.Should().BeLessThan(30);
-
         }
 
         [Test]
         public void PutNextRectangle_OneHundredRectangle_DoNotIntersect()
         {
-            var center = new Point(10, 10);
-            cloud = new CircularCloudLayouter(center);
             for (var i = 0; i < 100; i++)
             {
                 var rectangle = cloud.PutNextRectangle(new Size(10, 20));
@@ -93,8 +82,6 @@ namespace TagsCloudVisualization
         [TestCase(1, -1)]
         public void PutNextRectangle_NegativeSize_ArgumentException(int width, int height)
         {
-            var center = new Point(10, 10);
-            cloud = new CircularCloudLayouter(center);
             var message = "The dimensions of the rectangle must be greater than or equal to zero";
 
             var putNextRectangle = new Action(() => cloud.PutNextRectangle(new Size(width, height)));

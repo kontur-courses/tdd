@@ -42,10 +42,7 @@ namespace TagsCloudVisualization
 
         private bool CheckIntersect(Rectangle rectangle)
         {
-            foreach (var r in rectangles)
-                if (r.IntersectsWith(rectangle))
-                    return true;
-            return false;
+            return rectangles.Any(r => r.IntersectsWith(rectangle));
         }
 
         private Rectangle GetRectangle(Size rectangleSize)
