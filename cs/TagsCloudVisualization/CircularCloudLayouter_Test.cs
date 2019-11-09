@@ -75,18 +75,38 @@ namespace TagsCloudVisualization
         {
             for (var i = 0; i < 100; i++)
                             circularCloudLayouter.PutNextRectangle(new Size(30, 20));
-            var verticalLength = circularCloudLayouter.GetCloudVerticalLength();
-            var horizontalLength = circularCloudLayouter.GetCloudHorizontalLength();
+            var verticalLength = GetCloudVerticalLength(circularCloudLayouter.Rectangles, circularCloudLayouter.Center);
+            var horizontalLength = GetCloudHorizontalLength(circularCloudLayouter.Rectangles, circularCloudLayouter.Center);
             var ratio = verticalLength / horizontalLength;
             ratio.Should().BeInRange(0.9, 1.1);
         }
 
         private double GetCircumscribedCircleArea()
         {
-            var verticalLength = circularCloudLayouter.GetCloudVerticalLength();
-            var horizontalLength = circularCloudLayouter.GetCloudHorizontalLength();
+            var verticalLength = GetCloudVerticalLength(circularCloudLayouter.Rectangles, circularCloudLayouter.Center);
+            var horizontalLength = GetCloudHorizontalLength(circularCloudLayouter.Rectangles, circularCloudLayouter.Center);
             var radius = horizontalLength > verticalLength ? horizontalLength / 2 : verticalLength / 2;
             return Math.PI * radius * radius;
+        }
+        
+        private double GetCloudHorizontalLength(IEnumerable<Rectangle> rectangles, Point center)
+        {
+            var enumerable = rectangles.ToList();
+            var minX = enumerable.OrderBy(rect => rect.X).First().X;
+            var leftMostPoint = new Point(minX, center.Y);
+            var maxX = enumerable.OrderBy(rect => rect.Right).Last().Right;
+            var rightMostPoint = new Point(maxX, center.Y);
+            return leftMostPoint.GetDistanceTo(rightMostPoint);
+        }
+        
+        private double GetCloudVerticalLength(IEnumerable<Rectangle> rectangles, Point center)
+        {
+            var enumerable = rectangles as Rectangle[] ?? rectangles.ToArray();
+            var minY = enumerable.OrderBy(rect => rect.Y).First().Y;
+            var topMostPoint = new Point(center.X, minY); ;
+            var maxY = enumerable.OrderBy(rect => rect.Bottom).Last().Bottom;
+            var bottomMostPoint = new Point(center.X, maxY);
+            return topMostPoint.GetDistanceTo(bottomMostPoint);
         }
 
         private double GetRectanglesAreaSum(IEnumerable<Rectangle> rectangles)
