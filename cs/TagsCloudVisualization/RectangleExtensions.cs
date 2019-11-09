@@ -21,5 +21,10 @@ namespace TagsCloudVisualization
             var centeredLocation = GetCenteredLocation(rectangle, point);
             return new Rectangle(centeredLocation, rectangle.Size);
         }
+
+        public static Point GetCenter(this Rectangle rectangle)
+        {
+            return new Point(rectangle.X + rectangle.Width / 2, rectangle.Y + rectangle.Height / 2);
+        }
     }
 }
