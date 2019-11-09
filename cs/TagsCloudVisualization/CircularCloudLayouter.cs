@@ -49,30 +49,50 @@ namespace TagsCloudVisualization
             var lastNonZeroYOffset = 0;
             while (shouldPushByX || shouldPushByY)
             {
-                var rectangleCenter = rectangle.GetCenter();
-                var xDirection = 0;
-                var yDirection = 0;
+                var dx = 0;
+                var dy = 0;
                 
-                xDirection = rectangleCenter.X >= Center.X ? rectangleCenter.X == Center.X ? 0 : -1 : 1;
-                shouldPushByX = ShouldPushRectangleByX(rectangle, xDirection);
-                if (!shouldPushByX)
-                    xDirection = 0;
-                else if(xDirection != 0)
-                    lastNonZeroXOffset = xDirection;
-                
-                yDirection = rectangleCenter.Y >= Center.Y ? rectangleCenter.Y == Center.Y ? 0 : -1 : 1;
-                shouldPushByY = ShouldPushRectangleByY(rectangle, yDirection);
-                if (!shouldPushByY) 
-                    yDirection = 0;
-                else if(yDirection != 0)
-                    lastNonZeroYOffset = yDirection;
+                dx = GetRelativeRectangleOffsetDeltaX(rectangle);
+                if (dx != 0)
+                {
+                    lastNonZeroXOffset = dx;
+                    shouldPushByX = true;
+                }
+                else
+                    shouldPushByX = false;
 
-                rectangle.Offset(xDirection, yDirection);
+                dy = GetRelativeRectangleOffsetDeltaY(rectangle);
+                if (dy != 0)
+                {
+                    lastNonZeroYOffset = dy;
+                    shouldPushByY = true;
+                }
+                else
+                    shouldPushByY = false;
+
+                rectangle.Offset(dx, dy);
+                
                 if (!rectangle.IntersectsWithAny(Rectangles)) continue;
                 rectangle.Offset(-lastNonZeroXOffset, -lastNonZeroYOffset);
                 break;
             }
             return rectangle;
+        }
+
+        private int GetRelativeRectangleOffsetDeltaX(Rectangle rectangle)
+        {
+            var rectangleCenter = rectangle.GetCenter();
+            var xDirection = rectangleCenter.X >= Center.X ? rectangleCenter.X == Center.X ? 0 : -1 : 1;
+            var shouldPushByX = ShouldPushRectangleByX(rectangle, xDirection);
+            return shouldPushByX ? xDirection : 0;
+        }
+        
+        private int GetRelativeRectangleOffsetDeltaY(Rectangle rectangle)
+        {
+            var rectangleCenter = rectangle.GetCenter();
+            var yDirection = rectangleCenter.Y >= Center.Y ? rectangleCenter.Y == Center.Y ? 0 : -1 : 1;
+            var shouldPushByY = ShouldPushRectangleByY(rectangle, yDirection);
+            return shouldPushByY ? yDirection : 0;
         }
 
         private bool ShouldPushRectangleByX(Rectangle rectangle, int dx)
