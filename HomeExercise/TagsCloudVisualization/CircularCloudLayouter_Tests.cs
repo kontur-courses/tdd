@@ -42,9 +42,9 @@ namespace TagsCloudVisualization
 		public void RectanglesShouldNotIntersect(int width, int height)
 		{
 			var rectangleSize = new Size(width, height);
-			for (var i = 0; i < 500; i++)
+			for (var i = 0; i < 20; i++)
 				_circularCloudLayouter.PutNextRectangle(rectangleSize);
-			var expectedResult = new bool[124750];
+			var expectedResult = new bool[190];
 
 			var filledAreas = _circularCloudLayouter.Rectangles;
 			var actualResult = filledAreas
@@ -52,6 +52,39 @@ namespace TagsCloudVisualization
 					.Skip(i + 1)
 					.Select(area.IntersectsWith));
 			actualResult.Should().BeEquivalentTo(expectedResult);
+		}
+
+		[Test]
+		public void CloudShouldBeDense()
+		{
+			const double minimumDensityCoefficient = 0.5;
+			var rectangleSize = new Size(20, 20);
+			for (var i = 0; i < 100; i++)
+				_circularCloudLayouter.PutNextRectangle(rectangleSize);
+			var maximumArea = CalculateMaximumArea();
+			
+			var actualFilledArea = _circularCloudLayouter.Rectangles.Sum(rect => rect.Width * rect.Height);
+			var actualDensityCoefficient = (double) actualFilledArea / maximumArea;
+			actualDensityCoefficient.Should().BeGreaterOrEqualTo(minimumDensityCoefficient);
+		}
+
+		private long CalculateMaximumArea()
+		{
+			var rectangles = _circularCloudLayouter.Rectangles;
+			int maxX = int.MinValue, maxY = int.MinValue;
+			int minX = int.MaxValue, minY = int.MaxValue;
+
+			foreach (var rectangle in rectangles)
+			{
+				maxX = rectangle.Right > maxX ? rectangle.Right : maxX;
+				maxY = rectangle.Top > maxY ? rectangle.Top : maxY;
+				minY = rectangle.Bottom < minY ? rectangle.Bottom : minY;
+				minX = rectangle.Left < minX ? rectangle.Left : minX;
+			}
+
+			var width = maxX - minX;
+			var height = maxY - minY;
+			return width * height;
 		}
 	}
 }
