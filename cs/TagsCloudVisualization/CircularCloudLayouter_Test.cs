@@ -78,7 +78,7 @@ namespace TagsCloudVisualization
             var verticalLength = GetCloudVerticalLength(circularCloudLayouter.Rectangles, circularCloudLayouter.Center);
             var horizontalLength = GetCloudHorizontalLength(circularCloudLayouter.Rectangles, circularCloudLayouter.Center);
             var ratio = verticalLength / horizontalLength;
-            ratio.Should().BeInRange(0.9, 1.1);
+            ratio.Should().BeInRange(0.8, 1.2);
         }
 
         private double GetCircumscribedCircleArea()
