@@ -108,13 +108,13 @@ namespace TagsCloudVisualization
         public void TearDown()
         {
             var currentContext = TestContext.CurrentContext;
-            if (currentContext.Result.Outcome.Status == TestStatus.Failed)
-            {
-                var visualizer = new CircularCloudLayouterVisualizer();
-                var path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + currentContext.Test.Name +".png";
-                Console.WriteLine("Tag cloud visualization saved to file " + path);
-                visualizer.SaveImage(circularCloudLayouter.Rectangles, path);
-            }
+            if (currentContext.Result.Outcome.Status != TestStatus.Failed) return;
+            var visualizer = new CircularCloudLayouterVisualizer();
+            var path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var imageName = currentContext.Test.Name;
+            var fullPath = $"{path}{imageName}.png";
+            Console.WriteLine($"Tag cloud visualization saved to file {fullPath}");
+            visualizer.SaveImage(circularCloudLayouter.Rectangles, fullPath);
         }
     }
 
