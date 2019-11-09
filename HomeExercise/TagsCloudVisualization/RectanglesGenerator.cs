@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System;
 
 namespace TagsCloudVisualization
 {
 	public static class RectanglesGenerator
 	{
-		public static Rectangle[] GenerateRectangles(int rectanglesCount, Size maxSize, Size minSize)
+		public static IEnumerable<Rectangle> GenerateRectangles(int rectanglesCount, Size maxSize, Size minSize)
 		{
 			var sizes = GenerateSizes(rectanglesCount, maxSize, minSize);
 			var layouter = new CircularCloudLayouter();
-			var timer = new Stopwatch();
-			timer.Start();
-			var rectangles = sizes.Select(layouter.PutNextRectangle).ToArray();
-			timer.Stop();
-			Console.WriteLine(timer.Elapsed.TotalSeconds);
+			var rectangles = sizes.Select(layouter.PutNextRectangle);
 			return rectangles;
 		}
 

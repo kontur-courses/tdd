@@ -7,8 +7,7 @@ namespace TagsCloudVisualization
 {
 	public class CircularCloudLayouter
 	{
-		private const double VerticalDensity = 2;
-		private const double HorizontalDensity = 2;
+		private const double Density = 2;
 		private const double AngleStep = Math.PI / 180 * 5;
 
 		private readonly Point _center;
@@ -19,10 +18,10 @@ namespace TagsCloudVisualization
 		public CircularCloudLayouter(Point center)
 		{
 			_center = center;
-			_spiral = new Spiral(AngleStep, VerticalDensity, HorizontalDensity, _center);
+			_spiral = new Spiral(AngleStep, Density, _center);
 		}
 
-		public CircularCloudLayouter() => _spiral = new Spiral(AngleStep, VerticalDensity, HorizontalDensity, _center);
+		public CircularCloudLayouter() => _spiral = new Spiral(AngleStep, Density, _center);
 
 		public Rectangle PutNextRectangle(Size rectangleSize)
 		{

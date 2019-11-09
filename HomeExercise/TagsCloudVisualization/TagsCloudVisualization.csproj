@@ -55,8 +55,10 @@
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="CircularCloudLayouter_Tests.cs" />
     <Compile Include="CloudVisualizer.cs" />
+    <Compile Include="CloudVisualizer_Tests.cs" />
     <Compile Include="ExMath.cs" />
     <Compile Include="ExMath_Tests.cs" />
+    <Compile Include="RectangleExtensions_Tests.cs" />
     <Compile Include="RectanglesGenerator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

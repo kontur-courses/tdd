@@ -13,8 +13,8 @@ namespace TagsCloudVisualization
         {
             var maxSize = new Size(20, 20);
             var minSize = new Size(20, 20);
-            var rectangles = RectanglesGenerator.GenerateRectangles(100, maxSize, minSize);
-            var image = CloudVisualizer.Visualize(rectangles);
+            var rectangles = RectanglesGenerator.GenerateRectangles(2, maxSize, minSize);
+            var image = CloudVisualizer.Visualize(rectangles.ToArray());
             image.Save("layout1.png");
         }
     }

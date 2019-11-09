@@ -57,34 +57,31 @@ namespace TagsCloudVisualization
 		[Test]
 		public void CloudShouldBeDense()
 		{
-			const double minimumDensityCoefficient = 0.5;
+			const double minimumAreaRatio = 0.5;
 			var rectangleSize = new Size(20, 20);
 			for (var i = 0; i < 100; i++)
 				_circularCloudLayouter.PutNextRectangle(rectangleSize);
-			var maximumArea = CalculateMaximumArea();
+			var maxDistance = _circularCloudLayouter.Rectangles.Select(CalculateDistanceFromCenter).Max();
+			var maxArea = Math.PI * maxDistance * maxDistance;
 			
 			var actualFilledArea = _circularCloudLayouter.Rectangles.Sum(rect => rect.Width * rect.Height);
-			var actualDensityCoefficient = (double) actualFilledArea / maximumArea;
-			actualDensityCoefficient.Should().BeGreaterOrEqualTo(minimumDensityCoefficient);
+			var actualDensityCoefficient = actualFilledArea / maxArea;
+			actualDensityCoefficient.Should().BeGreaterOrEqualTo(minimumAreaRatio);
 		}
 
-		private long CalculateMaximumArea()
+		private static double CalculateDistanceFromCenter(Rectangle rectangle)
 		{
-			var rectangles = _circularCloudLayouter.Rectangles;
-			int maxX = int.MinValue, maxY = int.MinValue;
-			int minX = int.MaxValue, minY = int.MaxValue;
-
-			foreach (var rectangle in rectangles)
-			{
-				maxX = rectangle.Right > maxX ? rectangle.Right : maxX;
-				maxY = rectangle.Top > maxY ? rectangle.Top : maxY;
-				minY = rectangle.Bottom < minY ? rectangle.Bottom : minY;
-				minX = rectangle.Left < minX ? rectangle.Left : minX;
-			}
-
-			var width = maxX - minX;
-			var height = maxY - minY;
-			return width * height;
+			var rectangleCenter = rectangle.GetCenter();
+			Point furtherPoint;
+			if (rectangleCenter.X >= 0)
+				furtherPoint = rectangleCenter.Y >= 0
+					? new Point(rectangle.Right, rectangle.Y)
+					: new Point(rectangle.Right, rectangle.Bottom);
+			else
+				furtherPoint = rectangleCenter.Y >= 0 
+					? rectangle.Location
+					: new Point(rectangle.X, rectangle.Bottom);
+			return Math.Sqrt(Math.Pow(furtherPoint.X, 2) + Math.Pow(furtherPoint.Y, 2));
 		}
 	}
 }
