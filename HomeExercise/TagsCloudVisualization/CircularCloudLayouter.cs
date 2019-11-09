@@ -7,8 +7,8 @@ namespace TagsCloudVisualization
 {
 	public class CircularCloudLayouter
 	{
-		private const double Density = 2;
-		private const double AngleStep = Math.PI / 180 * 5;
+		private const double Density = 1;
+		private const double AngleStep = Math.PI / 180 * 45;
 
 		private readonly Point _center;
 		private readonly Spiral _spiral;

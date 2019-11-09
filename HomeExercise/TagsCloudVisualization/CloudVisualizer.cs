@@ -8,7 +8,7 @@ namespace TagsCloudVisualization
 	public static class CloudVisualizer
 	{
 		internal const int ImagePadding = 5;
-		private const int RectangleBorderWidth = 1;
+		private const int RectangleBorderWidth = 3;
 
 		private static readonly Color[] _possibleRectangleColors = 
 		{
