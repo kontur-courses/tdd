@@ -43,7 +43,7 @@ namespace TagCloud
             Math.Round(geometry.GetFurthestDistance(), 4).Should().Be(expected);
         }
 
-        [TestCase(1, 0.1469)]
+        [TestCase(1, 0.3673)]
         public void GetCloudFullness_Should(int rectCount, double expected)
         {
             rectangles.Add(new Rectangle(new Point(0, 0), new Size(3, 2)));
