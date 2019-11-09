@@ -43,17 +43,48 @@ namespace TagsCloudVisualization
 
         private Rectangle GetRectanglePushedCloserToCenter(Rectangle rectangle)
         {
-            var rectangleCenter = rectangle.GetCenter();
-            var xDirection = 0;
-            var yDirection = 0;
-            while (!rectangle.IntersectsWithAny(Rectangles) && Center.GetDistanceTo(rectangleCenter) > 10)
+            var shouldPushByX = true;
+            var shouldPushByY = true;
+            var lastNonZeroXOffset = 0;
+            var lastNonZeroYOffset = 0;
+            while (shouldPushByX || shouldPushByY)
             {
+                var rectangleCenter = rectangle.GetCenter();
+                var xDirection = 0;
+                var yDirection = 0;
+                
                 xDirection = rectangleCenter.X >= Center.X ? rectangleCenter.X == Center.X ? 0 : -1 : 1;
+                shouldPushByX = ShouldPushRectangleByX(rectangle, xDirection);
+                if (!shouldPushByX)
+                    xDirection = 0;
+                else if(xDirection != 0)
+                    lastNonZeroXOffset = xDirection;
+                
                 yDirection = rectangleCenter.Y >= Center.Y ? rectangleCenter.Y == Center.Y ? 0 : -1 : 1;
+                shouldPushByY = ShouldPushRectangleByY(rectangle, yDirection);
+                if (!shouldPushByY) 
+                    yDirection = 0;
+                else if(yDirection != 0)
+                    lastNonZeroYOffset = yDirection;
+
                 rectangle.Offset(xDirection, yDirection);
+                if (!rectangle.IntersectsWithAny(Rectangles)) continue;
+                rectangle.Offset(-lastNonZeroXOffset, -lastNonZeroYOffset);
+                break;
             }
-            rectangle.Offset(-xDirection, -yDirection);
             return rectangle;
+        }
+
+        private bool ShouldPushRectangleByX(Rectangle rectangle, int dx)
+        {
+            rectangle.Offset(dx, 0);
+            return !rectangle.IntersectsWithAny(Rectangles) && rectangle.GetCenter().X != Center.X;
+        }
+        
+        private bool ShouldPushRectangleByY(Rectangle rectangle, int dy)
+        {
+            rectangle.Offset(0, dy);
+            return !rectangle.IntersectsWithAny(Rectangles) && rectangle.GetCenter().Y != Center.Y;
         }
     }
 }
