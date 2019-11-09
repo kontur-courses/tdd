@@ -112,7 +112,7 @@ namespace TagsCloudVisualization
             var visualizer = new CircularCloudLayouterVisualizer();
             var path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var imageName = currentContext.Test.Name;
-            var fullPath = $"{path}{imageName}.png";
+            var fullPath = $"{path}\\{imageName}.png";
             Console.WriteLine($"Tag cloud visualization saved to file {fullPath}");
             visualizer.SaveImage(circularCloudLayouter.Rectangles, fullPath);
         }
