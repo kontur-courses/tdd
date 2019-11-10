@@ -75,7 +75,7 @@ namespace TagsCloudVisualization
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                var filename = $"{Path.GetTempPath()}{TestContext.CurrentContext.Test.Name}-Failed-{Utils.GetTimeStringCompatibleWithFileName(DateTime.Now)}.png";
+                var filename = $"{Path.GetTempPath()}{TestContext.CurrentContext.Test.Name}-Failed {DateTime.Now:yyyy-MM-dd hh-mm-ss}.png";
                 Utils.SaveRectanglesToPngFile(layouter.GetRectangles(), filename);
                 TestContext.WriteLine($"Tag cloud visualization saved to file {filename}");
             }

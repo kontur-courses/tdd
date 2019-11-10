@@ -191,7 +191,5 @@ namespace TagsCloudVisualization
                 bmp.Save(filename, ImageFormat.Png);
             }
         }
-
-        public static string GetTimeStringCompatibleWithFileName(DateTime time) => $"{time.Hour}-{time.Minute}-{time.Second}";
     }
 }
