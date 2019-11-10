@@ -42,9 +42,6 @@ namespace TagsCloudVisualization
                     var leftBorderX = FindLeftBorderX(segment, rectangleSize);
                     var rightBorderX = FindRightBorderX(segment, rectangleSize);
                     var updatedSegment = new Segment(leftBorderX, segment.start.Y, rightBorderX, segment.end.Y, segment.type);
-                    var topBorderY = FindTopBorderY(new Segment(updatedSegment.start, updatedSegment.start, Segment.Type.Right), new Size((int)updatedSegment.Length, 1));
-                    if (topBorderY > segment.start.Y - rectangleSize.Height)
-                        continue;
                     SearchMinDistanceTop(ref minSegment, ref minDistance, ref minCoord, segment, rectangleSize, updatedSegment);
                 }
                 if (segment.type == Segment.Type.Bottom)
@@ -52,18 +49,12 @@ namespace TagsCloudVisualization
                     var leftBorderX = FindLeftBorderX(segment, rectangleSize);
                     var rightBorderX = FindRightBorderX(segment, rectangleSize);
                     var updatedSegment = new Segment(leftBorderX, segment.start.Y, rightBorderX, segment.end.Y, segment.type);
-                    var bottomBorderY = FindBottomBorderY(new Segment(updatedSegment.start, updatedSegment.start, Segment.Type.Right), new Size((int)updatedSegment.Length, 1));
-                    if (bottomBorderY < segment.start.Y + rectangleSize.Height)//здесь нужно быть повнимательнее с типом фейкового сегмента
-                        continue;                                              //возможно стоит сделать с обоими типами и выбрать минимум
                     SearchMinDistanceBottom(ref minSegment, ref minDistance, ref minCoord, segment, rectangleSize, updatedSegment);
                 }
                 if (segment.type == Segment.Type.Left)
                 {
                     var topBorderY = FindTopBorderY(segment, rectangleSize);
                     var bottomBorderY = FindBottomBorderY(segment, rectangleSize);
-                    var leftBorderX = FindLeftBorderX(new Segment(segment.start, segment.start, Segment.Type.Top), new Size(1, (int)segment.Length));
-                    if (leftBorderX > segment.start.X - rectangleSize.Width)//здесь нужно быть повнимательнее с типом фейкового сегмента
-                        continue;
                     var updatedSegment = new Segment(segment.start.X, topBorderY, segment.end.X, bottomBorderY, segment.type);
                     SearchMinDistanceLeft(ref minSegment, ref minDistance, ref minCoord, segment, rectangleSize, updatedSegment);
                 }
@@ -71,9 +62,6 @@ namespace TagsCloudVisualization
                 {
                     var topBorderY = FindTopBorderY(segment, rectangleSize);
                     var bottomBorderY = FindBottomBorderY(segment, rectangleSize);
-                    var rightBorderX = FindRightBorderX(new Segment(segment.start, segment.start, Segment.Type.Top), new Size(1, (int)segment.Length));
-                    if (rightBorderX < segment.start.X + rectangleSize.Width)
-                        continue;
                     var updatedSegment = new Segment(segment.start.X, topBorderY, segment.end.X, bottomBorderY, segment.type);
                     SearchMinDistanceRight(ref minSegment, ref minDistance, ref minCoord, segment, rectangleSize, updatedSegment);
                 }
@@ -87,32 +75,8 @@ namespace TagsCloudVisualization
                     {
                         ProbablyBuggedSegments.Add(minSegment);//полагаем что тот сегмент к которому пытаемся присоединиться багованный
                         if (Segments.Except(ProbablyBuggedSegments).Count()==0)
-                        {//здесь должен быть выход из рекурсии, можно приделать прямоугольник в самую верхнюю точку
-                            var topBorder = Segments
-                                .Select(a => a.start.Y)
-                                .OrderBy(a => a)
-                                .First();
-                            var botBorder = Segments
-                                    .Select(a => a.start.Y)
-                                    .OrderByDescending(a => a)
-                                    .First();
-                            var leftBorder = Segments
-                                    .Select(a => a.start.X)
-                                    .OrderByDescending(a => a)
-                                    .First();
-                            var rightBorder = Segments
-                                    .Select(a => a.start.X)
-                                    .OrderBy(a => a)
-                                    .First();
-                            var minDist = new[] { Math.Abs(topBorder), Math.Abs(botBorder), Math.Abs(leftBorder), Math.Abs(rightBorder) }.Min();
-                            if (minDist == Math.Abs(topBorder))
-                                minCoord = new Point(center.X - rectangleSize.Width / 2, topBorder - rectangleSize.Height);
-                            if (minDist == Math.Abs(botBorder))
-                                minCoord = new Point(center.X - rectangleSize.Width / 2, botBorder);
-                            if (minDist == Math.Abs(leftBorder))
-                                minCoord = new Point(center.Y - rectangleSize.Height / 2, leftBorder - rectangleSize.Width);
-                            if (minDist == Math.Abs(rightBorder))
-                                minCoord = new Point(center.Y - rectangleSize.Height / 2, rightBorder);
+                        {//здесь должен быть выход из рекурсии, можно приделать прямоугольник в самую крайнюю точку
+                            minCoord = FindClosestCloudBorder(rectangleSize);
                             outRectangle = new Rectangle(minCoord, rectangleSize);
                             break;
                         }
@@ -141,12 +105,15 @@ namespace TagsCloudVisualization
             if (extendedSegment.start.X < center.X && extendedSegment.end.X > center.X)
             {
                 Point midAngleCoord = new Point(center.X - rectangleSize.Width / 2, extendedSegment.start.Y - rectangleSize.Height);
-                CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, midAngleCoord, rectangleSize);
+                if (CheckOppositeBorder(midAngleCoord, rectangleSize, Segment.Type.Top))
+                    CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, midAngleCoord, rectangleSize);
             }
             Point startAngleCoord = new Point(extendedSegment.start.X, extendedSegment.start.Y - rectangleSize.Height);
-            CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, startAngleCoord, rectangleSize);
+            if (CheckOppositeBorder(startAngleCoord, rectangleSize, Segment.Type.Top))
+                CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, startAngleCoord, rectangleSize);
             Point endAngleCoord = new Point(extendedSegment.end.X - rectangleSize.Width, extendedSegment.start.Y - rectangleSize.Height);
-            CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, endAngleCoord, rectangleSize);
+            if (CheckOppositeBorder(endAngleCoord, rectangleSize, Segment.Type.Top))
+                CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, endAngleCoord, rectangleSize);
         }
 
         private void SearchMinDistanceBottom(ref Segment minSegment, ref double minDistance, ref Point minCoord, Segment segment, Size rectangleSize, Segment extendedSegment)
@@ -156,13 +123,16 @@ namespace TagsCloudVisualization
             if (extendedSegment.start.X < center.X && extendedSegment.end.X > center.X)
             {
                 Point midAngleCoord = new Point(center.X - rectangleSize.Width / 2, extendedSegment.start.Y);
-                CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, midAngleCoord, rectangleSize);
+                if (CheckOppositeBorder(midAngleCoord, rectangleSize, Segment.Type.Top))
+                    CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, midAngleCoord, rectangleSize);
             }
 
             Point startAngleCoord = new Point(extendedSegment.start.X, extendedSegment.start.Y);
-            CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, startAngleCoord, rectangleSize);
+            if (CheckOppositeBorder(startAngleCoord, rectangleSize, Segment.Type.Top))
+                CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, startAngleCoord, rectangleSize);
             Point endAngleCoord = new Point(extendedSegment.end.X - rectangleSize.Width, extendedSegment.start.Y);
-            CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, endAngleCoord, rectangleSize);
+            if (CheckOppositeBorder(endAngleCoord, rectangleSize, Segment.Type.Top))
+                CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, endAngleCoord, rectangleSize);
         }
 
         private void SearchMinDistanceLeft(ref Segment minSegment, ref double minDistance, ref Point minCoord, Segment segment, Size rectangleSize, Segment extendedSegment)
@@ -172,12 +142,15 @@ namespace TagsCloudVisualization
             if (extendedSegment.start.Y < center.Y && extendedSegment.end.Y > center.Y)
             {
                 Point midAngleCoord = new Point(extendedSegment.start.X - rectangleSize.Width, center.Y - rectangleSize.Height / 2);
-                CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, midAngleCoord, rectangleSize);
+                if (CheckOppositeBorder(midAngleCoord, rectangleSize, Segment.Type.Top))
+                    CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, midAngleCoord, rectangleSize);
             }
             Point startAngleCoord = new Point(extendedSegment.start.X - rectangleSize.Width, extendedSegment.start.Y);
-            CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, startAngleCoord, rectangleSize);
+            if (CheckOppositeBorder(startAngleCoord, rectangleSize, Segment.Type.Top))
+                CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, startAngleCoord, rectangleSize);
             Point endAngleCoord = new Point(extendedSegment.end.X - rectangleSize.Width, extendedSegment.end.Y - rectangleSize.Height);
-            CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, endAngleCoord, rectangleSize);
+            if (CheckOppositeBorder(endAngleCoord, rectangleSize, Segment.Type.Top))
+                CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, endAngleCoord, rectangleSize);
         }
 
         private void SearchMinDistanceRight(ref Segment minSegment, ref double minDistance, ref Point minCoord, Segment segment, Size rectangleSize, Segment extendedSegment)
@@ -187,13 +160,69 @@ namespace TagsCloudVisualization
             if (extendedSegment.start.Y < center.Y && extendedSegment.end.Y > center.Y)
             {
                 Point midAngleCoord = new Point(extendedSegment.start.X, center.Y - rectangleSize.Height / 2);
-                CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, midAngleCoord, rectangleSize);
+                if (CheckOppositeBorder(midAngleCoord, rectangleSize, Segment.Type.Top))
+                    CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, midAngleCoord, rectangleSize);
             }
 
             Point startAngleCoord = new Point(extendedSegment.start.X, extendedSegment.start.Y);
-            CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, startAngleCoord, rectangleSize);
+            if (CheckOppositeBorder(startAngleCoord, rectangleSize, Segment.Type.Top))
+                CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, startAngleCoord, rectangleSize);
             Point endAngleCoord = new Point(extendedSegment.end.X, extendedSegment.end.Y - rectangleSize.Height);
-            CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, endAngleCoord, rectangleSize);
+            if (CheckOppositeBorder(endAngleCoord, rectangleSize, Segment.Type.Top))
+                CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, endAngleCoord, rectangleSize);
+        }
+
+        private bool CheckOppositeBorder(Point rectanglePos, Size rectangleSize, Segment.Type segmentType)
+        {
+            if (segmentType == Segment.Type.Top)
+            {
+                var TopBorderY = FindTopBorderY(
+                    new Segment(
+                        new Point(rectanglePos.X, rectanglePos.Y + rectangleSize.Height-1)
+                        , new Point(rectanglePos.X, rectanglePos.Y + rectangleSize.Height)
+                        , Segment.Type.Right)
+                    , new Size(rectangleSize.Width, 1));
+                if (TopBorderY <= rectanglePos.Y)
+                    return true;
+                return false;
+            }
+            if (segmentType == Segment.Type.Bottom)
+            {
+                var BotBorderY = FindBottomBorderY(
+                    new Segment(
+                        new Point(rectanglePos.X, rectanglePos.Y)
+                        , new Point(rectanglePos.X, rectanglePos.Y + 1)
+                        , Segment.Type.Right)
+                    , new Size(rectangleSize.Width, 1));
+                if (BotBorderY >= rectanglePos.Y + rectangleSize.Height)
+                    return true;
+                return false;
+            }
+            if (segmentType == Segment.Type.Left)
+            {
+                var LeftBorderX = FindLeftBorderX(
+                    new Segment(
+                        new Point(rectanglePos.X+rectangleSize.Width-1, rectanglePos.Y+rectangleSize.Height)
+                        , new Point(rectanglePos.X + rectangleSize.Width, rectanglePos.Y + rectangleSize.Height)
+                        , Segment.Type.Top)
+                    , new Size(1, rectangleSize.Height));
+                if (LeftBorderX <= rectanglePos.X)
+                    return true;
+                return false;
+            }
+            if (segmentType == Segment.Type.Right)
+            {
+                var RightBorderX = FindRightBorderX(
+                    new Segment(
+                        new Point(rectanglePos.X, rectanglePos.Y + rectangleSize.Height)
+                        , new Point(rectanglePos.X + 1, rectanglePos.Y + rectangleSize.Height)
+                        , Segment.Type.Top)
+                    , new Size(1, rectangleSize.Height));
+                if (RightBorderX >= rectanglePos.X + rectangleSize.Width)
+                    return true;
+                return false;
+            }
+            return false;
         }
 
         private int FindLeftBorderX(Segment segment, Size rectangleSize)
@@ -325,7 +354,7 @@ namespace TagsCloudVisualization
             return Math.Sqrt(Math.Pow((a.X - b.X), 2) + Math.Pow((a.Y - b.Y), 2));
         }
 
-        private void StackSegments(List<Segment> added)//экспериментальный метод, возможно работает косячно
+        private void StackSegments(List<Segment> added)
         {
             var toDelete = new HashSet<Segment>();
             var toAdd = new HashSet<Segment>();
@@ -346,7 +375,7 @@ namespace TagsCloudVisualization
                         toDelete.Add(segment2);
                         toAdd.Add(new Segment(segment2.start, segment1.end, segment1.type));
                     }
-                    if (segment1.start == segment2.start// здесь возможно не нужны такие проверки
+                    if (segment1.start == segment2.start
                         && segment1.end == segment2.end
                         && segment1.Opposite(segment2))
                     {
@@ -533,6 +562,35 @@ namespace TagsCloudVisualization
                 , center.Y + rectangleSize.Height / 2
                 , Segment.Type.Right));
             rectangles.Add(new Rectangle(new Point(center.X - rectangleSize.Width / 2, center.Y - rectangleSize.Height / 2), rectangleSize));
+        }
+
+        private Point FindClosestCloudBorder(Size rectangleSize)
+        {
+            var topBorder = Segments
+                                .Select(a => a.start.Y)
+                                .OrderBy(a => a)
+                                .First();
+            var botBorder = Segments
+                    .Select(a => a.start.Y)
+                    .OrderByDescending(a => a)
+                    .First();
+            var leftBorder = Segments
+                    .Select(a => a.start.X)
+                    .OrderByDescending(a => a)
+                    .First();
+            var rightBorder = Segments
+                    .Select(a => a.start.X)
+                    .OrderBy(a => a)
+                    .First();
+            var minDist = new[] { Math.Abs(topBorder), Math.Abs(botBorder), Math.Abs(leftBorder), Math.Abs(rightBorder) }.Min();
+            if (minDist == Math.Abs(topBorder))
+                return new Point(center.X - rectangleSize.Width / 2, topBorder - rectangleSize.Height);
+            if (minDist == Math.Abs(botBorder))
+                return new Point(center.X - rectangleSize.Width / 2, botBorder);
+            if (minDist == Math.Abs(leftBorder))
+                return new Point(center.Y - rectangleSize.Height / 2, leftBorder - rectangleSize.Width);
+            return new Point(center.Y - rectangleSize.Height / 2, rightBorder);
+
         }
     }
 
