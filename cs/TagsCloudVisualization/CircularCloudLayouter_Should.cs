@@ -41,7 +41,7 @@ namespace TagsCloudVisualization
             var dists = Enumerable
                 .Range(0, rayCount)
                 .Select(i => i * Math.PI / 36)
-                .Select(angle => rectangles.Select(r => r.IsIntersectsByRay(angle, out double intersectionPointDistance) ? intersectionPointDistance : 0).Max());
+                .Select(angle => rectangles.Max(r => r.GetDistanceIfIntersectsByRay(angle)));
             var mid = dists.Sum() / rayCount;
 
             dists.Any(dist => Math.Abs(dist - mid) / mid > 0.5)
@@ -57,7 +57,7 @@ namespace TagsCloudVisualization
             var dists = Enumerable
                 .Range(0, rayCount)
                 .Select(i => i * Math.PI / 36)
-                .Select(angle => rectangles.Select(r => r.IsIntersectsByRay(angle, out double intersectionPointDistance) ? intersectionPointDistance : 0).Max());
+                .Select(angle => rectangles.Max(r => r.GetDistanceIfIntersectsByRay(angle)));
             var mid = dists.Sum() / rayCount;
             var circleSquare = Math.PI * mid * mid;
             var rectanglesSquare = rectangles.Sum(r => r.Square());

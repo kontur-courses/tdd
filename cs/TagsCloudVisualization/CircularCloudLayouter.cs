@@ -52,8 +52,7 @@ namespace TagsCloudVisualization
                 {
                     var farthestIntersectionPointDistance = Items
                         .Take(i)
-                        .Select(it => it.Rectangle.IsIntersectsByRay(angle, out double intersectionPointDistance) ? intersectionPointDistance : 0)
-                        .Max();
+                        .Max(it => it.Rectangle.GetDistanceIfIntersectsByRay(angle));
                     var r = Utils.LengthOfRayFromCenterOfRectangle(Items[i].Rectangle, angle);
                     const int step = 2;
                     var dist = farthestIntersectionPointDistance + r;

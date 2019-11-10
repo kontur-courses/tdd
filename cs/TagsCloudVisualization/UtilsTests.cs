@@ -48,11 +48,10 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void IsIntersectsByRay_Distance_ReturnsCorrectValue()
+        public void GetDistanceIfIntersectsByRay_ReturnsCorrectValue()
         {
             new Rectangle[] { new Rectangle(-10, -10, 20, 20), new Rectangle(-5, 15, 10, 10) }
-                .Select(r => r.IsIntersectsByRay(0.5 * Math.PI, out double intersectionPointDistance) ? intersectionPointDistance : 0)
-                .Max()
+                .Max(r => r.GetDistanceIfIntersectsByRay(0.5 * Math.PI))
                 .Should().Be(25);
         }
     }

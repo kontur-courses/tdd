@@ -177,11 +177,13 @@ namespace TagsCloudVisualization
                 || IsRayIntersectsVerticalSegment(rayAngle, verticalSegment, out intersectionPointDistance);
         }
 
+        public static double GetDistanceIfIntersectsByRay(this Rectangle me, double rayAngle) =>
+            me.IsIntersectsByRay(rayAngle, out double intersectionPointDistance) ? intersectionPointDistance : 0;
+
         public static double LengthOfRayFromCenterOfRectangle(Rectangle rect, double rayAngle)
         {
             var tmpRect = new Rectangle(-rect.Width / 2, -rect.Height / 2, rect.Width, rect.Height);
-            tmpRect.IsIntersectsByRay(rayAngle, out double intersectionPointDistance);
-            return intersectionPointDistance;
+            return tmpRect.GetDistanceIfIntersectsByRay(rayAngle);
         }
 
         public static void SaveRectanglesToPngFile(IEnumerable<Rectangle> rectangles, string filename)
