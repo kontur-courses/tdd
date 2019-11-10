@@ -68,8 +68,10 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
+        [TestCase(20, 20, 2)]
         [TestCase(30, 15, 2)]
         [TestCase(7, 10, 2)]
+        [TestCase(20, 20, 20)]
         [TestCase(7, 10, 20)]
         [TestCase(25, 15, 20)]
         public void PutNextRectangle_RectanglesDoNotIntersect(int width, int height, int count)
@@ -112,8 +114,10 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
+        [TestCase(50, 50, 10, 0.45)]
         [TestCase(30, 10, 10, 0.45)]
         [TestCase(10, 30, 10, 0.45)]
+        [TestCase(40, 40, 100, 0.65)]
         [TestCase(30, 10, 100, 0.65)]
         [TestCase(10, 30, 100, 0.65)]
         public void TagsCloudIsDense(int width, int height, int count, double requiredDensity)
@@ -155,6 +159,7 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
+        [TestCase(50, 50, 10, 9)]
         [TestCase(30, 10, 10, 9)]
         [TestCase(60, 20, 10, 9)]
         [TestCase(30, 10, 1000, 950)]
