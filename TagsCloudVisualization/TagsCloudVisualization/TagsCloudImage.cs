@@ -6,11 +6,11 @@ namespace TagsCloudVisualization
 {
     public class TagsCloudImage
     {
-        private Bitmap _image;
-        private Graphics _graphics;
-        private int _width;
-        private int _height;
-        private Random _random = new Random();
+        private readonly Bitmap _image;
+        private readonly Graphics _graphics;
+        private readonly int _width;
+        private readonly int _height;
+        private readonly Random _random = new Random();
 
         public TagsCloudImage(int width, int height)
         {
