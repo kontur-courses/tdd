@@ -25,13 +25,11 @@ namespace TagsCloudVisualization
         public void AllocateRectanglesWithoutIntersects()
         {
             var rectangles = layouter.GetRectangles().ToList();
-            for (var i = 0; i < rectangles.Count - 1; i++)
-            {
-                for (var j = i + 1; j < rectangles.Count; j++)
-                {
-                    rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse();
-                }
-            }
+            Enumerable.Range(0, rectangles.Count - 1)
+                .SelectMany(i => Enumerable.Range(i + 1, rectangles.Count - i - 1)
+                    .Select(j => (i, j)))
+                    .Any(k => rectangles[k.i].IntersectsWith(rectangles[k.j]))
+                    .Should().BeFalse();
         }
 
         [Test]
