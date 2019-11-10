@@ -66,6 +66,19 @@ namespace TagsCloudVisualization
 
         [Test]
         [TestCaseSource(typeof(LayouterSource), "TestCases")]
+        public void Cloud_Should_BeDenseAndRound(CircularCloudLayouter layouter)
+        {
+            var maxRadius = layouter.Rectangles
+                    .Select(rec=>GetSegment(new Point(rec.X+rec.Width/2,rec.Y+rec.Height/2),layouter.Center))
+                    .OrderByDescending(len=>len)
+                    .FirstOrDefault();
+            var area =(double) layouter.Rectangles.Select(rec => rec.Height * rec.Width).Sum();
+            (area / (maxRadius * maxRadius * Math.PI)).Should().BeGreaterOrEqualTo(0.6);
+        }
+        
+
+        [Test]
+        [TestCaseSource(typeof(LayouterSource), "TestCases")]
         public void Rectangles_ShouldNot_Intersect(CircularCloudLayouter layouter)
         {
             layouter.Rectangles
@@ -103,6 +116,11 @@ namespace TagsCloudVisualization
             private static TestCaseData SameSizeData = 
                     new TestCaseData(LayouterWithSameSizeRectangles).SetName("SameSizeRectanglesTest");
             private static TestCaseData[] TestCases = { DiffrenetSizeData, SameSizeData };
+        }
+
+        private double GetSegment(Point start,Point end)
+        {
+            return Math.Sqrt((start.X - end.X) * (start.X - end.X) + (start.Y - end.Y) * (start.Y - end.Y));
         }
     }
 }

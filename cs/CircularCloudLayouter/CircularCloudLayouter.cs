@@ -26,10 +26,10 @@ namespace TagsCloudVisualization
                 Rectangles.Add(rectangle);
                 return rectangle;
             }
-            var spiral = new ArchimedeanSprial(0, Math.PI / 12, Math.PI / 12, 0.4, Center, rectangleSize);
+            var spiral = new ArchimedeanSprial(0, Math.PI / 40, Math.PI /40, 0.2, Center);
             while (true)
             {
-                var rectangle = new Rectangle(spiral.GetNextCoordinate(), rectangleSize);
+                var rectangle = new Rectangle(spiral.GetNextCoordinate(rectangleSize), rectangleSize);
                 if (!Rectangles.Any(rec => rec.IntersectsWith(rectangle)))
                 {
                     Rectangles.Add(rectangle);
@@ -47,24 +47,22 @@ namespace TagsCloudVisualization
         public double DensityCoefficient { get; }
         public Point Center { get; }
         private double RadiusVector { get; set; }
-        private Size RectangleSize { get; }
 
-        public ArchimedeanSprial(double a, double alpha, double step, double densityCoefficient, Point center, Size rectangleSize)
+        public ArchimedeanSprial(double a, double alpha, double step, double densityCoefficient, Point center)
         {
             A = a;
             Alpha = alpha;
             Step = step;
             DensityCoefficient = densityCoefficient;
             Center = center;
-            RectangleSize = rectangleSize;
         }
 
-        public Point GetNextCoordinate()
+        public Point GetNextCoordinate(Size rectangleSize)
         {
             Alpha += Step;
             RadiusVector = Alpha * DensityCoefficient;
-            var x = (int)(RadiusVector * Math.Cos(Alpha)) - RectangleSize.Width / 2 + Center.X;
-            var y = (int)(RadiusVector * Math.Sin(Alpha)) - RectangleSize.Height / 2 + Center.Y;
+            var x = (int)(RadiusVector * Math.Cos(Alpha)) - rectangleSize.Width / 2 + Center.X;
+            var y = (int)(RadiusVector * Math.Sin(Alpha)) - rectangleSize.Height / 2 + Center.Y;
             return new Point(x, y);
         }
     }
