@@ -34,6 +34,10 @@ namespace TagsCloudVisualization
     [TestFixture]
     public class CircularCloudLayouterPutNextRectangle_Should
     {
+        private Point layouterCenter;
+        private CircularCloudLayouter cloudLayouter;
+        private List<Rectangle> layouterRectangles;
+        
         [SetUp]
         public void Init()
         {
@@ -53,11 +57,7 @@ namespace TagsCloudVisualization
                 Console.WriteLine($"Tag cloud visualization saved to file {filename}");
             }
         }
-
-        private Point layouterCenter;
-        private CircularCloudLayouter cloudLayouter;
-        private List<Rectangle> layouterRectangles;
-
+        
         [TestCase(0, 10, TestName = "Width x is zero")]
         [TestCase(10, 0, TestName = "Height y is zero")]
         [TestCase(-1, 10, TestName = "Width x is negative")]
@@ -68,49 +68,7 @@ namespace TagsCloudVisualization
 
             action.Should().Throw<ArgumentException>();
         }
-
-        [TestCase(50, 40, 40, 2048, TestName = "Rectangles are squares")]
-        [TestCase(50, 50, 70, 1000, TestName = "Rectangles are big (50 to 70)")]
-        [TestCase(50, 30, 50, 42, TestName = "Rectangles are medium (30 to 50)")]
-        [TestCase(50, 10, 30, 777, TestName = "Rectangles are small (10 to 30)")]
-        [TestCase(1000, 70, 100, 555555, TestName = "Rectangles count is big (1000)")]
-        [TestCase(10, 10, 20, -555, TestName = "Rectangles count is small (10)")]
-        public void AddMultipleRectangles_That_FormACircleLikeShape_When(int count, int minSize, int maxSize,
-            int randomSeed)
-        {
-            var acceptableRatio = 50;
-            var random = new Random(randomSeed);
-            var furthestDistance = 0d;
-            var rectanglesSquare = 0d;
-
-            for (var i = 0; i < count; i++)
-            {
-                var size = new Size(random.Next(minSize, maxSize), random.Next(minSize, maxSize));
-                var rectangle = cloudLayouter.PutNextRectangle(size);
-                layouterRectangles.Add(rectangle);
-            }
-
-            foreach (var rectangle in layouterRectangles)
-            {
-                var distance = GetDistanceBetweenRectangleAndPoint(rectangle, layouterCenter);
-                if (distance > furthestDistance)
-                    furthestDistance = distance;
-                rectanglesSquare += rectangle.Width * rectangle.Height;
-            }
-
-            var circleSquare = furthestDistance * furthestDistance * Math.PI;
-            var squareRatio = rectanglesSquare / circleSquare * 100;
-            squareRatio.Should().BeGreaterOrEqualTo(acceptableRatio);
-        }
-
-        private static double GetDistanceBetweenRectangleAndPoint(Rectangle rectangle, Point point)
-        {
-            var rectangleCentre = new Point(rectangle.Location.X + rectangle.Width / 2,
-                rectangle.Location.Y + rectangle.Height / 2);
-
-            return Math.Sqrt(Math.Pow(rectangleCentre.X - point.X, 2) + Math.Pow(rectangleCentre.Y - point.Y, 2));
-        }
-
+        
         [Test]
         public void AddFirstRectangleInTheCloudCenter()
         {
@@ -168,6 +126,48 @@ namespace TagsCloudVisualization
             secondRectangle.Y.Should().Be(firstRectangle.Top);
             secondRectangle.X.Should().BeInRange(firstRectangle.Left - acceptableXAxisShift,
                 firstRectangle.Right + acceptableXAxisShift);
+        }
+
+        [TestCase(50, 40, 40, 2048, TestName = "Rectangles are squares")]
+        [TestCase(50, 50, 70, 1000, TestName = "Rectangles are big (50 to 70)")]
+        [TestCase(50, 30, 50, 42, TestName = "Rectangles are medium (30 to 50)")]
+        [TestCase(50, 10, 30, 777, TestName = "Rectangles are small (10 to 30)")]
+        [TestCase(1000, 70, 100, 555555, TestName = "Rectangles count is big (1000)")]
+        [TestCase(10, 10, 20, -555, TestName = "Rectangles count is small (10)")]
+        public void AddMultipleRectangles_That_FormACircleLikeShape_When(int count, int minSize, int maxSize,
+            int randomSeed)
+        {
+            var acceptableRatio = 50;
+            var random = new Random(randomSeed);
+            var furthestDistance = 0d;
+            var rectanglesSquare = 0d;
+
+            for (var i = 0; i < count; i++)
+            {
+                var size = new Size(random.Next(minSize, maxSize), random.Next(minSize, maxSize));
+                var rectangle = cloudLayouter.PutNextRectangle(size);
+                layouterRectangles.Add(rectangle);
+            }
+
+            foreach (var rectangle in layouterRectangles)
+            {
+                var distance = GetDistanceBetweenRectangleAndPoint(rectangle, layouterCenter);
+                if (distance > furthestDistance)
+                    furthestDistance = distance;
+                rectanglesSquare += rectangle.Width * rectangle.Height;
+            }
+
+            var circleSquare = furthestDistance * furthestDistance * Math.PI;
+            var squareRatio = rectanglesSquare / circleSquare * 100;
+            squareRatio.Should().BeGreaterOrEqualTo(acceptableRatio);
+        }
+
+        private static double GetDistanceBetweenRectangleAndPoint(Rectangle rectangle, Point point)
+        {
+            var rectangleCentre = new Point(rectangle.Location.X + rectangle.Width / 2,
+                rectangle.Location.Y + rectangle.Height / 2);
+
+            return Math.Sqrt(Math.Pow(rectangleCentre.X - point.X, 2) + Math.Pow(rectangleCentre.Y - point.Y, 2));
         }
     }
 }
