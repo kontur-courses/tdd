@@ -77,15 +77,14 @@ namespace TagsCloudVisualizationTests
             var circularCloudLayouter = new CircularCloudLayouter(Point.Empty);
             var rectangleSize = new Size(width, height);
 
-            var rectangles = new List<Rectangle>();
-            for (var i = 0; i < count; ++i)
-                rectangles.Add(circularCloudLayouter.PutNextRectangle(rectangleSize));
+            var rectangles = PutRectanglesUsingLayouter(count, circularCloudLayouter, rectangleSize);
 
             TestExecutionContext.CurrentContext.CurrentTest.Properties.Set("rectangles", rectangles);
 
             var intersectingRectangles =
                 rectangles.Where(r1 => rectangles.Any(r2 => r2 != r1 && r2.IntersectsWith(r1))).ToList();
-            TestExecutionContext.CurrentContext.CurrentTest.Properties.Set("intersectingRectangles", intersectingRectangles);
+            TestExecutionContext.CurrentContext.CurrentTest.Properties.Set("intersectingRectangles",
+                intersectingRectangles);
             var rectanglesIntersect = intersectingRectangles.Any();
             rectanglesIntersect.Should().BeFalse();
         }
@@ -100,17 +99,15 @@ namespace TagsCloudVisualizationTests
             var circularCloudLayouter = new CircularCloudLayouter(Point.Empty);
             var random = new Random();
 
-            var rectangles = new List<Rectangle>();
-            for (var i = 0; i < count; ++i)
-                rectangles.Add(circularCloudLayouter.PutNextRectangle(
-                    new Size(random.Next(minWidth, maxWith), random.Next(minHeight, maxHeight))
-                ));
+            var rectangles = PutRandomRectanglesUsingLayouter(count, circularCloudLayouter,
+                new Size(minWidth, minHeight), new Size(maxWith, maxHeight));
 
             TestExecutionContext.CurrentContext.CurrentTest.Properties.Set("rectangles", rectangles);
 
             var intersectingRectangles =
                 rectangles.Where(r1 => rectangles.Any(r2 => r2 != r1 && r2.IntersectsWith(r1))).ToList();
-            TestExecutionContext.CurrentContext.CurrentTest.Properties.Set("intersectingRectangles", intersectingRectangles);
+            TestExecutionContext.CurrentContext.CurrentTest.Properties.Set("intersectingRectangles",
+                intersectingRectangles);
             var rectanglesIntersect = intersectingRectangles.Any();
             rectanglesIntersect.Should().BeFalse();
         }
@@ -126,9 +123,7 @@ namespace TagsCloudVisualizationTests
             var circularCloudLayouter = new CircularCloudLayouter(center);
             var rectangleSize = new Size(width, height);
 
-            var rectangles = new List<Rectangle>();
-            for (var i = 0; i < count; ++i)
-                rectangles.Add(circularCloudLayouter.PutNextRectangle(rectangleSize));
+            var rectangles = PutRectanglesUsingLayouter(count, circularCloudLayouter, rectangleSize);
 
             TestExecutionContext.CurrentContext.CurrentTest.Properties.Set("rectangles", rectangles);
 
@@ -150,11 +145,8 @@ namespace TagsCloudVisualizationTests
             var circularCloudLayouter = new CircularCloudLayouter(center);
             var random = new Random();
 
-            var rectangles = new List<Rectangle>();
-            for (var i = 0; i < count; ++i)
-                rectangles.Add(circularCloudLayouter.PutNextRectangle(
-                    new Size(random.Next(minWidth, maxWith), random.Next(minHeight, maxHeight))
-                ));
+            var rectangles = PutRandomRectanglesUsingLayouter(count, circularCloudLayouter,
+                new Size(minWidth, minHeight), new Size(maxWith, maxHeight));
 
             TestExecutionContext.CurrentContext.CurrentTest.Properties.Set("rectangles", rectangles);
 
@@ -175,9 +167,7 @@ namespace TagsCloudVisualizationTests
             var circularCloudLayouter = new CircularCloudLayouter(center);
             var rectangleSize = new Size(width, height);
 
-            var rectangles = new List<Rectangle>();
-            for (var i = 0; i < count; ++i)
-                rectangles.Add(circularCloudLayouter.PutNextRectangle(rectangleSize));
+            var rectangles = PutRectanglesUsingLayouter(count, circularCloudLayouter, rectangleSize);
 
             TestExecutionContext.CurrentContext.CurrentTest.Properties.Set("rectangles", rectangles);
 
@@ -195,11 +185,8 @@ namespace TagsCloudVisualizationTests
             var circularCloudLayouter = new CircularCloudLayouter(center);
             var random = new Random();
 
-            var rectangles = new List<Rectangle>();
-            for (var i = 0; i < count; ++i)
-                rectangles.Add(circularCloudLayouter.PutNextRectangle(
-                    new Size(random.Next(minWidth, maxWith), random.Next(minHeight, maxHeight))
-                ));
+            var rectangles = PutRandomRectanglesUsingLayouter(count, circularCloudLayouter,
+                new Size(minWidth, minHeight), new Size(maxWith, maxHeight));
 
             TestExecutionContext.CurrentContext.CurrentTest.Properties.Set("rectangles", rectangles);
 
@@ -230,6 +217,28 @@ namespace TagsCloudVisualizationTests
                 Console.WriteLine("Tag cloud visualization saved to file {0}", exactPath);
             }
         }
+
+        private static List<Rectangle> PutRectanglesUsingLayouter(int rectanglesCount, CircularCloudLayouter layouter,
+            Size rectangleSize)
+        {
+            var rectangles = new List<Rectangle>();
+            for (var i = 0; i < rectanglesCount; ++i)
+                rectangles.Add(layouter.PutNextRectangle(rectangleSize));
+            return rectangles;
+        }
+
+        private static List<Rectangle> PutRandomRectanglesUsingLayouter(int rectanglesCount,
+            CircularCloudLayouter layouter, Size minSize, Size maxSize)
+        {
+            var random = new Random();
+            var rectangles = new List<Rectangle>();
+            for (var i = 0; i < rectanglesCount; ++i)
+                rectangles.Add(layouter.PutNextRectangle(
+                    new Size(random.Next(minSize.Width, maxSize.Width), random.Next(minSize.Height, maxSize.Height))
+                ));
+            return rectangles;
+        }
+
 
         #region Helper functions
 
