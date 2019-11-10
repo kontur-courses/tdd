@@ -105,7 +105,7 @@ namespace TagsCloudVisualization.Tests
                         {new Size(500, 500), new Size(600, 600), new Size(500, 500), new Size(500, 500),})
                     .SetName("some big rectangles");
 
-                yield return new TestCaseData(Enumerable.Repeat(50, 600).Select(x => new Size(x, x)).ToArray()).SetName(
+                yield return new TestCaseData(Enumerable.Repeat(new Size(50, 50), 600).ToArray()).SetName(
                     "many little rectangles");
             }
         }
@@ -162,7 +162,7 @@ namespace TagsCloudVisualization.Tests
                     })
                     .SetName("when some different little rectangles");
 
-                yield return new TestCaseData(Enumerable.Repeat(4, 50).Select(x => new Size(x, x)).ToArray()).SetName(
+                yield return new TestCaseData(Enumerable.Repeat(new Size(4, 4), 50).ToArray()).SetName(
                     "when many little squares");
             }
         }
