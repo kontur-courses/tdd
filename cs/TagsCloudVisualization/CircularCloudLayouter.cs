@@ -33,6 +33,11 @@ namespace TagsCloudVisualization
             return rectangle;
         }
 
+        public IEnumerable<Rectangle> PutMultipleRectangles(IEnumerable<Size> sizes)
+        {
+            return sizes.Select(PutNextRectangle);
+        }
+
         private void HandleFoundRectangle(Rectangle rectangle)
         {
             if (!pictureRectangle.Contains(rectangle))

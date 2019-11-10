@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization.Infrastructure;
 
 namespace TagsCloudVisualization.Tests
@@ -11,14 +14,17 @@ namespace TagsCloudVisualization.Tests
     [TestFixture]
     public class CircularCloudLayouter_Should
     {
+        private const string LayoutTestCategory = "layout test";
         private CircularCloudLayouter defaultLayouter;
         private Point defaultCenter;
+        private Size defaultSize;
 
         [SetUp]
         public void SetUp()
         {
             defaultCenter = Point.Empty;
-            defaultLayouter = new CircularCloudLayouter(defaultCenter, new Size(1000, 1000));
+            defaultSize = new Size(1000, 1000);
+            defaultLayouter = new CircularCloudLayouter(defaultCenter, defaultSize);
         }
 
         [TestCase(0, 0, TestName = "zero size")]
@@ -77,7 +83,7 @@ namespace TagsCloudVisualization.Tests
         [TestCaseSource(nameof(PutNextRectangleShouldReturnCommonTestCases))]
         public void PutNextRectangle_ShouldReturnDisjoint(Size[] sizes)
         {
-            var rectangles = PutMultipleRectangles(sizes);
+            var rectangles = PutMultipleRectangles(defaultLayouter, sizes);
 
             foreach (var rectangle in rectangles)
             {
@@ -90,7 +96,7 @@ namespace TagsCloudVisualization.Tests
         [TestCaseSource(nameof(PutNextRectangleShouldThrowWhenRectangleCannotBePlacedTestCases))]
         public void PutNextRectangle_ShouldThrow_WhenRectangleCannotBePlaced(Size[] sizes)
         {
-            Action put = () => PutMultipleRectangles(sizes);
+            Action put = () => PutMultipleRectangles(defaultLayouter, sizes);
 
             put.ShouldThrowExactly<ArgumentException>();
         }
@@ -113,7 +119,7 @@ namespace TagsCloudVisualization.Tests
         [TestCaseSource(nameof(PutNextRectangleShouldReturnCommonTestCases))]
         public void PutNextRectangle_ShouldReturnNearlyCircleShaped(Size[] sizes)
         {
-            var rectangles = PutMultipleRectangles(sizes);
+            var rectangles = PutMultipleRectangles(defaultLayouter, sizes);
 
             var maxDiagonal = rectangles.Max(r =>
                 GeometryHelper.GetDistanceBetweenPoints(r.Location, new Point(r.Right, r.Bottom)));
@@ -122,13 +128,13 @@ namespace TagsCloudVisualization.Tests
                 .CartesianSquare()
                 .Select(p => Math.Abs(p.Item2 - p.Item1))
                 .Should()
-                .OnlyContain(x => x < maxDiagonal);
+                .OnlyContain(x => x <= maxDiagonal);
         }
 
         [TestCaseSource(nameof(PutNextRectangleShouldReturnCommonTestCases))]
         public void PutNextRectangle_ShouldReturnCloseToEachOther(Size[] sizes)
         {
-            var rectangles = PutMultipleRectangles(sizes);
+            var rectangles = PutMultipleRectangles(defaultLayouter, sizes);
 
             var maxDiagonal = rectangles.Max(r =>
                 GeometryHelper.GetDistanceBetweenPoints(r.Location, new Point(r.Right, r.Bottom)));
@@ -146,14 +152,15 @@ namespace TagsCloudVisualization.Tests
             get
             {
                 yield return new TestCaseData(new[] {new Size(100, 100), new Size(250, 250), new Size(125, 125)})
-                    .SetName("when put some big rectangles");
+                    .SetName("when put some big rectangles").SetCategory(LayoutTestCategory);
 
                 yield return new TestCaseData(Enumerable.Range(1, 10).CartesianSquare()
                     .Select(p => new Size(p.Item1, p.Item2)).ToArray()).SetName(
-                    "when put many different little rectangles");
+                    "when put many different little rectangles").SetCategory(LayoutTestCategory);
 
                 yield return new TestCaseData(Enumerable.Range(30, 80).Where(x => x % 10 == 0).CartesianSquare()
-                    .Select(x => new Size(x.Item1, x.Item2)).ToArray()).SetName("when many different big rectangles");
+                    .Select(x => new Size(x.Item1, x.Item2)).ToArray()).SetName("when many different big rectangles")
+                    .SetCategory(LayoutTestCategory);
 
                 yield return new TestCaseData(new[]
                     {
@@ -167,9 +174,26 @@ namespace TagsCloudVisualization.Tests
             }
         }
 
-        private Rectangle[] PutMultipleRectangles(params Size[] sizes)
+        private Rectangle[] PutMultipleRectangles(CircularCloudLayouter layouter, params Size[] sizes)
         {
-            return sizes.Select(size => defaultLayouter.PutNextRectangle(size)).ToArray();
+            return layouter.PutMultipleRectangles(sizes).ToArray();
         }
+
+        [TearDown]
+        public void TearDown()
+        {
+            var status = TestContext.CurrentContext.Result.Outcome.Status;
+            var categories = TestContext.CurrentContext.Test.Properties["Category"];
+            if ((status == TestStatus.Failed || status == TestStatus.Inconclusive) && categories.Contains(LayoutTestCategory))
+            {
+                var sizes = TestContext.CurrentContext.Test.Arguments.FirstOrDefault(a => a is Size[]) as Size[];
+                var bitmap = BitmapGenerator.CreateBitmap(defaultCenter, defaultSize, sizes);
+                var path = Path.Combine(TestContext.CurrentContext.TestDirectory,
+                    $"{TestContext.CurrentContext.Test.MethodName} {TestContext.CurrentContext.Test.Name}");
+                bitmap.Save($"{path}.png", ImageFormat.Png);
+                TestContext.Out.Write($"Tag cloud visualization saved to file {path}.png");
+            }
+        }
+
     }
 }

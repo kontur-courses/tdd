@@ -11,18 +11,10 @@ namespace TagsCloudVisualization
         {
             foreach (var generatedPictureInfo in GetGeneratedPictureInfos())
             {
-                var rectangles = GetLayoutedRectangles(generatedPictureInfo);
-                var visualizer = new Visualizer(generatedPictureInfo.PictureSize);
-                var bitmap = visualizer.GetLayoutBitmap(rectangles, Color.Aqua, Color.Black);
+                var bitmap = BitmapGenerator.CreateBitmap(generatedPictureInfo.PictureCenter,
+                    generatedPictureInfo.PictureSize, generatedPictureInfo.RectangleSizes);
                 bitmap.Save($"{generatedPictureInfo.Name}.png", ImageFormat.Png);
             }
-        }
-
-        private static IEnumerable<Rectangle> GetLayoutedRectangles(PictureInfo pictureInfo)
-        {
-            var layouter = new CircularCloudLayouter(pictureInfo.PictureCenter, pictureInfo.PictureSize);
-
-            return pictureInfo.RectangleSizes.Select(s => layouter.PutNextRectangle(s));
         }
 
         private static IEnumerable<PictureInfo> GetGeneratedPictureInfos()
