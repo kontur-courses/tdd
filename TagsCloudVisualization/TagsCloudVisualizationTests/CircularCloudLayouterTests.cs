@@ -175,6 +175,7 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
+        [Retry(5)]
         [TestCase(5, 5, 10, 10, 10, 7)]
         public void TagsCloudOfRandomSizedRectanglesShapeIsCloseToCircle(int minWidth, int minHeight, int maxWith,
             int maxHeight, int count, int rectanglesInCircleRequired)
