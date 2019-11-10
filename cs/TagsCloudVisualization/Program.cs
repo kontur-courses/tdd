@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -10,10 +8,9 @@ namespace TagsCloudVisualization
         private static void Main(string[] _)
         {
             var rnd = new Random();
-            var center = new Point(rnd.Next(-100, 100), rnd.Next(-100, 100));
-            var count = rnd.Next(10, 50);
+            var center = rnd.NextPoint(-100, 100, -100, 100);
             var layouter = new CircularCloudLayouter(center);
-            layouter.PutRectangles(Enumerable.Range(0, count).Select(__ => rnd.GenerateRandomSize()));
+            layouter.PutRectangles(rnd.NextSizes(10, 30, 2, 5, 10, 50));
 
             var filename = $"{Path.GetTempPath()}CCL {DateTime.Now:yyyy-MM-dd HH-mm-ss}.png";
             Utils.SaveRectanglesToPngFile(layouter.GetRectangles(), filename);

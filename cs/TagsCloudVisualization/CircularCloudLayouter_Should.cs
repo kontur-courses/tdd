@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using System;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 
@@ -17,10 +16,9 @@ namespace TagsCloudVisualization
         public void OneTimeSetUp()
         {
             var rnd = new Random();
-            var center = new Point(rnd.Next(-100, 100), rnd.Next(-100, 100));
-            var count = rnd.Next(10, 50);
+            var center = rnd.NextPoint(-100, 100, -100, 100);
             layouter = new CircularCloudLayouter(center);
-            layouter.PutRectangles(Enumerable.Range(0, count).Select(_ => rnd.GenerateRandomSize()));
+            layouter.PutRectangles(rnd.NextSizes(10, 30, 2, 5, 10, 50));
         }
 
         [Test]

@@ -8,11 +8,33 @@ namespace TagsCloudVisualization
 {
     public static class Utils
     {
-        public static Size GenerateRandomSize(this Random me)
+        public static Point NextPoint(this Random me, int minX, int maxX, int minY, int maxY) =>
+            new Point(me.Next(minX, maxX), me.Next(minY, maxY));
+
+        public static Size NextSize(this Random me, int minHeight, int maxHeight, double minWidthFactor, double maxWidthFactor)
         {
-            int height = me.Next(10, 50);
-            int width = (int)(height * (2 + 3 * me.NextDouble()));
+            if (minWidthFactor > maxWidthFactor)
+                throw new ArgumentException("'maxWidthFactor' must be more than 'minWidthFactor'.");
+
+            var height = me.Next(minHeight, maxHeight);
+            var width = (int)(height * (minWidthFactor + (maxWidthFactor - minWidthFactor) * me.NextDouble()));
             return new Size(width, height);
+        }
+
+        public static IEnumerable<Size> NextSizes(this Random me, int minHeight, int maxHeight, int minWidthFactor, int maxWidthFactor, int count)
+        {
+            if (count <= 0)
+                throw new ArgumentException("'Count' parameter must be a positive nonzero number.");
+
+            return Enumerable.Range(0, count).Select(i => me.NextSize(minHeight, maxHeight, minWidthFactor, maxWidthFactor));
+        }
+
+        public static IEnumerable<Size> NextSizes(this Random me, int minHeight, int maxHeight, int minWidthFactor, int maxWidthFactor, int minCount, int maxCount)
+        {
+            if (minCount > maxCount)
+                throw new ArgumentException("'maxCount' must be more than 'minCount'.");
+
+            return me.NextSizes(minHeight, maxHeight, minWidthFactor, maxWidthFactor, me.Next(minCount, maxCount));
         }
 
         private static bool IsApproximatelyEquals(this double me, double val)
