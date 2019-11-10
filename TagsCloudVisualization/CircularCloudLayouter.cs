@@ -14,7 +14,7 @@ namespace TagsCloudVisualization
         private readonly HashSet<Segment> ProbablyBuggedSegments;
         private bool isFirstRectangle;
         private readonly List<Rectangle> rectangles;
-        private readonly bool safeMode = true;
+        private readonly bool safeMode = false;
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
@@ -30,7 +30,8 @@ namespace TagsCloudVisualization
             {
                 isFirstRectangle = false;
                 InitializeFirstRectangle(rectangleSize);
-                return new Rectangle(new Point(center.X - rectangleSize.Width / 2, center.Y - rectangleSize.Height / 2), rectangleSize);
+                var firstRect = new Rectangle(new Point(center.X - (int)Math.Floor(rectangleSize.Width / (double)2), center.Y - (int)Math.Floor(rectangleSize.Height / (double)2)), rectangleSize);
+                return firstRect;
             }
             double minDistance = double.MaxValue;
             Segment minSegment = null;
@@ -102,9 +103,12 @@ namespace TagsCloudVisualization
         {
             if (extendedSegment.Length < rectangleSize.Width)
                 return;
-            if (extendedSegment.start.X < center.X && extendedSegment.end.X > center.X)
+            if (extendedSegment.start.X < center.X 
+                && extendedSegment.end.X > center.X
+                && center.X + (int)Math.Truncate(rectangleSize.Width / (double)2) + 1 <= extendedSegment.end.X
+                && center.X - (int)Math.Truncate(rectangleSize.Width / (double)2) - 1 >= extendedSegment.start.X)
             {
-                Point midAngleCoord = new Point(center.X - rectangleSize.Width / 2, extendedSegment.start.Y - rectangleSize.Height);
+                Point midAngleCoord = new Point(center.X - (int)Math.Truncate(rectangleSize.Width / (double)2), extendedSegment.start.Y - rectangleSize.Height);
                 if (CheckOppositeBorder(midAngleCoord, rectangleSize, Segment.Type.Top))
                     CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, midAngleCoord, rectangleSize);
             }
@@ -120,9 +124,12 @@ namespace TagsCloudVisualization
         {
             if (extendedSegment.Length < rectangleSize.Width)
                 return;
-            if (extendedSegment.start.X < center.X && extendedSegment.end.X > center.X)
+            if (extendedSegment.start.X < center.X 
+                && extendedSegment.end.X > center.X
+                && center.X + (int)Math.Truncate(rectangleSize.Width / (double)2) + 1 <= extendedSegment.end.X
+                && center.X - (int)Math.Truncate(rectangleSize.Width / (double)2) - 1 >= extendedSegment.start.X)
             {
-                Point midAngleCoord = new Point(center.X - rectangleSize.Width / 2, extendedSegment.start.Y);
+                Point midAngleCoord = new Point(center.X - (int)Math.Truncate(rectangleSize.Width / (double)2), extendedSegment.start.Y);
                 if (CheckOppositeBorder(midAngleCoord, rectangleSize, Segment.Type.Top))
                     CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, midAngleCoord, rectangleSize);
             }
@@ -139,17 +146,20 @@ namespace TagsCloudVisualization
         {
             if (extendedSegment.Length < rectangleSize.Height)
                 return;
-            if (extendedSegment.start.Y < center.Y && extendedSegment.end.Y > center.Y)
+            if (extendedSegment.start.Y < center.Y 
+                && extendedSegment.end.Y > center.Y
+                && center.Y + (int)Math.Truncate(rectangleSize.Height / (double)2) + 1 <= extendedSegment.end.Y
+                && center.Y - (int)Math.Truncate(rectangleSize.Height / (double)2) - 1 >= extendedSegment.start.Y)
             {
-                Point midAngleCoord = new Point(extendedSegment.start.X - rectangleSize.Width, center.Y - rectangleSize.Height / 2);
-                if (CheckOppositeBorder(midAngleCoord, rectangleSize, Segment.Type.Top))
+                Point midAngleCoord = new Point(extendedSegment.start.X - rectangleSize.Width, center.Y - (int)Math.Truncate(rectangleSize.Height / (double)2));
+                if (CheckOppositeBorder(midAngleCoord, rectangleSize, Segment.Type.Right))
                     CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, midAngleCoord, rectangleSize);
             }
             Point startAngleCoord = new Point(extendedSegment.start.X - rectangleSize.Width, extendedSegment.start.Y);
-            if (CheckOppositeBorder(startAngleCoord, rectangleSize, Segment.Type.Top))
+            if (CheckOppositeBorder(startAngleCoord, rectangleSize, Segment.Type.Right))
                 CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, startAngleCoord, rectangleSize);
             Point endAngleCoord = new Point(extendedSegment.end.X - rectangleSize.Width, extendedSegment.end.Y - rectangleSize.Height);
-            if (CheckOppositeBorder(endAngleCoord, rectangleSize, Segment.Type.Top))
+            if (CheckOppositeBorder(endAngleCoord, rectangleSize, Segment.Type.Right))
                 CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, endAngleCoord, rectangleSize);
         }
 
@@ -157,18 +167,21 @@ namespace TagsCloudVisualization
         {
             if (extendedSegment.Length < rectangleSize.Height)
                 return;
-            if (extendedSegment.start.Y < center.Y && extendedSegment.end.Y > center.Y)
+            if (extendedSegment.start.Y < center.Y 
+                && extendedSegment.end.Y > center.Y
+                && center.Y + (int)Math.Truncate(rectangleSize.Height / (double)2) + 1 <= extendedSegment.end.Y
+                && center.Y - (int)Math.Truncate(rectangleSize.Height / (double)2) - 1 >= extendedSegment.start.Y)
             {
-                Point midAngleCoord = new Point(extendedSegment.start.X, center.Y - rectangleSize.Height / 2);
-                if (CheckOppositeBorder(midAngleCoord, rectangleSize, Segment.Type.Top))
+                Point midAngleCoord = new Point(extendedSegment.start.X, center.Y - (int)Math.Truncate(rectangleSize.Height / (double)2));
+                if (CheckOppositeBorder(midAngleCoord, rectangleSize, Segment.Type.Right))
                     CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, midAngleCoord, rectangleSize);
             }
 
             Point startAngleCoord = new Point(extendedSegment.start.X, extendedSegment.start.Y);
-            if (CheckOppositeBorder(startAngleCoord, rectangleSize, Segment.Type.Top))
+            if (CheckOppositeBorder(startAngleCoord, rectangleSize, Segment.Type.Right))
                 CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, startAngleCoord, rectangleSize);
             Point endAngleCoord = new Point(extendedSegment.end.X, extendedSegment.end.Y - rectangleSize.Height);
-            if (CheckOppositeBorder(endAngleCoord, rectangleSize, Segment.Type.Top))
+            if (CheckOppositeBorder(endAngleCoord, rectangleSize, Segment.Type.Right))
                 CheckDistance(ref minSegment, ref minDistance, segment, ref minCoord, endAngleCoord, rectangleSize);
         }
 
@@ -294,7 +307,8 @@ namespace TagsCloudVisualization
                 && b.start.Y <= segment.start.Y
                 && ((b.start.X >= leftRectSide && b.start.X < rightRectSide)
                             || (b.end.X > leftRectSide && b.end.X <= rightRectSide)
-                            || (b.start.X <= leftRectSide && b.end.X >= rightRectSide)))
+                            || (b.start.X <= leftRectSide && b.end.X >= rightRectSide)
+                            || (b.start.X >= leftRectSide && b.end.X <= rightRectSide)))
                 .OrderByDescending(c => c.start.Y)
                 .FirstOrDefault();
             int topBorderY;
@@ -320,7 +334,8 @@ namespace TagsCloudVisualization
                 && b.end.Y >= segment.end.Y
                 && ((b.start.X >= leftRectSide && b.start.X < rightRectSide)
                             || (b.end.X > leftRectSide && b.end.X <= rightRectSide)
-                            || (b.start.X <= leftRectSide && b.end.X >= rightRectSide)))
+                            || (b.start.X <= leftRectSide && b.end.X >= rightRectSide)
+                            || (b.start.X >= leftRectSide && b.end.X <= rightRectSide)))
                 .OrderBy(c => c.start.Y)
                 .FirstOrDefault();
             int topBorderY;
@@ -438,7 +453,7 @@ namespace TagsCloudVisualization
 
         private void StackCheckPartialCrossingHorizontal(Segment segment1, Segment segment2, ref HashSet<Segment> toDelete, ref HashSet<Segment> toAdd)
         {
-            if (segment1.type == Segment.Type.Bottom// еще нужна перестановка top/bottom и самих элементов
+            if (segment1.type == Segment.Type.Bottom
                 && segment1.type == Segment.Type.Top
                 && segment1.start.X < segment2.start.X
                 && segment1.end.X > segment2.start.X
@@ -537,31 +552,34 @@ namespace TagsCloudVisualization
         }
         private void InitializeFirstRectangle(Size rectangleSize)
         {
+            var firstRectCoord = new Point(
+                    center.X - (int)Math.Floor(rectangleSize.Width / (double)2)
+                    , center.Y - (int)Math.Floor(rectangleSize.Height / (double)2));
             Segments.Add(new Segment(
-                    center.X - rectangleSize.Width / 2
-                    , center.Y - rectangleSize.Height / 2
-                    , center.X + rectangleSize.Width / 2
-                    , center.Y - rectangleSize.Height / 2
+                    firstRectCoord.X
+                    , firstRectCoord.Y
+                    , firstRectCoord.X+rectangleSize.Width
+                    , firstRectCoord.Y
                     , Segment.Type.Top));
             Segments.Add(new Segment(
-                center.X - rectangleSize.Width / 2
-                , center.Y + rectangleSize.Height / 2
-                , center.X + rectangleSize.Width / 2
-                , center.Y + rectangleSize.Height / 2
+                firstRectCoord.X 
+                , firstRectCoord.Y + rectangleSize.Height
+                , firstRectCoord.X + rectangleSize.Width
+                , firstRectCoord.Y + rectangleSize.Height
                 , Segment.Type.Bottom));
             Segments.Add(new Segment(
-                center.X - rectangleSize.Width / 2
-                , center.Y - rectangleSize.Height / 2
-                , center.X - rectangleSize.Width / 2
-                , center.Y + rectangleSize.Height / 2
+                firstRectCoord.X
+                , firstRectCoord.Y
+                , firstRectCoord.X
+                , firstRectCoord.Y+rectangleSize.Height
                 , Segment.Type.Left));
             Segments.Add(new Segment(
-                center.X + rectangleSize.Width / 2
-                , center.Y - rectangleSize.Height / 2
-                , center.X + rectangleSize.Width / 2
-                , center.Y + rectangleSize.Height / 2
+                firstRectCoord.X + rectangleSize.Width
+                , firstRectCoord.Y
+                , firstRectCoord.X + rectangleSize.Width
+                , firstRectCoord.Y + rectangleSize.Height
                 , Segment.Type.Right));
-            rectangles.Add(new Rectangle(new Point(center.X - rectangleSize.Width / 2, center.Y - rectangleSize.Height / 2), rectangleSize));
+            rectangles.Add(new Rectangle(firstRectCoord, rectangleSize));
         }
 
         private Point FindClosestCloudBorder(Size rectangleSize)
@@ -584,12 +602,12 @@ namespace TagsCloudVisualization
                     .First();
             var minDist = new[] { Math.Abs(topBorder), Math.Abs(botBorder), Math.Abs(leftBorder), Math.Abs(rightBorder) }.Min();
             if (minDist == Math.Abs(topBorder))
-                return new Point(center.X - rectangleSize.Width / 2, topBorder - rectangleSize.Height);
+                return new Point(center.X - (int)Math.Floor(rectangleSize.Width / (double)2), topBorder - rectangleSize.Height);
             if (minDist == Math.Abs(botBorder))
-                return new Point(center.X - rectangleSize.Width / 2, botBorder);
+                return new Point(center.X - (int)Math.Ceiling(rectangleSize.Width / (double)2), botBorder);
             if (minDist == Math.Abs(leftBorder))
-                return new Point(center.Y - rectangleSize.Height / 2, leftBorder - rectangleSize.Width);
-            return new Point(center.Y - rectangleSize.Height / 2, rightBorder);
+                return new Point(center.Y - (int)Math.Floor(rectangleSize.Height / (double)2), leftBorder - rectangleSize.Width);
+            return new Point(center.Y - (int)Math.Ceiling(rectangleSize.Height / (double)2), rightBorder);
 
         }
     }
