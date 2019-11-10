@@ -22,9 +22,9 @@ namespace TagCloud
         {
             while (true)
             {
-                angle += Math.PI / 96;
+                angle += 0.0001;
                 var result = new Point((int) Math.Round(parameter * angle * Math.Sin(angle)) + random.Next(2, 10),
-                    (int) Math.Round(0.4 * parameter * angle * Math.Cos(angle)) + random.Next(2, 10));
+                    (int) Math.Round(0.6 * parameter * angle * Math.Cos(angle)) + random.Next(2, 10));
                 yield return result;
             }
         }
