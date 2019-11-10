@@ -1,9 +1,9 @@
-#Облако тегов
+#Облако тегов#
 Визуализация облака тегов поддерживает 3 темы:
 - Красная
 - Индиго
 - Зеленая
-###Примеры
+###Примеры###
 
 ![](https://raw.githubusercontent.com/Sc222/tdd/hometask/cs/TagsCloudVisualization/renders/squares%2C%20theme%20-%20red.png)
 
