@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Linq;
 
 namespace TagsCloudVisualization
@@ -7,11 +8,11 @@ namespace TagsCloudVisualization
     {
         public static void Main(string[] args)
         {
-            var maxSize = new Size(150, 50);
-            var minSize = new Size(50, 50);
-            var rectangles = RectanglesGenerator.GenerateRectangles(100, maxSize, minSize);
+            var maxSize = new Size(80, 40);
+            var minSize = new Size(40, 20);
+            var rectangles = RectanglesGenerator.GenerateRectangles(10, maxSize, minSize);
             var image = CloudVisualizer.Visualize(rectangles.ToArray());
-            image.Save("layout4.png");
+            image.Save("../../layout4.png");
         }
     }
 }

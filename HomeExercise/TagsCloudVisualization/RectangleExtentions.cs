@@ -13,5 +13,9 @@ namespace TagsCloudVisualization
 			var centerY = rectangle.Y - rectangle.Height / 2f;
 			return new PointF(centerX, centerY);
 		}
+
+		public static bool Intersects(this Rectangle rectangle, Rectangle otherRectangle) =>
+			!(rectangle.Left >= otherRectangle.Right || rectangle.Right <= otherRectangle.Left ||
+			 rectangle.GetBottom() >= otherRectangle.Top || rectangle.Top <= otherRectangle.GetBottom());
 	}
 }

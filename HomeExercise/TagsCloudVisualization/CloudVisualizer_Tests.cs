@@ -20,7 +20,7 @@ namespace TagsCloudVisualization
 				new Point(-10, 0),
 			};
 			var rectangles = locations.Select(location => new Rectangle(location, rectangleSize));
-			const int imagePadding = CloudVisualizer.ImagePadding;
+			const int imagePadding = CloudVisualizer.RectangleBorderWidth;
 			var expectedImageSize = new Size(20 + imagePadding, 20 + imagePadding);
 			
 			var actualImageSize = CloudVisualizer.CalculateImageSize(rectangles);

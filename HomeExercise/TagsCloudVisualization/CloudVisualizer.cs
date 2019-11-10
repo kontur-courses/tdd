@@ -7,8 +7,7 @@ namespace TagsCloudVisualization
 {
 	public static class CloudVisualizer
 	{
-		internal const int ImagePadding = 5;
-		private const int RectangleBorderWidth = 3;
+		internal const int RectangleBorderWidth = 1;
 
 		private static readonly Color[] _possibleRectangleColors = 
 		{
@@ -22,14 +21,15 @@ namespace TagsCloudVisualization
 			Color.DarkOrange,
 		};
 
-		public static Image Visualize(Rectangle[] rectangles)
+		public static Image Visualize(Rectangle[] rectangles, bool forTest=false)
 		{
 			var imageSize = CalculateImageSize(rectangles);
 			var movedRectangles = rectangles.Select(r => MoveToImageCenter(r, imageSize));
 			
 			var image = new Bitmap(imageSize.Width, imageSize.Height);
-			image = DrawDiagonals(image);
-			image = DrawRectangles(image, movedRectangles);
+			if (forTest)
+				image = DrawDiagonals(image);
+			image = DrawRectangles(image, movedRectangles, forTest);
 			return image;
 		}
 
@@ -42,8 +42,8 @@ namespace TagsCloudVisualization
 				maxY = GetAbsoluteMax(rectangle.Top, rectangle.GetBottom(), maxY);
 			}
 
-			var width = maxX * 2 + ImagePadding;
-			var height = maxY * 2 + ImagePadding;
+			var width = maxX * 2 + RectangleBorderWidth;
+			var height = maxY * 2 + RectangleBorderWidth;
 			return new Size(width, height);
 		}
 		
@@ -65,12 +65,18 @@ namespace TagsCloudVisualization
 			return image;
 		}
 
-		private static Bitmap DrawRectangles(Bitmap image, IEnumerable<Rectangle> rectangles)
+		private static Bitmap DrawRectangles(Bitmap image, IEnumerable<Rectangle> rectangles, bool drawIndexes)
 		{
 			var graphics = Graphics.FromImage(image);
 			var random = new Random();
+			var index = 1;
 			foreach (var rectangle in rectangles)
+			{
 				graphics.DrawRectangle(new Pen(GenerateColor(random), RectangleBorderWidth), rectangle);
+				if (!drawIndexes) continue;
+				var font = new Font(FontFamily.GenericMonospace, rectangle.Height / 2);
+				graphics.DrawString($"{index++}", font, Brushes.Black, rectangle);
+			}
 			return image;
 		}
 

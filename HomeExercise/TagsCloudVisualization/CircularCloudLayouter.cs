@@ -8,7 +8,7 @@ namespace TagsCloudVisualization
 	public class CircularCloudLayouter
 	{
 		private const double Density = 1;
-		private const double AngleStep = Math.PI / 180 * 45;
+		private const double AngleStep = Math.PI / 180 * 1;
 
 		private readonly Point _center;
 		private readonly Spiral _spiral;
@@ -29,7 +29,7 @@ namespace TagsCloudVisualization
 				throw new ArgumentException("Size values must be non-negative");
 
 			var newRectangle = new Rectangle(_spiral.GetNextPoint(), rectangleSize);
-			while (Rectangles.Any(rect => newRectangle.IntersectsWith(rect)))
+			while (Rectangles.Any(rect => newRectangle.Intersects(rect)))
 				newRectangle = new Rectangle(_spiral.GetNextPoint(), rectangleSize);
 			
 			Rectangles.Add(newRectangle);
