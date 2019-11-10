@@ -97,7 +97,6 @@ namespace TagsCloudVisualizationTests
             int maxHeight, int count)
         {
             var circularCloudLayouter = new CircularCloudLayouter(Point.Empty);
-            var random = new Random();
 
             var rectangles = PutRandomRectanglesUsingLayouter(count, circularCloudLayouter,
                 new Size(minWidth, minHeight), new Size(maxWith, maxHeight));
@@ -143,7 +142,6 @@ namespace TagsCloudVisualizationTests
         {
             var center = Point.Empty;
             var circularCloudLayouter = new CircularCloudLayouter(center);
-            var random = new Random();
 
             var rectangles = PutRandomRectanglesUsingLayouter(count, circularCloudLayouter,
                 new Size(minWidth, minHeight), new Size(maxWith, maxHeight));
@@ -183,7 +181,6 @@ namespace TagsCloudVisualizationTests
         {
             var center = Point.Empty;
             var circularCloudLayouter = new CircularCloudLayouter(center);
-            var random = new Random();
 
             var rectangles = PutRandomRectanglesUsingLayouter(count, circularCloudLayouter,
                 new Size(minWidth, minHeight), new Size(maxWith, maxHeight));
@@ -200,22 +197,20 @@ namespace TagsCloudVisualizationTests
         {
             var outcome = TestContext.CurrentContext.Result.Outcome;
             if (outcome != ResultState.Error && outcome != ResultState.Failure) return;
-            if (TestContext.CurrentContext.Test.Properties.Get("rectangles") is List<Rectangle> rectangles)
+            if (!(TestContext.CurrentContext.Test.Properties.Get("rectangles") is List<Rectangle> rectangles)) return;
+            var tagsCloudImage = new TagsCloudImage(1920, 1080);
+            tagsCloudImage.AddRectangles(rectangles, Color.Black, 1f);
+
+            if (TestContext.CurrentContext.Test.Properties.Get("intersectingRectangles") is List<Rectangle>
+                intersectingRectangles)
             {
-                var tagsCloudImage = new TagsCloudImage(1920, 1080);
-                tagsCloudImage.AddRectangles(rectangles, Color.Black, 1f);
-
-                if (TestContext.CurrentContext.Test.Properties.Get("intersectingRectangles") is List<Rectangle>
-                    intersectingRectangles)
-                {
-                    tagsCloudImage.AddRectangles(intersectingRectangles, Color.Red, 1f);
-                }
-
-                string fileName = TestContext.CurrentContext.Test.Name + "failed.png";
-                var exactPath = Path.GetFullPath(fileName);
-                tagsCloudImage.GetBitmap().Save(exactPath);
-                Console.WriteLine("Tag cloud visualization saved to file {0}", exactPath);
+                tagsCloudImage.AddRectangles(intersectingRectangles, Color.Red, 1f);
             }
+
+            var fileName = TestContext.CurrentContext.Test.Name + "failed.png";
+            var exactPath = Path.GetFullPath(fileName);
+            tagsCloudImage.GetBitmap().Save(exactPath);
+            Console.WriteLine("Tag cloud visualization saved to file {0}", exactPath);
         }
 
         private static List<Rectangle> PutRectanglesUsingLayouter(int rectanglesCount, CircularCloudLayouter layouter,
