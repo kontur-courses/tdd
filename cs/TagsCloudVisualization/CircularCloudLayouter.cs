@@ -44,7 +44,9 @@ namespace TagsCloudVisualization
             for (var i = 1; i < Items.Count; i++)
             {
                 var size = Items[i].Rectangle.Size;
-                var positionVariants = new List<KeyValuePair<Rectangle, double>>();
+                var minVertexDist = double.MaxValue;
+                Rectangle bestRect = default;
+
                 for (var angle = rnd.NextDouble() * Math.PI / 18; angle < 1.99 * Math.PI; angle += (Math.PI / 18))
                 {
                     var farthestIntersectionPointDistance = Items
@@ -63,11 +65,13 @@ namespace TagsCloudVisualization
                         newRect = new Rectangle(location, size);
                     } while (Items.Take(i).Select(it => it.Rectangle).Any(rect => newRect.IntersectsWith(rect)));
 
-                    positionVariants.Add(new KeyValuePair<Rectangle, double>(newRect, newRect.GetDistanceOfFathestFromCenterVertex()));
+                    var farthestVertexDist = newRect.GetDistanceOfFathestFromCenterVertex();
+                    if (farthestVertexDist < minVertexDist)
+                    {
+                        minVertexDist = farthestVertexDist;
+                        bestRect = newRect;
+                    }
                 }
-
-                var minVertexDist = positionVariants.Min(kv => kv.Value);
-                var bestRect = positionVariants.First(kv => kv.Value == minVertexDist).Key;
 
                 Items[i].Rectangle = bestRect;
             }

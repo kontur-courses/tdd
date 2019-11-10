@@ -15,7 +15,7 @@ namespace TagsCloudVisualization
             var layouter = new CircularCloudLayouter(center);
             layouter.PutRectangles(Enumerable.Range(0, count).Select(__ => rnd.GenerateRandomSize()));
 
-            var filename = $"{Path.GetTempPath()}CCL {DateTime.Now:yyyy-MM-dd hh-mm-ss}.png";
+            var filename = $"{Path.GetTempPath()}CCL {DateTime.Now:yyyy-MM-dd HH-mm-ss}.png";
             Utils.SaveRectanglesToPngFile(layouter.GetRectangles(), filename);
         }
     }
