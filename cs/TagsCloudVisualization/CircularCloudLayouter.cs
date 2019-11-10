@@ -9,25 +9,26 @@ namespace TagsCloudVisualization
     {
         private readonly Point center;
         private readonly List<LayoutItem> Items;
+        private bool isUpdated;
 
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
             Items = new List<LayoutItem>();
+            isUpdated = false;
         }
 
-        public Rectangle PutNextRectangle(Size rectangleSize)
+        public void PutNextRectangle(Size rectangleSize)
         {
             var newItem = new LayoutItem(new Rectangle(default, rectangleSize));
             Items.Add(newItem);
-            ReallocRectangles();
-            return newItem.Rectangle;
+            isUpdated = false;
         }
 
         public void PutRectangles(IEnumerable<Size> sizes)
         {
             Items.AddRange(sizes.Select(size => new LayoutItem(new Rectangle(default, size))));
-            ReallocRectangles();
+            isUpdated = false;
         }
 
         private void ReallocRectangles()
@@ -75,8 +76,16 @@ namespace TagsCloudVisualization
 
                 Items[i].Rectangle = bestRect;
             }
+
+            isUpdated = true;
         }
 
-        public IEnumerable<Rectangle> GetRectangles() => Items.Select(it => it.Rectangle);
+        public IEnumerable<Rectangle> GetRectangles()
+        {
+            if (!isUpdated)
+                ReallocRectangles();
+
+            return Items.Select(it => it.Rectangle);
+        }
     }
 }
