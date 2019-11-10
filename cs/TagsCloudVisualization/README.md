@@ -1,3 +1,6 @@
 ![Laid out squares](squares20x20.bmp)
 ![Laid out thin long rectangles](rectangles40x4.bmp)
 ![Laid out thick rectangles](rectanglesLong.bmp)
+![TextCloud](text_cloud.bmp)
+![TextInwards](text_inwards.bmp)
+![CircleText](text_circle.bmp)

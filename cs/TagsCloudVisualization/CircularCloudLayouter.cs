@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Numerics;
-using NUnit.Framework;
 
-namespace TagsCloudVisualization
+namespace WordCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private int spiralCounter = 0;
+        private float spiralCounter = 0;
 
         public CircularCloudLayouter(Point center)
         {
