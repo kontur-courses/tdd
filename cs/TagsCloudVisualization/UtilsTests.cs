@@ -27,7 +27,7 @@ namespace TagsCloudVisualization
         [TestCase(66, 11, 0.17453292519943295, ExpectedResult = 33)]
         public int LengthOfRayFromCenterOfRectangle_ReturnsCorrectValue(int width, int height, double rayAngle)
         {
-            return (int)Utils.LengthOfRayFromCenterOfRectangle(new Rectangle(0, 0, width, height), rayAngle);
+            return (int)Utils.LengthOfRayFromCenterOfRectangle(new Size(width, height), rayAngle);
         }
 
         [TestCase(0, 10, 10, 0)]

@@ -188,9 +188,9 @@ namespace TagsCloudVisualization
         public static double GetDistanceIfIntersectsByRay(this Rectangle me, double rayAngle) =>
             me.IsIntersectsByRay(rayAngle, out double intersectionPointDistance) ? intersectionPointDistance : 0;
 
-        public static double LengthOfRayFromCenterOfRectangle(Rectangle rect, double rayAngle)
+        public static double LengthOfRayFromCenterOfRectangle(Size size, double rayAngle)
         {
-            var tmpRect = new Rectangle(-rect.Width / 2, -rect.Height / 2, rect.Width, rect.Height);
+            var tmpRect = new Rectangle(-size.Width / 2, -size.Height / 2, size.Width, size.Height);
             return tmpRect.GetDistanceIfIntersectsByRay(rayAngle);
         }
 

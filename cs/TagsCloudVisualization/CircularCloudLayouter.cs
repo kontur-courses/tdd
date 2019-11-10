@@ -50,26 +50,12 @@ namespace TagsCloudVisualization
 
                 for (var angle = rnd.NextDouble() * Math.PI / 18; angle < 1.99 * Math.PI; angle += (Math.PI / 18))
                 {
-                    var farthestIntersectionPointDistance = Items
-                        .Take(i)
-                        .Max(it => it.Rectangle.GetDistanceIfIntersectsByRay(angle));
-                    var r = Utils.LengthOfRayFromCenterOfRectangle(Items[i].Rectangle, angle);
-                    const int step = 2;
-                    var dist = farthestIntersectionPointDistance + r;
-                    Rectangle newRect;
-                    do
-                    {
-                        dist += step;
-                        var location = new Point().FromPolar(angle, dist);
-                        location.Offset(-size.Width / 2, -size.Height / 2);
-                        newRect = new Rectangle(location, size);
-                    } while (Items.Take(i).Select(it => it.Rectangle).Any(rect => newRect.IntersectsWith(rect)));
-
-                    var farthestVertexDist = newRect.GetDistanceOfFathestFromCenterVertex();
+                    var closestRectOnRay = GetClosestPlaceWithoutIntersects(angle, size, i);
+                    var farthestVertexDist = closestRectOnRay.GetDistanceOfFathestFromCenterVertex();
                     if (farthestVertexDist < minVertexDist)
                     {
                         minVertexDist = farthestVertexDist;
-                        bestRect = newRect;
+                        bestRect = closestRectOnRay;
                     }
                 }
 
@@ -77,6 +63,28 @@ namespace TagsCloudVisualization
             }
 
             isUpdated = true;
+        }
+
+        private Rectangle GetClosestPlaceWithoutIntersects(double rayAngle, Size size, int intersectCheckingRectanglesCount)
+        {
+            var checkingItems = Items.Take(intersectCheckingRectanglesCount);
+
+            var farthestIntersectionPointDistance = checkingItems
+                .Max(it => it.Rectangle.GetDistanceIfIntersectsByRay(rayAngle));
+
+            var r = Utils.LengthOfRayFromCenterOfRectangle(size, rayAngle);
+            const int step = 2;
+            var dist = farthestIntersectionPointDistance + r;
+            Rectangle tryRect;
+            do
+            {
+                dist += step;
+                var location = new Point().FromPolar(rayAngle, dist);
+                location.Offset(-size.Width / 2, -size.Height / 2);
+                tryRect = new Rectangle(location, size);
+            } while (checkingItems.Any(it => tryRect.IntersectsWith(it.Rectangle)));
+
+            return tryRect;
         }
 
         public IEnumerable<Rectangle> GetRectangles()
