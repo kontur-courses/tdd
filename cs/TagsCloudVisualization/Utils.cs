@@ -52,6 +52,35 @@ namespace TagsCloudVisualization
             return me < val || me.IsApproximatelyEquals(val);
         }
 
+        private static bool MatchesToXAxisPositive(this double me) =>
+            me.IsApproximatelyEquals(0);
+
+        private static bool MatchesToXAxisNegative(this double me) =>
+            me.IsApproximatelyEquals(Math.PI);
+
+        private static bool MatchesToYAxisPositive(this double me) =>
+            me.IsApproximatelyEquals(0.5 * Math.PI);
+
+        private static bool MatchesToYAxisNegative(this double me) =>
+            me.IsApproximatelyEquals(1.5 * Math.PI);
+
+        /// <summary>
+        /// Угол - по часовой стрелке, рад.
+        /// Ось оринат - вниз.
+        /// А четверти - традиционно:
+        /// 2 | 1
+        /// -----
+        /// 3 | 4
+        /// </summary>
+        private static (int Number, int xSign, int ySign) RayQuarter(this double me)
+        {
+            double angle = me % (2.0 * Math.PI);
+            return 
+                angle >= 1.5 * Math.PI ? (1, 1, -1) :
+                angle >= 1.0 * Math.PI ? (2, -1, -1) :
+                angle >= 0.5 * Math.PI ? (3, -1, 1) : (4, 1, 1);
+        }
+
         private static double DistFromCenter(this Point me) => Math.Sqrt(me.X * me.X + me.Y * me.Y);
 
         public static Point FromPolar(this Point me, double angle, double dist)
@@ -69,6 +98,12 @@ namespace TagsCloudVisualization
         private static Point LeftBottom(this Rectangle me) => new Point(me.Left, me.Bottom);
         private static IEnumerable<Point> Vertices(this Rectangle me) => new Point[] { me.LeftTop(), me.RightTop(), me.RightBottom(), me.LeftBottom() };
 
+        private static bool IsCrossingXAxes(this (Point First, Point Second) segment) =>
+            segment.First.Y <= 0 && segment.Second.Y >= 0;
+
+        private static bool IsCrossingYAxes(this (Point First, Point Second) segment) =>
+            segment.First.X <= 0 && segment.Second.X >= 0;
+
         public static double GetDistanceOfFathestFromCenterVertex(this Rectangle me) => me.Vertices().Max(v => v.DistFromCenter());
 
         private static (Point First, Point Second) LeftVerticalSegment(this Rectangle me) =>
@@ -83,25 +118,28 @@ namespace TagsCloudVisualization
         private static (Point First, Point Second) BottomHorizontalSegment(this Rectangle me) =>
             (me.LeftBottom(), me.RightBottom());
 
+        private static (Point First, Point Second) FarthestFromCenterHorizontalSegment(this Rectangle me, double rayAngle)
+        {
+            var rayQuarter = rayAngle.RayQuarter();
+            return rayQuarter.ySign < 0 ? me.TopHorizontalSegment() : me.BottomHorizontalSegment();
+        }
+
+        private static (Point First, Point Second) FarthestFromCenterVerticalSegment(this Rectangle me, double rayAngle)
+        {
+            var rayQuarter = rayAngle.RayQuarter();
+            return rayQuarter.xSign < 0 ? me.LeftVerticalSegment() : me.RightVerticalSegment();
+        }
+
         private static bool IsRayIntersectsHorizontalSegment(double rayAngle, (Point First, Point Second) segment, out double intersectionPointDistance)
         {
-            if (rayAngle.IsApproximatelyEquals(1.5 * Math.PI) && segment.First.Y < 0)
+            if (segment.IsCrossingYAxes() &&
+                ((rayAngle.MatchesToYAxisNegative() && segment.First.Y < 0)
+                || (rayAngle.MatchesToYAxisPositive() && segment.First.Y > 0)))
             {
-                if (segment.First.X <= 0 && segment.Second.X >= 0)
-                {
-                    intersectionPointDistance = DistFromCenter(new Point(0, segment.First.Y));
-                    return true;
-                }
+                intersectionPointDistance = DistFromCenter(new Point(0, segment.First.Y));
+                return true;
             }
-            else if (rayAngle.IsApproximatelyEquals(0.5 * Math.PI) && segment.First.Y > 0)
-            {
-                if (segment.First.X <= 0 && segment.Second.X >= 0)
-                {
-                    intersectionPointDistance = DistFromCenter(new Point(0, segment.First.Y));
-                    return true;
-                }
-            }
-            else if ((rayAngle > Math.PI && segment.First.Y < 0) || (rayAngle < Math.PI && segment.First.Y > 0))
+            else if (rayAngle.RayQuarter().ySign == Math.Sign(segment.First.Y))
             {
                 double x = segment.First.Y / Math.Tan(rayAngle);
                 if (x.IsApproximatelyMoreThan(segment.First.X) && x.IsApproximatelyLessThan(segment.Second.X))
@@ -117,24 +155,14 @@ namespace TagsCloudVisualization
 
         private static bool IsRayIntersectsVerticalSegment(double rayAngle, (Point First, Point Second) segment, out double intersectionPointDistance)
         {
-            if (rayAngle.IsApproximatelyEquals(Math.PI) && segment.First.X < 0)
+            if (segment.IsCrossingXAxes() && 
+                ((rayAngle.MatchesToXAxisNegative() && segment.First.X < 0) 
+                || (rayAngle.MatchesToXAxisPositive() && segment.First.X > 0)))
             {
-                if (segment.First.Y <= 0 && segment.Second.Y >= 0)
-                {
-                    intersectionPointDistance = DistFromCenter(new Point(segment.First.X, 0));
-                    return true;
-                }
+                intersectionPointDistance = DistFromCenter(new Point(segment.First.X, 0));
+                return true;
             }
-            else if (rayAngle.IsApproximatelyEquals(0) && segment.First.X > 0)
-            {
-                if (segment.First.Y <= 0 && segment.Second.Y >= 0)
-                {
-                    intersectionPointDistance = DistFromCenter(new Point(segment.First.X, 0));
-                    return true;
-                }
-            }
-            else if (((rayAngle > 0.5 * Math.PI || rayAngle < 1.5 * Math.PI) && segment.First.X < 0)
-                || ((rayAngle < 0.5 * Math.PI || rayAngle > 1.5 * Math.PI) && segment.First.X > 0))
+            else if (rayAngle.RayQuarter().xSign == Math.Sign(segment.First.X))
             {
                 double y = Math.Tan(rayAngle) * segment.First.X;
                 if (y.IsApproximatelyMoreThan(segment.First.Y) && y.IsApproximatelyLessThan(segment.Second.Y))
@@ -150,28 +178,8 @@ namespace TagsCloudVisualization
 
         public static bool IsIntersectsByRay(this Rectangle me, double rayAngle, out double intersectionPointDistance)
         {
-            (Point First, Point Second) horizontalSegment, verticalSegment;
-
-            if (rayAngle >= 1.5 * Math.PI)
-            {
-                horizontalSegment = me.TopHorizontalSegment();
-                verticalSegment = me.RightVerticalSegment();
-            }
-            else if (rayAngle >= Math.PI)
-            {
-                horizontalSegment = me.TopHorizontalSegment();
-                verticalSegment = me.LeftVerticalSegment();
-            }
-            else if (rayAngle >= 0.5 * Math.PI)
-            {
-                horizontalSegment = me.BottomHorizontalSegment();
-                verticalSegment = me.LeftVerticalSegment();
-            }
-            else
-            {
-                horizontalSegment = me.BottomHorizontalSegment();
-                verticalSegment = me.RightVerticalSegment();
-            }
+            var horizontalSegment = me.FarthestFromCenterHorizontalSegment(rayAngle);
+            var verticalSegment = me.FarthestFromCenterVerticalSegment(rayAngle);
 
             return IsRayIntersectsHorizontalSegment(rayAngle, horizontalSegment, out intersectionPointDistance)
                 || IsRayIntersectsVerticalSegment(rayAngle, verticalSegment, out intersectionPointDistance);
