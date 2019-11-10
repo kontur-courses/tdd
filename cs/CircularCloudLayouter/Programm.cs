@@ -17,7 +17,7 @@ namespace TagsCloudVisualization
             for (int i = 0; i < count; i++)
                 layouter.PutNextRectangle(new Size(random.Next(3, 50), random.Next(3, 50)));
             var result = cloud.DrawRectangles(layouter.Rectangles);
-            result.Save(string.Format("layouter{0}.png", number));
+            result.Save(string.Format(@"../../layouter{0}.png", number));
         }
         public static void Main()
         {

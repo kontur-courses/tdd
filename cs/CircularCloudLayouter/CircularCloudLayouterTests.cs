@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using FluentAssertions;
+using FluentAssertions.Common;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 
 namespace TagsCloudVisualization
@@ -69,13 +73,13 @@ namespace TagsCloudVisualization
         public void Cloud_Should_BeDenseAndRound(CircularCloudLayouter layouter)
         {
             var maxRadius = layouter.Rectangles
-                    .Select(rec=>GetSegment(new Point(rec.X+rec.Width/2,rec.Y+rec.Height/2),layouter.Center))
-                    .OrderByDescending(len=>len)
+                    .Select(rec => GetSegment(new Point(rec.X + rec.Width / 2, rec.Y + rec.Height / 2), layouter.Center))
+                    .OrderByDescending(len => len)
                     .FirstOrDefault();
-            var area =(double) layouter.Rectangles.Select(rec => rec.Height * rec.Width).Sum();
+            var area = (double)layouter.Rectangles.Select(rec => rec.Height * rec.Width).Sum();
             (area / (maxRadius * maxRadius * Math.PI)).Should().BeGreaterOrEqualTo(0.6);
         }
-        
+
 
         [Test]
         [TestCaseSource(typeof(LayouterSource), "TestCases")]
@@ -85,6 +89,20 @@ namespace TagsCloudVisualization
                 .Select(first =>
                     layouter.Rectangles.Any(second => second != first && first.IntersectsWith(second)))
                 .Any(isIntersect => isIntersect).Should().BeFalse();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+            {
+                var layouter = TestContext.CurrentContext.Test.Arguments.FirstOrDefault() as CircularCloudLayouter;
+                var currentDirectoryName = Directory.GetCurrentDirectory();
+                var fileName = SaveCloudWhenTestIsFallAndGetName(layouter, TestContext.CurrentContext);
+                var path = new DirectoryInfo(currentDirectoryName).GetFiles(fileName).Select(f => f.FullName).FirstOrDefault();
+                Console.WriteLine("Tag cloud visualization saved to file:");
+                Console.WriteLine(path);
+            }
         }
 
         public static class LayouterSource
@@ -111,16 +129,25 @@ namespace TagsCloudVisualization
                 return layouter;
             }
 
-            private static TestCaseData DiffrenetSizeData = 
+            private static TestCaseData DiffrenetSizeData =
                     new TestCaseData(LayouterWithDifferentSizeRectangles).SetName("DiffetentSizeRectanglesTest");
-            private static TestCaseData SameSizeData = 
+            private static TestCaseData SameSizeData =
                     new TestCaseData(LayouterWithSameSizeRectangles).SetName("SameSizeRectanglesTest");
             private static TestCaseData[] TestCases = { DiffrenetSizeData, SameSizeData };
         }
 
-        private double GetSegment(Point start,Point end)
+        private double GetSegment(Point start, Point end)
         {
             return Math.Sqrt((start.X - end.X) * (start.X - end.X) + (start.Y - end.Y) * (start.Y - end.Y));
+        }
+
+        private string SaveCloudWhenTestIsFallAndGetName(CircularCloudLayouter layouter, TestContext context)
+        {
+            var cloud = new CloudVisualization(1000, 1000);
+            var result = cloud.DrawRectangles(layouter.Rectangles);
+            var name = string.Format("{0}.png", context.Test.Name);
+            result.Save(string.Format(name));
+            return name;
         }
     }
 }
