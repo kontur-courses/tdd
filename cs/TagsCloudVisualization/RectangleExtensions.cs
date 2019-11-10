@@ -22,13 +22,11 @@ namespace TagsCloudVisualization
             return rect;
         }
 
-        public static void ShiftToNewCenter(
-            this List<Rectangle> rectangles, Point oldCenter, Point newCenter)
+        public static Rectangle GetShiftedToNewCenter(this Rectangle rect, 
+            Point oldCenter, Point newCenter)
         {
-            var offset = new Point(newCenter.X - oldCenter.X, newCenter.Y - oldCenter.Y);
-            foreach (var rect in rectangles)
-                rect.Offset(offset);
+            rect.Offset(new Point(newCenter.X - oldCenter.X, newCenter.Y - oldCenter.Y));
+            return rect;
         }
-
     }
 }

@@ -14,7 +14,11 @@ namespace TagsCloudVisualizationTests
     [TestFixture]
     public class CloudLayouter_Should
     {
-        private Random rnd = new Random();
+        private readonly Random rnd = new Random();
+        private readonly int minWidth = 5;
+        private readonly int maxWidth = 100;
+        private readonly int minHeight = 5;
+        private readonly int maxHeight = 100;
         private Point center;
         private CircularCloudLayouter layouter;
         private List<Rectangle> rectangles;
@@ -26,7 +30,7 @@ namespace TagsCloudVisualizationTests
             center = new Point(0, 0);
             layouter = new CircularCloudLayouter(center);
             rectangles = new List<Rectangle>();
-            size = GetRandomSize();
+            size = CloudLayouterUtilities.GetRandomSize(5, 100, 5, 100);
         }
 
         [TestCase(10, 10)]
@@ -65,16 +69,13 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void PutRectanglesOnLayout_WithoutIntersection()
         {
-            var amountOfRectangles = rnd.Next(2, 25);
-
-            while (amountOfRectangles-- > 0)
-            {
-                var nextRectangle = layouter.PutNextRectangle(GetRandomSize());
-                var isIntersecting = rectangles.Any(rect => rect.IntersectsWith(nextRectangle));
-                rectangles.Add(nextRectangle);
-                isIntersecting.Should().BeFalse("rectangles should not intersect!");
-            }
-
+            rectangles = CloudLayouterUtilities.GenerateRandomLayout(
+                    center, rnd.Next(2, 25), minWidth, maxWidth, minHeight, maxHeight);
+            foreach(var rectangle in rectangles)
+                rectangles
+                    .Any(rect => rect.IntersectsWith(rectangle) && rect != rectangle)
+                    .Should()
+                    .BeFalse("rectangles should not intersect!");
         }
 
         [TestCase(0, 0)]
@@ -84,14 +85,9 @@ namespace TagsCloudVisualizationTests
             center = new Point(x, y);
             layouter = new CircularCloudLayouter(center);
 
-            var totalMass = 0.0;
-            var amountOfRectangles = rnd.Next(25, 50);
-            while(amountOfRectangles-- > 0)
-            {
-                var nextRectangle = layouter.PutNextRectangle(GetRandomSize());
-                totalMass += nextRectangle.Width * nextRectangle.Height;
-                rectangles.Add(nextRectangle);
-            }
+            rectangles = CloudLayouterUtilities.GenerateRandomLayout(
+                    center, rnd.Next(25, 50), minWidth, maxWidth, minHeight, maxHeight);
+            var totalMass = rectangles.Select(rect => rect.Width * rect.Height).Sum();
 
             var maxSquaredDistance = center.GetMaxSquaredDistanceTo(rectangles);
             var circleSize = Math.PI * maxSquaredDistance;
@@ -108,18 +104,13 @@ namespace TagsCloudVisualizationTests
             var testContext = TestContext.CurrentContext;
             if (testContext.Result.Outcome.Status == TestStatus.Passed)
                 return;
-            var bitmap = CloudLayouterUtilities.GetCenteredBitmapFromRectangles(center, rectangles);
+            var bitmap = RectangleVisualizator.GetBitmapFromRectangles(center, rectangles);
             var testImageDirectory = Path.Combine(testContext.WorkDirectory, "failed");
             var testImagePath = Path.Combine(testImageDirectory, $"{testContext.Test.FullName}.bmp");
             Directory.CreateDirectory(testImageDirectory);
             bitmap.Save(testImagePath);
 
             TestContext.WriteLine($"Tag cloud visualization saved to file {testImagePath}");
-        }
-
-        public Size GetRandomSize()
-        {
-            return new Size(rnd.Next(5, 100), rnd.Next(5, 100));
         }
     }
 }

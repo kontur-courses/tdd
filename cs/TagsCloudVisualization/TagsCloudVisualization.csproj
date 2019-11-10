@@ -49,6 +49,7 @@
     <Compile Include="CloudLayouterUtilities.cs" />
     <Compile Include="RectangleExtensions.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="RectangleVisualizator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FluentAssertions, Version=5.9.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
