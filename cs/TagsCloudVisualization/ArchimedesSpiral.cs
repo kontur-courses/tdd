@@ -7,10 +7,10 @@ namespace TagsCloudVisualization
 {
     public class ArchimedesSpiral : IEnumerable<Point>
     {
-        private readonly Point center;
-        private readonly float radius;
-        private readonly float increment;
         private readonly float angle;
+        private readonly Point center;
+        private readonly float increment;
+        private readonly float radius;
 
         public ArchimedesSpiral(Point center, float radius, float increment, float angle = 0)
         {
@@ -24,7 +24,10 @@ namespace TagsCloudVisualization
             this.angle = angle;
         }
 
-        public IEnumerator<Point> GetEnumerator() => new ArchimedesSpiralEnumerator(center, radius, increment, angle);
+        public IEnumerator<Point> GetEnumerator()
+        {
+            return new ArchimedesSpiralEnumerator(center, radius, increment, angle);
+        }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
@@ -32,14 +35,10 @@ namespace TagsCloudVisualization
     public class ArchimedesSpiralEnumerator : IEnumerator<Point>
     {
         private readonly Point center;
-        private readonly float radius;
-        private float angle;
         private readonly float increment;
+        private readonly float radius;
         private readonly float startAngle;
-
-        public Point Current { get; private set; }
-
-        object IEnumerator.Current => Current;
+        private float angle;
 
         public ArchimedesSpiralEnumerator(Point center, float radius, float increment, float angle = 0)
         {
@@ -54,6 +53,10 @@ namespace TagsCloudVisualization
             startAngle = angle;
             Current = center;
         }
+
+        public Point Current { get; private set; }
+
+        object IEnumerator.Current => Current;
 
         public bool MoveNext()
         {

@@ -54,7 +54,9 @@
         <Compile Include="ArchimedesSpiralTests.cs" />
         <Compile Include="CircularCloudLayouter.cs" />
         <Compile Include="CircularCloudLayouterTests.cs" />
+        <Compile Include="CloudVisualizator.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="VisualizatorTheme.cs" />
     </ItemGroup>
     <ItemGroup>
       <None Include="packages.config" />

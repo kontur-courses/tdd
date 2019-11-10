@@ -7,14 +7,16 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private IEnumerator<Point> spiralEnumerator;
         private readonly List<Rectangle> arrangedRectangles = new List<Rectangle>();
+        private readonly IEnumerator<Point> spiralEnumerator;
 
-        public CircularCloudLayouter(Point center)
+        public CircularCloudLayouter(Point center, ArchimedesSpiral spiral = null)
         {
             if (center.X <= 0 || center.Y <= 0)
                 throw new ArgumentException("Tags Cloud center coordinates should be positive.");
-            spiralEnumerator = new ArchimedesSpiral(center, 1, 1).GetEnumerator();
+            spiralEnumerator = spiral == null
+                ? new ArchimedesSpiral(center, 0.5f, 0.5f).GetEnumerator()
+                : spiral.GetEnumerator();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
