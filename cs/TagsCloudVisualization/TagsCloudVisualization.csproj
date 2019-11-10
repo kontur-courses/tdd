@@ -40,12 +40,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConvexHull.cs" />
+    <Compile Include="Infrastructure\ConvexHull.cs" />
     <Compile Include="CircularCloudLayouter.cs" />
-    <Compile Include="GeometryHelper.cs" />
+    <Compile Include="Infrastructure\GeometryHelper.cs" />
     <Compile Include="Tests\CircularCloudLayouter_Should.cs" />
-    <Compile Include="EnumerableExtensions.cs" />
-    <Compile Include="Spiral.cs" />
+    <Compile Include="Infrastructure\EnumerableExtensions.cs" />
+    <Compile Include="Infrastructure\Spiral.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FluentAssertions, Version=4.17.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">

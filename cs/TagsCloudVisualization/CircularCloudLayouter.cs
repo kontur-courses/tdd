@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using TagsCloudVisualization.Infrastructure;
 
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
         private readonly Rectangle pictureRectangle;
-        private readonly IEnumerable<Point> spiralPoints;
+        private readonly Spiral spiral;
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
 
         public CircularCloudLayouter(Point center, Size pictureSize)
@@ -19,7 +20,7 @@ namespace TagsCloudVisualization
             }
 
             pictureRectangle = GeometryHelper.GetRectangleFromCenterPoint(center, pictureSize);
-            spiralPoints = new Spiral(center).GetPoints();
+            spiral = new Spiral(center);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -49,7 +50,7 @@ namespace TagsCloudVisualization
 
         private Rectangle FindSuitableRectangle(Size rectangleSize)
         {
-            return spiralPoints
+            return spiral.GetPointsLazy()
                 .Select(p => GeometryHelper.GetRectangleFromCenterPoint(p, rectangleSize))
                 .First(current => !rectangles.Any(r => r.IntersectsWith(current)));
         }

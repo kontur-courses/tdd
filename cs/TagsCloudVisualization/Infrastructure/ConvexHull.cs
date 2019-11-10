@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Linq;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Infrastructure
 {
     public class ConvexHull
     {
@@ -30,9 +30,10 @@ namespace TagsCloudVisualization
             {
                 while (hull.Count >= 2)
                 {
-                    var q = hull[hull.Count - 1];
-                    var r = hull[hull.Count - 2];
-                    if ((q.X - r.X) * (p.Y - r.Y) >= (q.Y - r.Y) * (p.X - r.X))
+                    var lastAdded = hull[hull.Count - 1];
+                    var penultimateAdded = hull[hull.Count - 2];
+                    if ((lastAdded.X - penultimateAdded.X) * (p.Y - penultimateAdded.Y) >=
+                        (lastAdded.Y - penultimateAdded.Y) * (p.X - penultimateAdded.X))
                         hull.RemoveAt(hull.Count - 1);
                     else
                         break;

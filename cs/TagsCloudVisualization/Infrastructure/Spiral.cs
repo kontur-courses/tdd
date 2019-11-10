@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Infrastructure
 {
     public class Spiral
     {
@@ -18,7 +18,7 @@ namespace TagsCloudVisualization
             this.center = center;
         }
 
-        public IEnumerable<Point> GetPoints()
+        public IEnumerable<Point> GetPointsLazy()
         {
             while (true)
             {
