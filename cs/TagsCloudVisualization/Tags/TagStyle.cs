@@ -4,14 +4,14 @@ namespace TagsCloudVisualization.Tags
 {
     public class TagStyle
     {
-        public static readonly StringFormat TextFormat = new StringFormat
+        public static StringFormat TextFormat => new StringFormat
         {
             Alignment = StringAlignment.Center,
             LineAlignment = StringAlignment.Center
         };
 
-        public readonly Color TextColor;
-        public readonly Font Font;
+        public Color TextColor { get; }
+        public Font Font { get; }
 
         public TagStyle(Color textColor, Font font)
         {

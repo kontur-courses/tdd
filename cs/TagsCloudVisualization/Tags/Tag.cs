@@ -4,9 +4,9 @@ namespace TagsCloudVisualization.Tags
 {
     public struct Tag
     {
-        public readonly string Text;
-        public readonly TagStyle Style;
-        public readonly Rectangle TagBox;
+        public string Text { get; }
+        public TagStyle Style { get; }
+        public Rectangle TagBox { get; }
 
         public Tag(string text, TagStyle style, Rectangle tagBox)
         {
