@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 
-
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Geometry
 {
     class CenterMassChecker
     {
@@ -10,10 +9,10 @@ namespace TagsCloudVisualization
         {
             float allSquares = 0;
             float allX = 0;
-            float allY = 0;
+            float allY = 0; 
             foreach (var rectangle in rectangles)
             {
-                var square = rectangle.Width * rectangle.Height;
+                var square = (float)rectangle.Square();
                 allSquares += square;
                 allX += (rectangle.X + rectangle.Width / 2) * square;
                 allY += (rectangle.Y + rectangle.Height / 2) * square;

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Geometry
 {
     public static class RectangleGeometry
     {
@@ -23,5 +23,7 @@ namespace TagsCloudVisualization
             yield return new Point(rectangle.X, rectangle.Bottom);
             yield return new Point(rectangle.Right, rectangle.Bottom);
         }
+
+        public static double Square(this Rectangle rectangle) => rectangle.Width * rectangle.Height;
     }
 }

@@ -3,17 +3,18 @@ using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using TagsCloudVisualization.Geometry;
 
-namespace TagsCloudVisualization.tests
+namespace TagsCloudVisualization.Tests.Geometry
 {
     [TestFixture]
     class RectangleGeometryTest
     {
-        private readonly Size _rectangleSize = new Size(1, 4);
-        private readonly Point _rectangleLocation = new Point(3, 2);
+        private readonly Size rectangleSize = new Size(1, 4);
+        private readonly Point rectangleLocation = new Point(3, 2);
 
         [Test]
-        public void GetCornerRectangles_Should_ReturnRightRectangles()
+        public void ReturnRightRectangles()
         {
             var expectedRectangles = new List<Rectangle>()
             {
@@ -23,14 +24,14 @@ namespace TagsCloudVisualization.tests
                 new Rectangle(2,-2, 1, 4)
             };
 
-            RectangleGeometry.GetCornerRectangles(_rectangleSize, new HashSet<Point>() { _rectangleLocation })
+            RectangleGeometry.GetCornerRectangles(rectangleSize, new HashSet<Point>() { rectangleLocation })
                 .ToList()
                 .Should()
                 .BeEquivalentTo(expectedRectangles);
         }
 
         [Test]
-        public void GetRectangleCorners_Should_ReturnRightCorners()
+        public void ReturnRightCorners()
         {
             var expectedPoints = new List<Point>()
             {
@@ -40,10 +41,17 @@ namespace TagsCloudVisualization.tests
                 new Point(4, 6)
             };
 
-            new Rectangle(_rectangleLocation, _rectangleSize).GetCorners()
+            new Rectangle(rectangleLocation, rectangleSize).GetCorners()
                 .ToList()
                 .Should()
                 .BeEquivalentTo(expectedPoints);    
+        }
+
+        [Test]
+        public void ReturnRightSquare()
+        {
+            var rectangle = new Rectangle(rectangleLocation, rectangleSize);
+            rectangle.Square().Should().Be(4);
         }
     }
 }

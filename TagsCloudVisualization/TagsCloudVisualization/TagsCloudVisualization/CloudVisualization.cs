@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.TagsCloudVisualization
 {
-    class CloudVisualization : IVisualization
+    class CloudVisualization : ITagsCloudVisualization<Rectangle>
     {
-        public Bitmap DrawRectangles(List<Rectangle> rectangles)
+        public Bitmap DrawRectangles(List<Rectangle> rectangles, int imageWidth, int imageHeight)
         {
-            var image = new Bitmap(900, 900);
+            var image = new Bitmap(imageWidth, imageHeight);
             var random = new Random();
             using (var drawPlace = Graphics.FromImage(image))
             {

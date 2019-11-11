@@ -1,14 +1,15 @@
 ﻿using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
+using TagsCloudVisualization.Geometry;
 
-namespace TagsCloudVisualization.tests
+namespace TagsCloudVisualization.Tests.Geometry
 {
     [TestFixture]
     class PointExtensionTest
     {
         [Test]
-        public void DistanceShouldBeZero_When_TheSamePoints()
+        public void ReturnZero_When_TheSamePoints()
         {
             var point = new Point(1, 3);
             point.DistanceTo(point).Should().Be(0);

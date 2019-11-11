@@ -95,6 +95,60 @@ namespace TagsCloudVisualization.Tests.MainProject
             return points;
         }
 
+        [Test]
+        public void CreateCloud_WithCircleShape()
+        {
+            var random = new Random();
+            for (var i = 0; i < 50; i++)
+                rectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(random.Next(1, 50), random.Next(1, 50))));
+            var corners = GetAllPoint();
+
+            var xMinRadius = Math.Abs(corners.Min(point => point.X) - center.X);
+            var xMaxRadius = Math.Abs(corners.Max(point => point.X) - center.X);
+            var yMinRadius = Math.Abs(corners.Min(point => point.Y) - center.X);
+            var yMaxRadius = Math.Abs(corners.Max(point => point.Y) - center.X);
+            var middleRadius = (xMinRadius + xMaxRadius + yMinRadius + yMaxRadius) / 4;
+            var pointOnCircle1 = FindPointOnCircle(middleRadius, point => new Point(point.X + 1, point.Y + 1));
+            var pointOnCircle2 = FindPointOnCircle(middleRadius, point => new Point(point.X - 1, point.Y + 1));
+            var diagonalRadius1 = GetClosestLocation(pointOnCircle1, corners).DistanceTo(center);
+            var diagonalRadius2 = GetClosestLocation(pointOnCircle2, corners).DistanceTo(center);
+            var radius = (xMinRadius + xMaxRadius + yMinRadius + xMaxRadius + diagonalRadius1 + diagonalRadius2) / 6;
+            var startRange = 80 * (int)radius / 100;
+            var endRange = 120 * (int)radius / 100;
+
+            xMinRadius.Should().BeInRange(startRange, endRange);
+            xMaxRadius.Should().BeInRange(startRange, endRange);
+            yMinRadius.Should().BeInRange(startRange, endRange);
+            yMaxRadius.Should().BeInRange(startRange, endRange);
+            diagonalRadius1.Should().BeInRange(startRange, endRange);
+            diagonalRadius2.Should().BeInRange(startRange, endRange);
+        }
+
+        private Point FindPointOnCircle(double radius, Func<Point, Point> step)
+        {
+            Func<Point, double> circleEquation = p => Math.Sqrt(Math.Pow(p.X - center.X, 2) + Math.Pow(p.Y - center.Y, 2));
+            Point point = center;
+            double distance = 0;
+            while (radius >= distance)
+            {
+                point = step(point);
+                distance = circleEquation(point);
+            }
+            return point;
+        }
+
+        private Point GetClosestLocation(Point diagonalPoint, HashSet<Point> points)
+        {
+            var min = double.MaxValue;
+            Point closestPoint = default;
+            foreach (var point in points)
+                if (diagonalPoint.DistanceTo(point) < min)
+                {
+                    min = diagonalPoint.DistanceTo(point);
+                    closestPoint = point;
+                }
+            return closestPoint;
+        }
 
         [TestCase(100, 1, 50, TestName = "OnSmallRectangles")]
         [TestCase(100, 200, 1000, TestName = "OnHugeRectangles")]
