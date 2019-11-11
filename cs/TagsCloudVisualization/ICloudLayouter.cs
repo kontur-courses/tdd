@@ -11,7 +11,7 @@ namespace TagsCloudVisualization
     {
         Rectangle PutNextRectangle(Size rectangleSize);
 
-        List<Rectangle> Rectangles { get; }
+        IEnumerable<Rectangle> Rectangles { get; }
 
         Rectangle CloudRectangle { get; }
     }

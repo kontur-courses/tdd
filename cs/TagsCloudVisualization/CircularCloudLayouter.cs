@@ -8,16 +8,17 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter : ICloudLayouter
     {
         public readonly Size center;
-        public List<Rectangle> Rectangles { get; } // Перевел GetRectangles в проперти,
-                                                   // Изначально делал IEnumerable чтобы он не передавал текущий список
-                                                   // чтобы его нельзя было изменять. А если передатвать копию всего листа
-                                                   // то памяти уйдет больше.
+
+        public IEnumerable<Rectangle> Rectangles => _rectangles; 
+
         private readonly Spiral spiral; // теперь в классе Spiral метод возвращает просто следующую точку
         private Rectangle cloudRectangle;
+        private readonly List<Rectangle> _rectangles;
+
 
         public CircularCloudLayouter(Point center)
         {
-            Rectangles = new List<Rectangle>();
+            _rectangles = new List<Rectangle>();
             this.center = new Size(center);
             spiral = new Spiral(5);
         }
@@ -29,14 +30,14 @@ namespace TagsCloudVisualization
 
             Rectangle rectangle = new Rectangle(spiral.GetNextPointOnSpiral() + center, rectangleSize);
 
-            while (Rectangles.Any(rect => rect.IntersectsWith(rectangle)))
+            while (_rectangles.Any(rect => rect.IntersectsWith(rectangle)))
             {
                 rectangle = new Rectangle(spiral.GetNextPointOnSpiral() + center, rectangleSize);
             }
 
             rectangle = SnuggleRectangle(rectangle);
 
-            Rectangles.Add(rectangle);
+            _rectangles.Add(rectangle);
             
             UpdateCloudRectangle(rectangle);
 
@@ -52,7 +53,7 @@ namespace TagsCloudVisualization
             while (deltaX != 0 || deltaY != 0)
             {
                 rectangle.X += deltaX;
-                if (deltaX != 0 && !Rectangles.Any(rect => rect.IntersectsWith(rectangle)))
+                if (deltaX != 0 && !_rectangles.Any(rect => rect.IntersectsWith(rectangle)))
                 {
                     deltaX = Math.Sign(center.Width - rectangle.X);
                     continue;
@@ -60,7 +61,7 @@ namespace TagsCloudVisualization
 
                 rectangle.X -= deltaX;
                 rectangle.Y += deltaY;
-                if (deltaY != 0 && !Rectangles.Any(rect => rect.IntersectsWith(rectangle)))
+                if (deltaY != 0 && !_rectangles.Any(rect => rect.IntersectsWith(rectangle)))
                 {
                     deltaY = Math.Sign(center.Height - rectangle.Y);
                     continue;

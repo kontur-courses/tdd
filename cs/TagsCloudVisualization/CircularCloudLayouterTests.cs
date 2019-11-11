@@ -43,7 +43,7 @@ namespace TagsCloudVisualization
 
         [TestCase(2, 2, 5, TestName = "Small rectangles")]
         [TestCase(100, 100, 10, TestName = "CommonRectangles")]
-        [TestCase(100, 100, 100, TestName = "Many Rectangles")]
+        [TestCase(100, 100, 100, TestName = "Many _rectangles")]
         public void PutNextRectangle_HaveNoIntersections(int maxWidth, int maxHeight, int rectanglesCount)
         {
             cloudLayouter = new CircularCloudLayouter(new Point(0, 0));
@@ -59,7 +59,7 @@ namespace TagsCloudVisualization
 
         [TestCase(2, 2, 10, TestName = "Small rectangles")]
         [TestCase(100, 100, 10, TestName = "CommonRectangles")]
-        [TestCase(100, 100, 100, TestName = "Many Rectangles")]
+        [TestCase(100, 100, 100, TestName = "Many _rectangles")]
         public void PutNextRectangle_PlaceTightly(int maxWidth, int maxHeight, int rectanglesCount)
         {
             cloudLayouter = new CircularCloudLayouter(new Point(0, 0));
@@ -105,9 +105,8 @@ namespace TagsCloudVisualization
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
                 var visualizer = new CloudVisualizer(cloudLayouter);
-                var path = Directory.CreateDirectory($"{AppDomain.CurrentDomain.BaseDirectory}\\Tests").FullName;
-                Directory.CreateDirectory(path);
-                path += $"\\ID-{TestContext.CurrentContext.Test.ID}.png";
+                var path = Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Tests")).FullName;
+                path = Path.Combine(path, $"ID-{TestContext.CurrentContext.Test.ID}.png");
                 visualizer.GetAndSaveImage(path);
                 Console.WriteLine($"Tag cloud visualization saved to file {path}");
             }
