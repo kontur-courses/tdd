@@ -10,12 +10,14 @@ namespace TagsCloudVisualization
         private Point center;
         private SortedSet<Point> cornerPoints;
         private HashSet<Rectangle> rectangles;
+        private Dictionary<Point, int> countOfRectanglesOnPoint;
 
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
             cornerPoints = new SortedSet<Point>(new PointRadiusComparer(center)) {center};
             rectangles = new HashSet<Rectangle>();
+            countOfRectanglesOnPoint = new Dictionary<Point, int>{{center, 4}};
         }
 
         public CircularCloudLayouter() : this(Point.Empty)
@@ -46,8 +48,15 @@ namespace TagsCloudVisualization
                         continue;
                     rectangles.Add(rectangle);
                     foreach (var corner in RectanglesHelper.GetCorners(rectangle))
+                    {
                         cornerPoints.Add(corner);
-
+                        if (corner != possibleLocation)
+                            countOfRectanglesOnPoint[corner] = 3;
+                    }
+                    if (--countOfRectanglesOnPoint[possibleLocation] != 0) 
+                        return rectangle;
+                    cornerPoints.Remove(possibleLocation);
+                    countOfRectanglesOnPoint.Remove(possibleLocation);
                     return rectangle;
                 }
             }
