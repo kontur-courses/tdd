@@ -6,18 +6,15 @@ using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
     public class CircularCloudLayouterConstructor_Should
     {
-        [TestCase(0, 10, TestName = "Center x is zero")]
-        [TestCase(10, 0, TestName = "Center y is zero")]
-        [TestCase(-1, 10, TestName = "Center x is negative")]
-        [TestCase(10, -1, TestName = "Center y is negative")]
-        public void ThrowArgumentException_When(int x, int y)
+        [Test]
+        public void ThrowArgumentException_WhenSpiralIsNull()
         {
-            Action action = () => new CircularCloudLayouter(new Point(x, y));
+            Action action = () => new CircularCloudLayouter(null);
 
             action.Should().Throw<ArgumentException>();
         }
@@ -25,7 +22,9 @@ namespace TagsCloudVisualization
         [Test]
         public void CreateNewInstance_WhenCenterCoordinatesArePositive()
         {
-            Action action = () => new CircularCloudLayouter(new Point(150, 250));
+            var center = new Point(150, 250);
+            
+            Action action = () => new CircularCloudLayouter(new ArchimedesSpiral(center));
 
             action.Should().NotThrow<Exception>();
         }
@@ -42,7 +41,7 @@ namespace TagsCloudVisualization
         public void Init()
         {
             layouterCenter = new Point(500, 500);
-            cloudLayouter = new CircularCloudLayouter(layouterCenter);
+            cloudLayouter = new CircularCloudLayouter(new ArchimedesSpiral(layouterCenter));
             layouterRectangles = new List<Rectangle>();
         }
 
@@ -52,8 +51,11 @@ namespace TagsCloudVisualization
             var testContext = TestContext.CurrentContext;
             if (testContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                var filename = $"{AppDomain.CurrentDomain.BaseDirectory} {testContext.Test.Name} Failed.png";
-                CloudVisualizator.Visualize(VisualizatorTheme.Theme.Red, layouterRectangles).Save(filename);
+                var directory = AppDomain.CurrentDomain.BaseDirectory;
+                var testName = testContext.Test.Name;
+                var time = DateTime.Now.ToString("yy-MMM-dd hh:mm:ss");
+                var filename = $"{directory}/{testName} Failed at {time}.png";
+                CloudVisualizator.Visualize(new RedTheme(), layouterRectangles).Save(filename);
                 Console.WriteLine($"Tag cloud visualization saved to file {filename}");
             }
         }
@@ -117,13 +119,15 @@ namespace TagsCloudVisualization
         [Test]
         public void PlaceTwoRectanglesCloseToEachOther()
         {
-            var acceptableXAxisShift = 50;
+            var acceptableYAxisShift = 5;
+            var acceptableXAxisShift = 20;
             var firstRectangle = cloudLayouter.PutNextRectangle(new Size(100, 100));
             var secondRectangle = cloudLayouter.PutNextRectangle(new Size(20, 102));
 
             layouterRectangles = new List<Rectangle> {firstRectangle, secondRectangle};
 
-            secondRectangle.Y.Should().Be(firstRectangle.Top);
+            secondRectangle.Y.Should().BeInRange(firstRectangle.Top - acceptableYAxisShift,
+                firstRectangle.Top + acceptableYAxisShift);
             secondRectangle.X.Should().BeInRange(firstRectangle.Left - acceptableXAxisShift,
                 firstRectangle.Right + acceptableXAxisShift);
         }
@@ -142,32 +146,20 @@ namespace TagsCloudVisualization
             var furthestDistance = 0d;
             var rectanglesSquare = 0d;
 
-            for (var i = 0; i < count; i++)
-            {
-                var size = new Size(random.Next(minSize, maxSize), random.Next(minSize, maxSize));
-                var rectangle = cloudLayouter.PutNextRectangle(size);
-                layouterRectangles.Add(rectangle);
-            }
+            layouterRectangles = Utils.GenerateRandomRectangles(cloudLayouter,count, minSize, maxSize, random);
 
             foreach (var rectangle in layouterRectangles)
             {
-                var distance = GetDistanceBetweenRectangleAndPoint(rectangle, layouterCenter);
+                var distance =  Utils.GetDistanceBetweenRectangleAndPoint(rectangle, layouterCenter);
                 if (distance > furthestDistance)
                     furthestDistance = distance;
-                rectanglesSquare += rectangle.Width * rectangle.Height;
             }
+            foreach (var rectangle in layouterRectangles)
+                rectanglesSquare += rectangle.Width * rectangle.Height;
 
             var circleSquare = furthestDistance * furthestDistance * Math.PI;
             var squareRatio = rectanglesSquare / circleSquare * 100;
             squareRatio.Should().BeGreaterOrEqualTo(acceptableRatio);
-        }
-
-        private static double GetDistanceBetweenRectangleAndPoint(Rectangle rectangle, Point point)
-        {
-            var rectangleCentre = new Point(rectangle.Location.X + rectangle.Width / 2,
-                rectangle.Location.Y + rectangle.Height / 2);
-
-            return Math.Sqrt(Math.Pow(rectangleCentre.X - point.X, 2) + Math.Pow(rectangleCentre.Y - point.Y, 2));
         }
     }
 }

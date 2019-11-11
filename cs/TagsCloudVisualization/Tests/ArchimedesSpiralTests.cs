@@ -4,7 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
     public class ArchimedesSpiralConstructorTests
@@ -27,10 +27,7 @@ namespace TagsCloudVisualization
         private Point spiralCenter = new Point(500, 500);
 
         [SetUp]
-        public void Init()
-        {
-            archimedesSpiral = new ArchimedesSpiral(spiralCenter, 1, 1, 1);
-        }
+        public void Init() => archimedesSpiral = new ArchimedesSpiral(spiralCenter,1, 1);
 
         [Test]
         public void FirstCoordinateEqualToCenter()

@@ -10,19 +10,19 @@ namespace TagsCloudVisualization
         private readonly List<Rectangle> arrangedRectangles = new List<Rectangle>();
         private readonly IEnumerator<Point> spiralEnumerator;
 
-        public CircularCloudLayouter(Point center, ArchimedesSpiral spiral = null)
+        public CircularCloudLayouter(ArchimedesSpiral spiral)
         {
-            if (center.X <= 0 || center.Y <= 0)
-                throw new ArgumentException("Tags Cloud center coordinates should be positive.");
-            spiralEnumerator = spiral == null
-                ? new ArchimedesSpiral(center, 0.5f, 0.5f).GetEnumerator()
-                : spiral.GetEnumerator();
+            if(spiral == null)
+                throw new ArgumentException("Tag Cloud spiral can't be null.");
+
+            spiralEnumerator = spiral.GetEnumerator();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
                 throw new ArgumentException("Tags Cloud rectangle size parameters should be positive.");
+            
             var tempRect = new Rectangle(spiralEnumerator.Current, rectangleSize);
             while (arrangedRectangles.Any(r => r.IntersectsWith(tempRect)) && spiralEnumerator.MoveNext())
                 tempRect.Location = spiralEnumerator.Current;

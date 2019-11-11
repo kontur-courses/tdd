@@ -7,87 +7,74 @@ namespace TagsCloudVisualization
 {
     public class ArchimedesSpiral : IEnumerable<Point>
     {
-        private readonly float angle;
-        private readonly Point center;
-        private readonly float increment;
-        private readonly float radius;
+        private readonly ArchimedesSpiralEnumerator spiralEnumerator;
 
-        public ArchimedesSpiral(Point center, float radius, float increment, float angle = 0)
+        public ArchimedesSpiral(Point center, float radius = 0.5f, float increment = 0.5f, float angle = 0)
         {
             if (Math.Abs(radius) < float.Epsilon)
-                throw new ArgumentException("Archimedes spiral radius can't be zero");
+                throw new ArgumentException("Spiral radius absolute value can't be less then float.Epsilon");
             if (Math.Abs(increment) < float.Epsilon)
-                throw new ArgumentException("Archimedes spiral increment can't be zero");
-            this.center = center;
-            this.radius = radius;
-            this.increment = increment;
-            this.angle = angle;
+                throw new ArgumentException("Spiral increment absolute value can't be less then float.Epsilon");
+
+            spiralEnumerator = new ArchimedesSpiralEnumerator(center, radius, increment, angle);
         }
 
-        public IEnumerator<Point> GetEnumerator()
-        {
-            return new ArchimedesSpiralEnumerator(center, radius, increment, angle);
-        }
+        public IEnumerator<Point> GetEnumerator() => spiralEnumerator;
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-    }
 
-    public class ArchimedesSpiralEnumerator : IEnumerator<Point>
-    {
-        private readonly Point center;
-        private readonly float increment;
-        private readonly float radius;
-        private readonly float startAngle;
-        private float angle;
-
-        public ArchimedesSpiralEnumerator(Point center, float radius, float increment, float angle = 0)
+        private class ArchimedesSpiralEnumerator : IEnumerator<Point>
         {
-            if (Math.Abs(radius) < float.Epsilon)
-                throw new ArgumentException("Archimedes spiral radius can't be zero");
-            if (Math.Abs(increment) < float.Epsilon)
-                throw new ArgumentException("Archimedes spiral increment can't be zero");
-            this.center = center;
-            this.radius = radius;
-            this.increment = increment;
-            this.angle = angle;
-            startAngle = angle;
-            Current = center;
-        }
+            private readonly Point center;
+            private readonly float increment;
+            private readonly float radius;
+            private readonly float startAngle;
+            private float angle;
 
-        public Point Current { get; private set; }
-
-        object IEnumerator.Current => Current;
-
-        public bool MoveNext()
-        {
-            var isOverFlown = false;
-            try
+            internal ArchimedesSpiralEnumerator(Point center, float radius, float increment, float angle)
             {
-                checked
+                this.center = center;
+                this.radius = radius;
+                this.increment = increment;
+                this.angle = angle;
+                startAngle = angle;
+                Current = center;
+            }
+
+            public Point Current { get; private set; }
+
+            object IEnumerator.Current => Current;
+
+            public bool MoveNext()
+            {
+                try
                 {
-                    angle += increment;
-                    var x = center.X + (int) Math.Round(Math.Cos(angle) * (angle * radius));
-                    var y = center.Y + (int) Math.Round(Math.Sin(angle) * (angle * radius));
-                    Current = new Point(x, y);
+                    checked
+                    {
+                        angle += increment;
+                        var x = center.X + (int) Math.Round(Math.Cos(angle) * (angle * radius));
+                        var y = center.Y + (int) Math.Round(Math.Sin(angle) * (angle * radius));
+                        Current = new Point(x, y);
+                    }
                 }
+                catch (OverflowException e)
+                {
+                    Console.WriteLine(e);
+                    return false;
+                }
+
+                return true;
             }
-            catch (OverflowException e)
+
+            public void Reset()
             {
-                Console.WriteLine(e);
-                isOverFlown = true;
+                Current = center;
+                angle = startAngle;
             }
 
-            return !isOverFlown;
-        }
-
-        public void Reset()
-        {
-            Current = center;
-            angle = startAngle;
-        }
-
-        public void Dispose()
-        {
+            public void Dispose()
+            {
+            }
         }
     }
 }
