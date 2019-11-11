@@ -14,7 +14,7 @@ namespace TagsCloudVisualization
             circularCloudDrawing.SaveImage(filename);
         }
 
-        private string _fontFamilyName = "Arial";
+        private const string FONT_FAMILY_NAME = "Arial";
         
         public void GenerateFirstTagCloud()
         {
