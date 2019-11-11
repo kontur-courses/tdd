@@ -6,11 +6,11 @@ namespace TagsCloudVisualization
 {
     public class TagCloudContext
     {
-        public readonly string ImageName;
-        public readonly Size ImageSize;
-        public readonly string[] TagCloudContent;
-        public readonly TagCloud Cloud;
-        public readonly ICloudLayouter CloudLayouter;
+        public string ImageName { get; }
+        public Size ImageSize { get; }
+        public string[] TagCloudContent { get; }
+        public TagCloud Cloud { get; }
+        public ICloudLayouter CloudLayouter { get; }
 
         public TagCloudContext(string imageName, Size imageSize, string[] tagCloudContent, TagCloud cloud,
                                ICloudLayouter cloudLayouter)

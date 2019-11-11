@@ -1,11 +1,16 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TagsCloudVisualization.Tests.Extensions
 {
     public static class RandomExtensions
     {
-        public static int[] GetRandomSequence(this Random random, int minLength = 100, int maxLength = 500) =>
-            Enumerable.Range(0, random.Next(minLength, maxLength)).Select(i => random.Next()).ToArray();
+        [SuppressMessage("ReSharper", "IteratorNeverReturns")]
+        public static IEnumerable<int> GetRandomSequence(this Random random)
+        {
+            while (true)
+                yield return random.Next();
+        }
     }
 }
