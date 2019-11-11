@@ -43,7 +43,7 @@ namespace TagsCloudVisualization
 
         [TestCase(2, 2, 5, TestName = "Small rectangles")]
         [TestCase(100, 100, 10, TestName = "CommonRectangles")]
-        [TestCase(100, 100, 100, TestName = "Many _rectangles")]
+        [TestCase(100, 100, 100, TestName = "Many Rectangles")]
         public void PutNextRectangle_HaveNoIntersections(int maxWidth, int maxHeight, int rectanglesCount)
         {
             cloudLayouter = new CircularCloudLayouter(new Point(0, 0));
@@ -59,7 +59,7 @@ namespace TagsCloudVisualization
 
         [TestCase(2, 2, 10, TestName = "Small rectangles")]
         [TestCase(100, 100, 10, TestName = "CommonRectangles")]
-        [TestCase(100, 100, 100, TestName = "Many _rectangles")]
+        [TestCase(100, 100, 100, TestName = "Many Rectangles")]
         public void PutNextRectangle_PlaceTightly(int maxWidth, int maxHeight, int rectanglesCount)
         {
             cloudLayouter = new CircularCloudLayouter(new Point(0, 0));
