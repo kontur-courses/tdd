@@ -7,13 +7,15 @@ namespace TagsCloudVisualization
 {
     public static class ImageSaver
     {
-        public static void SaveImageToDefaultDirectory(string name, Bitmap image)
+        public static string  SaveImageToDefaultDirectory(string name, Bitmap image)
         {
             var path = GetImagesPath(name);
             image.Save(path);
+            
+            return path;
         }
 
-        public static string GetImagesPath(string name)
+        private static string GetImagesPath(string name)
         {
             var directoryName =
                 new StringBuilder(

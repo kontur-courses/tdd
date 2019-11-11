@@ -98,8 +98,7 @@ namespace TagsCloudVisualization.Tests
             var painter = new Painter(new Size(1000, 1000));
             var image = painter.GetMultiColorCloud(rectangles);
             var fileName = new StringBuilder(testName).Append("FAILED").ToString();
-            ImageSaver.SaveImageToDefaultDirectory(fileName, image);
-            var path = ImageSaver.GetImagesPath(fileName);
+            var path = ImageSaver.SaveImageToDefaultDirectory(fileName, image);
             Console.WriteLine($"Tag cloud visualization saved to file {path}");
         }
     }
