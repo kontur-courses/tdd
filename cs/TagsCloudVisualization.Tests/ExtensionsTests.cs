@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -11,22 +10,23 @@ namespace TagsCloudVisualization.Tests
     public class ExtensionsTests
     {
         private const double Precision = 0.7072; // sqrt(2)/2.
-        private static readonly Random random = new Random();
 
         [Test]
         public void SequenceShuffle_OnInputSequence_ReturnsSequenceWithSameItems()
         {
-            var sequence = random.GetRandomSequence().Take(500).ToArray();
+            var randomizer = TestContext.CurrentContext.Random;
+            var sequence = randomizer.GetRandomSequence().Take(500).ToArray();
 
-            sequence.SequenceShuffle(random).Should().BeEquivalentTo(sequence);
+            sequence.SequenceShuffle(randomizer).Should().BeEquivalentTo(sequence);
         }
 
         [Test]
         public void SequenceShuffle_OnInputSequence_ReturnsSequenceWithDifferentOrder()
         {
-            var sequence = random.GetRandomSequence().Take(500).ToArray();
+            var randomizer = TestContext.CurrentContext.Random;
+            var sequence = randomizer.GetRandomSequence().Take(500).ToArray();
 
-            sequence.SequenceShuffle(random).Should().NotEqual(sequence);
+            sequence.SequenceShuffle(randomizer).Should().NotEqual(sequence);
         }
 
         [Test]

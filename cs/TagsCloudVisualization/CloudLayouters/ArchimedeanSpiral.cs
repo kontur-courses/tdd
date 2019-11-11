@@ -1,4 +1,9 @@
-﻿namespace TagsCloudVisualization.CloudLayouters
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
+
+namespace TagsCloudVisualization.CloudLayouters
 {
     /// <summary>
     ///     Class implement archimedean spiral function in polar coordinate system: r(f) = a + bf
@@ -27,16 +32,25 @@
         /// <summary>
         ///     Azimuth is variable f from r(f) = a + bf. Measured in radians.
         /// </summary>
-        public double Azimuth { get; private set; }
+        private double Azimuth { get; set; }
 
         /// <summary>
         ///     Radius is r from r(f) = a + bf.
         /// </summary>
-        public double Radius => freeCoefficient + azimuthCoefficient * Azimuth;
+        private double Radius => freeCoefficient + azimuthCoefficient * Azimuth;
 
-        /// <summary>
-        ///     Increase azimuth on specified azimuth delta.
-        /// </summary>
-        public void IncreaseAzimuth() => Azimuth += azimuthDelta;
+        [SuppressMessage("ReSharper", "IteratorNeverReturns")]
+        public IEnumerable<Point> GetPoints()
+        {
+            while (true)
+            {
+                var x = (int)Math.Round(Radius * Math.Cos(Azimuth), MidpointRounding.AwayFromZero);
+                var y = (int)Math.Round(Radius * Math.Sin(Azimuth), MidpointRounding.AwayFromZero);
+
+                Azimuth += azimuthDelta;
+
+                yield return new Point(x, y);
+            }
+        }
     }
 }

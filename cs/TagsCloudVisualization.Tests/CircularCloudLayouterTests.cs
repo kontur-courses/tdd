@@ -14,7 +14,6 @@ namespace TagsCloudVisualization.Tests
     {
         private const double Precision = 0.7072; // sqrt(2)/2.
         private static readonly Point origin = Point.Empty;
-        private static readonly Random random = new Random();
 
         private CircularCloudLayouter circularCloudLayouter;
 
@@ -63,12 +62,14 @@ namespace TagsCloudVisualization.Tests
         [Test]
         public void PutNextRectangle_OnALotOfCalls_ReturnsNotIntersectedRectangles()
         {
+            var randomizer = TestContext.CurrentContext.Random;
+
             var rectangles = Enumerable.Range(0, 500)
                                        .Select(i => circularCloudLayouter.PutNextRectangle(
-                                                   new Size(random.Next(1, 500), random.Next(1, 500))))
+                                                   new Size(randomizer.Next(1, 500), randomizer.Next(1, 500))))
                                        .ToArray();
 
-            CheckIfAnyIntersects(rectangles).Should().BeFalse();
+            GetAnyPairOfIntersectingRectangles(rectangles).Should().BeNull();
         }
 
         [Test]
@@ -84,20 +85,23 @@ namespace TagsCloudVisualization.Tests
         [Test]
         public void PutNextRectangle_OnALotOfCalls_ReturnsRectanglesWithSpecifiedSizes()
         {
-            var inputSizes = Enumerable.Range(0, 500).Select(i => new Size(random.Next(1, 500), random.Next(1, 500)))
+            var randomizer = TestContext.CurrentContext.Random;
+
+            var inputSizes = Enumerable.Range(0, 500)
+                                       .Select(i => new Size(randomizer.Next(1, 500), randomizer.Next(1, 500)))
                                        .ToArray();
             var rectangles = inputSizes.Select(size => circularCloudLayouter.PutNextRectangle(size));
 
             rectangles.Select(rectangle => rectangle.Size).Should().Equal(inputSizes);
         }
 
-        private static bool CheckIfAnyIntersects(Rectangle[] rectangles)
+        private static (Rectangle, Rectangle)? GetAnyPairOfIntersectingRectangles(Rectangle[] rectangles)
         {
             for (int i = 0; i < rectangles.Length; i++)
                 for (int j = i + 1; j < rectangles.Length; j++)
                     if (rectangles[i].IntersectsWith(rectangles[j]))
-                        return true;
-            return false;
+                        return (rectangles[i], rectangles[j]);
+            return null;
         }
     }
 }

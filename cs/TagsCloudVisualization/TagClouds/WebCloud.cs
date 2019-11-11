@@ -24,6 +24,8 @@ namespace TagsCloudVisualization.TagClouds
 
         protected override Action<Tag> GetTagDrawer(Graphics graphics)
         {
+            // here i'm caching some disposable objects. If you are gonna use a lot of colors, think about creating your
+            // own disposable class with this dictionary and dispose him instance after using.
             var brushByColor = new Dictionary<Color, Brush>();
 
             return tag => graphics.DrawString(tag.Text, tag.Style.Font, GetBrush(tag.Style.TextColor, brushByColor),

@@ -7,7 +7,7 @@ using TagsCloudVisualization.TagClouds;
 
 namespace TagsCloudVisualization
 {
-    static class Program
+    internal static class Program
     {
         private const string WebCloudFilename = "WebTagCloud.bmp";
         private const string CommonWordsCloudFilename = "CommonWordsTagCloud.bmp";
@@ -35,8 +35,8 @@ namespace TagsCloudVisualization
                                                                          .SequenceShuffle(new Random()))
                                                      .ToArray();
 
-            var bitmap = cloudContext.Cloud.CreateBitmap(shuffledContentStrings, cloudContext.CloudLayouter,
-                                                         cloudContext.ImageSize);
+            using var bitmap = cloudContext.Cloud.CreateBitmap(shuffledContentStrings, cloudContext.CloudLayouter,
+                                                               cloudContext.ImageSize);
 
             bitmap.Save(cloudContext.ImageName);
         }

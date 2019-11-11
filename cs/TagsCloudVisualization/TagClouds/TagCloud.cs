@@ -15,9 +15,10 @@ namespace TagsCloudVisualization.TagClouds
         public Bitmap CreateBitmap(string[] cloudStrings, ICloudLayouter cloudLayouter, Size bitmapSize)
         {
             var bitmap = new Bitmap(bitmapSize.Width, bitmapSize.Height);
-            var graphics = GetGraphics(bitmap);
+            using var graphics = GetGraphics(bitmap);
+            using var backgroundBrush = new SolidBrush(BackgroundColor);
 
-            graphics.FillRectangle(new SolidBrush(BackgroundColor), new Rectangle(Point.Empty, bitmapSize));
+            graphics.FillRectangle(backgroundBrush, new Rectangle(Point.Empty, bitmapSize));
 
             var tagDrawer = GetTagDrawer(graphics);
 

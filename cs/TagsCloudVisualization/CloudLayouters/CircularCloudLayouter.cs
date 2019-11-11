@@ -19,11 +19,10 @@ namespace TagsCloudVisualization.CloudLayouters
         {
             if (rectangleSize.IsEmpty) throw new ArgumentException();
 
-            Rectangle newRectangle;
+            Rectangle newRectangle = Rectangle.Empty;
 
-            while (true)
+            foreach (var currentArchimedeanSpiralPoint in spiral.GetPoints())
             {
-                var currentArchimedeanSpiralPoint = ConvertPointFromPolarToCartesian(spiral.Radius, spiral.Azimuth);
                 Point newRectangleLocation = currentArchimedeanSpiralPoint;
 
                 newRectangle = new Rectangle(newRectangleLocation, rectangleSize);
@@ -36,8 +35,6 @@ namespace TagsCloudVisualization.CloudLayouters
 
                     if (newRectangle.IntersectsWith(rectangles)) break;
                 }
-
-                spiral.IncreaseAzimuth();
             }
 
             if (rectangles.Count == 0)
@@ -48,17 +45,8 @@ namespace TagsCloudVisualization.CloudLayouters
             }
 
             rectangles.Add(newRectangle);
-            spiral.IncreaseAzimuth();
 
             return newRectangle.CreateMovedCopy(centralOffset);
-        }
-
-        private static Point ConvertPointFromPolarToCartesian(double radius, double azimuth)
-        {
-            var x = (int)Math.Round(radius * Math.Cos(azimuth), MidpointRounding.AwayFromZero);
-            var y = (int)Math.Round(radius * Math.Sin(azimuth), MidpointRounding.AwayFromZero);
-
-            return new Point(x, y);
         }
     }
 }
