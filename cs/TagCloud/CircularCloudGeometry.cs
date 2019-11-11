@@ -19,7 +19,7 @@ namespace TagCloud
         public double GetCloudFullnessPercent()
         {
             var radius = GetFurthestDistance();
-            var cloudCircleSquare = Math.PI * 0.6 *radius * radius;
+            var cloudCircleSquare = Math.PI * 0.6 * radius * radius;
             var allRectanglesSquare = GetAllRectanglesSquare();
             return allRectanglesSquare / cloudCircleSquare;
         }

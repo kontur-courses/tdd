@@ -1,4 +1,4 @@
-# Test Driven Development
+﻿# Test Driven Development
 
 Пройдя блок, ты:
 
@@ -30,3 +30,14 @@
 1. Выполни задание [Облако тегов](HomeExercise.md)
 2. Спецзадание __TDD__  
 Выполни ещё какую-нибудь ближайшую задачу в стиле TDD. Рабочую задачу, если уже работаешь, или учебную, если ещё учишься.
+
+## Примеры раскладок облака тегов
+
+
+
+
+1. ![](https://github.com/IAlmostDeveloper/tdd/tree/master/cs/TagCloud/CloudLayoutExamples/Example1.png)
+
+2. ![](https://github.com/IAlmostDeveloper/tdd/tree/master/cs/TagCloud/CloudLayoutExamples/Example2.png)
+
+3. ![](https://github.com/IAlmostDeveloper/tdd/tree/master/cs/TagCloud/CloudLayoutExamples/Example3.png)

@@ -56,16 +56,13 @@
   <ItemGroup>
     <Compile Include="ArchimedeanSpiral.cs" />
     <Compile Include="CircularCloudGeometry.cs" />
-    <Compile Include="CircularCloudGeometry_Should.cs" />
     <Compile Include="CircularCloudLayouter.cs" />
-    <Compile Include="CircularCloudLayouter_Should.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TagCloudForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="TagCloudForm.Designer.cs">
-      <DependentUpon>TagCloudForm.cs</DependentUpon>
-    </Compile>
+    <Compile Include="TagCloudVisualization.cs" />
+    <Compile Include="TagCloud_Should\ArchimedeanSpiral_Should.cs" />
+    <Compile Include="TagCloud_Should\CircularCloudGeometry_Should.cs" />
+    <Compile Include="TagCloud_Should\CircularCloudLayouter_Should.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
