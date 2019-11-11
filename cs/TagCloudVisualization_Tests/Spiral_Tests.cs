@@ -17,20 +17,6 @@ namespace TagsCloudVisualization
         }
         
         [Test]
-        public void SpiralCtor_ValidParameter_ShouldNotThrowException()
-        {
-            Action act = () => new Spiral(new Point(0, 0));
-            act.Should().NotThrow();
-        }
-
-        [Test]
-        public void GetNextPoint_ShouldNotThrowException()
-        {
-            Action act = () => new Spiral(new Point(0, 0)).GetNextPoint();
-            act.Should().NotThrow();
-        }
-
-        [Test]
         public void GetNextPoint_SpiralRadius_ShouldBeGreaterThanBefore()
         {
             var previousRadius = spiral.Radius;

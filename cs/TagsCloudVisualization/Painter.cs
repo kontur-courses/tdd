@@ -8,36 +8,38 @@ namespace TagsCloudVisualization
 {
     public class Painter
     {
-        private readonly Bitmap Field;
-        private readonly Graphics Image;
-        private Brush Brush;
+        private readonly Bitmap field;
+        private readonly Graphics image;
+        private Brush brush;
         
         public Painter(Size size)
         {
-            Field = new Bitmap(size.Width, size.Height);
-            Image = Graphics.FromImage(Field);
-            Image.Clear(Color.White);
-            Brush = new SolidBrush(Color.Black);
+            field = new Bitmap(size.Width, size.Height);
+            image = Graphics.FromImage(field);
+            image.Clear(Color.White);
+            brush = new SolidBrush(Color.Black);
         }
         
-        public void GetSingleColorCloud(Color color, IEnumerable<Rectangle> rectangles)
+        public Bitmap GetSingleColorCloud(Color color, IEnumerable<Rectangle> rectangles)
         {
             foreach (var rectangle in rectangles)
             {
-                Brush = new SolidBrush(color);
-                Image.FillRectangle(Brush, rectangle);
+                brush = new SolidBrush(color);
+                image.FillRectangle(brush, rectangle);
             }
+            
+            return field;
         }
         
         public Bitmap GetMultiColorCloud(IEnumerable<Rectangle> rectangles)
         {
             foreach (var rectangle in rectangles)
             {
-                Brush = new SolidBrush(GetRandomColor());
-                Image.FillRectangle(Brush, rectangle);
+                brush = new SolidBrush(GetRandomColor());
+                image.FillRectangle(brush, rectangle);
             }
 
-            return Field;
+            return field;
         }
         
         private Color GetRandomColor()

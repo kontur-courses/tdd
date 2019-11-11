@@ -30,12 +30,7 @@ namespace TagsCloudVisualization.Tests
 
             return bottomBorder - topBorder;
         }
-
-        public static double GetDistanceBetweenPoints(Point firstPoint, Point secondPoint)
-        {
-            return Math.Sqrt(Math.Pow(secondPoint.X - firstPoint.X, 2) + Math.Pow(secondPoint.Y - firstPoint.Y, 2));
-        }
-
+        
         public static List<Rectangle> GetCloudWithEqualRectangles(int rectanglesCount, int width = 15, int height = 15)
         {
             var cloud = new CircularCloudLayouter(new Point(500, 500));

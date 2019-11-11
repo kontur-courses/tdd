@@ -13,28 +13,16 @@ namespace TagsCloudVisualization.Tests
     [TestFixture]
     public class CircularCloudLayouter_Tests
     {
-        private CircularCloudLayouter Cloud;
-        private List<Rectangle> Rectangles;
+        private CircularCloudLayouter cloud;
+        private List<Rectangle> rectangles;
+        private Point center;
 
         [SetUp]
         public void SetUp()
         {
-            Cloud = new CircularCloudLayouter(new Point(500, 500));
-            Rectangles = new List<Rectangle>();
-        }
-
-        [Test]
-        public void CircularCloudLayouterCtor_ValidParameter_ShouldNotThrowException()
-        {
-            Action act = () => new CircularCloudLayouter(new Point(0, 0));
-            act.Should().NotThrow();
-        }
-
-        [Test]
-        public void PutNextRectangle_ValidSize_ShouldNotThrowException()
-        {
-            Action act = () => Cloud.PutNextRectangle(new Size(50, 50));
-            act.Should().NotThrow();
+            center = new Point(500, 500);
+            cloud = new CircularCloudLayouter(center);
+            rectangles = new List<Rectangle>();
         }
 
         [TestCase(0, 0)]
@@ -43,14 +31,14 @@ namespace TagsCloudVisualization.Tests
         [TestCase(-100, -100)]
         public void PutNextRectangle_InvalidSize_ShouldThrowException(int width, int height)
         {
-            Action act = () => Cloud.PutNextRectangle(new Size(width, height));
+            Action act = () => cloud.PutNextRectangle(new Size(width, height));
             act.Should().Throw<ArgumentException>();
         }
 
         [Test]
         public void PutNextRectangle_FirstRectangle_ShouldBeInCenter()
         {
-            var rectangle = Cloud.PutNextRectangle(new Size(100, 50));
+            var rectangle = cloud.PutNextRectangle(new Size(100, 50));
             rectangle.Location.Should().Be(new Point(450, 475));
         }
 
@@ -96,11 +84,11 @@ namespace TagsCloudVisualization.Tests
             var rectangles = GetCloudWithDifferentRectangles(rectanglesCount, minWidth, maxWidth, minHeight, maxHeight);
             var cloudRadius = GetCloudRadius(rectangles);
             var rectanglesOutOfCircleCount = rectangles.Count(rectangle =>
-                GetDistanceBetweenPoints(rectangle.Location, new Point(500, 500)) > cloudRadius);
+                rectangle.Location.GetDistanceToPoint(center) > cloudRadius);
 
             rectanglesOutOfCircleCount.Should().BeLessOrEqualTo((int) (rectanglesCount * 0.03));
         }
-
+        
         [TearDown]
         public void TearDown()
         {
@@ -108,10 +96,10 @@ namespace TagsCloudVisualization.Tests
                 return;
             var testName = TestContext.CurrentContext.Test.Name;
             var painter = new Painter(new Size(1000, 1000));
-            var image = painter.GetMultiColorCloud(Rectangles);
+            var image = painter.GetMultiColorCloud(rectangles);
             var fileName = new StringBuilder(testName).Append("FAILED").ToString();
-            Saving.SaveImageToDefaultDirectory(fileName, image);
-            var path = Saving.GetImagesPath(fileName);
+            ImageSaver.SaveImageToDefaultDirectory(fileName, image);
+            var path = ImageSaver.GetImagesPath(fileName);
             Console.WriteLine($"Tag cloud visualization saved to file {path}");
         }
     }

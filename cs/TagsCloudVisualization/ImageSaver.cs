@@ -3,9 +3,9 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 
-namespace TagsCloudVisualization.Tests
+namespace TagsCloudVisualization
 {
-    public static class Saving
+    public static class ImageSaver
     {
         public static void SaveImageToDefaultDirectory(string name, Bitmap image)
         {
