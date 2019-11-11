@@ -4,9 +4,9 @@ using System.Drawing;
 using TagsCloudVisualization.CloudLayouters;
 using TagsCloudVisualization.Tags;
 
-namespace TagsCloudVisualization.CloudFactories
+namespace TagsCloudVisualization.TagClouds
 {
-    public class WebCloudFactory : TagCloudFactory
+    public class WebCloud : TagCloud
     {
         private const string MutualFont = "Bahnschrift SemiLight";
         private const int LargeTagsFrequency = 8;
@@ -20,10 +20,9 @@ namespace TagsCloudVisualization.CloudFactories
             [TagType.Small] = new TagStyle(Color.FromArgb(160, 90, 44), new Font(MutualFont, 13))
         };
 
-        public override Size CanvasSize => new Size(800, 600);
-        public override Color BackgroundColor => Color.FromArgb(0, 34, 43);
+        protected override Color BackgroundColor => Color.FromArgb(0, 34, 43);
 
-        public override Action<Tag> GetTagDrawer(Graphics graphics)
+        protected override Action<Tag> GetTagDrawer(Graphics graphics)
         {
             var brushByColor = new Dictionary<Color, Brush>();
 
@@ -31,8 +30,8 @@ namespace TagsCloudVisualization.CloudFactories
                                               tag.TagBox, TagStyle.TextFormat);
         }
 
-        public override IEnumerable<Tag> GetTags(string[] cloudStrings, Graphics graphics,
-                                                 ICloudLayouter circularCloudLayouter)
+        protected override IEnumerable<Tag> GetTags(string[] cloudStrings, Graphics graphics,
+                                                    ICloudLayouter circularCloudLayouter)
         {
             for (var i = 0; i < cloudStrings.Length; i++)
             {

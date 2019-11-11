@@ -5,9 +5,9 @@ using System.Drawing.Drawing2D;
 using TagsCloudVisualization.CloudLayouters;
 using TagsCloudVisualization.Tags;
 
-namespace TagsCloudVisualization.CloudFactories
+namespace TagsCloudVisualization.TagClouds
 {
-    public class CommonWordsCloudFactory : TagCloudFactory
+    public class CommonWordsCloud : TagCloud
     {
         private const string MutualFont = "Bahnschrift SemiLight";
 
@@ -17,10 +17,9 @@ namespace TagsCloudVisualization.CloudFactories
             [TagType.Medium] = new TagStyle(Color.Black, new Font(MutualFont, 18))
         };
 
-        public override Size CanvasSize => new Size(800, 600);
-        public override Color BackgroundColor => Color.White;
+        protected override Color BackgroundColor => Color.White;
 
-        public override Action<Tag> GetTagDrawer(Graphics graphics)
+        protected override Action<Tag> GetTagDrawer(Graphics graphics)
         {
             var brushByColor = new Dictionary<Color, Brush>();
 
@@ -35,8 +34,8 @@ namespace TagsCloudVisualization.CloudFactories
             };
         }
 
-        public override IEnumerable<Tag> GetTags(string[] cloudStrings, Graphics graphics,
-                                                 ICloudLayouter circularCloudLayouter)
+        protected override IEnumerable<Tag> GetTags(string[] cloudStrings, Graphics graphics,
+                                                    ICloudLayouter circularCloudLayouter)
         {
             for (var i = 0; i < cloudStrings.Length; i++)
             {
