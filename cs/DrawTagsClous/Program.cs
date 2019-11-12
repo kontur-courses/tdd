@@ -14,7 +14,7 @@ namespace DrawTagsCloud
             var cloud = new CircularCloudLayouter(new Point(800, 600));
             var rand = new Random();
             var rectangles = new List<Rectangle>();
-            for (var i = 0; i < 1000; i++)
+            for (var i = 0; i < 5000; i++)
             {
                 var size = new Size(rand.Next(20, 150), rand.Next(20, 150));
                 rectangles.Add(cloud.PutNextRectangle(size));

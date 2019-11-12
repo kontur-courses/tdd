@@ -9,8 +9,8 @@ namespace TagsCloudVisualization
     {
         public static Bitmap GetImageOfRectangles(List<Rectangle> rectangles, int widthOfBorder=0)
         {
-            var cloudBorders = GetBorderOfRectangles(rectangles);
-            var image = new Bitmap(cloudBorders.Width + widthOfBorder * 2, cloudBorders.Height + widthOfBorder * 2);
+            var borderOfRectangles = GetBorderOfRectangles(rectangles);
+            var image = new Bitmap(borderOfRectangles.Width + widthOfBorder * 2, borderOfRectangles.Height + widthOfBorder * 2);
             var canvas = Graphics.FromImage(image);
             canvas.Clear(Color.White);
             var rand = new Random();
@@ -20,8 +20,9 @@ namespace TagsCloudVisualization
                 var r = rand.Next(256);
                 var g = rand.Next(256);
                 var b = rand.Next(256);
-                rect.Move(-cloudBorders.X + widthOfBorder, -cloudBorders.Y + widthOfBorder);
-                canvas.FillRectangle(new SolidBrush(Color.FromArgb(r, g,b)), rect);
+                canvas.FillRectangle(new SolidBrush(Color.FromArgb(r, g,b)), new Rectangle(rect.X - borderOfRectangles.X + widthOfBorder, 
+                    rect.Y - borderOfRectangles.Y + widthOfBorder, 
+                    rect.Width, rect.Height));
             }
             return image;
         }
