@@ -56,6 +56,8 @@
   <ItemGroup>
     <Compile Include="ArchimedesSpiral.cs" />
     <Compile Include="CircularCloudLayouter.cs" />
+    <Compile Include="PointConverter.cs" />
+    <Compile Include="Tests\PointConverterTests.cs" />
     <Compile Include="Visualizer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\ArchimedesSpiralTests.cs" />

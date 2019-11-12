@@ -38,37 +38,13 @@ namespace TagsCloudVisualization.Tests
             var firstPoint = generator.Current;
             generator.MoveNext();
             float theta, r;
-            (r, theta) = ArchimedesSpiral.TransformCartesianToPolar(firstPoint.X - centerX, firstPoint.Y - centerY);
+            (r, theta) = PointConverter.TransformCartesianToPolar(firstPoint.X - centerX, firstPoint.Y - centerY);
             theta += ArchimedesSpiral.DeltaAngle;
             r = a * theta;
             var nextX = (float) (r * Math.Cos(theta)) + centerX;
             var nextY = (float) (r * Math.Sin(theta)) + centerY;
             generator.Current.X.Should().BeApproximately(nextX, (float)Epsilon);
             generator.Current.Y.Should().BeApproximately(nextY, (float)Epsilon);
-        }
-
-        
-        [TestCase(0, 0, 0, 0, TestName = "OnZeroR")]
-        [TestCase(0, 15, 0, 0, TestName = "OnNonZeroThetaAndZeroR")]
-        [TestCase(15, (float)Math.PI, -15, 0, TestName = "RandomCoordinates")]
-        [TestCase(25, (float)Math.PI / 2, 0, 25, TestName = "RandomCoordinates2")]
-
-        public void TransformPolarToCartesian_ReturnsCorrectValues(float r, float theta, float expectedX, float expectedY)
-        {
-            var (x, y) = ArchimedesSpiral.TransformPolarToCartesian(r, theta);
-            x.Should().BeApproximately(expectedX, (float)Epsilon);
-            y.Should().BeApproximately(expectedY, (float)Epsilon);
-        }
-
-        [TestCase(0, 0, 0, 0, TestName = "ZeroIfInStart")]
-        [TestCase(3, 4, 5, 0.92f, TestName = "RandomCoordinates")] //theta is Acos(3/5)
-        [TestCase(-5, -12, 13, -1.96f, TestName = "RandomCoordinates2")] //theta is -Acos(-5/13)
-        public void TransformCartesianToPolar_ReturnsCorrectValues(float x, float y, float expectedR,
-            float expectedTheta)
-        {
-            var (r, theta) = ArchimedesSpiral.TransformCartesianToPolar(x, y);
-            r.Should().BeApproximately(expectedR, (float)Epsilon);
-            theta.Should().BeApproximately(expectedTheta, (float)Epsilon);
         }
 
         [TearDown]

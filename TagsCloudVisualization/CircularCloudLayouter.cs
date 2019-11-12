@@ -38,7 +38,7 @@ namespace TagsCloudVisualization
                 rect.X = (int) spiralPoints.Current.X;
                 rect.Y = (int) spiralPoints.Current.Y;
             }
-            if (ArchimedesSpiral.TryFindPreviousSpinPoint(rect.Location, Thickness, out var previousSpinPointF))
+            if (TryFindPreviousSpinPoint(rect.Location, Thickness, out var previousSpinPointF))
             {
                 var previousSpinPoint = new Point((int) previousSpinPointF.X, (int) previousSpinPointF.Y);
                 foreach (var point in BuildPath(previousSpinPoint, rect.Location))
@@ -57,6 +57,23 @@ namespace TagsCloudVisualization
             var visualizer = new Visualizer();
             return visualizer.DrawRectangles(rectangles);
         }
+
+        private static bool TryFindPreviousSpinPoint(PointF currentSpinPoint, float a, out PointF previousSpinPoint)
+        {
+            var (r, theta) =
+                PointConverter.TransformCartesianToPolar(currentSpinPoint.X, currentSpinPoint.Y);
+            theta -= (float)(2 * Math.PI * a);
+            if (theta < 0)
+            {
+                previousSpinPoint = new PointF(0, 0);
+                return false;
+            }
+            r = theta * a;
+            var (x, y) = PointConverter.TransformPolarToCartesian(r, theta);
+            previousSpinPoint = new PointF(x, y);
+            return true;
+        }
+
 
         private IEnumerable<Point> BuildPath(Point from, Point to)
         {
