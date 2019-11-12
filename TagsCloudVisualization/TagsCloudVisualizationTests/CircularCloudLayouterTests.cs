@@ -13,7 +13,6 @@ namespace TagsCloudVisualizationTests
 {
     public class CircularCloudLayouterTests
     {
-        [Test]
         [TestCase(0, 0)]
         [TestCase(3, 5)]
         [TestCase(13, 8)]
@@ -25,7 +24,6 @@ namespace TagsCloudVisualizationTests
             action.Should().NotThrow();
         }
 
-        [Test]
         [TestCase(0, 0)]
         [TestCase(-1, 0)]
         [TestCase(0, -1)]
@@ -39,7 +37,6 @@ namespace TagsCloudVisualizationTests
                 .Should().Throw<ArgumentException>().WithMessage("rectangleSize");
         }
 
-        [Test]
         [TestCase(35, 17)]
         [TestCase(24, 47)]
         [TestCase(57, 57)]
@@ -53,7 +50,6 @@ namespace TagsCloudVisualizationTests
             rectangle.Size.Should().Be(rectangleSize);
         }
 
-        [Test]
         [TestCase(0, 0, 4, 15)]
         [TestCase(30, 200, 5, 5)]
         public void PutNextRectangle_FirstRectangleContainsCenterPoint(int centerX, int centerY, int width, int height)
@@ -67,7 +63,6 @@ namespace TagsCloudVisualizationTests
             rectangle.Contains(center).Should().BeTrue();
         }
 
-        [Test]
         [TestCase(20, 20, 2)]
         [TestCase(30, 15, 2)]
         [TestCase(7, 10, 2)]
@@ -91,7 +86,6 @@ namespace TagsCloudVisualizationTests
             rectanglesIntersect.Should().BeFalse();
         }
 
-        [Test]
         [Repeat(10)]
         [TestCase(5, 5, 10, 10, 2)]
         [TestCase(5, 5, 10, 10, 200)]
@@ -113,7 +107,6 @@ namespace TagsCloudVisualizationTests
             rectanglesIntersect.Should().BeFalse();
         }
 
-        [Test]
         [TestCase(50, 50, 10, 0.45)]
         [TestCase(30, 10, 10, 0.45)]
         [TestCase(10, 30, 10, 0.45)]
@@ -137,7 +130,6 @@ namespace TagsCloudVisualizationTests
             (area / circleArea).Should().BeGreaterThan(requiredDensity);
         }
 
-        [Test]
         [Retry(10)]
         [TestCase(5, 5, 10, 10, 10, 0.5)]
         [TestCase(5, 5, 10, 10, 100, 0.65)]
@@ -158,7 +150,6 @@ namespace TagsCloudVisualizationTests
             (area / circleArea).Should().BeGreaterThan(requiredDensity);
         }
 
-        [Test]
         [TestCase(50, 50, 10, 9)]
         [TestCase(30, 10, 10, 9)]
         [TestCase(60, 20, 10, 9)]
@@ -179,7 +170,6 @@ namespace TagsCloudVisualizationTests
             rectanglesInCircleCount.Should().BeGreaterOrEqualTo(rectanglesInCircleRequired);
         }
 
-        [Test]
         [Retry(5)]
         [TestCase(5, 5, 10, 10, 10, 7)]
         public void TagsCloudOfRandomSizedRectanglesShapeIsCloseToCircle(int minWidth, int minHeight, int maxWith,
