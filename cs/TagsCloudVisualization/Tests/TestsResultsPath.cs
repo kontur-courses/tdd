@@ -19,7 +19,7 @@ namespace TagsCloudVisualization.Tests
                 testTime.ToString("dd.MM.yyyy"));
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            return $"{path}{directorySeparator}{testTime.ToString("HH-mm-ss")}_{testName}";
+            return $"{path}{directorySeparator}{testTime:HH-mm-ss}_{testName}";
         }
     }
 }
