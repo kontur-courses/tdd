@@ -5,14 +5,14 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudDrawer : IDisposable
     {
-        private readonly CircularCloudLayouter layouter;
+        private readonly SpiralCloudLayouter layouter;
         private readonly Bitmap bitmap;
         private readonly Graphics graphics;
         private readonly Brush brush;
         private readonly Pen pen;
         private readonly StringFormat stringFormat;
 
-        public CircularCloudDrawer(Size imageSize, CircularCloudLayouter layouter)
+        public CircularCloudDrawer(Size imageSize, SpiralCloudLayouter layouter)
         {
             bitmap = new Bitmap(imageSize.Width, imageSize.Height);
             this.layouter = layouter;
@@ -31,15 +31,12 @@ namespace TagsCloudVisualization
             var wordSize = graphics.MeasureString(word, font) + new SizeF(1, 1);
             var wordRect = layouter.PutNextRectangle(wordSize.ToSize());
             graphics.DrawString(word, font, brush, wordRect, stringFormat);
-            graphics.DrawRectangle(pen, wordRect);
+            DrawRectangle(wordRect);
         }
 
-        public void DrawLayouterRectangles()
+        public void DrawRectangle(Rectangle rectangle)
         {
-            foreach (var rectangle in layouter.Rectangles())
-            {
-                graphics.DrawRectangle(pen, rectangle);
-            }
+            graphics.DrawRectangle(pen, rectangle);
         }
 
         public void Save(string filename)
@@ -49,10 +46,10 @@ namespace TagsCloudVisualization
 
         public void Dispose()
         {
-            bitmap?.Dispose();
-            graphics?.Dispose();
-            brush?.Dispose();
-            stringFormat?.Dispose();
+            bitmap.Dispose();
+            graphics.Dispose();
+            brush.Dispose();
+            stringFormat.Dispose();
         }
     }
 }

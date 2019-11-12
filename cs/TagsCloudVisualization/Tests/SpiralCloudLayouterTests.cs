@@ -10,17 +10,21 @@ using NUnit.Framework.Interfaces;
 namespace TagsCloudVisualization
 {
     [TestFixture]
-    public class CircularCloudLayouter_Tests
+    public class SpiralCloudLayouterTests
     {
-        private CircularCloudLayouter layouter;
+        private SpiralCloudLayouter layouter;
+        private List<Rectangle> rectangles;
+        private Random random;
         private readonly Point center = new Point(250, 250);
 
         [SetUp]
         public void SetUp()
         {
-            layouter = new CircularCloudLayouter(
+            layouter = new SpiralCloudLayouter(
                 center,
                 new ArchimedeanSpiral(1));
+            rectangles = new List<Rectangle>();
+            random = new Random();
         }
 
         [TestCase(5, TestName = "WhenPut5Rectangles")]
@@ -28,9 +32,7 @@ namespace TagsCloudVisualization
         [TestCase(50, TestName = "WhenPut50Rectangles")]
         public void PutNextRectangle_ReturnsDisjointRectangles(int count)
         {
-            var rectangles = new List<Rectangle>();
-            for (var i = 1; i < count; i++)
-                rectangles.Add(layouter.PutNextRectangle(new Size(i, i)));
+            PutRandomRectangles(count);
             IsDisjointRectangles(rectangles).Should().BeTrue();
         }
 
@@ -39,9 +41,8 @@ namespace TagsCloudVisualization
         [TestCase(100, TestName = "WhenPut100Rectangles")]
         public void PutNextRectangle_ShouldIncreaseRectanglesCount(int count)
         {
-            for (var i = 0; i < count; i++)
-                layouter.PutNextRectangle(new Size(10, 10));
-            layouter.Rectangles().ToList().Count.Should().Be(count);
+            PutRandomRectangles(count);
+            rectangles.Count.Should().Be(count);
         }
 
         [Test]
@@ -65,15 +66,31 @@ namespace TagsCloudVisualization
         {
             var size = new Size(10, 10);
             for (var i = 0; i < rectanglesCount - 1; i++)
-            {
                 layouter.PutNextRectangle(size);
-            }
 
             var rect = layouter.PutNextRectangle(size);
             Math.Abs(rect.X - center.X).Should()
                 .BeLessThan(rectanglesCount * size.Width / (rectanglesCount / 4));
             Math.Abs(rect.Y - center.Y).Should()
                 .BeLessThan(rectanglesCount * size.Height / (rectanglesCount / 4));
+        }
+
+        [TestCase(10, TestName = "WhenPut10Rectangles")]
+        [TestCase(30, TestName = "WhenPut30Rectangles")]
+        [TestCase(50, TestName = "WhenPut50Rectangles")]
+        public void PutNextRectangle_ShouldArrangeRectanglesAsCircle(int count)
+        {
+            var rectanglesArea = 0;
+            foreach (var size in GenerateRandomSizes(count))
+            {
+                var rectangle = layouter.PutNextRectangle(size);
+                rectangles.Add(rectangle);
+                rectanglesArea += rectangle.Width * rectangle.Height;
+            }
+
+            var squaredIncreasedRadius = (int) ((rectanglesArea / Math.PI) * 1.25);
+            foreach (var rectangle in rectangles)
+                RectangleUtils.GetSquareDistanceToPoint(rectangle, center).Should().BeLessThan(squaredIncreasedRadius);
         }
 
         [TearDown]
@@ -85,10 +102,24 @@ namespace TagsCloudVisualization
             if (!Directory.Exists(failedTestsPath))
                 Directory.CreateDirectory(failedTestsPath);
             var cloudDrawer = new CircularCloudDrawer(new Size(500, 500), layouter);
-            cloudDrawer.DrawLayouterRectangles();
+            foreach (var rectangle in rectangles)
+                cloudDrawer.DrawRectangle(rectangle);
             var filename = failedTestsPath + $"\\{TestContext.CurrentContext.Test.FullName}.png";
             cloudDrawer.Save(filename);
             TestContext.WriteLine($"Tag cloud visualisation saved to file: '{filename}'");
+        }
+
+        private IEnumerable<Size> GenerateRandomSizes(int count)
+        {
+            for (var i = 0; i < count; i++)
+                yield return new Size(random.Next(1, 1000), random.Next(1, 1000));
+        }
+
+        private void PutRandomRectangles(int count)
+        {
+            rectangles = rectangles
+                .Concat(GenerateRandomSizes(count).Select(size => layouter.PutNextRectangle(size)))
+                .ToList();
         }
 
         private bool IsDisjointRectangles(List<Rectangle> rectangles)

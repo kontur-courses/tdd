@@ -4,13 +4,13 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter
+    public class SpiralCloudLayouter : ICircularCloudLayouter
     {
         private readonly Point center;
         private readonly ISpiral spiral;
         private readonly List<Rectangle> rectangles;
 
-        public CircularCloudLayouter(Point center, ISpiral spiral)
+        public SpiralCloudLayouter(Point center, ISpiral spiral)
         {
             this.center = center;
             this.spiral = spiral;
@@ -23,14 +23,6 @@ namespace TagsCloudVisualization
             var shiftedRect = ShiftRectangleToCenter(rect);
             rectangles.Add(shiftedRect);
             return shiftedRect;
-        }
-
-        public IEnumerable<Rectangle> Rectangles()
-        {
-            foreach (var rectangle in rectangles)
-            {
-                yield return rectangle;
-            }
         }
 
         private Rectangle GetNextRectangle(Size rectangleSize)
@@ -49,13 +41,18 @@ namespace TagsCloudVisualization
             return rectangles.Any(other => Rectangle.Intersect(rect, other) != Rectangle.Empty);
         }
 
+        private Point OffsetPointToRectangleCenter(Point point, Size rectangleSize)
+        {
+            point.Offset(center);
+            point.Offset(-rectangleSize.Width / 2, -rectangleSize.Height / 2);
+            return point;
+        }
+
         private Rectangle GetPossibleRectangle(Size rectangleSize)
         {
-            var nextSpiralPoint = Point.Round(spiral.GetNextPoint());
-            nextSpiralPoint.Offset(center);
-            nextSpiralPoint.Offset(-rectangleSize.Width / 2, -rectangleSize.Height / 2);
-            var possibleRect = new Rectangle(nextSpiralPoint, rectangleSize);
-            return possibleRect;
+            return new Rectangle(
+                OffsetPointToRectangleCenter(Point.Round(spiral.GetNextPoint()), rectangleSize),
+                rectangleSize);
         }
 
         private Rectangle ShiftRectangleToCenter(Rectangle rect)
@@ -67,34 +64,16 @@ namespace TagsCloudVisualization
             while (queue.Count != 0)
             {
                 var currentRect = queue.Dequeue();
-                var squareDistanceToCenter = GetSquareDistanceToCenter(currentRect);
+                var squareDistanceToCenter = RectangleUtils.GetSquareDistanceToPoint(currentRect, center);
                 if (squareDistanceToCenter >= minDistanceSquare || IsIntersectsWithOthersRectangles(currentRect))
                     continue;
                 minDistanceSquare = squareDistanceToCenter;
                 shiftedRect = currentRect;
-                foreach (var adjacentRectangle in GetAdjacentRectangles(currentRect))
+                foreach (var adjacentRectangle in RectangleUtils.GetAdjacentRectangles(currentRect))
                     queue.Enqueue(adjacentRectangle);
             }
 
             return shiftedRect;
-        }
-
-        private int GetSquareDistanceToCenter(Rectangle currentRect)
-        {
-            var rectCenter = new Point(
-                currentRect.X + currentRect.Width / 2,
-                currentRect.Y + currentRect.Height / 2);
-            var squareDistanceToCenter = (rectCenter.X - center.X) * (rectCenter.X - center.X) +
-                                         (rectCenter.Y - center.Y) * (rectCenter.Y - center.Y);
-            return squareDistanceToCenter;
-        }
-
-        private IEnumerable<Rectangle> GetAdjacentRectangles(Rectangle rect)
-        {
-            yield return new Rectangle(new Point(rect.X - 1, rect.Y), rect.Size);
-            yield return new Rectangle(new Point(rect.X + 1, rect.Y), rect.Size);
-            yield return new Rectangle(new Point(rect.X, rect.Y - 1), rect.Size);
-            yield return new Rectangle(new Point(rect.X, rect.Y + 1), rect.Size);
         }
     }
 }

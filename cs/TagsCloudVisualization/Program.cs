@@ -7,6 +7,7 @@ namespace TagsCloudVisualization
             UsageExamples.GenerateFirstTagCloud();
             UsageExamples.GenerateSecondTagCloud();
             UsageExamples.GenerateThirdTagCloud();
+            UsageExamples.GenerateFourthTagCloud();
         }
     }
 }
