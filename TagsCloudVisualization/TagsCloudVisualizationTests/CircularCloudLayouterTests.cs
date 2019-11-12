@@ -87,7 +87,13 @@ namespace TagsCloudVisualizationTests
             var rectanglesIntersect = intersectingRectangles.Any();
             rectanglesIntersect.Should().BeFalse();
         }
-
+        
+        /**
+         * Test is checked with different number of rectangles
+         * because the fulfillment of check on some number
+         * does not implicitly mean that it is fulfilled
+         * on any smaller number
+         */
         [TestCase(50, 50, 50, 50, 10, 0.45)]
         [TestCase(30, 10, 30, 10, 10, 0.45)]
         [TestCase(10, 30, 10, 30, 10, 0.45)]
@@ -113,7 +119,13 @@ namespace TagsCloudVisualizationTests
             var area = rectangles.Sum(rectangle => rectangle.Width * rectangle.Height);
             (area / circleArea).Should().BeGreaterThan(requiredDensity);
         }
-
+        
+        /**
+         * Test is checked with different number of rectangles
+         * because the fulfillment of check on some number
+         * does not implicitly mean that it is fulfilled
+         * on any smaller number
+         */
         [TestCase(50, 50, 50, 50, 10, 9)]
         [TestCase(30, 10, 30, 10, 10, 9)]
         [TestCase(60, 20, 60, 20, 10, 9)]
