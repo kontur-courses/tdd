@@ -5,9 +5,9 @@ namespace TagsCloudVisualization
 {
     public class Segment
     {
-        public readonly Point start;
-        public readonly Point end;
-        public readonly Type type;
+        public Point start { get; private set; }
+        public  Point end { get; private set; }
+        public  Type type { get; private set; }
         public double Length  => Math.Sqrt(Math.Pow((start.X - end.X), 2) + Math.Pow((start.Y - end.Y), 2)); 
         public Segment(Point start, Point end, Type type)
         {

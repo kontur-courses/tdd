@@ -68,28 +68,14 @@ namespace TagsCloudVisualization
             var searchResult = new PositionSearchResult(double.MaxValue, null, new Point());
             foreach (var segment in BorderSegments.Except(ProbablyBuggedSegments))
             {
-                if (segment.type == Segment.Type.Top)
+                if (segment.Horizontal())
                 {
                     var leftBorderX = FindLeftBorderX(segment, rectangleSize);
                     var rightBorderX = FindRightBorderX(segment, rectangleSize);
                     var updatedSegment = new Segment(leftBorderX, segment.start.Y, rightBorderX, segment.end.Y, segment.type);
                     SearchMinDistance(searchResult, segment, rectangleSize, updatedSegment);
                 }
-                if (segment.type == Segment.Type.Bottom)
-                {
-                    var leftBorderX = FindLeftBorderX(segment, rectangleSize);
-                    var rightBorderX = FindRightBorderX(segment, rectangleSize);
-                    var updatedSegment = new Segment(leftBorderX, segment.start.Y, rightBorderX, segment.end.Y, segment.type);
-                    SearchMinDistance(searchResult, segment, rectangleSize, updatedSegment);
-                }
-                if (segment.type == Segment.Type.Left)
-                {
-                    var topBorderY = FindTopBorderY(segment, rectangleSize);
-                    var bottomBorderY = FindBottomBorderY(segment, rectangleSize);
-                    var updatedSegment = new Segment(segment.start.X, topBorderY, segment.end.X, bottomBorderY, segment.type);
-                    SearchMinDistance(searchResult, segment, rectangleSize, updatedSegment);
-                }
-                if (segment.type == Segment.Type.Right)
+                else
                 {
                     var topBorderY = FindTopBorderY(segment, rectangleSize);
                     var bottomBorderY = FindBottomBorderY(segment, rectangleSize);
@@ -106,7 +92,7 @@ namespace TagsCloudVisualization
                     {
                         ProbablyBuggedSegments.Add(searchResult.MinSegment);//полагаем что тот сегмент к которому пытаемся присоединиться багованный
                         if (BorderSegments.Except(ProbablyBuggedSegments).Count()==0)
-                        {//здесь должен быть выход из рекурсии, можно приделать прямоугольник в самую крайнюю точку
+                        {
                             var closestRectCoord = FindClosestCloudBorder(rectangleSize);
                             outRectangle = new Rectangle(closestRectCoord, rectangleSize);
                             break;
@@ -390,7 +376,7 @@ namespace TagsCloudVisualization
         {
             var toDelete = new HashSet<Segment>();
             var toAdd = new HashSet<Segment>();
-            BorderSegments.UnionWith(added);//добавляем все элементы, какие не нужны - удалим в процессе проверки
+            BorderSegments.UnionWith(added);
             foreach (var segment1 in added)
             {
                 foreach (var segment2 in BorderSegments)
