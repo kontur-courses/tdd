@@ -29,7 +29,7 @@ namespace TagsCloudVisualization
             return newRectangle;
         }
 
-        private double _spiralPosition = 0;
+        private double _spiralPosition;
         private const double SpiralFactor = 0.5;
         private const double Step = 1 / 50d;
 
