@@ -3,8 +3,8 @@ using System.Drawing;
 
 namespace TagsCloudVisualization.TagsCloudVisualization
 {
-    internal interface ITagsCloudVisualization<T>
+    internal interface ITagsCloudVisualization<in T>
     {   
-        Bitmap Draw(List<T> objectsToDraw, int imageWidth, int imageHeight);
+        Bitmap Draw(IEnumerable<T> figuresToDraw, int imageWidth, int imageHeight);
     }
 }

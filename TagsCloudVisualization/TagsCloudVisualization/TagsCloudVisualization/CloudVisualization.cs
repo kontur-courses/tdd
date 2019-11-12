@@ -6,7 +6,7 @@ namespace TagsCloudVisualization.TagsCloudVisualization
 {
     class CloudVisualization : ITagsCloudVisualization<Rectangle>
     {
-        public Bitmap Draw(List<Rectangle> rectangles, int imageWidth, int imageHeight)
+        public Bitmap Draw(IEnumerable<Rectangle> rectangles, int imageWidth, int imageHeight)
         {
             var image = new Bitmap(imageWidth, imageHeight);
             var random = new Random();
