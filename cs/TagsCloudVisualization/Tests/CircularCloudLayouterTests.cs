@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using TagsCloudVisualization.Themes;
 
 namespace TagsCloudVisualization.Tests
 {
@@ -53,8 +55,8 @@ namespace TagsCloudVisualization.Tests
             {
                 var directory = AppDomain.CurrentDomain.BaseDirectory;
                 var testName = testContext.Test.Name;
-                var time = DateTime.Now.ToString("yy-MMM-dd hh:mm:ss");
-                var filename = $"{directory}/{testName} Failed at {time}.png";
+                var time = DateTime.Now.ToString("yy-MM-dd hh-mm-ss");
+                var filename = Path.Combine(directory, $"{testName} {time}.png");
                 CloudVisualizator.Visualize(new RedTheme(), layouterRectangles).Save(filename);
                 Console.WriteLine($"Tag cloud visualization saved to file {filename}");
             }
@@ -150,7 +152,7 @@ namespace TagsCloudVisualization.Tests
 
             foreach (var rectangle in layouterRectangles)
             {
-                var distance =  Utils.GetDistanceBetweenRectangleAndPoint(rectangle, layouterCenter);
+                var distance =  GetDistanceBetweenRectangleAndPoint(rectangle, layouterCenter);
                 if (distance > furthestDistance)
                     furthestDistance = distance;
             }
@@ -159,7 +161,15 @@ namespace TagsCloudVisualization.Tests
 
             var circleSquare = furthestDistance * furthestDistance * Math.PI;
             var squareRatio = rectanglesSquare / circleSquare * 100;
-            squareRatio.Should().BeGreaterOrEqualTo(acceptableRatio);
+            squareRatio.Should().BeLessOrEqualTo(acceptableRatio);
+        }
+        
+        public static double GetDistanceBetweenRectangleAndPoint(Rectangle rectangle, Point point)
+        {
+            var rectangleCentre = new Point(rectangle.Location.X + rectangle.Width / 2,
+                rectangle.Location.Y + rectangle.Height / 2);
+
+            return Math.Sqrt(Math.Pow(rectangleCentre.X - point.X, 2) + Math.Pow(rectangleCentre.Y - point.Y, 2));
         }
     }
 }

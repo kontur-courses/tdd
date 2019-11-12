@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
 using TagsCloudVisualization;
+using TagsCloudVisualization.Themes;
 
 namespace TagsCloudApplication
 {
@@ -22,7 +23,7 @@ namespace TagsCloudApplication
                                            + "c - int, rectangles count,\n"
                                            + "minS, maxS - int, rectangle size interval,\n"
                                            + "w, h - int, render image size,\n"
-                                           + "t - theme, red, green or indigo"
+                                           + "t - theme, red, green or indigo\n"
                                            + "filename - string, output file name.";
 
         private static readonly string FileNameRegex = $"([^{new string(Path.GetInvalidFileNameChars())}]+)";
