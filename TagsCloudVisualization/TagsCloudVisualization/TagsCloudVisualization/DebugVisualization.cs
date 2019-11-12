@@ -8,7 +8,7 @@ namespace TagsCloudVisualization.TagsCloudVisualization
     {
         public Bitmap DrawRectangles(List<Rectangle> rectangles, int imageWidth, int imageHeight)
         {
-            var image = new Bitmap(900, 900);
+            var image = new Bitmap(imageWidth, imageHeight);
             using (var drawPlace = Graphics.FromImage(image))
             {
                 var blackPen = new Pen(new SolidBrush(Color.Black), 3);

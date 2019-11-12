@@ -76,7 +76,7 @@ namespace TagsCloudVisualization.Tests.MainProject
         {
             rectangles = sizesForTesting.Select(size => circularCloudLayouter.PutNextRectangle(size)).ToList();
             double allRectanglesSquare = rectangles.Select(rectangle => rectangle.Square()).Sum();
-            var corners = GetAllPoint();
+            var corners = GetAllPoints();
             var xMinRadius = Math.Abs(corners.Min(point => point.X) - center.X);
             var xMaxRadius = Math.Abs(corners.Max(point => point.X) - center.X);
             var yMinRadius = Math.Abs(corners.Min(point => point.Y) - center.X);
@@ -86,7 +86,7 @@ namespace TagsCloudVisualization.Tests.MainProject
             allRectanglesSquare.Should().BeGreaterOrEqualTo(80 * circleSquare / 100);
         }
 
-        private HashSet<Point> GetAllPoint()
+        private HashSet<Point> GetAllPoints()
         {
             var points = new HashSet<Point>();
             foreach (var rectangle in rectangles)
@@ -101,7 +101,7 @@ namespace TagsCloudVisualization.Tests.MainProject
             var random = new Random();
             for (var i = 0; i < 50; i++)
                 rectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(random.Next(1, 50), random.Next(1, 50))));
-            var corners = GetAllPoint();
+            var corners = GetAllPoints();
 
             var xMinRadius = Math.Abs(corners.Min(point => point.X) - center.X);
             var xMaxRadius = Math.Abs(corners.Max(point => point.X) - center.X);
