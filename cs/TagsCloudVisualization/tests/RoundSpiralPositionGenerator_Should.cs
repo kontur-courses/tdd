@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Numerics;
-using System.Text;
+﻿using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -17,15 +13,6 @@ namespace TagsCloudVisualization
             var center = new Point(800, 600);
             var spiralGenerator = new RoundSpiralPositionGenerator(center);
             spiralGenerator.Next().Should().BeEquivalentTo(center);
-        }
-        
-        [Test]
-        public void SecondStep_Should_NotEqualCenterSpiral()
-        {
-            var center = new Point(800, 600);
-            var spiralGenerator = new RoundSpiralPositionGenerator(center);
-            spiralGenerator.Next();
-            spiralGenerator.Next().Should().NotBeEquivalentTo(center);
         }
 
         [Test]

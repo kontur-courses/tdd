@@ -9,15 +9,11 @@ namespace TagsCloudVisualization
     {
         private Point center;
         private double angle = 0;
-        public readonly double DeltaRadiusBetweenTurns = 10;
+        public readonly double DeltaRadiusBetweenTurns = Math.PI;
         public readonly double DeltaAngle = 0.5;
 
         public RoundSpiralPositionGenerator(Point center)
         {
-            if (center.X < 0 || center.Y < 0)
-            {
-                throw new ArgumentException();
-            }
             this.center = center;
         }
 

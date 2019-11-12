@@ -16,20 +16,13 @@ namespace TagsCloudVisualization
     {
         private CircularCloudLayouter circularCloud;
         private readonly Point center = new Point(800, 600);
+        private List<Rectangle> rectangles;
 
         [SetUp]
         public void SetUp()
         {
             circularCloud = new CircularCloudLayouter(center);
-        }
-
-
-        [Test]
-        public void DoesNotTrowException_WhenPutFirstRectangle()
-        {
-            var rectangleSize = new Size(100, 100);
-            Action act = () => circularCloud.PutNextRectangle(rectangleSize);
-            act.Should().NotThrow();
+            rectangles = new List<Rectangle>();
         }
 
         [Test]
@@ -45,6 +38,7 @@ namespace TagsCloudVisualization
         {
             var rectangleSize = new Size(100, 100);
             var rectangle = circularCloud.PutNextRectangle(rectangleSize);
+            rectangles.Add(rectangle);
             var deltaX = Math.Abs(rectangle.X - center.X);
             var deltaY = Math.Abs(rectangle.Y - center.Y);
             deltaX.Should().BeLessThan(100);
@@ -56,7 +50,6 @@ namespace TagsCloudVisualization
         [TestCase(200)]
         public void Rectangles_Should_NotIntersectWithPrevious(int countRectangles)
         {
-            var rectangles = new List<Rectangle>();
             var rectangleSize = new Size(100, 100);
             for (var i = 0; i < countRectangles; i++)
             {
@@ -72,9 +65,8 @@ namespace TagsCloudVisualization
             var rectangleSize = new Size(123, 112);
             for (var i = 0; i < 100; i++)
             {
-                var rectangle = circularCloud.PutNextRectangle(rectangleSize);
+                rectangles.Add(circularCloud.PutNextRectangle(rectangleSize));
             }
-            var rectangles = circularCloud.GetRectangles();
             var maxY = rectangles.Max(rect => rect.Bottom);
             var minY = rectangles.Min(rect => rect.Top);
             var maxX = rectangles.Max(rect=> rect.Right);
@@ -87,8 +79,8 @@ namespace TagsCloudVisualization
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                var image = CloudPainter.GetImageOfCloud(circularCloud, 100);
-                var mainDirOfProject = Path.GetFullPath($"..\\..\\..");
+                var image = RectanglePainter.GetImageOfRectangles(rectangles, 100);
+                var mainDirOfProject = Path.GetFullPath(Path.Combine("..", "..", ".."));
                 var pathToFailedTestImageDirectory = Path.Combine(mainDirOfProject, "testFailedImage");
                 if (!Directory.Exists(pathToFailedTestImageDirectory))
                 {

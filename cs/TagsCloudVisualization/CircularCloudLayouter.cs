@@ -16,10 +16,6 @@ namespace TagsCloudVisualization
 
         public CircularCloudLayouter(Point center)
         {
-            if (center.X < 0 || center.Y < 0)
-            {
-                throw new ArgumentException("Center out of range");
-            }
             this.center = center;
             rectangles = new List<Rectangle>();
             positionGenerator = new RoundSpiralPositionGenerator(center);
@@ -74,20 +70,6 @@ namespace TagsCloudVisualization
         private bool IntersectsWithPrevious(Rectangle rectangle)
         {
             return rectangles.Any(previousRectangle => previousRectangle.IntersectsWith(rectangle));
-        }
-
-        public Rectangle GetImageSize()
-        {
-            var maxX = rectangles.Max(rectangle => rectangle.Right);
-            var maxY = rectangles.Max(rectangle => rectangle.Bottom);
-            var minX = rectangles.Min(rectangle => rectangle.Left);
-            var minY = rectangles.Min(rectangle => rectangle.Top);
-            return new Rectangle(minX, minY, maxX - minX, maxY - minY);
-        }
-
-        public IReadOnlyCollection<Rectangle> GetRectangles()
-        {
-            return this.rectangles;
         }
     }
 }
