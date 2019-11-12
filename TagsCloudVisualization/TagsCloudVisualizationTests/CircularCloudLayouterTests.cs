@@ -272,20 +272,17 @@ namespace TagsCloudVisualizationTests
 
         private static bool IsRectangleInCircle(Rectangle rectangle, Point circleCenter, int circleRadius)
         {
-            var squareRadius = circleRadius * circleRadius;
+            return IsPointInCircle(new Point(rectangle.Left, rectangle.Top), circleCenter, circleRadius) &&
+                   IsPointInCircle(new Point(rectangle.Left, rectangle.Bottom), circleCenter, circleRadius) &&
+                   IsPointInCircle(new Point(rectangle.Right, rectangle.Top), circleCenter, circleRadius) &&
+                   IsPointInCircle(new Point(rectangle.Right, rectangle.Bottom), circleCenter, circleRadius);
+        }
 
-            // Get rectangle coordinates relative to circle center
-            var left = rectangle.X - circleCenter.X;
-            var right = left + rectangle.Width;
-            var top = rectangle.Y - circleCenter.Y;
-            var bottom = top + rectangle.Height;
-
-            // Check if rectangle in circle by checking if every vertex in circle
-            // Vertices are checked with circle equation
-            return left * left + top * top <= squareRadius &&
-                   right * right + top * top <= squareRadius &&
-                   right * right + bottom * bottom <= squareRadius &&
-                   left * left + bottom * bottom <= squareRadius;
+        private static bool IsPointInCircle(Point point, Point circleCenter, int circleRadius)
+        {
+            var pointXRelative = point.X - circleCenter.X;
+            var pointYRelative = point.Y - circleCenter.Y;
+            return pointXRelative * pointXRelative + pointYRelative * pointYRelative <= circleRadius * circleRadius;
         }
 
         #endregion
