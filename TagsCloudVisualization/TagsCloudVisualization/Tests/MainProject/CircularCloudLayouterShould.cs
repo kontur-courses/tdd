@@ -6,6 +6,7 @@ using System.Linq;
 using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using NUnit.Framework.Interfaces;
 using TagsCloudVisualization.Geometry;
 using TagsCloudVisualization.MainProject;
@@ -77,22 +78,23 @@ namespace TagsCloudVisualization.Tests.MainProject
             rectangles = sizesForTesting.Select(size => circularCloudLayouter.PutNextRectangle(size)).ToList();
             double allRectanglesSquare = rectangles.Select(rectangle => rectangle.Square()).Sum();
             var corners = GetAllPoints();
-            var xMinRadius = Math.Abs(corners.Min(point => point.X) - center.X);
-            var xMaxRadius = Math.Abs(corners.Max(point => point.X) - center.X);
-            var yMinRadius = Math.Abs(corners.Min(point => point.Y) - center.X);
-            var yMaxRadius = Math.Abs(corners.Max(point => point.Y) - center.X);
-            var radius = (xMinRadius + xMaxRadius + yMinRadius + yMaxRadius) / 4;
+            var radiuses = GetFourRadiuses(corners);
+            var radius = radiuses.Sum() / 4;
             var circleSquare = Math.PI * radius * radius;
             allRectanglesSquare.Should().BeGreaterOrEqualTo(80 * circleSquare / 100);
         }
 
         private HashSet<Point> GetAllPoints()
         {
-            var points = new HashSet<Point>();
-            foreach (var rectangle in rectangles)
-                foreach (var point in rectangle.GetCorners())
-                    points.Add(point);
-            return points;
+           return rectangles.SelectMany(rectangle => rectangle.GetCorners()).ToHashSet();
+        }
+
+        private IEnumerable<double> GetFourRadiuses(HashSet<Point> allCirclePoints)
+        {
+            yield return Math.Abs(allCirclePoints.Min(point => point.X) - center.X);
+            yield return Math.Abs(allCirclePoints.Max(point => point.X) - center.X);
+            yield return Math.Abs(allCirclePoints.Min(point => point.Y) - center.Y);
+            yield return Math.Abs(allCirclePoints.Max(point => point.Y) - center.Y);
         }
 
         [Test]
@@ -102,24 +104,17 @@ namespace TagsCloudVisualization.Tests.MainProject
             for (var i = 0; i < 50; i++)
                 rectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(random.Next(1, 50), random.Next(1, 50))));
             var corners = GetAllPoints();
-
-            var xMinRadius = Math.Abs(corners.Min(point => point.X) - center.X);
-            var xMaxRadius = Math.Abs(corners.Max(point => point.X) - center.X);
-            var yMinRadius = Math.Abs(corners.Min(point => point.Y) - center.X);
-            var yMaxRadius = Math.Abs(corners.Max(point => point.Y) - center.X);
-            var middleRadius = (xMinRadius + xMaxRadius + yMinRadius + yMaxRadius) / 4;
+            var radiuses = GetFourRadiuses(corners);
+            var middleRadius = radiuses.Sum() / 4;
             var pointOnCircle1 = FindPointOnCircle(middleRadius, point => new Point(point.X + 1, point.Y + 1));
             var pointOnCircle2 = FindPointOnCircle(middleRadius, point => new Point(point.X - 1, point.Y + 1));
             var diagonalRadius1 = GetClosestLocation(pointOnCircle1, corners).DistanceTo(center);
             var diagonalRadius2 = GetClosestLocation(pointOnCircle2, corners).DistanceTo(center);
-            var radius = (xMinRadius + xMaxRadius + yMinRadius + xMaxRadius + diagonalRadius1 + diagonalRadius2) / 6;
+            var radius = (radiuses.Sum() + diagonalRadius1 + diagonalRadius2) / 6;
             var startRange = 80 * (int)radius / 100;
             var endRange = 120 * (int)radius / 100;
 
-            xMinRadius.Should().BeInRange(startRange, endRange);
-            xMaxRadius.Should().BeInRange(startRange, endRange);
-            yMinRadius.Should().BeInRange(startRange, endRange);
-            yMaxRadius.Should().BeInRange(startRange, endRange);
+            radiuses.Select(r => r.Should().BeInRange(startRange, endRange));
             diagonalRadius1.Should().BeInRange(startRange, endRange);
             diagonalRadius2.Should().BeInRange(startRange, endRange);
         }

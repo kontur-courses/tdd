@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization.Geometry
 {
@@ -22,6 +23,12 @@ namespace TagsCloudVisualization.Geometry
             yield return new Point(rectangle.Right, rectangle.Y);
             yield return new Point(rectangle.X, rectangle.Bottom);
             yield return new Point(rectangle.Right, rectangle.Bottom);
+        }
+
+        public static bool AnyRectanglePointOutOfRange(this Rectangle rectangle, Point point, 
+            double permissionRange)
+        {
+            return rectangle.GetCorners().ToList().Any(c => c.DistanceTo(point) > permissionRange);
         }
 
         public static double Square(this Rectangle rectangle) => rectangle.Width * rectangle.Height;
