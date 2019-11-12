@@ -184,16 +184,8 @@ namespace TagsCloudVisualizationTests
         private static int GetRadiusOfCircleIncludingAllRectangles(IReadOnlyCollection<Rectangle> rectangles,
             Point center)
         {
-            var left = rectangles.Aggregate(center.X,
-                (leftmost, rectangle) => rectangle.Left < leftmost ? rectangle.Left : leftmost);
-            var right = rectangles.Aggregate(center.X,
-                (rightmost, rectangle) => rectangle.Right > rightmost ? rectangle.Right : rightmost);
-
-            var top = rectangles.Aggregate(center.Y,
-                (topmost, rectangle) => rectangle.Top < topmost ? rectangle.Top : topmost);
-            var bottom = rectangles.Aggregate(center.Y,
-                (bottommost, rectangle) => rectangle.Bottom > bottommost ? rectangle.Bottom : bottommost);
-
+            var (left, right, top, bottom) = GetEdgesOfRectanglesSet(rectangles);
+            
             var radius = 0;
 
             if (Math.Abs(left - center.X) > radius)
@@ -206,6 +198,22 @@ namespace TagsCloudVisualizationTests
                 radius = Math.Abs(bottom - center.Y);
 
             return radius;
+        }
+
+        private static (int left, int right, int top, int bottom) GetEdgesOfRectanglesSet(
+            IReadOnlyCollection<Rectangle> rectangles)
+        {
+            var left = rectangles.Aggregate(0,
+                (leftmost, rectangle) => rectangle.Left < leftmost ? rectangle.Left : leftmost);
+            var right = rectangles.Aggregate(0,
+                (rightmost, rectangle) => rectangle.Right > rightmost ? rectangle.Right : rightmost);
+
+            var top = rectangles.Aggregate(0,
+                (topmost, rectangle) => rectangle.Top < topmost ? rectangle.Top : topmost);
+            var bottom = rectangles.Aggregate(0,
+                (bottommost, rectangle) => rectangle.Bottom > bottommost ? rectangle.Bottom : bottommost);
+
+            return (left, right, top, bottom);
         }
 
         private static bool IsRectangleInCircle(Rectangle rectangle, Point circleCenter, int circleRadius)
