@@ -167,7 +167,8 @@ namespace TagsCloudVisualizationTests
                 tagsCloudImage.AddRectangles(intersectingRectangles, Color.Red, 1f);
             }
 
-            TestsHelper.SaveFailedTagsCloudAndNotify(TestContext.CurrentContext.Test.Name, tagsCloudImage);
+            var path = TestsHelper.SaveFailedTagsCloud(TestContext.CurrentContext.Test.Name, tagsCloudImage);
+            Console.WriteLine("Tag cloud visualization saved to file {0}", path);
         }
     }
 }

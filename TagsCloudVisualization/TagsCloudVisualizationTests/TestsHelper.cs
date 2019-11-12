@@ -53,12 +53,12 @@ namespace TagsCloudVisualizationTests
                    IsPointInCircle(new Point(rectangle.Right, rectangle.Bottom), circleCenter, circleRadius);
         }
 
-        public static void SaveFailedTagsCloudAndNotify(string imageName, TagsCloudImage tagsCloudImage)
+        public static string SaveFailedTagsCloud(string imageName, TagsCloudImage tagsCloudImage)
         {
             var fileName = imageName + "failed.png";
             var exactPath = Path.GetFullPath(fileName);
             tagsCloudImage.GetBitmap().Save(exactPath);
-            Console.WriteLine("Tag cloud visualization saved to file {0}", exactPath);
+            return exactPath;
         }
 
         private static bool IsPointInCircle(Point point, Point circleCenter, int circleRadius)
