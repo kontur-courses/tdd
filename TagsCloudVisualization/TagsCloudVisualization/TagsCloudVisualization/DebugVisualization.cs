@@ -13,11 +13,10 @@ namespace TagsCloudVisualization.TagsCloudVisualization
             {
                 var blackPen = new Pen(new SolidBrush(Color.Black), 3);
                 var redPen = new Pen(new SolidBrush(Color.Red), 3);
-                bool rectangleIntersectsAnother;
                 foreach (var rectangle in rectangles)
                 {
-                    rectangleIntersectsAnother = rectangles
-                                    .Any(rec => rec != rectangle && rectangle.IntersectsWith(rec));
+                    var rectangleIntersectsAnother = rectangles.Any(rec => rec != rectangle
+                                                                           && rectangle.IntersectsWith(rec));
                     drawPlace.DrawRectangle(rectangleIntersectsAnother ? redPen : blackPen, rectangle);
                 }
             }

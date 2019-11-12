@@ -127,13 +127,12 @@ namespace TagsCloudVisualization.Tests.TagCloudLayouters
 
         private Point FindPointOnCircle(double radius, Func<Point, Point> step)
         {
-            Func<Point, double> circleEquation = p => Math.Sqrt(Math.Pow(p.X - center.X, 2) + Math.Pow(p.Y - center.Y, 2));
             Point point = center;
             double distance = 0;
             while (radius >= distance)
             {
                 point = step(point);
-                distance = circleEquation(point);
+                distance = point.DistanceTo(center);
             }
             return point;
         }
@@ -141,7 +140,7 @@ namespace TagsCloudVisualization.Tests.TagCloudLayouters
         private Point GetClosestLocation(Point diagonalPoint, HashSet<Point> points)
         {
             var min = double.MaxValue;
-            Point closestPoint = default;
+            var closestPoint = new Point();
             foreach (var point in points)
                 if (diagonalPoint.DistanceTo(point) < min)
                 {
