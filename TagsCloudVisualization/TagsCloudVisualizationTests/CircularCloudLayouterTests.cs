@@ -44,7 +44,8 @@ namespace TagsCloudVisualizationTests
         public void PutNextRectangle_RectangleHasCorrectSize(int minWidth, int minHeight, int maxWidth, int maxHeight)
         {
             var circularCloudLayouter = new CircularCloudLayouter(Point.Empty);
-            var rectangleSize = TestsHelper.CreateRandomSize(new Size(minWidth, minHeight), new Size(maxWidth, maxHeight));
+            var rectangleSize =
+                TestsHelper.CreateRandomSize(new Size(minWidth, minHeight), new Size(maxWidth, maxHeight));
 
             var rectangle = circularCloudLayouter.PutNextRectangle(rectangleSize);
 
@@ -87,16 +88,24 @@ namespace TagsCloudVisualizationTests
             var rectanglesIntersect = intersectingRectangles.Any();
             rectanglesIntersect.Should().BeFalse();
         }
-        
-        [TestCase(50, 50, 50, 50, 10, 0.45, Description = "Cloud is dense on small number of equal-sized squares")]
-        [TestCase(30, 10, 30, 10, 10, 0.45, Description = "Cloud is dense on small number of equal-sized wide rectangles")]
-        [TestCase(10, 30, 10, 30, 10, 0.45, Description = "Cloud is dense on small number of equal-sized tall rectangles")]
-        [TestCase(40, 40, 40, 40, 100, 0.65, Description = "Cloud is dense on large number of equal-sized squares")]
-        [TestCase(30, 10, 30, 10, 100, 0.65, Description = "Cloud is dense on large number of equal-sized wide rectangles")]
-        [TestCase(10, 30, 10, 30, 100, 0.65, Description = "Cloud is dense on large number of equal-sized tall rectangles")]
+
+        [TestCase(50, 50, 50, 50, 10, 0.45,
+            Description = "Cloud is dense on small number of equal-sized squares")]
+        [TestCase(30, 10, 30, 10, 10, 0.45,
+            Description = "Cloud is dense on small number of equal-sized wide rectangles")]
+        [TestCase(10, 30, 10, 30, 10, 0.45,
+            Description = "Cloud is dense on small number of equal-sized tall rectangles")]
+        [TestCase(40, 40, 40, 40, 100, 0.65,
+            Description = "Cloud is dense on large number of equal-sized squares")]
+        [TestCase(30, 10, 30, 10, 100, 0.65,
+            Description = "Cloud is dense on large number of equal-sized wide rectangles")]
+        [TestCase(10, 30, 10, 30, 100, 0.65,
+            Description = "Cloud is dense on large number of equal-sized tall rectangles")]
         [Retry(10)]
-        [TestCase(5, 5, 10, 10, 10, 0.5, Description = "Cloud is dense on small number of rectangles")]
-        [TestCase(5, 5, 10, 10, 100, 0.65, Description = "Cloud is dense on large number of rectangles")]
+        [TestCase(5, 5, 10, 10, 10, 0.5,
+            Description = "Cloud is dense on small number of rectangles")]
+        [TestCase(5, 5, 10, 10, 100, 0.65,
+            Description = "Cloud is dense on large number of rectangles")]
         public void TagsCloudOfRandomSizedRectanglesIsDense(int minWidth, int minHeight, int maxWith, int maxHeight,
             int count, double requiredDensity)
         {
@@ -113,16 +122,24 @@ namespace TagsCloudVisualizationTests
             var area = rectangles.Sum(rectangle => rectangle.Width * rectangle.Height);
             (area / circleArea).Should().BeGreaterThan(requiredDensity);
         }
-        
-        [TestCase(50, 50, 50, 50, 10, 9, Description = "Shape is close to circle on small number of equal-sized squares")]
-        [TestCase(30, 10, 30, 10, 10, 9, Description = "Shape is close to circle on small number of equal-sized wide rectangles")]
-        [TestCase(60, 20, 60, 20, 10, 9, Description = "Shape is close to circle on small number of equal-sized tall rectangles")]
-        [TestCase(50, 50, 50, 50, 1000, 950, Description = "Shape is close to circle on large number of equal-sized squares")]
-        [TestCase(30, 10, 30, 10, 1000, 950, Description = "Shape is close to circle on large number of equal-sized wide rectangles")]
-        [TestCase(60, 20, 60, 20, 1000, 950, Description = "Shape is close to circle on large number of equal-sized tall rectangles")]
+
+        [TestCase(50, 50, 50, 50, 10, 9,
+            Description = "Shape is close to circle on small number of equal-sized squares")]
+        [TestCase(30, 10, 30, 10, 10, 9,
+            Description = "Shape is close to circle on small number of equal-sized wide rectangles")]
+        [TestCase(60, 20, 60, 20, 10, 9,
+            Description = "Shape is close to circle on small number of equal-sized tall rectangles")]
+        [TestCase(50, 50, 50, 50, 1000, 950,
+            Description = "Shape is close to circle on large number of equal-sized squares")]
+        [TestCase(30, 10, 30, 10, 1000, 950,
+            Description = "Shape is close to circle on large number of equal-sized wide rectangles")]
+        [TestCase(60, 20, 60, 20, 1000, 950,
+            Description = "Shape is close to circle on large number of equal-sized tall rectangles")]
         [Retry(5)]
-        [TestCase(5, 5, 10, 10, 10, 7, Description = "Shape is close to circle on small number of rectangles")]
-        [TestCase(5, 5, 10, 10, 1000, 750, Description = "Shape is close to circle on small large of rectangles")]
+        [TestCase(5, 5, 10, 10, 10, 7,
+            Description = "Shape is close to circle on small number of rectangles")]
+        [TestCase(5, 5, 10, 10, 1000, 750,
+            Description = "Shape is close to circle on small large of rectangles")]
         public void TagsCloudOfRandomSizedRectanglesShapeIsCloseToCircle(int minWidth, int minHeight, int maxWith,
             int maxHeight, int count, int rectanglesInCircleRequired)
         {
@@ -135,7 +152,8 @@ namespace TagsCloudVisualizationTests
             TestExecutionContext.CurrentContext.CurrentTest.Properties.Set("rectangles", rectangles);
 
             var radius = TestsHelper.GetRadiusOfCircleIncludingAllRectangles(rectangles, center);
-            var rectanglesInCircleCount = rectangles.Count(rectangle => TestsHelper.IsRectangleInCircle(rectangle, center, radius));
+            var rectanglesInCircleCount =
+                rectangles.Count(rectangle => TestsHelper.IsRectangleInCircle(rectangle, center, radius));
             rectanglesInCircleCount.Should().BeGreaterOrEqualTo(rectanglesInCircleRequired);
         }
 
@@ -143,13 +161,13 @@ namespace TagsCloudVisualizationTests
         public void TearDown()
         {
             var outcome = TestContext.CurrentContext.Result.Outcome;
-            if (outcome != ResultState.Error && outcome != ResultState.Failure) 
+            if (outcome != ResultState.Error && outcome != ResultState.Failure)
                 return;
-            if (!(TestContext.CurrentContext.Test.Properties.Get("rectangles") is List<Rectangle> rectangles)) 
+            if (!(TestContext.CurrentContext.Test.Properties.Get("rectangles") is List<Rectangle> rectangles))
                 return;
-            
+
             var tagsCloudImage = new TagsCloudImage(1920, 1080);
-            tagsCloudImage.AddRectangles(rectangles, Color.Black, 1f);    
+            tagsCloudImage.AddRectangles(rectangles, Color.Black, 1f);
 
             if (TestContext.CurrentContext.Test.Properties.Get("intersectingRectangles") is List<Rectangle>
                 intersectingRectangles)
