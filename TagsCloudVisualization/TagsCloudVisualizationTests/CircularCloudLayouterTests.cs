@@ -161,14 +161,7 @@ namespace TagsCloudVisualizationTests
             Console.WriteLine("Tag cloud visualization saved to file {0}", exactPath);
         }
 
-        private static List<Rectangle> PutRectanglesUsingLayouter(int rectanglesCount, CircularCloudLayouter layouter,
-            Size rectangleSize)
-        {
-            var rectangles = new List<Rectangle>();
-            for (var i = 0; i < rectanglesCount; ++i)
-                rectangles.Add(layouter.PutNextRectangle(rectangleSize));
-            return rectangles;
-        }
+        #region Helper functions
 
         private static List<Rectangle> PutRandomRectanglesUsingLayouter(int rectanglesCount,
             CircularCloudLayouter layouter, Size minSize, Size maxSize)
@@ -181,9 +174,6 @@ namespace TagsCloudVisualizationTests
                 ));
             return rectangles;
         }
-
-
-        #region Helper functions
 
         private static int GetRadiusOfCircleIncludingAllRectangles(IReadOnlyCollection<Rectangle> rectangles,
             Point center)
