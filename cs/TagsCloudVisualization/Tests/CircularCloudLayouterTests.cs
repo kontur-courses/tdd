@@ -161,7 +161,7 @@ namespace TagsCloudVisualization.Tests
 
             var circleSquare = furthestDistance * furthestDistance * Math.PI;
             var squareRatio = rectanglesSquare / circleSquare * 100;
-            squareRatio.Should().BeLessOrEqualTo(acceptableRatio);
+            squareRatio.Should().BeGreaterOrEqualTo(acceptableRatio);
         }
         
         public static double GetDistanceBetweenRectangleAndPoint(Rectangle rectangle, Point point)
