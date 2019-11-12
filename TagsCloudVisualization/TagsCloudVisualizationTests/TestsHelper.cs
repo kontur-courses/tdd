@@ -76,7 +76,7 @@ namespace TagsCloudVisualizationTests
             return pointXRelative * pointXRelative + pointYRelative * pointYRelative <= circleRadius * circleRadius;
         }
 
-        public static string SaveFailedTagsCloudAndNotify(string imageName, TagsCloudImage tagsCloudImage)
+        public static void SaveFailedTagsCloudAndNotify(string imageName, TagsCloudImage tagsCloudImage)
         {
             var fileName = imageName + "failed.png";
             var exactPath = Path.GetFullPath(fileName);
