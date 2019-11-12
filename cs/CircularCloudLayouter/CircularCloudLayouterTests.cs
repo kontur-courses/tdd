@@ -2,12 +2,9 @@
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using FluentAssertions;
-using FluentAssertions.Common;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using NUnit.Framework.Internal;
 
 namespace TagsCloudVisualization
 
@@ -43,17 +40,17 @@ namespace TagsCloudVisualization
         [TestCase(-1, 10, TestName = "WhenWidthIsNegative")]
         [TestCase(10, -1, TestName = "WhenHeightIsNegative")]
         [TestCase(-2, -1, TestName = "WhenWidthAndHeightIsNegative")]
-        public void ShouldThrowsArgumentException_When_PuttedRectangleHaveIncorrectDimension(int w, int h)
+        public void ShouldThrowArgumentException_WhenPutRectangleWithIncorrectDimension(int width, int height)
         {
-            Action action = () => basicLayouter.PutNextRectangle(new Size(w, h));
+            Action action = () => basicLayouter.PutNextRectangle(new Size(width, height));
             action.Should().Throw<ArgumentException>();
         }
 
-        [TestCase(20, 20, -10, -10)]
-        [TestCase(13, 13, -6, -6)]
-        public void GetCenterOfFirstRectangle(int w, int h, int x, int y)
+        [TestCase(20, 20, 90, 90)]
+        [TestCase(13, 13, 94, 94)]
+        public void CenterOfTheFirstRectangle_Should_BeCorrect(int width, int height, int x, int y)
         {
-            basicLayouter.PutNextRectangle(new Size(w, h)).Location.Should().Be(new Point(100 + x, 100 + y));
+            basicLayouter.PutNextRectangle(new Size(width, height)).Location.Should().Be(new Point(x, y));
         }
 
         [Test]
@@ -73,9 +70,7 @@ namespace TagsCloudVisualization
         public void Cloud_Should_BeDenseAndRound(CircularCloudLayouter layouter)
         {
             var maxRadius = layouter.Rectangles
-                    .Select(rec => GetSegment(new Point(rec.X + rec.Width / 2, rec.Y + rec.Height / 2), layouter.Center))
-                    .OrderByDescending(len => len)
-                    .FirstOrDefault();
+                .Max(rec => GetSegment(new Point(rec.X + rec.Width / 2, rec.Y + rec.Height / 2), layouter.Center));
             var area = (double)layouter.Rectangles.Select(rec => rec.Height * rec.Width).Sum();
             (area / (maxRadius * maxRadius * Math.PI)).Should().BeGreaterOrEqualTo(0.6);
         }
@@ -86,9 +81,8 @@ namespace TagsCloudVisualization
         public void Rectangles_ShouldNot_Intersect(CircularCloudLayouter layouter)
         {
             layouter.Rectangles
-                .Select(first =>
-                    layouter.Rectangles.Any(second => second != first && first.IntersectsWith(second)))
-                .Any(isIntersect => isIntersect).Should().BeFalse();
+                .Any(first =>
+                    layouter.Rectangles.Any(second => second != first && first.IntersectsWith(second))).Should().BeFalse();
         }
 
         [TearDown]
@@ -99,7 +93,8 @@ namespace TagsCloudVisualization
                 var layouter = TestContext.CurrentContext.Test.Arguments.FirstOrDefault() as CircularCloudLayouter;
                 var currentDirectoryName = Directory.GetCurrentDirectory();
                 var fileName = SaveCloudWhenTestIsFallAndGetName(layouter, TestContext.CurrentContext);
-                var path = new DirectoryInfo(currentDirectoryName).GetFiles(fileName).Select(f => f.FullName).FirstOrDefault();
+                var path = new DirectoryInfo(currentDirectoryName).Parent.Parent.Parent
+                        .GetFiles(fileName).Select(f => f.FullName).FirstOrDefault();
                 Console.WriteLine("Tag cloud visualization saved to file:");
                 Console.WriteLine(path);
             }
@@ -146,7 +141,7 @@ namespace TagsCloudVisualization
             var cloud = new CloudVisualization(1000, 1000);
             var result = cloud.DrawRectangles(layouter.Rectangles);
             var name = string.Format("{0}.png", context.Test.Name);
-            result.Save(string.Format(name));
+            result.Save(string.Format(@"../../../{0}", name));
             return name;
         }
     }

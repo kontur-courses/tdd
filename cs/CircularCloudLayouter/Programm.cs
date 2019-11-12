@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using NUnit.Framework;
 
 namespace TagsCloudVisualization
 
@@ -41,7 +39,9 @@ namespace TagsCloudVisualization
             var layouter = new CircularCloudLayouter(new Point(sizes.Count, sizes.Count));
             foreach (var size in sizes)
                 layouter.PutNextRectangle(new Size(size.Item1, size.Item2));
-            GetCloud(layouter, sizes.Count * 2, sizes.Count * 2, 3);
+            var width = (layouter.Rectangles.Max(rec => rec.X) -layouter.Rectangles.Min(rec=>rec.X))*2;
+            var height = (layouter.Rectangles.Max(rec => rec.Y) - layouter.Rectangles.Min(rec => rec.X))*2;
+            GetCloud(layouter, width, height, 3);
         }
     }
 }

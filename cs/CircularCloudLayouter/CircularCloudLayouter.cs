@@ -17,7 +17,7 @@ namespace TagsCloudVisualization
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
-                throw new ArgumentException();
+                throw new ArgumentException("Width and Height should be greater than zero");
             if (Rectangles.Count == 0)
             {
                 var x = Center.X - rectangleSize.Width / 2;
@@ -26,10 +26,12 @@ namespace TagsCloudVisualization
                 Rectangles.Add(rectangle);
                 return rectangle;
             }
-            var spiral = new ArchimedeanSprial(0, Math.PI / 40, Math.PI /40, 0.2, Center);
+            var spiral = new ArchimedeanSprial(0, Math.PI / 40, Math.PI / 40, 0.2, Center);
             while (true)
             {
-                var rectangle = new Rectangle(spiral.GetNextCoordinate(rectangleSize), rectangleSize);
+                var point = new Point(spiral.GetNextCoordinate().X - rectangleSize.Width / 2,
+                        spiral.GetNextCoordinate().Y - rectangleSize.Height / 2);
+                var rectangle = new Rectangle(point, rectangleSize);
                 if (!Rectangles.Any(rec => rec.IntersectsWith(rectangle)))
                 {
                     Rectangles.Add(rectangle);
@@ -57,12 +59,12 @@ namespace TagsCloudVisualization
             Center = center;
         }
 
-        public Point GetNextCoordinate(Size rectangleSize)
+        public Point GetNextCoordinate()
         {
             Alpha += Step;
             RadiusVector = Alpha * DensityCoefficient;
-            var x = (int)(RadiusVector * Math.Cos(Alpha)) - rectangleSize.Width / 2 + Center.X;
-            var y = (int)(RadiusVector * Math.Sin(Alpha)) - rectangleSize.Height / 2 + Center.Y;
+            var x = (int)(RadiusVector * Math.Cos(Alpha)) + Center.X;
+            var y = (int)(RadiusVector * Math.Sin(Alpha)) + Center.Y;
             return new Point(x, y);
         }
     }
