@@ -38,13 +38,13 @@ namespace TagsCloudVisualizationTests
                 .WithMessage("rectangleSize is not correct rectangle size");
         }
 
-        [TestCase(35, 17)]
-        [TestCase(24, 47)]
-        [TestCase(57, 57)]
-        public void PutNextRectangle_RectangleHasCorrectSize(int width, int height)
+        [TestCase(57, 57, 57, 57)]
+        [Repeat(10)]
+        [TestCase(10, 10, 100, 100)]
+        public void PutNextRectangle_RectangleHasCorrectSize(int minWidth, int minHeight, int maxWidth, int maxHeight)
         {
             var circularCloudLayouter = new CircularCloudLayouter(Point.Empty);
-            var rectangleSize = new Size(width, height);
+            var rectangleSize = CreateRandomSize(new Size(minWidth, minHeight), new Size(maxWidth, maxHeight));
 
             var rectangle = circularCloudLayouter.PutNextRectangle(rectangleSize);
 
@@ -166,13 +166,18 @@ namespace TagsCloudVisualizationTests
         private static List<Rectangle> PutRandomRectanglesUsingLayouter(int rectanglesCount,
             CircularCloudLayouter layouter, Size minSize, Size maxSize)
         {
-            var random = new Random();
             var rectangles = new List<Rectangle>();
             for (var i = 0; i < rectanglesCount; ++i)
                 rectangles.Add(layouter.PutNextRectangle(
-                    new Size(random.Next(minSize.Width, maxSize.Width), random.Next(minSize.Height, maxSize.Height))
+                    CreateRandomSize(minSize, maxSize)
                 ));
             return rectangles;
+        }
+
+        private static Size CreateRandomSize(Size minSize, Size maxSize)
+        {
+            var random = new Random();
+            return new Size(random.Next(minSize.Width, maxSize.Width), random.Next(minSize.Height, maxSize.Height));
         }
 
         private static int GetRadiusOfCircleIncludingAllRectangles(IReadOnlyCollection<Rectangle> rectangles,
