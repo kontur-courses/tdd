@@ -9,10 +9,18 @@ namespace TagCloud.Tests
 {
     internal class OnFailDrawer
     {
+        private int imgWidth;
+        private int imgHeight;
         protected CircularCloudLayouter cloudLayouter;
-        
+
+        public OnFailDrawer(int imgWidth = 1200, int imgHeight = 1200)
+        {
+            this.imgWidth = imgWidth;
+            this.imgHeight = imgHeight;
+        }
+
         [SetUp]
-        public void OnFailDraweSetUp()
+        public void SetUp()
         {
             cloudLayouter = new CircularCloudLayouter(TestingDegenerateSize.CenterPoint);
         }
@@ -24,10 +32,10 @@ namespace TagCloud.Tests
                 return;
             var fname = $"{TestContext.CurrentContext.Test.FullName}.png";
             DrawOriginOrientedRectangles(
-                new Size(1200, 1200),
+                new Size(imgWidth, imgHeight),
                 cloudLayouter
                     .GetAllRectangles()
-                    .Select(rect => new Rectangle(600 + rect.X  , 600 + rect.Y , rect.Width, rect.Height)),
+                    .Select(rect => new Rectangle(imgWidth / 2 + rect.X  , imgHeight / 2 + rect.Y , rect.Width, rect.Height)),
                 fname);
             TestContext.WriteLine($"Tag cloud visualisation saved to file: '{fname}'");
         }

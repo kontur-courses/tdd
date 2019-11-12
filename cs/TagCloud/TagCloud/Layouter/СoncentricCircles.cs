@@ -11,16 +11,17 @@ namespace TagCloud
         private double phi;
 
         private double deltaRo;
+        private double roStepMultiplier;
 
-        public СoncentricCircles(double deltaRo = 0.2)
+        public СoncentricCircles(double deltaRo = 0.2, double roStepMultiplier = 1)
         {
             this.deltaRo = deltaRo;
+            this.roStepMultiplier = roStepMultiplier;
         }
 
         public IEnumerable<Point> IterateBySpiralPoints()
         {
-            // productivity enhancing
-            // ro /= 2;
+            ro *= roStepMultiplier;
             while (true)
             {
                 var sectors = Math.Max(Math.Round(ro * 18), 18);

@@ -10,7 +10,7 @@ using NUnit.Framework.Internal;
 
 namespace TagCloud.Tests
 {
-    internal class TestingDenseLayout : OnFailDrawer
+    internal class TestingDenseLayoutOn100RandomRectangles : OnFailDrawer
     {
         private static bool IsSymmetricOverAxis(IReadOnlyCollection<Rectangle> rectangles, 
             Func<Rectangle, int> coordinateSelector,
@@ -19,7 +19,7 @@ namespace TagCloud.Tests
             var min = rectangles.Min(coordinateSelector);
             var max = rectangles.Select(rect => coordinateSelector(rect) + sideSelector(rect)).Max();
 
-            return Math.Abs(Math.Abs(max) - Math.Abs(min)) < (rectangles.Sum(sideSelector) / rectangles.Count);
+            return Math.Abs(Math.Abs(max) - Math.Abs(min)) < rectangles.Sum(sideSelector) / rectangles.Count;
         }
 
         [Test]
@@ -79,7 +79,7 @@ namespace TagCloud.Tests
                 2 * innerSquareHalfSide, 
                 2 * innerSquareHalfSide);
 
-            // check if we have outliers
+            // check if we don't have outliers
             rectangles
                 .All(rect => square.IntersectsWith(rect))
                 .Should()
