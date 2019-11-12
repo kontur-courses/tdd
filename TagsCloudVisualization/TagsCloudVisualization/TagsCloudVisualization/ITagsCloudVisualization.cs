@@ -5,6 +5,6 @@ namespace TagsCloudVisualization.TagsCloudVisualization
 {
     internal interface ITagsCloudVisualization<T>
     {   
-        Bitmap DrawRectangles(List<T> objectsToDraw, int imageWidth, int imageHeight);
+        Bitmap Draw(List<T> objectsToDraw, int imageWidth, int imageHeight);
     }
 }

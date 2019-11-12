@@ -6,7 +6,7 @@ namespace TagsCloudVisualization.TagsCloudVisualization
 {
     class DebugVisualization : ITagsCloudVisualization<Rectangle>
     {
-        public Bitmap DrawRectangles(List<Rectangle> rectangles, int imageWidth, int imageHeight)
+        public Bitmap Draw(List<Rectangle> rectangles, int imageWidth, int imageHeight)
         {
             var image = new Bitmap(imageWidth, imageHeight);
             using (var drawPlace = Graphics.FromImage(image))

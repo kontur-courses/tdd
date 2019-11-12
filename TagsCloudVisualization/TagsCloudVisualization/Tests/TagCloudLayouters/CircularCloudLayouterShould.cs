@@ -6,14 +6,13 @@ using System.Linq;
 using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 using NUnit.Framework.Interfaces;
 using TagsCloudVisualization.Exceptions;
 using TagsCloudVisualization.Geometry;
 using TagsCloudVisualization.TagCloudLayouters;
 using TagsCloudVisualization.TagsCloudVisualization;
 
-namespace TagsCloudVisualization.Tests.MainProject
+namespace TagsCloudVisualization.Tests.TagCloudLayouters
 {
     [TestFixture]
     class CircularCloudLayouterShould
@@ -183,7 +182,7 @@ namespace TagsCloudVisualization.Tests.MainProject
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                var image = new DebugVisualization().DrawRectangles(rectangles, 900, 900);
+                var image = new DebugVisualization().Draw(rectangles, 900, 900);
                 var pathToTestNameDir = Path.Combine(TestContext.CurrentContext.TestDirectory, TestContext.CurrentContext.Test.Name);
                 if (!Directory.Exists(pathToTestNameDir))
                     Directory.CreateDirectory(pathToTestNameDir);
