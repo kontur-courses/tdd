@@ -45,6 +45,29 @@ namespace TagsCloudVisualizationTests
             return radius;
         }
 
+        public static bool IsRectangleInCircle(Rectangle rectangle, Point circleCenter, int circleRadius)
+        {
+            return IsPointInCircle(new Point(rectangle.Left, rectangle.Top), circleCenter, circleRadius) &&
+                   IsPointInCircle(new Point(rectangle.Left, rectangle.Bottom), circleCenter, circleRadius) &&
+                   IsPointInCircle(new Point(rectangle.Right, rectangle.Top), circleCenter, circleRadius) &&
+                   IsPointInCircle(new Point(rectangle.Right, rectangle.Bottom), circleCenter, circleRadius);
+        }
+
+        public static void SaveFailedTagsCloudAndNotify(string imageName, TagsCloudImage tagsCloudImage)
+        {
+            var fileName = imageName + "failed.png";
+            var exactPath = Path.GetFullPath(fileName);
+            tagsCloudImage.GetBitmap().Save(exactPath);
+            Console.WriteLine("Tag cloud visualization saved to file {0}", exactPath);
+        }
+
+        private static bool IsPointInCircle(Point point, Point circleCenter, int circleRadius)
+        {
+            var pointXRelative = point.X - circleCenter.X;
+            var pointYRelative = point.Y - circleCenter.Y;
+            return pointXRelative * pointXRelative + pointYRelative * pointYRelative <= circleRadius * circleRadius;
+        }
+
         private static (int left, int right, int top, int bottom) GetEdgesOfRectanglesSet(
             IReadOnlyCollection<Rectangle> rectangles)
         {
@@ -59,29 +82,6 @@ namespace TagsCloudVisualizationTests
                 (bottommost, rectangle) => rectangle.Bottom > bottommost ? rectangle.Bottom : bottommost);
 
             return (left, right, top, bottom);
-        }
-
-        public static bool IsRectangleInCircle(Rectangle rectangle, Point circleCenter, int circleRadius)
-        {
-            return IsPointInCircle(new Point(rectangle.Left, rectangle.Top), circleCenter, circleRadius) &&
-                   IsPointInCircle(new Point(rectangle.Left, rectangle.Bottom), circleCenter, circleRadius) &&
-                   IsPointInCircle(new Point(rectangle.Right, rectangle.Top), circleCenter, circleRadius) &&
-                   IsPointInCircle(new Point(rectangle.Right, rectangle.Bottom), circleCenter, circleRadius);
-        }
-
-        private static bool IsPointInCircle(Point point, Point circleCenter, int circleRadius)
-        {
-            var pointXRelative = point.X - circleCenter.X;
-            var pointYRelative = point.Y - circleCenter.Y;
-            return pointXRelative * pointXRelative + pointYRelative * pointYRelative <= circleRadius * circleRadius;
-        }
-
-        public static void SaveFailedTagsCloudAndNotify(string imageName, TagsCloudImage tagsCloudImage)
-        {
-            var fileName = imageName + "failed.png";
-            var exactPath = Path.GetFullPath(fileName);
-            tagsCloudImage.GetBitmap().Save(exactPath);
-            Console.WriteLine("Tag cloud visualization saved to file {0}", exactPath);
         }
     }
 }
