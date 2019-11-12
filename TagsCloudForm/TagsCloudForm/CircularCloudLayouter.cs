@@ -244,11 +244,7 @@ namespace TagsCloudVisualization
 
         private int FindLeftBorderX(Segment segment, Size rectangleSize)
         {
-            int topRectSide;
-            if (segment.type == Segment.Type.Top)
-                topRectSide = segment.end.Y - rectangleSize.Height;
-            else
-                topRectSide = segment.end.Y;
+            int topRectSide = segment.type == Segment.Type.Top ? segment.end.Y - rectangleSize.Height : segment.end.Y;
             int bottomRectSide = topRectSide + rectangleSize.Height;
             var leftRectSide = new Segment(0, topRectSide, 0, bottomRectSide, Segment.Type.Left);
             var leftBorder = BorderSegments
@@ -269,11 +265,7 @@ namespace TagsCloudVisualization
 
         private int FindRightBorderX(Segment segment, Size rectangleSize)
         {
-            int topRectSide;
-            if (segment.type == Segment.Type.Top)
-                topRectSide = segment.end.Y - rectangleSize.Height;
-            else
-                topRectSide = segment.end.Y;
+            int topRectSide = segment.type == Segment.Type.Top ? segment.end.Y - rectangleSize.Height : segment.end.Y;
             int bottomRectSide = topRectSide + rectangleSize.Height;
             var rightRectSide = new Segment(0, topRectSide, 0, bottomRectSide, Segment.Type.Right);
             var rightBorder = BorderSegments
@@ -294,11 +286,7 @@ namespace TagsCloudVisualization
 
         private int FindTopBorderY(Segment segment, Size rectangleSize)
         {
-            int leftRectSide;
-            if (segment.type == Segment.Type.Left)
-                leftRectSide = segment.end.X - rectangleSize.Width;
-            else
-                leftRectSide = segment.end.X;
+            int leftRectSide = segment.type == Segment.Type.Left ? segment.end.X - rectangleSize.Width : segment.end.X;
             int rightRectSide = leftRectSide + rectangleSize.Width;
             var topRectSide = new Segment(leftRectSide, 0, rightRectSide, 0, Segment.Type.Top);
             var topBorder = BorderSegments
@@ -319,11 +307,7 @@ namespace TagsCloudVisualization
 
         private int FindBottomBorderY(Segment segment, Size rectangleSize)
         {
-            int leftRectSide;
-            if (segment.type == Segment.Type.Left)
-                leftRectSide = segment.end.X - rectangleSize.Width;
-            else
-                leftRectSide = segment.end.X;
+            int leftRectSide = segment.type == Segment.Type.Left ? segment.end.X - rectangleSize.Width : segment.end.X;
             int rightRectSide = leftRectSide + rectangleSize.Width;
             var bottomRectSide = new Segment(leftRectSide, 0, rightRectSide, 0, Segment.Type.Bottom);
             var topBorder = BorderSegments
