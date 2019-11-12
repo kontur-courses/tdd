@@ -20,28 +20,24 @@ namespace TagsCloudVisualization
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException("rectangleSize is not correct rectangle size");
 
-            var (x, y) = GetNextPosition(rectangleSize);
+            var (x, y) = GetNextUpperLeftCornerPosition(rectangleSize);
             var newRectangle = new Rectangle(x, y, rectangleSize.Width, rectangleSize.Height);
             while (_placedRectangles.Any(pr => pr.IntersectsWith(newRectangle)))
-                (newRectangle.X, newRectangle.Y) = GetNextPosition(newRectangle.Size);
+                (newRectangle.X, newRectangle.Y) = GetNextUpperLeftCornerPosition(newRectangle.Size);
 
             _placedRectangles.Add(newRectangle);
             return newRectangle;
         }
 
-        /**
-         * Advance through the Archimedean spiral
-         * Position is moved to correspond the upper left corner of rectangle with the given size
-         */
-        private double _phi = 0;
+        private double _spiralPosition = 0;
         private const double SpiralFactor = 0.5;
         private const double Step = 1 / 50d;
 
-        private (int x, int y) GetNextPosition(Size size)
+        private (int x, int y) GetNextUpperLeftCornerPosition(Size size)
         {
-            var x = (int) (_center.X + SpiralFactor * _phi * Math.Cos(_phi) - size.Width / 2d);
-            var y = (int) (_center.Y + SpiralFactor * _phi * Math.Sin(_phi) - size.Height / 2d);
-            _phi += Step;
+            var x = (int) (_center.X + SpiralFactor * _spiralPosition * Math.Cos(_spiralPosition) - size.Width / 2d);
+            var y = (int) (_center.Y + SpiralFactor * _spiralPosition * Math.Sin(_spiralPosition) - size.Height / 2d);
+            _spiralPosition += Step;
             return (x, y);
         }
     }
