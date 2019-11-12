@@ -43,7 +43,7 @@ namespace TagsCloudVisualization.Tests.TagCloudLayouters
         public void SetUp()
         {
             center = new Point(300, 300);
-            circularCloudLayouter = new CircularCloudLayouter(center, 400);
+            circularCloudLayouter = new CircularCloudLayouter(center, 1000);
         }
 
         [Test]
@@ -74,7 +74,7 @@ namespace TagsCloudVisualization.Tests.TagCloudLayouters
         [Test]
         public void ThrowOutOfPermissibleRangeException_When_RectangleIsOutPermissibleRange()
         {
-            Func<Rectangle> act = () => circularCloudLayouter.PutNextRectangle(new Size(300, 400));
+            Func<Rectangle> act = () => circularCloudLayouter.PutNextRectangle(new Size(3000, 400));
             act.Should().Throw<OutOfPermissibleRangeException>();
         }
 
@@ -84,7 +84,7 @@ namespace TagsCloudVisualization.Tests.TagCloudLayouters
             rectangles = sizesForTesting.Select(size => circularCloudLayouter.PutNextRectangle(size)).ToList();
             double allRectanglesSquare = rectangles.Select(rectangle => rectangle.Square()).Sum();
             var corners = GetAllPoints();
-            var radiuses = GetFourRadiuses(corners);
+            var radiuses = GetFourRadiuses(corners).ToList();
             var radius = radiuses.Sum() / 4;
             var circleSquare = Math.PI * radius * radius;
             allRectanglesSquare.Should().BeGreaterOrEqualTo(80 * circleSquare / 100);
@@ -103,14 +103,16 @@ namespace TagsCloudVisualization.Tests.TagCloudLayouters
             yield return Math.Abs(allCirclePoints.Max(point => point.Y) - center.Y);
         }
 
-        [Test]
-        public void CreateCloud_WithCircleShape()
+        [TestCase(50)]
+        [TestCase(150)]
+        [TestCase(700)]
+        public void CreateCloud_WithCircleShape(int rectanglesCount)
         {
             var random = new Random();
-            for (var i = 0; i < 50; i++)
+            for (var i = 0; i < rectanglesCount; i++)
                 rectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(random.Next(1, 50), random.Next(1, 50))));
             var corners = GetAllPoints();
-            var radiuses = GetFourRadiuses(corners);
+            var radiuses = GetFourRadiuses(corners).ToList();
             var middleRadius = radiuses.Sum() / 4;
             var pointOnCircle1 = FindPointOnCircle(middleRadius, point => new Point(point.X + 1, point.Y + 1));
             var pointOnCircle2 = FindPointOnCircle(middleRadius, point => new Point(point.X - 1, point.Y + 1));
