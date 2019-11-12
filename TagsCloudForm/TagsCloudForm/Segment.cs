@@ -97,6 +97,29 @@ namespace TagsCloudVisualization
                 return false;
         }
 
+        public bool Intersects(Segment segment)
+        {
+            if (this.Horizontal() && segment.Horizontal())
+            {
+                if ((this.start.X >= segment.start.X && this.start.X < segment.end.X)
+                            || (this.end.X > segment.start.X && this.end.X <= segment.end.X)
+                            || (this.start.X <= segment.start.X && this.end.X >= segment.end.X)
+                            || (this.start.X >= segment.start.X && this.end.X <= segment.end.X))
+                    return true;
+                return false;
+            }
+            if (!this.Horizontal() && !segment.Horizontal())
+            {
+                if ((this.start.Y >= segment.start.Y && this.start.Y < segment.end.Y)
+                            || (this.end.Y > segment.start.Y && this.end.Y <= segment.end.Y)
+                            || (this.start.Y <= segment.start.Y && this.end.Y >= segment.end.Y)
+                            || (this.start.Y >= segment.start.Y && this.end.Y <= segment.end.Y))
+                    return true;
+                return false;
+            }
+            return false;
+        }
+
 
         public enum Type
         {

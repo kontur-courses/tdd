@@ -250,15 +250,13 @@ namespace TagsCloudVisualization
             else
                 topRectSide = segment.end.Y;
             int bottomRectSide = topRectSide + rectangleSize.Height;
+            var leftRectSide = new Segment(0, topRectSide, 0, bottomRectSide, Segment.Type.Left);
             var leftBorder = BorderSegments
                             .Select(a => a)
                             .Where(b =>
                             b.type == Segment.Type.Right
                             && b.start.X <= segment.start.X
-                            && ((b.start.Y >= topRectSide && b.start.Y < bottomRectSide)
-                            || (b.end.Y > topRectSide && b.end.Y <= bottomRectSide)
-                            || (b.start.Y <= topRectSide && b.end.Y >= bottomRectSide
-                            || (b.start.Y >= topRectSide && b.end.Y <= bottomRectSide))))
+                            && b.Intersects(leftRectSide))
                             .OrderByDescending(c => c.start.X)
                             .FirstOrDefault();
             int leftBorderX;
@@ -277,15 +275,13 @@ namespace TagsCloudVisualization
             else
                 topRectSide = segment.end.Y;
             int bottomRectSide = topRectSide + rectangleSize.Height;
+            var rightRectSide = new Segment(0, topRectSide, 0, bottomRectSide, Segment.Type.Right);
             var rightBorder = BorderSegments
                             .Select(a => a)
                             .Where(b =>
                             b.type == Segment.Type.Left
                             && b.start.X >= segment.end.X
-                            && ((b.start.Y >= topRectSide && b.start.Y < bottomRectSide)
-                            || (b.end.Y > topRectSide && b.end.Y <= bottomRectSide)
-                            || (b.start.Y <= topRectSide && b.end.Y >= bottomRectSide
-                            || (b.start.Y >= topRectSide && b.end.Y <= bottomRectSide))))
+                            && b.Intersects(rightRectSide))
                             .OrderBy(c => c.start.X)
                             .FirstOrDefault();
             int rightBorderX;
@@ -304,15 +300,13 @@ namespace TagsCloudVisualization
             else
                 leftRectSide = segment.end.X;
             int rightRectSide = leftRectSide + rectangleSize.Width;
+            var topRectSide = new Segment(leftRectSide, 0, rightRectSide, 0, Segment.Type.Top);
             var topBorder = BorderSegments
                 .Select(a => a)
                 .Where(b =>
                 b.type == Segment.Type.Bottom
                 && b.start.Y <= segment.start.Y
-                && ((b.start.X >= leftRectSide && b.start.X < rightRectSide)
-                            || (b.end.X > leftRectSide && b.end.X <= rightRectSide)
-                            || (b.start.X <= leftRectSide && b.end.X >= rightRectSide)
-                            || (b.start.X >= leftRectSide && b.end.X <= rightRectSide)))
+                && b.Intersects(topRectSide))
                 .OrderByDescending(c => c.start.Y)
                 .FirstOrDefault();
             int topBorderY;
@@ -331,15 +325,13 @@ namespace TagsCloudVisualization
             else
                 leftRectSide = segment.end.X;
             int rightRectSide = leftRectSide + rectangleSize.Width;
+            var bottomRectSide = new Segment(leftRectSide, 0, rightRectSide, 0, Segment.Type.Bottom);
             var topBorder = BorderSegments
                 .Select(a => a)
                 .Where(b =>
                 b.type == Segment.Type.Top
                 && b.end.Y >= segment.end.Y
-                && ((b.start.X >= leftRectSide && b.start.X < rightRectSide)
-                            || (b.end.X > leftRectSide && b.end.X <= rightRectSide)
-                            || (b.start.X <= leftRectSide && b.end.X >= rightRectSide)
-                            || (b.start.X >= leftRectSide && b.end.X <= rightRectSide)))
+                && b.Intersects(bottomRectSide))
                 .OrderBy(c => c.start.Y)
                 .FirstOrDefault();
             int topBorderY;
@@ -351,12 +343,12 @@ namespace TagsCloudVisualization
         }
 
 
-        private void CheckDistance(PositionSearchResult currentSearchRes, Segment segment, Point coord, Size rectangleSize)
+        private void CheckDistance(PositionSearchResult currentSearchRes, Segment segment, Point rectangleCoord, Size rectangleSize)
         {
-            var dist = Distance(GetRectangleCenter(new Rectangle(coord, rectangleSize)), CloudCenter);
+            var dist = Distance(GetRectangleCenter(new Rectangle(rectangleCoord, rectangleSize)), CloudCenter);
             if (dist < currentSearchRes.MinDistance)
             {
-                currentSearchRes.Update(dist, segment, coord);
+                currentSearchRes.Update(dist, segment, rectangleCoord);
             }
         }
 
