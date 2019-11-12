@@ -51,11 +51,12 @@ namespace TagsCloudVisualizationTests
             rectangle.Size.Should().Be(rectangleSize);
         }
 
-        [TestCase(0, 0, 4, 15)]
-        [TestCase(30, 200, 5, 5)]
-        public void PutNextRectangle_FirstRectangleContainsCenterPoint(int centerX, int centerY, int width, int height)
+        [TestCase(4, 15)]
+        [TestCase(8, 3)]
+        [TestCase(5, 5)]
+        public void PutNextRectangle_FirstRectangleContainsCenterPoint(int width, int height)
         {
-            var center = new Point(centerX, centerY);
+            var center = new Point(30, 200);
             var circularCloudLayouter = new CircularCloudLayouter(center);
             var rectangleSize = new Size(width, height);
 
