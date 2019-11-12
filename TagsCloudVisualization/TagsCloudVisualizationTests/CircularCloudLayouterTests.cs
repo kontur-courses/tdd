@@ -65,14 +65,10 @@ namespace TagsCloudVisualizationTests
             rectangle.Contains(center).Should().BeTrue();
         }
 
-        [TestCase(20, 20, 20, 20, 2)]
-        [TestCase(30, 15, 30, 15, 2)]
-        [TestCase(7, 10, 7, 10, 2)]
         [TestCase(20, 20, 20, 20, 20)]
         [TestCase(7, 10, 7, 10, 20)]
         [TestCase(25, 15, 25, 15, 20)]
         [Repeat(10)]
-        [TestCase(5, 5, 10, 10, 2)]
         [TestCase(5, 5, 10, 10, 200)]
         public void PutNextRectangle_RectanglesOfRandomSizesDoNotIntersect(int minWidth, int minHeight, int maxWith,
             int maxHeight, int count)
