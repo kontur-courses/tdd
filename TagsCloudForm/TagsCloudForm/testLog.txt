@@ -1,0 +1,6 @@
+{X=374,Y=373,Width=53,Height=54}
+{X=299,Y=359,Width=75,Height=82}
+{X=374,Y=321,Width=56,Height=52}
+{X=374,Y=427,Width=64,Height=22}
+{X=427,Y=373,Width=66,Height=66}
+
