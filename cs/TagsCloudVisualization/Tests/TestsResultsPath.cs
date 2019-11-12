@@ -8,17 +8,18 @@ namespace TagsCloudVisualization.Tests
     {
         public static string GetPathToFailedTestResult(string className, string testName, DateTime testTime)
         {
-            var directorySeparator = Path.DirectorySeparatorChar;
-            var path = Environment.CurrentDirectory + directorySeparator +
-                "TestsResults" + directorySeparator +
-                "Failed" + directorySeparator +
-                Assembly.GetExecutingAssembly().GetName().Name + directorySeparator +
-                className + directorySeparator +
-                testTime.ToString("dd.MM.yyyy") + directorySeparator;
+            var directorySeparator = Path.DirectorySeparatorChar.ToString();
+            var path = string.Join(
+                directorySeparator,
+                Environment.CurrentDirectory,
+                "TestsResults",
+                "Failed",
+                Assembly.GetExecutingAssembly().GetName().Name,
+                className,
+                testTime.ToString("dd.MM.yyyy"));
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
-            path += testTime.ToString("HH-mm-ss") + "_" + testName;
-            return path;
+            return $"{path}{directorySeparator}{testTime.ToString("HH-mm-ss")}_{testName}";
         }
     }
 }
