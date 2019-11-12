@@ -40,4 +40,4 @@
 
 ![Rectangle](picture1.png)
 ![Rectangle](picture2.png)
-![Rectangle](Pircture3.png)
+![Rectangle](Picture3.png)
