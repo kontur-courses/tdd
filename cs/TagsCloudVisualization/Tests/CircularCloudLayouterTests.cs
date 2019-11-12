@@ -35,10 +35,14 @@ namespace TagsCloudVisualization.Tests
             Console.WriteLine($"Tag cloud visualization saved to file {path}");
         }
 
-        [TestCase(0, 0, TestName = "WhenZeroPoint")]
-        [TestCase(1, 1, TestName = "WhenPositivePoint")]
-        [TestCase(-1, -1, TestName = "WhenNegativePoint")]
-        [TestCase(-1, 0, TestName = "WhenCoordinatesDifferentSigns")]
+        [TestCase(0, 0, Description = "The constructor can take zero by any coordinate",
+            TestName = "WhenZeroPoint")]
+        [TestCase(1, 1, Description = "The constructor can accept positive numbers by any coordinate",
+            TestName = "WhenPositivePoint")]
+        [TestCase(-1, -1, Description = "The constructor can accept negative numbers by any coordinate",
+            TestName = "WhenNegativePoint")]
+        [TestCase(-1, 0, Description = "The constructor can take the coordinates of different characters",
+            TestName = "WhenCoordinatesDifferentSigns")]
         public void Constructor_DoesNotThrow(int centerX, int centerY)
         {
             Action action = () => new CircularCloudLayouter(new Point(centerX, centerY));
