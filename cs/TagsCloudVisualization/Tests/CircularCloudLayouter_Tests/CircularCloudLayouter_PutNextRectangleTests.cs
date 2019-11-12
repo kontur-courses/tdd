@@ -7,7 +7,7 @@ using FluentAssertions;
 
 namespace TagsCloudVisualization.Tests.CircularCloudLayouter_Tests
 {
-    class CircularCloudLayouter_PutNextRectangleTests
+    internal class CircularCloudLayouter_PutNextRectangleTests
     {
         private CircularCloudLayouter sut;
         private List<Rectangle> rectangles;

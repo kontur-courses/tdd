@@ -2,7 +2,7 @@
 
 namespace TagsCloudVisualization.Interfaces
 {
-    interface IFigure
+    public interface IFigure
     {
         Point Center { get; set; }
         Point Location { get; set; }

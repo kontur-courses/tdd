@@ -9,7 +9,7 @@ using FluentAssertions;
 
 namespace TagsCloudVisualization.Tests.CircularCloudLayouter_Tests
 {
-    class CircularCloudLayouter_InitializationTests
+    internal class CircularCloudLayouter_InitializationTests
     {
         [TestCase(1000, 500)]
         [TestCase(10000, 2000)]

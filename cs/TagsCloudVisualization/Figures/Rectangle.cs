@@ -3,7 +3,7 @@ using TagsCloudVisualization.Interfaces;
 
 namespace TagsCloudVisualization.Figures
 {
-    class Rectangle : IFigure
+    public class Rectangle : IFigure
     {
         private System.Drawing.Rectangle rect;
 
