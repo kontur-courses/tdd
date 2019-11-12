@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using TagsCloudVisualization.Exceptions;
 using TagsCloudVisualization.Geometry;
 
 namespace TagsCloudVisualization.MainProject
@@ -40,8 +41,9 @@ namespace TagsCloudVisualization.MainProject
                 }
             }   
 
-            throw new ArgumentException("We can't find the place to add your rectangle, because rectangle " +
-                                         $"was out of permissible range :(. Your size was: {rectangleSize}");
+            throw new OutOfPermissibleRangeException("We can't find the place to add your rectangle, " +
+                                                     "because rectangle was out of permissible range :(. " +
+                                                     $"Your size was: {rectangleSize}");
         }
 
 

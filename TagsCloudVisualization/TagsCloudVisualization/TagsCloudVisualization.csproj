@@ -59,6 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\OutOfPermissibleRangeException.cs" />
     <Compile Include="Geometry\CenterMassChecker.cs" />
     <Compile Include="TagsCloudVisualization\CloudVisualization.cs" />
     <Compile Include="Tests\MainProject\CircularCloudLayouterShould.cs" />

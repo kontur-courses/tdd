@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using NUnit.Framework.Interfaces;
+using TagsCloudVisualization.Exceptions;
 using TagsCloudVisualization.Geometry;
 using TagsCloudVisualization.MainProject;
 using TagsCloudVisualization.TagsCloudVisualization;
@@ -65,11 +66,17 @@ namespace TagsCloudVisualization.Tests.MainProject
 
         [TestCase(-1, 3, TestName = "When_WidthLessThanZero")]
         [TestCase(32, -3, TestName = "When_HeightLessThanZero")]
-        [TestCase(300, 400, TestName = "When_RectangleIsOutPermissibleRange")]
-        public void ThrowException(int width, int height)
+        public void ThrowArgumentException(int width, int height)
         {
             Func<Rectangle> act = () => circularCloudLayouter.PutNextRectangle(new Size(width, height));
             act.Should().Throw<ArgumentException>();
+        }
+
+        [Test]
+        public void ThrowOutOfPermissibleRangeException_When_RectangleIsOutPermissibleRange()
+        {
+            Func<Rectangle> act = () => circularCloudLayouter.PutNextRectangle(new Size(300, 400));
+            act.Should().Throw<OutOfPermissibleRangeException>();
         }
 
         [Test]
