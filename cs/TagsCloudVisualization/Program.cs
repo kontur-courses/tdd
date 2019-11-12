@@ -1,13 +1,12 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
     internal class Program
     {
-        private static readonly Point Center = new Point(512, 360);
-        private static readonly Size ImageSize = new Size(Center.X * 2, Center.Y * 2);
-        private static readonly Size MinRectangleSize = new Size(20, 10);
-        private static readonly Size MaxRectangleSize = new Size(70, 60);
+        private static readonly Point Center = new Point(500, 500);
 
         private static void Main()
         {
@@ -18,45 +17,46 @@ namespace TagsCloudVisualization
 
         private static void DrawTagCloudWithEqualRectangles()
         {
-            var size = new Size(MaxRectangleSize.Width - MinRectangleSize.Width,
-                MaxRectangleSize.Height - MinRectangleSize.Height);
-            using (var visualizer = CreateVisualizer())
-            {
-                for (var i = 0; i < 100; i++)
-                {
-                    visualizer.DrawRectangle(size);
-                }
-                visualizer.Save("equal_rectangles.png");
-            }
+            var sizes = Enumerable.Repeat(new Size(50, 50), 100).ToArray();
+            var layouter = new CircularCloudLayouter(Center);
+            var visualizer = new CircularCloudVisualizer();
+            var bitmap = visualizer.Visualize(layouter, sizes);
+            bitmap.Save("equal_rectangles.png");
         }
 
         private static void DrawTagCloudWithIncreasingRectangles()
         {
-            using (var visualizer = CreateVisualizer())
+            var bitmap = CreateBitmap(50, i =>
             {
-                for (var i = 0; i < 50; i++)
-                {
-                    var font = new Font(FontFamily.GenericMonospace, 8 + i);
-                    visualizer.DrawText($"#{i + 1}", font);
-                }
-                visualizer.Save("increasing_rectangles.png");
-            }
+                var text = $"#{i + 1}";
+                var fontSize = 8 + i;
+                var font = new Font(FontFamily.GenericSansSerif, fontSize);
+                return new Tag(MeasureText(text, fontSize), text, font);
+            });
+            bitmap.Save("increasing_rectangles.png");
         }
 
         private static void DrawTagCloudWithDecreasingRectangles()
         {
-            using (var visualizer = CreateVisualizer())
+            var bitmap = CreateBitmap(50, i =>
             {
-                for (var i = 0; i < 50; i++)
-                {
-                    var font = new Font(FontFamily.GenericMonospace, 58 - i);
-                    visualizer.DrawText($"#{i + 1}", font);
-                }
-                visualizer.Save("decreasing_rectangles.png");
-            }
+                var text = $"#{i + 1}";
+                var fontSize = 58 - i;
+                var font = new Font(FontFamily.GenericSansSerif, fontSize);
+                return new Tag(MeasureText(text, fontSize), text, font);
+            });
+            bitmap.Save("decreasing_rectangles.png");
         }
 
-        private static CircularCloudVisualizer CreateVisualizer() =>
-            new CircularCloudVisualizer(new CircularCloudLayouter(Center), ImageSize);
+        private static Bitmap CreateBitmap(int count, Func<int, Tag> fabric)
+        {
+            var layouter = new CircularCloudLayouter(Center);
+            var tags = Enumerable.Range(0, count).Select(fabric).ToArray();
+            var visualizer = new CircularCloudVisualizer();
+            return visualizer.Visualize(layouter, tags);
+        }
+
+        private static Size MeasureText(string text, int fontSize) =>
+            new Size(fontSize * (text.Length + 1), fontSize * 2);
     }
 }

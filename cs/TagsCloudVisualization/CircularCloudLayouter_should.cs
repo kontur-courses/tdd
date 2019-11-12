@@ -1,89 +1,69 @@
-﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using FluentAssertions;
+using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal;
 
 namespace TagsCloudVisualization
 {
     [TestFixture]
     class CircularCloudLayouter_should
     {
-        private static readonly Point Center = new Point(10, 10);
+        private const int X = 200;
+        private const int Y = 200;
+        private const string LayouterKey = "layouter";
 
-        private CircularCloudLayouter layouter;
+        private static readonly Point Center = new Point(X, Y);
 
         [SetUp]
         public void SetUp()
         {
-            layouter = new CircularCloudLayouter(Center);
+            SetTestProperty(LayouterKey, new CircularCloudLayouter(Center));
         }
 
-        [TestCase(9, 9, 2, 2, Description = "Coordinates without bias")]
-        [TestCase(10, 10, 1, 1, Description = "Coordinates with bias")]
+        [TestCase(X - 1, Y - 1, 2, 2, Description = "Coordinates without bias")]
+        [TestCase(X, Y, 1, 1, Description = "Coordinates with bias")]
         public void PutNextRectangle_CenterRectangle_OnTheFirstCall(int x, int y, int width, int height)
         {
             var expected = new Rectangle(x, y, width, height);
+            var layouter = GetTestProperty<CircularCloudLayouter>(LayouterKey);
 
-            var actual = layouter.PutNextRectangle(expected.Size);
-
-            Assert.AreEqual(expected, actual);
+            layouter.PutNextRectangle(expected.Size).Should().Be(expected);
         }
 
         [Test]
         public void PutNextRectangle_RectanglesDoNotIntersect_AfterPuttingRectangles()
         {
-            var rectangles = GenerateRandomRectangleSizes(30, 10, 10)
-                .Select(layouter.PutNextRectangle);
+            var layouter = GetTestProperty<CircularCloudLayouter>(LayouterKey);
+            var rectangles = Enumerable.Repeat(new Size(10, 10), 30)
+                .Select(layouter.PutNextRectangle)
+                .ToArray();
 
-            var intersections = rectangles
-                .Where(f => rectangles.Any(s => f != s && f.IntersectsWith(s)));
-            Assert.IsEmpty(intersections);
-        }
-
-        private static IEnumerable<TestCaseData> LocationTestCases
-        {
-            get
-            {
-                yield return new TestCaseData(
-                    new Func<Rectangle, bool>(rectangle => rectangle.X > Center.X)
-                ).SetDescription("Rectangle is located to the right of the center");
-                yield return new TestCaseData(
-                    new Func<Rectangle, bool>(rectangle => rectangle.X < Center.X)
-                ).SetDescription("Rectangle is located to the left of the center");
-                yield return new TestCaseData(
-                    new Func<Rectangle, bool>(rectangle => rectangle.Y > Center.Y)
-                ).SetDescription("Rectangle is located above the center");
-                yield return new TestCaseData(
-                    new Func<Rectangle, bool>(rectangle => rectangle.Y < Center.Y)
-                ).SetDescription("Rectangle is located below the center");
-            }
-        }
-
-        [TestCaseSource(nameof(LocationTestCases))]
-        public void PutNextRectangle_RectanglesAreLocatedAroundTheCenter_AfterPuttingRectangles(Func<Rectangle, bool> checkSide)
-        {
-            var rectangles = GenerateRandomRectangleSizes(20, 20, 20)
-                .Select(layouter.PutNextRectangle);
-
-            Assert.IsNotEmpty(rectangles.Where(checkSide));
+            rectangles
+                .Where(f => rectangles.Any(s => f != s && f.IntersectsWith(s)))
+                .Should().BeEmpty();
         }
 
         [Test]
         public void PutNextRectangle_UsesOptimalPlace_OnPuttingRectangles()
         {
-            var size = new Size(5, 5);
-            var maxDistance = 3 * (Math.Pow(size.Width, 2) + Math.Pow(size.Height, 2));
-            var centerRectangle = layouter.PutNextRectangle(size);
+            const int numberOfLayers = 4;
+            const int count = 4 * numberOfLayers * (numberOfLayers - 1) + 1;
+            var size = new Size(50, 10);
+            var maxDistance = Math.Pow(numberOfLayers, 2) * GetSquaredDiagonal(size);
+            var layouter = GetTestProperty<CircularCloudLayouter>(LayouterKey);
 
-            var rectangles = GenerateRandomRectangleSizes(8, size.Width, size.Height)
-                .Select(layouter.PutNextRectangle);
+            var rectangles = Enumerable.Repeat(size, count)
+                .Select(layouter.PutNextRectangle)
+                .ToArray();
 
-            var rectanglesOutsideRadius = rectangles
-                .Where(r => GetSquaredDistanceBetweenCenters(centerRectangle, r) > maxDistance);
-            Assert.IsEmpty(rectanglesOutsideRadius);
+            rectangles
+                .Select(rect => GetSquaredDistanceTo(Center, GetCenter(rect)))
+                .Where(distance => distance > maxDistance)
+                .Should().BeEmpty();
         }
 
         [TearDown]
@@ -94,23 +74,22 @@ namespace TagsCloudVisualization
             {
                 return;
             }
-            var dir = Directory.CreateDirectory($".{Path.DirectorySeparatorChar}Failed").FullName;
-            var path = $"{dir}{Path.DirectorySeparatorChar}{context.Test.Name}.png";
-            var size = GetLayoutSize(layouter.Rectangles);
-            using (var visualizer = new CircularCloudVisualizer(layouter, size))
-            {
-                visualizer.DrawPositionedRectangles();
-                visualizer.Save(path);
-            }
+
+            var dir = Path.Combine(context.TestDirectory, "Failed layouts");
+            Directory.CreateDirectory(dir);
+            var file = Path.ChangeExtension(context.Test.Name, "png");
+            var path = Path.Combine(dir, file);
+
+            var layouter = GetTestProperty<CircularCloudLayouter>(LayouterKey);
+            var visualizer = new CircularCloudVisualizer();
+            var bitmap = visualizer.Visualize(layouter.Rectangles);
+            bitmap.Save(path);
             TestContext.WriteLine($"Tag cloud visualization saved to file {path}");
         }
 
-        private static double GetSquaredDistanceBetweenCenters(Rectangle first, Rectangle second)
+        private static double GetSquaredDistanceTo(Point point, Point other)
         {
-            var firstCenter = GetCenter(first);
-            var secondCenter = GetCenter(second);
-            return Math.Pow(firstCenter.X - secondCenter.X, 2) +
-                   Math.Pow(firstCenter.Y - secondCenter.Y, 2);
+            return Math.Pow(point.X - other.X, 2) + Math.Pow(point.Y - other.Y, 2);
         }
 
         private static Point GetCenter(Rectangle rectangle)
@@ -121,31 +100,19 @@ namespace TagsCloudVisualization
             );
         }
 
-        private static IEnumerable<Size> GenerateRandomRectangleSizes(int count, int maxWidth, int maxHeight)
+        private static double GetSquaredDiagonal(Size size)
         {
-            var random = new Random();
-            for (var i = 0; i < count; i++)
-            {
-                var width = random.Next(maxWidth) + 1;
-                var height = random.Next(maxHeight) + 1;
-                yield return new Size(width, height);
-            }
+            return Math.Pow(size.Width, 2) + Math.Pow(size.Height, 2);
         }
 
-        private static Size GetLayoutSize(IEnumerable<Rectangle> rectangles)
+        private static void SetTestProperty<T>(string key, T value)
         {
-            var minX = int.MaxValue;
-            var minY = int.MaxValue;
-            var maxX = 0;
-            var maxY = 0;
-            foreach (var rectangle in rectangles)
-            {
-                minX = Math.Min(minX, rectangle.X);
-                minY = Math.Min(minY, rectangle.Y);
-                maxX = Math.Max(maxX, rectangle.Right);
-                maxY = Math.Max(maxY, rectangle.Bottom);
-            }
-            return new Size(maxX - minX, maxY - minY);
+            TestExecutionContext.CurrentContext.CurrentTest.Properties.Add(key, value);
+        }
+
+        private static T GetTestProperty<T>(string key)
+        {
+            return (T) TestExecutionContext.CurrentContext.CurrentTest.Properties.Get(key);
         }
     }
 }

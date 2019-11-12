@@ -1,62 +1,94 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudVisualizer : IDisposable
+    public class CircularCloudVisualizer
     {
-        private readonly Bitmap bitmap;
-        private readonly CircularCloudLayouter layouter;
-        private readonly Graphics graphics;
-
-        public Pen RectangleBorderPen { get; set; } = new Pen(Brushes.Black);
+        public Color BackgroundColor { get; set; } = Color.Transparent;
+        public Pen RectangleBorderPen { get; set; } = Pens.Black;
         public Brush RectangleFillBrush { get; set; } = Brushes.SlateBlue;
         public Brush TextBrush { get; set; } = Brushes.Gold;
 
-        public CircularCloudVisualizer(CircularCloudLayouter layouter, Size imageSize)
+        public Bitmap Visualize(CircularCloudLayouter layouter, IEnumerable<Tag> tags)
         {
-            this.layouter = layouter;
-            bitmap = new Bitmap(imageSize.Width, imageSize.Height);
-            graphics = Graphics.FromImage(bitmap);
-        }
+            var rectangles = tags.Select(tag => layouter.PutNextRectangle(tag.Size)).ToArray();
+            var viewport = GetViewport(rectangles);
+            var bitmap = CreateBitmap(viewport);
+            var graphics = CreateGraphics(bitmap, viewport);
 
-        public void DrawPositionedRectangles()
-        {
-            foreach (var rectangle in layouter.Rectangles)
+            foreach (var (rectangle, tag) in rectangles.Zip(tags, (r, t) => (r, t)))
             {
-                DrawRectangle(rectangle);
+                DrawTag(graphics, rectangle, tag);
             }
+
+            return bitmap;
         }
 
-        public void DrawText(string text, Font font)
+        public Bitmap Visualize(CircularCloudLayouter layouter, IEnumerable<Size> sizes)
         {
-            var textSize = graphics.MeasureString(text, font) + new SizeF(1, 1);
-            var rectangle = DrawRectangle(textSize.ToSize());
-            graphics.DrawString(text, font, TextBrush, rectangle);
+            var rectangles = sizes.Select(layouter.PutNextRectangle).ToArray();
+            return Visualize(rectangles);
         }
 
-        public Rectangle DrawRectangle(Size size)
+        public Bitmap Visualize(IEnumerable<Rectangle> rectangles)
         {
-            var rectangle = layouter.PutNextRectangle(size);
-            DrawRectangle(rectangle);
-            return rectangle;
+            var viewport = GetViewport(rectangles);
+            var bitmap = CreateBitmap(viewport);
+            var graphics = CreateGraphics(bitmap, viewport);
+
+            foreach (var rectangle in rectangles)
+            {
+                DrawRectangle(graphics, rectangle);
+            }
+
+            return bitmap;
         }
 
-        public void Save(string filename)
+        private Bitmap CreateBitmap(Rectangle viewport)
         {
-            bitmap.Save(filename);
+            var border = (int) RectangleBorderPen.Width * 2;
+            return new Bitmap(viewport.Width + border, viewport.Height + border);
         }
 
-        public void Dispose()
+        private Graphics CreateGraphics(Image image, Rectangle viewport)
         {
-            graphics.Dispose();
-            bitmap.Dispose();
+            var border = (int) RectangleBorderPen.Width;
+            var graphics = Graphics.FromImage(image);
+            graphics.TranslateTransform(border - viewport.X, border - viewport.Y);
+            graphics.Clear(BackgroundColor);
+            return graphics;
         }
 
-        private void DrawRectangle(Rectangle rectangle)
+        private void DrawTag(Graphics graphics, Rectangle rectangle, Tag tag)
+        {
+            DrawRectangle(graphics, rectangle);
+            graphics.DrawString(tag.Text, tag.Font, TextBrush, rectangle);
+        }
+
+        private void DrawRectangle(Graphics graphics, Rectangle rectangle)
         {
             graphics.FillRectangle(RectangleFillBrush, rectangle);
             graphics.DrawRectangle(RectangleBorderPen, rectangle);
+        }
+
+        private static Rectangle GetViewport(IEnumerable<Rectangle> rectangles)
+        {
+            var minX = int.MaxValue;
+            var minY = int.MaxValue;
+            var maxX = 0;
+            var maxY = 0;
+            foreach (var rectangle in rectangles)
+            {
+                minX = Math.Min(minX, rectangle.Left);
+                minY = Math.Min(minY, rectangle.Top);
+                maxX = Math.Max(maxX, rectangle.Right);
+                maxY = Math.Max(maxY, rectangle.Bottom);
+            }
+
+            return new Rectangle(minX, minY, maxX - minX + 1, maxY - minY + 1);
         }
     }
 }
