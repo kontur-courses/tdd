@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using TagsCloudVisualization;
 
@@ -73,6 +74,14 @@ namespace TagsCloudVisualizationTests
             var pointXRelative = point.X - circleCenter.X;
             var pointYRelative = point.Y - circleCenter.Y;
             return pointXRelative * pointXRelative + pointYRelative * pointYRelative <= circleRadius * circleRadius;
+        }
+
+        public static string SaveFailedTagsCloudAndNotify(string imageName, TagsCloudImage tagsCloudImage)
+        {
+            var fileName = imageName + "failed.png";
+            var exactPath = Path.GetFullPath(fileName);
+            tagsCloudImage.GetBitmap().Save(exactPath);
+            Console.WriteLine("Tag cloud visualization saved to file {0}", exactPath);
         }
     }
 }

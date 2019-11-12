@@ -167,10 +167,7 @@ namespace TagsCloudVisualizationTests
                 tagsCloudImage.AddRectangles(intersectingRectangles, Color.Red, 1f);
             }
 
-            var fileName = TestContext.CurrentContext.Test.Name + "failed.png";
-            var exactPath = Path.GetFullPath(fileName);
-            tagsCloudImage.GetBitmap().Save(exactPath);
-            Console.WriteLine("Tag cloud visualization saved to file {0}", exactPath);
+            TestsHelper.SaveFailedTagsCloudAndNotify(TestContext.CurrentContext.Test.Name, tagsCloudImage);
         }
     }
 }
