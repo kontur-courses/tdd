@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Drawing;
-using System.Reflection;
-using System.Linq;
 
 namespace TagsCloudVisualization
 {
