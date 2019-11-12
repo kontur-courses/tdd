@@ -3,10 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29424.173
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BowlingGame", "BowlingGame\BowlingGame.csproj", "{AD0F018A-732E-4074-8527-AB2EEC8D0BF3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.csproj", "{B5108E20-2ACF-4ED9-84FE-2A718050FC94}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{7CF5A97D-2A75-4D72-A58C-8B9A2602D488}"
 EndProject
 Global
@@ -15,14 +11,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AD0F018A-732E-4074-8527-AB2EEC8D0BF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AD0F018A-732E-4074-8527-AB2EEC8D0BF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AD0F018A-732E-4074-8527-AB2EEC8D0BF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AD0F018A-732E-4074-8527-AB2EEC8D0BF3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7CF5A97D-2A75-4D72-A58C-8B9A2602D488}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7CF5A97D-2A75-4D72-A58C-8B9A2602D488}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7CF5A97D-2A75-4D72-A58C-8B9A2602D488}.Release|Any CPU.ActiveCfg = Release|Any CPU
