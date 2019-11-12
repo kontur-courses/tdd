@@ -7,8 +7,14 @@ using NUnit.Framework;
 namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
-    public class ArchimedesSpiralConstructorTests
+    public class ArchimedesSpiralTests
     {
+        private ArchimedesSpiral archimedesSpiral;
+        private Point spiralCenter = new Point(500, 500);
+
+        [SetUp]
+        public void Init() => archimedesSpiral = new ArchimedesSpiral(spiralCenter, 1, 1);
+
         [TestCase(0, 10, TestName = "radius is zero")]
         [TestCase(10, 0, TestName = "increment is zero")]
         [TestCase(0, 0, TestName = "radius and increment are zero")]
@@ -18,16 +24,6 @@ namespace TagsCloudVisualization.Tests
 
             action.Should().Throw<ArgumentException>();
         }
-    }
-
-    [TestFixture]
-    public class ArchimedesSpiralTests
-    {
-        private ArchimedesSpiral archimedesSpiral;
-        private Point spiralCenter = new Point(500, 500);
-
-        [SetUp]
-        public void Init() => archimedesSpiral = new ArchimedesSpiral(spiralCenter,1, 1);
 
         [Test]
         public void FirstCoordinateEqualToCenter()

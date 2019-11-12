@@ -25,7 +25,7 @@ namespace TagsCloudVisualization.Tests
         public void CreateNewInstance_WhenCenterCoordinatesArePositive()
         {
             var center = new Point(150, 250);
-            
+
             Action action = () => new CircularCloudLayouter(new ArchimedesSpiral(center));
 
             action.Should().NotThrow<Exception>();
@@ -38,7 +38,7 @@ namespace TagsCloudVisualization.Tests
         private Point layouterCenter;
         private CircularCloudLayouter cloudLayouter;
         private List<Rectangle> layouterRectangles;
-        
+
         [SetUp]
         public void Init()
         {
@@ -61,7 +61,7 @@ namespace TagsCloudVisualization.Tests
                 Console.WriteLine($"Tag cloud visualization saved to file {filename}");
             }
         }
-        
+
         [TestCase(0, 10, TestName = "Width x is zero")]
         [TestCase(10, 0, TestName = "Height y is zero")]
         [TestCase(-1, 10, TestName = "Width x is negative")]
@@ -72,7 +72,7 @@ namespace TagsCloudVisualization.Tests
 
             action.Should().Throw<ArgumentException>();
         }
-        
+
         [Test]
         public void AddFirstRectangleInTheCloudCenter()
         {
@@ -145,25 +145,19 @@ namespace TagsCloudVisualization.Tests
         {
             var acceptableRatio = 50;
             var random = new Random(randomSeed);
-            var furthestDistance = 0d;
-            var rectanglesSquare = 0d;
 
-            layouterRectangles = Utils.GenerateRandomRectangles(cloudLayouter,count, minSize, maxSize, random);
+            layouterRectangles = Utils.GenerateRandomRectangles(cloudLayouter, count, minSize, maxSize, random);
 
-            foreach (var rectangle in layouterRectangles)
-            {
-                var distance =  GetDistanceBetweenRectangleAndPoint(rectangle, layouterCenter);
-                if (distance > furthestDistance)
-                    furthestDistance = distance;
-            }
-            foreach (var rectangle in layouterRectangles)
-                rectanglesSquare += rectangle.Width * rectangle.Height;
-
+            var furthestDistance = layouterRectangles
+                .Select(r => GetDistanceBetweenRectangleAndPoint(r, layouterCenter))
+                .Max();
+            var rectanglesSquare = layouterRectangles
+                .Aggregate(0d, (current, rectangle) => current + rectangle.Width * rectangle.Height);
             var circleSquare = furthestDistance * furthestDistance * Math.PI;
             var squareRatio = rectanglesSquare / circleSquare * 100;
             squareRatio.Should().BeGreaterOrEqualTo(acceptableRatio);
         }
-        
+
         public static double GetDistanceBetweenRectangleAndPoint(Rectangle rectangle, Point point)
         {
             var rectangleCentre = new Point(rectangle.Location.X + rectangle.Width / 2,
