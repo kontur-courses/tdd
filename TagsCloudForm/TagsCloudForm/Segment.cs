@@ -8,7 +8,7 @@ namespace TagsCloudVisualization
         public readonly Point start;
         public readonly Point end;
         public readonly Type type;
-        public double Length { get => Math.Sqrt(Math.Pow((start.X - end.X), 2) + Math.Pow((start.Y - end.Y), 2)); }
+        public double Length  => Math.Sqrt(Math.Pow((start.X - end.X), 2) + Math.Pow((start.Y - end.Y), 2)); 
         public Segment(Point start, Point end, Type type)
         {
             if (type == Type.Bottom || type == Type.Top)
