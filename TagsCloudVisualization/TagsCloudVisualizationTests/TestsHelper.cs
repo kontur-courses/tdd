@@ -44,7 +44,7 @@ namespace TagsCloudVisualizationTests
             return radius;
         }
 
-        public static (int left, int right, int top, int bottom) GetEdgesOfRectanglesSet(
+        private static (int left, int right, int top, int bottom) GetEdgesOfRectanglesSet(
             IReadOnlyCollection<Rectangle> rectangles)
         {
             var left = rectangles.Aggregate(0,
@@ -68,7 +68,7 @@ namespace TagsCloudVisualizationTests
                    IsPointInCircle(new Point(rectangle.Right, rectangle.Bottom), circleCenter, circleRadius);
         }
 
-        public static bool IsPointInCircle(Point point, Point circleCenter, int circleRadius)
+        private static bool IsPointInCircle(Point point, Point circleCenter, int circleRadius)
         {
             var pointXRelative = point.X - circleCenter.X;
             var pointYRelative = point.Y - circleCenter.Y;
