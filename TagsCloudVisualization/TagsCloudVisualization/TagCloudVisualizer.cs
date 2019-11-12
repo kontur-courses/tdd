@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace TagsCloudVisualization
 {
@@ -12,7 +10,7 @@ namespace TagsCloudVisualization
             var bmp = new Bitmap(imageSize.Width, imageSize.Height);
             var graphics = Graphics.FromImage(bmp);
             var random = new Random();
-            foreach (var rectangle in layouter.GetRectangles().ToArray())
+            foreach (var rectangle in layouter.GetRectangles())
                 graphics.FillRectangle(new SolidBrush(GetRandomColor(random)), rectangle);
             return bmp;
         }

@@ -3,14 +3,14 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    internal static class Geometry
+    public static class Geometry
     {
-        public static Point PolarToCartesian(double ro, double phi)
+        public static Point PolarToCartesianCoordinates(double ro, double phi)
         {
             return new Point((int) (ro * Math.Cos(phi)), (int) (ro * Math.Sin(phi)));
         }
 
-        public static double GetLengthFromRectCenterToBorderOnVector(Rectangle rect, Point vector)
+        public static double GetLengthFromRectangleCenterToBorderOnVector(Rectangle rect, Point vector)
         {
             if (rect.Width < 0 || rect.Height < 0) 
                 throw new ArgumentException();

@@ -1,19 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 
 namespace TagsCloudVisualization
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             var rnd = new Random();
             var layouter = new CircularCloudLayouter(new Point(500, 500));
 
-            for (int i = 1; i <= 100; i++)
+            for (var i = 0; i < 100; i++)
                 layouter.PutNextRectangle(new Size(10 + rnd.Next(100),
                     10 + rnd.Next(100)));
 

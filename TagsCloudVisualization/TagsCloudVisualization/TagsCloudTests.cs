@@ -11,7 +11,7 @@ using NUnit.Framework.Interfaces;
 namespace TagsCloudVisualization
 {
     [TestFixture]
-    internal class TagsCloudTests
+    public class TagsCloudTests
     {
         private CircularCloudLayouter layouter;
 
@@ -24,22 +24,23 @@ namespace TagsCloudVisualization
         [TearDown]
         public void CreateImageOnFail()
         {
-            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
-            {
-                var path = $"{Directory.GetCurrentDirectory()}\\TestOutput\\{TestContext.CurrentContext.Test.Name}.png";
-                var bmp = TagCloudVisualizer.Visualize(layouter, new Size(1000, 1000));
-                bmp.Save(path, ImageFormat.Png);
-                TestContext.WriteLine($"Tag cloud visualization saved to file {path}");
-            }
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
+                return;
+
+            var path = $"{Directory.GetCurrentDirectory()}\\TestOutput\\{TestContext.CurrentContext.Test.Name}.png";
+            var bmp = TagCloudVisualizer.Visualize(layouter, new Size(1000, 1000));
+            bmp.Save(path, ImageFormat.Png);
+            TestContext.WriteLine($"Tag cloud visualization saved to file {path}");
         }
 
-        [TestCase(1, 0)]
-        [TestCase(0, 1)]
-        [TestCase(-1, 1)]
-        [TestCase(1, -1)]
-        public void PutNextRectangle_ThrowsArgumentException_IfRectangleSizeHasNonPositiveParameter(int width, int height)
+        [TestCase(0, 1, TestName = "Width is zero")]
+        [TestCase(1, 0, TestName = "Height is zero")]
+        [TestCase(-1, 1, TestName = "Width is negative number")]
+        [TestCase(1, -1, TestName = "Height is negative number")]
+        public void PutNextRectangle_ThrowsArgumentException(int width, int height)
         {
             Func<Rectangle> act = () => layouter.PutNextRectangle(new Size(width, height));
+
             act.Should().Throw<ArgumentException>();
         }
 
@@ -50,36 +51,40 @@ namespace TagsCloudVisualization
             var expectedShiftedCenter =
                 new Point(layouter.Center.X - recSize.Width / 2, layouter.Center.Y - recSize.Height / 2);
             var rectangle = layouter.PutNextRectangle(recSize);
+
             new Point(rectangle.X, rectangle.Y).Should().Be(expectedShiftedCenter);
         }
 
-        [TestCase(1, 1)]
-        [TestCase(42, 19)]
-        [TestCase(1000, 1000)]
+        [TestCase(1, 1, TestName = "Rectangle is the smallest possible rectangle")]
+        [TestCase(42, 19, TestName = "Rectangle with non-unique sizes")]
+        [TestCase(int.MaxValue, int.MaxValue, TestName = "Rectangle has maximum size")]
         public void PutNextRectangle_ReturnsRectangleWithCorrectSize(int width, int height)
         {
             var rectSize = new Size(width, height);
+
             layouter.PutNextRectangle(rectSize).Size.Should().Be(rectSize);
         }
 
-        [TestCase(0, 0)]
-        [TestCase(42, 38)]
-        [TestCase(-10000, -500)]
-        public void PutNextRectangle_FirstRectangleIsOnCenter_WhenLayouterHasCustomCenterPoint(int x, int y)
+        [TestCase(0, 0, TestName = "Center is null point")]
+        [TestCase(42, 38, TestName = "Center is point with positive X and Y")]
+        [TestCase(-10000, -500, TestName = "Center is point with negative X and Y")]
+        public void PutNextRectangle_FirstRectangleIsOnCenter(int x, int y)
         {
             var center = new Point(x, y);
             var customLayouter = new CircularCloudLayouter(center);
             var rectangle = customLayouter.PutNextRectangle(new Size(10, 10));
+
             rectangle.X.Should().Be(center.X - rectangle.Width / 2);
             rectangle.Y.Should().Be(center.Y - rectangle.Height / 2);
         }
 
-        [TestCase(2)]
-        [TestCase(10)]
-        [TestCase(100)]
-        public void PutNextRectangles_ShouldNotReturnCrossingRectangles_AfterPassingSetOfRectangleSizes(int rectanglesAmount)
+        [TestCase(2, TestName = "2 rectangles created")]
+        [TestCase(10, TestName = "10 rectangles created")]
+        [TestCase(100, TestName = "100 rectangles created")]
+        public void PutNextRectangles_ShouldNotReturnCrossingRectangles(int rectanglesAmount)
         {
             var rectangles = new List<Rectangle>();
+
             for (var i = 1; i < rectanglesAmount; i++)
                 rectangles.Add(layouter.PutNextRectangle(new Size(i, i)));
 
@@ -100,10 +105,10 @@ namespace TagsCloudVisualization
             distance.Should().BeLessThan(10);
         }
 
-        [TestCase(100)]
-        [TestCase(500)]
-        [TestCase(1000)]
-        public void PutNextRectangle_IsTimePermissible_OnBigNumberOfRectangles(int rectanglesAmount)
+        [TestCase(100, 1000, TestName = "100 rectangles created in less than 1 second")]
+        [TestCase(500, 5000, TestName = "500 rectangles created in less than 5 second")]
+        [TestCase(1000, 10000, TestName = "1000 rectangles created in less than 10 second")]
+        public void PutNextRectangle_IsTimePermissible(int rectanglesAmount, int milliseconds)
         {
             var rnd = new Random();
             Action action = () =>
@@ -111,7 +116,8 @@ namespace TagsCloudVisualization
                 for (var i = 0; i < rectanglesAmount; i++)
                     layouter.PutNextRectangle(new Size(5 + rnd.Next(40), 5 + rnd.Next(40)));
             };
-            action.ExecutionTime().Should().BeLessThan((10 * rectanglesAmount).Milliseconds());
+
+            action.ExecutionTime().Should().BeLessThan(milliseconds.Milliseconds());
         }
     }
 }
