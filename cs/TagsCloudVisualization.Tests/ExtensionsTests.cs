@@ -15,7 +15,7 @@ namespace TagsCloudVisualization.Tests
         public void SequenceShuffle_OnInputSequence_ReturnsSequenceWithSameItems()
         {
             var randomizer = TestContext.CurrentContext.Random;
-            var sequence = randomizer.GetRandomSequence().Take(500).ToArray();
+            var sequence = randomizer.GetRandomSequence().Take(100).ToArray();
 
             sequence.SequenceShuffle(randomizer).Should().BeEquivalentTo(sequence);
         }

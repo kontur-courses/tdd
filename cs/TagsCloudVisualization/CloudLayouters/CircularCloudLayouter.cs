@@ -17,7 +17,8 @@ namespace TagsCloudVisualization.CloudLayouters
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            if (rectangleSize.IsEmpty) throw new ArgumentException();
+            if (rectangleSize.IsEmpty)
+                throw new ArgumentException("Got argument is empty.", nameof(rectangleSize));
 
             Rectangle newRectangle = Rectangle.Empty;
 
@@ -27,13 +28,13 @@ namespace TagsCloudVisualization.CloudLayouters
 
                 newRectangle = new Rectangle(newRectangleLocation, rectangleSize);
 
-                if (newRectangle.IntersectsWith(rectangles)) break;
+                if (!newRectangle.IntersectsWithAnyOf(rectangles)) break;
 
                 if (currentArchimedeanSpiralPoint.X <= 0)
                 {
                     newRectangle.Offset(new Point(-rectangleSize.Width, -rectangleSize.Height));
 
-                    if (newRectangle.IntersectsWith(rectangles)) break;
+                    if (!newRectangle.IntersectsWithAnyOf(rectangles)) break;
                 }
             }
 

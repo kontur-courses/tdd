@@ -18,7 +18,7 @@ namespace TagsCloudVisualization.TagClouds
             using var graphics = GetGraphics(bitmap);
             using var backgroundBrush = new SolidBrush(BackgroundColor);
 
-            graphics.FillRectangle(backgroundBrush, new Rectangle(Point.Empty, bitmapSize));
+            graphics.FillRectangle(backgroundBrush, new Rectangle(Point.Empty, bitmap.Size));
 
             var tagDrawer = GetTagDrawer(graphics);
 

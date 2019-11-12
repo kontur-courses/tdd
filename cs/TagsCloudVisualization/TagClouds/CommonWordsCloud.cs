@@ -25,7 +25,7 @@ namespace TagsCloudVisualization.TagClouds
 
             return tag =>
             {
-                var pen = new Pen(GetBrush(Color.Black, brushByColor), 1) { Alignment = PenAlignment.Inset };
+                using var pen = new Pen(Color.Black, 1) { Alignment = PenAlignment.Inset };
 
                 graphics.FillRectangle(GetBrush(Color.Cornsilk, brushByColor), tag.TagBox);
                 graphics.DrawRectangle(pen, tag.TagBox);

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization.CloudLayouters;
 using TagsCloudVisualization.Tests.Extensions;
 
@@ -13,12 +15,66 @@ namespace TagsCloudVisualization.Tests
     public class CircularCloudLayouterTests
     {
         private const double Precision = 0.7072; // sqrt(2)/2.
+        private const string FailedTestsDirectoryName = "FailedVisualizationTests";
         private static readonly Point origin = Point.Empty;
 
         private CircularCloudLayouter circularCloudLayouter;
+        private VisualizationContext visualizationContext;
 
         [SetUp]
-        public void SetUp() => circularCloudLayouter = new CircularCloudLayouter(origin);
+        public void SetUp()
+        {
+            circularCloudLayouter = new CircularCloudLayouter(origin);
+            visualizationContext = new VisualizationContext();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (!(TestContext.CurrentContext.Result.Outcome.Status is TestStatus.Failed) ||
+                visualizationContext.IsEmpty)
+                return;
+
+            var failedTestFilename = $"{GetCurrentTestName()}_{DateTime.Now:dd.MM.yyyy-HH.mm.ss}.png";
+
+            Directory.CreateDirectory(FailedTestsDirectoryName);
+            var wrongVisualisationImageFilepath = Path.Combine(TestContext.CurrentContext.TestDirectory,
+                                                               FailedTestsDirectoryName,
+                                                               failedTestFilename);
+
+            using var image = visualizationContext.GetTestVisualization();
+            image.Save(wrongVisualisationImageFilepath);
+
+            TestContext.WriteLine($@"Tag cloud visualization saved to file:{Environment.NewLine
+                                      }{wrongVisualisationImageFilepath}");
+
+            string GetCurrentTestName() => TestContext.CurrentContext.Test is var test &&
+                                           test.MethodName == test.Name
+                                               ? test.Name
+                                               : test.MethodName + test.Name;
+        }
+
+        [Test]
+        public void AlwaysFailedTest()
+        {
+            var randomizer = TestContext.CurrentContext.Random;
+
+            var sut = new CircularCloudLayouter(new Point(500, 500));
+            var rectangles = Enumerable.Range(0, 50)
+                                       .Select(i => sut.PutNextRectangle(
+                                                   new Size(randomizer.Next(50, 100), randomizer.Next(50, 100))))
+                                       .Append(new Rectangle(530, 550, 100, 45))
+                                       .ToArray();
+
+            visualizationContext.AllRectangles.UnionWith(rectangles);
+            visualizationContext.WrongRectangles.UnionWith(new[]
+            {
+                GetAnyPairOfIntersectingRectangles(rectangles).Value.Item1,
+                GetAnyPairOfIntersectingRectangles(rectangles).Value.Item2
+            });
+
+            Assert.Fail("Always fail");
+        }
 
         [Test]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement")]

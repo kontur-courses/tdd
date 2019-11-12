@@ -9,7 +9,7 @@ namespace TagsCloudVisualization.Extensions
         public static Rectangle CreateMovedCopy(this Rectangle rectangle, Size offset) =>
             new Rectangle(rectangle.Location + offset, rectangle.Size);
 
-        public static bool IntersectsWith(this Rectangle rectangle, IEnumerable<Rectangle> otherRectangles) =>
-            otherRectangles.All(otherRectangle => !otherRectangle.IntersectsWith(rectangle));
+        public static bool IntersectsWithAnyOf(this Rectangle rectangle, IEnumerable<Rectangle> otherRectangles) =>
+            otherRectangles.Any(otherRectangle => otherRectangle.IntersectsWith(rectangle));
     }
 }
