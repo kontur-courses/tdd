@@ -153,10 +153,13 @@ namespace TagsCloudVisualizationTests
         public void TearDown()
         {
             var outcome = TestContext.CurrentContext.Result.Outcome;
-            if (outcome != ResultState.Error && outcome != ResultState.Failure) return;
-            if (!(TestContext.CurrentContext.Test.Properties.Get("rectangles") is List<Rectangle> rectangles)) return;
+            if (outcome != ResultState.Error && outcome != ResultState.Failure) 
+                return;
+            if (!(TestContext.CurrentContext.Test.Properties.Get("rectangles") is List<Rectangle> rectangles)) 
+                return;
+            
             var tagsCloudImage = new TagsCloudImage(1920, 1080);
-            tagsCloudImage.AddRectangles(rectangles, Color.Black, 1f);
+            tagsCloudImage.AddRectangles(rectangles, Color.Black, 1f);    
 
             if (TestContext.CurrentContext.Test.Properties.Get("intersectingRectangles") is List<Rectangle>
                 intersectingRectangles)
