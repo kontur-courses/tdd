@@ -10,7 +10,7 @@ using NUnit.Framework.Constraints;
 using NUnit.Framework.Interfaces;
 using TagsCloudVisualization.Exceptions;
 using TagsCloudVisualization.Geometry;
-using TagsCloudVisualization.MainProject;
+using TagsCloudVisualization.TagCloudLayouters;
 using TagsCloudVisualization.TagsCloudVisualization;
 
 namespace TagsCloudVisualization.Tests.MainProject

@@ -62,7 +62,7 @@
     <Compile Include="Exceptions\OutOfPermissibleRangeException.cs" />
     <Compile Include="Geometry\CenterMassChecker.cs" />
     <Compile Include="TagsCloudVisualization\CloudVisualization.cs" />
-    <Compile Include="Tests\MainProject\CircularCloudLayouterShould.cs" />
+    <Compile Include="Tests\TagCloudLayouters\CircularCloudLayouterShould.cs" />
     <Compile Include="Tests\Geometry\CenterMassCheckerShould.cs" />
     <Compile Include="TagsCloudVisualization\DebugVisualization.cs" />
     <Compile Include="TagsCloudVisualization\ITagsCloudVisualization.cs" />
@@ -70,7 +70,7 @@
     <Compile Include="Tests\Geometry\PointExtentionShould.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Geometry\RectangleGeometry.cs" />
-    <Compile Include="MainProject\CircularCloudLayouter.cs" />
+    <Compile Include="TagCloudLayouters\CircularCloudLayouter.cs" />
     <Compile Include="Tests\Geometry\RectangleGeometryShould.cs" />
   </ItemGroup>
   <ItemGroup>

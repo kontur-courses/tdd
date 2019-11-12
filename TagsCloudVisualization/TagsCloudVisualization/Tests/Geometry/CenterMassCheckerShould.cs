@@ -4,7 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization.Geometry;
-using TagsCloudVisualization.MainProject;
+using TagsCloudVisualization.TagCloudLayouters;
 
 namespace TagsCloudVisualization.Tests.Geometry
 {

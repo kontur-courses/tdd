@@ -5,7 +5,7 @@ using System.Linq;
 using TagsCloudVisualization.Exceptions;
 using TagsCloudVisualization.Geometry;
 
-namespace TagsCloudVisualization.MainProject
+namespace TagsCloudVisualization.TagCloudLayouters
 {
     public class CircularCloudLayouter
     {
