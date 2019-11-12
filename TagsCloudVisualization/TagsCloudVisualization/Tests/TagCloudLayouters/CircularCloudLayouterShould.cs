@@ -182,18 +182,29 @@ namespace TagsCloudVisualization.Tests.TagCloudLayouters
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
                 var image = new DebugVisualization().Draw(rectangles, 900, 900);
-                var pathToTestNameDir = Path.Combine(TestContext.CurrentContext.TestDirectory, TestContext.CurrentContext.Test.Name);
-                if (!Directory.Exists(pathToTestNameDir))
-                    Directory.CreateDirectory(pathToTestNameDir);
-                var dirsCount = Directory.GetDirectories(pathToTestNameDir).Length.ToString();
-                var pathToCurrentTestNumberDir = Path.Combine(Path.Combine(pathToTestNameDir, dirsCount));
-                Directory.CreateDirectory(pathToCurrentTestNumberDir);
-                File.WriteAllText(Path.Combine(pathToCurrentTestNumberDir, "Rectangles.json"), 
-                                                                JsonConvert.SerializeObject(rectangles));
-                image.Save(Path.Combine(pathToCurrentTestNumberDir, "Image.png"));
+                var pathToTestNameDir = Path.Combine(TestContext.CurrentContext.TestDirectory, 
+                                                                            TestContext.CurrentContext.Test.Name);
+                var pathToCurrentTestNumberDir = CreateDirectoryAndReturnPath(pathToTestNameDir);
+                SaveFiles(pathToCurrentTestNumberDir, image);
                 Console.WriteLine($"Tag cloud visualization saved to file {pathToCurrentTestNumberDir}");
             }
             rectangles.Clear();
+        }
+
+        private string CreateDirectoryAndReturnPath(string pathToTestNameDir)
+        {
+            if (!Directory.Exists(pathToTestNameDir))
+                Directory.CreateDirectory(pathToTestNameDir);
+            var dirsCount = Directory.GetDirectories(pathToTestNameDir).Length.ToString();
+            var pathToCurrentTestNumberDir = Path.Combine(Path.Combine(pathToTestNameDir, dirsCount));
+            Directory.CreateDirectory(pathToCurrentTestNumberDir);
+            return pathToCurrentTestNumberDir;
+        }
+
+        private void SaveFiles(string path, Bitmap image)
+        {
+            File.WriteAllText(Path.Combine(path, "Rectangles.json"), JsonConvert.SerializeObject(rectangles));
+            image.Save(Path.Combine(path, "Image.png"));
         }
     }
 }
