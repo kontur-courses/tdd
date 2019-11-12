@@ -18,7 +18,7 @@ namespace TagsCloudVisualization
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
-                throw new ArgumentException("rectangleSize");
+                throw new ArgumentException("rectangleSize is not correct rectangle size");
 
             var (x, y) = GetNextPosition(rectangleSize);
             var newRectangle = new Rectangle(x, y, rectangleSize.Width, rectangleSize.Height);

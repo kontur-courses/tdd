@@ -34,7 +34,8 @@ namespace TagsCloudVisualizationTests
 
             circularCloudLayouter
                 .Invoking(ccl => ccl.PutNextRectangle(rectangleSize))
-                .Should().Throw<ArgumentException>().WithMessage("rectangleSize");
+                .Should().Throw<ArgumentException>()
+                .WithMessage("rectangleSize is not correct rectangle size");
         }
 
         [TestCase(35, 17)]
