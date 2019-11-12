@@ -44,15 +44,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
+    <Compile Include="RectangleUtils.cs" />
+    <Compile Include="ShiftUtils.cs" />
     <Compile Include="Tests\CircularCloudLayouterTests.cs" />
     <Compile Include="DistanceUtils.cs" />
     <Compile Include="Tests\DistanceUtilsTests.cs" />
     <Compile Include="GeometryUtils.cs" />
+    <Compile Include="Tests\ShiftUtilsTests.cs" />
     <Compile Include="Tests\GeometryUtilsTests.cs" />
     <Compile Include="Segment.cs" />
+    <Compile Include="Tests\RectangleUtilsTests.cs" />
     <Compile Include="Tests\SegmentTests.cs" />
     <Compile Include="Spiral.cs" />
     <Compile Include="Tests\SpiralTests.cs" />
+    <Compile Include="Tests\VisualizerTests.cs" />
+    <Compile Include="Visualizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FluentAssertions, Version=5.9.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
@@ -61,7 +67,6 @@
     <Reference Include="nunit.framework, Version=3.12.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.12.0\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="System.Configuration" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />

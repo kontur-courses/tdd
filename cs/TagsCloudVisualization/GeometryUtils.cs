@@ -14,69 +14,53 @@ namespace TagsCloudVisualization
             return new Point(x, y);
         }
 
-        public static IEnumerable<Rectangle> GetPossibleRectangles(Point point, Size size)
+        public static IEnumerable<Point> BuildConvexHull(IEnumerable<Rectangle> rectangles)
         {
-            var delta = new[] { 1, 0 };
-            foreach (var dx in delta)
-            foreach (var dy in delta)
-                yield return new Rectangle(
-                    new Point(point.X - dx * size.Width, point.Y - dy * size.Height), 
-                    size);
+            var points = GetAllCornersPoints(rectangles).OrderBy(p => p.X).ThenBy(p => p.Y).ToList();
+            var upperHull = GetHullHalf(points, true);
+            var lowerHull = GetHullHalf(points, false);
+            return upperHull.Concat(lowerHull).Distinct();
         }
 
-        public static bool RectanglesAreIntersected(Rectangle firstRectangle, Rectangle secondRectangle)
+        private static List<Point> GetHullHalf(List<Point> points, bool upper)
         {
-            return Segment.SegmentsAreIntersected(
-                       new Segment(firstRectangle.Left, firstRectangle.Right),
-                       new Segment(secondRectangle.Left, secondRectangle.Right))
-                   && Segment.SegmentsAreIntersected(
-                       new Segment(firstRectangle.Top, firstRectangle.Bottom),
-                       new Segment(secondRectangle.Top, secondRectangle.Bottom));
-        }
+            var start = upper ? 0 : points.Count - 1;
+            bool IsStop(int i) => upper ? i < points.Count : i >= 0;
+            var delta = upper ? 1 : -1;
 
-
-        public static Segment[] GetRectangleSides(Rectangle rectangle)
-        {
-            var topLeft = new Point(rectangle.Left, rectangle.Top);
-            var topRight = new Point(rectangle.Right, rectangle.Top);
-            var bottomLeft = new Point(rectangle.Left, rectangle.Bottom);
-            var bottomRight = new Point(rectangle.Right, rectangle.Bottom);
-
-            return new[]
+            var hull = new List<Point>();
+            for (var i = start; IsStop(i); i += delta)
             {
-                new Segment(topLeft, topRight),
-                new Segment(topLeft, bottomLeft),
-                new Segment(topRight, bottomRight),
-                new Segment(bottomLeft, bottomRight)
-            };
+                var point = points[i];
+                ProcessPoint(hull, point);
+                hull.Add(point);
+            }
+            hull.RemoveAt(hull.Count - 1);
+            return hull;
         }
 
-        public static IEnumerable<Rectangle> GetRectanglesThatCloserToPoint(Point point, Rectangle rectangle, int delta)
+        private static void ProcessPoint(List<Point> hull, Point point)
         {
-            if (rectangle.Contains(point))
-                yield break;
-
-            var dx = Math.Sign(rectangle.X - point.X) * -delta;
-            var dy = Math.Sign(rectangle.Y - point.Y) * -delta;
-
-            var dxRectangle = new Rectangle(new Point(rectangle.X + dx, rectangle.Y), rectangle.Size);
-            var dyRectangle = new Rectangle(new Point(rectangle.X, rectangle.Y + dy), rectangle.Size);
-            var dxdyRectangle = new Rectangle(new Point(rectangle.X + dx, rectangle.Y + dy), rectangle.Size);
-
-            if (ShiftedRectangleIsCloserToPoint(point, rectangle, dxRectangle))
-                yield return dxRectangle;
-            if (ShiftedRectangleIsCloserToPoint(point, rectangle, dyRectangle))
-                yield return dyRectangle;
-            if (ShiftedRectangleIsCloserToPoint(point, rectangle, dxdyRectangle))
-                yield return dxdyRectangle;
+            while (hull.Count >= 2)
+            {
+                var lastIndex = hull.Count - 1;
+                var vector = new Segment(hull[lastIndex - 1], hull[lastIndex]);
+                if (!IsRightTurn(vector, point))
+                    hull.RemoveAt(lastIndex);
+                else
+                    break;
+            }
         }
 
-        public static bool ShiftedRectangleIsCloserToPoint(Point point, Rectangle originalRectangle, Rectangle shiftedRectangle)
+        private static bool IsRightTurn(Segment vector, Point point)
         {
-            return DistanceUtils.GetDistanceFromRectangleToPoint(point, shiftedRectangle) <
-                   DistanceUtils.GetDistanceFromRectangleToPoint(point, originalRectangle);
+            return (vector.Right.X - vector.Left.X) * (point.Y - vector.Left.Y)
+                   < (vector.Right.Y - vector.Left.Y) * (point.X - vector.Left.X);
         }
 
-
+        public static List<Point> GetAllCornersPoints(IEnumerable<Rectangle> rectangles)
+        {
+            return rectangles.SelectMany(RectangleUtils.GetRectangleCorners).ToList();
+        }
     }
 }

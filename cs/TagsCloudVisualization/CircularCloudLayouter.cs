@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -14,7 +13,7 @@ namespace TagsCloudVisualization
         {
             Center = center;
             rectangles = new List<Rectangle>();
-            spiral = new Spiral(1, 10);
+            spiral = new Spiral(0.25, 1);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -22,20 +21,12 @@ namespace TagsCloudVisualization
             while (true)
             {
                 var currentPoint = spiral.GetNextPoint();
-                var possibleRectangles = GeometryUtils.GetPossibleRectangles(currentPoint, rectangleSize);
-                var closerPossibleRectangles = possibleRectangles
-                    .SelectMany(r => GeometryUtils.GetRectanglesThatCloserToPoint(Center, r, 1));
-                var acceptableRectangles = possibleRectangles
-                    .Concat(closerPossibleRectangles)
-                    .Where(possibleRectangle =>
-                        !rectangles.Any(r =>
-                            GeometryUtils.RectanglesAreIntersected(r, possibleRectangle)))
-                    .ToArray();
-                if (!acceptableRectangles.Any())
+                var rectangle = RectangleUtils.GetClosestRectangleThatDoesNotIntersectWithOthers(
+                    currentPoint, rectangleSize, Center, rectangles);
+                if (rectangle == null)
                     continue;
-                var rectangle = DistanceUtils.GetClosestToThePointRectangle(Center, acceptableRectangles);
-                rectangles.Add(rectangle);
-                return rectangle;
+                rectangles.Add(rectangle.Value);
+                return rectangle.Value;
             }
         }
     }

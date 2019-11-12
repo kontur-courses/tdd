@@ -1,7 +1,8 @@
-﻿using System;
-using System.Drawing;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace TagsCloudVisualization.Tests
 {
@@ -90,7 +91,7 @@ namespace TagsCloudVisualization.Tests
                 new Segment(new Point(0, 3), new Point(4, 3)),
             };
 
-            var result = GeometryUtils.GetRectangleSides(rectangle);
+            var result = RectangleUtils.GetRectangleSides(rectangle);
 
             result.Should().BeEquivalentTo(sides);
         }
@@ -104,19 +105,19 @@ namespace TagsCloudVisualization.Tests
             var thirdRectangle = new Rectangle(new Point(-1, 3), new Size(2, 3));
 
             var result = DistanceUtils.GetClosestToThePointRectangle(
-                point, new[] { firstRectangle, secondRectangle, thirdRectangle });
+                point, new List<Rectangle> { firstRectangle, secondRectangle, thirdRectangle });
 
             result.Should().Be(secondRectangle);
         }
 
         [Test]
-        public void GetClosestToThePointRectangle_ShouldThrow_WhenNoRectangles()
+        public void GetClosestToThePointRectangle_ShouldReturnNull_WhenNoRectangles()
         {
             var point = new Point(0, 0);
 
-            Action action = () => DistanceUtils.GetClosestToThePointRectangle(point, new Rectangle[0]);
+            var result = DistanceUtils.GetClosestToThePointRectangle(point, new List<Rectangle>());
 
-            action.Should().Throw<ArgumentException>();
+            result.Should().BeNull();
         }
     }
 }

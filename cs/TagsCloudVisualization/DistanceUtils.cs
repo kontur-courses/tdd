@@ -22,18 +22,19 @@ namespace TagsCloudVisualization
 
         public static double GetDistanceFromRectangleToPoint(Point point, Rectangle rectangle)
         {
-            return GeometryUtils
+            return RectangleUtils
                 .GetRectangleSides(rectangle)
                 .Min(s => GetDistanceFromSegmentToPoint(point, s));
         }
 
-        public static Rectangle GetClosestToThePointRectangle(Point point, IEnumerable<Rectangle> rectangles)
+        public static Rectangle? GetClosestToThePointRectangle(Point point, IEnumerable<Rectangle> rectangles)
         {
             if (!rectangles.Any())
-                throw new ArgumentException("There is no rectangles");
+                return null;
 
             return rectangles.Aggregate((closestRectangle, nextRectangle) =>
-                GetDistanceFromRectangleToPoint(point, closestRectangle) < GetDistanceFromRectangleToPoint(point, nextRectangle)
+                GetDistanceFromRectangleToPoint(point, closestRectangle) <
+                GetDistanceFromRectangleToPoint(point, nextRectangle)
                     ? closestRectangle
                     : nextRectangle);
         }

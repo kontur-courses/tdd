@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
@@ -21,126 +22,44 @@ namespace TagsCloudVisualization.Tests
         }
 
         [Test]
-        public void GetPossibleRectangles_ShouldReturnRectanglesWithFourDifferentStartPoints_OnPointAndSize()
+        public void BuildConvexHull_ShouldReturnRectangleCorners_OnOneRectangle()
         {
-            var point = new Point(0, 0);
-            var size = new Size(2, 1);
-            var possibleRectangles = new[]
+            var rectangle = new Rectangle(new Point(1, 1), new Size(3, 1));
+            var rectangles = new List<Rectangle> { rectangle };
+            var expectedPoints = RectangleUtils.GetRectangleCorners(rectangle);
+
+            var result = GeometryUtils.BuildConvexHull(rectangles);
+
+            result.Should().BeEquivalentTo(expectedPoints);
+        }
+
+        [Test]
+        public void BuildConvexHull_ShouldReturnConvexHull_OnManyRectangles()
+        {
+            var rectangles = new List<Rectangle>
             {
-                new Rectangle(point, size),
-                new Rectangle(new Point(-2, 0), size),
-                new Rectangle(new Point(-2, -1), size),
-                new Rectangle(new Point(0, -1), size),
+                new Rectangle(new Point(0, -1), new Size(7, 1)),
+                new Rectangle(new Point(-6, 1), new Size(5, 3)),
+                new Rectangle(new Point(-4, -2), new Size(3, 2)),
+                new Rectangle(new Point(1, -3), new Size(3, 1)),
+                new Rectangle(new Point(1, 1), new Size(3, 1))
+            };
+            var convexHull = new List<Point>
+            {
+                new Point(-6, 4),
+                new Point(-6, 1),
+                new Point(-4, -2),
+                new Point(1, -3),
+                new Point(4, -3),
+                new Point(7, -1),
+                new Point(7, 0),
+                new Point(4, 2),
+                new Point(-1, 4)
             };
 
-            var result = GeometryUtils.GetPossibleRectangles(point, size);
+            var result = GeometryUtils.BuildConvexHull(rectangles);
 
-            result.Should().BeEquivalentTo(possibleRectangles);
-        }
-
-        [Test]
-        public void RectanglesAreIntersected_ShouldReturnFalse_WhenRectanglesAreNotIntersected()
-        {
-            var firstRectangle = new Rectangle(new Point(3, 3), new Size(3, 2));
-            var secondRectangle = new Rectangle(new Point(0, 0), new Size(3, 2));
-
-            GeometryUtils
-                .RectanglesAreIntersected(firstRectangle, secondRectangle)
-                .Should()
-                .BeFalse();
-        }
-
-        [Test]
-        public void RectanglesAreIntersected_ShouldReturnTrue_WhenRectanglesAreIntersectedInTheCorner()
-        {
-            var firstRectangle = new Rectangle(new Point(1, 1), new Size(3, 2));
-            var secondRectangle = new Rectangle(new Point(0, 0), new Size(3, 2));
-
-            GeometryUtils
-                .RectanglesAreIntersected(firstRectangle, secondRectangle)
-                .Should()
-                .BeTrue();
-        }
-
-        [Test]
-        public void RectanglesAreIntersected_ShouldReturnTrue_WhenOneInsideTheOther()
-        {
-            var firstRectangle = new Rectangle(new Point(1, 1), new Size(1, 1));
-            var secondRectangle = new Rectangle(new Point(0, 0), new Size(3, 3));
-
-            GeometryUtils
-                .RectanglesAreIntersected(firstRectangle, secondRectangle)
-                .Should()
-                .BeTrue();
-        }
-
-        [Test]
-        public void RectanglesAreIntersected_ShouldReturnTrue_WhenTheyPlacedAsACross()
-        {
-            var firstRectangle = new Rectangle(new Point(1, 0), new Size(1, 3));
-            var secondRectangle = new Rectangle(new Point(0, 1), new Size(3, 1));
-
-            GeometryUtils
-                .RectanglesAreIntersected(firstRectangle, secondRectangle)
-                .Should()
-                .BeTrue();
-        }
-
-        [Test]
-        public void GetRectanglesThatCloserToPoint_ShouldBeEmpty_WhenPointInRectangle()
-        {
-            var point = new Point(1, 1);
-            var rectangle = new Rectangle(new Point(0, 0), new Size(3, 2));
-
-            var result = GeometryUtils.GetRectanglesThatCloserToPoint(point, rectangle, 1);
-
-            result.Should().BeEmpty();
-        }
-
-        [Test]
-        public void GetRectanglesThatCloserToPoint_ShouldBeEmpty_WhenPointOnRectangleSide()
-        {
-            var point = new Point(2, 0);
-            var rectangle = new Rectangle(new Point(0, 0), new Size(3, 2));
-
-            var result = GeometryUtils.GetRectanglesThatCloserToPoint(point, rectangle, 1);
-
-            result.Should().BeEmpty();
-        }
-
-        [Test]
-        public void GetRectanglesThatCloserToPoint_ShouldNotReturnTheSameRectangle_WhenIntersectsPointCoordinate()
-        {
-            var point = new Point(0, 0);
-            var size = new Size(2, 1);
-            var rectangle = new Rectangle(new Point(0, 2), size);
-            var expectedRectangle = new Rectangle(new Point(0, 1), size);
-
-            var result = GeometryUtils.GetRectanglesThatCloserToPoint(point, rectangle, 1);
-
-            result.Should().OnlyContain(r => r == expectedRectangle);
-        }
-
-        [TestCase(2, 2, 1, 1, TestName = "I quadrant")]
-        [TestCase(-5, 2, -4, 1, TestName = "II quadrant")]
-        [TestCase(-5, -4, -4, -3, TestName = "III quadrant")]
-        [TestCase(2, -4, 1, -3, TestName = "IV quadrant")]
-        public void GetRectanglesThatCloserToPoint_ShouldReturnCloserRectangles_OnRectangle(
-            int x, int y, int dx, int dy)
-        {
-            var point = new Point(0, 0);
-            var size = new Size(3, 2);
-            var rectangle = new Rectangle(new Point(x, y), size);
-            var expectedRectangles = new[]
-            {
-                new Rectangle(new Point(dx, y), size),
-                new Rectangle(new Point(x, dy), size),
-                new Rectangle(new Point(dx, dy), size),
-            };
-
-            var result = GeometryUtils.GetRectanglesThatCloserToPoint(point, rectangle, 1);
-
-            result.Should().BeEquivalentTo(expectedRectangles);
+            result.Should().BeEquivalentTo(convexHull);
         }
     }
 }
