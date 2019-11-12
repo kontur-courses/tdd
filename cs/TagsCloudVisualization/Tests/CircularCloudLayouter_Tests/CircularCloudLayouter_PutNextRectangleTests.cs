@@ -29,7 +29,7 @@ namespace TagsCloudVisualization.Tests.CircularCloudLayouter_Tests
                     TestContext.CurrentContext.Test.Name,
                     DateTime.Now);
                 var message = "Failed to save result image";
-                if (RectanglesVisualizator.TryDrawRectanglesAndSaveAsPng(rectangles.ToArray(), path, out var savedPath))
+                if (RectanglesVisualizator.TryDrawRectanglesAndSaveAsPng(rectangles, path, out var savedPath))
                     message = $"Tag cloud visualization saved to file {savedPath}";
                 TestContext.Out.WriteLine(message);
             }
@@ -107,12 +107,12 @@ namespace TagsCloudVisualization.Tests.CircularCloudLayouter_Tests
         {
             var radiusSquared = Math.Pow(circlesRadius, 2);
 
-            bool IsPointInsideCircle(Point p) => Math.Pow(p.X, 2) + Math.Pow(p.Y, 2) <= radiusSquared;
+            bool IsPointInsideCircle(int x, int y) => Math.Pow(x, 2) + Math.Pow(y, 2) <= radiusSquared;
 
-            return IsPointInsideCircle(new Point(rect.Left, rect.Bottom)) &&
-                IsPointInsideCircle(new Point(rect.Right, rect.Bottom)) &&
-                IsPointInsideCircle(new Point(rect.Right, rect.Top)) &&
-                IsPointInsideCircle(new Point(rect.Left, rect.Top));
+            return IsPointInsideCircle(rect.Left, rect.Bottom) &&
+                IsPointInsideCircle(rect.Right, rect.Bottom) &&
+                IsPointInsideCircle(rect.Right, rect.Top) &&
+                IsPointInsideCircle(rect.Left, rect.Top);
         }
     }
 }
