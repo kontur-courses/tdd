@@ -177,11 +177,16 @@ namespace TagsCloudVisualization.Tests.MainProject
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
                 var image = new DebugVisualization().DrawRectangles(rectangles, 900, 900);
-                var path = Environment.CurrentDirectory + "\\" + TestContext.CurrentContext.Test.Name;
-                Directory.CreateDirectory(path);
-                File.WriteAllText(path + @"\Rectangles.txt", JsonConvert.SerializeObject(rectangles));
-                image.Save(path + @"\Image.png");
-                Console.WriteLine($"Tag cloud visualization saved to file {Path.GetFullPath(path)}");
+                var pathToTestNameDir = Path.Combine(TestContext.CurrentContext.TestDirectory, TestContext.CurrentContext.Test.Name);
+                if (!Directory.Exists(pathToTestNameDir))
+                    Directory.CreateDirectory(pathToTestNameDir);
+                var dirsCount = Directory.GetDirectories(pathToTestNameDir).Length.ToString();
+                var pathToCurrentTestNumberDir = Path.Combine(Path.Combine(pathToTestNameDir, dirsCount));
+                Directory.CreateDirectory(pathToCurrentTestNumberDir);
+                File.WriteAllText(Path.Combine(pathToCurrentTestNumberDir, "Rectangles.json"), 
+                                                                JsonConvert.SerializeObject(rectangles));
+                image.Save(Path.Combine(pathToCurrentTestNumberDir, "Image.png"));
+                Console.WriteLine($"Tag cloud visualization saved to file {pathToCurrentTestNumberDir}");
             }
             rectangles.Clear();
         }
