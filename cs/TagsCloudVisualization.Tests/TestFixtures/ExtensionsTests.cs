@@ -5,7 +5,7 @@ using NUnit.Framework;
 using TagsCloudVisualization.Extensions;
 using TagsCloudVisualization.Tests.Extensions;
 
-namespace TagsCloudVisualization.Tests
+namespace TagsCloudVisualization.Tests.TestFixtures
 {
     public class ExtensionsTests
     {
