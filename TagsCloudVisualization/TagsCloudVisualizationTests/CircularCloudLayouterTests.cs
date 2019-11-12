@@ -88,21 +88,15 @@ namespace TagsCloudVisualizationTests
             rectanglesIntersect.Should().BeFalse();
         }
         
-        /**
-         * Test is checked with different number of rectangles
-         * because the fulfillment of check on some number
-         * does not implicitly mean that it is fulfilled
-         * on any smaller number
-         */
-        [TestCase(50, 50, 50, 50, 10, 0.45)]
-        [TestCase(30, 10, 30, 10, 10, 0.45)]
-        [TestCase(10, 30, 10, 30, 10, 0.45)]
-        [TestCase(40, 40, 40, 40, 100, 0.65)]
-        [TestCase(30, 10, 30, 10, 100, 0.65)]
-        [TestCase(10, 30, 10, 30, 100, 0.65)]
+        [TestCase(50, 50, 50, 50, 10, 0.45, Description = "Cloud is dense on small number of equal-sized squares")]
+        [TestCase(30, 10, 30, 10, 10, 0.45, Description = "Cloud is dense on small number of equal-sized wide rectangles")]
+        [TestCase(10, 30, 10, 30, 10, 0.45, Description = "Cloud is dense on small number of equal-sized tall rectangles")]
+        [TestCase(40, 40, 40, 40, 100, 0.65, Description = "Cloud is dense on large number of equal-sized squares")]
+        [TestCase(30, 10, 30, 10, 100, 0.65, Description = "Cloud is dense on large number of equal-sized wide rectangles")]
+        [TestCase(10, 30, 10, 30, 100, 0.65, Description = "Cloud is dense on large number of equal-sized tall rectangles")]
         [Retry(10)]
-        [TestCase(5, 5, 10, 10, 10, 0.5)]
-        [TestCase(5, 5, 10, 10, 100, 0.65)]
+        [TestCase(5, 5, 10, 10, 10, 0.5, Description = "Cloud is dense on small number of rectangles")]
+        [TestCase(5, 5, 10, 10, 100, 0.65, Description = "Cloud is dense on large number of rectangles")]
         public void TagsCloudOfRandomSizedRectanglesIsDense(int minWidth, int minHeight, int maxWith, int maxHeight,
             int count, double requiredDensity)
         {
@@ -120,19 +114,15 @@ namespace TagsCloudVisualizationTests
             (area / circleArea).Should().BeGreaterThan(requiredDensity);
         }
         
-        /**
-         * Test is checked with different number of rectangles
-         * because the fulfillment of check on some number
-         * does not implicitly mean that it is fulfilled
-         * on any smaller number
-         */
-        [TestCase(50, 50, 50, 50, 10, 9)]
-        [TestCase(30, 10, 30, 10, 10, 9)]
-        [TestCase(60, 20, 60, 20, 10, 9)]
-        [TestCase(30, 10, 30, 10, 1000, 950)]
-        [TestCase(60, 20, 60, 20, 1000, 950)]
+        [TestCase(50, 50, 50, 50, 10, 9, Description = "Shape is close to circle on small number of equal-sized squares")]
+        [TestCase(30, 10, 30, 10, 10, 9, Description = "Shape is close to circle on small number of equal-sized wide rectangles")]
+        [TestCase(60, 20, 60, 20, 10, 9, Description = "Shape is close to circle on small number of equal-sized tall rectangles")]
+        [TestCase(50, 50, 50, 50, 1000, 950, Description = "Shape is close to circle on large number of equal-sized squares")]
+        [TestCase(30, 10, 30, 10, 1000, 950, Description = "Shape is close to circle on large number of equal-sized wide rectangles")]
+        [TestCase(60, 20, 60, 20, 1000, 950, Description = "Shape is close to circle on large number of equal-sized tall rectangles")]
         [Retry(5)]
-        [TestCase(5, 5, 10, 10, 10, 7)]
+        [TestCase(5, 5, 10, 10, 10, 7, Description = "Shape is close to circle on small number of rectangles")]
+        [TestCase(5, 5, 10, 10, 1000, 750, Description = "Shape is close to circle on small large of rectangles")]
         public void TagsCloudOfRandomSizedRectanglesShapeIsCloseToCircle(int minWidth, int minHeight, int maxWith,
             int maxHeight, int count, int rectanglesInCircleRequired)
         {
