@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -11,7 +11,7 @@ using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTests
 {
-    public class CircularCloudLayouterTests
+    public partial class CircularCloudLayouterTests
     {
         [TestCase(0, 0)]
         [TestCase(3, 5)]
@@ -44,7 +44,7 @@ namespace TagsCloudVisualizationTests
         public void PutNextRectangle_RectangleHasCorrectSize(int minWidth, int minHeight, int maxWidth, int maxHeight)
         {
             var circularCloudLayouter = new CircularCloudLayouter(Point.Empty);
-            var rectangleSize = CreateRandomSize(new Size(minWidth, minHeight), new Size(maxWidth, maxHeight));
+            var rectangleSize = TestsHelper.CreateRandomSize(new Size(minWidth, minHeight), new Size(maxWidth, maxHeight));
 
             var rectangle = circularCloudLayouter.PutNextRectangle(rectangleSize);
 
@@ -79,7 +79,7 @@ namespace TagsCloudVisualizationTests
         {
             var circularCloudLayouter = new CircularCloudLayouter(Point.Empty);
 
-            var rectangles = PutRandomRectanglesUsingLayouter(count, circularCloudLayouter,
+            var rectangles = TestsHelper.PutRandomRectanglesUsingLayouter(count, circularCloudLayouter,
                 new Size(minWidth, minHeight), new Size(maxWith, maxHeight));
 
             TestExecutionContext.CurrentContext.CurrentTest.Properties.Set("rectangles", rectangles);
@@ -107,12 +107,12 @@ namespace TagsCloudVisualizationTests
             var center = Point.Empty;
             var circularCloudLayouter = new CircularCloudLayouter(center);
 
-            var rectangles = PutRandomRectanglesUsingLayouter(count, circularCloudLayouter,
+            var rectangles = TestsHelper.PutRandomRectanglesUsingLayouter(count, circularCloudLayouter,
                 new Size(minWidth, minHeight), new Size(maxWith, maxHeight));
 
             TestExecutionContext.CurrentContext.CurrentTest.Properties.Set("rectangles", rectangles);
 
-            var radius = GetRadiusOfCircleIncludingAllRectangles(rectangles, center);
+            var radius = TestsHelper.GetRadiusOfCircleIncludingAllRectangles(rectangles, center);
             var circleArea = radius * radius * Math.PI;
             var area = rectangles.Sum(rectangle => rectangle.Width * rectangle.Height);
             (area / circleArea).Should().BeGreaterThan(requiredDensity);
@@ -131,13 +131,13 @@ namespace TagsCloudVisualizationTests
             var center = Point.Empty;
             var circularCloudLayouter = new CircularCloudLayouter(center);
 
-            var rectangles = PutRandomRectanglesUsingLayouter(count, circularCloudLayouter,
+            var rectangles = TestsHelper.PutRandomRectanglesUsingLayouter(count, circularCloudLayouter,
                 new Size(minWidth, minHeight), new Size(maxWith, maxHeight));
 
             TestExecutionContext.CurrentContext.CurrentTest.Properties.Set("rectangles", rectangles);
 
-            var radius = GetRadiusOfCircleIncludingAllRectangles(rectangles, center);
-            var rectanglesInCircleCount = rectangles.Count(rectangle => IsRectangleInCircle(rectangle, center, radius));
+            var radius = TestsHelper.GetRadiusOfCircleIncludingAllRectangles(rectangles, center);
+            var rectanglesInCircleCount = rectangles.Count(rectangle => TestsHelper.IsRectangleInCircle(rectangle, center, radius));
             rectanglesInCircleCount.Should().BeGreaterOrEqualTo(rectanglesInCircleRequired);
         }
 
@@ -161,76 +161,5 @@ namespace TagsCloudVisualizationTests
             tagsCloudImage.GetBitmap().Save(exactPath);
             Console.WriteLine("Tag cloud visualization saved to file {0}", exactPath);
         }
-
-        #region Helper functions
-
-        private static List<Rectangle> PutRandomRectanglesUsingLayouter(int rectanglesCount,
-            CircularCloudLayouter layouter, Size minSize, Size maxSize)
-        {
-            var rectangles = new List<Rectangle>();
-            for (var i = 0; i < rectanglesCount; ++i)
-                rectangles.Add(layouter.PutNextRectangle(
-                    CreateRandomSize(minSize, maxSize)
-                ));
-            return rectangles;
-        }
-
-        private static Size CreateRandomSize(Size minSize, Size maxSize)
-        {
-            var random = new Random();
-            return new Size(random.Next(minSize.Width, maxSize.Width), random.Next(minSize.Height, maxSize.Height));
-        }
-
-        private static int GetRadiusOfCircleIncludingAllRectangles(IReadOnlyCollection<Rectangle> rectangles,
-            Point center)
-        {
-            var (left, right, top, bottom) = GetEdgesOfRectanglesSet(rectangles);
-            
-            var radius = 0;
-
-            if (Math.Abs(left - center.X) > radius)
-                radius = Math.Abs(left - center.X);
-            if (Math.Abs(right - center.X) > radius)
-                radius = Math.Abs(right - center.X);
-            if (Math.Abs(top - center.Y) > radius)
-                radius = Math.Abs(top - center.Y);
-            if (Math.Abs(bottom - center.Y) > radius)
-                radius = Math.Abs(bottom - center.Y);
-
-            return radius;
-        }
-
-        private static (int left, int right, int top, int bottom) GetEdgesOfRectanglesSet(
-            IReadOnlyCollection<Rectangle> rectangles)
-        {
-            var left = rectangles.Aggregate(0,
-                (leftmost, rectangle) => rectangle.Left < leftmost ? rectangle.Left : leftmost);
-            var right = rectangles.Aggregate(0,
-                (rightmost, rectangle) => rectangle.Right > rightmost ? rectangle.Right : rightmost);
-
-            var top = rectangles.Aggregate(0,
-                (topmost, rectangle) => rectangle.Top < topmost ? rectangle.Top : topmost);
-            var bottom = rectangles.Aggregate(0,
-                (bottommost, rectangle) => rectangle.Bottom > bottommost ? rectangle.Bottom : bottommost);
-
-            return (left, right, top, bottom);
-        }
-
-        private static bool IsRectangleInCircle(Rectangle rectangle, Point circleCenter, int circleRadius)
-        {
-            return IsPointInCircle(new Point(rectangle.Left, rectangle.Top), circleCenter, circleRadius) &&
-                   IsPointInCircle(new Point(rectangle.Left, rectangle.Bottom), circleCenter, circleRadius) &&
-                   IsPointInCircle(new Point(rectangle.Right, rectangle.Top), circleCenter, circleRadius) &&
-                   IsPointInCircle(new Point(rectangle.Right, rectangle.Bottom), circleCenter, circleRadius);
-        }
-
-        private static bool IsPointInCircle(Point point, Point circleCenter, int circleRadius)
-        {
-            var pointXRelative = point.X - circleCenter.X;
-            var pointYRelative = point.Y - circleCenter.Y;
-            return pointXRelative * pointXRelative + pointYRelative * pointYRelative <= circleRadius * circleRadius;
-        }
-
-        #endregion
     }
 }
