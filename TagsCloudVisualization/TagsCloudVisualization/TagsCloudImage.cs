@@ -20,7 +20,7 @@ namespace TagsCloudVisualization
             _graphics = Graphics.FromImage(_image);
         }
 
-        public void AddRectangles(List<Rectangle> rectangles, float penWidth = 2f)
+        public void AddRectangles(IEnumerable<Rectangle> rectangles, float penWidth = 2f)
         {
             foreach (var rectangle in rectangles)
             {
@@ -35,7 +35,7 @@ namespace TagsCloudVisualization
             }
         }
 
-        public void AddRectangles(List<Rectangle> rectangles, Color penColor, float penWidth = 2f)
+        public void AddRectangles(IEnumerable<Rectangle> rectangles, Color penColor, float penWidth = 2f)
         {
             var pen = new Pen(penColor, penWidth);
             foreach (var rectangle in rectangles)
