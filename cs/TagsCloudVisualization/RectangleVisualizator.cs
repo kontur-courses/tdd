@@ -31,14 +31,5 @@ namespace TagsCloudVisualization
 
             return bitmap;
         }
-
-        public static Bitmap GenerateRandomCloudBitmap(Point center, int amount,
-            int minWidth, int maxWidth, int minHeight, int maxHeight)
-        {
-            var rectangles = CloudLayouterUtilities.GenerateRandomLayout(center, amount,
-                minWidth, maxWidth, minHeight, maxHeight);
-
-            return GetBitmapFromRectangles(center, rectangles);
-        }
     }
 }
