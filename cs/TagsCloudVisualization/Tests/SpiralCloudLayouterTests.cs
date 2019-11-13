@@ -15,16 +15,16 @@ namespace TagsCloudVisualization
         private SpiralCloudLayouter layouter;
         private List<Rectangle> rectangles;
         private Random random;
-        private readonly Point center = new Point(250, 250);
+        private Point center;
 
         [SetUp]
         public void SetUp()
         {
             layouter = new SpiralCloudLayouter(
-                center,
-                new ArchimedeanSpiral(1));
+                new ArchimedeanSpiral(1, 0.05f));
             rectangles = new List<Rectangle>();
-            random = new Random();
+            random = new Random(25);
+            center = new Point(0, 0);
         }
 
         [TestCase(5, TestName = "WhenPut5Rectangles")]
@@ -88,9 +88,9 @@ namespace TagsCloudVisualization
                 rectanglesArea += rectangle.Width * rectangle.Height;
             }
 
-            var squaredIncreasedRadius = (int) ((rectanglesArea / Math.PI) * 1.25);
+            var increasedRadius = Math.Sqrt(rectanglesArea / Math.PI) * 1.25;
             foreach (var rectangle in rectangles)
-                RectangleUtils.GetSquareDistanceToPoint(rectangle, center).Should().BeLessThan(squaredIncreasedRadius);
+                rectangle.DistanceToPoint(center).Should().BeLessThan(increasedRadius);
         }
 
         [TearDown]
@@ -101,11 +101,9 @@ namespace TagsCloudVisualization
             var failedTestsPath = TestContext.CurrentContext.TestDirectory + @"\FailedTests";
             if (!Directory.Exists(failedTestsPath))
                 Directory.CreateDirectory(failedTestsPath);
-            var cloudDrawer = new CircularCloudDrawer(new Size(500, 500), layouter);
-            foreach (var rectangle in rectangles)
-                cloudDrawer.DrawRectangle(rectangle);
+            var cloudDrawer = new CircularCloudDrawer(Color.Teal, Brushes.Peru, Brushes.Black);
             var filename = failedTestsPath + $"\\{TestContext.CurrentContext.Test.FullName}.png";
-            cloudDrawer.Save(filename);
+            cloudDrawer.DrawRectangles(rectangles, filename);
             TestContext.WriteLine($"Tag cloud visualisation saved to file: '{filename}'");
         }
 

@@ -1,55 +1,59 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudDrawer : IDisposable
+    public class CircularCloudDrawer
     {
-        private readonly SpiralCloudLayouter layouter;
-        private readonly Bitmap bitmap;
-        private readonly Graphics graphics;
-        private readonly Brush brush;
+        private static readonly Font FakeFont = new Font(FontFamily.GenericSerif, 1);
+        private readonly Color backgroundColor;
+        private readonly Brush tagBrush;
         private readonly Pen pen;
         private readonly StringFormat stringFormat;
 
-        public CircularCloudDrawer(Size imageSize, SpiralCloudLayouter layouter)
+        public CircularCloudDrawer(Color backgroundColor, Brush tagBrush, Brush rectBrush)
         {
-            bitmap = new Bitmap(imageSize.Width, imageSize.Height);
-            this.layouter = layouter;
-            graphics = Graphics.FromImage(bitmap);
-            graphics.Clear(Color.Teal);
-            brush = Brushes.Peru;
-            pen = new Pen(Brushes.Black);
+            this.backgroundColor = backgroundColor;
+            this.tagBrush = tagBrush;
+            pen = new Pen(rectBrush);
             stringFormat = new StringFormat()
             {
                 LineAlignment = StringAlignment.Center,
             };
         }
 
-        public void DrawWord(string word, Font font)
+        public void DrawRectangles(IEnumerable<Rectangle> rectangles, string filename)
         {
-            var wordSize = graphics.MeasureString(word, font) + new SizeF(1, 1);
-            var wordRect = layouter.PutNextRectangle(wordSize.ToSize());
-            graphics.DrawString(word, font, brush, wordRect, stringFormat);
-            DrawRectangle(wordRect);
+            DrawCloud(
+                rectangles.Select(rect => new TagInfo("", FakeFont, rect)),
+                filename);
         }
 
-        public void DrawRectangle(Rectangle rectangle)
+        public void DrawCloud(IEnumerable<TagInfo> tags, string filename)
         {
-            graphics.DrawRectangle(pen, rectangle);
-        }
+            var imageSize = GetSuitableImageSize(tags);
+            var center = new Point(imageSize.Width / 2, imageSize.Height / 2);
+            var bitmap = new Bitmap(imageSize.Width, imageSize.Height);
+            var graphics = Graphics.FromImage(bitmap);
+            graphics.Clear(backgroundColor);
+            foreach (var tag in tags)
+            {
+                var movedToCenterRect = tag.Rectangle.ShiftLocation(center);
+                graphics.DrawString(tag.Value, tag.Font, tagBrush, movedToCenterRect, stringFormat);
+                graphics.DrawRectangle(pen, movedToCenterRect);
+            }
 
-        public void Save(string filename)
-        {
             bitmap.Save(filename);
         }
 
-        public void Dispose()
+        private Size GetSuitableImageSize(IEnumerable<TagInfo> tags)
         {
-            bitmap.Dispose();
-            graphics.Dispose();
-            brush.Dispose();
-            stringFormat.Dispose();
+            var rectanglesSquare = tags
+                .Select(tag => tag.Rectangle.Width * tag.Rectangle.Height).Sum();
+            var increasedDiameter = (int) (Math.Sqrt(rectanglesSquare / Math.PI) * 1.5) * 2;
+            return new Size(increasedDiameter, increasedDiameter);
         }
     }
 }

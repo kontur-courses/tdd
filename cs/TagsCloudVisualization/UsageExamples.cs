@@ -1,63 +1,63 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace TagsCloudVisualization
 {
     public static class UsageExamples
     {
-        private static readonly Size ImageSize = new Size(1200, 1200);
         private const string FontFamilyName = "Arial";
-
-        private static void GenerateTagCloud(IEnumerable<Tuple<string, Font>> wordsWithFonts, string filename)
-        {
-            var cloudLayouter = new SpiralCloudLayouter(
-                new Point(ImageSize.Width / 2, ImageSize.Height / 2),
-                new ArchimedeanSpiral(1));
-            var cloudDrawer = new CircularCloudDrawer(ImageSize, cloudLayouter);
-            foreach (var (word, font) in wordsWithFonts)
-                cloudDrawer.DrawWord(word, font);
-            cloudDrawer.Save(Environment.CurrentDirectory + $"\\Examples\\{filename}.png");
-        }
-
-        private static IEnumerable<Tuple<string, Font>> GetWordsWithFonts(
-            int count,
-            Func<int, string> wordGenerator,
-            Func<int, int> fontSizeGenerator)
-        {
-            for (var i = 1; i <= count; i++)
-            {
-                yield return new Tuple<string, Font>(
-                    wordGenerator(i), new Font(FontFamilyName, fontSizeGenerator(i)));
-            }
-        }
 
         public static void GenerateFirstTagCloud()
         {
             GenerateTagCloud(
-                GetWordsWithFonts(25, a => $"word{a.ToString()}", a => a * 3), 
+                GetTags(25, a => $"word{a.ToString()}", a => a * 3), 
                 "first");
         }
 
         public static void GenerateSecondTagCloud()
         {
             GenerateTagCloud(
-                GetWordsWithFonts(50, a => a.ToString(), a => a * 2), 
+                GetTags(50, a => a.ToString(), a => a * 2), 
                 "second");
         }
 
         public static void GenerateThirdTagCloud()
         {
             GenerateTagCloud(
-                GetWordsWithFonts(75, a => "25", a => 30),
+                GetTags(75, a => "25", a => 30),
                 "third");
         }
 
         public static void GenerateFourthTagCloud()
         {
             GenerateTagCloud(
-                GetWordsWithFonts(70, a => Math.Pow(5, a).ToString(), a => 10),
+                GetTags(70, a => Math.Pow(5, a).ToString(), a => 10),
                 "fourth");
+        }
+        
+        private static void GenerateTagCloud(IEnumerable<TagInfo> tags, string filename)
+        {
+            var cloudDrawer = new CircularCloudDrawer(Color.Teal, Brushes.Peru, Brushes.Black);
+            cloudDrawer.DrawCloud(tags.ToList(), Environment.CurrentDirectory + $"\\Examples\\{filename}.png");
+        }
+
+        private static IEnumerable<TagInfo> GetTags(
+            int count,
+            Func<int, string> wordGenerator,
+            Func<int, int> fontSizeGenerator)
+        {
+            var layouter = new SpiralCloudLayouter(new ArchimedeanSpiral(1, 0.05f));
+            for (var i = 1; i <= count; i++)
+            {
+                var font = new Font(FontFamilyName, fontSizeGenerator(i));
+                var value = wordGenerator(i);
+                var rectSize = TextRenderer.MeasureText(value, font);
+                var rect = layouter.PutNextRectangle(rectSize);
+                yield return new TagInfo(value, font, rect);
+            }
         }
     }
 }

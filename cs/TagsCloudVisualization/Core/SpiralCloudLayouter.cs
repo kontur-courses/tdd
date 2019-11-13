@@ -4,16 +4,16 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class SpiralCloudLayouter : ICircularCloudLayouter
+    public class SpiralCloudLayouter : RectangleCloudLayouter
     {
         private readonly Point center;
         private readonly ISpiral spiral;
         private readonly List<Rectangle> rectangles;
 
-        public SpiralCloudLayouter(Point center, ISpiral spiral)
+        public SpiralCloudLayouter(ISpiral spiral)
         {
-            this.center = center;
             this.spiral = spiral;
+            center = new Point(0, 0);
             rectangles = new List<Rectangle>();
         }
 
@@ -30,7 +30,9 @@ namespace TagsCloudVisualization
             Rectangle possibleRect;
             do
             {
-                possibleRect = GetPossibleRectangle(rectangleSize);
+                var topLeftCornerLocation = GetTopLeftCornerLocationOfRectangle(
+                    Point.Round(spiral.GetNextPoint()), rectangleSize);
+                possibleRect = new Rectangle(topLeftCornerLocation, rectangleSize);
             } while (IsIntersectsWithOthersRectangles(possibleRect));
 
             return possibleRect;
@@ -41,39 +43,41 @@ namespace TagsCloudVisualization
             return rectangles.Any(other => Rectangle.Intersect(rect, other) != Rectangle.Empty);
         }
 
-        private Point OffsetPointToRectangleCenter(Point point, Size rectangleSize)
+        private Point GetTopLeftCornerLocationOfRectangle(Point centerRectangle, Size rectangleSize)
         {
-            point.Offset(center);
-            point.Offset(-rectangleSize.Width / 2, -rectangleSize.Height / 2);
-            return point;
-        }
-
-        private Rectangle GetPossibleRectangle(Size rectangleSize)
-        {
-            return new Rectangle(
-                OffsetPointToRectangleCenter(Point.Round(spiral.GetNextPoint()), rectangleSize),
-                rectangleSize);
+            return new Point(
+                centerRectangle.X - rectangleSize.Width / 2,
+                centerRectangle.Y - rectangleSize.Height / 2);
         }
 
         private Rectangle ShiftRectangleToCenter(Rectangle rect)
         {
-            var minDistanceSquare = int.MaxValue;
+            var minDistanceSquare = double.MaxValue;
             var shiftedRect = rect;
             var queue = new Queue<Rectangle>();
             queue.Enqueue(rect);
             while (queue.Count != 0)
             {
                 var currentRect = queue.Dequeue();
-                var squareDistanceToCenter = RectangleUtils.GetSquareDistanceToPoint(currentRect, center);
+                var squareDistanceToCenter = currentRect.DistanceToPoint(center);
                 if (squareDistanceToCenter >= minDistanceSquare || IsIntersectsWithOthersRectangles(currentRect))
                     continue;
                 minDistanceSquare = squareDistanceToCenter;
                 shiftedRect = currentRect;
-                foreach (var adjacentRectangle in RectangleUtils.GetAdjacentRectangles(currentRect))
+                foreach (var adjacentRectangle in GetAdjacentRectangles(currentRect))
                     queue.Enqueue(adjacentRectangle);
             }
 
             return shiftedRect;
+        }
+         
+        private IEnumerable<Rectangle> GetAdjacentRectangles(Rectangle rect)
+        {
+            
+            yield return new Rectangle(new Point(rect.X - 1, rect.Y), rect.Size);
+            yield return new Rectangle(new Point(rect.X + 1, rect.Y), rect.Size);
+            yield return new Rectangle(new Point(rect.X, rect.Y - 1), rect.Size);
+            yield return new Rectangle(new Point(rect.X, rect.Y + 1), rect.Size);
         }
     }
 }

@@ -2,7 +2,7 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public interface ICircularCloudLayouter
+    public interface RectangleCloudLayouter
     {
         Rectangle PutNextRectangle(Size rectangleSize);
     }

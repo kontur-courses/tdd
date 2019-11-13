@@ -1,26 +1,24 @@
-using System.Collections.Generic;
 using System.Drawing;
 
 namespace TagsCloudVisualization
 {
     public static class RectangleUtils
-    {    
-        public static int GetSquareDistanceToPoint(Rectangle currentRect, Point point)
+    {
+        public static Point GetCenter(this Rectangle rect)
         {
-            var rectCenter = new Point(
-                currentRect.X + currentRect.Width / 2,
-                currentRect.Y + currentRect.Height / 2);
-            var squareDistanceToCenter = (rectCenter.X - point.X) * (rectCenter.X - point.X) +
-                                         (rectCenter.Y - point.Y) * (rectCenter.Y - point.Y);
-            return squareDistanceToCenter;
+            return new Point(
+                rect.X + rect.Width / 2,
+                rect.Y + rect.Height / 2);
+        }
+        
+        public static double DistanceToPoint(this Rectangle rect, Point point)
+        {
+            return rect.GetCenter().DistanceTo(point);
         }
 
-        public static  IEnumerable<Rectangle> GetAdjacentRectangles(Rectangle rect)
+        public static Rectangle ShiftLocation(this Rectangle rect, Point shift)
         {
-            yield return new Rectangle(new Point(rect.X - 1, rect.Y), rect.Size);
-            yield return new Rectangle(new Point(rect.X + 1, rect.Y), rect.Size);
-            yield return new Rectangle(new Point(rect.X, rect.Y - 1), rect.Size);
-            yield return new Rectangle(new Point(rect.X, rect.Y + 1), rect.Size);
+            return new Rectangle(new Point(rect.X + shift.X, rect.Y + shift.Y), rect.Size);
         }
     }
 }

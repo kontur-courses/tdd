@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
 
@@ -14,7 +15,7 @@ namespace TagsCloudVisualization
         [SetUp]
         public void SetUp()
         {
-            archimedeanSpiral = new ArchimedeanSpiral(1);
+            archimedeanSpiral = new ArchimedeanSpiral(1, 0.05f);
         }
 
         [Test]
@@ -36,17 +37,7 @@ namespace TagsCloudVisualization
 
         private bool IsDifferentPoints(List<PointF> points)
         {
-            for (var i = 0; i < points.Count; i++)
-            {
-                for (var j = i + 1; j < points.Count; j++)
-                {
-                    if (Math.Abs(points[i].X - points[j].X) < double.Epsilon
-                        && Math.Abs(points[i].Y - points[j].Y) < double.Epsilon)
-                        return false;
-                }
-            }
-
-            return true;
+            return points.Distinct(new PointFComparer()).Count() == points.Count;
         }
     }
 }
