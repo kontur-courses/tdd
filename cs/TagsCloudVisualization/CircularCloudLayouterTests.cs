@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization
 {
@@ -19,6 +20,19 @@ namespace TagsCloudVisualization
             layouter = new CircularCloudLayouter(defaultCenter);
         }
 
+        [TearDown]
+        public void SaveTestInformationIfFailed()
+        {
+            if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure)
+                return;
+            var directoryName = "FailedImages";
+            var filename = TestContext.CurrentContext.Test.Name + ".png";
+            RectanglesVisualizer.SaveNewRectanglesLayout(
+                layouter.Rectangles, directoryName, filename);
+            var path = $@"TagsCloudVisualization\{directoryName}\{filename}";
+            Console.WriteLine($"Tag cloud visualization saved to file {path}");
+        }
+
         [Test]
         public void PutNextRectangle_ShouldPutRectangleWithSameSizeAsInArgument_IfFirstRectangle()
         {
@@ -31,13 +45,6 @@ namespace TagsCloudVisualization
             size.Should().Be(rectangleSize);
         }
 
-        /*
-            Я хотел написать в TestCase названия тестовых случаев,
-            например в данном случае TestName = "IfSizesAreEven" и TestName = "IfSizesAreOdd", 
-            но почему то если их прописать, то тест перестает выполняться, хотя в прошлой домашке все работало хорошо
-            Не знаю в чем может быть проблема. Может эта ошибка связана с проектом. Но я пока убрал названия.
-            Такая же проблема и в PointsRadiusComparerTests.
-         */
         [Test]
         [TestCase(10, 10)]
         [TestCase(9, 9)]
@@ -52,10 +59,14 @@ namespace TagsCloudVisualization
             location.Should().Be(expectedLocation);
         }
 
-        [Test]
-        public void PutNextRectangle_RectanglesShouldBeArrangedAsCircle()
+        [TestCase(100)]
+        [TestCase(200)]
+        [TestCase(300)]
+        [TestCase(400)]
+        [TestCase(500)]
+        public void PutNextRectangle_RectanglesShouldBeArrangedAsCircle(int seed)
         {
-            var sizes = Generator.GetRandomSizesList(1, 10, 1, 10, 500, new Random(100));
+            var sizes = Generator.GetRandomSizesList(10, 100, 10, 100, 500, new Random(seed));
             var rectangelsArea = 0;
 
             foreach (var size in sizes)
@@ -65,18 +76,21 @@ namespace TagsCloudVisualization
             }
 
             var squaredMaxRadius = (int)Math.Ceiling(rectangelsArea / Math.PI);
-            squaredMaxRadius += squaredMaxRadius / 4;
+            squaredMaxRadius += squaredMaxRadius / 3;
             var corners = layouter.Rectangles
                 .SelectMany(rectangle => rectangle.GetCorners()).ToList();
             foreach (var corner in corners)
                 corner.SquaredDistanceTo(layouter.Center).Should().BeLessThan(squaredMaxRadius);
         }
 
-        [Test]
-        [Repeat(5)]
-        public void PutNextRectangle_RectanglesShouldNotIntersect()
+        [TestCase(100)]
+        [TestCase(200)]
+        [TestCase(300)]
+        [TestCase(400)]
+        [TestCase(500)]
+        public void PutNextRectangle_RectanglesShouldNotIntersect(int seed)
         {
-            var sizes = Generator.GetRandomSizesList(1, 10, 1, 10, 100, new Random());
+            var sizes = Generator.GetRandomSizesList(10, 100, 10, 100, 100, new Random(seed));
 
             foreach (var size in sizes)
                 layouter.PutNextRectangle(size);
