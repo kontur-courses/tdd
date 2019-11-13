@@ -26,26 +26,30 @@ namespace TagsCloudVisualization
 
         private static void DrawTagCloudWithIncreasingRectangles()
         {
-            var bitmap = CreateBitmap(50, i =>
+            using (var bitmap = CreateBitmap(50, i =>
             {
                 var text = $"#{i + 1}";
                 var fontSize = 8 + i;
                 var font = new Font(FontFamily.GenericSansSerif, fontSize);
                 return new Tag(MeasureText(text, fontSize), text, font);
-            });
-            bitmap.Save("increasing_rectangles.png");
+            }))
+            {
+                bitmap.Save("increasing_rectangles.png");
+            }
         }
 
         private static void DrawTagCloudWithDecreasingRectangles()
         {
-            var bitmap = CreateBitmap(50, i =>
+            using (var bitmap = CreateBitmap(50, i =>
             {
                 var text = $"#{i + 1}";
                 var fontSize = 58 - i;
                 var font = new Font(FontFamily.GenericSansSerif, fontSize);
                 return new Tag(MeasureText(text, fontSize), text, font);
-            });
-            bitmap.Save("decreasing_rectangles.png");
+            }))
+            {
+                bitmap.Save("decreasing_rectangles.png");
+            }
         }
 
         private static Bitmap CreateBitmap(int count, Func<int, Tag> fabric)

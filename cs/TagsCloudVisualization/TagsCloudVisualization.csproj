@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArchimedeanSpiral.cs" />
+    <Compile Include="ArchimedeanSpiral_should.cs" />
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="CircularCloudLayouter_should.cs" />
     <Compile Include="CircularCloudVisualizer.cs" />

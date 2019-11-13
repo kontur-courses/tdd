@@ -82,8 +82,11 @@ namespace TagsCloudVisualization
 
             var layouter = GetTestProperty<CircularCloudLayouter>(LayouterKey);
             var visualizer = new CircularCloudVisualizer();
-            var bitmap = visualizer.Visualize(layouter.Rectangles);
-            bitmap.Save(path);
+            using (var bitmap = visualizer.Visualize(layouter.Rectangles))
+            {
+                bitmap.Save(path);
+            }
+
             TestContext.WriteLine($"Tag cloud visualization saved to file {path}");
         }
 
