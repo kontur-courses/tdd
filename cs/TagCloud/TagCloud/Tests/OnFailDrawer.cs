@@ -35,7 +35,7 @@ namespace TagCloud.Tests
                 new Size(imgWidth, imgHeight),
                 cloudLayouter
                     .GetAllRectangles()
-                    .Select(rect => new Rectangle(imgWidth / 2 + rect.X  , imgHeight / 2 + rect.Y , rect.Width, rect.Height)),
+                    .Select(rect => new Rectangle(imgWidth / 2 + rect.X, imgHeight / 2 + rect.Y, rect.Width, rect.Height)),
                 fname);
             TestContext.WriteLine($"Tag cloud visualisation saved to file: '{fname}'");
         }

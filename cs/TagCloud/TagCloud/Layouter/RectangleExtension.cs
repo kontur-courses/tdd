@@ -1,3 +1,4 @@
+using System;
 using System.Drawing;
 
 namespace TagCloud.Layouter
@@ -7,6 +8,11 @@ namespace TagCloud.Layouter
         public static Rectangle Shift(this Rectangle rect, Point shiftPoint)
         {
             return new Rectangle(new Point(rect.X + shiftPoint.X, rect.Y + shiftPoint.Y), rect.Size);     
+        }
+
+        public static double GetCircumscribedCircleArea(this Rectangle rect)
+        {
+            return Math.PI * (rect.Width * rect.Width + rect.Height * rect.Height) / 4.0;
         }
     }
 }

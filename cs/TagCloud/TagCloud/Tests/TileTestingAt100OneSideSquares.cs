@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -9,14 +10,13 @@ namespace TagCloud.Tests
 {
     internal class TileTestingAt100OneSideSquares : OnFailDrawer
     {
-        private CircularCloudLayouter cloudLayouter;
         private List<Rectangle> tiledRectangles;
         private const int ElementsAmount = 100;
 
         [SetUp]
         public void SetUp()
         {
-            cloudLayouter = new CircularCloudLayouter(TestingDegenerateSize.CenterPoint);
+            cloudLayouter = new CircularCloudLayouter(TestingDegenerateSize.CenterPoint, 0.5);
             tiledRectangles = Enumerable
                 .Range(0, ElementsAmount)
                 .Select(number => cloudLayouter.PutNextRectangle(TestingDegenerateSize.SingleSize))
