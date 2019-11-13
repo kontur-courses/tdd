@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="CircularCloudDrawing.cs" />
     <Compile Include="CircularCloudLayouter.cs" />
+    <Compile Include="ExamplesCircularCloud.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spiral.cs" />

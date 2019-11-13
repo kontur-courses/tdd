@@ -14,12 +14,12 @@ namespace TagsCloudVisualization
         
         public CircularCloudDrawing(Size imageSize)
         {
-            if (imageSize.IsEmpty)
+            if (imageSize.Height <= 0 || imageSize.Height <= 0)
                 throw new AggregateException("Size have zero width or height");
             bitmap = new Bitmap(imageSize.Width, imageSize.Height);
             graphics = Graphics.FromImage(bitmap);
-            graphics.Clear(Color.DarkBlue);
-            brush = Brushes.Cyan;
+            graphics.Clear(Color.Linen);
+            brush = Brushes.Black;
             layouter = new CircularCloudLayouter(new Point(imageSize.Width / 2, imageSize.Height / 2));
             pen = new Pen(Brushes.Brown);
             stringFormat = new StringFormat()

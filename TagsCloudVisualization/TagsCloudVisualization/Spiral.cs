@@ -8,28 +8,48 @@ namespace TagsCloudVisualization
     public class Spiral
     {
         private readonly Point center;
-        private double radius = 0;
-        private double angle = 0;
+        //знаяю что для многопоточного кода это уязвимое место, но иначе подает сильно производительность
         private HashSet<Point> points = new HashSet<Point>();
+        private  double radius = 0.0; 
+        private  double angle = 0.0;
         
         public Spiral(Point center)
         {
             this.center = center;
         }
         
+//        public IEnumerable<Point> GetPoints()
+//        { 
+//            while (true)
+//            {
+//                var point = ConvertingBetweenPolarToCartesianCoordinates(radius, angle);
+//                point.Offset(center);
+//                yield return point;
+//                radius = 2 * Math.PI / 2 * angle;
+//                angle += 0.1;
+//            }
+//        }
+        
         public IEnumerable<Point> GetPoints()
         {
             while (true)
             {
                 var point = ConvertingBetweenPolarToCartesianCoordinates(radius, angle);
+                point.Offset(center);
                 if (! points.Contains(point))
                 {
                     points.Add(point);
-                    point.Offset(center);
                     yield return point;
                 }
-                radius = angle > Math.PI * 2 ? radius + 1: radius;
-                angle = angle > Math.PI * 2 ? angle - Math.PI * 2 : angle + 0.1;
+
+                if (angle > Math.PI * 2)
+                {
+                    radius++;
+                    angle -= Math.PI * 2;
+                    points.Clear();
+                }
+                else
+                    angle += 0.1;
             }
         }
 

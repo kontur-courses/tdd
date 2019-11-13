@@ -18,14 +18,14 @@ namespace TagsCloudVisualization.Tests
             rectangles = new List<Rectangle>();
         }
         
-        [TestCaseSource(nameof(sequenceCoordinateCenters))] 
+        [TestCaseSource(nameof(cloudCenters))] 
         public void Constructor_DoesNotThrow_WithСorrectСenter(Point center) 
         { 
             Action action = () => new CircularCloudLayouter(center); 
             action.Should().NotThrow(); 
         }
         
-        [TestCaseSource(nameof(sequenceCoordinateCenters))]
+        [TestCaseSource(nameof(cloudCenters))]
         public void PutNextRectangle_LocateFirstRectangle_OnSpecifiedByXCenter(Point center)
         {
             var circularCloudLayouter = new CircularCloudLayouter(center); 
@@ -33,7 +33,7 @@ namespace TagsCloudVisualization.Tests
             rectangle.X.Should().Be(center.X - 31 / 2);
         }
         
-        [TestCaseSource(nameof(sequenceCoordinateCenters))]
+        [TestCaseSource(nameof(cloudCenters))]
         public void PutNextRectangle_LocateFirstRectangle_OnSpecifiedByYCenter(Point center)
         {
             var circularCloudLayouter = new CircularCloudLayouter(center); 
@@ -51,7 +51,7 @@ namespace TagsCloudVisualization.Tests
             rectangles.AddRange(Enumerable.Range(10, countRectangles)
                 .Select(i => circularCloudLayouter.PutNextRectangle(new Size(i * 3, i))));
             
-            HasOverlappingRectangles(rectangles).Should().BeFalse();
+            CircularCloudLayouter.HasOverlappingRectangles(rectangles).Should().BeFalse();
         }
 
         [TearDown]
@@ -68,13 +68,8 @@ namespace TagsCloudVisualization.Tests
             path =  Path.Combine(path, $"{testName}.png");
             circularCloudDrawing.SaveImage(path);
         }
-        
-        private static bool HasOverlappingRectangles(IReadOnlyCollection<Rectangle> rectangles)
-        {
-            return rectangles.Any(i => rectangles.Any(j => i != j && i.IntersectsWith(j)));
-        }
-        
-        private static IEnumerable<TestCaseData> sequenceCoordinateCenters = Enumerable 
+
+        private static IEnumerable<TestCaseData> cloudCenters = Enumerable 
         .Range(-1, 3) 
         .SelectMany(i => Enumerable 
             .Range(-1, 3) 

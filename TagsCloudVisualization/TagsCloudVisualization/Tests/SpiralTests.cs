@@ -10,7 +10,7 @@ namespace TagsCloudVisualization.Tests
     [TestFixture()]
     public class SpiralTests
     {
-        [TestCaseSource(nameof(coordinateCenter))]
+        [TestCaseSource(nameof(cloudCenters))]
         public void GetPoints_ShouldGiveFirstPointCenter(Point center)
         {
             var spiral = new Spiral(center);
@@ -18,21 +18,7 @@ namespace TagsCloudVisualization.Tests
             firstPoint.Should().BeEquivalentTo(center);
         }
         
-        [TestCaseSource(nameof(coordinateCenter))]
-        public void GetPoints_ShouldBeSpiral_WithThirteenCalls(Point center)
-        {
-            var points = new List<Point>();
-            for (var i = -2; i <= 2 ; i++)
-            for (var j = -2; j <= 2; j++)
-                if (Math.Pow(i, 2) + Math.Pow(j, 2) <= Math.Pow(2, 2))
-                    points.Add(new Point(i +  center.X, j + center.Y));
-            
-            var spiral = new Spiral(center);
-            var points1 = spiral.GetPoints().Take(points.Count * 2).ToList();
-            points1.Should().Contain(points);
-        }
-        
-        private static IEnumerable<TestCaseData> coordinateCenter = Enumerable 
+        private static IEnumerable<TestCaseData> cloudCenters = Enumerable 
             .Range(-1, 3) 
             .SelectMany(i => Enumerable 
                 .Range(-1, 3) 
