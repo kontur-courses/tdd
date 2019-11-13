@@ -9,7 +9,7 @@ namespace TagsCloudVisualization
     {
         private const int frameWidth = 100;
 
-        public static bool TryDrawRectanglesAndSaveAsPng(IEnumerable<Rectangle> rectangles, string pathToSave, out string savedPath)
+        public static bool TryDrawRectanglesAndSaveAsPng(List<Rectangle> rectangles, string pathToSave, out string savedPath)
         {
             if (rectangles == null || pathToSave == null)
                 throw new ArgumentNullException();
