@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public static class Utils
+    public static class RectangleGenerator
     {
         public static List<Rectangle> GenerateRandomRectangles(CircularCloudLayouter layouter, int count, int minSize,
             int maxSize, Random random)

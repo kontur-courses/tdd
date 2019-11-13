@@ -23,9 +23,9 @@ namespace TagsCloudVisualization
             return result;
         }
 
-        private static Brush GetRandomBrush(Random random, ImmutableList<Brush> brushes)
+        private static Brush GetRandomBrush(Random random, ImmutableArray<Brush> brushes)
         {
-            return brushes[random.Next(0, brushes.Count)];
+            return brushes[random.Next(0, brushes.Length)];
         }
     }
 }

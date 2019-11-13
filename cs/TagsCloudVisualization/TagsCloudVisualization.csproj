@@ -82,7 +82,7 @@
     <Compile Include="Themes\IndigoTheme.cs" />
     <Compile Include="Themes\RedTheme.cs" />
     <Compile Include="Themes\Theme.cs" />
-    <Compile Include="Utils.cs" />
+    <Compile Include="RectangleGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

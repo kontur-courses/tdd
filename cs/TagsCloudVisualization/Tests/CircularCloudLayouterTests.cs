@@ -146,7 +146,7 @@ namespace TagsCloudVisualization.Tests
             var acceptableRatio = 50;
             var random = new Random(randomSeed);
 
-            layouterRectangles = Utils.GenerateRandomRectangles(cloudLayouter, count, minSize, maxSize, random);
+            layouterRectangles = RectangleGenerator.GenerateRandomRectangles(cloudLayouter, count, minSize, maxSize, random);
 
             var furthestDistance = layouterRectangles
                 .Select(r => GetDistanceBetweenRectangleAndPoint(r, layouterCenter))

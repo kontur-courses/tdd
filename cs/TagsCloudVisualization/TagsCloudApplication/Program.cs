@@ -69,7 +69,7 @@ namespace TagsCloudApplication
                     var filename = groups[12].Value;
 
                     var layouter = new CircularCloudLayouter(spiral);
-                    var rectangles = Utils.GenerateRandomRectangles(layouter, count, minSize, maxSize, new Random());
+                    var rectangles = RectangleGenerator.GenerateRandomRectangles(layouter, count, minSize, maxSize, new Random());
                     var path = $"{AppDomain.CurrentDomain.BaseDirectory}{filename}";
                     CloudVisualizator.Visualize(theme, rectangles, width, height).Save(path);
                     Console.WriteLine(SavedMessage, path);
