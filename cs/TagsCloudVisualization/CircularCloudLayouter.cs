@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using TagsCloudVisualization.tools;
 
 namespace TagsCloudVisualization
 {
@@ -34,7 +35,13 @@ namespace TagsCloudVisualization
                 //Should be empty
             }
 
-            return location;
+            if (Cloud.Rectangles.Count == 0)
+                return location;
+            
+            location = TryMove(rectangleSize, location, Cloud.Center);
+            var previous = Cloud.Rectangles.Last().Location;
+           
+            return TryMove(rectangleSize, location, previous);
         }
 
         private bool TryGetNextLocation(Size rectangleSize, out Point upperLeftCorner)
@@ -44,6 +51,32 @@ namespace TagsCloudVisualization
 
             upperLeftCorner = GetUpperLeftCornerPosition(rectangleSize, center);
             var rectangle = new Rectangle(upperLeftCorner, rectangleSize);
+
+            return NotIntersectsWithOther(rectangle);
+        }
+        
+        private Point TryMove(Size rectangleSize, Point from, Point to)
+        {
+            var newLocation = from;
+            var nearestToTarget = to;
+            var minDistance = Math.Sqrt(2);
+
+            while (newLocation.Distance(nearestToTarget) > minDistance)
+            {
+                var middle = newLocation.GetMiddlePoint(nearestToTarget);
+                var rectangle = new Rectangle(middle, rectangleSize);
+
+                if (NotIntersectsWithOther(rectangle))
+                    newLocation = middle;
+                else
+                    nearestToTarget = middle;
+            }
+
+            return newLocation;
+        }
+
+        private bool NotIntersectsWithOther(Rectangle rectangle)
+        {
             return Cloud.Rectangles.All(r => !r.IntersectsWith(rectangle));
         }
 
