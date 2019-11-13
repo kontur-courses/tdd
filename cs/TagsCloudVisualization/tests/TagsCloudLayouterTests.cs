@@ -8,7 +8,7 @@ using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.tests
 {
     [TestFixture]
     public class TagsCloudLayouterTests
@@ -33,7 +33,7 @@ namespace TagsCloudVisualization
             if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
                 return;
 
-            if (layouter.Cloud.Rectangles.Count < 1)
+            if (layouter.Cloud.Rectangles.Count == 0)
                 return;
 
             var format = ImageFormat.Png;

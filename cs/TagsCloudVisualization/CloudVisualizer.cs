@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using TagsCloudVisualization.tools;
 
 namespace TagsCloudVisualization
 {
@@ -35,15 +36,17 @@ namespace TagsCloudVisualization
 
         public Bitmap Draw(Cloud cloud)
         {
+            var rectangles = cloud.Rectangles;
+
+            if (rectangles.Count == 0)
+                throw new ArgumentException("There are no rectangles");
+
             var bitmap = new Bitmap(imageWidth, imageHeight);
 
             using (var graphics = Graphics.FromImage(bitmap))
             {
-                var rectangles = cloud.Rectangles;
-
                 graphics.Clear(Color.Black);
-                graphics.TranslateTransform(imageWidth / 2 - cloud.Center.X,
-                    imageHeight / 2 - cloud.Center.Y);
+                graphics.TranslateTransform(imageWidth / 2, imageHeight / 2);
 
                 var scale = ComputeScale(rectangles);
                 graphics.ScaleTransform(scale, scale);

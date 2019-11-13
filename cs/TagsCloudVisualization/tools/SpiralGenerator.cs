@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.tools
 {
     public static class SpiralGenerator
     {
-        public static IEnumerable<Point> GetSpiral(Point center, int spiralStep, double angleStep = 0.5)
+        public static IEnumerable<Point> GetSpiral(Point center, double spiralStep, double angleStep = 0.5)
         {
             var angle = 0.0;
             var k = spiralStep / (Math.PI * 2);

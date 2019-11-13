@@ -4,8 +4,9 @@ using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using TagsCloudVisualization.tools;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.tests
 {
     public class SpiralGeneratorTests
     {

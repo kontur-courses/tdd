@@ -58,7 +58,7 @@
     <Compile Include="Cloud.cs" />
     <Compile Include="CloudVisualizer.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="SpiralGenerator.cs" />
+    <Compile Include="tools\SpiralGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="tests\SpiralGeneratorTests.cs" />
     <Compile Include="tests\TagsCloudLayouterTests.cs" />
