@@ -9,10 +9,5 @@ namespace TagCloud.Layouter
         {
             return new Rectangle(new Point(rect.X + shiftPoint.X, rect.Y + shiftPoint.Y), rect.Size);     
         }
-
-        public static double GetCircumscribedCircleArea(this Rectangle rect)
-        {
-            return Math.PI * (rect.Width * rect.Width + rect.Height * rect.Height) / 4.0;
-        }
     }
 }
