@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using FluentAssertions.Equivalency;
 
 namespace TagsCloudVisualization
 {
@@ -9,6 +10,7 @@ namespace TagsCloudVisualization
     {
         public List<Rectangle> Rectangles { get; }
         public Point Center { get; }
+        private const double destinyCOfficient = 0.2; 
         public CircularCloudLayouter(Point center)
         {
             Center = center;
@@ -26,7 +28,7 @@ namespace TagsCloudVisualization
                 Rectangles.Add(rectangle);
                 return rectangle;
             }
-            var spiral = new ArchimedeanSprial(0, Math.PI / 40, Math.PI / 40, 0.2, Center);
+            var spiral = new ArchimedeanSprial(0, Math.PI / 40, Math.PI / 40, destinyCOfficient, Center);
             while (true)
             {
                 var point = new Point(spiral.GetNextCoordinate().X - rectangleSize.Width / 2,

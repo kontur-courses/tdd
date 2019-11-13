@@ -21,7 +21,7 @@ namespace TagsCloudVisualization
         }
 
         [TestCase(0, 0)]
-        public void ShouldHaveCorrectCenterCoordinates_When_Create(int x, int y)
+        public void Center_ShouldHaveCorrectCenterCoordinates_When_Create(int x, int y)
         {
             var circularLayouter = new CircularCloudLayouter(new Point(x, y));
             circularLayouter.Center.Should().Be(new Point(x, y));
@@ -40,15 +40,15 @@ namespace TagsCloudVisualization
         [TestCase(-1, 10, TestName = "WhenWidthIsNegative")]
         [TestCase(10, -1, TestName = "WhenHeightIsNegative")]
         [TestCase(-2, -1, TestName = "WhenWidthAndHeightIsNegative")]
-        public void ShouldThrowArgumentException_WhenPutRectangleWithIncorrectDimension(int width, int height)
+        public void PutRectangle_ShouldThrowArgumentException_WhenPutRectangleWithIncorrectDimension(int width, int height)
         {
             Action action = () => basicLayouter.PutNextRectangle(new Size(width, height));
-            action.Should().Throw<ArgumentException>();
+            action.Should().Throw<ArgumentException>().WithMessage("Width and Height should be greater than zero");
         }
 
         [TestCase(20, 20, 90, 90)]
         [TestCase(13, 13, 94, 94)]
-        public void CenterOfTheFirstRectangle_Should_BeCorrect(int width, int height, int x, int y)
+        public void CenterOfTheFirstRectangle_Should_BeCorrect_WhenItPut(int width, int height, int x, int y)
         {
             basicLayouter.PutNextRectangle(new Size(width, height)).Location.Should().Be(new Point(x, y));
         }
@@ -91,25 +91,23 @@ namespace TagsCloudVisualization
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
                 var layouter = TestContext.CurrentContext.Test.Arguments.FirstOrDefault() as CircularCloudLayouter;
-                var currentDirectoryName = Directory.GetCurrentDirectory();
-                var fileName = SaveCloudWhenTestIsFallAndGetName(layouter, TestContext.CurrentContext);
-                var path = new DirectoryInfo(currentDirectoryName).Parent.Parent.Parent
-                        .GetFiles(fileName).Select(f => f.FullName).FirstOrDefault();
-                Console.WriteLine("Tag cloud visualization saved to file:");
-                Console.WriteLine(path);
+                var path = Path.GetTempPath();
+                SaveCloudWhenTestIsFallAndGetName(layouter, TestContext.CurrentContext,path);
+                Console.WriteLine("Tag cloud visualization saved in directory:");
+                Console.WriteLine(string.Format("{0}{1}.png",path,TestContext.CurrentContext.Test.Name));
             }
         }
 
         public static class LayouterSource
         {
-            private static readonly CircularCloudLayouter LayouterWithSameSizeRectangles =
+            private static readonly CircularCloudLayouter layouterWithSameSizeRectangles =
                 GetSameSizeRectnagles();
-            private static readonly CircularCloudLayouter LayouterWithDifferentSizeRectangles =
+            private static readonly CircularCloudLayouter layouterWithDifferentSizeRectangles =
                 GetDifferentSizeRectangles();
 
             public static CircularCloudLayouter GetSameSizeRectnagles()
             {
-                var layouter = new CircularCloudLayouter(new Point(100, 100));
+                var layouter = new CircularCloudLayouter(new Point(100, 100));  
                 for (int i = 0; i < 50; i++)
                     layouter.PutNextRectangle(new Size(5, 5));
                 return layouter;
@@ -125,9 +123,9 @@ namespace TagsCloudVisualization
             }
 
             private static TestCaseData DiffrenetSizeData =
-                    new TestCaseData(LayouterWithDifferentSizeRectangles).SetName("DiffetentSizeRectanglesTest");
+                    new TestCaseData(layouterWithDifferentSizeRectangles).SetName("DiffetentSizeRectanglesTest");
             private static TestCaseData SameSizeData =
-                    new TestCaseData(LayouterWithSameSizeRectangles).SetName("SameSizeRectanglesTest");
+                    new TestCaseData(layouterWithSameSizeRectangles).SetName("SameSizeRectanglesTest");
             private static TestCaseData[] TestCases = { DiffrenetSizeData, SameSizeData };
         }
 
@@ -136,13 +134,13 @@ namespace TagsCloudVisualization
             return Math.Sqrt((start.X - end.X) * (start.X - end.X) + (start.Y - end.Y) * (start.Y - end.Y));
         }
 
-        private string SaveCloudWhenTestIsFallAndGetName(CircularCloudLayouter layouter, TestContext context)
+        private void SaveCloudWhenTestIsFallAndGetName(CircularCloudLayouter layouter
+                , TestContext context,string path)
         {
             var cloud = new CloudVisualization(1000, 1000);
             var result = cloud.DrawRectangles(layouter.Rectangles);
             var name = string.Format("{0}.png", context.Test.Name);
-            result.Save(string.Format(@"../../../{0}", name));
-            return name;
+            result.Save(Path.Combine(path, string.Format("{0}", name)));
         }
     }
 }

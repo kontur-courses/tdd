@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 
 namespace TagsCloudVisualization
-
 {
     public class Programm
     {
@@ -26,7 +25,6 @@ namespace TagsCloudVisualization
         }
         public static void Main()
         {
-
             GetCloud(GetLayouter(400, new Point(500, 500)), 1000, 1000, 1);
             GetCloud(GetLayouter(200, new Point(250, 250)), 500, 500, 2);
             Console.WriteLine("Введиьте путь к файлу");
@@ -39,8 +37,8 @@ namespace TagsCloudVisualization
             var layouter = new CircularCloudLayouter(new Point(sizes.Count, sizes.Count));
             foreach (var size in sizes)
                 layouter.PutNextRectangle(new Size(size.Item1, size.Item2));
-            var width = (layouter.Rectangles.Max(rec => rec.X) -layouter.Rectangles.Min(rec=>rec.X))*2;
-            var height = (layouter.Rectangles.Max(rec => rec.Y) - layouter.Rectangles.Min(rec => rec.X))*2;
+            var width = (layouter.Rectangles.Max(rec => rec.X) - layouter.Rectangles.Min(rec => rec.X)) * 2;
+            var height = (layouter.Rectangles.Max(rec => rec.Y) - layouter.Rectangles.Min(rec => rec.X)) * 2;
             GetCloud(layouter, width, height, 3);
         }
     }
