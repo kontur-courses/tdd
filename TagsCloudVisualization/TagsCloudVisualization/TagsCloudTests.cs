@@ -27,7 +27,11 @@ namespace TagsCloudVisualization
             if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
                 return;
 
-            var path = $"{Directory.GetCurrentDirectory()}\\TestOutput\\{TestContext.CurrentContext.Test.Name}.png";
+            var path = Path.Combine(
+                    Directory.GetCurrentDirectory(), 
+                    "TestOutput", 
+                    $"{TestContext.CurrentContext.Test.Name}.png"
+                );
             var bmp = TagCloudVisualizer.Visualize(layouter, new Size(1000, 1000));
             bmp.Save(path, ImageFormat.Png);
             TestContext.WriteLine($"Tag cloud visualization saved to file {path}");

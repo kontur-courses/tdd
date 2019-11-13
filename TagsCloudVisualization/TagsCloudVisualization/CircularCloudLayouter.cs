@@ -40,7 +40,7 @@ namespace TagsCloudVisualization
 
             while (taggedRectangles.Any(otherRectangle => rectangle.IntersectsWith(otherRectangle)))
             {
-                var spiralPoint = spiral.GetNextSpiralPoint();
+                var spiralPoint = spiral.GetNextPoint();
                 rectangle.X = shiftedCenter.X + spiralPoint.X;
                 rectangle.Y = shiftedCenter.Y + spiralPoint.Y;
             }

@@ -4,7 +4,7 @@ namespace TagsCloudVisualization
 {
     public class ArchimedeanSpiral
     {
-        public Point Center { get; }
+        public readonly Point Center;
 
         public double DistanceFromCenter { get; set; }
 
@@ -18,7 +18,7 @@ namespace TagsCloudVisualization
             this.spiralRatio = spiralRatio;
         }
 
-        public Point GetNextSpiralPoint()
+        public Point GetNextPoint()
         {
             angle += spiralRatio;
             DistanceFromCenter += spiralRatio;

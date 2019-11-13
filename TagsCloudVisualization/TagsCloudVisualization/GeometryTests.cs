@@ -29,10 +29,10 @@ namespace TagsCloudVisualization
             action.Should().Throw<ArgumentException>();
         }
 
-        [TestCase(0, 0, 10, 10, TestName = "Centre is zero")]
-        [TestCase(0, 0, 0, 10, TestName = "Centre is zero, width is zero")]
-        [TestCase(0, 0, 10, 0, TestName = "Centre is zero, height is zero")]
-        [TestCase(25, -10, 10, 10, TestName = "Centre is non-zero")]
+        [TestCase(0, 0, 10, 10, TestName = "Center is zero")]
+        [TestCase(0, 0, 0, 10, TestName = "Center is zero, width is zero")]
+        [TestCase(0, 0, 10, 0, TestName = "Center is zero, height is zero")]
+        [TestCase(25, -10, 10, 10, TestName = "Center is non-zero")]
         public void ShiftPointBySizeOffsets_ReturnsCorrectPoint(int x, int y, int width, int height)
         {
             var shiftedPoint = Geometry.ShiftPointBySizeOffsets(new Point(x, y), new Size(width, height));
@@ -67,9 +67,9 @@ namespace TagsCloudVisualization
             action.Should().Throw<ArgumentException>();
         }
 
-        [TestCase(0, 0, 10, 10, 0, 0, TestName = "Centre is zero and point is zero")]
-        [TestCase(0, 0, 10, 10, 3, -3, TestName = "Centre is zero and non-zero point inside")]
-        [TestCase(10, -40, 20, 20, 5, -35, TestName = "Centre is non-zero and point inside")]
+        [TestCase(0, 0, 10, 10, 0, 0, TestName = "Center is zero and point is zero")]
+        [TestCase(0, 0, 10, 10, 3, -3, TestName = "Center is zero and non-zero point inside")]
+        [TestCase(10, -40, 20, 20, 5, -35, TestName = "Center is non-zero and point inside")]
         [TestCase(0,0,10,10,0,5, TestName  = "Point is on rectangle border")]
         public void GetLengthFromRectCenterToBorderOnVector_ReturnsZero(
             int centerX, int centerY, int width, int height, int endX, int endY)
