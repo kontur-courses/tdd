@@ -18,22 +18,22 @@ namespace TagsCloudVisualization
             Center = center;
         }
 
-        private static IEnumerable<PointF> GetSpiralPoints(PointF center, float a)
+        private IEnumerable<PointF> GetSpiralPoints()
         {
             for (float theta = 0; ; theta += DeltaAngle)
             {
-                var r = a * theta;
+                var r = A * theta;
                 float x, y;
                 (x, y) = PointConverter.TransformPolarToCartesian(r, theta);
-                x += center.X;
-                y += center.Y;
+                x += Center.X;
+                y += Center.Y;
                 yield return new PointF(x, y);
             }
         }
 
         public IEnumerator<PointF> GetEnumerator()
         {
-            return GetSpiralPoints(Center, A).GetEnumerator();
+            return GetSpiralPoints().GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

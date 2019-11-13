@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Reflection;
 
 namespace TagsCloudVisualization
 {
@@ -38,9 +37,16 @@ namespace TagsCloudVisualization
                 rect.X = (int) spiralPoints.Current.X;
                 rect.Y = (int) spiralPoints.Current.Y;
             }
+            rect.Location = FindBetterDensityPoint(rect);
+            rectangles.Add(rect);
+            return rect;
+        }
+
+        private Point FindBetterDensityPoint(Rectangle rect)
+        {
             if (TryFindPreviousSpinPoint(rect.Location, Thickness, out var previousSpinPointF))
             {
-                var previousSpinPoint = new Point((int) previousSpinPointF.X, (int) previousSpinPointF.Y);
+                var previousSpinPoint = new Point((int)previousSpinPointF.X, (int)previousSpinPointF.Y);
                 foreach (var point in BuildPath(previousSpinPoint, rect.Location))
                 {
                     rect.Location = point;
@@ -48,14 +54,7 @@ namespace TagsCloudVisualization
                         break;
                 }
             }
-            rectangles.Add(rect);
-            return rect;
-        }
-
-        public Bitmap DrawRectangles()
-        {
-            var visualizer = new Visualizer();
-            return visualizer.DrawRectangles(rectangles);
+            return rect.Location;
         }
 
         private static bool TryFindPreviousSpinPoint(PointF currentSpinPoint, float a, out PointF previousSpinPoint)
@@ -74,7 +73,6 @@ namespace TagsCloudVisualization
             return true;
         }
 
-
         private IEnumerable<Point> BuildPath(Point from, Point to)
         {
             var currentPoint = from;
@@ -91,6 +89,21 @@ namespace TagsCloudVisualization
                     yield return currentPoint;
                 }
             }
+        }
+
+        public static List<Rectangle> CreateRandomLayout(Point center,
+            float thickness, int minRectSize, int maxRectSize, int amountOfRectangles)
+        {
+            var layouter = new CircularCloudLayouter(center, thickness);
+            var random = new Random();
+            for (var i = 0; i < amountOfRectangles; i++)
+            {
+                var randomValue1 = random.Next(minRectSize, maxRectSize + 1);
+                var randomValue2 = random.Next(minRectSize, maxRectSize + 1);
+                var randomSize = new Size(Math.Max(randomValue1, randomValue2), Math.Min(randomValue1, randomValue2));
+                layouter.PutNextRectangle(randomSize);
+            }
+            return layouter.rectangles;
         }
     }
 }
