@@ -7,7 +7,7 @@ using FluentAssertions;
 namespace TagsCloudVisualization
 {
     [TestFixture]
-    class CircularCloudLayouter_Should
+    public class CircularCloudLayouter_Should
     {
         private CircularCloudLayouter layouter;
         private readonly Point center = new Point(100, 50);
@@ -84,11 +84,12 @@ namespace TagsCloudVisualization
         public void PutNextRectangle_RectanglesShouldNotIntersect()
         {
             var sizes = GetRandomSizes();
-
+            var rectangles = new List<Rectangle>();
             foreach (var size in sizes)
-                layouter.PutNextRectangle(size);
-
-            var rectangles = layouter.rectanglesList;
+            {
+                rectangles.Add(layouter.PutNextRectangle(size));                
+            }
+            
             for (var i = 0; i < rectangles.Count; i++)
             {
                 for (var j = 0; j < rectangles.Count; j++)

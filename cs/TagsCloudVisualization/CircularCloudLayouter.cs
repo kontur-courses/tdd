@@ -1,22 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    class CircularCloudLayouter
+    public class CircularCloudLayouter
     {
-        public List<Rectangle> rectanglesList;
-        private List<int> anglesList;
-        private Point сenter;
-        private int radius;
+        private List<Rectangle> rectanglesList;
+        private Point сenter;        
 
         public CircularCloudLayouter(Point currentCenter)
         {
             if (currentCenter.X < 0 || currentCenter.Y < 0)
                 throw new ArgumentException("Center coordinates should be greater than null");
             rectanglesList = new List<Rectangle>();
-            anglesList = new List<int>() { 36, 72, 108, 144, 180, 216, 252, 288, 324, 0 };
             сenter = currentCenter;
         }
 
@@ -25,84 +23,80 @@ namespace TagsCloudVisualization
             if (rectanglesList.Count == 0)
             {
                 var newCoordinates = new Point(сenter.X - (rectangleSize.Width / 2), сenter.Y - (rectangleSize.Height / 2));
-                rectanglesList.Add(new Rectangle(newCoordinates, rectangleSize));
-                radius = Math.Min(rectangleSize.Height, rectangleSize.Width) / 2;
+                rectanglesList.Add(new Rectangle(newCoordinates, rectangleSize));               
                 return new Rectangle(newCoordinates, rectangleSize);
             }
 
             var rectangle = new Rectangle(сenter, rectangleSize);
             var min = int.MaxValue;
+            var suitablePointsList = GetSuitablePointsList(rectangle);
             var result = сenter;
-            while (result == сenter)
+
+            for (var k = 0; k < suitablePointsList.Count; k++)
             {
-                radius += Math.Min(rectangleSize.Height, rectangleSize.Width);
-                for (var i = 0; i < anglesList.Count; i++)
+                if (min > GetSquaredDistanceFromCenterToRectangle(suitablePointsList[k]))
                 {
-                    var angle = (anglesList[i] * (Math.PI)) / 180;
-                    var newX = сenter.X + radius * Math.Cos(angle);
-                    newX += Math.Sign(radius * Math.Cos(angle)) * rectangle.Width;
-                    var newY = сenter.Y + radius * Math.Sin(angle);
-                    newY += Math.Sign(radius * Math.Sin(angle)) * rectangle.Height;
-                    rectangle.Location = new Point((int)newX, (int)newY);
-                    if (Check(rectangle))
-                    {
-                        if ((Math.Pow(rectangleSize.Width, 2) + Math.Pow(rectangleSize.Height, 2)) < min)
-                        {
-                            min = (int)(Math.Pow(newY - сenter.Y, 2) + Math.Pow(newY - сenter.Y, 2));
-                            result = new Point((int)newX, (int)newY);
-                        }
-                    }
+                    min = GetSquaredDistanceFromCenterToRectangle(suitablePointsList[k]);
+                    result = suitablePointsList[k];
                 }
             }
             rectangle.Location = result;
-            rectangle.Location = GetNormalizedRectanglePosition(rectangle, true, true);
-            rectangle.Location = GetNormalizedRectanglePosition(rectangle, false, true);
-            rectangle.Location = GetNormalizedRectanglePosition(rectangle, true, false);
             rectanglesList.Add(rectangle);
-            radius = Math.Min(rectanglesList[0].Height, rectanglesList[0].Width) / 2;
             return rectanglesList[rectanglesList.Count - 1];
         }
 
-        private bool Check(Rectangle rectangle)
+        private bool CheckRectangleDoesNotIntersectWithAnyAnother(Rectangle rectangle)
         {
-            for (var i = 0; i < rectanglesList.Count; i++)
-            {
-                if (rectanglesList[i].IntersectsWith(rectangle))
-                    return false;
-            }
-            return true;
+            return !rectanglesList.Any(t => t.IntersectsWith(rectangle));
         }
 
-        private Point GetNormalizedRectanglePosition(Rectangle rectangle, bool isXChanged, bool isYChanged)
+        private List<Point> GetSuitablePointsList(Rectangle rectangle)
         {
-            if (isXChanged && !isYChanged && (сenter.X - rectangle.X) == 0)
-                return rectangle.Location;
-            if (isYChanged && !isXChanged && (сenter.Y - rectangle.Y) == 0)
-                return rectangle.Location;
-            var coefX = isXChanged ? 1 : 0;
-            var coefY = isYChanged ? 1 : 0;
+            var pointsList = new List<Point>();
+            for (var i = 0; i < rectanglesList.Count; i++)
+            {
+                var rectangleSides = GetRectangleSides(rectanglesList[i]);
+                for (var j = 0; j < rectangleSides.Count; j++)
+                {
+                    rectangle.Y = rectangleSides[2];
+                    if (j == 2)
+                        rectangle.Y -= rectangle.Height;
+                    else if (j == 3)
+                        rectangle.Y = rectangleSides[3];
 
-            while (Check(rectangle))
-            {
-                var oldsighnY = Math.Sign(сenter.Y - rectangle.Y);
-                var oldsighnX = Math.Sign(сenter.Y - rectangle.Y);
-                var newX = rectangle.X + Math.Sign(сenter.X - rectangle.X) * 5 * coefX;
-                var newY = rectangle.Y + Math.Sign(сenter.Y - rectangle.Y) * 5 * coefY;
-                if (oldsighnY != Math.Sign(сenter.Y - newY))
-                    break;
-                if (oldsighnX != Math.Sign(сenter.X - newX))
-                    break;
-                var newCoordinates = new Point((int)newX, (int)newY);
-                rectangle.Location = newCoordinates;
+                    rectangle.X = rectangleSides[0];
+                    if (j == 0)
+                        rectangle.X -= rectangle.Width;
+                    else if (j == 1)
+                        rectangle.X = rectangleSides[1];
+                    var side = (j == 0 || j == 1) ? rectanglesList[i].Height : rectanglesList[i].Width;
+                    for (var k = 0; k < side; k = k + 5)
+                    {
+                        if (j == 0 || j == 1)
+                            rectangle.Y -= k;
+                        else
+                            rectangle.X += k;
+                        if (CheckRectangleDoesNotIntersectWithAnyAnother(rectangle))
+                            pointsList.Add(rectangle.Location);
+                    }
+                }
             }
-            while (!Check(rectangle))
-            {
-                var newX = rectangle.X - Math.Sign(сenter.X - rectangle.X) * 5 * coefX;
-                var newY = rectangle.Y - Math.Sign(сenter.Y - rectangle.Y) * 5 * coefY;
-                var newCoordinates = new Point((int)newX, (int)newY);
-                rectangle.Location = newCoordinates;
-            }
-            return rectangle.Location;
-        }        
+            return pointsList;
+        }
+
+        private List<int> GetRectangleSides(Rectangle rectangle)
+        {
+            var rectangleSides = new List<int>();
+            rectangleSides.Add(rectangle.Left);
+            rectangleSides.Add(rectangle.Right);
+            rectangleSides.Add(rectangle.Top);
+            rectangleSides.Add(rectangle.Bottom);
+            return rectangleSides;
+        }
+
+        private int GetSquaredDistanceFromCenterToRectangle(Point point)
+        {
+            return (int)(Math.Pow(сenter.X - point.X, 2) + Math.Pow(сenter.Y - point.Y, 2));
+        }
     }
 }
