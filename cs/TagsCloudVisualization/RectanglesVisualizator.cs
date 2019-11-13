@@ -35,9 +35,9 @@ namespace TagsCloudVisualization
             return true;
         }
 
-        private static IEnumerable<Rectangle> GetCenteredRectangles(IEnumerable<Rectangle> rectangles)
+        private static List<Rectangle> GetCenteredRectangles(List<Rectangle> rectangles)
         {
-            if (rectangles.Count() == 0)
+            if (rectangles.Count == 0)
                 return rectangles;
 
             var minX = rectangles.Min(r => r.X);
@@ -47,18 +47,18 @@ namespace TagsCloudVisualization
                 .Select(r => new Rectangle(
                     new Point(r.X - minX + frameWidth, r.Y - minY + frameWidth),
                     r.Size))
-                .ToArray();
+                .ToList();
         }
 
-        private static Size GetImageSize(IEnumerable<Rectangle> rectangles)
+        private static Size GetImageSize(List<Rectangle> rectangles)
         {
             var (lengthByX, lengthByY) = GetMaxLengthsByXAndByY(rectangles);
             return new Size(2 * frameWidth + lengthByX, 2 * frameWidth + lengthByY);
         }
 
-        private static (int lengthByX, int lengthByY) GetMaxLengthsByXAndByY(IEnumerable<Rectangle> rectangles)
+        private static (int lengthByX, int lengthByY) GetMaxLengthsByXAndByY(List<Rectangle> rectangles)
         {
-            if (rectangles.Count() == 0)
+            if (rectangles.Count == 0)
                 return (0, 0);
 
             var minY = rectangles.Min(r => r.Top);
@@ -72,7 +72,7 @@ namespace TagsCloudVisualization
             return (lengthByX, lengthByY);
         }
 
-        private static void DrawRectangles(IEnumerable<Rectangle> rectangles, Graphics graphics)
+        private static void DrawRectangles(List<Rectangle> rectangles, Graphics graphics)
         {
             var penDarkRed = new Pen(Color.DarkRed);
             DrawRectangles(rectangles.Take(1), graphics, new SolidBrush(Color.Red), penDarkRed);
