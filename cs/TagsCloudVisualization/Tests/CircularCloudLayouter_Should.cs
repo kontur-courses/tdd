@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
@@ -22,7 +23,7 @@ namespace TagsCloudVisualization
         {
             if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
 
-            TagCloudVisualizatior.DrawAndSaveAtCurrentFolder(cloudLayouter.GetRectangles(),
+            TagCloudVisualizatior.DrawAndSaveAtDocumentFolder(cloudLayouter.GetRectangles(),
                                     TestContext.CurrentContext.Test.Name, 1000, 1000);
 
             Console.WriteLine($"Tag cloud visualization saved to file <{Directory.GetCurrentDirectory()}>");
@@ -94,6 +95,37 @@ namespace TagsCloudVisualization
             for (var i = 0; i < rectangles.Count; i++)
                 for (var j = i + 1; j < rectangles.Count; j++)
                     rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse();
+        }
+
+
+        [TestCase(50, 200, TestName = "Fifty rectangles")]
+        [TestCase(50, 2000, TestName = "Fifty rectangles, big size")]
+        [TestCase(100, 200, TestName = "One hundred rectangles")]
+        [TestCase(1000, 200, TestName = "One thousand rectangles")]
+        [TestCase(3000, 2000, TestName = "Three thousand rectangles, big size")]
+        public void PutNextRectangle_PutRandomRectangles_ResultingCloudMustBeTight(int rectanglesCount, int maxSizeParam)
+        {
+            var randomizer = new Random();
+
+            for (var i = 0; i < rectanglesCount; i++)
+            {
+                var size = new Size(randomizer.Next(1, maxSizeParam), 
+                                    randomizer.Next(1, maxSizeParam));
+                cloudLayouter.PutNextRectangle(size);
+            }
+
+            var cloudRadius = cloudLayouter.GetRectangles()
+                .Select(rec => rec.GetDistanceToPoint(cloudLayouter.Center))
+                .OrderBy(distance => distance)
+                .First();
+
+            var occupiedArea = cloudLayouter.GetRectangles()
+                .Select(a => a.Width * a.Height)
+                .Sum();
+
+            var cloudArea = Math.PI * cloudRadius * cloudRadius;
+            cloudArea /= occupiedArea;
+            cloudArea.Should().BeLessThan(2);
         }
     }
 }

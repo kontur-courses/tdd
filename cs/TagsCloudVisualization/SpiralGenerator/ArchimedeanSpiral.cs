@@ -1,39 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using NUnit.Framework;
 
 namespace TagsCloudVisualization
 {
     public class ArchimedeanSpiral : ISpiralGenerator
     {
-        public Point Center => center;
+        public Point Center { get; }
         private IEnumerator<Point> spiralPoints;
-
-        private readonly Point center;
         private readonly double spiralStep;
 
         public ArchimedeanSpiral(Point center, double spiralStep)
         {
-            this.center = center;
+            this.Center = center;
             this.spiralStep = spiralStep;
             spiralPoints = GetAllSpiralPoints().GetEnumerator();
         }
 
         private IEnumerable<Point> GetAllSpiralPoints()
         {
-            var currentPos = center;
+            var currentPos = Center;
             var angle = 0.0;
 
-            while (currentPos.X < int.MaxValue || 
+            while (currentPos.X < int.MaxValue ||
                    currentPos.Y < int.MaxValue)
             {
                 var nextPos = new Point(
-                    center.X + (int) Math.Round(angle * Math.Sin(angle)),
-                    center.Y + (int) Math.Round(angle * Math.Cos(angle)));
+                    Center.X + (int) Math.Round(angle * Math.Sin(angle)),
+                    Center.Y + (int) Math.Round(angle * Math.Cos(angle)));
                 angle += spiralStep;
 
-                if (currentPos == nextPos && currentPos != center) continue;
+                if (currentPos == nextPos && currentPos != Center) continue;
 
                 currentPos = nextPos;
                 yield return nextPos;
@@ -48,9 +45,9 @@ namespace TagsCloudVisualization
 
         public List<Point> GetNextSpiralPoints(int count)
         {
-            if(count <= 0)
+            if (count <= 0)
                 throw new ArgumentException("Count of elements need be more than zero");
-            
+
             var result = new List<Point>();
             for (var i = 0; i < count; i++)
                 result.Add(GetNextSpiralPoint());
@@ -60,6 +57,5 @@ namespace TagsCloudVisualization
 
         public void ResetSpiral() =>
             spiralPoints = GetAllSpiralPoints().GetEnumerator();
-
     }
 }

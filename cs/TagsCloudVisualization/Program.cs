@@ -18,15 +18,15 @@ namespace TagsCloudVisualization
 
         static void Main()
         {
-            var ranomizer = new Random();
+            var random = new Random();
             var cloudLayouter = new CircularCloudLayouter(new Point(ImageHeight / 2, ImageWidth / 2));
 
             for (var i = 0; i < RectanglesCount; i++)
                 cloudLayouter.PutNextRectangle(new Size(
-                    ranomizer.Next(MinimalRectangleWidth, MaximalRectangleWidth),
-                    ranomizer.Next(MinimalRectangleHeight, MaximalRectangleHeight)));
+                    random.Next(MinimalRectangleWidth, MaximalRectangleWidth),
+                    random.Next(MinimalRectangleHeight, MaximalRectangleHeight)));
 
-            TagCloudVisualizatior.DrawAndSaveAtCurrentFolder(cloudLayouter.GetRectangles(),"Test", ImageHeight, ImageWidth);
+            TagCloudVisualizatior.DrawAndSaveAtDocumentFolder(cloudLayouter.GetRectangles(),"Test", ImageHeight, ImageWidth);
         }
     }
 }

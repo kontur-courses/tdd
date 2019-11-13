@@ -43,8 +43,11 @@ namespace TagsCloudVisualization
             graphics.DrawRectangle(Outliner, rectangle);
         }
 
-        public void SaveAsPng(string path, string fileName) => 
+        public void SaveAsPng(string path, string fileName)
+        {
+            Directory.CreateDirectory(path);
             bitmap.Save(Path.Combine(path, fileName + ".png"));
+        }
 
         public static void DrawAndSave(IEnumerable<Rectangle> rectangles, 
                                         string path, string name,
@@ -56,10 +59,11 @@ namespace TagsCloudVisualization
             image.SaveAsPng(path, name);
         }
 
-        public static void DrawAndSaveAtCurrentFolder(IEnumerable<Rectangle> rectangles,
+        public static void DrawAndSaveAtDocumentFolder(IEnumerable<Rectangle> rectangles,
                                                         string name, int height, int width)
         {
-            DrawAndSave(rectangles, Directory.GetCurrentDirectory(), name, height, width);
+            var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "TagCloudImages");
+            DrawAndSave(rectangles, documentsPath, name, height, width);
         }
 
     }
