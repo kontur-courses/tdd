@@ -41,8 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
-    <Compile Include="Drawing.cs" />
-    <Compile Include="GeometryObjects.cs" />
+    <Compile Include="DrawingClass.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Tests.cs" />
   </ItemGroup>

@@ -13,7 +13,7 @@ namespace UserInterface
         public DrawingClass(int imageWidth, int imageHeight, string fileName)
         {
             if (imageHeight <= 0 || imageWidth <= 0)
-                throw new ArgumentException("Size of image should be not negative");
+                throw new ArgumentException("Size of image should be positive");
             if (fileName.Length == 0)
                 throw new ArgumentException("File name must be not empty");
             this.imageWidth = imageWidth;
@@ -27,12 +27,8 @@ namespace UserInterface
             var drawingObj = Graphics.FromImage(image);
             foreach (var curRec in tagCloud.RectanglesList)
             {
-                drawingObj.FillRectangle(new SolidBrush(Color.AliceBlue),
-                    new Rectangle(curRec.LeftBottomVertex.X, curRec.LeftBottomVertex.Y,
-                        curRec.Size.Width, curRec.Size.Height));
-                drawingObj.DrawRectangle(new Pen(new SolidBrush(Color.Magenta)),
-                    new Rectangle(curRec.LeftBottomVertex.X, curRec.LeftBottomVertex.Y,
-                        curRec.Size.Width, curRec.Size.Height));
+                drawingObj.FillRectangle(new SolidBrush(Color.AliceBlue), curRec);
+                drawingObj.DrawRectangle(new Pen(new SolidBrush(Color.Magenta)), curRec);
             }
             var imagePath = Environment.CurrentDirectory + Path.DirectorySeparatorChar + fileName;
             Console.WriteLine("Saved file has path:");
