@@ -57,9 +57,13 @@
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="Cloud.cs" />
     <Compile Include="CloudVisualizer.cs" />
+    <Compile Include="tests\GeometryHelperTests.cs" />
+    <Compile Include="tools\GeometryHelper.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="tools\RectangleExtensions.cs" />
     <Compile Include="tools\SpiralGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="tools\StackExtensions.cs" />
     <Compile Include="tests\SpiralGeneratorTests.cs" />
     <Compile Include="tests\TagsCloudLayouterTests.cs" />
     <Compile Include="tools\PointExtensions.cs" />

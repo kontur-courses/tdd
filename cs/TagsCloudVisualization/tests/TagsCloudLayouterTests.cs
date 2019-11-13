@@ -6,6 +6,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using TagsCloudVisualization.tools;
 
 
 namespace TagsCloudVisualization.tests
@@ -87,7 +88,7 @@ namespace TagsCloudVisualization.tests
         }
 
         [Test]
-        [Timeout(300)]
+        [Timeout(500)]
         public void PutNextRectangle_Put1000BigRectangles_ShouldNotThrowException()
         {
             var size = new Size(100, 50);
@@ -111,37 +112,43 @@ namespace TagsCloudVisualization.tests
             layouter.Cloud.Rectangles.Count.Should().Be(n);
         }
 
-        [Test]
-        public void PutNextRectangle_DistanceOfAdjacentRectanglesShouldNotExceedN()
+        [TestCase(10)]
+        [TestCase(50)]
+        [TestCase(100)]
+        [TestCase(500)]
+        public void PutNextRectangle_DistanceOfAdjacentRectanglesShouldNotExceedN(int n)
         {
-            var maxDistance = 10;
+            RepeatPutNextRectangle(rectangleSize, n);
+
             var rectangles = layouter.Cloud.Rectangles;
 
-            RepeatPutNextRectangle(rectangleSize, 15);
-
-            for (var i = 0; i < rectangles.Count - 1; i++)
+            foreach (var rectangle in rectangles)
             {
-                var dx = rectangles[i].Location.X - rectangles[i + 1].Location.X;
-                var dy = rectangles[i].Location.Y - rectangles[i + 1].Location.Y;
-
-                var distance = Math.Sqrt(dx * dx + dy * dy);
-
-                distance.Should().BeLessOrEqualTo(maxDistance);
+                rectangles
+                    .Count(other => rectangle.Distance(other) < Math.Max(rectangle.Width, rectangle.Height))
+                    .Should()
+                    .BeGreaterThan(3);
             }
         }
 
-        [Test]
-        public void PutRectangle_AfterPutNRectangles_TheyShouldBeTightlySpaced()
+        [TestCase(15)]
+        [TestCase(50)]
+        [TestCase(100)]
+        [TestCase(500)]
+        public void PutRectangle_AfterPutNRectangles_TheyShouldBeTightlySpaced(int rectanglesCount)
         {
-            for (var i = 0; i < 14; i++)
-            {
-                var rectangle = layouter.PutNextRectangle(rectangleSize);
-                Console.WriteLine(rectangle.Location);
-            }
-
+            var rand = new Random();
+            RepeatPutNextRectangle(new Size(rand.Next(100, 200), rand.Next(100, 200)), rectanglesCount);
+            
             var rectangles = layouter.Cloud.Rectangles;
+            var hull = GeometryHelper.BuildConvexHull(rectangles);
+            var cloudSquare = GeometryHelper.GetSquareOfConvexHull(hull);
+            var rectanglesSquare = rectangles.Sum(x => x.Width * x.Height);
 
-//            rectangles.All(x => x.)
+            var ration = cloudSquare / rectanglesSquare;
+
+            ration.Should().BeLessOrEqualTo(1.5);
+            Console.WriteLine(ration);
         }
 
         private void RepeatPutNextRectangle(Size rectanglesSize, int count)
