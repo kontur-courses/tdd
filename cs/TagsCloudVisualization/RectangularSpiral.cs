@@ -5,12 +5,12 @@ namespace TagsCloudVisualization
 {
     class RectangularSpiral : ISpiral
     {
-        static Point[] directions = new Point[]
+        static Size[] directions = new Size[]
         {
-            new Point(0, 1),
-            new Point(1, 0),
-            new Point(0, -1),
-            new Point(-1, 0),
+            new Size(0, 1),
+            new Size(1, 0),
+            new Size(0, -1),
+            new Size(-1, 0),
         };
 
         public IEnumerable<Point> GetPoints()
@@ -25,7 +25,7 @@ namespace TagsCloudVisualization
                 var curentDirection = directions[stepNumber % 4];
                 for (int i = 0; i < countStepsInCurentDirection; i++)
                 {
-                    curentPosition += new Size(curentDirection);
+                    curentPosition += curentDirection;
                     yield return curentPosition;
                 }
                 stepNumber += 1;

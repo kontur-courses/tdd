@@ -7,13 +7,14 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    [TestFixture]
-    class Spiral_should
+    [TestFixture(typeof(ArchimedeanSpiral))]
+    [TestFixture(typeof(RectangularSpiral))]
+    class Spiral_should<Spiral> where Spiral : ISpiral, new()
     {
         ISpiral spiral;
 
         [SetUp]
-        public void ArchimedeanSetUp() => spiral = new ArchimedeanSpiral();
+        public void ArchimedeanSetUp() => spiral = new Spiral();
 
         [Test]
         public void GetPoints_ShouldBeReturnFirstPosition_InZeroZero()

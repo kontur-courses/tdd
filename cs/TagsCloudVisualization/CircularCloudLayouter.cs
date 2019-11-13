@@ -6,14 +6,14 @@ namespace TagsCloudVisualization
 {
     internal class CircularCloudLayouter
     {
-        Point center;
+        public readonly Point Center;
         List<Rectangle> rectangles;
         ISpiral spiral;
         IEnumerator<Point> spiralPoints;
 
         public CircularCloudLayouter(Point center)
         {
-            this.center = center;
+            Center = center;
             rectangles = new List<Rectangle>();
             this.spiral = new ArchimedeanSpiral();
             spiralPoints = spiral.GetPoints().GetEnumerator();
@@ -21,7 +21,7 @@ namespace TagsCloudVisualization
 
         public CircularCloudLayouter(Point center, ISpiral spiral)
         {
-            this.center = center;
+            Center = center;
             rectangles = new List<Rectangle>();
             this.spiral = spiral;
             spiralPoints = spiral.GetPoints().GetEnumerator();
@@ -37,8 +37,8 @@ namespace TagsCloudVisualization
             {
                 var curentSpiralPoint = spiralPoints.Current;
                 var curentPosition = new Point(
-                    center.X + curentSpiralPoint.X, 
-                    center.Y + curentSpiralPoint.Y);
+                    Center.X + curentSpiralPoint.X, 
+                    Center.Y + curentSpiralPoint.Y);
 
                 var rectangle = new Rectangle(curentPosition, rectangleSize);
 

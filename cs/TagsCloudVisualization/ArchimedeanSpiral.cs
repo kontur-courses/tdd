@@ -8,12 +8,13 @@ namespace TagsCloudVisualization
     {
         const int stepSize = 2;
         const double stepValueInRadians = 0.05;
-        const double eccentricity = 1.5;
+        const double eccentricity = 1;
 
         public IEnumerable<Point> GetPoints()
         {
             double angle = 0;
             Point curentPosition = new Point(0, 0);
+            yield return curentPosition;
 
             while (true)
             {
