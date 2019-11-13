@@ -1,13 +1,13 @@
-Изображения находятся по пути:
+РР·РѕР±СЂР°Р¶РµРЅРёСЏ РЅР°С…РѕРґСЏС‚СЃСЏ РїРѕ РїСѓС‚Рё:
 	TagsCloudVisualization\Images
 
-Сигнатура метода генератора:
+РЎРёРіРЅР°С‚СѓСЂР° РјРµС‚РѕРґР° РіРµРЅРµСЂР°С‚РѕСЂР°:
 	GetRandomSizesList(int minWidth, int maxWidth, int minHeight, int maxHeight, int numberOfSizes, Random random)
 
-Eсть 3 изображения:
-	1.BigWidthSmallHeight.png - прямоугольники с большой шириной и маленькой высотой
-		Параметры метода генератора: Generator.GetRandomSizesList(50, 100, 10, 20, 50, new Random());
-	2.RandomWidthAndHeight.png - прямоугольники со случайными размерами
-		Параметры метода генератора: Generator.GetRandomSizesList(10, 50, 10, 50, 200, new Random());
-	3.Squares.png - все прямоугольники - квадраты
-		Параметры метода генератора: Generator.GetRandomSizesList(20, 20, 20, 20, 100, new Random());
+EСЃС‚СЊ 3 РёР·РѕР±СЂР°Р¶РµРЅРёСЏ:
+	1.BigWidthSmallHeight.png - РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРё СЃ Р±РѕР»СЊС€РѕР№ С€РёСЂРёРЅРѕР№ Рё РјР°Р»РµРЅСЊРєРѕР№ РІС‹СЃРѕС‚РѕР№
+		РџР°СЂР°РјРµС‚СЂС‹ РјРµС‚РѕРґР° РіРµРЅРµСЂР°С‚РѕСЂР°: Generator.GetRandomSizesList(50, 100, 10, 20, 50, new Random());
+	2.RandomWidthAndHeight.png - РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРё СЃРѕ СЃР»СѓС‡Р°Р№РЅС‹РјРё СЂР°Р·РјРµСЂР°РјРё
+		РџР°СЂР°РјРµС‚СЂС‹ РјРµС‚РѕРґР° РіРµРЅРµСЂР°С‚РѕСЂР°: Generator.GetRandomSizesList(10, 50, 10, 50, 200, new Random());
+	3.Squares.png - РІСЃРµ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРё - РєРІР°РґСЂР°С‚С‹
+		РџР°СЂР°РјРµС‚СЂС‹ РјРµС‚РѕРґР° РіРµРЅРµСЂР°С‚РѕСЂР°: Generator.GetRandomSizesList(20, 20, 20, 20, 100, new Random());
