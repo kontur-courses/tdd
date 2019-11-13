@@ -7,10 +7,7 @@ namespace TagsCloudVisualization
 {
     public class ArchimedesSpiral : IEnumerable<Point>
     {
-        private readonly Point center;
-        private readonly float increment;
-        private readonly float radius;
-        private readonly float angle;
+        private readonly Func<ArchimedesSpiralEnumerator> spiralEnumerator;
         
         public ArchimedesSpiral(Point center, float radius = 0.5f, float increment = 0.5f, float angle = 0)
         {
@@ -19,13 +16,10 @@ namespace TagsCloudVisualization
             if (Math.Abs(increment) < float.Epsilon)
                 throw new ArgumentException("Spiral increment absolute value can't be less then float.Epsilon");
 
-            this.center = center;
-            this.radius = radius;
-            this.increment = increment;
-            this.angle = angle;
+            spiralEnumerator = () =>  new ArchimedesSpiralEnumerator(center, radius, increment, angle);
         }
 
-        public IEnumerator<Point> GetEnumerator() => new ArchimedesSpiralEnumerator(center, radius, increment, angle);
+        public IEnumerator<Point> GetEnumerator() => spiralEnumerator.Invoke();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
