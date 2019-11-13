@@ -47,19 +47,16 @@ namespace TagCloud.Tests
         }
 
         [Test]
-        public void Should_DenselyPlaceRectangles_InCircleArea()
+        public void Should_DenselyLocateRectangles_InCircumscribedSquare()
         {
-            var rectangles = cloudLayouter.GetAllRectangles().ToList();
-            var circleArea = cloudLayouter.GetCircumscribedSquare().GetCircumscribedCircleArea();
-            var actualRectanglesAres = rectangles.Sum(rect => rect.Width * rect.Height);
+            var circumscribedSquare = cloudLayouter.GetCircumscribedSquare();
+            var actualRectanglesAres = cloudLayouter.GetAllRectangles().Sum(rect => rect.Width * rect.Height);
 
-            // here we suppose that our figure is circle shape but not that dense then inscribed circle,
-            // so we set delta in 0.13 (in ideal case delta should be less or equal 0.05)
-            var denseCoefficient = 0.5 - actualRectanglesAres / circleArea;
+            var denseCoefficient =
+                (double) actualRectanglesAres / (circumscribedSquare.Width * circumscribedSquare.Width);
             denseCoefficient
                 .Should()
-                .BeLessThan(0.13, 
-                    "Circle between circumscribed and inscribed squares should have area bigger no more then 5 times.");
+                .BeGreaterThan(0.5);
         }
 
         [Test]
