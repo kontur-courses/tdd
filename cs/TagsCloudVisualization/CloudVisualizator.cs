@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Drawing;
 using TagsCloudVisualization.Themes;
 
@@ -22,7 +23,7 @@ namespace TagsCloudVisualization
             return result;
         }
 
-        private static Brush GetRandomBrush(Random random, List<Brush> brushes)
+        private static Brush GetRandomBrush(Random random, ImmutableList<Brush> brushes)
         {
             return brushes[random.Next(0, brushes.Count)];
         }
