@@ -28,7 +28,7 @@ namespace TagsCloudVisualization
                 Rectangles.Add(rectangle);
                 return rectangle;
             }
-            var spiral = new ArchimedeanSprial(0, Math.PI / 40, Math.PI / 40, destinyCOfficient, Center);
+            var spiral = new ArchimedeanSprial(Math.PI / 40, Math.PI / 40, destinyCOfficient, Center);
             while (true)
             {
                 var point = new Point(spiral.GetNextCoordinate().X - rectangleSize.Width / 2,
@@ -45,16 +45,14 @@ namespace TagsCloudVisualization
 
     public class ArchimedeanSprial
     {
-        public double A { get; }
         public double Alpha { get; private set; }
         public double Step { get; }
         public double DensityCoefficient { get; }
         public Point Center { get; }
         private double RadiusVector { get; set; }
 
-        public ArchimedeanSprial(double a, double alpha, double step, double densityCoefficient, Point center)
+        public ArchimedeanSprial(double alpha, double step, double densityCoefficient, Point center)
         {
-            A = a;
             Alpha = alpha;
             Step = step;
             DensityCoefficient = densityCoefficient;
