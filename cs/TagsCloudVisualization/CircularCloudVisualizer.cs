@@ -8,7 +8,7 @@ namespace TagsCloudVisualization
     {
         private readonly Pen rectangleBorderPen = new Pen(Color.Black);
         private readonly Brush rectangleFillBrush = new SolidBrush(Color.Gray);
-        private readonly Brush backgroundBrush = new SolidBrush(Color.White);
+        private readonly Brush backgroundFillBrush = new SolidBrush(Color.White);
         private readonly Brush textBrush = new SolidBrush(Color.Blue);
 
         public Bitmap VisualizeLayout(CircularCloudLayouter layouter)
@@ -38,8 +38,8 @@ namespace TagsCloudVisualization
 
             using (var graphics = Graphics.FromImage(image))
             {
-                var backgroundRectangle = new Rectangle(0, 0, imageSize.Width, imageSize.Height);
-                graphics.FillRectangle(backgroundBrush, backgroundRectangle);
+                FillBackground(graphics, imageSize, backgroundFillBrush);
+
                 var rectangleNumber = 0;
                 foreach (var rectangle in rectangles)
                 {
@@ -55,6 +55,12 @@ namespace TagsCloudVisualization
             }
 
             return image;
+        }
+
+        private static void FillBackground(Graphics graphics, Size imageSize, Brush backgroundBrush)
+        {
+            var backgroundRectangle = new Rectangle(0, 0, imageSize.Width, imageSize.Height);
+            graphics.FillRectangle(backgroundBrush, backgroundRectangle);
         }
     }
 }
