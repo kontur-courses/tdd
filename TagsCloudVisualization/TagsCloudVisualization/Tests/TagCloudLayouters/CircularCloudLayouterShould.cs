@@ -183,24 +183,27 @@ namespace TagsCloudVisualization.Tests.TagCloudLayouters
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                var image = new DebugVisualization().Draw(rectangles, 900, 900);
-                var pathToTestNameDir = Path.Combine(TestContext.CurrentContext.TestDirectory, 
-                                                                            TestContext.CurrentContext.Test.Name);
-                var pathToCurrentTestNumberDir = CreateDirectoryAndReturnPath(pathToTestNameDir);
-                SaveFiles(pathToCurrentTestNumberDir, image);
+                var pathToTestNameDir = Path.Combine(TestContext.CurrentContext.TestDirectory,  TestContext.CurrentContext.Test.Name);
+                var pathToCurrentTestNumberDir = GetPathToDirectoryForSaving(pathToTestNameDir);
+                SaveFiles(pathToCurrentTestNumberDir, new DebugVisualization().Draw(rectangles, 900, 900));
                 Console.WriteLine($"Tag cloud visualization saved to file {pathToCurrentTestNumberDir}");
             }
             rectangles.Clear();
         }
 
-        private string CreateDirectoryAndReturnPath(string pathToTestNameDir)
+        private string GetPathToDirectoryForSaving(string pathToTestNameDir)
         {
-            if (!Directory.Exists(pathToTestNameDir))
-                Directory.CreateDirectory(pathToTestNameDir);
+            CreateDirectory(pathToTestNameDir);
             var dirsCount = Directory.GetDirectories(pathToTestNameDir).Length.ToString();
             var pathToCurrentTestNumberDir = Path.Combine(Path.Combine(pathToTestNameDir, dirsCount));
-            Directory.CreateDirectory(pathToCurrentTestNumberDir);
+            CreateDirectory(pathToCurrentTestNumberDir);
             return pathToCurrentTestNumberDir;
+        }
+
+        private void CreateDirectory(string path)
+        {
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
         }
 
         private void SaveFiles(string path, Bitmap image)
