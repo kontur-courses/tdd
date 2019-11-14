@@ -26,7 +26,10 @@ namespace TagsCloudVisualization
                     random.Next(MinimalRectangleWidth, MaximalRectangleWidth),
                     random.Next(MinimalRectangleHeight, MaximalRectangleHeight)));
 
-            TagCloudVisualizatior.DrawAndSaveAtDocumentFolder(cloudLayouter.GetRectangles(),"Test", ImageHeight, ImageWidth);
+            Console.WriteLine("Enter image file name:");
+            var fileName = Console.ReadLine();
+
+            TagCloudVisualizatior.DrawAndSaveAtDocumentFolder(cloudLayouter.GetRectangles(), fileName, ImageHeight, ImageWidth);
         }
     }
 }

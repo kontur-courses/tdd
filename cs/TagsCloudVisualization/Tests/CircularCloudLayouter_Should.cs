@@ -102,8 +102,7 @@ namespace TagsCloudVisualization
         [TestCase(50, 2000, TestName = "Fifty rectangles, big size")]
         [TestCase(100, 200, TestName = "One hundred rectangles")]
         [TestCase(1000, 200, TestName = "One thousand rectangles")]
-        [TestCase(3000, 2000, TestName = "Three thousand rectangles, big size")]
-        public void PutNextRectangle_PutRandomRectangles_ResultingCloudMustBeTight(int rectanglesCount, int maxSizeParam)
+        public void PutNextRectangle_PutRandomRectangles_TagCloudDestinyNeedBeModerate(int rectanglesCount, int maxSizeParam)
         {
             var randomizer = new Random();
 
