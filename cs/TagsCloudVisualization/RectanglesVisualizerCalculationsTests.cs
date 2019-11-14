@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace TagsCloudVisualization
 {
-    class RectanglesVisualizerTests
+    class RectanglesVisualizerСalculationsTests
     {
         [Test]
         public void GetOptimalSizeForImage_ShouldReturnCorrectSize()
@@ -19,7 +19,7 @@ namespace TagsCloudVisualization
                 new Rectangle(new Point(0, 0), size)
             };
 
-            var optimalImageSize = RectanglesVisualizer.GetOptimalSizeForImage(rectangles, 5);
+            var optimalImageSize = RectanglesVisualizerСalculations.GetOptimalSizeForImage(rectangles, 5);
 
             optimalImageSize.Should().Be(new Size(18, 18));
         }
@@ -30,7 +30,7 @@ namespace TagsCloudVisualization
         {
             var size = new Size(width, height);
 
-            var center = RectanglesVisualizer.GetCenter(size);
+            var center = RectanglesVisualizerСalculations.GetCenter(size);
 
             center.Should().Be(new Point(width / 2, height / 2));
         }
@@ -45,7 +45,7 @@ namespace TagsCloudVisualization
                 new Rectangle(new Point(0, 0), size)
             };
 
-            var newRectangles = RectanglesVisualizer.GetRectanglesWithOptimalLocation(rectangles, new Size(10, -10));
+            var newRectangles = RectanglesVisualizerСalculations.GetRectanglesWithOptimalLocation(rectangles, new Size(10, -10));
 
             var firstExpectedRectangle = new Rectangle(new Point(5, -15), size);
             var secondExpectedRectangle = new Rectangle(new Point(10, -10), size);

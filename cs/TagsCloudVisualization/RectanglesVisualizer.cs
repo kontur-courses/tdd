@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 using System.IO;
-using System.Linq;
+using static TagsCloudVisualization.RectanglesVisualizerСalculations;
 
 namespace TagsCloudVisualization
 {
@@ -20,14 +19,14 @@ namespace TagsCloudVisualization
             graphics = Graphics.FromImage(bitmap);
         }
 
-        public void DrawCenter(Point center)
+        private void DrawCenter(Point center)
         {
             var brush = Brushes.Red;
             var location = center - new Size(1, 1);
             graphics.FillRectangle(brush, new Rectangle(location, new Size(2, 2)));
         }
 
-        public void DrawRectangles()
+        private void DrawRectangles()
         {
             var brush = Brushes.Green;
             graphics.FillRectangles(brush, rectangles.ToArray());
@@ -35,7 +34,7 @@ namespace TagsCloudVisualization
             graphics.DrawRectangles(pen, rectangles.ToArray());
         }
 
-        public void Save(string directoryName, string filename)
+        private void Save(string directoryName, string filename)
         {
             var directoryInfo = Directory.GetParent(Environment.CurrentDirectory);
             while (directoryInfo != null && directoryInfo.Name != "TagsCloudVisualization")
@@ -46,42 +45,16 @@ namespace TagsCloudVisualization
             bitmap.Save(directoryInfo.FullName + $@"\{directoryName}\{filename}");
         }
 
-        public static Size GetOptimalSizeForImage(List<Rectangle> rectangles, int indent)
-        {
-            if (rectangles.Count == 0)
-                throw new ArgumentException("Empty rectangles list");
-            var minTop = rectangles.Min(rect => rect.Top);
-            var maxBottom = rectangles.Max(rect => rect.Bottom);
-            var maxRight = rectangles.Max(rect => rect.Right);
-            var minLeft = rectangles.Min(rect => rect.Left);
-            var width = maxRight - minLeft;
-            var height = maxBottom - minTop;
-            return new Size(width + indent * 2, height + indent * 2);
-        }
-
-        public static Point GetCenter(Size size)
-        {
-            return new Point(size.Width / 2, size.Height / 2);
-        }
-
-        public static List<Rectangle> GetRectanglesWithOptimalLocation(List<Rectangle> rectangles, Size offset)
-        {
-            return rectangles
-                .Select(rectangle => new Rectangle(rectangle.Location + offset, rectangle.Size))
-                .ToList();
-        }
-
         public static void SaveNewRectanglesLayout(List<Rectangle> rectangles, string directoryName, string filename)
         {
             var imageSize = GetOptimalSizeForImage(rectangles, 5);
             var center = GetCenter(imageSize);
             var offset = new Size(center);
             rectangles = GetRectanglesWithOptimalLocation(rectangles, offset);
-            var visualizer = new RectanglesVisualizer(imageSize, rectangles);
+            using var visualizer = new RectanglesVisualizer(imageSize, rectangles);
             visualizer.DrawRectangles();
             visualizer.DrawCenter(center);
             visualizer.Save(directoryName, filename);
-            visualizer.Dispose();
         }
 
         public void Dispose()
