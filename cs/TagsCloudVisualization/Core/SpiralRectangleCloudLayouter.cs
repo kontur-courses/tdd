@@ -4,13 +4,13 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class SpiralCloudLayouter : RectangleCloudLayouter
+    public class SpiralRectangleCloudLayouter : IRectangleCloudLayouter
     {
         private readonly Point center;
         private readonly ISpiral spiral;
         private readonly List<Rectangle> rectangles;
 
-        public SpiralCloudLayouter(ISpiral spiral)
+        public SpiralRectangleCloudLayouter(ISpiral spiral)
         {
             this.spiral = spiral;
             center = new Point(0, 0);

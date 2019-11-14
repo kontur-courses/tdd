@@ -34,8 +34,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Core\ArchimedeanSpiral.cs" />
-    <Compile Include="Core\SpiralCloudLayouter.cs" />
-    <Compile Include="Core\RectangleCloudLayouter.cs" />
+    <Compile Include="Core\SpiralRectangleCloudLayouter.cs" />
+    <Compile Include="Core\IRectangleCloudLayouter.cs" />
     <Compile Include="Core\ISpiral.cs" />
     <Compile Include="Infrastructure\PointFComparer.cs" />
     <Compile Include="Infrastructure\PointUtils.cs" />
@@ -45,7 +45,8 @@
     <Compile Include="Tests\ArchimedeanSpiralTests.cs" />
     <Compile Include="Tests\SpiralCloudLayouterTests.cs" />
     <Compile Include="UsageExamples.cs" />
-    <Compile Include="Visualization\CircularCloudDrawer.cs" />
+    <Compile Include="Visualization\RectangleCloudDrawer.cs" />
+    <Compile Include="Visualization\IRectangleCloudDrawer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FluentAssertions, Version=5.9.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a">

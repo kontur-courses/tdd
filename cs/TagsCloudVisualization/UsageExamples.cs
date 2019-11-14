@@ -40,7 +40,7 @@ namespace TagsCloudVisualization
         
         private static void GenerateTagCloud(IEnumerable<TagInfo> tags, string filename)
         {
-            var cloudDrawer = new CircularCloudDrawer(Color.Teal, Brushes.Peru, Brushes.Black);
+            var cloudDrawer = new RectangleCloudDrawer(Color.Teal, Brushes.Peru, Brushes.Black);
             cloudDrawer.DrawCloud(tags.ToList(), Environment.CurrentDirectory + $"\\Examples\\{filename}.png");
         }
 
@@ -49,7 +49,7 @@ namespace TagsCloudVisualization
             Func<int, string> wordGenerator,
             Func<int, int> fontSizeGenerator)
         {
-            var layouter = new SpiralCloudLayouter(new ArchimedeanSpiral(1, 0.05f));
+            var layouter = new SpiralRectangleCloudLayouter(new ArchimedeanSpiral(1, 0.05f));
             for (var i = 1; i <= count; i++)
             {
                 var font = new Font(FontFamilyName, fontSizeGenerator(i));

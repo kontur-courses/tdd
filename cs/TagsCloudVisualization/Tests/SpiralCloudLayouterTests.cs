@@ -12,7 +12,7 @@ namespace TagsCloudVisualization
     [TestFixture]
     public class SpiralCloudLayouterTests
     {
-        private SpiralCloudLayouter layouter;
+        private SpiralRectangleCloudLayouter layouter;
         private List<Rectangle> rectangles;
         private Random random;
         private Point center;
@@ -20,7 +20,7 @@ namespace TagsCloudVisualization
         [SetUp]
         public void SetUp()
         {
-            layouter = new SpiralCloudLayouter(
+            layouter = new SpiralRectangleCloudLayouter(
                 new ArchimedeanSpiral(1, 0.05f));
             rectangles = new List<Rectangle>();
             random = new Random(25);
@@ -101,7 +101,7 @@ namespace TagsCloudVisualization
             var failedTestsPath = TestContext.CurrentContext.TestDirectory + @"\FailedTests";
             if (!Directory.Exists(failedTestsPath))
                 Directory.CreateDirectory(failedTestsPath);
-            var cloudDrawer = new CircularCloudDrawer(Color.Teal, Brushes.Peru, Brushes.Black);
+            var cloudDrawer = new RectangleCloudDrawer(Color.Teal, Brushes.Peru, Brushes.Black);
             var filename = failedTestsPath + $"\\{TestContext.CurrentContext.Test.FullName}.png";
             cloudDrawer.DrawRectangles(rectangles, filename);
             TestContext.WriteLine($"Tag cloud visualisation saved to file: '{filename}'");

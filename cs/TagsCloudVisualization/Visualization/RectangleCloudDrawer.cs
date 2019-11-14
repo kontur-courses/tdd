@@ -1,11 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudDrawer
+    public class RectangleCloudDrawer : IRectangleCloudDrawer
     {
         private static readonly Font FakeFont = new Font(FontFamily.GenericSerif, 1);
         private readonly Color backgroundColor;
@@ -13,7 +12,7 @@ namespace TagsCloudVisualization
         private readonly Pen pen;
         private readonly StringFormat stringFormat;
 
-        public CircularCloudDrawer(Color backgroundColor, Brush tagBrush, Brush rectBrush)
+        public RectangleCloudDrawer(Color backgroundColor, Brush tagBrush, Brush rectBrush)
         {
             this.backgroundColor = backgroundColor;
             this.tagBrush = tagBrush;
@@ -50,10 +49,13 @@ namespace TagsCloudVisualization
 
         private Size GetSuitableImageSize(IEnumerable<TagInfo> tags)
         {
-            var rectanglesSquare = tags
-                .Select(tag => tag.Rectangle.Width * tag.Rectangle.Height).Sum();
-            var increasedDiameter = (int) (Math.Sqrt(rectanglesSquare / Math.PI) * 1.5) * 2;
-            return new Size(increasedDiameter, increasedDiameter);
+            var origin = new Point(0, 0);
+            var maxDistToOrigin = tags
+                .SelectMany(tag => tag.Rectangle.GetCornersClockwiseFromTopLeft())
+                .Select(corner => corner.DistanceTo(origin))
+                .Max();
+            var imageSide = (int) maxDistToOrigin * 2;
+            return new Size(imageSide, imageSide);
         }
     }
 }
