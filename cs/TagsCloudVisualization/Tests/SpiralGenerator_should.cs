@@ -14,7 +14,7 @@ namespace TagsCloudVisualization.Tests
         [SetUp]
         public void SetUp()
         {
-            center = new Point(5, 5);
+            center = new Point(10, 10);
             generator = new SpiralGenerator(center);
         }
 
@@ -28,9 +28,10 @@ namespace TagsCloudVisualization.Tests
         public void GetNextPoint_WhenGetPoints_ReturnDifferentPoints()
         {
             var hash = new HashSet<Point>();
-            for (var i = 0; i < 20; i++)
+            var point = new Point();
+            while (point.X>=0 && point.Y >=0)
             {
-                var point = generator.GetNextPoint();
+                point = generator.GetNextPoint();
                 hash.Should().NotContain(point);
                 hash.Add(point);
             }
