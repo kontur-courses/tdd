@@ -41,9 +41,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
-    <Compile Include="DrawingClass.cs" />
-    <Compile Include="Main.cs" />
-    <Compile Include="Tests.cs" />
+    <Compile Include="TagCloudDrawingClass.cs" />
+    <Compile Include="ProgrammMain.cs" />
+    <Compile Include="CircularCloudLayouterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FluentAssertions, Version=5.9.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
