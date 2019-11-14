@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -6,24 +7,29 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private Spiral spiral;
         private List<Rectangle> rectangles = new List<Rectangle>();
+        private IEnumerator<Point> spiralPoint;
+
         public CircularCloudLayouter(Point center)
         {
-            spiral = new Spiral(center);
+            var spiral = new Spiral(center);
+            spiralPoint = spiral.GetPoints().GetEnumerator();
         }
 
+        
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            foreach (var point in spiral.GetPoints())
+            while (true)
             {
+                spiralPoint.MoveNext();
+                var point = spiralPoint.Current;
                 var rectangle = new Rectangle(new Point(point.X - rectangleSize.Width / 2, point.Y - rectangleSize.Height / 2), rectangleSize);
                 if (HasOverlappingRectangles(rectangle, rectangles)) continue;
                 rectangles.Add(rectangle);
                 return rectangle;
             }
-            return Rectangle.Empty;
         }
+        
         
         public static bool HasOverlappingRectangles(Rectangle rectangle, IEnumerable<Rectangle> rectangles) =>
             rectangles.Any(r => r.IntersectsWith(rectangle));

@@ -6,6 +6,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal;
 
 namespace TagsCloudVisualization.Tests
 {
@@ -18,28 +19,31 @@ namespace TagsCloudVisualization.Tests
             rectangles = new List<Rectangle>();
         }
         
-        [TestCaseSource(nameof(cloudCenters))] 
-        public void Constructor_DoesNotThrow_WithСorrectСenter(Point center) 
+        [Test]
+        public void Constructor_DoesNotThrow_WithСorrectСenter([ValueSource(nameof(cloudCenters))]Point center) 
         { 
             Action action = () => new CircularCloudLayouter(center); 
             action.Should().NotThrow(); 
         }
         
-        [TestCaseSource(nameof(cloudCenters))]
-        public void PutNextRectangle_LocateFirstRectangle_OnSpecifiedByXCenter(Point center)
+        
+        [Test]
+        public void PutNextRectangle_LocateFirstRectangle_OnSpecifiedByXCenter([ValueSource(nameof(cloudCenters))]Point center)
         {
             var circularCloudLayouter = new CircularCloudLayouter(center); 
             var rectangle = circularCloudLayouter.PutNextRectangle(new Size(31 , 42));
             rectangle.X.Should().Be(center.X - 31 / 2);
         }
         
-        [TestCaseSource(nameof(cloudCenters))]
-        public void PutNextRectangle_LocateFirstRectangle_OnSpecifiedByYCenter(Point center)
+        [Test]
+        public void PutNextRectangle_LocateFirstRectangle_OnSpecifiedByYCenter( [ValueSource(nameof(cloudCenters))]Point center)
         {
             var circularCloudLayouter = new CircularCloudLayouter(center); 
             var rectangle = circularCloudLayouter.PutNextRectangle(new Size(31 , 42));
             rectangle.Y.Should().Be(center.Y - 42 / 2);
         }
+        
+        
         
         [TestCase(2, TestName = "TwoRectangles")]
         [TestCase(10, TestName = "TenRectangles")]
@@ -69,10 +73,10 @@ namespace TagsCloudVisualization.Tests
             circularCloudDrawing.SaveImage(path);
         }
 
-        private static IEnumerable<TestCaseData> cloudCenters = Enumerable 
+        private static IEnumerable<Point> cloudCenters = Enumerable 
         .Range(-1, 3) 
         .SelectMany(i => Enumerable 
             .Range(-1, 3) 
-            .Select(j => new TestCaseData(new Point(i, j)).SetName("{m}: " + $"X = {i}, Y = {j}"))); 
+            .Select(j => new Point(i, j))); 
     }
 }

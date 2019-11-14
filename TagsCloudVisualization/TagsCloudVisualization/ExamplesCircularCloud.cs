@@ -51,9 +51,8 @@ namespace TagsCloudVisualization
         
         public static void GenerateThirdTagCloud()
         {
-            var enumerable =
-                Enumerable.Repeat(new Tuple<string, Font>((6).ToString(), new Font(FONT_FAMILY_NAME, 15)), 50000);
-            GenerateTagCloud(enumerable, new Size(10000, 10000), "3.png");
+            var enumerable = Enumerable.Repeat(new Tuple<string, Font>((6).ToString(), new Font(FONT_FAMILY_NAME, 15)), 5000);
+            GenerateTagCloud(enumerable, new Size(2000, 2000), "3.png");
         }
     }
 }
