@@ -59,10 +59,10 @@ namespace TagsCloudVisualization.Tests.TestFixtures
                                        .ToArray();
 
             var intersectingRectangles = TestsHelper.GetAnyPairOfIntersectingRectangles(rectangles);
-            var notEmptyRectangle = new Rectangle(0, 0, 1, 1);
-            wrongVisualizationCloud = new WrongVisualizationCloud(intersectingRectangles ?? (notEmptyRectangle,
-                                                                                             notEmptyRectangle),
-                                                                  rectangles);
+
+            if (intersectingRectangles.HasValue)
+                wrongVisualizationCloud = new WrongVisualizationCloud(intersectingRectangles.Value, rectangles);
+
             Assert.Fail("Should fail to test logging functionality.");
         }
 
@@ -74,7 +74,6 @@ namespace TagsCloudVisualization.Tests.TestFixtures
         [Test]
         [SuppressMessage("ReSharper", "ObjectCreationAsStatement")]
         public void WrongVisualizationCloudConstructor_OnEmptySizeWrongRectangles_ThrowArgumentException() =>
-            Assert.Throws<ArgumentException>(() => new WrongVisualizationCloud((new Rectangle(1, 1, 1, 1),
-                                                                                new Rectangle(1, 1, 0, 0))));
+            Assert.Throws<ArgumentException>(() => new WrongVisualizationCloud((Rectangle.Empty, Rectangle.Empty)));
     }
 }

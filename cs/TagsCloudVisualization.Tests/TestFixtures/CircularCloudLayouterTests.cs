@@ -18,13 +18,16 @@ namespace TagsCloudVisualization.Tests.TestFixtures
         private static readonly Point origin = Point.Empty;
         private static Size VisualizationImageSize => new Size(1000, 800);
 
+        private static Point ImageCenter => new Point(VisualizationImageSize.Width / 2,
+                                                      VisualizationImageSize.Height / 2);
+
         private WrongVisualizationCloud wrongVisualizationCloud;
         private CircularCloudLayouter circularCloudLayouter;
 
         [SetUp]
         public void SetUp()
         {
-            circularCloudLayouter = new CircularCloudLayouter(origin);
+            circularCloudLayouter = new CircularCloudLayouter(ImageCenter);
             wrongVisualizationCloud = null;
         }
 
@@ -54,6 +57,7 @@ namespace TagsCloudVisualization.Tests.TestFixtures
         [TestCase(1, 1, TestName = "WhenOddWidthAndHeight")]
         public void PutNextRectangle_OnFirstSize_ReturnsRectangleWithCenterInTheOrigin(int width, int height)
         {
+            circularCloudLayouter = new CircularCloudLayouter(origin);
             var firstRectangle = circularCloudLayouter.PutNextRectangle(new Size(width, height));
 
             wrongVisualizationCloud = new WrongVisualizationCloud((firstRectangle,
@@ -92,16 +96,16 @@ namespace TagsCloudVisualization.Tests.TestFixtures
         {
             var randomizer = TestContext.CurrentContext.Random;
 
-            var rectangles = Enumerable.Range(0, 500)
+            var rectangles = Enumerable.Range(0, 60)
                                        .Select(i => circularCloudLayouter.PutNextRectangle(
-                                                   new Size(randomizer.Next(1, 500), randomizer.Next(1, 500))))
+                                                   new Size(randomizer.Next(50, 100), randomizer.Next(50, 100))))
                                        .ToArray();
 
             var intersectingRectangles = TestsHelper.GetAnyPairOfIntersectingRectangles(rectangles);
-            var notEmptyRectangle = new Rectangle(0, 0, 1, 1);
-            wrongVisualizationCloud = new WrongVisualizationCloud(intersectingRectangles ?? (notEmptyRectangle,
-                                                                                             notEmptyRectangle),
-                                                                  rectangles);
+
+            if (intersectingRectangles.HasValue)
+                wrongVisualizationCloud = new WrongVisualizationCloud(intersectingRectangles.Value, rectangles);
+
             intersectingRectangles.Should().BeNull();
         }
 
@@ -116,7 +120,7 @@ namespace TagsCloudVisualization.Tests.TestFixtures
         }
 
         [Test]
-        public void PutNextRectangle_OnALotOfCalls_ReturnsRectanglesWithSpecifiedSizes()
+        public void PutNextRectangle_OnALotOfCallsWithRandomSizes_ReturnsRectanglesWithSpecifiedSizes()
         {
             var randomizer = TestContext.CurrentContext.Random;
 
@@ -126,6 +130,25 @@ namespace TagsCloudVisualization.Tests.TestFixtures
             var rectangles = inputSizes.Select(size => circularCloudLayouter.PutNextRectangle(size));
 
             rectangles.Select(rectangle => rectangle.Size).Should().Equal(inputSizes);
+        }
+
+        [Test]
+        [Repeat(100)]
+        public void PutNextRectangle_OnALotOfCallsWithRandomSize_ReturnsDenseRoundlyCloud()
+        {
+            var randomizer = TestContext.CurrentContext.Random;
+            var rectangles = Enumerable.Range(0, randomizer.Next(50, 100))
+                                       .Select(i => new Size(randomizer.Next(40, 100), randomizer.Next(40, 80)))
+                                       .Select(size => circularCloudLayouter.PutNextRectangle(size))
+                                       .ToArray();
+
+            wrongVisualizationCloud = new WrongVisualizationCloud(rectangles);
+
+            var maxRadius = rectangles.Max(rectangle => ImageCenter.GetDistanceToPoint(rectangle.GetRectangleCenter()));
+            var maxArea = maxRadius * maxRadius * Math.PI;
+            var cloudArea = rectangles.Sum(rectangle => rectangle.Height * rectangle.Width);
+
+            (cloudArea / maxArea).Should().BeGreaterOrEqualTo(0.65);
         }
     }
 }

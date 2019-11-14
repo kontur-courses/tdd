@@ -21,11 +21,20 @@ namespace TagsCloudVisualization.Tests.WrongVisualization
         private readonly Rectangle[] allRectangles;
         private readonly (Rectangle, Rectangle) wrongRectanglesPair;
 
+        public WrongVisualizationCloud(IEnumerable<Rectangle> allRectangles)
+        {
+            if (allRectangles is null) throw new ArgumentNullException(nameof(allRectangles));
+            this.allRectangles = allRectangles.ToArray();
+
+            if (this.allRectangles.Length == 0)
+                throw new ArgumentException("Empty sequence was passed", nameof(allRectangles));
+        }
+
         public WrongVisualizationCloud((Rectangle, Rectangle) wrongRectanglesPair,
                                        IEnumerable<Rectangle> allRectangles = null)
         {
-            if (wrongRectanglesPair.Item1.Size.IsEmpty || wrongRectanglesPair.Item2.Size.IsEmpty)
-                throw new ArgumentException("One of rectangles has empty size", nameof(wrongRectanglesPair));
+            if (wrongRectanglesPair.Item1.Size.IsEmpty && wrongRectanglesPair.Item2.Size.IsEmpty)
+                throw new ArgumentException("Both of rectangles have empty size", nameof(wrongRectanglesPair));
 
             this.allRectangles = allRectangles?.ToArray() ?? new Rectangle[0];
             this.wrongRectanglesPair = wrongRectanglesPair;
