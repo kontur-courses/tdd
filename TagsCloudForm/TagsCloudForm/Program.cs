@@ -40,7 +40,7 @@ namespace TagsCloudForm
                             WriteLog(rectangles);
                         }
                 }
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
             }
             if (savePicture)
                 SavePicture(rectangles);

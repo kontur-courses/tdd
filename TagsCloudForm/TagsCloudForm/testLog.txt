@@ -1,6 +1,6 @@
-{X=374,Y=373,Width=53,Height=54}
-{X=299,Y=359,Width=75,Height=82}
-{X=374,Y=321,Width=56,Height=52}
-{X=374,Y=427,Width=64,Height=22}
-{X=427,Y=373,Width=66,Height=66}
+{X=482,Y=463,Width=37,Height=75}
+{X=402,Y=460,Width=80,Height=81}
+{X=452,Y=434,Width=96,Height=26}
+{X=519,Y=486,Width=51,Height=28}
+{X=456,Y=381,Width=89,Height=79}
 

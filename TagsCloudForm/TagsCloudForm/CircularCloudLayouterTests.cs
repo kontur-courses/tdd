@@ -133,14 +133,44 @@ namespace TagsCloudVisualization
             var center = new Point(0, 0);
             var layouter = new CircularCloudLayouter(center);
             var rects = new List<Rectangle> {
-            layouter.PutNextRectangle(new Size(70, 94)),
-            layouter.PutNextRectangle(new Size(92, 39)),
-            layouter.PutNextRectangle(new Size(83, 74)),
-            layouter.PutNextRectangle(new Size(36, 72)),
-            layouter.PutNextRectangle(new Size(78, 21))
+            layouter.PutNextRectangle(new Size(89, 26)),
+            layouter.PutNextRectangle(new Size(30, 44)),
+            layouter.PutNextRectangle(new Size(97, 84)),
+            layouter.PutNextRectangle(new Size(28, 92)),
             };
-            var testedRect = layouter.PutNextRectangle(new Size(73, 70));
+            var testedRect = layouter.PutNextRectangle(new Size(60, 42));
             rects.ForEach(a => testedRect.IntersectsWith(a).Should().BeFalse());
+        }
+
+        [Test]
+        public void PutNextRectangle_TestFromRandomTester5_LastRectangleShouldNotIntersectWithOthers()
+        {
+            var center = new Point(0, 0);
+            var layouter = new CircularCloudLayouter(center);
+            var rects = new List<Rectangle> {
+            layouter.PutNextRectangle(new Size(42, 71)),
+            layouter.PutNextRectangle(new Size(77, 53)),
+            layouter.PutNextRectangle(new Size(24, 52)),
+            layouter.PutNextRectangle(new Size(74, 36)),
+            };
+            var testedRect = layouter.PutNextRectangle(new Size(32, 46));
+            rects.ForEach(a => testedRect.IntersectsWith(a).Should().BeFalse());
+        }
+
+        [Test]
+        public void PutNextRectangle_TestFromRandomTester6_LastRectangleShouldNotIntersectWithOthers()
+        {
+            var center = new Point(0, 0);
+            var layouter = new CircularCloudLayouter(center);
+            var rects = new List<Rectangle> {
+            layouter.PutNextRectangle(new Size(37, 75)),
+            layouter.PutNextRectangle(new Size(80, 81)),
+            layouter.PutNextRectangle(new Size(96, 26)),
+            layouter.PutNextRectangle(new Size(51, 28)),
+            };
+            var testedRect = layouter.PutNextRectangle(new Size(89, 79));
+            rects.ForEach(a => testedRect.IntersectsWith(a).Should().BeFalse());
+
         }
 
         [Test]

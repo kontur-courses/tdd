@@ -131,7 +131,7 @@ namespace TagsCloudVisualization
                         midRectCoordinates = new Point(CloudCenter.X - (int)Math.Truncate(rectangleSize.Width / (double)2), extendedSegment.start.Y - rectangleSize.Height);
                     else
                         midRectCoordinates = new Point(CloudCenter.X - (int)Math.Truncate(rectangleSize.Width / (double)2), extendedSegment.start.Y);
-                    if (CheckOppositeBorder(midRectCoordinates, rectangleSize, Segment.Type.Top))
+                    if (CheckOppositeBorder(midRectCoordinates, rectangleSize, segment.type))
                         CheckDistance(searchResult, segment, midRectCoordinates, rectangleSize);
                 }
                 Point leftMostRectCoordinates;
@@ -146,9 +146,9 @@ namespace TagsCloudVisualization
                     leftMostRectCoordinates = new Point(extendedSegment.start.X, extendedSegment.start.Y);
                     rightMostRectCoordinates = new Point(extendedSegment.end.X - rectangleSize.Width, extendedSegment.start.Y);
                 }
-                if (CheckOppositeBorder(leftMostRectCoordinates, rectangleSize, Segment.Type.Top))
+                if (CheckOppositeBorder(leftMostRectCoordinates, rectangleSize, segment.type))
                     CheckDistance(searchResult, segment, leftMostRectCoordinates, rectangleSize);
-                if (CheckOppositeBorder(rightMostRectCoordinates, rectangleSize, Segment.Type.Top))
+                if (CheckOppositeBorder(rightMostRectCoordinates, rectangleSize, segment.type))
                     CheckDistance(searchResult, segment, rightMostRectCoordinates, rectangleSize);
             }
             else
@@ -165,7 +165,7 @@ namespace TagsCloudVisualization
                         midRectCoordinates = new Point(extendedSegment.start.X - rectangleSize.Width, CloudCenter.Y - (int)Math.Truncate(rectangleSize.Height / (double)2));
                     else
                         midRectCoordinates = new Point(extendedSegment.start.X, CloudCenter.Y - (int)Math.Truncate(rectangleSize.Height / (double)2));
-                    if (CheckOppositeBorder(midRectCoordinates, rectangleSize, Segment.Type.Right))
+                    if (CheckOppositeBorder(midRectCoordinates, rectangleSize, segment.type))
                         CheckDistance(searchResult, segment, midRectCoordinates, rectangleSize);
                 }
                 Point topMostRectCoordinates;
@@ -180,9 +180,9 @@ namespace TagsCloudVisualization
                     topMostRectCoordinates = new Point(extendedSegment.start.X, extendedSegment.start.Y);
                     botMostRectcoordinates = new Point(extendedSegment.end.X, extendedSegment.end.Y - rectangleSize.Height);
                 }
-                if (CheckOppositeBorder(topMostRectCoordinates, rectangleSize, Segment.Type.Right))
+                if (CheckOppositeBorder(topMostRectCoordinates, rectangleSize, segment.type))
                     CheckDistance(searchResult, segment, topMostRectCoordinates, rectangleSize);
-                if (CheckOppositeBorder(botMostRectcoordinates, rectangleSize, Segment.Type.Right))
+                if (CheckOppositeBorder(botMostRectcoordinates, rectangleSize, segment.type))
                     CheckDistance(searchResult, segment, botMostRectcoordinates, rectangleSize);
             }
 
@@ -227,7 +227,7 @@ namespace TagsCloudVisualization
                     return true;
                 return false;
             }
-            if (segmentType == Segment.Type.Right)
+            if (segmentType == Segment.Type.Right)// кажется здесь должно быть FindLeftBorderX
             {
                 var RightBorderX = FindRightBorderX(
                     new Segment(
@@ -433,7 +433,8 @@ namespace TagsCloudVisualization
         private void StackCheckPartialCrossingHorizontal(Segment segment1, Segment segment2, ref HashSet<Segment> toDelete, ref HashSet<Segment> toAdd)
         {
             if (segment1.type == Segment.Type.Bottom
-                && segment1.type == Segment.Type.Top
+                && segment2.type == Segment.Type.Top
+                && segment1.start.Y==segment2.start.Y
                 && segment1.start.X < segment2.start.X
                 && segment1.end.X > segment2.start.X
                 && segment1.end.X < segment2.end.X)
@@ -444,7 +445,8 @@ namespace TagsCloudVisualization
                 toAdd.Add(new Segment(segment1.end, segment2.end, Segment.Type.Top));
             }
             if (segment1.type == Segment.Type.Top
-                && segment1.type == Segment.Type.Bottom
+                && segment2.type == Segment.Type.Bottom
+                && segment1.start.Y == segment2.start.Y
                 && segment1.start.X < segment2.start.X
                 && segment1.end.X > segment2.start.X
                 && segment1.end.X < segment2.end.X)
@@ -455,7 +457,8 @@ namespace TagsCloudVisualization
                 toAdd.Add(new Segment(segment1.end, segment2.end, Segment.Type.Bottom));
             }
             if (segment1.type == Segment.Type.Bottom
-                && segment1.type == Segment.Type.Top
+                && segment2.type == Segment.Type.Top
+                && segment1.start.Y == segment2.start.Y
                 && segment2.start.X < segment1.start.X
                 && segment2.end.X > segment1.start.X
                 && segment2.end.X < segment1.end.X)
@@ -466,7 +469,8 @@ namespace TagsCloudVisualization
                 toAdd.Add(new Segment(segment2.end, segment1.end, Segment.Type.Top));
             }
             if (segment1.type == Segment.Type.Top
-                && segment1.type == Segment.Type.Bottom
+                && segment2.type == Segment.Type.Bottom
+                && segment1.start.Y == segment2.start.Y
                 && segment2.start.X < segment1.start.X
                 && segment2.end.X > segment1.start.X
                 && segment2.end.X < segment1.end.X)

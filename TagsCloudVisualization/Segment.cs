@@ -1,83 +1,75 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    class Segment
+    public class Segment
     {
-        public readonly Point start;
-        public readonly Point end;
-        public readonly Type type;
-        public double Length {get => Math.Sqrt(Math.Pow((start.X - end.X), 2) + Math.Pow((start.Y - end.Y), 2)); }
+        public Point start { get; private set; }
+        public  Point end { get; private set; }
+        public  Type type { get; private set; }
+        public double Length  => Math.Sqrt(Math.Pow((start.X - end.X), 2) + Math.Pow((start.Y - end.Y), 2)); 
         public Segment(Point start, Point end, Type type)
         {
             if (type == Type.Bottom || type == Type.Top)
             {
                 if (start.Y != end.Y)
                     throw new ArgumentException("Wrong coordinates");
+                if (start.X < end.X)
+                {
+                    this.start = start;
+                    this.end = end;
+                }
                 else
                 {
-                    if (start.X < end.X)
-                    {
-                        this.start = start;
-                        this.end = end;
-                    }
-                    else
-                    {
-                        this.start = end;
-                        this.end = start;
-                    }
-                    this.type = type;
+                    this.start = end;
+                    this.end = start;
                 }
+                this.type = type;
             }
             else
             {
                 if (start.X != end.X)
                     throw new ArgumentException("Wrong coordinates");
+                if (start.Y < end.Y)
+                {
+                    this.start = start;
+                    this.end = end;
+                }
                 else
                 {
-                    if (start.Y < end.Y)
-                    {
-                        this.start = start;
-                        this.end = end;
-                    }
-                    else
-                    {
-                        this.start = end;
-                        this.end = start;
-                    }
-                    this.type = type;
+                    this.start = end;
+                    this.end = start;
                 }
+                this.type = type;
             }
         }
-        public Segment(int startX, int startY, int endX, int endY, Type type):this(new Point(startX, startY), new Point(endX, endY), type)
+        public Segment(int startX, int startY, int endX, int endY, Type type) : this(new Point(startX, startY), new Point(endX, endY), type)
         {
         }
 
         public bool Parallel(Segment segment)
         {
-            if (segment.type == Segment.Type.Top && type == Segment.Type.Top
-                || segment.type == Segment.Type.Bottom && type == Segment.Type.Top
-                || segment.type == Segment.Type.Top && type == Segment.Type.Bottom
-                || segment.type == Segment.Type.Bottom && type == Segment.Type.Bottom)
+            if (segment.type == Type.Top && type == Type.Top
+                || segment.type == Type.Bottom && type == Type.Top
+                || segment.type == Type.Top && type == Type.Bottom
+                || segment.type == Type.Bottom && type == Type.Bottom)
                 return true;
-            if (segment.type == Segment.Type.Left && type == Segment.Type.Left
-                || segment.type == Segment.Type.Right && type == Segment.Type.Left
-                || segment.type == Segment.Type.Left && type == Segment.Type.Right
-                || segment.type == Segment.Type.Right && type == Segment.Type.Right)
+            if (segment.type == Type.Left && type == Type.Left
+                || segment.type == Type.Right && type == Type.Left
+                || segment.type == Type.Left && type == Type.Right
+                || segment.type == Type.Right && type == Type.Right)
                 return true;
             return false;
         }
 
         public bool Opposite(Segment segment)
         {
-            if (segment.type == Segment.Type.Bottom && type == Segment.Type.Top
-                || segment.type == Segment.Type.Top && type == Segment.Type.Bottom)
+            if (segment.type == Type.Bottom && type == Type.Top
+                || segment.type == Type.Top && type == Type.Bottom)
                 return true;
-            if (segment.type == Segment.Type.Right && type == Segment.Type.Left
-                || segment.type == Segment.Type.Left && type == Segment.Type.Right)
+            if (segment.type == Type.Right && type == Type.Left
+                || segment.type == Type.Left && type == Type.Right)
                 return true;
             return false;
         }
@@ -103,6 +95,29 @@ namespace TagsCloudVisualization
                 return true;
             else
                 return false;
+        }
+
+        public bool Intersects(Segment segment)
+        {
+            if (this.Horizontal() && segment.Horizontal())
+            {
+                if ((this.start.X >= segment.start.X && this.start.X < segment.end.X)
+                            || (this.end.X > segment.start.X && this.end.X <= segment.end.X)
+                            || (this.start.X <= segment.start.X && this.end.X >= segment.end.X)
+                            || (this.start.X >= segment.start.X && this.end.X <= segment.end.X))
+                    return true;
+                return false;
+            }
+            if (!this.Horizontal() && !segment.Horizontal())
+            {
+                if ((this.start.Y >= segment.start.Y && this.start.Y < segment.end.Y)
+                            || (this.end.Y > segment.start.Y && this.end.Y <= segment.end.Y)
+                            || (this.start.Y <= segment.start.Y && this.end.Y >= segment.end.Y)
+                            || (this.start.Y >= segment.start.Y && this.end.Y <= segment.end.Y))
+                    return true;
+                return false;
+            }
+            return false;
         }
 
 
