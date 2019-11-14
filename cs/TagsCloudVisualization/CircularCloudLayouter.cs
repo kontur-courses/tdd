@@ -8,7 +8,7 @@ namespace TagsCloudVisualization
     class CircularCloudLayouter
     {
         public readonly Point Center;
-        private List<Rectangle> Rectangles { get; }
+        public List<Rectangle> Rectangles { get; }
         private readonly SpiralGenerator generator;
 
         public CircularCloudLayouter(Point center)

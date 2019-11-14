@@ -2,6 +2,8 @@
 using NUnit.Framework;
 using System;
 using System.Drawing;
+using System.IO;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization
 {
@@ -109,6 +111,19 @@ namespace TagsCloudVisualization
         public double GetDistance(Point point, Point othPoint)
         {
             return Math.Sqrt(Math.Pow(point.X - othPoint.X, 2) + Math.Pow(point.Y - othPoint.Y, 2));
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
+                return;
+
+            var visualizer = new Visualizer(new Size(1000, 1000));
+            visualizer.DrawRectangles(layouter.Rectangles);
+            var path = Path.Combine(TestContext.CurrentContext.TestDirectory, $"{TestContext.CurrentContext.Test.Name}.bmp");
+            visualizer.Save(path);
+            Console.WriteLine($"Error Tests TagCloud saved to file {path}");
         }
     }
 }
