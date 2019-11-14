@@ -31,16 +31,16 @@ namespace TagsCloudVisualization.Tests
         public void PutNextRectangle_LocateFirstRectangle_OnSpecifiedByXCenter([ValueSource(nameof(cloudCenters))]Point center)
         {
             var circularCloudLayouter = new CircularCloudLayouter(center); 
-            var rectangle = circularCloudLayouter.PutNextRectangle(new Size(31 , 42));
-            rectangle.X.Should().Be(center.X - 31 / 2);
+            rectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(31 , 42)));
+            rectangles[0].X.Should().Be(center.X - 31 / 2);
         }
         
         [Test]
         public void PutNextRectangle_LocateFirstRectangle_OnSpecifiedByYCenter( [ValueSource(nameof(cloudCenters))]Point center)
         {
             var circularCloudLayouter = new CircularCloudLayouter(center); 
-            var rectangle = circularCloudLayouter.PutNextRectangle(new Size(31 , 42));
-            rectangle.Y.Should().Be(center.Y - 42 / 2);
+            rectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(31 , 42)));
+            rectangles[0].Y.Should().Be(center.Y - 42 / 2);
         }
         
         
