@@ -1,6 +1,10 @@
-{X=482,Y=463,Width=37,Height=75}
-{X=402,Y=460,Width=80,Height=81}
-{X=452,Y=434,Width=96,Height=26}
-{X=519,Y=486,Width=51,Height=28}
-{X=456,Y=381,Width=89,Height=79}
+layouter.PutNextRectangle(new Size(94,82))
+layouter.PutNextRectangle(new Size(91,46))
+layouter.PutNextRectangle(new Size(67,Height=99}
+layouter.PutNextRectangle(new Size(74,Height=23}
+layouter.PutNextRectangle(new Size(63,Height=32}
+layouter.PutNextRectangle(new Size(57,Height=44}
+layouter.PutNextRectangle(new Size(95,Height=37}
+layouter.PutNextRectangle(new Size(81,Height=83}
+layouter.PutNextRectangle(new Size(55,Height=24}
 

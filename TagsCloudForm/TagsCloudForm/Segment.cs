@@ -121,6 +121,23 @@ namespace TagsCloudVisualization
         }
 
 
+        public static Type OppositeType(Type type)
+        {
+            switch (type)
+            {
+                case Type.Top:
+                    return Type.Bottom;
+                case Type.Bottom:
+                    return Type.Top;
+                case Type.Left:
+                    return Type.Right;
+                case Type.Right:
+                    return Type.Left;
+                default:
+                    return Type.Top;
+            }
+        }
+
         public enum Type
         {
             Top,
@@ -128,5 +145,6 @@ namespace TagsCloudVisualization
             Left,
             Right
         }
+
     }
 }

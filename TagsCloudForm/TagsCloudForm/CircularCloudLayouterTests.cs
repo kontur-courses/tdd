@@ -170,8 +170,23 @@ namespace TagsCloudVisualization
             };
             var testedRect = layouter.PutNextRectangle(new Size(89, 79));
             rects.ForEach(a => testedRect.IntersectsWith(a).Should().BeFalse());
-
         }
+
+        [Test]
+        public void PutNextRectangle_TestFromRandomTester7_LastRectangleShouldNotIntersectWithOthers()
+        {
+            var center = new Point(0, 0);
+            var layouter = new CircularCloudLayouter(center);
+            var rects = new List<Rectangle> {
+            layouter.PutNextRectangle(new Size(10,10)),
+            layouter.PutNextRectangle(new Size(40, 10)),
+            layouter.PutNextRectangle(new Size(40, 10)),
+            layouter.PutNextRectangle(new Size(20, 100))
+        };
+            var testedRect = layouter.PutNextRectangle(new Size(15, 15));
+        rects.ForEach(a => testedRect.IntersectsWith(a).Should().BeFalse());
+        }
+
 
         [Test]
         public void CircularCloudLayouter_AddingFiftyRandomRectangles_CheckDensity()
@@ -191,6 +206,23 @@ namespace TagsCloudVisualization
             var cloudArea = Math.PI * cloudRadius * cloudRadius;
             (cloudArea/rectanglesArea).Should().BeLessThan(Math.PI/2);//площадь вписанного квадрата/площадь описанной окружности = Pi/2
 
+        }
+
+        [Test]
+        public void FindIntersectionsTest1()
+        {
+            var segments = new List<Segment>()
+            {
+                new Segment(0, 2, 0, 3, Segment.Type.Left),
+                new Segment(0, 1, 0, 6, Segment.Type.Right),
+                new Segment(0,10, 0, 12,  Segment.Type.Left),
+                new Segment(0,11, 0, 13,  Segment.Type.Right),
+                new Segment(0, 20, 0, 22, Segment.Type.Left),
+                new Segment(0, 22, 0, 25, Segment.Type.Left)
+            };
+
+            var outList = CircularCloudLayouter.FindIntersectionsVertical(segments, 0);
+            Console.WriteLine();
         }
 
 
