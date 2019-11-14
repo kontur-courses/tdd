@@ -21,23 +21,7 @@ namespace TagsCloudVisualization.CloudLayouters
             if (rectangleSize.IsEmpty)
                 throw new ArgumentException("Passed argument is empty.", nameof(rectangleSize));
 
-            Rectangle newRectangle = Rectangle.Empty;
-
-            foreach (var currentArchimedeanSpiralPoint in spiral.GetPoints())
-            {
-                Point newRectangleLocation = currentArchimedeanSpiralPoint;
-
-                newRectangle = new Rectangle(newRectangleLocation, rectangleSize);
-
-                if (!newRectangle.IntersectsWith(rectangles)) break;
-
-                if (currentArchimedeanSpiralPoint.X <= 0)
-                {
-                    newRectangle.Offset(new Point(-rectangleSize.Width, -rectangleSize.Height));
-
-                    if (!newRectangle.IntersectsWith(rectangles)) break;
-                }
-            }
+            var newRectangle = FindNextRectangleOnTheSpiral(rectangleSize);
 
             if (rectangles.Count == 0)
             {
@@ -51,6 +35,25 @@ namespace TagsCloudVisualization.CloudLayouters
             rectangles.Add(newRectangle);
 
             return newRectangle.CreateMovedCopy(centralOffset);
+        }
+
+        private Rectangle FindNextRectangleOnTheSpiral(Size rectangleSize)
+        {
+            foreach (var currentArchimedeanSpiralPoint in spiral.GetPoints())
+            {
+                var rectangle = new Rectangle(currentArchimedeanSpiralPoint, rectangleSize);
+
+                if (!rectangle.IntersectsWith(rectangles)) return rectangle;
+
+                if (currentArchimedeanSpiralPoint.X <= 0)
+                {
+                    rectangle.Offset(new Point(-rectangleSize.Width, -rectangleSize.Height));
+
+                    if (!rectangle.IntersectsWith(rectangles)) return rectangle;
+                }
+            }
+
+            throw new Exception("Unreachable code, GetPoints() returns infinity lazy sequence.");
         }
 
         private static Rectangle MoveRectangleToOrigin(Rectangle rectangle, IReadOnlyCollection<Rectangle> rectangles)
@@ -78,7 +81,7 @@ namespace TagsCloudVisualization.CloudLayouters
             return rectangle;
 
             static int XDistanceToCenter(Rectangle rect) => rect.X + rect.Width / 2;
-            static int YDistanceToCenter(Rectangle r) => r.Y + r.Height / 2;
+            static int YDistanceToCenter(Rectangle rect) => rect.Y + rect.Height / 2;
         }
     }
 }
