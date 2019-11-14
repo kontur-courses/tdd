@@ -8,7 +8,7 @@ using System.Linq;
 namespace TagsCloudVisualization
 {
     [TestFixture]
-    class CircularCloudLayouter_Should
+    public class CircularCloudLayouter_Should
     {
         private CircularCloudLayouter layouter;
 
