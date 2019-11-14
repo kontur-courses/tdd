@@ -137,7 +137,7 @@ namespace TagsCloudVisualization.tests
         [TestCase(500)]
         public void PutRectangle_AfterPutNRectangles_TheyShouldBeTightlySpaced(int rectanglesCount)
         {
-            var rand = new Random();
+            var rand = new Random(31337);
             RepeatPutNextRectangle(new Size(rand.Next(100, 200), rand.Next(100, 200)), rectanglesCount);
             
             var rectangles = layouter.Cloud.Rectangles;

@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
 
 namespace TagsCloudVisualization.tools
 {
@@ -33,9 +31,8 @@ namespace TagsCloudVisualization.tools
 
             private double GetAngle(Point p)
             {
-                var dx = p.X - basePoint.X;
-                var dy = p.Y - basePoint.Y;
-                var angle = Math.Atan2(dy, dx);
+                var delta = p.Sub(basePoint);
+                var angle = Math.Atan2(delta.Y, delta.X);
 
                 if (angle < 0)
                 {
@@ -129,12 +126,10 @@ namespace TagsCloudVisualization.tools
 
         private static int GetRotation(Point a, Point b, Point c)
         {
-            var ux = b.X - a.X;
-            var uy = b.Y - a.Y;
-            var vx = c.X - b.X;
-            var vy = c.Y - b.Y;
+            var v = b.Sub(a);
+            var u = c.Sub(b);
 
-            return ux * vy - uy * vx;
+            return v.PMul(u);
         }
 
         private static Point GetDownLeft(List<Point> points)
