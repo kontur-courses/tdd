@@ -10,12 +10,12 @@ namespace TagsCloudVisualization
         private static readonly Random Random = new Random();
         static void Main(string[] args)
         {
-            DrawExample(FirstFillFunc, "example1");
-            DrawExample(SecondFillFunc, "example2");
-            DrawExample(ThirdFillFunc, "example3");
+            DrawExample(FillThreeHundredRectFunc, "example1");
+            DrawExample(FillGraduallyDecreasingRectFunc, "example2");
+            DrawExample(FillHundredRectFunc, "example3");
         }
 
-        public static List<Rectangle> FirstFillFunc(CircularCloudLayouter layouter)
+        public static List<Rectangle> FillThreeHundredRectFunc(CircularCloudLayouter layouter)
         {
             var rectangles = new List<Rectangle>();
             for (var i = 0; i < 300; i++)
@@ -27,7 +27,7 @@ namespace TagsCloudVisualization
             return rectangles;
         }
 
-        public static List<Rectangle> SecondFillFunc(CircularCloudLayouter layouter)
+        public static List<Rectangle> FillGraduallyDecreasingRectFunc(CircularCloudLayouter layouter)
         {
             var width = 60;
             const int height = 30;
@@ -43,7 +43,7 @@ namespace TagsCloudVisualization
             return rectangles;
         }
 
-        public static List<Rectangle> ThirdFillFunc(CircularCloudLayouter layouter)
+        public static List<Rectangle> FillHundredRectFunc(CircularCloudLayouter layouter)
         {
             var rectangles = new List<Rectangle>();
             for (var i = 0; i < 100; i++)
