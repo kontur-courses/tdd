@@ -11,8 +11,8 @@ namespace TagsCloudForm
 {
     class Program : Form
     {
-        private const bool testMode = false;
-        private const bool savePicture = false;
+        private const bool testMode = true;
+        private const bool savePicture = true;
 
         CircularCloudLayouter layouter = new CircularCloudLayouter(new Point(500, 500), false);
         protected override void OnPaint(PaintEventArgs e)
@@ -40,7 +40,7 @@ namespace TagsCloudForm
                             WriteLog(rectangles);
                         }
                 }
-                Thread.Sleep(500);
+                Thread.Sleep(100);
             }
             if (savePicture)
                 SavePicture(rectangles);

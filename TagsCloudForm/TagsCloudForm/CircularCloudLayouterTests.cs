@@ -4,12 +4,15 @@ using FluentAssertions;
 using NUnit.Framework;
 using System.Drawing;
 using System.Linq;
+using System.Drawing.Imaging;
 
 namespace TagsCloudVisualization
 {
     [TestFixture]
     public class CircularCloudLayouterTests
     {
+
+
         private double GetDistance(Rectangle rectangle, Point center)
         {
             var rectangleCenter = new Point(rectangle.X + rectangle.Width / 2, rectangle.Y + rectangle.Height / 2);
@@ -209,22 +212,21 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void FindIntersectionsTest1()
+        [Repeat(20)]
+        public void PutNextRectangle_HundredRectangles_ShouldNotIntersect()
         {
-            var segments = new List<Segment>()
+            var center = new Point(0, 0);
+            var layouter = new CircularCloudLayouter(center, false);
+            var rectangles = new List<Rectangle>();
+            var rnd = new Random();
+            for (int i = 0; i < 100; i++)
             {
-                new Segment(0, 2, 0, 3, Segment.Type.Left),
-                new Segment(0, 1, 0, 6, Segment.Type.Right),
-                new Segment(0,10, 0, 12,  Segment.Type.Left),
-                new Segment(0,11, 0, 13,  Segment.Type.Right),
-                new Segment(0, 20, 0, 22, Segment.Type.Left),
-                new Segment(0, 22, 0, 25, Segment.Type.Left)
-            };
-
-            var outList = CircularCloudLayouter.FindIntersectionsVertical(segments, 0);
-            Console.WriteLine();
+                var size = new Size(rnd.Next(5, 100), rnd.Next(5, 100));
+                var rect = layouter.PutNextRectangle(size);
+                rectangles.ForEach(a => rect.IntersectsWith(a).Should().BeFalse());
+                rectangles.Add(rect);
+            }
         }
-
 
     }
 }

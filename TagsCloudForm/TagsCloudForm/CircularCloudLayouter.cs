@@ -109,7 +109,6 @@ namespace TagsCloudVisualization
             toAdd.Add(new Segment(searchResult.ClosestRectCoord.X, searchResult.ClosestRectCoord.Y + rectangleSize.Height, searchResult.ClosestRectCoord.X + rectangleSize.Width, searchResult.ClosestRectCoord.Y + rectangleSize.Height, Segment.Type.Bottom));
             toAdd.Add(new Segment(searchResult.ClosestRectCoord.X, searchResult.ClosestRectCoord.Y, searchResult.ClosestRectCoord.X, searchResult.ClosestRectCoord.Y + rectangleSize.Height, Segment.Type.Left));
             toAdd.Add(new Segment(searchResult.ClosestRectCoord.X + rectangleSize.Width, searchResult.ClosestRectCoord.Y, searchResult.ClosestRectCoord.X + rectangleSize.Width, searchResult.ClosestRectCoord.Y + rectangleSize.Height, Segment.Type.Right));
-            //StackSegments(toAdd);
             StackSegments2(toAdd);
             addedRectangles.Add(outRectangle);
             return outRectangle;
@@ -349,191 +348,7 @@ namespace TagsCloudVisualization
             return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
         }
 
-        private void StackSegments(List<Segment> added)
-        {
-            var toDelete = new HashSet<Segment>();
-            var toAdd = new HashSet<Segment>();
-            BorderSegments.UnionWith(added);
-            foreach (var segment1 in added)
-            {
-                foreach (var segment2 in BorderSegments)
-                {
-                    if (segment1.end == segment2.start && segment1.type == segment2.type)
-                    {
-                        toDelete.Add(segment1);
-                        toDelete.Add(segment2);
-                        toAdd.Add(new Segment(segment1.start, segment2.end, segment1.type));
-                    }
-                    if (segment2.end == segment1.start && segment1.type == segment2.type)
-                    {
-                        toDelete.Add(segment1);
-                        toDelete.Add(segment2);
-                        toAdd.Add(new Segment(segment2.start, segment1.end, segment1.type));
-                    }
-                    if (segment1.start == segment2.start
-                        && segment1.end == segment2.end
-                        && segment1.Opposite(segment2))
-                    {
-                        toDelete.Add(segment1);
-                        toDelete.Add(segment2);
-                    }
-                    if (segment1.Opposite(segment2)
-                        && !segment1.Horizontal()
-                        && segment1.start.X == segment2.start.X
-                        && segment1.start.Y <= segment2.start.Y
-                        && segment1.end.Y >= segment2.end.Y)
-                    {
-                        toDelete.Add(segment1);
-                        toDelete.Add(segment2);
-                        toAdd.Add(new Segment(segment1.start, segment2.start, segment1.type));
-                        toAdd.Add(new Segment(segment2.end, segment1.end, segment1.type));
-                    }
-                    if (segment1.Opposite(segment2)
-                        && !segment1.Horizontal()
-                        && segment1.start.X == segment2.start.X
-                        && segment2.start.Y <= segment1.start.Y
-                        && segment2.end.Y >= segment1.end.Y)
-                    {
-                        toDelete.Add(segment1);
-                        toDelete.Add(segment2);
-                        toAdd.Add(new Segment(segment2.start, segment1.start, segment2.type));
-                        toAdd.Add(new Segment(segment1.end, segment2.end, segment2.type));
-                    }
-                    if (segment1.Opposite(segment2)
-                        && segment1.Horizontal()
-                        && segment1.start.Y == segment2.start.Y
-                        && segment1.start.X <= segment2.start.X
-                        && segment1.end.X >= segment2.end.X)
-                    {
-                        toDelete.Add(segment1);
-                        toDelete.Add(segment2);
-                        toAdd.Add(new Segment(segment1.start, segment2.start, segment1.type));
-                        toAdd.Add(new Segment(segment2.end, segment1.end, segment1.type));
-                    }
-                    if (segment1.Opposite(segment2)
-                        && segment1.Horizontal()
-                        && segment1.start.Y == segment2.start.Y
-                        && segment2.start.X <= segment1.start.X
-                        && segment2.end.X >= segment1.end.X)
-                    {
-                        toDelete.Add(segment1);
-                        toDelete.Add(segment2);
-                        toAdd.Add(new Segment(segment2.start, segment1.start, segment2.type));
-                        toAdd.Add(new Segment(segment1.end, segment2.end, segment2.type));
-                    }
-                    StackCheckPartialCrossingHorizontal(segment1, segment2, ref toDelete, ref toAdd);
-                    StackCheckPartialCrossingVertical(segment1, segment2, ref toDelete, ref toAdd);
-                }
-            }
-            BorderSegments.UnionWith(toAdd);
-            BorderSegments.ExceptWith(toDelete);
-            BorderSegments.RemoveWhere(a => a.Length == 0);
-        }
-
-
-        private void StackCheckPartialCrossingHorizontal(Segment segment1, Segment segment2, ref HashSet<Segment> toDelete, ref HashSet<Segment> toAdd)
-        {
-            if (segment1.type == Segment.Type.Bottom
-                && segment2.type == Segment.Type.Top
-                && segment1.start.Y==segment2.start.Y
-                && segment1.start.X < segment2.start.X
-                && segment1.end.X > segment2.start.X
-                && segment1.end.X < segment2.end.X)
-            {
-                toDelete.Add(segment1);
-                toDelete.Add(segment2);
-                toAdd.Add(new Segment(segment1.start, segment2.start, Segment.Type.Bottom));
-                toAdd.Add(new Segment(segment1.end, segment2.end, Segment.Type.Top));
-            }
-            if (segment1.type == Segment.Type.Top
-                && segment2.type == Segment.Type.Bottom
-                && segment1.start.Y == segment2.start.Y
-                && segment1.start.X < segment2.start.X
-                && segment1.end.X > segment2.start.X
-                && segment1.end.X < segment2.end.X)
-            {
-                toDelete.Add(segment1);
-                toDelete.Add(segment2);
-                toAdd.Add(new Segment(segment1.start, segment2.start, Segment.Type.Top));
-                toAdd.Add(new Segment(segment1.end, segment2.end, Segment.Type.Bottom));
-            }
-            if (segment1.type == Segment.Type.Bottom
-                && segment2.type == Segment.Type.Top
-                && segment1.start.Y == segment2.start.Y
-                && segment2.start.X < segment1.start.X
-                && segment2.end.X > segment1.start.X
-                && segment2.end.X < segment1.end.X)
-            {
-                toDelete.Add(segment1);
-                toDelete.Add(segment2);
-                toAdd.Add(new Segment(segment2.start, segment1.start, Segment.Type.Bottom));
-                toAdd.Add(new Segment(segment2.end, segment1.end, Segment.Type.Top));
-            }
-            if (segment1.type == Segment.Type.Top
-                && segment2.type == Segment.Type.Bottom
-                && segment1.start.Y == segment2.start.Y
-                && segment2.start.X < segment1.start.X
-                && segment2.end.X > segment1.start.X
-                && segment2.end.X < segment1.end.X)
-            {
-                toDelete.Add(segment1);
-                toDelete.Add(segment2);
-                toAdd.Add(new Segment(segment2.start, segment1.start, Segment.Type.Top));
-                toAdd.Add(new Segment(segment2.end, segment1.end, Segment.Type.Bottom));
-            }
-        }
-
-        private void StackCheckPartialCrossingVertical(Segment segment1, Segment segment2, ref HashSet<Segment> toDelete, ref HashSet<Segment> toAdd)
-        {
-            if (segment1.type == Segment.Type.Left
-                && segment2.type == Segment.Type.Right
-                && segment1.start.X == segment2.start.X
-                && segment1.start.Y < segment2.start.Y
-                && segment1.end.Y > segment2.start.Y
-                && segment1.end.Y < segment2.end.Y)
-            {
-                toDelete.Add(segment1);
-                toDelete.Add(segment2);
-                toAdd.Add(new Segment(segment1.start, segment2.start, Segment.Type.Left));
-                toAdd.Add(new Segment(segment1.end, segment2.end, Segment.Type.Right));
-            }
-            if (segment1.type == Segment.Type.Right
-                && segment2.type == Segment.Type.Left
-                && segment1.start.X == segment2.start.X
-                && segment1.start.Y < segment2.start.Y
-                && segment1.end.Y > segment2.start.Y
-                && segment1.end.Y < segment2.end.Y)
-            {
-                toDelete.Add(segment1);
-                toDelete.Add(segment2);
-                toAdd.Add(new Segment(segment1.start, segment2.start, Segment.Type.Right));
-                toAdd.Add(new Segment(segment1.end, segment2.end, Segment.Type.Left));
-            }
-            if (segment1.type == Segment.Type.Left
-                && segment2.type == Segment.Type.Right
-                && segment1.start.X == segment2.start.X
-                && segment2.start.Y < segment1.start.Y
-                && segment2.end.Y > segment1.start.Y
-                && segment2.end.Y < segment1.end.Y)
-            {
-                toDelete.Add(segment1);
-                toDelete.Add(segment2);
-                toAdd.Add(new Segment(segment2.start, segment1.start, Segment.Type.Right));
-                toAdd.Add(new Segment(segment2.end, segment1.end, Segment.Type.Left));
-            }
-            if (segment1.type == Segment.Type.Right
-                && segment2.type == Segment.Type.Left
-                && segment1.start.X == segment2.start.X
-                && segment2.start.Y < segment1.start.Y
-                && segment2.end.Y > segment1.start.Y
-                && segment2.end.Y < segment1.end.Y)
-            {
-                toDelete.Add(segment1);
-                toDelete.Add(segment2);
-                toAdd.Add(new Segment(segment2.start, segment1.start, Segment.Type.Left));
-                toAdd.Add(new Segment(segment2.end, segment1.end, Segment.Type.Right));
-            }
-        }
+        
         private void InitializeFirstRectangle(Size rectangleSize)
         {
             var firstRectCoord = new Point(
@@ -635,6 +450,17 @@ namespace TagsCloudVisualization
             bool isIntersection = false;
             bool isFirst = true;
             int lastAdded = int.MinValue;
+            var sortedPoints = points.OrderBy(a => a.Coord).ToList();
+            for (int i = 0; i < sortedPoints.Count - 1; i++)// ужасно выглядит, наверное можно запилить покрасивее
+            {
+                if (sortedPoints[i].Coord == sortedPoints[i + 1].Coord && sortedPoints[i].SegmentType == sortedPoints[i + 1].SegmentType)
+                {
+                    if (sortedPoints[i].Type == CustomPoint.PointType.End)
+                        sortedPoints[i].Type = CustomPoint.PointType.Start;
+                    if (sortedPoints[i + 1].Type == CustomPoint.PointType.End)
+                        sortedPoints[i + 1].Type = CustomPoint.PointType.Start;
+                }
+            }
             foreach (var point in points.OrderBy(a => a.Coord))
             {
                 if (isFirst)
@@ -702,7 +528,18 @@ namespace TagsCloudVisualization
             bool isIntersection = false;
             bool isFirst = true;
             int lastAdded = int.MinValue;
-            foreach (var point in points.OrderBy(a => a.Coord))
+            var sortedPoints = points.OrderBy(a => a.Coord).ToList();
+            for(int i=0; i<sortedPoints.Count-1;i++)// ужасно выглядит, наверное можно запилить покрасивее
+            {
+                if (sortedPoints[i].Coord == sortedPoints[i + 1].Coord && sortedPoints[i].SegmentType == sortedPoints[i + 1].SegmentType)
+                {
+                    if (sortedPoints[i].Type == CustomPoint.PointType.End)
+                        sortedPoints[i].Type = CustomPoint.PointType.Start;
+                    if (sortedPoints[i + 1].Type == CustomPoint.PointType.End)
+                        sortedPoints[i + 1].Type = CustomPoint.PointType.Start;
+                }
+            }
+            foreach (var point in sortedPoints)
             {
                 if (isFirst)
                 {
@@ -730,9 +567,12 @@ namespace TagsCloudVisualization
                         currentPoint = new CustomPoint(lastSegment.start.X, point.SegmentType, CustomPoint.PointType.Start);
                         continue;
                     }
-                    currentPoint = point;
-                    startFound = true;
-                    currentType = point.SegmentType;
+                    else
+                    {
+                        currentPoint = point;
+                        startFound = true;
+                        currentType = point.SegmentType;
+                    }
                     continue;
                 }
                 if (startFound && point.SegmentType == currentType && point.Type == CustomPoint.PointType.End)
@@ -754,7 +594,7 @@ namespace TagsCloudVisualization
             return outSegments.Where(a => a.Length > 0).ToList();
         }
 
-        public class CustomPoint
+        private class CustomPoint
         {
             public int Coord;
             public Segment.Type SegmentType;
@@ -770,12 +610,6 @@ namespace TagsCloudVisualization
                 Start,
                 End
             }
-        }
-
-        enum PointType
-        {
-            Start,
-            End
         }
     }
 

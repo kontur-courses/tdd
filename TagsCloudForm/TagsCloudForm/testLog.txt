@@ -1,10 +1,43 @@
-layouter.PutNextRectangle(new Size(94,82))
-layouter.PutNextRectangle(new Size(91,46))
-layouter.PutNextRectangle(new Size(67,Height=99}
-layouter.PutNextRectangle(new Size(74,Height=23}
-layouter.PutNextRectangle(new Size(63,Height=32}
-layouter.PutNextRectangle(new Size(57,Height=44}
-layouter.PutNextRectangle(new Size(95,Height=37}
-layouter.PutNextRectangle(new Size(81,Height=83}
-layouter.PutNextRectangle(new Size(55,Height=24}
+{X=463,Y=478,Width=75,Height=44}
+{X=477,Y=522,Width=46,Height=39}
+{X=438,Y=468,Width=25,Height=64}
+{X=463,Y=450,Width=87,Height=28}
+{X=523,Y=522,Width=25,Height=21}
+{X=538,Y=486,Width=52,Height=28}
+{X=452,Y=532,Width=25,Height=22}
+{X=548,Y=514,Width=28,Height=55}
+{X=452,Y=383,Width=96,Height=67}
+{X=399,Y=458,Width=39,Height=85}
+{X=471,Y=561,Width=59,Height=21}
+{X=451,Y=582,Width=98,Height=41}
+{X=550,Y=416,Width=76,Height=70}
+{X=380,Y=554,Width=91,Height=28}
+{X=373,Y=387,Width=79,Height=71}
+{X=576,Y=514,Width=41,Height=89}
+{X=345,Y=478,Width=54,Height=45}
+{X=369,Y=582,Width=82,Height=61}
+{X=548,Y=357,Width=62,Height=59}
+{X=549,Y=569,Width=20,Height=21}
+{X=617,Y=486,Width=35,Height=51}
+{X=485,Y=335,Width=31,Height=48}
+{X=356,Y=523,Width=43,Height=22}
+{X=461,Y=623,Width=78,Height=29}
+{X=404,Y=335,Width=81,Height=48}
+{X=549,Y=603,Width=37,Height=42}
+{X=626,Y=400,Width=98,Height=86}
+{X=617,Y=537,Width=23,Height=74}
+{X=328,Y=454,Width=45,Height=24}
+{X=311,Y=399,Width=62,Height=55}
+{X=296,Y=545,Width=73,Height=78}
+{X=516,Y=304,Width=48,Height=53}
+{X=460,Y=652,Width=80,Height=63}
+{X=652,Y=486,Width=73,Height=80}
+{X=306,Y=478,Width=39,Height=66}
+{X=368,Y=643,Width=92,Height=57}
+{X=586,Y=611,Width=67,Height=38}
+{X=540,Y=649,Width=70,Height=27}
+{X=427,Y=265,Width=89,Height=70}
+{X=306,Y=314,Width=98,Height=73}
+{X=610,Y=319,Width=91,Height=81}
+{X=404,Y=335,Width=47,Height=51}
 
