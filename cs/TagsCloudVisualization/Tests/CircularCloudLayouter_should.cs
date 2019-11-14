@@ -108,6 +108,29 @@ namespace TagsCloudVisualization
             radius.Should().BeLessThan(expectedRadius);
         }
 
+        [Test]
+        public void PutNextRectangle_WhenPutEnoughRectangles_RectanglesShouldBeDense()
+        {
+             layouter = new CircularCloudLayouter(new Point(500, 500));
+             var random = new Random(0);
+
+             for (var i = 0; i < 100; i++)
+             {
+                 var size = new Size(random.Next(10, 50), random.Next(10, 50));
+                 var rect = layouter.PutNextRectangle(size);
+                 
+                 var direction = center - (Size) rect.GetCenter();
+
+                 var recMoveXToCenter =  new Rectangle(rect.Location,rect.Size);
+                 var recMoveYToCenter =  new Rectangle(rect.Location,rect.Size);
+                 recMoveXToCenter.Offset(new Point(Math.Sign(direction.X), 0));
+                 recMoveYToCenter.Offset(new Point(0, Math.Sign(direction.Y)));
+
+                 recMoveXToCenter.IntersectsWith(layouter.Rectangles).Should().BeTrue();
+                 recMoveYToCenter.IntersectsWith(layouter.Rectangles).Should().BeTrue();
+             }
+        }
+
         public double GetDistance(Point point, Point othPoint)
         {
             return Math.Sqrt(Math.Pow(point.X - othPoint.X, 2) + Math.Pow(point.Y - othPoint.Y, 2));
