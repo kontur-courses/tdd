@@ -70,7 +70,7 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_WhenPutTwoRectangle_RectanglesDosntIntersects()
         {
-            var random = new Random();
+            var random = new Random(0);
             for (var i = 0; i < 50; i++)
             {
                 var firstSize = new Size(random.Next(10, 50), random.Next(10, 100));
@@ -87,7 +87,7 @@ namespace TagsCloudVisualization
         public void PutNextRectangle_WhenPutEnoughRectangles_RectanglesShouldBeLikeCircle()
         {
             layouter = new CircularCloudLayouter(new Point(500, 500));
-            var random = new Random();
+            var random = new Random(0);
             var areaRectangles = 0;
             double radius = 0;
 
