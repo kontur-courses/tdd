@@ -109,7 +109,7 @@ namespace TagsCloudVisualization
             toAdd.Add(new Segment(searchResult.ClosestRectCoord.X, searchResult.ClosestRectCoord.Y + rectangleSize.Height, searchResult.ClosestRectCoord.X + rectangleSize.Width, searchResult.ClosestRectCoord.Y + rectangleSize.Height, Segment.Type.Bottom));
             toAdd.Add(new Segment(searchResult.ClosestRectCoord.X, searchResult.ClosestRectCoord.Y, searchResult.ClosestRectCoord.X, searchResult.ClosestRectCoord.Y + rectangleSize.Height, Segment.Type.Left));
             toAdd.Add(new Segment(searchResult.ClosestRectCoord.X + rectangleSize.Width, searchResult.ClosestRectCoord.Y, searchResult.ClosestRectCoord.X + rectangleSize.Width, searchResult.ClosestRectCoord.Y + rectangleSize.Height, Segment.Type.Right));
-            StackSegments2(toAdd);
+            StackSegments(toAdd);
             addedRectangles.Add(outRectangle);
             return outRectangle;
         }
@@ -410,7 +410,7 @@ namespace TagsCloudVisualization
 
         }
 
-        private void StackSegments2(List<Segment> added)
+        private void StackSegments(List<Segment> added)
         {
             foreach (var segment in added)
             {
@@ -451,9 +451,10 @@ namespace TagsCloudVisualization
             bool isFirst = true;
             int lastAdded = int.MinValue;
             var sortedPoints = points.OrderBy(a => a.Coord).ToList();
-            for (int i = 0; i < sortedPoints.Count - 1; i++)// ужасно выглядит, наверное можно запилить покрасивее
+            for (int i = 0; i < sortedPoints.Count - 1; i++)
             {
-                if (sortedPoints[i].Coord == sortedPoints[i + 1].Coord && sortedPoints[i].SegmentType == sortedPoints[i + 1].SegmentType)
+                if (sortedPoints[i].Coord == sortedPoints[i + 1].Coord 
+                    && sortedPoints[i].SegmentType == sortedPoints[i + 1].SegmentType)
                 {
                     if (sortedPoints[i].Type == CustomPoint.PointType.End)
                         sortedPoints[i].Type = CustomPoint.PointType.Start;
@@ -461,7 +462,7 @@ namespace TagsCloudVisualization
                         sortedPoints[i + 1].Type = CustomPoint.PointType.Start;
                 }
             }
-            foreach (var point in points.OrderBy(a => a.Coord))
+            foreach (var point in sortedPoints)
             {
                 if (isFirst)
                 {
@@ -529,14 +530,16 @@ namespace TagsCloudVisualization
             bool isFirst = true;
             int lastAdded = int.MinValue;
             var sortedPoints = points.OrderBy(a => a.Coord).ToList();
-            for(int i=0; i<sortedPoints.Count-1;i++)// ужасно выглядит, наверное можно запилить покрасивее
+            for(int i=0; i<sortedPoints.Count-1;i++)
             {
                 if (sortedPoints[i].Coord == sortedPoints[i + 1].Coord && sortedPoints[i].SegmentType == sortedPoints[i + 1].SegmentType)
                 {
-                    if (sortedPoints[i].Type == CustomPoint.PointType.End)
-                        sortedPoints[i].Type = CustomPoint.PointType.Start;
-                    if (sortedPoints[i + 1].Type == CustomPoint.PointType.End)
-                        sortedPoints[i + 1].Type = CustomPoint.PointType.Start;
+                    sortedPoints[i].Type = CustomPoint.PointType.Start;
+                    sortedPoints[i + 1].Type = CustomPoint.PointType.Start;
+                    //if (sortedPoints[i].Type == CustomPoint.PointType.End)
+                    //    sortedPoints[i].Type = CustomPoint.PointType.Start;
+                    //if (sortedPoints[i + 1].Type == CustomPoint.PointType.End)
+                    //    sortedPoints[i + 1].Type = CustomPoint.PointType.Start;
                 }
             }
             foreach (var point in sortedPoints)
@@ -601,9 +604,9 @@ namespace TagsCloudVisualization
             public PointType Type;
             public CustomPoint(int coord, Segment.Type segmentType, PointType type)
             {
-                this.Coord = coord;
-                this.SegmentType = segmentType;
-                this.Type = type;
+                Coord = coord;
+                SegmentType = segmentType;
+                Type = type;
             }
             public enum PointType
             {

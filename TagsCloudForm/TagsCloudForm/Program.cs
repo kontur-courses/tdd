@@ -11,8 +11,8 @@ namespace TagsCloudForm
 {
     class Program : Form
     {
-        private const bool testMode = true;
-        private const bool savePicture = true;
+        private const bool testMode = false;
+        private const bool savePicture = false;
 
         CircularCloudLayouter layouter = new CircularCloudLayouter(new Point(500, 500), false);
         protected override void OnPaint(PaintEventArgs e)
