@@ -20,17 +20,17 @@ namespace TagsCloudVisualization
             layouter = new CircularCloudLayouter(center);
             rectangles = new List<Rectangle>();
         }
-
+        
         [TearDown]
         public void SaveInfIfFailed()
         {
             if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure)
-                return;        
+                return;
+            var visualisator = new RectanglesVisualisator(new Size(2000, 2000), rectangles);
             var filename = TestContext.CurrentContext.Test.Name + ".bmp";
-            RectanglesVisualisator.SaveNewRectangles(
-                rectangles, filename);         
+            visualisator.DrawRectangles(filename);                    
         }
-
+        
 
         [Test]
         public void Constructor_ThrowArgumentException_OnNegativeCoordinate()
@@ -42,8 +42,8 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_ShouldPlace_FirstRectangleToCenter()
         {
-            var newRectangle = layouter.PutNextRectangle(new Size(20, 10));
-            var location = newRectangle.Location;
+            rectangles.Add(layouter.PutNextRectangle(new Size(20, 10)));
+            var location = rectangles[0].Location;
             var expectedLocation = new Point(90, 45);
             location.Should().Be(expectedLocation);
         }
@@ -76,7 +76,8 @@ namespace TagsCloudVisualization
             rectangles[1].Y.Should().BeLessOrEqualTo(rectangles[0].Bottom + 6);
             rectangles[2].Y.Should().BeLessOrEqualTo(rectangles[0].Bottom + 6);
             rectangles[3].Y.Should().BeLessOrEqualTo(rectangles[0].Bottom + 6);
-            rectangles[4].Y.Should().BeLessOrEqualTo(rectangles[0].Bottom + 6);            
+            rectangles[4].Y.Should().BeLessOrEqualTo(rectangles[0].Bottom + 6);
+            rectangles[4].Y.Should().BeGreaterOrEqualTo(rectangles[0].Bottom + 6);
         }
         
         private List<Size> GetRandomSizes()
