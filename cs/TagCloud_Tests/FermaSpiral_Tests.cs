@@ -14,28 +14,34 @@ namespace TagCloud_Tests
         [TestCase(1000, 3, TestName = "AtThousandPoints")]
         public void ContainsCountOfPointsInQuartersThatAlmostEqual(int countPoints, int accuracy)
         {
+            var counts = GetPointCountsInQuaters(countPoints);
+            var isEql = IsElementsAlmostEqual(counts, accuracy);
+
+            isEql.Should().BeTrue();
+        }
+
+        private static List<int> GetPointCountsInQuaters(int countPoints)
+        {
             var points = new List<Point>();
             var spiral = new FermaSpiral(1, new Point(0, 0));
 
-            for (var i = 0; i < 10000; i++)
+            for (var i = 0; i < countPoints; i++)
                 points.Add(spiral.GetSpiralNext());
             var firstQuarterPointsCount = points.Count(p => p.X > 0 && p.Y > 0);
             var secondQuarterPointsCount = points.Count(p => p.X < 0 && p.Y > 0);
             var thirdQuarterPointsCount = points.Count(p => p.X > 0 && p.Y < 0);
             var fourthQuarterPointsCount = points.Count(p => p.X > 0 && p.Y > 0);
-            var counts = new List<int>{
+            var counts = new List<int>
+            {
                 firstQuarterPointsCount,
                 secondQuarterPointsCount,
                 thirdQuarterPointsCount,
-                fourthQuarterPointsCount};
-            var isEql = IsElementsAlmostEqual(counts,3);
-
-            isEql
-                .Should()
-                .BeTrue();
+                fourthQuarterPointsCount
+            };
+            return counts;
         }
 
-        private static bool IsElementsAlmostEqual(List<int> counts,int accuracy)
+        private static bool IsElementsAlmostEqual(List<int> counts, int accuracy)
         {
             var isAlmostEql = true;
             counts.ForEach(first => counts.ForEach(second =>
@@ -45,5 +51,6 @@ namespace TagCloud_Tests
             }));
             return isAlmostEql;
         }
+
     }
 }

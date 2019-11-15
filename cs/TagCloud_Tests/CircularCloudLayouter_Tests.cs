@@ -1,22 +1,20 @@
-using System;
+п»їusing System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using TagCloud;
 
 namespace TagCloud_Tests
 {
-    //за основу конфенции именования взято
-    //TestMethod_Condition_ExpectedResult
-    // в силу тест кейсов изменено на 
-    // TestMethod_ExpectedResult_AtCondition
-    //для того чтобы последняя часть менялась в зависимости от названия кейса
+    [TestFixture]
     public class CircularCloudLayouter_Tests
     {
-        public static CircularCloudLayouter cloudLayouter;
+        private static CircularCloudLayouter cloudLayouter;
         [SetUp]
         public void Setup()
         {
@@ -32,19 +30,21 @@ namespace TagCloud_Tests
             cloudLayouter.PutNextRectangle(size);
             var currentSize = cloudLayouter.SizeOfCloud;
 
-            currentSize
-                .Should()
-                .Be(size);
+            currentSize.Should().Be(size);
         }
 
-        [TestCase(10, 10, TestName = "WithMaxHeightAndWidth10")]
-        [TestCase(50, 50, TestName = "WithMaxHeightAndWidth50")]
-        public void ContainsRectanglesThatNotIntersectEachOther_AtAddingRectanglesList(int widthMax, int heightMax)
+        [TestCase(10, 10)]
+        [TestCase(50, 50)]
+        public void LayouterRectangles_NotIntersect_WhileAdding(int widthMax, int heightMax)
         {
             var sizes = new List<Size>();
             for (var width = 5; width < widthMax; width += 2)
+            {
                 for (var height = 5; height < heightMax; height += 2)
+                {
                     sizes.Add(new Size(width, height));
+                }
+            }
             var rectangles = cloudLayouter.Rectangles;
 
             sizes.ForEach(s => cloudLayouter.PutNextRectangle(s));
@@ -54,67 +54,63 @@ namespace TagCloud_Tests
         }
 
         [Test]
-        public void ContainsTheSameSizes_AtAddingRectanglesList()
+        public void Layouter_ContainsTheSameSizes_AtAddingRectanglesList()
         {
 
             var sizes = new List<Size>();
             for (var width = 5; width < 50; width += 2)
-                for (var height = 5; height < 50; height += 2)
-                    sizes.Add(new Size(width, height));
+            for (var height = 5; height < 50; height += 2)
+                sizes.Add(new Size(width, height));
 
             sizes.ForEach(s => cloudLayouter.PutNextRectangle(s));
             var rectangles = cloudLayouter.Rectangles.Select(rect => new Size(rect.Width, rect.Height));
 
-            rectangles
-                .Should()
-                .BeEquivalentTo(sizes);
+            rectangles.Should().BeEquivalentTo(sizes);
         }
 
-        [TestFixture]
-        public class PutNextRectangle
+        [TestCase(5, 5)]
+        [TestCase(20, 20)]
+        public void PutNextRectangle_ReturnSameSizeRectangle_AtPositiveSizes(int width, int height)
         {
-            [SetUp]
-            public void Setup()
+            var size = new Size(width, height);
+
+            var rectangleSize = cloudLayouter.PutNextRectangle(size).Size;
+
+            rectangleSize.Should().Be(size);
+        }
+
+        private static IEnumerable<Size> TestCases
+        {
+            get
             {
-                var center = new Point(0, 0);
-                cloudLayouter = new CircularCloudLayouter(center);
-            }
-
-            //Тест находит после того как запустил остальные, приходится запускать в ручную
-            [TestCase(5, 5)]
-            [TestCase(20, 20)]
-            public void ReturnSameSizeRectangle_AtPositiveSizes(int width, int height)
-            {
-                var size = new Size(width, height);
-
-                var rectangleSize = cloudLayouter.PutNextRectangle(size).Size;
-
-                rectangleSize
-                    .Should()
-                    .Be(size);
-            }
-
-            public static IEnumerable TestCases
-            {
-                get
-                {
-                    var testName = "ThrowsExceptionAt_";
-                    yield return new TestCaseData(new Size(0, 10)).SetName(testName + "ZeroWidth");
-                    yield return new TestCaseData(new Size(10, 0)).SetName(testName + "ZeroHeight");
-                    yield return new TestCaseData(Size.Empty).SetName(testName + "EmptySize");
-                }
-            }
-            //С тест кейс соурс не отображается название основного теста, не нашел как исправить
-            //Но сам тест отображается и светится не запущеным
-            [TestCaseSource(nameof(TestCases))]
-            public void ThrowsException(Size size)
-            {
-                Action rectAdding = () => cloudLayouter.PutNextRectangle(size);
-
-                rectAdding
-                    .Should()
-                    .Throw<ArgumentException>();
+                yield return new Size(0, 10);
+                yield return new Size(10, 0);
+                yield return Size.Empty;
             }
         }
+
+        [TestCaseSource(nameof(TestCases))]
+        public void PutNextRectangle_ThrowsException_OnW(Size size)
+        {
+            Action rectAdding = () => cloudLayouter.PutNextRectangle(size);
+
+            rectAdding.Should().Throw<ArgumentException>();
+        }
+
+
+        [TearDown]
+        public void TearDown()
+        {
+
+            var result = TestContext.CurrentContext.Result.Outcome.Status.Equals(TestStatus.Failed) ? "Failed" : "Successful";
+            var workingDirectory = Environment.CurrentDirectory;
+            var projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
+            var testFullName = TestContext.CurrentContext.Test.Name;
+            var savePath = projectDirectory + "\\Images\\" + result + "Tests\\" + testFullName + ".bmp";
+            Console.WriteLine("Tag cloud visualization saved to file " + savePath);
+            TagDrawer.Draw(savePath, cloudLayouter);
+        }
+
+
     }
 }
