@@ -81,6 +81,13 @@ namespace TagsCloudVisualization
             return false;
         }
 
+        public static bool Horizontal(Type type)
+        {
+            if (type == Type.Bottom || type == Type.Top)
+                return true;
+            return false;
+        }
+
         public bool Contains(Segment segment)
         {
             if (!this.Parallel(segment))
@@ -121,6 +128,23 @@ namespace TagsCloudVisualization
         }
 
 
+        public static Type OppositeType(Type type)
+        {
+            switch (type)
+            {
+                case Type.Top:
+                    return Type.Bottom;
+                case Type.Bottom:
+                    return Type.Top;
+                case Type.Left:
+                    return Type.Right;
+                case Type.Right:
+                    return Type.Left;
+                default:
+                    return Type.Top;
+            }
+        }
+
         public enum Type
         {
             Top,
@@ -128,5 +152,6 @@ namespace TagsCloudVisualization
             Left,
             Right
         }
+
     }
 }

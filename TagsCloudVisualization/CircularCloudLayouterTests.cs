@@ -4,12 +4,15 @@ using FluentAssertions;
 using NUnit.Framework;
 using System.Drawing;
 using System.Linq;
+using System.Drawing.Imaging;
 
 namespace TagsCloudVisualization
 {
     [TestFixture]
     public class CircularCloudLayouterTests
     {
+
+
         private double GetDistance(Rectangle rectangle, Point center)
         {
             var rectangleCenter = new Point(rectangle.X + rectangle.Width / 2, rectangle.Y + rectangle.Height / 2);
@@ -170,8 +173,23 @@ namespace TagsCloudVisualization
             };
             var testedRect = layouter.PutNextRectangle(new Size(89, 79));
             rects.ForEach(a => testedRect.IntersectsWith(a).Should().BeFalse());
-
         }
+
+        [Test]
+        public void PutNextRectangle_TestFromRandomTester7_LastRectangleShouldNotIntersectWithOthers()
+        {
+            var center = new Point(0, 0);
+            var layouter = new CircularCloudLayouter(center);
+            var rects = new List<Rectangle> {
+            layouter.PutNextRectangle(new Size(10,10)),
+            layouter.PutNextRectangle(new Size(40, 10)),
+            layouter.PutNextRectangle(new Size(40, 10)),
+            layouter.PutNextRectangle(new Size(20, 100))
+        };
+            var testedRect = layouter.PutNextRectangle(new Size(15, 15));
+        rects.ForEach(a => testedRect.IntersectsWith(a).Should().BeFalse());
+        }
+
 
         [Test]
         public void CircularCloudLayouter_AddingFiftyRandomRectangles_CheckDensity()
@@ -193,6 +211,22 @@ namespace TagsCloudVisualization
 
         }
 
+        [Test]
+        [Repeat(20)]
+        public void PutNextRectangle_HundredRectangles_ShouldNotIntersect()
+        {
+            var center = new Point(0, 0);
+            var layouter = new CircularCloudLayouter(center, false);
+            var rectangles = new List<Rectangle>();
+            var rnd = new Random();
+            for (int i = 0; i < 100; i++)
+            {
+                var size = new Size(rnd.Next(5, 100), rnd.Next(5, 100));
+                var rect = layouter.PutNextRectangle(size);
+                rectangles.ForEach(a => rect.IntersectsWith(a).Should().BeFalse());
+                rectangles.Add(rect);
+            }
+        }
 
     }
 }
