@@ -19,25 +19,19 @@ namespace TagsCloudVisualization
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                var drawer = new TagCloudDrawingClass(3000, 3000, TestContext.CurrentContext.Test.FullName
+                var drawer = new TagCloudDrawing(3000, 3000, TestContext.CurrentContext.Test.FullName
                     + ".bmp",
                     circularCloudLayouter.cloudCenter);
                 drawer.DrawTagCloud(rectangleSizes);
             }
+        }
+
+        [SetUp]
+        public void ClearRectangleSizesList()
+        {
             rectangleSizes = new List<Size>();
         }
 
-        [Test]
-        [TestCase(3, 2)]
-        [TestCase(-3, 2)]
-        [TestCase(3, -2)]
-        [TestCase(-3, -2)]
-        [TestCase(0, 0)]
-        public void Create_IfCorrectCentrePoint(int x, int y)
-        {
-            circularCloudLayouter = new CircularCloudLayouter(new Point(x, y));
-            circularCloudLayouter.GetType().Name.Should().Be(nameof(CircularCloudLayouter));
-        }
 
         [Test]
         public void PutAndReturnOneRectangle_IfAllPlaneIsFree()
@@ -58,8 +52,7 @@ namespace TagsCloudVisualization
 
             var rectangle = circularCloudLayouter.PutNextRectangle(rectangleSizes[0]);
 
-            circularCloudLayouter.cloudCenter.X.Should().BeInRange(rectangle.Left, rectangle.Right);
-            circularCloudLayouter.cloudCenter.Y.Should().BeInRange(rectangle.Top, rectangle.Bottom);
+            rectangle.Contains(circularCloudLayouter.cloudCenter);
         }
 
         [Test]
@@ -149,7 +142,7 @@ namespace TagsCloudVisualization
         [TestCase(100)]
         [TestCase(500)]
         [TestCase(1000)]
-        public void PutManyRectangles_AndTheyAreTight(int rectanglesCount)
+        public void PutManyRectangles_AndTagCloudIsCircularity(int rectanglesCount)
         {
             circularCloudLayouter = new CircularCloudLayouter(new Point(100, 100));
             const int randomRange = 1000;
@@ -169,19 +162,63 @@ namespace TagsCloudVisualization
                     new Point(rectangle.Right, rectangle.Bottom),
                     new Point(rectangle.Right, rectangle.Top),
                 };
-                foreach (var vertex in vertices)
-                {
-                    maxDistanceFromCenter = Math.Max(maxDistanceFromCenter,
-                        CalcDistanceBetweenPoints(circularCloudLayouter.cloudCenter, vertex));
-                }
+                var theMostFarVertexFromCenter = vertices
+                    .Select((x) => CalcDistanceBetweenPoints(circularCloudLayouter.cloudCenter, x))
+                    .Max();
+                maxDistanceFromCenter = Math.Max(maxDistanceFromCenter,
+                    theMostFarVertexFromCenter);
                 tagCloudSquare += rectangleSizes[i].Width * rectangleSizes[i].Height;
             }
-            double circleArea = Math.PI * maxDistanceFromCenter * maxDistanceFromCenter;
-            double squaresRatio = circleArea / tagCloudSquare;
-            squaresRatio.Should().BeLessOrEqualTo(3);
+            var circleArea = Math.PI * maxDistanceFromCenter * maxDistanceFromCenter;
+            var squaresRatio = tagCloudSquare / circleArea;
+            squaresRatio.Should().BeGreaterOrEqualTo(0.1);
         }
+
+        [Test]
+        [TestCase(10)]
+        [TestCase(50)]
+        [TestCase(100)]
+        [TestCase(500)]
+        [TestCase(1000)]
+        public void PutManyRectangles_AndTheyAreTight(int rectanglesCount)
+        {
+            circularCloudLayouter = new CircularCloudLayouter(new Point(100, 100));
+            const int randomRange = 1000;
+            var random = new Random(randomRange);
+            for (var i = 0; i < rectanglesCount; i++)
+                rectangleSizes.Add(new Size(1 + random.Next(randomRange), 1 + random.Next(randomRange)));
+            var rectangles = new List<Rectangle>();
+            foreach (var curRectSize in rectangleSizes)
+                rectangles.Add(circularCloudLayouter.PutNextRectangle(curRectSize));
+            foreach (var rectangle in rectangles)
+                CanRectangleBeMovedToCentre(rectangle, rectangles).Should().BeFalse();
+        }
+
 
         private double CalcDistanceBetweenPoints(Point a, Point b) =>
             Math.Sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y));
+
+        private bool CanRectangleBeMovedToCentre(Rectangle rectangle,
+            IEnumerable<Rectangle> rectangles)
+        {
+            var cloudCenter = circularCloudLayouter.cloudCenter;
+            var cX = rectangle.X < cloudCenter.X ? 1 : rectangle.X > cloudCenter.X ? -1 : 0;
+            var cY = rectangle.Y < cloudCenter.Y ? 1 : rectangle.Y > cloudCenter.Y ? -1 : 0;
+            rectangle.X += cX;
+            if (cX != 0 &&
+                rectangles.
+                Where(r => !r.Equals(rectangle))
+                .All(r => !r.IntersectsWith(rectangle)))
+                return true;
+            rectangle.X -= cX;
+            rectangle.Y += cY;
+            if (cY != 0 &&
+                rectangles.
+                Where(r => !r.Equals(rectangle))
+                .All(r => !r.IntersectsWith(rectangle)))
+                return true;
+            rectangle.Y -= cY;
+            return false;
+        }
     }
 }

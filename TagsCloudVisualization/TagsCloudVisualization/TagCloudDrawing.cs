@@ -6,7 +6,7 @@ using System.IO;
 
 namespace TagsCloudVisualization
 {
-    public class TagCloudDrawingClass
+    public class TagCloudDrawing
     {
         private readonly int imageWidth;
         private readonly int imageHeight;
@@ -14,7 +14,7 @@ namespace TagsCloudVisualization
         private readonly CircularCloudLayouter tagCloud =
             new CircularCloudLayouter(new Point(1, 2));
 
-        public TagCloudDrawingClass(int imageWidth, int imageHeight, string fileName, 
+        public TagCloudDrawing(int imageWidth, int imageHeight, string fileName, 
             Point tagCloudCenter)
         {
             if (imageHeight <= 0 || imageWidth <= 0)
@@ -43,7 +43,7 @@ namespace TagsCloudVisualization
                 drawingObj.FillRectangle(new SolidBrush(Color.AliceBlue), curRectangle);
                 drawingObj.DrawRectangle(new Pen(new SolidBrush(Color.Magenta)), curRectangle);
             }
-            var imagePath = Environment.CurrentDirectory + Path.DirectorySeparatorChar + fileName;
+            var imagePath = AppDomain.CurrentDomain.BaseDirectory + fileName;
             Console.WriteLine("Tag cloud visualization saved to file " + imagePath);
             image.Save(imagePath);
         }

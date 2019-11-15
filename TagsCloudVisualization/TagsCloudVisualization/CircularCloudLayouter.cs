@@ -8,11 +8,11 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        readonly public Point cloudCenter;
+        public readonly Point cloudCenter;
         private List<Rectangle> RectanglesList { get; } = new List<Rectangle>();
-        private const double spiralCoefficientK = 1;
+        private const double spiralCoefControlsPointShift = 1;
         private double spiralAngle = 0;
-        private const double angleDelta = 0.01;
+        private const double angleDelta = 0.1;
 
 
         public CircularCloudLayouter(Point center)
@@ -25,18 +25,47 @@ namespace TagsCloudVisualization
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException("Sizes of rectangle must be positive");
             var rectangle = Rectangle.Empty;
-            int possibleX = 0;
-            int possibleY = 0;
+            var possibleX = 0;
+            var possibleY = 0;
             do
             {
-                possibleX = (int)(spiralCoefficientK * spiralAngle * Math.Cos(spiralAngle) + cloudCenter.X -
+                possibleX = (int)(spiralCoefControlsPointShift * spiralAngle * Math.Cos(spiralAngle) + cloudCenter.X -
                                   rectangleSize.Width / 2.0);
-                possibleY = (int)(spiralCoefficientK * spiralAngle * Math.Sin(spiralAngle) + cloudCenter.Y -
+                possibleY = (int)(spiralCoefControlsPointShift * spiralAngle * Math.Sin(spiralAngle) + cloudCenter.Y -
                                   rectangleSize.Height / 2.0);
                 rectangle = new Rectangle(new Point(possibleX, possibleY), rectangleSize);
                 spiralAngle += angleDelta;
             } while (RectanglesList.Any(r => r.IntersectsWith(rectangle)));
+            rectangle = MakeRectangleCloserToCentre(rectangle);
             RectanglesList.Add(rectangle);
+            return rectangle;
+        }
+
+        private Rectangle MakeRectangleCloserToCentre(Rectangle rectangle)
+        {
+            var cX = rectangle.X < cloudCenter.X ? 1 : rectangle.X > cloudCenter.X ? -1 : 0;
+            var cY = rectangle.Y < cloudCenter.Y ? 1 : rectangle.Y > cloudCenter.Y ? -1 : 0;
+            var wasMoved = false;
+            do
+            {
+                wasMoved = false;
+                if (rectangle.X != cloudCenter.X)
+                {
+                    rectangle.X += cX;
+                    if (RectanglesList.Any(r => r.IntersectsWith(rectangle)))
+                        rectangle.X -= cX;
+                    else
+                        wasMoved = true;
+                }
+                if (rectangle.Y != cloudCenter.Y)
+                {
+                    rectangle.Y += cY;
+                    if (RectanglesList.Any(r => r.IntersectsWith(rectangle)))
+                        rectangle.Y -= cY;
+                    else
+                        wasMoved = true;
+                }
+            } while (wasMoved);
             return rectangle;
         }
     }
