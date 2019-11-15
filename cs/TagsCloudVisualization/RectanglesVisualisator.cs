@@ -4,9 +4,9 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    class RectanglesVisualisator
+    public class RectanglesVisualisator : IDisposable
     {
-        private readonly List<Rectangle> rectanglesList;
+        private List<Rectangle> rectanglesList;
         private readonly Bitmap bitmap;
         private readonly Graphics graphics;
 
@@ -18,7 +18,7 @@ namespace TagsCloudVisualization
         }
 
         public void DrawRectangles()
-        {
+        {            
             graphics.FillRectangles(Brushes.Blue, rectanglesList.ToArray());
             var pen = new Pen(Color.FromArgb(255, 0, 255, 0), 2);
             graphics.DrawRectangles(pen, rectanglesList.ToArray());
@@ -27,6 +27,21 @@ namespace TagsCloudVisualization
         public void Save(string filename)
         {
             bitmap.Save(Environment.CurrentDirectory + @"\RectangleImages\" + filename);
+        }
+
+        public static void SaveNewRectangles(List<Rectangle> newRectangles, string filename)
+        {
+            using (var visualisator = new RectanglesVisualisator(new Size(2000, 2000), newRectangles))
+            {
+                visualisator.DrawRectangles();
+                visualisator.Save(filename);
+            }
+        }
+
+        public void Dispose()
+        {
+            bitmap?.Dispose();
+            graphics?.Dispose();
         }
     }
 }

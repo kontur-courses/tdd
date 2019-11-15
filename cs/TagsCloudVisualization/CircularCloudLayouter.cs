@@ -26,21 +26,9 @@ namespace TagsCloudVisualization
                 rectanglesList.Add(new Rectangle(newCoordinates, rectangleSize));               
                 return new Rectangle(newCoordinates, rectangleSize);
             }
-
-            var rectangle = new Rectangle(сenter, rectangleSize);
-            var min = int.MaxValue;
+            var rectangle = new Rectangle(сenter, rectangleSize);           
             var suitablePointsList = GetSuitablePointsList(rectangle);
-            var result = сenter;
-
-            for (var k = 0; k < suitablePointsList.Count; k++)
-            {
-                if (min > GetSquaredDistanceFromCenterToRectangle(suitablePointsList[k]))
-                {
-                    min = GetSquaredDistanceFromCenterToRectangle(suitablePointsList[k]);
-                    result = suitablePointsList[k];
-                }
-            }
-            rectangle.Location = result;
+            rectangle.Location = suitablePointsList.OrderBy(point => GetSquaredDistanceFromCenterToRectangle(point)).First();            
             rectanglesList.Add(rectangle);
             return rectanglesList[rectanglesList.Count - 1];
         }
@@ -50,47 +38,39 @@ namespace TagsCloudVisualization
             return !rectanglesList.Any(t => t.IntersectsWith(rectangle));
         }
 
-        private List<Point> GetSuitablePointsList(Rectangle rectangle)
+        private List<Point> GetSuitablePointsList(Rectangle newRectangle)
         {
             var pointsList = new List<Point>();
-            for (var i = 0; i < rectanglesList.Count; i++)
+            foreach (var rectangle in rectanglesList)
             {
-                var rectangleSides = GetRectangleSides(rectanglesList[i]);
-                for (var j = 0; j < rectangleSides.Count; j++)
+                var startLocations = GetStartLocations(rectangle, newRectangle);
+                for (var j = 0; j < startLocations.Count; j++)
                 {
-                    rectangle.Y = rectangleSides[2];
-                    if (j == 2)
-                        rectangle.Y -= rectangle.Height;
-                    else if (j == 3)
-                        rectangle.Y = rectangleSides[3];
-
-                    rectangle.X = rectangleSides[0];
-                    if (j == 0)
-                        rectangle.X -= rectangle.Width;
-                    else if (j == 1)
-                        rectangle.X = rectangleSides[1];
-                    var side = (j == 0 || j == 1) ? rectanglesList[i].Height : rectanglesList[i].Width;
-                    for (var k = 0; k < side; k = k + 5)
+                    newRectangle.Location = startLocations[j];
+                    var side = (j == 0 || j == 1) ? rectangle.Height : rectangle.Width;
+                    for (var k = 0; k < side; k = k + (side/4))
                     {
                         if (j == 0 || j == 1)
-                            rectangle.Y -= k;
+                            newRectangle.Y -= k;
                         else
-                            rectangle.X += k;
-                        if (CheckRectangleDoesNotIntersectWithAnyAnother(rectangle))
-                            pointsList.Add(rectangle.Location);
-                    }
+                            newRectangle.X += k;
+                        if (CheckRectangleDoesNotIntersectWithAnyAnother(newRectangle))
+                            pointsList.Add(newRectangle.Location);
+                    }                    
                 }
             }
             return pointsList;
         }
 
-        private List<int> GetRectangleSides(Rectangle rectangle)
+        private static List<Point> GetStartLocations(Rectangle rectangle, Rectangle newRectangle)
         {
-            var rectangleSides = new List<int>();
-            rectangleSides.Add(rectangle.Left);
-            rectangleSides.Add(rectangle.Right);
-            rectangleSides.Add(rectangle.Top);
-            rectangleSides.Add(rectangle.Bottom);
+            var rectangleSides = new List<Point>
+            {
+                new Point(rectangle.Left - newRectangle.Width, rectangle.Top),
+                new Point(rectangle.Right, rectangle.Top),
+                new Point(rectangle.Left, rectangle.Top - newRectangle.Height),
+                new Point(rectangle.Left, rectangle.Bottom)
+            };            
             return rectangleSides;
         }
 

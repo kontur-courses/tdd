@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using System.Drawing;
 using FluentAssertions;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization
 {
@@ -10,12 +11,24 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter_Should
     {
         private CircularCloudLayouter layouter;
+        private List<Rectangle> rectangles;
         private readonly Point center = new Point(100, 50);
 
         [SetUp]
         public void CreateCircularCloudLayouter()
         {
             layouter = new CircularCloudLayouter(center);
+            rectangles = new List<Rectangle>();
+        }
+
+        [TearDown]
+        public void SaveInfIfFailed()
+        {
+            if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure)
+                return;        
+            var filename = TestContext.CurrentContext.Test.Name + ".bmp";
+            RectanglesVisualisator.SaveNewRectangles(
+                rectangles, filename);         
         }
 
 
@@ -39,31 +52,31 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_ShouldPlaceTwoRectangles_WithoutInsersection()
         {
-            var newRectangle = layouter.PutNextRectangle(new Size(20, 10));
-            var newRectangle2 = layouter.PutNextRectangle(new Size(10, 5));            
-            newRectangle.IntersectsWith(newRectangle2).Should().BeFalse();
+            rectangles.Add(layouter.PutNextRectangle(new Size(20, 10)));
+            rectangles.Add(layouter.PutNextRectangle(new Size(10, 5)));
+            rectangles[0].IntersectsWith(rectangles[1]).Should().BeFalse();
         }
         
         [Test]
         public void PutNextRectangle_ShouldPlaceTwoRectangles_Near()
         {
-            var newRectangle = layouter.PutNextRectangle(new Size(20, 10));
-            var newRectangle2 = layouter.PutNextRectangle(new Size(10, 5));
-            newRectangle.Bottom.Should().Be(newRectangle2.Y);            
+            rectangles.Add(layouter.PutNextRectangle(new Size(20, 10)));
+            rectangles.Add(layouter.PutNextRectangle(new Size(10, 5)));
+            rectangles[0].Bottom.Should().Be(rectangles[1].Y);            
         }
         
         [Test]
         public void PutNextRectangle_ShouldPlaceFourRectangles_NearCenterRectangle()
         {
-            var newRectangle = layouter.PutNextRectangle(new Size(20, 10));
-            var newRectangle2 = layouter.PutNextRectangle(new Size(10, 5));
-            var newRectangle3 = layouter.PutNextRectangle(new Size(10, 5));
-            var newRectangle4 = layouter.PutNextRectangle(new Size(10, 5));
-            var newRectangle5 = layouter.PutNextRectangle(new Size(10, 5));
-            newRectangle2.Y.Should().BeLessOrEqualTo(newRectangle.Bottom + 6);
-            newRectangle3.Y.Should().BeLessOrEqualTo(newRectangle.Bottom + 6);
-            newRectangle4.Y.Should().BeLessOrEqualTo(newRectangle.Bottom + 6);
-            newRectangle5.Y.Should().BeLessOrEqualTo(newRectangle.Bottom + 6);            
+            rectangles.Add(layouter.PutNextRectangle(new Size(20, 10)));
+            rectangles.Add(layouter.PutNextRectangle(new Size(10, 5)));
+            rectangles.Add(layouter.PutNextRectangle(new Size(10, 5)));
+            rectangles.Add(layouter.PutNextRectangle(new Size(10, 5)));
+            rectangles.Add(layouter.PutNextRectangle(new Size(10, 5)));
+            rectangles[1].Y.Should().BeLessOrEqualTo(rectangles[0].Bottom + 6);
+            rectangles[2].Y.Should().BeLessOrEqualTo(rectangles[0].Bottom + 6);
+            rectangles[3].Y.Should().BeLessOrEqualTo(rectangles[0].Bottom + 6);
+            rectangles[4].Y.Should().BeLessOrEqualTo(rectangles[0].Bottom + 6);            
         }
         
         private List<Size> GetRandomSizes()
@@ -83,8 +96,7 @@ namespace TagsCloudVisualization
         [Test]        
         public void PutNextRectangle_RectanglesShouldNotIntersect()
         {
-            var sizes = GetRandomSizes();
-            var rectangles = new List<Rectangle>();
+            var sizes = GetRandomSizes();            
             foreach (var size in sizes)
             {
                 rectangles.Add(layouter.PutNextRectangle(size));                
