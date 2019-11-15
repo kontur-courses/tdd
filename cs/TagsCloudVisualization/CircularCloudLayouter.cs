@@ -13,6 +13,8 @@ namespace TagsCloudVisualization
 
         private readonly Spiral spiral = new Spiral(0.1);
         private double spiralParam;
+        public int Height => 2 * rectangles.Max(r => Math.Abs(r.Y));
+        public int Width => 2 * rectangles.Max(r => Math.Abs(r.X));
 
         public CircularCloudLayouter(Point center)
         {
@@ -25,7 +27,7 @@ namespace TagsCloudVisualization
             if (rectangles.Count == 0)
             {
                 var location = new Point(Center.X - rectangleSize.Width / 2,
-                                         Center.Y - rectangleSize.Height / 2);
+                    Center.Y - rectangleSize.Height / 2);
                 rectangle = new Rectangle(location, rectangleSize);
             }
             else
@@ -46,7 +48,7 @@ namespace TagsCloudVisualization
             {
                 var newRectCenter = spiral.Calculate(spiralParam);
                 rectangle.Location = new Point(newRectCenter.X - rectangle.Size.Width / 2,
-                                               newRectCenter.Y - rectangle.Size.Height / 2);
+                    newRectCenter.Y - rectangle.Size.Height / 2);
                 spiralParam += 0.1;
             }
         }
@@ -56,16 +58,18 @@ namespace TagsCloudVisualization
             var rectCenter = rectangle.GetCenter();
             var dx = Math.Sign(Center.X - rectCenter.X);
             var dy = Math.Sign(Center.Y - rectCenter.Y);
-
-            while (true)
+            var done = false;
+            while (!done)
             {
-                var prevLocation = rectangle.Location;
                 rectangle.X += dx;
                 rectangle.Y += dy;
+
                 if (!RectangleIntersectsWithLayout(rectangle))
                     continue;
-                rectangle.Location = prevLocation;
-                break;
+
+                rectangle.X -= dx;
+                rectangle.Y -= dy;
+                done = true;
             }
         }
 
@@ -82,7 +86,7 @@ namespace TagsCloudVisualization
         public Spiral(double coefficient)
         {
             func = t => new Point(Convert.ToInt32(coefficient * t * Math.Sin(t)),
-                                  Convert.ToInt32(coefficient * t * Math.Cos(t)));
+                Convert.ToInt32(coefficient * t * Math.Cos(t)));
         }
 
         public Point Calculate(double param)

@@ -2,9 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization
 {
@@ -31,8 +33,9 @@ namespace TagsCloudVisualization
         [Test]
         public void PlaceRectangles_WithoutIntersection()
         {
-            var rect1 = layouter.PutNextRectangle(new Size(1, 1));
-            var rect2 = layouter.PutNextRectangle(new Size(1, 1));
+            var sizes = GenerateRandomSizes(2).ToList();
+            var rect1 = layouter.PutNextRectangle(sizes[0]);
+            var rect2 = layouter.PutNextRectangle(sizes[1]);
 
             rect1.IntersectsWith(rect2).Should().Be(false);
         }
@@ -41,16 +44,8 @@ namespace TagsCloudVisualization
         {
             get
             {
-                yield return new TestCaseData(new List<Size>
-                {
-                    new Size(2, 2),
-                    new Size(2, 2),
-                    new Size(2, 2),
-                    new Size(2, 2),
-                    new Size(2, 2),
-                    new Size(2, 2),
-                    new Size(2, 2)
-                });
+                var r = new Random();
+                yield return new TestCaseData(GenerateRandomSizes(r.Next(100, 1000)));
             }
         }
 
@@ -69,9 +64,30 @@ namespace TagsCloudVisualization
                 .BeGreaterThan(0.6, $"layout area = {layoutArea}, circle area = {circleArea}");
         }
 
-        /// <summary>
-        /// Расчитывает площадь описаной вокруг всех прямоугольников окружности
-        /// </summary>
+        [TearDown]
+        public void SaveImgIfFailed()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
+                return;
+            var vis = new LayoutVisualization();
+            var image = vis.Visualize(layouter);
+            var path = TestContext.CurrentContext.TestDirectory;
+            var fullname = $"{path}\\failed.jpeg";
+            image.Save(fullname, ImageFormat.Jpeg);
+            Console.WriteLine($"Tag cloud visualization saved to file {fullname}");
+        }
+
+        private static IEnumerable<Size> GenerateRandomSizes(int count)
+        {
+            var r = new Random();
+            for (var i = 0; i < count; i++)
+            {
+                var height = r.Next(1, 10);
+                var width = height + r.Next(1, 10);
+                yield return new Size(width, height);
+            }
+        }
+
         private static double GetСircumscribedСircleArea(CircularCloudLayouter layouter)
         {
             var maxRadius = layouter.Rectangles.SelectMany(GetCornerPoints)
