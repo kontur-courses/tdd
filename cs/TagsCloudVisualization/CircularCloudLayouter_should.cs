@@ -112,7 +112,6 @@ namespace TagsCloudVisualization
         }
 
         [Category("long tests")]
-        [TestCase(10)]
         [TestCase(25)]
         [TestCase(50)]
         [TestCase(100)]
@@ -128,20 +127,24 @@ namespace TagsCloudVisualization
                     cloudLayouter.PutNextRectangle(size);
                 }
 
-                var radius = cloudLayouter
+                double radius = cloudLayouter
                     .GetAllRectangles()
-                    .Select(a => GetDistance(a, cloudLayouter.Center))
-                    .OrderByDescending(a => a)
+                    .Select(rec => GetDistance(rec, cloudLayouter.Center))
+                    .OrderByDescending(distance => distance)
                     .First();
 
-                foreach(var rectangle in cloudLayouter.GetAllRectangles())
-                    if (GetDistance(rectangle, cloudLayouter.Center) > radius)
-                        Assert.Fail($"Rectangular {rectangle} exit of a circle with a radius of {radius}");
+                double widthCloud = cloudLayouter.GetAllRectangles().Max(rec => rec.X) -
+                                 cloudLayouter.GetAllRectangles().Min(rec => rec.X);
+
+                double heightCloud = cloudLayouter.GetAllRectangles().Max(rec => rec.Y) -
+                                  cloudLayouter.GetAllRectangles().Min(rec => rec.Y);
+
+                (radius / (widthCloud / 2)).Should().BeLessThan(1.5);
+                (radius / (heightCloud / 2)).Should().BeLessThan(1.5);
             }
         }
 
         [Category("long tests")]
-        [TestCase(10)]
         [TestCase(25)]
         [TestCase(50)]
         [TestCase(100)]
@@ -160,7 +163,7 @@ namespace TagsCloudVisualization
                 var radius = cloudLayouter
                     .GetAllRectangles()
                     .Select(rec => GetDistance(rec, cloudLayouter.Center))
-                    .OrderBy(distace => distace)
+                    .OrderBy(distance => distance)
                     .First();
                 var occupiedArea = cloudLayouter
                     .GetAllRectangles()
