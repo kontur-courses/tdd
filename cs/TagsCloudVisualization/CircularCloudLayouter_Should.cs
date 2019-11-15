@@ -77,7 +77,6 @@ namespace TagsCloudVisualization
             rectangles[2].Y.Should().BeLessOrEqualTo(rectangles[0].Bottom + 6);
             rectangles[3].Y.Should().BeLessOrEqualTo(rectangles[0].Bottom + 6);
             rectangles[4].Y.Should().BeLessOrEqualTo(rectangles[0].Bottom + 6);
-            rectangles[4].Y.Should().BeGreaterOrEqualTo(rectangles[0].Bottom + 6);
         }
         
         private List<Size> GetRandomSizes()
