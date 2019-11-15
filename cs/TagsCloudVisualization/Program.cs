@@ -10,21 +10,9 @@ namespace TagsCloudVisualization
         private static readonly Random Random = new Random();
         static void Main(string[] args)
         {
-            DrawExample(FillThreeHundredRectFunc, "example1");
+            DrawExample(RectFuncGenerator(300, 10, 50, 10, 50), "example1");
             DrawExample(FillGraduallyDecreasingRectFunc, "example2");
-            DrawExample(FillHundredRectFunc, "example3");
-        }
-
-        public static List<Rectangle> FillThreeHundredRectFunc(CircularCloudLayouter layouter)
-        {
-            var rectangles = new List<Rectangle>();
-            for (var i = 0; i < 300; i++)
-            {
-                var size = new Size(Random.Next(10, 50), Random.Next(10, 50));
-                rectangles.Add(layouter.PutNextRectangle(size));
-            }
-
-            return rectangles;
+            DrawExample(RectFuncGenerator(100, 5, 60, 5, 60), "example3");
         }
 
         public static List<Rectangle> FillGraduallyDecreasingRectFunc(CircularCloudLayouter layouter)
@@ -43,16 +31,19 @@ namespace TagsCloudVisualization
             return rectangles;
         }
 
-        public static List<Rectangle> FillHundredRectFunc(CircularCloudLayouter layouter)
+        public static Func<CircularCloudLayouter, List<Rectangle>> RectFuncGenerator(int n, int minWidth, int maxWidth, int minHeight, int maxHeight)
         {
-            var rectangles = new List<Rectangle>();
-            for (var i = 0; i < 100; i++)
+            return layouter =>
             {
-                var size = new Size(Random.Next(5, 60), Random.Next(5, 60));
-                rectangles.Add(layouter.PutNextRectangle(size));
-            }
+                var rectangles = new List<Rectangle>();
+                for (var i = 0; i < n; i++)
+                {
+                    var size = new Size(Random.Next(minWidth, maxWidth), Random.Next(minHeight, maxHeight));
+                    rectangles.Add(layouter.PutNextRectangle(size));
+                }
 
-            return rectangles;
+                return rectangles;
+            };
         }
 
         public static void DrawExample(Func<CircularCloudLayouter, List<Rectangle>> fillFunc, string nameExample)
