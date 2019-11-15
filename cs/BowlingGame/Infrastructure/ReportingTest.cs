@@ -81,7 +81,8 @@ namespace BowlingGame.Infrastructure
             tests = tests.OrderByDescending(t => t.LastRunTime).ThenByDescending(t => t.FirstRunTime).ToList();
             SaveResults(tests);
 
-            foreach (var kv in tests)
+            
+            each (var kv in tests)
                 Console.WriteLine(kv.TestName);
 
             if (string.IsNullOrWhiteSpace(YourName.Authors))

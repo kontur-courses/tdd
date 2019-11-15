@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 
 namespace TagCloudVisualization
 {
@@ -19,6 +18,7 @@ namespace TagCloudVisualization
             var center = new Point(0, 0);
             var cloudLayouter = new CircularCloudLayouter(center);
             var sizes = new List<Size>();
+
             for (var width = 5; width < widthMax; width += 5)
             {
                 for (var height = 5; height < heightMax; height += 5)

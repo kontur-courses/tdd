@@ -12,7 +12,7 @@ namespace TagCloudVisualization_Tests
     {
         [TestCase(100, 5)]
         [TestCase(1000, 3)]
-        public void FermaSpiral_ContainsAlmostEqual_CountOfPointsInQuarters_(int countPoints, int accuracy)
+        public void FermaSpiral_ContainsAlmostEqual_CountOfPointsInQuarters(int countPoints, int accuracy)
         {
             var counts = GetPointCountsInQuarters(countPoints);
             var isEql = IsElementsAlmostEqual(counts, accuracy);

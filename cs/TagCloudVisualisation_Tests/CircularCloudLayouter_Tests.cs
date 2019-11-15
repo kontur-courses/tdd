@@ -14,6 +14,7 @@ namespace TagCloudVisualization_Tests
     {
         private static Point center;
         private static CircularCloudLayouter cloudLayouter;
+
         [SetUp]
         public void Setup()
         {
@@ -81,6 +82,17 @@ namespace TagCloudVisualization_Tests
             rectangleSize.Should().Be(size);
         }
 
+        [TestCase(5, 5)]
+        [TestCase(20, 20)]
+        public void PutNextRectangle_RectangleInCenter_OnFirstRectangle(int width, int height)
+        {
+            var size = new Size(width, height);
+
+            var rectangleSize = cloudLayouter.PutNextRectangle(size).Location;
+
+            rectangleSize.Should().Be(center);
+        }
+
         private static IEnumerable<Size> TestCases
         {
             get
@@ -98,27 +110,21 @@ namespace TagCloudVisualization_Tests
 
             rectAdding.Should().Throw<ArgumentException>();
         }
+
         [Test]
         public void PutNextRectangle_OptimalRectanglesLocation_OnManyRectangles()
         {
             var accuracy = 40;
-            var sizes =  GetSizesList(50, 50);
-
+            var sizes = GetSizesList(50, 50);
 
             sizes.ForEach(s => cloudLayouter.PutNextRectangle(s));
-            var radius = Math.Max(LengthToPint(center, cloudLayouter.RightUpperPointOfCloud),
-                    LengthToPint(center, cloudLayouter.LeftDownPointOfCloud));
+
+            var radius = Math.Max(center.LengthTo(cloudLayouter.RightUpperPointOfCloud),
+                    center.LengthTo(cloudLayouter.LeftDownPointOfCloud));
             var sumOfRectanglesSquares = cloudLayouter.Rectangles.Select(r => r.Width * r.Height).Sum();
             var squareOfCircle = Math.PI * radius * radius;
-            var isOptimal =  sumOfRectanglesSquares / squareOfCircle * 100 < accuracy;
-
+            var isOptimal = sumOfRectanglesSquares / squareOfCircle * 100 < accuracy;
             isOptimal.Should().BeTrue();
-        }
-
-        public double LengthToPint(Point first, Point second)
-        {
-            return Math.Sqrt((first.X - second.X) * (first.X - second.X) +
-                             (first.Y - second.Y) * (first.Y - second.Y));
         }
 
         private static List<Size> GetSizesList(int widthMax, int heightMax)
@@ -134,6 +140,12 @@ namespace TagCloudVisualization_Tests
 
             return sizes;
         }
+    }
 
+    public static class PointExtension
+    {
+        public static double LengthTo(this Point first, Point second) =>
+            Math.Sqrt((first.X - second.X) * (first.X - second.X) +
+                      (first.Y - second.Y) * (first.Y - second.Y));
     }
 }
