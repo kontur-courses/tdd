@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using FluentAssertions;
 using NUnit.Framework;
 using System.Drawing;
 
@@ -31,18 +32,29 @@ namespace TagsCloudVisualization.Tests
             rectangle.GetCenter().Should().Be(new Point(centerExpectedX, centerExpectedY));
         }
 
-        [TestCase(0, 50, 50, 50, ExpectedResult = false, TestName = "IntersectsWith_WhenRectanglesIntersectsOnEdge_ReturnFalse")]
-        [TestCase(50, 50, 50, 50, ExpectedResult = false, TestName = "IntersectsWith_WhenRectanglesIntersectsOnPoint_ReturnFalse")]
-        [TestCase(0, 0, 50, 50, ExpectedResult = true, TestName = "IntersectsWith_WhenRectangleEqualOneRectangle_ReturnTrue")]
-        [TestCase(-10, -10, 100, 100, ExpectedResult = true, TestName = "IntersectsWith_WhenRectangleContainsOneRectangle_ReturnTrue")]
-        [TestCase(10, 10, 10, 10, ExpectedResult = true, TestName = "IntersectsWith_WhenRectangleComesInOneRectangle_ReturnTrue")]
-        [TestCase(-150, -150, 50, 50, ExpectedResult = false, TestName = "IntersectsWith_WhenRectangleWithCoordinatesWithOppositeSign_ReturnFalse")]
-        [TestCase(90, 90, 10, 40, ExpectedResult = false, TestName = "IntersectsWith_WhenRectanglesDontIntersects_ReturnFalse")]
-        public bool IntersectsWithOtherRectangles(int actualX, int actualY, int actualWidth, int actualHeight)
+        [TestCase(0, 0, 50, 50, -50, -50, 50, -50, -50, 50, ExpectedResult = false, TestName = "IntersectsWith_WhenRectanglesIntersectsOnPoint_ReturnFalse")]
+        [TestCase(0, 0, 0, -50, -50, 0, 50, 0, 0, 50, ExpectedResult = false, TestName = "IntersectsWith_WhenRectanglesIntersectsOnEdge_ReturnFalse")]
+        [TestCase(0, 0, 0, 0, ExpectedResult = true, TestName = "IntersectsWith_WhenRectangleEqualOneRectangle_ReturnTrue")]
+        [TestCase(-150, -150, 150, 150, ExpectedResult = false, TestName = "IntersectsWith_WhenRectangleWithCoordinatesWithOppositeSign_ReturnFalse")]
+        [TestCase(0, 0, 100, 100, 200, 200, ExpectedResult = false, TestName = "IntersectsWith_WhenRectanglesDontIntersects_ReturnFalse")]
+        public bool IntersectsWithOtherRectangles(int actualX, int actualY, params int[] args)
         {
-            var rectangle = new Rectangle(actualX, actualY, actualWidth, actualHeight);
-            var rectangles = new[] { new Rectangle(0, 0, 50, 50), new Rectangle(150, 150, 50, 50) };
+            var rectangle = new Rectangle(actualX, actualY, 50, 50);
+            var rectangles = new List<Rectangle>();
+            for (int i = 0; i < args.Length / 2; i++)
+            {
+                rectangles.Add(new Rectangle(args[i], args[i + 1], 50, 50));
+            }
             return rectangle.IntersectsWith(rectangles);
+        }
+
+        [TestCase(0, 0, 100, 100, 0, 0, 10, 10, TestName = "IntersectsWith_WhenRectangleContainsRectangle_ReturnTrue")]
+        [TestCase(10, 10, 10, 10, 0, 0, 100, 100, TestName = "IntersectsWith_WhenRectangleComesInRectangle_ReturnTrue")]
+        public void IntersectsWithContainsRectangles_ShouldTrue(int firstX, int firstY, int firstWidth, int firstHeight, int secondX, int secondY, int secondWidth, int secondHeight)
+        {
+            var rectangle = new Rectangle(firstX, firstY, firstWidth, firstHeight);
+            var rectangles = new List<Rectangle>(){new Rectangle(secondX,secondY,secondWidth,secondHeight)};
+            rectangle.IntersectsWith(rectangles).Should().BeTrue();
         }
     }
 }
