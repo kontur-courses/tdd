@@ -16,6 +16,7 @@ namespace TagsCloudVisualization
             {
                 if (start.Y != end.Y)
                     throw new ArgumentException("Wrong coordinates");
+
                 if (start.X < end.X)
                 {
                     Start = start;
@@ -32,6 +33,7 @@ namespace TagsCloudVisualization
             {
                 if (start.X != end.X)
                     throw new ArgumentException("Wrong coordinates");
+
                 if (start.Y < end.Y)
                 {
                     Start = start;
