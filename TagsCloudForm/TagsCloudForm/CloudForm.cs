@@ -45,11 +45,13 @@ namespace TagsCloudForm
             Random rnd = new Random();
             var graphics = e.Graphics;
             var rectangles = new List<Rectangle>();
+            var rectBorderPen = new Pen(Color.Black, 2);
+            var rectFillBrush = new SolidBrush(Color.LightGreen);
             for (int i = 0; i < RectanglesNum; i++)
             {
                 var rect = Layouter.PutNextRectangle(new Size(rnd.Next(MinRectSize, MaxRectSize), rnd.Next(MinRectSize, MaxRectSize)));
-                graphics.FillRectangle(new SolidBrush(Color.LightGreen), rect);
-                graphics.DrawRectangle(new Pen(Color.Black, 2), rect);
+                graphics.FillRectangle(rectFillBrush, rect);
+                graphics.DrawRectangle(rectBorderPen, rect);
                 rectangles.Add(rect);
                 Thread.Sleep(100);
             }

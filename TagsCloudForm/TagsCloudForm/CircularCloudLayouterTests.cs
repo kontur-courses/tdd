@@ -5,13 +5,15 @@ using NUnit.Framework;
 using System.Drawing;
 using System.Linq;
 using System.Drawing.Imaging;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization
 {
     [TestFixture]
     public class CircularCloudLayouterTests
     {
-
+        private Point CloudCenter;
+        private CircularCloudLayouter Layouter;
 
         private double GetDistance(Rectangle rectangle, Point center)
         {
@@ -22,6 +24,35 @@ namespace TagsCloudVisualization
         private double Distance(Point a, Point b)
         {
             return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
+        }
+
+        private void SavePicture(List<Rectangle> rectangles)
+        {
+            string pictureName = @"..\..\picture.png";
+            var bitmap = new Bitmap(Convert.ToInt32(1024), Convert.ToInt32(1024), System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            var graphics = Graphics.FromImage(bitmap);
+            foreach (var rect in rectangles)
+            {
+                graphics.FillRectangle(new SolidBrush(Color.LightGreen), rect);
+                graphics.DrawRectangle(new Pen(Color.Black, 2), rect);
+            }
+            bitmap.Save(pictureName, ImageFormat.Png);
+        }
+
+        [SetUp]
+        public void SetUp()
+        {
+            CloudCenter = new Point(0, 0);
+            Layouter = new CircularCloudLayouter(CloudCenter);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Passed)
+            {
+                SavePicture(Layouter.GetRectangles());
+            }
         }
 
         [Test]

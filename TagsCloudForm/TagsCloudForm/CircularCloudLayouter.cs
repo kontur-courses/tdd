@@ -12,14 +12,14 @@ namespace TagsCloudVisualization
         private readonly HashSet<Segment> BorderSegments;
         private readonly HashSet<Segment> ProbablyBuggedSegments;
         private bool isFirstRectangle;
-        private readonly List<Rectangle> addedRectangles;
+        private readonly List<Rectangle> AddedRectangles;
         public CircularCloudLayouter(Point center)
         {
             CloudCenter = center;
             BorderSegments = new HashSet<Segment>();
             ProbablyBuggedSegments = new HashSet<Segment>();
             isFirstRectangle = true;
-            addedRectangles = new List<Rectangle>();
+            AddedRectangles = new List<Rectangle>();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -51,7 +51,7 @@ namespace TagsCloudVisualization
             }
             var outRectangle = new Rectangle(searchResult.ClosestRectCoordinates, rectangleSize);
             SegmentStacker.StackSegments(Segment.GetSegmentsFromRectangle(outRectangle), BorderSegments);
-            addedRectangles.Add(outRectangle);
+            AddedRectangles.Add(outRectangle);
             return outRectangle;
         }
 
@@ -275,7 +275,12 @@ namespace TagsCloudVisualization
                     , CloudCenter.Y - (int)Math.Floor(rectangleSize.Height / (double)2));
             var firstRect = new Rectangle(firstRectCoord, rectangleSize);
             BorderSegments.UnionWith(Segment.GetSegmentsFromRectangle(firstRect));
-            addedRectangles.Add(firstRect);
+            AddedRectangles.Add(firstRect);
+        }
+
+        public List<Rectangle> GetRectangles()
+        {
+            return AddedRectangles;
         }
     }
 
