@@ -8,25 +8,25 @@ namespace TagsCloudVisualization
 {
     public static class SegmentStacker
     {
-        public static void StackSegments(List<Segment> addedSegments, HashSet<Segment> borderSegments)
+        public static void StackSegments(HashSet<Segment> addedSegments, HashSet<Segment> borderSegments)
         {
             foreach (var segment in addedSegments)
             {
                 if (segment.Horizontal())
                 {
                     List<Segment> parallelSegments = borderSegments
-                        .Where(a => a.start.Y == segment.start.Y && a.Horizontal()).ToList();
+                        .Where(a => a.Start.Y == segment.Start.Y && a.Horizontal()).ToList();
                     parallelSegments.Add(segment);
-                    var stacked = RemoveIntersections(parallelSegments, segment.start.Y, segment.type);
+                    var stacked = RemoveIntersections(parallelSegments, segment.Start.Y, segment.SegmentType);
                     borderSegments.ExceptWith(parallelSegments);
                     borderSegments.UnionWith(stacked);
                 }
                 else
                 {
                     List<Segment> parallelSegments = borderSegments
-                        .Where(a => a.start.X == segment.start.X && !a.Horizontal()).ToList();
+                        .Where(a => a.Start.X == segment.Start.X && !a.Horizontal()).ToList();
                     parallelSegments.Add(segment);
-                    var stacked = RemoveIntersections(parallelSegments, segment.start.X, segment.type);
+                    var stacked = RemoveIntersections(parallelSegments, segment.Start.X, segment.SegmentType);
                     borderSegments.ExceptWith(parallelSegments);
                     borderSegments.UnionWith(stacked);
                 }
@@ -42,13 +42,13 @@ namespace TagsCloudVisualization
             {
                 if (Segment.Horizontal(type))
                 {
-                    points.Add(new SegmentPoint(segment.start.X, segment.type, SegmentPoint.PointType.Start));
-                    points.Add(new SegmentPoint(segment.end.X, segment.type, SegmentPoint.PointType.End));
+                    points.Add(new SegmentPoint(segment.Start.X, segment.SegmentType, SegmentPoint.PointType.Start));
+                    points.Add(new SegmentPoint(segment.End.X, segment.SegmentType, SegmentPoint.PointType.End));
                 }
                 else
                 {
-                    points.Add(new SegmentPoint(segment.start.Y, segment.type, SegmentPoint.PointType.Start));
-                    points.Add(new SegmentPoint(segment.end.Y, segment.type, SegmentPoint.PointType.End));
+                    points.Add(new SegmentPoint(segment.Start.Y, segment.SegmentType, SegmentPoint.PointType.Start));
+                    points.Add(new SegmentPoint(segment.End.Y, segment.SegmentType, SegmentPoint.PointType.End));
                 }
             }
             Segment.Type currentType = points[0].SegmentType;
@@ -90,15 +90,15 @@ namespace TagsCloudVisualization
                 }
                 if (!startFound && point.Type == SegmentPoint.PointType.Start)
                 {
-                    if (lastAdded == point.Coord && outSegments.Last().type == point.SegmentType)
+                    if (lastAdded == point.Coord && outSegments.Last().SegmentType == point.SegmentType)
                     {
                         var lastSegment = outSegments.Last();
                         outSegments.RemoveAt(outSegments.Count - 1);
                         startFound = true;
                         if (Segment.Horizontal(type))
-                            currentPoint = new SegmentPoint(lastSegment.start.X, point.SegmentType, SegmentPoint.PointType.Start);
+                            currentPoint = new SegmentPoint(lastSegment.Start.X, point.SegmentType, SegmentPoint.PointType.Start);
                         else
-                            currentPoint = new SegmentPoint(lastSegment.start.Y, point.SegmentType, SegmentPoint.PointType.Start);
+                            currentPoint = new SegmentPoint(lastSegment.Start.Y, point.SegmentType, SegmentPoint.PointType.Start);
                         continue;
                     }
                     currentPoint = point;

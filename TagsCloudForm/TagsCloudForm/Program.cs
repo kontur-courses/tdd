@@ -14,7 +14,7 @@ namespace TagsCloudForm
         private const bool testMode = false;
         private const bool savePicture = false;
 
-        CircularCloudLayouter layouter = new CircularCloudLayouter(new Point(500, 500), false);
+        CircularCloudLayouter layouter = new CircularCloudLayouter(new Point(500, 500));
         protected override void OnPaint(PaintEventArgs e)
         {
             int minSize = 20;

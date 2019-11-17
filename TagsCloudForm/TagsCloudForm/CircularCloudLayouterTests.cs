@@ -77,7 +77,7 @@ namespace TagsCloudVisualization
         public void PutNextRectangle_FiftyRectanglesInSafeMode_ShouldNotIntersect()
         {
             var center = new Point(0, 0);
-            var layouter = new CircularCloudLayouter(center, true);
+            var layouter = new CircularCloudLayouter(center);
             var rectangles = new List<Rectangle>();
             var rnd = new Random();
             for (int i=0; i<50; i++)
@@ -195,7 +195,7 @@ namespace TagsCloudVisualization
         public void CircularCloudLayouter_AddingFiftyRandomRectangles_CheckDensity()
         {
             var center = new Point(0, 0);
-            var layouter = new CircularCloudLayouter(center, true);
+            var layouter = new CircularCloudLayouter(center);
             var rectangles = new List<Rectangle>();
             var rnd = new Random();
             for (int i = 0; i < 50; i++)
@@ -212,11 +212,10 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        [Repeat(20)]
         public void PutNextRectangle_HundredRectangles_ShouldNotIntersect()
         {
             var center = new Point(0, 0);
-            var layouter = new CircularCloudLayouter(center, false);
+            var layouter = new CircularCloudLayouter(center);
             var rectangles = new List<Rectangle>();
             var rnd = new Random();
             for (int i = 0; i < 100; i++)

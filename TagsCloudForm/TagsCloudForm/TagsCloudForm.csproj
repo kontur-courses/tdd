@@ -66,6 +66,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="ICircularCloudLayouter.cs" />
+    <Compile Include="PositionSearchResult.cs" />
     <Compile Include="Program.cs">
       <SubType>Form</SubType>
     </Compile>

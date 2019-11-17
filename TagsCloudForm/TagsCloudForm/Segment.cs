@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace TagsCloudVisualization
 {
     public class Segment
     {
-        public Point start { get; private set; }
-        public  Point end { get; private set; }
-        public  Type type { get; private set; }
-        public double Length  => Math.Sqrt(Math.Pow((start.X - end.X), 2) + Math.Pow((start.Y - end.Y), 2)); 
+        public Point Start { get; private set; }
+        public  Point End { get; private set; }
+        public  Type SegmentType { get; private set; }
+        public double Length  => Math.Sqrt(Math.Pow((Start.X - End.X), 2) + Math.Pow((Start.Y - End.Y), 2)); 
         public Segment(Point start, Point end, Type type)
         {
             if (type == Type.Bottom || type == Type.Top)
@@ -17,15 +18,15 @@ namespace TagsCloudVisualization
                     throw new ArgumentException("Wrong coordinates");
                 if (start.X < end.X)
                 {
-                    this.start = start;
-                    this.end = end;
+                    Start = start;
+                    End = end;
                 }
                 else
                 {
-                    this.start = end;
-                    this.end = start;
+                    Start = end;
+                    End = start;
                 }
-                this.type = type;
+                SegmentType = type;
             }
             else
             {
@@ -33,15 +34,15 @@ namespace TagsCloudVisualization
                     throw new ArgumentException("Wrong coordinates");
                 if (start.Y < end.Y)
                 {
-                    this.start = start;
-                    this.end = end;
+                    Start = start;
+                    End = end;
                 }
                 else
                 {
-                    this.start = end;
-                    this.end = start;
+                    Start = end;
+                    End = start;
                 }
-                this.type = type;
+                SegmentType = type;
             }
         }
         public Segment(int startX, int startY, int endX, int endY, Type type) : this(new Point(startX, startY), new Point(endX, endY), type)
@@ -50,33 +51,33 @@ namespace TagsCloudVisualization
 
         public bool Parallel(Segment segment)
         {
-            if (segment.type == Type.Top && type == Type.Top
-                || segment.type == Type.Bottom && type == Type.Top
-                || segment.type == Type.Top && type == Type.Bottom
-                || segment.type == Type.Bottom && type == Type.Bottom)
+            if (segment.SegmentType == Type.Top && SegmentType == Type.Top
+                || segment.SegmentType == Type.Bottom && SegmentType == Type.Top
+                || segment.SegmentType == Type.Top && SegmentType == Type.Bottom
+                || segment.SegmentType == Type.Bottom && SegmentType == Type.Bottom)
                 return true;
-            if (segment.type == Type.Left && type == Type.Left
-                || segment.type == Type.Right && type == Type.Left
-                || segment.type == Type.Left && type == Type.Right
-                || segment.type == Type.Right && type == Type.Right)
+            if (segment.SegmentType == Type.Left && SegmentType == Type.Left
+                || segment.SegmentType == Type.Right && SegmentType == Type.Left
+                || segment.SegmentType == Type.Left && SegmentType == Type.Right
+                || segment.SegmentType == Type.Right && SegmentType == Type.Right)
                 return true;
             return false;
         }
 
         public bool Opposite(Segment segment)
         {
-            if (segment.type == Type.Bottom && type == Type.Top
-                || segment.type == Type.Top && type == Type.Bottom)
+            if (segment.SegmentType == Type.Bottom && SegmentType == Type.Top
+                || segment.SegmentType == Type.Top && SegmentType == Type.Bottom)
                 return true;
-            if (segment.type == Type.Right && type == Type.Left
-                || segment.type == Type.Left && type == Type.Right)
+            if (segment.SegmentType == Type.Right && SegmentType == Type.Left
+                || segment.SegmentType == Type.Left && SegmentType == Type.Right)
                 return true;
             return false;
         }
 
         public bool Horizontal()
         {
-            if (type == Type.Bottom || type == Type.Top)
+            if (SegmentType == Type.Bottom || SegmentType == Type.Top)
                 return true;
             return false;
         }
@@ -90,15 +91,15 @@ namespace TagsCloudVisualization
 
         public bool Contains(Segment segment)
         {
-            if (!this.Parallel(segment))
+            if (!Parallel(segment))
                 return false;
             if (segment.Horizontal())
-                if (this.start.X < segment.start.X && this.end.X > segment.end.X)
+                if (Start.X < segment.Start.X && End.X > segment.End.X)
                     return true;
                 else
                     return false;
             else
-                if (this.start.Y < segment.start.Y && this.end.Y > segment.end.Y)
+                if (Start.Y < segment.Start.Y && End.Y > segment.End.Y)
                 return true;
             else
                 return false;
@@ -106,21 +107,21 @@ namespace TagsCloudVisualization
 
         public bool Intersects(Segment segment)
         {
-            if (this.Horizontal() && segment.Horizontal())
+            if (Horizontal() && segment.Horizontal())
             {
-                if ((this.start.X >= segment.start.X && this.start.X < segment.end.X)
-                            || (this.end.X > segment.start.X && this.end.X <= segment.end.X)
-                            || (this.start.X <= segment.start.X && this.end.X >= segment.end.X)
-                            || (this.start.X >= segment.start.X && this.end.X <= segment.end.X))
+                if ((Start.X >= segment.Start.X && Start.X < segment.End.X)
+                            || (End.X > segment.Start.X && End.X <= segment.End.X)
+                            || (Start.X <= segment.Start.X && End.X >= segment.End.X)
+                            || (Start.X >= segment.Start.X && End.X <= segment.End.X))
                     return true;
                 return false;
             }
-            if (!this.Horizontal() && !segment.Horizontal())
+            if (!Horizontal() && !segment.Horizontal())
             {
-                if ((this.start.Y >= segment.start.Y && this.start.Y < segment.end.Y)
-                            || (this.end.Y > segment.start.Y && this.end.Y <= segment.end.Y)
-                            || (this.start.Y <= segment.start.Y && this.end.Y >= segment.end.Y)
-                            || (this.start.Y >= segment.start.Y && this.end.Y <= segment.end.Y))
+                if ((Start.Y >= segment.Start.Y && Start.Y < segment.End.Y)
+                            || (End.Y > segment.Start.Y && End.Y <= segment.End.Y)
+                            || (Start.Y <= segment.Start.Y && End.Y >= segment.End.Y)
+                            || (Start.Y >= segment.Start.Y && End.Y <= segment.End.Y))
                     return true;
                 return false;
             }
@@ -143,6 +144,37 @@ namespace TagsCloudVisualization
                 default:
                     return Type.Top;
             }
+        }
+
+
+        public static HashSet<Segment> GetSegmentsFromRectangle(Rectangle rect)
+        {
+            var outSegments = new HashSet<Segment>();
+            outSegments.Add(new Segment(
+                    rect.X
+                    , rect.Y
+                    , rect.X + rect.Width
+                    , rect.Y
+                    , Type.Top));
+            outSegments.Add(new Segment(
+                rect.X
+                , rect.Y + rect.Height
+                , rect.X + rect.Width
+                , rect.Y + rect.Height
+                , Type.Bottom));
+            outSegments.Add(new Segment(
+                rect.X
+                , rect.Y
+                , rect.X
+                , rect.Y + rect.Height
+                , Type.Left));
+            outSegments.Add(new Segment(
+                rect.X + rect.Width
+                , rect.Y
+                , rect.X + rect.Width
+                , rect.Y + rect.Height
+                , Type.Right));
+            return outSegments;
         }
 
         public enum Type

@@ -6,28 +6,6 @@ using System.Linq;
 namespace TagsCloudVisualization
 {
 
-    public class PositionSearchResult
-    {
-        public double MinDistance { get; private set; }
-        public Segment MinSegment { get; private set; }
-        public Point ClosestRectCoord { get; private set; }
-        public PositionSearchResult(double minDistance, Segment minSegment, Point closestRectCoord)
-        {
-            this.MinDistance = minDistance;
-            this.MinSegment = minSegment;
-            this.ClosestRectCoord = closestRectCoord;
-        }
-        public void Update(double minDistance, Segment minSegment, Point closestRectCoord)
-        {
-            if (minDistance<this.MinDistance)
-            {
-                this.MinDistance = minDistance;
-                this.MinSegment = minSegment;
-                this.ClosestRectCoord = closestRectCoord;
-            }
-        }
-    }
-
     public class CircularCloudLayouter : ICircularCloudLayouter
     {
         private readonly Point CloudCenter;
@@ -35,7 +13,6 @@ namespace TagsCloudVisualization
         private readonly HashSet<Segment> ProbablyBuggedSegments;
         private bool isFirstRectangle;
         private readonly List<Rectangle> addedRectangles;
-        private readonly bool safeMode;
         public CircularCloudLayouter(Point center)
         {
             CloudCenter = center;
@@ -43,17 +20,6 @@ namespace TagsCloudVisualization
             ProbablyBuggedSegments = new HashSet<Segment>();
             isFirstRectangle = true;
             addedRectangles = new List<Rectangle>();
-            safeMode = false;
-        }
-
-        public CircularCloudLayouter(Point center, bool mode)
-        {
-            CloudCenter = center;
-            BorderSegments = new HashSet<Segment>();
-            ProbablyBuggedSegments = new HashSet<Segment>();
-            isFirstRectangle = true;
-            addedRectangles = new List<Rectangle>();
-            safeMode = mode;
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -72,119 +38,95 @@ namespace TagsCloudVisualization
                 {
                     var leftBorderX = FindLeftBorderX(segment, rectangleSize);
                     var rightBorderX = FindRightBorderX(segment, rectangleSize);
-                    var updatedSegment = new Segment(leftBorderX, segment.start.Y, rightBorderX, segment.end.Y, segment.type);
-                    SearchMinDistance(searchResult, segment, rectangleSize, updatedSegment);
+                    var updatedSegment = new Segment(leftBorderX, segment.Start.Y, rightBorderX, segment.End.Y, segment.SegmentType);
+                    searchResult = SearchMinDistance(searchResult, segment, rectangleSize, updatedSegment);
                 }
                 else
                 {
                     var topBorderY = FindTopBorderY(segment, rectangleSize);
                     var bottomBorderY = FindBottomBorderY(segment, rectangleSize);
-                    var updatedSegment = new Segment(segment.start.X, topBorderY, segment.end.X, bottomBorderY, segment.type);
-                    SearchMinDistance(searchResult, segment, rectangleSize, updatedSegment);
+                    var updatedSegment = new Segment(segment.Start.X, topBorderY, segment.End.X, bottomBorderY, segment.SegmentType);
+                    searchResult = SearchMinDistance(searchResult, segment, rectangleSize, updatedSegment);
                 }
             }
-            var outRectangle = new Rectangle(searchResult.ClosestRectCoord, rectangleSize);
-            var toAdd = new List<Segment>();
-            if (safeMode)
-            {
-                foreach (var rect in addedRectangles)
-                    if (rect.IntersectsWith(outRectangle))
-                    {
-                        ProbablyBuggedSegments.Add(searchResult.MinSegment);//полагаем что тот сегмент к которому пытаемся присоединиться багованный
-                        if (BorderSegments.Except(ProbablyBuggedSegments).Count()==0)
-                        {
-                            var closestRectCoord = FindClosestCloudBorder(rectangleSize);
-                            outRectangle = new Rectangle(closestRectCoord, rectangleSize);
-                            break;
-                        }
-                        return PutNextRectangle(rectangleSize);
-                    }
-            }
-            else
-            {
-                if (searchResult.MinSegment == null)
-                    throw new ArgumentException("Place for appending not found");
-            }
-            toAdd.Add(new Segment(searchResult.ClosestRectCoord.X, searchResult.ClosestRectCoord.Y, searchResult.ClosestRectCoord.X + rectangleSize.Width, searchResult.ClosestRectCoord.Y, Segment.Type.Top));
-            toAdd.Add(new Segment(searchResult.ClosestRectCoord.X, searchResult.ClosestRectCoord.Y + rectangleSize.Height, searchResult.ClosestRectCoord.X + rectangleSize.Width, searchResult.ClosestRectCoord.Y + rectangleSize.Height, Segment.Type.Bottom));
-            toAdd.Add(new Segment(searchResult.ClosestRectCoord.X, searchResult.ClosestRectCoord.Y, searchResult.ClosestRectCoord.X, searchResult.ClosestRectCoord.Y + rectangleSize.Height, Segment.Type.Left));
-            toAdd.Add(new Segment(searchResult.ClosestRectCoord.X + rectangleSize.Width, searchResult.ClosestRectCoord.Y, searchResult.ClosestRectCoord.X + rectangleSize.Width, searchResult.ClosestRectCoord.Y + rectangleSize.Height, Segment.Type.Right));
-            SegmentStacker.StackSegments(toAdd, BorderSegments);
+            var outRectangle = new Rectangle(searchResult.ClosestRectCoordinates, rectangleSize);
+            SegmentStacker.StackSegments(Segment.GetSegmentsFromRectangle(outRectangle), BorderSegments);
             addedRectangles.Add(outRectangle);
             return outRectangle;
         }
 
 
-        private void SearchMinDistance(PositionSearchResult searchResult, Segment segment, Size rectangleSize, Segment extendedSegment)
+        private PositionSearchResult SearchMinDistance(PositionSearchResult searchResult, Segment segment, Size rectangleSize, Segment extendedSegment)
         {
             if (segment.Horizontal())
             {
                 if (extendedSegment.Length < rectangleSize.Width)
-                    return;
-                if (extendedSegment.start.X < CloudCenter.X
-                && extendedSegment.end.X > CloudCenter.X
-                && CloudCenter.X + (int)Math.Truncate(rectangleSize.Width / (double)2) + 1 <= extendedSegment.end.X
-                && CloudCenter.X - (int)Math.Truncate(rectangleSize.Width / (double)2) - 1 >= extendedSegment.start.X)
+                    return searchResult;
+                if (extendedSegment.Start.X < CloudCenter.X
+                && extendedSegment.End.X > CloudCenter.X
+                && CloudCenter.X + (int)Math.Truncate(rectangleSize.Width / (double)2) + 1 <= extendedSegment.End.X
+                && CloudCenter.X - (int)Math.Truncate(rectangleSize.Width / (double)2) - 1 >= extendedSegment.Start.X)
                 {
                     Point midRectCoordinates;
-                    if (segment.type==Segment.Type.Top)
-                        midRectCoordinates = new Point(CloudCenter.X - (int)Math.Truncate(rectangleSize.Width / (double)2), extendedSegment.start.Y - rectangleSize.Height);
+                    if (segment.SegmentType == Segment.Type.Top)
+                        midRectCoordinates = new Point(CloudCenter.X - (int)Math.Truncate(rectangleSize.Width / (double)2), extendedSegment.Start.Y - rectangleSize.Height);
                     else
-                        midRectCoordinates = new Point(CloudCenter.X - (int)Math.Truncate(rectangleSize.Width / (double)2), extendedSegment.start.Y);
-                    if (CheckOppositeBorder(midRectCoordinates, rectangleSize, segment.type))
-                        CheckDistance(searchResult, segment, midRectCoordinates, rectangleSize);
+                        midRectCoordinates = new Point(CloudCenter.X - (int)Math.Truncate(rectangleSize.Width / (double)2), extendedSegment.Start.Y);
+                    if (CheckOppositeBorder(midRectCoordinates, rectangleSize, segment.SegmentType))
+                        searchResult = CheckDistance(searchResult, segment, midRectCoordinates, rectangleSize);
                 }
                 Point leftMostRectCoordinates;
                 Point rightMostRectCoordinates;
-                if (segment.type == Segment.Type.Top)
+                if (segment.SegmentType == Segment.Type.Top)
                 {
-                    leftMostRectCoordinates = new Point(extendedSegment.start.X, extendedSegment.start.Y - rectangleSize.Height);
-                    rightMostRectCoordinates = new Point(extendedSegment.end.X - rectangleSize.Width, extendedSegment.start.Y - rectangleSize.Height);
+                    leftMostRectCoordinates = new Point(extendedSegment.Start.X, extendedSegment.Start.Y - rectangleSize.Height);
+                    rightMostRectCoordinates = new Point(extendedSegment.End.X - rectangleSize.Width, extendedSegment.Start.Y - rectangleSize.Height);
                 }
                 else
                 {
-                    leftMostRectCoordinates = new Point(extendedSegment.start.X, extendedSegment.start.Y);
-                    rightMostRectCoordinates = new Point(extendedSegment.end.X - rectangleSize.Width, extendedSegment.start.Y);
+                    leftMostRectCoordinates = new Point(extendedSegment.Start.X, extendedSegment.Start.Y);
+                    rightMostRectCoordinates = new Point(extendedSegment.End.X - rectangleSize.Width, extendedSegment.Start.Y);
                 }
-                if (CheckOppositeBorder(leftMostRectCoordinates, rectangleSize, segment.type))
-                    CheckDistance(searchResult, segment, leftMostRectCoordinates, rectangleSize);
-                if (CheckOppositeBorder(rightMostRectCoordinates, rectangleSize, segment.type))
-                    CheckDistance(searchResult, segment, rightMostRectCoordinates, rectangleSize);
+                if (CheckOppositeBorder(leftMostRectCoordinates, rectangleSize, segment.SegmentType))
+                    searchResult = CheckDistance(searchResult, segment, leftMostRectCoordinates, rectangleSize);
+                if (CheckOppositeBorder(rightMostRectCoordinates, rectangleSize, segment.SegmentType))
+                    searchResult = CheckDistance(searchResult, segment, rightMostRectCoordinates, rectangleSize);
             }
             else
             {
                 if (extendedSegment.Length < rectangleSize.Height)
-                    return;
-                if (extendedSegment.start.Y < CloudCenter.Y
-                && extendedSegment.end.Y > CloudCenter.Y
-                && CloudCenter.Y + (int)Math.Truncate(rectangleSize.Height / (double)2) + 1 <= extendedSegment.end.Y
-                && CloudCenter.Y - (int)Math.Truncate(rectangleSize.Height / (double)2) - 1 >= extendedSegment.start.Y)
+                    return searchResult;
+                if (extendedSegment.Start.Y < CloudCenter.Y
+                && extendedSegment.End.Y > CloudCenter.Y
+                && CloudCenter.Y + (int)Math.Truncate(rectangleSize.Height / (double)2) + 1 <= extendedSegment.End.Y
+                && CloudCenter.Y - (int)Math.Truncate(rectangleSize.Height / (double)2) - 1 >= extendedSegment.Start.Y)
                 {
                     Point midRectCoordinates;
-                    if (segment.type==Segment.Type.Left)
-                        midRectCoordinates = new Point(extendedSegment.start.X - rectangleSize.Width, CloudCenter.Y - (int)Math.Truncate(rectangleSize.Height / (double)2));
+                    if (segment.SegmentType == Segment.Type.Left)
+                        midRectCoordinates = new Point(extendedSegment.Start.X - rectangleSize.Width, CloudCenter.Y - (int)Math.Truncate(rectangleSize.Height / (double)2));
                     else
-                        midRectCoordinates = new Point(extendedSegment.start.X, CloudCenter.Y - (int)Math.Truncate(rectangleSize.Height / (double)2));
-                    if (CheckOppositeBorder(midRectCoordinates, rectangleSize, segment.type))
-                        CheckDistance(searchResult, segment, midRectCoordinates, rectangleSize);
+                        midRectCoordinates = new Point(extendedSegment.Start.X, CloudCenter.Y - (int)Math.Truncate(rectangleSize.Height / (double)2));
+                    if (CheckOppositeBorder(midRectCoordinates, rectangleSize, segment.SegmentType))
+                        searchResult = CheckDistance(searchResult, segment, midRectCoordinates, rectangleSize);
                 }
                 Point topMostRectCoordinates;
                 Point botMostRectcoordinates;
-                if (segment.type==Segment.Type.Left)
+                if (segment.SegmentType == Segment.Type.Left)
                 {
-                    topMostRectCoordinates = new Point(extendedSegment.start.X - rectangleSize.Width, extendedSegment.start.Y);
-                    botMostRectcoordinates = new Point(extendedSegment.end.X - rectangleSize.Width, extendedSegment.end.Y - rectangleSize.Height);
+                    topMostRectCoordinates = new Point(extendedSegment.Start.X - rectangleSize.Width, extendedSegment.Start.Y);
+                    botMostRectcoordinates = new Point(extendedSegment.End.X - rectangleSize.Width, extendedSegment.End.Y - rectangleSize.Height);
                 }
                 else
                 {
-                    topMostRectCoordinates = new Point(extendedSegment.start.X, extendedSegment.start.Y);
-                    botMostRectcoordinates = new Point(extendedSegment.end.X, extendedSegment.end.Y - rectangleSize.Height);
+                    topMostRectCoordinates = new Point(extendedSegment.Start.X, extendedSegment.Start.Y);
+                    botMostRectcoordinates = new Point(extendedSegment.End.X, extendedSegment.End.Y - rectangleSize.Height);
                 }
-                if (CheckOppositeBorder(topMostRectCoordinates, rectangleSize, segment.type))
-                    CheckDistance(searchResult, segment, topMostRectCoordinates, rectangleSize);
-                if (CheckOppositeBorder(botMostRectcoordinates, rectangleSize, segment.type))
-                    CheckDistance(searchResult, segment, botMostRectcoordinates, rectangleSize);
+                if (CheckOppositeBorder(topMostRectCoordinates, rectangleSize, segment.SegmentType))
+                    searchResult = CheckDistance(searchResult, segment, topMostRectCoordinates, rectangleSize);
+                if (CheckOppositeBorder(botMostRectcoordinates, rectangleSize, segment.SegmentType))
+                    searchResult = CheckDistance(searchResult, segment, botMostRectcoordinates, rectangleSize);
             }
+            return searchResult;
 
         }
 
@@ -195,7 +137,7 @@ namespace TagsCloudVisualization
             {
                 var TopBorderY = FindTopBorderY(
                     new Segment(
-                        new Point(rectanglePos.X, rectanglePos.Y + rectangleSize.Height-1)
+                        new Point(rectanglePos.X, rectanglePos.Y + rectangleSize.Height - 1)
                         , new Point(rectanglePos.X, rectanglePos.Y + rectangleSize.Height)
                         , Segment.Type.Right)
                     , new Size(rectangleSize.Width, 1));
@@ -219,7 +161,7 @@ namespace TagsCloudVisualization
             {
                 var LeftBorderX = FindLeftBorderX(
                     new Segment(
-                        new Point(rectanglePos.X+rectangleSize.Width-1, rectanglePos.Y+rectangleSize.Height)
+                        new Point(rectanglePos.X + rectangleSize.Width - 1, rectanglePos.Y + rectangleSize.Height)
                         , new Point(rectanglePos.X + rectangleSize.Width, rectanglePos.Y + rectangleSize.Height)
                         , Segment.Type.Top)
                     , new Size(1, rectangleSize.Height));
@@ -244,96 +186,97 @@ namespace TagsCloudVisualization
 
         private int FindLeftBorderX(Segment segment, Size rectangleSize)
         {
-            int topRectSide = segment.type == Segment.Type.Top ? segment.end.Y - rectangleSize.Height : segment.end.Y;
+            int topRectSide = segment.SegmentType == Segment.Type.Top ? segment.End.Y - rectangleSize.Height : segment.End.Y;
             int bottomRectSide = topRectSide + rectangleSize.Height;
             var leftRectSide = new Segment(0, topRectSide, 0, bottomRectSide, Segment.Type.Left);
             var leftBorder = BorderSegments
                             .Select(a => a)
                             .Where(b =>
-                            b.type == Segment.Type.Right
-                            && b.start.X <= segment.start.X
+                            b.SegmentType == Segment.Type.Right
+                            && b.Start.X <= segment.Start.X
                             && b.Intersects(leftRectSide))
-                            .OrderByDescending(c => c.start.X)
+                            .OrderByDescending(c => c.Start.X)
                             .FirstOrDefault();
             int leftBorderX;
             if (leftBorder == null)
                 leftBorderX = -100000;
             else
-                leftBorderX = leftBorder.start.X;
+                leftBorderX = leftBorder.Start.X;
             return leftBorderX;
         }
 
         private int FindRightBorderX(Segment segment, Size rectangleSize)
         {
-            int topRectSide = segment.type == Segment.Type.Top ? segment.end.Y - rectangleSize.Height : segment.end.Y;
+            int topRectSide = segment.SegmentType == Segment.Type.Top ? segment.End.Y - rectangleSize.Height : segment.End.Y;
             int bottomRectSide = topRectSide + rectangleSize.Height;
             var rightRectSide = new Segment(0, topRectSide, 0, bottomRectSide, Segment.Type.Right);
             var rightBorder = BorderSegments
                             .Select(a => a)
                             .Where(b =>
-                            b.type == Segment.Type.Left
-                            && b.start.X >= segment.end.X
+                            b.SegmentType == Segment.Type.Left
+                            && b.Start.X >= segment.End.X
                             && b.Intersects(rightRectSide))
-                            .OrderBy(c => c.start.X)
+                            .OrderBy(c => c.Start.X)
                             .FirstOrDefault();
             int rightBorderX;
             if (rightBorder == null)
                 rightBorderX = 100000;
             else
-                rightBorderX = rightBorder.start.X;
+                rightBorderX = rightBorder.Start.X;
             return rightBorderX;
         }
 
         private int FindTopBorderY(Segment segment, Size rectangleSize)
         {
-            int leftRectSide = segment.type == Segment.Type.Left ? segment.end.X - rectangleSize.Width : segment.end.X;
+            int leftRectSide = segment.SegmentType == Segment.Type.Left ? segment.End.X - rectangleSize.Width : segment.End.X;
             int rightRectSide = leftRectSide + rectangleSize.Width;
             var topRectSide = new Segment(leftRectSide, 0, rightRectSide, 0, Segment.Type.Top);
             var topBorder = BorderSegments
                 .Select(a => a)
                 .Where(b =>
-                b.type == Segment.Type.Bottom
-                && b.start.Y <= segment.start.Y
+                b.SegmentType == Segment.Type.Bottom
+                && b.Start.Y <= segment.Start.Y
                 && b.Intersects(topRectSide))
-                .OrderByDescending(c => c.start.Y)
+                .OrderByDescending(c => c.Start.Y)
                 .FirstOrDefault();
             int topBorderY;
             if (topBorder == null)
                 topBorderY = -100000;
             else
-                topBorderY = topBorder.start.Y;
+                topBorderY = topBorder.Start.Y;
             return topBorderY;
         }
 
         private int FindBottomBorderY(Segment segment, Size rectangleSize)
         {
-            int leftRectSide = segment.type == Segment.Type.Left ? segment.end.X - rectangleSize.Width : segment.end.X;
+            int leftRectSide = segment.SegmentType == Segment.Type.Left ? segment.End.X - rectangleSize.Width : segment.End.X;
             int rightRectSide = leftRectSide + rectangleSize.Width;
             var bottomRectSide = new Segment(leftRectSide, 0, rightRectSide, 0, Segment.Type.Bottom);
             var topBorder = BorderSegments
                 .Select(a => a)
                 .Where(b =>
-                b.type == Segment.Type.Top
-                && b.end.Y >= segment.end.Y
+                b.SegmentType == Segment.Type.Top
+                && b.End.Y >= segment.End.Y
                 && b.Intersects(bottomRectSide))
-                .OrderBy(c => c.start.Y)
+                .OrderBy(c => c.Start.Y)
                 .FirstOrDefault();
             int topBorderY;
             if (topBorder == null)
                 topBorderY = 100000;
             else
-                topBorderY = topBorder.start.Y;
+                topBorderY = topBorder.Start.Y;
             return topBorderY;
         }
 
 
-        private void CheckDistance(PositionSearchResult currentSearchRes, Segment segment, Point rectangleCoord, Size rectangleSize)
+        private PositionSearchResult CheckDistance(PositionSearchResult currentSearchRes, Segment segment, Point rectangleCoord, Size rectangleSize)
         {
             var dist = Distance(GetRectangleCenter(new Rectangle(rectangleCoord, rectangleSize)), CloudCenter);
             if (dist < currentSearchRes.MinDistance)
             {
-                currentSearchRes.Update(dist, segment, rectangleCoord);
+                return currentSearchRes.Update(dist, segment, rectangleCoord);
             }
+            return currentSearchRes;
         }
 
 
@@ -348,66 +291,15 @@ namespace TagsCloudVisualization
             return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
         }
 
-        
+
         private void InitializeFirstRectangle(Size rectangleSize)
         {
             var firstRectCoord = new Point(
                     CloudCenter.X - (int)Math.Floor(rectangleSize.Width / (double)2)
                     , CloudCenter.Y - (int)Math.Floor(rectangleSize.Height / (double)2));
-            BorderSegments.Add(new Segment(
-                    firstRectCoord.X
-                    , firstRectCoord.Y
-                    , firstRectCoord.X+rectangleSize.Width
-                    , firstRectCoord.Y
-                    , Segment.Type.Top));
-            BorderSegments.Add(new Segment(
-                firstRectCoord.X 
-                , firstRectCoord.Y + rectangleSize.Height
-                , firstRectCoord.X + rectangleSize.Width
-                , firstRectCoord.Y + rectangleSize.Height
-                , Segment.Type.Bottom));
-            BorderSegments.Add(new Segment(
-                firstRectCoord.X
-                , firstRectCoord.Y
-                , firstRectCoord.X
-                , firstRectCoord.Y+rectangleSize.Height
-                , Segment.Type.Left));
-            BorderSegments.Add(new Segment(
-                firstRectCoord.X + rectangleSize.Width
-                , firstRectCoord.Y
-                , firstRectCoord.X + rectangleSize.Width
-                , firstRectCoord.Y + rectangleSize.Height
-                , Segment.Type.Right));
-            addedRectangles.Add(new Rectangle(firstRectCoord, rectangleSize));
-        }
-
-        private Point FindClosestCloudBorder(Size rectangleSize)
-        {
-            var topBorder = BorderSegments
-                                .Select(a => a.start.Y)
-                                .OrderBy(a => a)
-                                .First();
-            var botBorder = BorderSegments
-                    .Select(a => a.start.Y)
-                    .OrderByDescending(a => a)
-                    .First();
-            var leftBorder = BorderSegments
-                    .Select(a => a.start.X)
-                    .OrderByDescending(a => a)
-                    .First();
-            var rightBorder = BorderSegments
-                    .Select(a => a.start.X)
-                    .OrderBy(a => a)
-                    .First();
-            var minDist = new[] { Math.Abs(topBorder), Math.Abs(botBorder), Math.Abs(leftBorder), Math.Abs(rightBorder) }.Min();
-            if (minDist == Math.Abs(topBorder))
-                return new Point(CloudCenter.X - (int)Math.Floor(rectangleSize.Width / (double)2), topBorder - rectangleSize.Height);
-            if (minDist == Math.Abs(botBorder))
-                return new Point(CloudCenter.X - (int)Math.Ceiling(rectangleSize.Width / (double)2), botBorder);
-            if (minDist == Math.Abs(leftBorder))
-                return new Point(CloudCenter.Y - (int)Math.Floor(rectangleSize.Height / (double)2), leftBorder - rectangleSize.Width);
-            return new Point(CloudCenter.Y - (int)Math.Ceiling(rectangleSize.Height / (double)2), rightBorder);
-
+            var firstRect = new Rectangle(firstRectCoord, rectangleSize);
+            BorderSegments.UnionWith(Segment.GetSegmentsFromRectangle(firstRect));
+            addedRectangles.Add(firstRect);
         }
     }
 
