@@ -32,7 +32,9 @@ namespace TagsCloudVisualization
             var rnd = new Random();
             var size = new Size(rnd.Next(5, 100), rnd.Next(5, 100));
             var expectedLocation = new Point(-(int)Math.Floor(size.Width / (double)2), -(int)Math.Floor(size.Height / (double)2));
+
             var rect = layouter.PutNextRectangle(size);
+
             rect.Location.Should().Be(expectedLocation);
         }
 
@@ -44,8 +46,10 @@ namespace TagsCloudVisualization
             var rnd = new Random();
             var size1 = new Size(rnd.Next(5, 100), rnd.Next(5, 100));
             var size2 = new Size(rnd.Next(5, 100), rnd.Next(5, 100));
+
             var rect1 = layouter.PutNextRectangle(size1);
             var rect2 = layouter.PutNextRectangle(size2);
+
             rect1.IntersectsWith(rect2).Should().BeFalse();
         }
 
@@ -54,9 +58,11 @@ namespace TagsCloudVisualization
         {
             var center = new Point(0, 0);
             var layouter = new CircularCloudLayouter(center);
+
             var rect1 = layouter.PutNextRectangle(new Size(10, 10));
             var rect2 = layouter.PutNextRectangle(new Size(10, 10));
             var rect3 = layouter.PutNextRectangle(new Size(10, 10));
+
             rect3.IntersectsWith(rect2).Should().BeFalse();
             rect3.IntersectsWith(rect1).Should().BeFalse();
         }
@@ -68,8 +74,10 @@ namespace TagsCloudVisualization
             var center = new Point(0, 0);
             var squareSize = new Size(10, 10);
             var layouter = new CircularCloudLayouter(center);
+
             var rect1 = layouter.PutNextRectangle(squareSize);
             var rect2 = layouter.PutNextRectangle(new Size(20, 20));
+
             rect1.IntersectsWith(rect2).Should().BeFalse();
         }
 
@@ -192,7 +200,7 @@ namespace TagsCloudVisualization
 
 
         [Test]
-        public void CircularCloudLayouter_AddingFiftyRandomRectangles_CheckDensity()
+        public void PutNextRectangle_AddingFiftyRandomRectangles_CheckDensity()
         {
             var center = new Point(0, 0);
             var layouter = new CircularCloudLayouter(center);
@@ -204,9 +212,11 @@ namespace TagsCloudVisualization
                 var rect = layouter.PutNextRectangle(size);
                 rectangles.Add(rect);
             }
+
             var cloudRadius = rectangles.Select(a => GetDistance(a, center)).OrderByDescending(a => a).First();
             var rectanglesArea = rectangles.Select(a => a.Width * a.Height).Sum();
             var cloudArea = Math.PI * cloudRadius * cloudRadius;
+
             (cloudArea/rectanglesArea).Should().BeLessThan(Math.PI/2);//площадь вписанного квадрата/площадь описанной окружности = Pi/2
 
         }

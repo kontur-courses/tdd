@@ -15,7 +15,7 @@ namespace TagsCloudVisualization
                 if (segment.Horizontal())
                 {
                     List<Segment> parallelSegments = borderSegments
-                        .Where(a => a.Start.Y == segment.Start.Y && a.Horizontal()).ToList();
+                        .Where(x => x.Start.Y == segment.Start.Y && x.Horizontal()).ToList();
                     parallelSegments.Add(segment);
                     var stacked = RemoveIntersections(parallelSegments, segment.Start.Y, segment.SegmentType);
                     borderSegments.ExceptWith(parallelSegments);
@@ -24,7 +24,7 @@ namespace TagsCloudVisualization
                 else
                 {
                     List<Segment> parallelSegments = borderSegments
-                        .Where(a => a.Start.X == segment.Start.X && !a.Horizontal()).ToList();
+                        .Where(x => x.Start.X == segment.Start.X && !x.Horizontal()).ToList();
                     parallelSegments.Add(segment);
                     var stacked = RemoveIntersections(parallelSegments, segment.Start.X, segment.SegmentType);
                     borderSegments.ExceptWith(parallelSegments);
@@ -57,10 +57,10 @@ namespace TagsCloudVisualization
             bool isIntersection = false;
             bool isFirst = true;
             int lastAdded = int.MinValue;
-            var sortedPoints = points.OrderBy(a => a.Coord).ToList();
+            var sortedPoints = points.OrderBy(x => x.Coordinates).ToList();
             for (int i = 0; i < sortedPoints.Count - 1; i++)
             {
-                if (sortedPoints[i].Coord == sortedPoints[i + 1].Coord
+                if (sortedPoints[i].Coordinates == sortedPoints[i + 1].Coordinates
                     && sortedPoints[i].SegmentType == sortedPoints[i + 1].SegmentType)
                 {
                     sortedPoints[i].Type = SegmentPoint.PointType.Start;
@@ -90,7 +90,7 @@ namespace TagsCloudVisualization
                 }
                 if (!startFound && point.Type == SegmentPoint.PointType.Start)
                 {
-                    if (lastAdded == point.Coord && outSegments.Last().SegmentType == point.SegmentType)
+                    if (lastAdded == point.Coordinates && outSegments.Last().SegmentType == point.SegmentType)
                     {
                         var lastSegment = outSegments.Last();
                         outSegments.RemoveAt(outSegments.Count - 1);
@@ -109,36 +109,36 @@ namespace TagsCloudVisualization
                 if (startFound && point.SegmentType == currentType && point.Type == SegmentPoint.PointType.End)
                 {
                     if (Segment.Horizontal(type))
-                        outSegments.Add(new Segment(currentPoint.Coord, coord, point.Coord, coord, currentType));
+                        outSegments.Add(new Segment(currentPoint.Coordinates, coord, point.Coordinates, coord, currentType));
                     else
-                        outSegments.Add(new Segment(coord, currentPoint.Coord, coord, point.Coord, currentType));
-                    lastAdded = point.Coord;
+                        outSegments.Add(new Segment(coord, currentPoint.Coordinates, coord, point.Coordinates, currentType));
+                    lastAdded = point.Coordinates;
                     startFound = false;
                     continue;
                 }
                 if (startFound && point.SegmentType != currentType)
                 {
                     if (Segment.Horizontal(type))
-                        outSegments.Add(new Segment(currentPoint.Coord, coord, point.Coord, coord, currentType));
+                        outSegments.Add(new Segment(currentPoint.Coordinates, coord, point.Coordinates, coord, currentType));
                     else
-                        outSegments.Add(new Segment(coord, currentPoint.Coord, coord, point.Coord, currentType));
-                    lastAdded = point.Coord;
+                        outSegments.Add(new Segment(coord, currentPoint.Coordinates, coord, point.Coordinates, currentType));
+                    lastAdded = point.Coordinates;
                     startFound = false;
                     isIntersection = true;
                     continue;
                 }
             }
-            return outSegments.Where(a => a.Length > 0).ToList();
+            return outSegments.Where(x => x.Length > 0).ToList();
         }
 
         private class SegmentPoint
         {
-            public int Coord;
+            public int Coordinates;
             public Segment.Type SegmentType;
             public PointType Type;
-            public SegmentPoint(int coord, Segment.Type segmentType, PointType type)
+            public SegmentPoint(int coordinates, Segment.Type segmentType, PointType type)
             {
-                Coord = coord;
+                Coordinates = coordinates;
                 SegmentType = segmentType;
                 Type = type;
             }

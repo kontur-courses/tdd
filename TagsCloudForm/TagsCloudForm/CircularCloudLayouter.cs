@@ -198,19 +198,19 @@ namespace TagsCloudVisualization
                 Segment border;
                 if (borderType == Segment.Type.Left)
                     border = BorderSegments
-                                .Where(b =>
-                                b.SegmentType == Segment.OppositeType(borderType)
-                                && b.Start.X <= segment.Start.X
-                                && b.Intersects(side))
-                                .OrderByDescending(c => c.Start.X)
+                                .Where(x =>
+                                x.SegmentType == Segment.OppositeType(borderType)
+                                && x.Start.X <= segment.Start.X
+                                && x.Intersects(side))
+                                .OrderByDescending(x => x.Start.X)
                                 .FirstOrDefault();
                 else
                     border = BorderSegments
-                            .Where(b =>
-                            b.SegmentType == Segment.OppositeType(borderType)
-                            && b.Start.X >= segment.End.X
-                            && b.Intersects(side))
-                            .OrderBy(c => c.Start.X)
+                            .Where(x =>
+                            x.SegmentType == Segment.OppositeType(borderType)
+                            && x.Start.X >= segment.End.X
+                            && x.Intersects(side))
+                            .OrderBy(x => x.Start.X)
                             .FirstOrDefault();
                 if (border == null)
                     return borderType == Segment.Type.Left ? -100000 : 100000;
@@ -224,19 +224,19 @@ namespace TagsCloudVisualization
                 Segment border;
                 if (borderType==Segment.Type.Top)
                 border = BorderSegments
-                        .Where(b =>
-                        b.SegmentType == Segment.OppositeType(borderType)
-                        && b.Start.Y <= segment.Start.Y
-                        && b.Intersects(side))
-                        .OrderByDescending(c => c.Start.Y)
+                        .Where(x =>
+                        x.SegmentType == Segment.OppositeType(borderType)
+                        && x.Start.Y <= segment.Start.Y
+                        && x.Intersects(side))
+                        .OrderByDescending(x => x.Start.Y)
                         .FirstOrDefault();
                 else
                     border = BorderSegments
-                        .Where(b =>
-                        b.SegmentType == Segment.OppositeType(borderType)
-                        && b.End.Y >= segment.End.Y
-                        && b.Intersects(side))
-                        .OrderBy(c => c.Start.Y)
+                        .Where(x =>
+                        x.SegmentType == Segment.OppositeType(borderType)
+                        && x.End.Y >= segment.End.Y
+                        && x.Intersects(side))
+                        .OrderBy(x => x.Start.Y)
                         .FirstOrDefault();
                 if (border == null)
                     return borderType == Segment.Type.Top ? -100000 : 100000;
