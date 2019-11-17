@@ -21,9 +21,7 @@ namespace BowlingGame
     public class Game_should : ReportingTest<Game_should>
     {
         [Test]
-        public void HaveZeroScore_Be
-        
-        eAnyRolls()
+        public void HaveZeroScore_BeforeAnyRolls()
         {
             new Game()
                 .GetScore()

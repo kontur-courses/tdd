@@ -82,7 +82,7 @@ namespace BowlingGame.Infrastructure
             SaveResults(tests);
 
             
-            each (var kv in tests)
+            foreach (var kv in tests)
                 Console.WriteLine(kv.TestName);
 
             if (string.IsNullOrWhiteSpace(YourName.Authors))

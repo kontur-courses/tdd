@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace TagCloudVisualization
 {
-   public class FermaSpiral
+    public class FermaSpiral
     {
         private readonly float coefficient;
         private readonly Point center;
@@ -18,16 +18,16 @@ namespace TagCloudVisualization
 
         public Point GetSpiralNext()
         {
-            var x = coefficient * MathF.Pow(spiralCounter, 1f / 2) * MathF.Cos(spiralCounter);
-            var y = coefficient * MathF.Pow(spiralCounter, 1f / 2) * MathF.Sin(spiralCounter);
-            var pos = new Point((int)(x + center.X), (int)(y + center.Y));
             spiralCounter++;
-            return pos;
+            return GetSpiralCurrent();
         }
 
-        public void Reset()
+        public Point GetSpiralCurrent()
         {
-            spiralCounter = 0;
+            var x = coefficient * MathF.Pow(spiralCounter, 1f / 2) * MathF.Cos(spiralCounter);
+            var y = coefficient * MathF.Pow(spiralCounter, 1f / 2) * MathF.Sin(spiralCounter);
+            var pos = new Point((int) (x + center.X), (int) (y + center.Y));
+            return pos;
         }
     }
 }

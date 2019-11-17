@@ -6,18 +6,17 @@ using FluentAssertions;
 using NUnit.Framework;
 using TagCloudVisualization;
 
-namespace TagCloudVisualization_Tests
+namespace TagsCloudVisualization_Tests
 {
-   public class FermaSpiral_Tests
+    public class FermaSpiral_Tests
     {
         [TestCase(100, 5)]
         [TestCase(1000, 3)]
         public void FermaSpiral_ContainsAlmostEqual_CountOfPointsInQuarters(int countPoints, int accuracy)
         {
             var counts = GetPointCountsInQuarters(countPoints);
-            var isEql = IsElementsAlmostEqual(counts, accuracy);
 
-            isEql.Should().BeTrue();
+            IsElementsAlmostEqual(counts, accuracy).Should().BeTrue();
         }
 
         private static List<int> GetPointCountsInQuarters(int countPoints)
@@ -29,6 +28,7 @@ namespace TagCloudVisualization_Tests
             {
                 points.Add(spiral.GetSpiralNext());
             }
+
             var firstQuarterPointsCount = points.Count(p => p.X > 0 && p.Y > 0);
             var secondQuarterPointsCount = points.Count(p => p.X < 0 && p.Y > 0);
             var thirdQuarterPointsCount = points.Count(p => p.X > 0 && p.Y < 0);
@@ -53,6 +53,7 @@ namespace TagCloudVisualization_Tests
                         return false;
                 }
             }
+
             return true;
         }
     }

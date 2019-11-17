@@ -7,7 +7,7 @@ using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using TagCloudVisualization;
 
-namespace TagCloudVisualization_Tests
+namespace TagsCloudVisualization_Tests
 {
     [TestFixture]
     public class CircularCloudLayouter_Tests
@@ -25,7 +25,9 @@ namespace TagCloudVisualization_Tests
         [TearDown]
         public void TearDown()
         {
-            var result = TestContext.CurrentContext.Result.Outcome.Status.Equals(TestStatus.Failed) ? "Failed" : "Successful";
+            var result = TestContext.CurrentContext.Result.Outcome.Status.Equals(TestStatus.Failed)
+                ? "Failed"
+                : "Successful";
             var workingDirectory = Environment.CurrentDirectory;
             var testFullName = TestContext.CurrentContext.Test.Name;
             var savePath = workingDirectory + "\\" + result + "Test" + testFullName + ".bmp";
@@ -59,48 +61,42 @@ namespace TagCloudVisualization_Tests
         }
 
         [Test]
-        public void Layouter_ContainsTheSameSizes_OnAddingRectanglesList()
+        public void LayouterRectangles_ContainsTheSameSizes_OnAddingRectanglesList()
         {
-
             var sizes = GetSizesList(50, 50);
 
             sizes.ForEach(s => cloudLayouter.PutNextRectangle(s));
-            var rectangles = cloudLayouter.Rectangles.Select(rect => new Size(rect.Width, rect.Height));
+            var rectanglesSizes = cloudLayouter.Rectangles.Select(rect => new Size(rect.Width, rect.Height));
 
-            rectangles.Should().BeEquivalentTo(sizes);
+            rectanglesSizes.Should().BeEquivalentTo(sizes);
         }
 
+        [Test]
+        public void PutNextRectangle_HasOptimalRectanglesLocations_OnManyRectangles()
+        {
+            const int accuracy = 40;
+            var sizes = GetSizesList(50, 50);
+
+            sizes.ForEach(s => cloudLayouter.PutNextRectangle(s));
+
+            var radius = Math.Max(center.LengthTo(cloudLayouter.RightUpperPointOfCloud),
+                center.LengthTo(cloudLayouter.LeftDownPointOfCloud));
+            var sumOfRectanglesSquares = cloudLayouter.Rectangles.Select(r => r.Width * r.Height).Sum();
+            var squareOfCircle = Math.PI * radius * radius;
+            var isOptimal = sumOfRectanglesSquares / squareOfCircle * 100 < accuracy;
+            isOptimal.Should().BeTrue();
+        }
 
         [TestCase(5, 5)]
         [TestCase(20, 20)]
-        public void PutNextRectangle_ReturnSameSizeRectangle_OnPositiveSizes(int width, int height)
+        public void PutNextRectangle_ReturnSameSizeRectangleOnCenter_OnFirstPutting(int width, int height)
         {
             var size = new Size(width, height);
+            var rectangle = new Rectangle(center, size);
 
-            var rectangleSize = cloudLayouter.PutNextRectangle(size).Size;
+            var rectangleFromLayouter = cloudLayouter.PutNextRectangle(size);
 
-            rectangleSize.Should().Be(size);
-        }
-
-        [TestCase(5, 5)]
-        [TestCase(20, 20)]
-        public void PutNextRectangle_RectangleInCenter_OnFirstRectangle(int width, int height)
-        {
-            var size = new Size(width, height);
-
-            var rectangleSize = cloudLayouter.PutNextRectangle(size).Location;
-
-            rectangleSize.Should().Be(center);
-        }
-
-        private static IEnumerable<Size> TestCases
-        {
-            get
-            {
-                yield return new Size(0, 10);
-                yield return new Size(10, 0);
-                yield return Size.Empty;
-            }
+            rectangleFromLayouter.Should().Be(rectangle);
         }
 
         [TestCaseSource(nameof(TestCases))]
@@ -111,20 +107,14 @@ namespace TagCloudVisualization_Tests
             rectAdding.Should().Throw<ArgumentException>();
         }
 
-        [Test]
-        public void PutNextRectangle_OptimalRectanglesLocation_OnManyRectangles()
+        private static IEnumerable<Size> TestCases
         {
-            var accuracy = 40;
-            var sizes = GetSizesList(50, 50);
-
-            sizes.ForEach(s => cloudLayouter.PutNextRectangle(s));
-
-            var radius = Math.Max(center.LengthTo(cloudLayouter.RightUpperPointOfCloud),
-                    center.LengthTo(cloudLayouter.LeftDownPointOfCloud));
-            var sumOfRectanglesSquares = cloudLayouter.Rectangles.Select(r => r.Width * r.Height).Sum();
-            var squareOfCircle = Math.PI * radius * radius;
-            var isOptimal = sumOfRectanglesSquares / squareOfCircle * 100 < accuracy;
-            isOptimal.Should().BeTrue();
+            get
+            {
+                yield return new Size(0, 10);
+                yield return new Size(10, 0);
+                yield return Size.Empty;
+            }
         }
 
         private static List<Size> GetSizesList(int widthMax, int heightMax)

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-//пришлось скачивать через нугет так как на нетКоре не было битмапа)
 using System.Drawing;
 
 namespace TagCloudVisualization
@@ -23,7 +22,6 @@ namespace TagCloudVisualization
             var bitmap = new Bitmap(width, height);
             var graphics = Graphics.FromImage(bitmap);
 
-            var whiteRectangle = new Rectangle(0, 0, width, height);
             graphics.Clear(Color.White);
             graphics.TranslateTransform(border / 2 - layouter.LeftDownPointOfCloud.X,
                 border / 2 - layouter.LeftDownPointOfCloud.Y);
