@@ -42,7 +42,7 @@
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="TagCloudDrawing.cs" />
-    <Compile Include="ProgrammMain.cs" />
+    <Compile Include="Programm.cs" />
     <Compile Include="CircularCloudLayouterTests.cs" />
   </ItemGroup>
   <ItemGroup>

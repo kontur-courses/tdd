@@ -8,11 +8,11 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        public readonly Point cloudCenter;
+        private readonly Point cloudCenter;
         private List<Rectangle> RectanglesList { get; } = new List<Rectangle>();
-        private const double spiralCoefControlsPointShift = 1;
+        private const double SpiralCoefControlsPointShift = 1;
         private double spiralAngle = 0;
-        private const double angleDelta = 0.1;
+        private const double AngleDelta = 0.1;
 
 
         public CircularCloudLayouter(Point center)
@@ -25,16 +25,14 @@ namespace TagsCloudVisualization
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException("Sizes of rectangle must be positive");
             var rectangle = Rectangle.Empty;
-            var possibleX = 0;
-            var possibleY = 0;
             do
             {
-                possibleX = (int)(spiralCoefControlsPointShift * spiralAngle * Math.Cos(spiralAngle) + cloudCenter.X -
+                var possibleX = (int)(SpiralCoefControlsPointShift * spiralAngle * Math.Cos(spiralAngle) + cloudCenter.X -
                                   rectangleSize.Width / 2.0);
-                possibleY = (int)(spiralCoefControlsPointShift * spiralAngle * Math.Sin(spiralAngle) + cloudCenter.Y -
+                var possibleY = (int)(SpiralCoefControlsPointShift * spiralAngle * Math.Sin(spiralAngle) + cloudCenter.Y -
                                   rectangleSize.Height / 2.0);
                 rectangle = new Rectangle(new Point(possibleX, possibleY), rectangleSize);
-                spiralAngle += angleDelta;
+                spiralAngle += AngleDelta;
             } while (RectanglesList.Any(r => r.IntersectsWith(rectangle)));
             rectangle = MakeRectangleCloserToCentre(rectangle);
             RectanglesList.Add(rectangle);

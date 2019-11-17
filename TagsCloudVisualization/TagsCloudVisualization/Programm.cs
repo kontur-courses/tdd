@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public class ProgrammMain
+    public class Programm
     {
         static void Main(string[] args)
         {
@@ -13,8 +13,8 @@ namespace TagsCloudVisualization
             var random = new Random(randomRange);
             var sizes = new Size[rectanglesCount];
             for (var i = 0; i < rectanglesCount; i++)
-                sizes[i] = new Size(1 + random.Next(randomRange), 1 + random.Next(randomRange));
-            var drawer = new TagCloudDrawing(3000, 3000, "Bitmap4.bmp",
+                sizes[i] = new Size(random.Next(1, randomRange), random.Next(1, randomRange));
+            var drawer = new TagCloudDrawing(1000, 1000, "Bitmap4.bmp",
                 new Point(-3, -4));
             drawer.DrawTagCloud(sizes);
         }

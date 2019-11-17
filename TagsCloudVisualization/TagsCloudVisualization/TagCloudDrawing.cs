@@ -24,8 +24,8 @@ namespace TagsCloudVisualization
             this.imageWidth = imageWidth;
             this.imageHeight = imageHeight;
             this.fileName = fileName;
-            tagCloudCenter = new Point(tagCloudCenter.X + imageHeight / 2,
-                tagCloudCenter.Y + imageWidth / 2);
+            tagCloudCenter = new Point(tagCloudCenter.X + imageWidth / 2,
+                tagCloudCenter.Y + imageHeight / 2);
             if (0 > tagCloudCenter.X || tagCloudCenter.X > imageWidth ||
                 0 > tagCloudCenter.Y || tagCloudCenter.Y > imageHeight)
                 throw new ArgumentException("Center of tag cloud must be in the picture");
@@ -43,7 +43,7 @@ namespace TagsCloudVisualization
                 drawingObj.FillRectangle(new SolidBrush(Color.AliceBlue), curRectangle);
                 drawingObj.DrawRectangle(new Pen(new SolidBrush(Color.Magenta)), curRectangle);
             }
-            var imagePath = AppDomain.CurrentDomain.BaseDirectory + fileName;
+            var imagePath = Path.Combine(new string[] {AppDomain.CurrentDomain.BaseDirectory, fileName});
             Console.WriteLine("Tag cloud visualization saved to file " + imagePath);
             image.Save(imagePath);
         }
