@@ -59,7 +59,7 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        [TestCase(0, 5)]
+        [TestCase(0, 4)]
         [TestCase(3, -5)]
         [TestCase(-3, -5)]
         [TestCase(-3, 5)]
