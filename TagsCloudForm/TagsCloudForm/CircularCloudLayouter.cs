@@ -135,63 +135,51 @@ namespace TagsCloudVisualization
 
         private bool CheckOppositeBorder(Point rectanglePos, Size rectangleSize, Segment.Type segmentType)
         {
-            if (segmentType == Segment.Type.Top)
+            if (Segment.Horizontal(segmentType))
             {
-                var TopBorderY = FindBorder(
-                    new Segment(
-                        new Point(rectanglePos.X, rectanglePos.Y + rectangleSize.Height - 1)
-                        , new Point(rectanglePos.X, rectanglePos.Y + rectangleSize.Height)
-                        , Segment.Type.Right)
+                var BorderY = FindBorder(
+                    MakeFakeSegment(rectanglePos, rectangleSize, segmentType)
                     , new Size(rectangleSize.Width, 1)
-                    , Segment.Type.Top);
-                if (TopBorderY <= rectanglePos.Y)
-                    return true;
-
-                return false;
+                    , segmentType);
+                return (segmentType == Segment.Type.Top) ? (BorderY <= rectanglePos.Y) : (BorderY >= rectanglePos.Y + rectangleSize.Height);
             }
-            if (segmentType == Segment.Type.Bottom)
+            else
             {
-                var BotBorderY = FindBorder(
-                    new Segment(
+                var BorderX = FindBorder(
+                   MakeFakeSegment(rectanglePos, rectangleSize, segmentType)
+                   , new Size(1, rectangleSize.Height)
+                   , segmentType);
+                return (segmentType == Segment.Type.Left) ? (BorderX <= rectanglePos.X) : (BorderX >= rectanglePos.X + rectangleSize.Width);
+            }
+        }
+
+        private Segment MakeFakeSegment(Point rectanglePos, Size rectangleSize, Segment.Type segmentType)
+        {
+            switch (segmentType)
+            {
+                case Segment.Type.Top:
+                    return new Segment(
+                            new Point(rectanglePos.X, rectanglePos.Y + rectangleSize.Height - 1)
+                            , new Point(rectanglePos.X, rectanglePos.Y + rectangleSize.Height)
+                            , Segment.Type.Right);
+                case Segment.Type.Bottom:
+                    return new Segment(
                         new Point(rectanglePos.X, rectanglePos.Y)
                         , new Point(rectanglePos.X, rectanglePos.Y + 1)
-                        , Segment.Type.Right)
-                    , new Size(rectangleSize.Width, 1)
-                    , Segment.Type.Bottom);
-                if (BotBorderY >= rectanglePos.Y + rectangleSize.Height)
-                    return true;
-
-                return false;
-            }
-            if (segmentType == Segment.Type.Left)
-            {
-                var LeftBorderX = FindBorder(
-                    new Segment(
+                        , Segment.Type.Right);
+                case Segment.Type.Left:
+                    return new Segment(
                         new Point(rectanglePos.X + rectangleSize.Width - 1, rectanglePos.Y + rectangleSize.Height)
                         , new Point(rectanglePos.X + rectangleSize.Width, rectanglePos.Y + rectangleSize.Height)
-                        , Segment.Type.Top)
-                    , new Size(1, rectangleSize.Height)
-                    , Segment.Type.Left);
-                if (LeftBorderX <= rectanglePos.X)
-                    return true;
-
-                return false;
-            }
-            if (segmentType == Segment.Type.Right)// кажется здесь должно быть FindLeftBorderX
-            {
-                var RightBorderX = FindBorder(
-                    new Segment(
+                        , Segment.Type.Top);
+                case Segment.Type.Right:
+                    return new Segment(
                         new Point(rectanglePos.X, rectanglePos.Y + rectangleSize.Height)
                         , new Point(rectanglePos.X + 1, rectanglePos.Y + rectangleSize.Height)
-                        , Segment.Type.Top)
-                    , new Size(1, rectangleSize.Height)
-                    , Segment.Type.Right);
-                if (RightBorderX >= rectanglePos.X + rectangleSize.Width)
-                    return true;
-
-                return false;
+                        , Segment.Type.Top);
+                default:
+                    return default;
             }
-            return false;
         }
 
         private int FindBorder(Segment segment, Size rectangleSize, Segment.Type borderType)
@@ -218,10 +206,7 @@ namespace TagsCloudVisualization
                             && x.Intersects(side))
                             .OrderBy(x => x.Start.X)
                             .FirstOrDefault();
-                if (border == null)
-                    return borderType == Segment.Type.Left ? -100000 : 100000;
-
-                return border.Start.X;
+                return (border == null) ? (borderType == Segment.Type.Left ? -100000 : 100000) : border.Start.X;
             }
             else
             {
@@ -229,14 +214,14 @@ namespace TagsCloudVisualization
                 int rightRectSide = leftRectSide + rectangleSize.Width;
                 var side = new Segment(leftRectSide, 0, rightRectSide, 0, borderType);
                 Segment border;
-                if (borderType==Segment.Type.Top)
-                border = BorderSegments
-                        .Where(x =>
-                        x.SegmentType == Segment.OppositeType(borderType)
-                        && x.Start.Y <= segment.Start.Y
-                        && x.Intersects(side))
-                        .OrderByDescending(x => x.Start.Y)
-                        .FirstOrDefault();
+                if (borderType == Segment.Type.Top)
+                    border = BorderSegments
+                            .Where(x =>
+                            x.SegmentType == Segment.OppositeType(borderType)
+                            && x.Start.Y <= segment.Start.Y
+                            && x.Intersects(side))
+                            .OrderByDescending(x => x.Start.Y)
+                            .FirstOrDefault();
                 else
                     border = BorderSegments
                         .Where(x =>
@@ -245,34 +230,19 @@ namespace TagsCloudVisualization
                         && x.Intersects(side))
                         .OrderBy(x => x.Start.Y)
                         .FirstOrDefault();
-                if (border == null)
-                    return borderType == Segment.Type.Top ? -100000 : 100000;
-
-                return border.Start.Y;
+                return (border == null) ? (borderType == Segment.Type.Top ? -100000 : 100000) : border.Start.Y;
             }
         }
 
 
         private PositionSearchResult CheckDistance(PositionSearchResult currentSearchRes, Segment segment, Point rectangleCoord, Size rectangleSize)
         {
-            var dist = Distance(GetRectangleCenter(new Rectangle(rectangleCoord, rectangleSize)), CloudCenter);
+            var rectangle = new Rectangle(rectangleCoord, rectangleSize);
+            var dist = rectangle.GetRectangleCenter().Distance(CloudCenter);
             if (dist < currentSearchRes.MinDistance)
-            {
                 return currentSearchRes.Update(dist, segment, rectangleCoord);
-            }
+
             return currentSearchRes;
-        }
-
-
-        private Point GetRectangleCenter(Rectangle rect)
-        {
-            return new Point(rect.Left + rect.Width / 2,
-                     rect.Top + rect.Height / 2);
-        }
-
-        private double Distance(Point a, Point b)
-        {
-            return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
         }
 
 

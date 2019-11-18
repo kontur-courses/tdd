@@ -45,7 +45,7 @@ namespace TagsCloudVisualization
             bitmap.Save(pictureName, ImageFormat.Png);
         }
 
-        private static void WriteLog(List<Rectangle> rectangles, string testName)
+        private void WriteLog(List<Rectangle> rectangles, string testName)
         {
             string fileName = string.Format("{0}.txt", testName);
             string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Data\", fileName);
@@ -115,9 +115,11 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_AddingThreeRectangles_ShouldNotIntersect()
         {
-            var rect1 = Layouter.PutNextRectangle(new Size(10, 10));
-            var rect2 = Layouter.PutNextRectangle(new Size(10, 10));
-            var rect3 = Layouter.PutNextRectangle(new Size(10, 10));
+            var rectSize = new Size(10, 10);
+
+            var rect1 = Layouter.PutNextRectangle(rectSize);
+            var rect2 = Layouter.PutNextRectangle(rectSize);
+            var rect3 = Layouter.PutNextRectangle(rectSize);
 
             rect3.IntersectsWith(rect2).Should().BeFalse();
             rect3.IntersectsWith(rect1).Should().BeFalse();
@@ -209,22 +211,6 @@ namespace TagsCloudVisualization
                 foreach (var rect2 in rectangles)
                     if (rect1 != rect2)
                         rect1.IntersectsWith(rect2).Should().BeFalse();
-        }
-
-
-        [Test]
-        public void TearDown_AlwaysFallingTest_ShouldSavePictureProper()
-        {
-            var rectangles = new List<Rectangle>();
-            var rnd = new Random();
-            for (int i = 0; i < 10; i++)
-            {
-                var size = new Size(rnd.Next(5, 100), rnd.Next(5, 100));
-                var rect = Layouter.PutNextRectangle(size);
-                //rectangles.ForEach(a => rect.IntersectsWith(a).Should().BeFalse());
-                rectangles.Add(rect);
-            }
-            true.Should().BeFalse();
         }
 
     }
