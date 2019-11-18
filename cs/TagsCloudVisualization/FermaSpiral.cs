@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace TagCloudVisualization
+namespace TagsCloudVisualization
 {
     public class FermaSpiral
     {

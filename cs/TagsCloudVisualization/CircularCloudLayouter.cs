@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace TagCloudVisualization
+namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
@@ -61,50 +61,56 @@ namespace TagCloudVisualization
                 rect.Y = currentPoint.Y;
             }
 
-            var canMoveToCenter = true;
-            while (canMoveToCenter)
-            {
-                rect = TryMoveToCenter(out canMoveToCenter, rect);
-            }
+            rect = GetRectangleMovedToCenter(rect);
 
             Rectangles.Add(rect);
             return rect;
         }
 
-        private Rectangle TryMoveToCenter(out bool canMove, Rectangle rect)
+        private Rectangle GetRectangleMovedToCenter(Rectangle rect)
         {
-            if (rect.X == center.X && rect.Y == center.Y)
-            {
-                canMove = false;
-                return rect;
-            }
-
-            var dx = center.X - rect.X;
-            var dy = center.Y - rect.Y;
-            var canMoveX = false;
-            var canMoveY = false;
-            rect = dx == 0 ? rect :
-                dx > 0 ? TryToMove(out canMoveX, rect, 1, 0) :
-                TryToMove(out canMoveX, rect, -1, 0);
-            rect = dy == 0 ? rect :
-                dy > 0 ? TryToMove(out canMoveY, rect, 0, 1) :
-                TryToMove(out canMoveY, rect, 0, -1);
-            canMove = canMoveX || canMoveY;
+            while (TryMoveToCenter(rect, out rect)) ;
             return rect;
         }
 
-        private Rectangle TryToMove(out bool canMove, Rectangle rect, int dx, int dy)
+        private bool TryMoveToCenter(Rectangle rect, out Rectangle rectOut)
         {
-            rect.X += dx;
-            rect.Y += dy;
-            canMove = !Rectangles.Any(r => r.IntersectsWith(rect));
-            if (!canMove)
             {
-                rect.X -= dx;
-                rect.Y -= dy;
-            }
+                if (rect.X == center.X && rect.Y == center.Y)
+                {
+                    rectOut = rect;
+                    return false;
+                }
 
-            return rect;
+                var dx = center.X - rect.X;
+                var dy = center.Y - rect.Y;
+
+                rectOut = rect;
+                var canMoveX = dx != 0 &&
+                               (dx > 0
+                                   ? TryMove(rect, 1, 0, out rectOut)
+                                   : TryMove(rect, -1, 0, out rectOut));
+                var canMoveY = dy != 0 &&
+                               (dy > 0
+                                   ? TryMove(rectOut, 0, 1, out rectOut)
+                                   : TryMove(rectOut, 0, -1, out rectOut));
+                return canMoveX || canMoveY;
+            }
+        }
+
+        private bool TryMove(Rectangle rect, int dx, int dy, out Rectangle rectOut)
+        {
+            {
+                rect.X += dx;
+                rect.Y += dy;
+                rectOut = rect;
+                if (!Rectangles.Any(r => r.IntersectsWith(rect)))
+                    return true;
+
+                rectOut.X -= dx;
+                rectOut.Y -= dy;
+                return false;
+            }
         }
     }
 }
