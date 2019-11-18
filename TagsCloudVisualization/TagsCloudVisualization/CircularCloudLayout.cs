@@ -21,6 +21,8 @@ namespace TagsCloudVisualization
             rectangles = new List<Rectangle>();
         }
 
+        public List<Rectangle> GetRectangles() => new List<Rectangle>(rectangles);
+
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
@@ -53,7 +55,5 @@ namespace TagsCloudVisualization
             angle += step;
             return new Point(cloudCenter.X + x, cloudCenter.Y + (int)y);
         }
-
-
     }
 }
