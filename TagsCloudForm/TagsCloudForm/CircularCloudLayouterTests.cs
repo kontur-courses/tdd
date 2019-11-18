@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Drawing.Imaging;
 using NUnit.Framework.Interfaces;
+using System.IO;
 
 namespace TagsCloudVisualization
 {
@@ -26,17 +27,46 @@ namespace TagsCloudVisualization
             return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
         }
 
-        private void SavePicture(List<Rectangle> rectangles)
+        private void SavePicture(List<Rectangle> rectangles, string testName)
         {
-            string pictureName = @"..\..\picture.png";
-            var bitmap = new Bitmap(Convert.ToInt32(1024), Convert.ToInt32(1024), System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            string fileName = string.Format("{0}.png", testName);
+            string pictureName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Data\", fileName);
+            var imageSize = new Size(600, 600);
+            var bitmap = new Bitmap(imageSize.Width, imageSize.Height, PixelFormat.Format32bppArgb);
             var graphics = Graphics.FromImage(bitmap);
+            var rectBrush = new SolidBrush(Color.LightGreen);
+            var rectBorderPen = new Pen(Color.Black, 2);
             foreach (var rect in rectangles)
             {
-                graphics.FillRectangle(new SolidBrush(Color.LightGreen), rect);
-                graphics.DrawRectangle(new Pen(Color.Black, 2), rect);
+                var offsetRect = new Rectangle(new Point(rect.Location.X + imageSize.Width/2, rect.Location.Y + imageSize.Height / 2), rect.Size);
+                graphics.FillRectangle(rectBrush, offsetRect);
+                graphics.DrawRectangle(rectBorderPen, offsetRect);
             }
             bitmap.Save(pictureName, ImageFormat.Png);
+        }
+
+        private static void WriteLog(List<Rectangle> rectangles, string testName)
+        {
+            string fileName = string.Format("{0}.txt", testName);
+            string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"Data\", fileName);
+            if (File.Exists(filePath) != true)
+            {
+                using (StreamWriter sw = new StreamWriter(new FileStream(filePath, FileMode.Create, FileAccess.Write)))
+                {
+                    foreach (var rect in rectangles)
+                        sw.WriteLine(rect.ToString());
+                    sw.WriteLine("");
+                }
+            }
+            else
+            {
+                using (StreamWriter sw = new StreamWriter(new FileStream(filePath, FileMode.Open, FileAccess.Write)))
+                {
+                    foreach (var rect in rectangles)
+                        sw.WriteLine(rect.ToString());
+                    sw.WriteLine("");
+                }
+            }
         }
 
         [SetUp]
@@ -51,20 +81,20 @@ namespace TagsCloudVisualization
         {
             if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Passed)
             {
-                SavePicture(Layouter.GetRectangles());
+                var testName = TestContext.CurrentContext.Test.Name;
+                SavePicture(Layouter.GetRectangles(), testName);
+                WriteLog(Layouter.GetRectangles(), testName);
             }
         }
 
         [Test]
         public void PutNextRectangle_PuttingOnce_RectangleCenterShouldBeInLayouterCenter()
         {
-            var center = new Point(0, 0);
-            var layouter = new CircularCloudLayouter(center);
             var rnd = new Random();
             var size = new Size(rnd.Next(5, 100), rnd.Next(5, 100));
             var expectedLocation = new Point(-(int)Math.Floor(size.Width / (double)2), -(int)Math.Floor(size.Height / (double)2));
 
-            var rect = layouter.PutNextRectangle(size);
+            var rect = Layouter.PutNextRectangle(size);
 
             rect.Location.Should().Be(expectedLocation);
         }
@@ -72,14 +102,12 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_PuttingTwoRectangles_RectanglesShouldNotIntersect()
         {
-            var center = new Point(0, 0);
-            var layouter = new CircularCloudLayouter(center);
             var rnd = new Random();
             var size1 = new Size(rnd.Next(5, 100), rnd.Next(5, 100));
             var size2 = new Size(rnd.Next(5, 100), rnd.Next(5, 100));
 
-            var rect1 = layouter.PutNextRectangle(size1);
-            var rect2 = layouter.PutNextRectangle(size2);
+            var rect1 = Layouter.PutNextRectangle(size1);
+            var rect2 = Layouter.PutNextRectangle(size2);
 
             rect1.IntersectsWith(rect2).Should().BeFalse();
         }
@@ -87,12 +115,9 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_AddingThreeRectangles_ShouldNotIntersect()
         {
-            var center = new Point(0, 0);
-            var layouter = new CircularCloudLayouter(center);
-
-            var rect1 = layouter.PutNextRectangle(new Size(10, 10));
-            var rect2 = layouter.PutNextRectangle(new Size(10, 10));
-            var rect3 = layouter.PutNextRectangle(new Size(10, 10));
+            var rect1 = Layouter.PutNextRectangle(new Size(10, 10));
+            var rect2 = Layouter.PutNextRectangle(new Size(10, 10));
+            var rect3 = Layouter.PutNextRectangle(new Size(10, 10));
 
             rect3.IntersectsWith(rect2).Should().BeFalse();
             rect3.IntersectsWith(rect1).Should().BeFalse();
@@ -102,12 +127,8 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_AddingSquareAndBiggerSquare_SquaresShouldNotIntersect()
         {
-            var center = new Point(0, 0);
-            var squareSize = new Size(10, 10);
-            var layouter = new CircularCloudLayouter(center);
-
-            var rect1 = layouter.PutNextRectangle(squareSize);
-            var rect2 = layouter.PutNextRectangle(new Size(20, 20));
+            var rect1 = Layouter.PutNextRectangle(new Size(10, 10));
+            var rect2 = Layouter.PutNextRectangle(new Size(20, 20));
 
             rect1.IntersectsWith(rect2).Should().BeFalse();
         }
@@ -115,35 +136,18 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_FiftyRectanglesInSafeMode_ShouldNotIntersect()
         {
-            var center = new Point(0, 0);
-            var layouter = new CircularCloudLayouter(center);
             var rectangles = new List<Rectangle>();
             var rnd = new Random();
             for (int i=0; i<50; i++)
             {
                 var size = new Size(rnd.Next(5, 100), rnd.Next(5, 100));
-                var rect = layouter.PutNextRectangle(size);
+                var rect = Layouter.PutNextRectangle(size);
                 rectangles.ForEach(a => rect.IntersectsWith(a).Should().BeFalse());
                 rectangles.Add(rect);
             }
         }
 
 
-        [Test]
-        public void PutNextRectangle_TestFromRandomTester_RectanglesShouldNotIntersect()
-        {
-            var center = new Point(0, 0);
-            var layouter = new CircularCloudLayouter(center);
-            var rects = new List<Rectangle>
-            {
-                layouter.PutNextRectangle(new Size(86, 79)),
-                layouter.PutNextRectangle(new Size(21, 92)),
-            };
-            var testedRect = layouter.PutNextRectangle(new Size(97, 98));
-            rects.ForEach(a => testedRect.IntersectsWith(a).Should().BeFalse());
-        }
-
-        [Test]
         public void PutNextRectangle_TestFromRandomTester2_LastRectangleShouldNotIntersect()
         {
             var center = new Point(0, 0);
@@ -158,61 +162,6 @@ namespace TagsCloudVisualization
             rects.ForEach(a => testedRect.IntersectsWith(a).Should().BeFalse());
         }
 
-        [Test]
-        public void PutNextRectangle_TestFromRandomTester3_LastRectangleShouldNotIntersectWithOthers()
-        {
-            var center = new Point(0, 0);
-            var layouter = new CircularCloudLayouter(center);
-            var rects = new List<Rectangle>();
-            rects.Add(layouter.PutNextRectangle(new Size(73, 63)));
-            var testedRect = layouter.PutNextRectangle(new Size(84, 23));
-            rects.ForEach(a => testedRect.IntersectsWith(a).Should().BeFalse());
-        }
-
-        [Test]
-        public void PutNextRectangle_TestFromRandomTester4_LastRectangleShouldNotIntersectWithOthers()
-        {
-            var center = new Point(0, 0);
-            var layouter = new CircularCloudLayouter(center);
-            var rects = new List<Rectangle> {
-            layouter.PutNextRectangle(new Size(89, 26)),
-            layouter.PutNextRectangle(new Size(30, 44)),
-            layouter.PutNextRectangle(new Size(97, 84)),
-            layouter.PutNextRectangle(new Size(28, 92)),
-            };
-            var testedRect = layouter.PutNextRectangle(new Size(60, 42));
-            rects.ForEach(a => testedRect.IntersectsWith(a).Should().BeFalse());
-        }
-
-        [Test]
-        public void PutNextRectangle_TestFromRandomTester5_LastRectangleShouldNotIntersectWithOthers()
-        {
-            var center = new Point(0, 0);
-            var layouter = new CircularCloudLayouter(center);
-            var rects = new List<Rectangle> {
-            layouter.PutNextRectangle(new Size(42, 71)),
-            layouter.PutNextRectangle(new Size(77, 53)),
-            layouter.PutNextRectangle(new Size(24, 52)),
-            layouter.PutNextRectangle(new Size(74, 36)),
-            };
-            var testedRect = layouter.PutNextRectangle(new Size(32, 46));
-            rects.ForEach(a => testedRect.IntersectsWith(a).Should().BeFalse());
-        }
-
-        [Test]
-        public void PutNextRectangle_TestFromRandomTester6_LastRectangleShouldNotIntersectWithOthers()
-        {
-            var center = new Point(0, 0);
-            var layouter = new CircularCloudLayouter(center);
-            var rects = new List<Rectangle> {
-            layouter.PutNextRectangle(new Size(37, 75)),
-            layouter.PutNextRectangle(new Size(80, 81)),
-            layouter.PutNextRectangle(new Size(96, 26)),
-            layouter.PutNextRectangle(new Size(51, 28)),
-            };
-            var testedRect = layouter.PutNextRectangle(new Size(89, 79));
-            rects.ForEach(a => testedRect.IntersectsWith(a).Should().BeFalse());
-        }
 
         [Test]
         public void PutNextRectangle_TestFromRandomTester7_LastRectangleShouldNotIntersectWithOthers()
@@ -233,18 +182,16 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_AddingFiftyRandomRectangles_CheckDensity()
         {
-            var center = new Point(0, 0);
-            var layouter = new CircularCloudLayouter(center);
             var rectangles = new List<Rectangle>();
             var rnd = new Random();
             for (int i = 0; i < 50; i++)
             {
                 var size = new Size(rnd.Next(5, 100), rnd.Next(5, 100));
-                var rect = layouter.PutNextRectangle(size);
+                var rect = Layouter.PutNextRectangle(size);
                 rectangles.Add(rect);
             }
 
-            var cloudRadius = rectangles.Select(a => GetDistance(a, center)).OrderByDescending(a => a).First();
+            var cloudRadius = rectangles.Select(a => GetDistance(a, CloudCenter)).OrderByDescending(a => a).First();
             var rectanglesArea = rectangles.Select(a => a.Width * a.Height).Sum();
             var cloudArea = Math.PI * cloudRadius * cloudRadius;
 
@@ -255,17 +202,31 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_HundredRectangles_ShouldNotIntersect()
         {
-            var center = new Point(0, 0);
-            var layouter = new CircularCloudLayouter(center);
             var rectangles = new List<Rectangle>();
             var rnd = new Random();
             for (int i = 0; i < 100; i++)
             {
                 var size = new Size(rnd.Next(5, 100), rnd.Next(5, 100));
-                var rect = layouter.PutNextRectangle(size);
+                var rect = Layouter.PutNextRectangle(size);
                 rectangles.ForEach(a => rect.IntersectsWith(a).Should().BeFalse());
                 rectangles.Add(rect);
             }
+        }
+
+
+        [Test]
+        public void PutNextRectangle_Test_ShouldNotIntersect()
+        {
+            var rectangles = new List<Rectangle>();
+            var rnd = new Random();
+            for (int i = 0; i < 10; i++)
+            {
+                var size = new Size(rnd.Next(5, 100), rnd.Next(5, 100));
+                var rect = Layouter.PutNextRectangle(size);
+                //rectangles.ForEach(a => rect.IntersectsWith(a).Should().BeFalse());
+                rectangles.Add(rect);
+            }
+            true.Should().BeFalse();
         }
 
     }

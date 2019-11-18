@@ -11,7 +11,6 @@ namespace TagsCloudForm
 {
     class CloudForm : Form
     {
-        private const bool savePicture = false;
         private readonly int  RectanglesNum;
         private Point CloudCenter;
         private readonly int MinRectSize;
@@ -55,49 +54,7 @@ namespace TagsCloudForm
                 rectangles.Add(rect);
                 Thread.Sleep(100);
             }
-            if (savePicture)
-                SavePicture(rectangles);
 
-        }
-
-        private static void WriteLog(List<Rectangle> rectangles)
-        {
-            string fileName = @"..\..\testLog.txt";
-            if (File.Exists(fileName) != true)
-            {
-                using (StreamWriter sw = new StreamWriter(new FileStream(fileName, FileMode.Create, FileAccess.Write)))
-                {
-                    foreach (var rect in rectangles)
-                    {
-                        sw.WriteLine(rect.ToString());
-                    }
-                    sw.WriteLine("");
-                }
-            }
-            else
-            {
-                using (StreamWriter sw = new StreamWriter(new FileStream(fileName, FileMode.Open, FileAccess.Write)))
-                {
-                    foreach (var rect in rectangles)
-                    {
-                        sw.WriteLine(rect.ToString());
-                    }
-                    sw.WriteLine("");
-                }
-            }
-        }
-
-        private void SavePicture(List<Rectangle> rectangles)
-        {
-            string pictureName = @"..\..\picture.png";
-            var bitmap = new Bitmap(Convert.ToInt32(1024), Convert.ToInt32(1024), System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            var graphics = Graphics.FromImage(bitmap);
-            foreach (var rect in rectangles)
-            {
-                graphics.FillRectangle(new SolidBrush(Color.LightGreen), rect);
-                graphics.DrawRectangle(new Pen(Color.Black, 2), rect);
-            }
-            bitmap.Save(pictureName, ImageFormat.Png);
         }
 
         private void InitializeComponent()
