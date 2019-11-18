@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using System.Drawing;
+using System.IO;
+using NUnit.Framework.Interfaces;
+using System.Drawing.Imaging;
 
 namespace TagsCloudVisualization
 {
@@ -16,7 +19,7 @@ namespace TagsCloudVisualization
 
             public Size BasicSize = new Size(5, 2);
 
-            public Point BasicCenter = new Point(50, 50);
+            public Point BasicCenter = new Point(100, 100);
 
             private CircularCloudLayouter CreateBaseLayouter()
             {
@@ -27,6 +30,21 @@ namespace TagsCloudVisualization
             public void BaseSetUp()
             {
                 BaseLayouter = CreateBaseLayouter();
+            }
+
+            [TearDown]
+            public void CreateImageOnFail()
+            {
+                if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+                {
+                    var visualizer = new Visualizer();
+                    var testName = TestContext.CurrentContext.Test.Name;
+                    var directory = Directory.GetCurrentDirectory();
+                    var path = Path.Combine(directory, "TearDownImages", $"{testName}.png");
+                    var bmp = visualizer.Visualize(BaseLayouter.GetRectangles(), new Size(200, 200));
+                    bmp.Save(path, ImageFormat.Png);
+                    TestContext.WriteLine($"Tag cloud visualization saved to file {path}");
+                }
             }
 
             public bool AreIntersecting(List<Rectangle> rectangles)
