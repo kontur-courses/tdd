@@ -59,14 +59,14 @@ namespace TagsCloudForm
 
         private void InitializeComponent()
         {
-            this.SuspendLayout();
+            SuspendLayout();
             // 
             // CloudForm
             // 
-            this.ClientSize = new System.Drawing.Size(584, 561);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Name = "CloudForm";
-            this.ResumeLayout(false);
+            ClientSize = new Size(584, 561);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            Name = "CloudForm";
+            ResumeLayout(false);
 
         }
     }

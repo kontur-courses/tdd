@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
+
 
 namespace TagsCloudVisualization
 {
     public class PositionSearchResult
     {
-        public double MinDistance { get; private set; }
-        public Segment MinSegment { get; private set; }
-        public Point ClosestRectCoordinates { get; private set; }
+        public double MinDistance { get; }
+        public Segment MinSegment { get; }
+        public Point ClosestRectCoordinates { get; }
         public PositionSearchResult(double minDistance, Segment minSegment, Point closestRectCoordinates)
         {
             MinDistance = minDistance;

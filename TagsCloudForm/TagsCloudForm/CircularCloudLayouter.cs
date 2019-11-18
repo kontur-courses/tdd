@@ -62,6 +62,7 @@ namespace TagsCloudVisualization
             {
                 if (extendedSegment.Length < rectangleSize.Width)
                     return searchResult;
+
                 if (extendedSegment.Start.X < CloudCenter.X
                 && extendedSegment.End.X > CloudCenter.X
                 && CloudCenter.X + (int)Math.Truncate(rectangleSize.Width / (double)2) + 1 <= extendedSegment.End.X
@@ -96,6 +97,7 @@ namespace TagsCloudVisualization
             {
                 if (extendedSegment.Length < rectangleSize.Height)
                     return searchResult;
+
                 if (extendedSegment.Start.Y < CloudCenter.Y
                 && extendedSegment.End.Y > CloudCenter.Y
                 && CloudCenter.Y + (int)Math.Truncate(rectangleSize.Height / (double)2) + 1 <= extendedSegment.End.Y
@@ -144,6 +146,7 @@ namespace TagsCloudVisualization
                     , Segment.Type.Top);
                 if (TopBorderY <= rectanglePos.Y)
                     return true;
+
                 return false;
             }
             if (segmentType == Segment.Type.Bottom)
@@ -157,6 +160,7 @@ namespace TagsCloudVisualization
                     , Segment.Type.Bottom);
                 if (BotBorderY >= rectanglePos.Y + rectangleSize.Height)
                     return true;
+
                 return false;
             }
             if (segmentType == Segment.Type.Left)
@@ -170,6 +174,7 @@ namespace TagsCloudVisualization
                     , Segment.Type.Left);
                 if (LeftBorderX <= rectanglePos.X)
                     return true;
+
                 return false;
             }
             if (segmentType == Segment.Type.Right)// кажется здесь должно быть FindLeftBorderX
@@ -183,6 +188,7 @@ namespace TagsCloudVisualization
                     , Segment.Type.Right);
                 if (RightBorderX >= rectanglePos.X + rectangleSize.Width)
                     return true;
+
                 return false;
             }
             return false;
@@ -214,6 +220,7 @@ namespace TagsCloudVisualization
                             .FirstOrDefault();
                 if (border == null)
                     return borderType == Segment.Type.Left ? -100000 : 100000;
+
                 return border.Start.X;
             }
             else
@@ -240,6 +247,7 @@ namespace TagsCloudVisualization
                         .FirstOrDefault();
                 if (border == null)
                     return borderType == Segment.Type.Top ? -100000 : 100000;
+
                 return border.Start.Y;
             }
         }

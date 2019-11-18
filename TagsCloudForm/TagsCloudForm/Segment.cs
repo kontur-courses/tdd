@@ -6,27 +6,19 @@ namespace TagsCloudVisualization
 {
     public class Segment
     {
-        public Point Start { get; private set; }
-        public  Point End { get; private set; }
-        public  Type SegmentType { get; private set; }
+        public Point Start { get; }
+        public  Point End { get; }
+        public  Type SegmentType { get; }
         public double Length  => Math.Sqrt(Math.Pow((Start.X - End.X), 2) + Math.Pow((Start.Y - End.Y), 2)); 
         public Segment(Point start, Point end, Type type)
         {
-            if (type == Type.Bottom || type == Type.Top)
+            if (Segment.Horizontal(type))
             {
                 if (start.Y != end.Y)
                     throw new ArgumentException("Wrong coordinates");
 
-                if (start.X < end.X)
-                {
-                    Start = start;
-                    End = end;
-                }
-                else
-                {
-                    Start = end;
-                    End = start;
-                }
+                Start = start.X < end.X ? start : end;
+                End = start.X < end.X ? end : start;
                 SegmentType = type;
             }
             else
@@ -34,16 +26,8 @@ namespace TagsCloudVisualization
                 if (start.X != end.X)
                     throw new ArgumentException("Wrong coordinates");
 
-                if (start.Y < end.Y)
-                {
-                    Start = start;
-                    End = end;
-                }
-                else
-                {
-                    Start = end;
-                    End = start;
-                }
+                Start = start.Y < end.Y ? start : end;
+                End = start.Y < end.Y ? end : start;
                 SegmentType = type;
             }
         }
@@ -58,11 +42,13 @@ namespace TagsCloudVisualization
                 || segment.SegmentType == Type.Top && SegmentType == Type.Bottom
                 || segment.SegmentType == Type.Bottom && SegmentType == Type.Bottom)
                 return true;
+
             if (segment.SegmentType == Type.Left && SegmentType == Type.Left
                 || segment.SegmentType == Type.Right && SegmentType == Type.Left
                 || segment.SegmentType == Type.Left && SegmentType == Type.Right
                 || segment.SegmentType == Type.Right && SegmentType == Type.Right)
                 return true;
+
             return false;
         }
 
@@ -71,9 +57,11 @@ namespace TagsCloudVisualization
             if (segment.SegmentType == Type.Bottom && SegmentType == Type.Top
                 || segment.SegmentType == Type.Top && SegmentType == Type.Bottom)
                 return true;
+
             if (segment.SegmentType == Type.Right && SegmentType == Type.Left
                 || segment.SegmentType == Type.Left && SegmentType == Type.Right)
                 return true;
+
             return false;
         }
 
@@ -81,31 +69,15 @@ namespace TagsCloudVisualization
         {
             if (SegmentType == Type.Bottom || SegmentType == Type.Top)
                 return true;
+
             return false;
         }
 
         public static bool Horizontal(Type type)
         {
-            if (type == Type.Bottom || type == Type.Top)
-                return true;
-            return false;
+            return type == Type.Bottom || type == Type.Top;
         }
 
-        public bool Contains(Segment segment)
-        {
-            if (!Parallel(segment))
-                return false;
-            if (segment.Horizontal())
-                if (Start.X < segment.Start.X && End.X > segment.End.X)
-                    return true;
-                else
-                    return false;
-            else
-                if (Start.Y < segment.Start.Y && End.Y > segment.End.Y)
-                return true;
-            else
-                return false;
-        }
 
         public bool Intersects(Segment segment)
         {
@@ -116,6 +88,7 @@ namespace TagsCloudVisualization
                             || (Start.X <= segment.Start.X && End.X >= segment.End.X)
                             || (Start.X >= segment.Start.X && End.X <= segment.End.X))
                     return true;
+
                 return false;
             }
             if (!Horizontal() && !segment.Horizontal())
@@ -125,6 +98,7 @@ namespace TagsCloudVisualization
                             || (Start.Y <= segment.Start.Y && End.Y >= segment.End.Y)
                             || (Start.Y >= segment.Start.Y && End.Y <= segment.End.Y))
                     return true;
+
                 return false;
             }
             return false;
