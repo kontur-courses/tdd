@@ -9,9 +9,8 @@ namespace TagsCloudVisualization
     {
         private Point cloudCenter;
         private List<Rectangle> rectangles;
-        private const double turnFactor = 1;
-        private const double distanceFactor = 5;
-        private const double step = 0.1;
+        private const float radius = 0.5f;
+        private const double step = 0.5f;
         private double angle = 0;
 
         public CircularCloudLayouter(Point center)
@@ -49,10 +48,10 @@ namespace TagsCloudVisualization
         private Point GetNextRectangleCenter()
         {
             var t = Math.PI * angle;
-            var x = (turnFactor + distanceFactor * t) * Math.Cos(t);
-            var y = (turnFactor + distanceFactor * t) * Math.Sin(t);
+            var x = (int)(Math.Cos(angle) * (angle * radius));
+            var y = (int)(Math.Sin(angle) * (angle * radius)); ;
             angle += step;
-            return new Point(cloudCenter.X + (int)x, cloudCenter.Y + (int)y);
+            return new Point(cloudCenter.X + x, cloudCenter.Y + (int)y);
         }
 
 
