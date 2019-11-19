@@ -17,10 +17,10 @@ namespace TagsCloudVisualization.Tests
         [TestCase(7, 0, 0, 5, 2.76f, 1.29f, TestName = "RandomPoint")]
         [TestCase(7, 5, 1, 5, 7.76f, 2.29f, TestName = "RandomPointWhenCenterIsNotZero")]
         [TestCase(3, 0, 0, 5, 1.18f, 0.55f, TestName = "RandomPointOnRandomThickness")]
-        public void IEnumerator_YieldsCorrectValues(float a, float centerX, float centerY,
+        public void IEnumerator_YieldsCorrectValues(float thickness, float centerX, float centerY,
             int elementIndex, float expectedValueX, float expectedValueY)
         {
-            generator = new ArchimedesSpiral(a, new PointF(centerX, centerY)).GetEnumerator();
+            generator = new ArchimedesSpiral(new PointF(centerX, centerY), thickness).GetSpiralPoints().GetEnumerator();
             for (var i = 0; i <= elementIndex; i++)
                 generator.MoveNext();
             generator.Current.X.Should().BeApproximately(expectedValueX, (float) Epsilon);
@@ -30,9 +30,9 @@ namespace TagsCloudVisualization.Tests
         [TestCase(7, 0, 0, 20, TestName = "RandomPointOnSpiral")]
         [TestCase(2, 0, 0, 16, TestName = "RandomPointOnDifferentThickness")]
         [TestCase(2, 16, -2, 16, TestName = "RandomPointWhenCenterIsNotZero")]
-        public void IEnumerator_YieldsSequenceInCorrectOrder(float a, float centerX, float centerY, int elementIndex)
+        public void IEnumerator_YieldsSequenceInCorrectOrder(float thickness, float centerX, float centerY, int elementIndex)
         {
-            generator = new ArchimedesSpiral(a, new PointF(centerX, centerY)).GetEnumerator();
+            generator = new ArchimedesSpiral(new PointF(centerX, centerY), thickness).GetSpiralPoints().GetEnumerator();
             for (var i = 0; i <= elementIndex; i++)
                 generator.MoveNext();
             var firstPoint = generator.Current;
@@ -40,7 +40,7 @@ namespace TagsCloudVisualization.Tests
             float theta, r;
             (r, theta) = PointConverter.TransformCartesianToPolar(firstPoint.X - centerX, firstPoint.Y - centerY);
             theta += ArchimedesSpiral.DeltaAngle;
-            r = a * theta;
+            r = thickness * theta;
             var nextX = (float) (r * Math.Cos(theta)) + centerX;
             var nextY = (float) (r * Math.Sin(theta)) + centerY;
             generator.Current.X.Should().BeApproximately(nextX, (float)Epsilon);

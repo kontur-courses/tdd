@@ -5,40 +5,37 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public class ArchimedesSpiral : IEnumerable<PointF>
+    public class ArchimedesSpiral : ISpiral
     {
         public const float DeltaAngle = (float)(5 * Math.PI / 180);
+        private const float Thickness = 1;
 
-        private readonly float A;
-        private readonly PointF Center;
+        private readonly float thickness;
+        private readonly PointF center;
 
-        public ArchimedesSpiral(float a, PointF center)
+        public ArchimedesSpiral(PointF center)
         {
-            A = a;
-            Center = center;
+            thickness = Thickness;
+            this.center = center;
         }
 
-        private IEnumerable<PointF> GetSpiralPoints()
+        public ArchimedesSpiral(PointF center, float thickness)
+        {
+            this.thickness = thickness;
+            this.center = center;
+        }
+
+        public IEnumerable<PointF> GetSpiralPoints()
         {
             for (float theta = 0; ; theta += DeltaAngle)
             {
-                var r = A * theta;
+                var r = thickness * theta;
                 float x, y;
                 (x, y) = PointConverter.TransformPolarToCartesian(r, theta);
-                x += Center.X;
-                y += Center.Y;
+                x += center.X;
+                y += center.Y;
                 yield return new PointF(x, y);
             }
-        }
-
-        public IEnumerator<PointF> GetEnumerator()
-        {
-            return GetSpiralPoints().GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

@@ -13,13 +13,19 @@ namespace TagsCloudVisualization.Tests
     public class CircularCloudLayouterTests
     {
         private CircularCloudLayouter layouter;
+        private List<Rectangle> generatedRectangles;
 
+        [SetUp]
+        public void SetUp()
+        {
+            generatedRectangles = new List<Rectangle>();
+        }
 
         [Test]
         public void PutNextRectangle_Throws_WhenNegativeSize()
         {
             layouter = new CircularCloudLayouter(new Point(0, 0));
-            Action action = () => layouter.PutNextRectangle(new Size(-10, 0));
+            Action action = () => PutNextRectangle(new Size(-10, 0));
             action.Should().Throw<ArgumentException>();
         }
 
@@ -34,7 +40,7 @@ namespace TagsCloudVisualization.Tests
             var rectangles = new List<Rectangle>();
             for (var i = 0; i < amountOfRectangles; i++)
             {
-                var rectangle = layouter.PutNextRectangle(new Size(random.Next(1, 100), random.Next(1, 100)));
+                var rectangle = PutNextRectangle(new Size(random.Next(1, 100), random.Next(1, 100)));
                 rectangles.Any(x => x.IntersectsWith(rectangle)).Should()
                     .BeFalse("Rectangles shouldn't intersect with each other");
                 rectangles.Add(rectangle);
@@ -48,8 +54,59 @@ namespace TagsCloudVisualization.Tests
         {
             var center = new Point(centerX, centerY);
             layouter = new CircularCloudLayouter(center);
-            var rect = layouter.PutNextRectangle(new Size(width, height));
+            var rect = PutNextRectangle(new Size(width, height));
             rect.Location.Should().Be(center);
+        }
+
+        [TestCase(5, 5, 5, TestName = "OnSmallSizeAnd5Rectangles")]
+        [TestCase(35, 35, 5, TestName = "OnBigSizeAnd5Rectangles")]
+        [TestCase(5, 5, 35, TestName = "OnSmallSizeAnd35Rectangles")]
+        [TestCase(35, 35, 35, TestName = "OnBigSizeAnd35Rectangles")]
+        [TestCase(5, 5, 105, TestName = "OnSmallSizeAnd105Rectangles")]
+        [TestCase(35, 35, 105, TestName = "OnBigSizeAnd105Rectangles")]
+        public void PutNextRectangle_PutsRectanglesInCircularShape(int sizeX, int sizeY, int amountOfRectangles)
+        {
+            layouter = new CircularCloudLayouter(new Point(0, 0));
+            var size = new Size(sizeX, sizeY);
+            for (var i = 0; i < amountOfRectangles; i++)
+                PutNextRectangle(size);
+            var rectangleArea = generatedRectangles.Sum(x => x.Height * x.Width);
+            var outerCircleRadius =
+                generatedRectangles.Max(x => Math.Max(
+                    Math.Max(Math.Abs(x.Right), 
+                        Math.Abs(x.Top)), 
+                    Math.Max(Math.Abs(x.Left), 
+                        Math.Abs(x.Bottom))));
+            var circleArea = Math.PI * outerCircleRadius * outerCircleRadius;
+            rectangleArea.Should().BeLessOrEqualTo((int) (circleArea / 1.5));
+        }
+
+        [TestCase(5, 5, 5, TestName = "OnSmallSizeAnd5Rectangles")]
+        [TestCase(35, 35, 5, TestName = "OnBigSizeAnd5Rectangles")]
+        [TestCase(5, 5, 35, TestName = "OnSmallSizeAnd35Rectangles")]
+        [TestCase(35, 35, 35, TestName = "OnBigSizeAnd35Rectangles")]
+        [TestCase(5, 5, 105, TestName = "OnSmallSizeAnd105Rectangles")]
+        [TestCase(35, 35, 105, TestName = "OnBigSizeAnd105Rectangles")]
+        public void PutNextRectangle_PutsRectanglesTightly(int sizeX, int sizeY, int amountOfRectangles)
+        {
+            layouter = new CircularCloudLayouter(new Point(0, 0));
+            var size = new Size(sizeX, sizeY);
+            for (var i = 0; i < amountOfRectangles - 1; i++)
+                PutNextRectangle(size);
+            var rect = PutNextRectangle(size);
+            Math.Abs(rect.X).Should()
+                .BeLessOrEqualTo(size.Width * amountOfRectangles / 4);
+            Math.Abs(rect.Y).Should()
+                .BeLessOrEqualTo(size.Height * amountOfRectangles / 4);
+        }
+
+        private Rectangle PutNextRectangle(Size size)
+        {
+            if(layouter == null)
+                throw new NullReferenceException("Layouter was not initialized!");
+            var rect = layouter.PutNextRectangle(size);
+            generatedRectangles.Add(rect);
+            return rect;
         }
 
         [TearDown]
@@ -57,8 +114,9 @@ namespace TagsCloudVisualization.Tests
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                var path = Directory.CreateDirectory($"{AppDomain.CurrentDomain.BaseDirectory}\\TestFailurePictures").FullName  + "\\" + Guid.NewGuid() + ".png";
-                layouter.DrawRectangles().Save(path);
+                var path = Path.Combine(
+                    Directory.CreateDirectory($"{AppDomain.CurrentDomain.BaseDirectory}\\TestFailurePictures").FullName, Guid.NewGuid() + ".png");
+                new Visualizer().DrawRectangles(generatedRectangles).Save(path);
                 Console.WriteLine($"Tag cloud visualization saved to file {path}");
             }
         }

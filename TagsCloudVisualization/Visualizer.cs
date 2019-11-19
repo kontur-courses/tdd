@@ -36,22 +36,5 @@ namespace TagsCloudVisualization
             }
             return bitmap;
         }
-
-        static void Main(string[] args)
-        {
-            var visualizer = new Visualizer();
-            visualizer.DrawRectangles(
-                CircularCloudLayouter.CreateRandomLayout(new Point(0, 0), 1, 15, 60, 100)).Save(
-                "onSmallRectangleDifferenceAndSmallThickness.png");
-            visualizer.DrawRectangles(
-                CircularCloudLayouter.CreateRandomLayout(new Point(0, 0), 5, 15, 60, 100)).Save(
-                "onSmallRectangleDifferenceAndLargeThickness.png");
-            visualizer.DrawRectangles(
-                CircularCloudLayouter.CreateRandomLayout(new Point(0, 0), 1, 10, 150, 100)).Save(
-                "onBigRectangleDifferenceAndSmallThickness.png");
-            visualizer.DrawRectangles(
-                CircularCloudLayouter.CreateRandomLayout(new Point(0, 0), 5, 10, 150, 100)).Save(
-                "onBigRectangleDifferenceAndLargeThickness.png");
-        }
     }
 }
