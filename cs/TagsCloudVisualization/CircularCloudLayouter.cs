@@ -87,12 +87,12 @@ namespace TagsCloudVisualization
             return tryRect;
         }
 
-        public IEnumerable<Rectangle> GetRectangles()
+        public List<Rectangle> GetRectangles()
         {
             if (!isUpdated)
                 ReallocRectangles();
 
-            return Items.Select(it => it.Rectangle);
+            return Items.ConvertAll(it => it.Rectangle);
         }
     }
 }
