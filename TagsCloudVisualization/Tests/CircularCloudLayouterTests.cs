@@ -66,17 +66,14 @@ namespace TagsCloudVisualization.Tests
         [TestCase(35, 35, 105, TestName = "OnBigSizeAnd105Rectangles")]
         public void PutNextRectangle_FillsCircularShape(int sizeX, int sizeY, int amountOfRectangles)
         {
-            layouter = new CircularCloudLayouter(new Point(0, 0));
+            var center = new Point(0, 0);
+            layouter = new CircularCloudLayouter(center);
             var size = new Size(sizeX, sizeY);
             for (var i = 0; i < amountOfRectangles; i++)
                 PutNextRectangle(size);
             var rectangleArea = generatedRectangles.Sum(x => x.Height * x.Width);
             var outerCircleRadius =
-                generatedRectangles.Max(x => Math.Max(
-                    Math.Max(Math.Abs(x.Right) - x.Height,
-                        Math.Abs(x.Right) + x.Height),
-                    Math.Max(Math.Abs(x.Left) - x.Height,
-                        Math.Abs(x.Left) + x.Height)));
+                generatedRectangles.Max(x => x.Location.GetDistanceTo(center)) + Math.Sqrt(size.Width * size.Width + size.Height * size.Height);
             var circleArea = Math.PI * outerCircleRadius * outerCircleRadius;
             rectangleArea.Should().BeGreaterOrEqualTo((int) (circleArea / 6));
         }
@@ -98,9 +95,7 @@ namespace TagsCloudVisualization.Tests
             var increasedArea = rectangleArea * 2;
             var radiusOfEquivalentCircle = Math.Sqrt(increasedArea / Math.PI);
             foreach (var rect in generatedRectangles)
-            {
                 rect.Location.GetDistanceTo(center).Should().BeLessOrEqualTo(radiusOfEquivalentCircle);
-            }
         }
 
         [TestCase(5, 5, 5, TestName = "OnSmallSizeAnd5Rectangles")]
