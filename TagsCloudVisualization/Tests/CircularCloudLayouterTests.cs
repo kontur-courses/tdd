@@ -64,7 +64,7 @@ namespace TagsCloudVisualization.Tests
         [TestCase(35, 35, 35, TestName = "OnBigSizeAnd35Rectangles")]
         [TestCase(5, 5, 105, TestName = "OnSmallSizeAnd105Rectangles")]
         [TestCase(35, 35, 105, TestName = "OnBigSizeAnd105Rectangles")]
-        public void PutNextRectangle_PutsRectanglesInCircularShape(int sizeX, int sizeY, int amountOfRectangles)
+        public void PutNextRectangle_FillsCircularShape(int sizeX, int sizeY, int amountOfRectangles)
         {
             layouter = new CircularCloudLayouter(new Point(0, 0));
             var size = new Size(sizeX, sizeY);
@@ -73,12 +73,34 @@ namespace TagsCloudVisualization.Tests
             var rectangleArea = generatedRectangles.Sum(x => x.Height * x.Width);
             var outerCircleRadius =
                 generatedRectangles.Max(x => Math.Max(
-                    Math.Max(Math.Abs(x.Right), 
-                        Math.Abs(x.Top)), 
-                    Math.Max(Math.Abs(x.Left), 
-                        Math.Abs(x.Bottom))));
+                    Math.Max(Math.Abs(x.Right) - x.Height,
+                        Math.Abs(x.Right) + x.Height),
+                    Math.Max(Math.Abs(x.Left) - x.Height,
+                        Math.Abs(x.Left) + x.Height)));
             var circleArea = Math.PI * outerCircleRadius * outerCircleRadius;
-            rectangleArea.Should().BeLessOrEqualTo((int) (circleArea / 1.5));
+            rectangleArea.Should().BeGreaterOrEqualTo((int) (circleArea / 6));
+        }
+
+        [TestCase(5, 5, 5, TestName = "OnSmallSizeAnd5Rectangles")]
+        [TestCase(35, 35, 5, TestName = "OnBigSizeAnd5Rectangles")]
+        [TestCase(5, 5, 35, TestName = "OnSmallSizeAnd35Rectangles")]
+        [TestCase(35, 35, 35, TestName = "OnBigSizeAnd35Rectangles")]
+        [TestCase(5, 5, 105, TestName = "OnSmallSizeAnd105Rectangles")]
+        [TestCase(35, 35, 105, TestName = "OnBigSizeAnd105Rectangles")]
+        public void PutNextRectangle_PutsRectanglesInCircularShape(int sizeX, int sizeY, int amountOfRectangles)
+        {
+            var center = new Point(0, 0);
+            layouter = new CircularCloudLayouter(center);
+            var size = new Size(sizeX, sizeY);
+            for (var i = 0; i < amountOfRectangles; i++)
+                PutNextRectangle(size);
+            var rectangleArea = generatedRectangles.Sum(x => x.Height * x.Width);
+            var increasedArea = rectangleArea * 2;
+            var radiusOfEquivalentCircle = Math.Sqrt(increasedArea / Math.PI);
+            foreach (var rect in generatedRectangles)
+            {
+                rect.Location.GetDistanceTo(center).Should().BeLessOrEqualTo(radiusOfEquivalentCircle);
+            }
         }
 
         [TestCase(5, 5, 5, TestName = "OnSmallSizeAnd5Rectangles")]
