@@ -141,6 +141,29 @@ namespace TagsCloudVisualization
                 for (int i = 0; i < 10000; ++i)
                     BaseLayouter.PutNextRectangle(size);
             }
+
+            private double GetDistanceToCenter(Rectangle rectangle) =>
+                Math.Sqrt(Math.Pow(rectangle.X - BasicCenter.X, 2) + Math.Pow(rectangle.Y - BasicCenter.Y, 2));
+
+            [TestCase(5, 2)]
+            [TestCase(10, 20)]
+            [TestCase(10, 10)]
+            [TestCase(100, 100)]
+            [TestCase(1, 1)]
+            public void PlaceRectanglesTightly(int width, int height)
+            {
+                var size = new Size(width, height);
+                for (int i = 0; i < 500; ++i)
+                    BaseLayouter.PutNextRectangle(size);
+                var maxRadius = BaseLayouter.GetRectangles()
+                    .Max(rectangle => GetDistanceToCenter(rectangle));
+                var cloudMaxArea = maxRadius * maxRadius * Math.PI;
+                var squareArea = BaseLayouter.GetRectangles()
+                    .Select(rectangle => rectangle.Height * rectangle.Width)
+                    .Sum();
+                var ratio = cloudMaxArea / squareArea;
+                ratio.Should().BeLessThan(5);
+            }
         }
     }
 }
