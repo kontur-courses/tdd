@@ -25,6 +25,9 @@
 ~ 3.5 часа
 
 
+[Инструкция для дистанционного формата](https://docs.google.com/document/d/18YYaIoyWfNzf1HXT_DCWnsqJA_3yoNkjetj_E4omMY8/edit?usp=sharing)
+
+
 ## Закрепление материала
 
 1. Выполни задание [Облако тегов](HomeExercise.md)
