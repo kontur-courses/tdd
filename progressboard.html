@@ -82,8 +82,10 @@
 	}
     
     function formatName(name){
-        const good = (name.indexOf("Spare") >=0 && name.indexOf("Strike") >=0);
+        const good = (name.toLowerCase().indexOf("spare") >=0 && name.toLowerCase().indexOf("strike") >=0);
         name = name.
+            replace("strike", "<span class='strike'>strike</span>").
+            replace("spare", "<span class='spare'>spare</span>").
             replace("Strike", "<span class='strike'>Strike</span>").
             replace("Spare", "<span class='spare'>Spare</span>");
             
