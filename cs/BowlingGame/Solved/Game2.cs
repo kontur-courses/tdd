@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BowlingGame.Infrastructure;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace BowlingGame
+namespace BowlingGame.Solved
 {
-    public class Game
+    public class Game2
     {
         private int score = 0;
         private int prevPins = 0;
