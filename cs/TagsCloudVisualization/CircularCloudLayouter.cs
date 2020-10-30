@@ -1,18 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private Rectangle rectangle;
-        private Rectangle lastRectangle;
+        //private List<Point> points;
         private Point center;
-        private int position =1;
-        private int top = int.MaxValue;
-        private int bottom = 0;
-        private int left = 0;
-        private int right = 0;
+        private List<Rectangle> rectangels= new List<Rectangle>();
 
         public CircularCloudLayouter(Point center)
         {
@@ -21,83 +18,32 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            if (rectangle.IsEmpty)
+            var halfRectangleSize = new Size(rectangleSize.Width / 2, rectangleSize.Height / 2);
+            foreach (var point in GetSpiralPoints())
             {
-                rectangle= new Rectangle(new Point(center.X - rectangleSize.Width / 2, center.Y - rectangleSize.Height / 2), rectangleSize);
+                var rectangle = new Rectangle(point-halfRectangleSize,rectangleSize);
+                if (rectangels.Any(x => x.IntersectsWith(rectangle)))
+                    continue;
+
+                rectangels.Add(rectangle);
                 return rectangle;
             }
+            return new Rectangle();
+        }
 
-            if (position == 1)
+        private IEnumerable<Point> GetSpiralPoints()
+        {
+            var radius = 0;
+            while (true)
             {
-                if (lastRectangle.IsEmpty)
+                for (var i = 0; i < 360; i++)
                 {
-                    lastRectangle = new Rectangle(new Point(rectangle.Left, rectangle.Top - rectangleSize.Height), rectangleSize);
+                    yield return new Point((int) (Math.Cos(2 * Math.PI * i / 360) * radius + 0.5) + center.X,
+                                           (int) (Math.Sin(2 * Math.PI * i / 360) * radius + 0.5) + center.Y);
                 }
-                else
-                {
-                    lastRectangle = new Rectangle(new Point(lastRectangle.Right, rectangle.Top - rectangleSize.Height), rectangleSize);
-                }
-
-                if (top > lastRectangle.Top)
-                    top = lastRectangle.Top;
-
-                if (lastRectangle.Right > rectangle.Right)
-                {
-                    right = lastRectangle.Right;
-                    position = 2;
-                    rectangle = new Rectangle(new Point(rectangle.Left, top), new Size(rectangle.Width, rectangle.Bottom - top));
-                }
-
-                return lastRectangle;
+                radius++;
             }
-            else if (position == 2)
-            {
-                lastRectangle = new Rectangle(new Point(rectangle.Right, lastRectangle.Bottom), rectangleSize);
-
-                if (right < lastRectangle.Right)
-                    right = lastRectangle.Right;
-
-                if (lastRectangle.Bottom > rectangle.Bottom)
-                {
-                    bottom = lastRectangle.Bottom;
-                    position = 3;
-                    rectangle = new Rectangle(new Point(rectangle.Left, rectangle.Top), new Size(right-rectangle.Left , rectangle.Height));
-                }
-
-                return lastRectangle;
-            }
-            else if (position == 3)
-            {
-                lastRectangle = new Rectangle(new Point(lastRectangle.Left-rectangleSize.Width, rectangle.Bottom), rectangleSize);
-
-                if (bottom < lastRectangle.Bottom)
-                    bottom = lastRectangle.Bottom;
-
-                if (lastRectangle.Left < rectangle.Left) 
-                {
-                    left = lastRectangle.Left;
-                    position = 4;
-                    rectangle = new Rectangle(new Point(rectangle.Left, rectangle.Top), new Size(rectangle.Width, bottom-rectangle.Top));
-                }
-
-                return lastRectangle;
-            }
-            else
-            {
-                lastRectangle = new Rectangle(new Point(rectangle.Left-rectangleSize.Width, lastRectangle.Top-rectangleSize.Height), rectangleSize);
-
-                if (left > lastRectangle.Left)
-                    left = lastRectangle.Left;
-
-                if (lastRectangle.Top < rectangle.Top) 
-                {
-                    top = lastRectangle.Top;
-                    position = 1;
-                    rectangle = new Rectangle(new Point(left, rectangle.Top), new Size(rectangle.Right-left, rectangle.Height));
-                }
-                
-                return lastRectangle;
-            }
+            
         }
     }
 }
