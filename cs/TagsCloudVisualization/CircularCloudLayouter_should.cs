@@ -15,5 +15,14 @@ namespace TagsCloudVisualization
         {
             layouter = new CircularCloudLayouter(new Point(10, 10));
         }
+        
+        [Test]
+        [TestCase(15, 10)]
+        public void Layouter_ShouldReturnRectangleWithSameSize_WhenPuttingNextRectangle(int width, int height)
+        {
+            var size = new Size(width, height);
+            layouter.PutNextRectangle(size).Size
+                .Should().BeEquivalentTo(size);
+        }
     }
 }
