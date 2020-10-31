@@ -1,33 +1,32 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("TagCloud.Tests")]
 
 namespace TagCloud
 {
     public class CircularCloudLayouter
     {
-        private readonly Point center;
-        public readonly List<Rectangle> Rectangles = new List<Rectangle>();
+        private readonly Spiral spiral;
+        internal readonly List<Rectangle> Rectangles = new List<Rectangle>();
 
         public CircularCloudLayouter(Point center)
         {
-            this.center = center;
+            spiral = new Spiral(center);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var newRect = Rectangles.Count == 0
-                ? new Rectangle(center, rectangleSize)
-                : FindPlaceForRect(rectangleSize);
+            var newRect = FindPlaceForRect(rectangleSize);
             Rectangles.Add(newRect);
             return newRect;
         }
 
         private Rectangle FindPlaceForRect(Size rectangleSize)
         {
-            var spiral = new Spiral(center);
             var resultRect = new Rectangle(spiral.GetNextPoint(), rectangleSize);
-            while (Rectangles.Any(rect => rect.IntersectsWith(resultRect)))
+            while (resultRect.IntersectsWith(Rectangles))
                 resultRect = new Rectangle(spiral.GetNextPoint(), rectangleSize);
 
             return resultRect;

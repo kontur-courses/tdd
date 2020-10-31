@@ -14,7 +14,7 @@ namespace TagCloudTests
         private CircularCloudLayouter cloudLayouter;
 
         [SetUp]
-        private void SetUp()
+        public void SetUp()
         {
             center = new Point(50, 50);
             cloudLayouter = new CircularCloudLayouter(center);
