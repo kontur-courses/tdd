@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 
 namespace TagCloud
@@ -21,7 +20,9 @@ namespace TagCloud
         {
             angle += Math.PI / 180;
             rayLength = 1d / (2 * Math.PI) * angle;
-            return new Point((int)(center.X + rayLength * Math.Cos(angle)), (int)(center.Y + rayLength * Math.Sin(angle)));
+            var xCoord = (int) (center.X + rayLength * Math.Cos(angle));
+            var yCoord = (int) (center.Y + rayLength * Math.Sin(angle));
+            return new Point(xCoord, yCoord);
         }
     }
 }

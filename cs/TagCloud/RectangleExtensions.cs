@@ -6,9 +6,9 @@ namespace TagCloud
 {
     public static class RectangleExtensions
     {
-        public static bool IntersectsWith(this Rectangle sourceRect, IEnumerable<Rectangle> otherRects)
+        public static bool IntersectsWith(this Rectangle rect, IEnumerable<Rectangle> otherRects)
         {
-            return otherRects.Any(sourceRect.IntersectsWith);
+            return otherRects.Any(rect.IntersectsWith);
         }
     }
 }

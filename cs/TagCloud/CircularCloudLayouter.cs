@@ -1,8 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.CompilerServices;
-
-[assembly: InternalsVisibleTo("TagCloud.Tests")]
 
 namespace TagCloud
 {
