@@ -24,11 +24,19 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void PutNextRectangle_PutDifferentRectanglesInDifferentPlaces_Always()
+        public void PutNextRectangle_PutDifferentRectanglesInDifferentPlaces()
         {
             var firstRectangle = layouter.PutNextRectangle(new Size(50, 50));
             var secondRrectangle = layouter.PutNextRectangle(new Size(50, 50));
             firstRectangle.Location.Should().NotBeEquivalentTo(secondRrectangle.Location);
+        }
+
+        [Test]
+        public void PutNextRectangle_ReturnsNotIntersectedRectangles()
+        {
+            var firstRectangle = layouter.PutNextRectangle(new Size(50, 50));
+            var secondRrectangle = layouter.PutNextRectangle(new Size(50, 50));
+            firstRectangle.IntersectsWith(secondRrectangle).Should().BeFalse();
         }
     }
 }

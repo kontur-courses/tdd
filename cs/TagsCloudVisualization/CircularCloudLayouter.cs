@@ -22,16 +22,25 @@ namespace TagsCloudVisualization
         {
             var point = GetNextPoint();
             if (point == center)
-                return new Rectangle(
+            {
+                currentRectangles.Add(new Rectangle(
                     new Point(
                         center.X - rectangleSize.Width / 2,
                         center.Y - rectangleSize.Height / 2),
-                    rectangleSize);
-            else
-                return new Rectangle(point, rectangleSize);
+                    rectangleSize));
+                return currentRectangles[0];
+            }
+            var newRectangle = new Rectangle(point, rectangleSize);
+            while(IntersectWithPreviousRectangles(newRectangle))
+            {
+                point = GetNextPoint();
+                newRectangle = new Rectangle(point, rectangleSize);
+            }
+            currentRectangles.Add(newRectangle);
+            return newRectangle;
         }
 
-        public Point GetNextPoint()
+        private Point GetNextPoint()
         {
             if (currentRadius == 0)
             {
@@ -48,6 +57,16 @@ namespace TagsCloudVisualization
                 currentRadius++;
             }
             return point;
+        }
+
+        private bool IntersectWithPreviousRectangles(Rectangle newRectangle)
+        {
+            foreach (var rectangle in currentRectangles)
+            {
+                if (newRectangle.IntersectsWith(rectangle))
+                    return true;
+            }
+            return false;
         }
     }
 }
