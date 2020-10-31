@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using FluentAssertions;
@@ -8,20 +10,29 @@ namespace TagCloudTests
 {
     public class Tests
     {
+        private Point center;
+        private CircularCloudLayouter cloudLayouter;
+
+        [SetUp]
+        private void SetUp()
+        {
+            center = new Point(50, 50);
+            cloudLayouter = new CircularCloudLayouter(center);
+        }
+        
         [Test]
         public void CircularCloudLayouter_IsFirstRectInCenter()
         {
-            var center = new Point(50, 50);
-            var cloudLayouter = new CircularCloudLayouter(center);
             var resultRect = cloudLayouter.PutNextRectangle(new Size(5, 5));
+            
             resultRect.Location.Should().Be(center);
         }
 
         [Test]
         public void PutNextRectangle_RectanglesDoNotIntersect_AfterAddition()
         {
-            var cloudLayouter = new CircularCloudLayouter(new Point(50, 50));
-            var sizes = SizeCreator(5);
+            var sizes = CreateSizesCollection(5);
+            
             foreach (var size in sizes) cloudLayouter.PutNextRectangle(size);
 
             for (var i = 0; i < cloudLayouter.Rectangles.Count - 1; i++)
@@ -30,24 +41,25 @@ namespace TagCloudTests
         }
 
         [Test]
-        public void PutNextRectangle_RectanglesAreNotFarFromCenter_AfterAddition()
+        public void PutNextRectangle_PutRectanglesInCircleForm_AfterAddition()
         {
-            var center = new Point(50, 50);
-            var cloudLayouter = new CircularCloudLayouter(center);
-            var sizes = SizeCreator(5);
+            var sizes = CreateSizesCollection(5);
             foreach (var size in sizes) cloudLayouter.PutNextRectangle(size);
             var mostTopRect = cloudLayouter.Rectangles.OrderBy(rect => rect.Top).First();
             var mostDownRect = cloudLayouter.Rectangles.OrderByDescending(rect => rect.Bottom).First();
             var mostLeftRect = cloudLayouter.Rectangles.OrderBy(rect => rect.Left).First();
             var mostRightRect = cloudLayouter.Rectangles.OrderByDescending(rect => rect.Right).First();
             const int expectedRadius = 15;
-            (center.Y - mostTopRect.Top).Should().BeLessThan(expectedRadius);
-            (mostDownRect.Bottom - center.Y).Should().BeLessThan(expectedRadius);
-            (center.X - mostLeftRect.Left).Should().BeLessThan(expectedRadius);
-            (mostRightRect.X - center.X).Should().BeLessThan(expectedRadius);
+            var dy = Math.Max(center.Y - mostTopRect.Top, mostDownRect.Bottom - center.Y);
+            var dx = Math.Max(center.X - mostLeftRect.Left, mostRightRect.X - center.X);
+            var difBetweenDeltas = Math.Abs(dx - dy);
+            
+            dy.Should().BeLessThan(expectedRadius);
+            dx.Should().BeLessThan(expectedRadius);
+            difBetweenDeltas.Should().BeLessThan(expectedRadius / 2);
         }
 
-        private static Size[] SizeCreator(int amount)
+        private static IEnumerable<Size> CreateSizesCollection(int amount)
         {
             var sizes = new Size[amount];
             for (var i = 0; i < amount; i++) sizes[i] = new Size(amount + 2 - i, amount - i);
