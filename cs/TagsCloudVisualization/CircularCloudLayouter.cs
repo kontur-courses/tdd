@@ -38,14 +38,27 @@ namespace TagsCloudVisualization
                     rectangleSize));
                 return currentRectangles[0];
             }
-            var newRectangle = new Rectangle(point, rectangleSize);
-            while(IntersectWithPreviousRectangles(newRectangle))
+            Rectangle? newRectangle = null;
+            while(true)
             {
+                var newRectangles = GetRectangles(point, rectangleSize);
+                foreach (var rectangle in newRectangles)
+                {
+                    if (IntersectWithPreviousRectangles(rectangle))
+                        continue;
+                    var movedRectangle = MoveToCenter(rectangle);
+                    if (newRectangle == null)
+                        newRectangle = movedRectangle;
+                    else if (GetDistanceToCenter(movedRectangle) < GetDistanceToCenter((Rectangle)newRectangle))
+                        newRectangle = movedRectangle;
+                }
+                if (newRectangle != null)
+                    break;
                 point = GetNextPoint();
-                newRectangle = new Rectangle(point, rectangleSize);
+
             }
-            currentRectangles.Add(MoveToCenter(newRectangle));
-            return newRectangle;
+            currentRectangles.Add((Rectangle)newRectangle);
+            return (Rectangle)newRectangle;
         }
 
         private Point GetNextPoint()
@@ -83,6 +96,17 @@ namespace TagsCloudVisualization
                 rectangle.X + rectangle.Width / 2,
                 rectangle.Y + rectangle.Height / 2);
             return Math.Sqrt((center.X - rectangle.X) ^ 2 + (center.Y - rectCenter.Y) ^ 2);
+        }
+
+        private Rectangle[] GetRectangles(Point point, Size size)
+        {
+            return new Rectangle[]
+            {
+                new Rectangle(point.X - size.Width, point.Y, size.Width, size.Height),
+                new Rectangle(point, size),
+                new Rectangle(point.X, point.Y - size.Height, size.Width, size.Height),
+                new Rectangle(point.X - size.Width, point.Y - size.Height, size.Width, size.Height)
+            };
         }
 
         private Rectangle MoveToCenter(Rectangle rectangle)
