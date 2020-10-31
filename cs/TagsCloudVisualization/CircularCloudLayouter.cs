@@ -7,21 +7,29 @@ namespace TagsCloudVisualization
 {
     class CircularCloudLayouter
     {
-        private Point center;
+        public Point Center { get; }
+        private Point nextRectanglePos;
         
         public List<Rectangle> Rectangles { get; private set; }
         
         public CircularCloudLayouter(Point center)
         {
             Rectangles = new List<Rectangle>();
-            this.center = center;
+            Center = center;
+            nextRectanglePos = Center;
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var rectangle = new Rectangle(center, rectangleSize);
+            var rectangle = new Rectangle(nextRectanglePos, rectangleSize);
             Rectangles.Add(rectangle);
+            setNextRectanglePos(rectangleSize);
             return rectangle;
+        }
+
+        private void setNextRectanglePos(Size currentRectangleSize)
+        {
+            nextRectanglePos.X += currentRectangleSize.Width;
         }
     }
 }
