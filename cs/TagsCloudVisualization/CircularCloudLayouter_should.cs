@@ -11,11 +11,16 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter_should
     {
         private CircularCloudLayouter layouter;
+        private List<Size> sizes;
         
         [SetUp]
         public void SetUp()
         {
             layouter = new CircularCloudLayouter(new Point(10, 10));
+            sizes = new List<Size>() {new Size(10, 5), 
+                new Size(100, 10), new Size(10, 5), 
+                new Size(15, 15)};
+
         }
         
         [Test]
@@ -30,16 +35,33 @@ namespace TagsCloudVisualization
         [Test]
         public void Layouter_ShouldContainsAllRectangles_WhenSomeRectangleSizesAdded()
         {
-            var sizes = new List<Size>() {new Size(10, 5), 
-                new Size(100, 10), new Size(10, 5), 
-                new Size(15, 15)};
-            
-            foreach (var size in sizes)
-                layouter.PutNextRectangle(size);
+            fillLayouterWithSomeRectangles(layouter, sizes);
 
             layouter.Rectangles.Select(rect => rect.Size)
                 .Should().BeEquivalentTo(sizes);
         }
+        
+        [Test]
+        public void LayouterRectangles_ShouldNotIntersectEachOther_WhenSomeRectanglesAdded()
+        {
+            fillLayouterWithSomeRectangles(layouter, sizes);
 
+            foreach (var rectangle in layouter.Rectangles)
+            {
+                foreach (var otherRectangle in layouter.Rectangles)
+                {
+                    if (rectangle != otherRectangle)
+                        rectangle.IntersectsWith(otherRectangle)
+                            .Should().BeFalse();
+                }
+            }
+        }
+
+        private void fillLayouterWithSomeRectangles(CircularCloudLayouter layouter,
+            List<Size> rectangleSizes)
+        {
+            foreach (var size in rectangleSizes)
+                layouter.PutNextRectangle(size);
+        }
     }
 }
