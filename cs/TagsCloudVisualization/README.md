@@ -1,2 +1,2 @@
-﻿![alt text](images\picture1.jpeg)
-![alt text](images\net48\picture2.jpeg)
+﻿![alt text](picture1.jpeg)
+![alt text](picture2.jpeg)
