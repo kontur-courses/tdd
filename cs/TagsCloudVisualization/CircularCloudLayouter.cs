@@ -8,7 +8,7 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter : ICloudLayouter
     {
         private readonly Point center;
-        private readonly List<Rectangle> currentRectangles;
+        public readonly List<Rectangle> CurrentRectangles;
         private int currentRadius;
         private double currentAngle;
         public readonly Tuple<int, int>[] Directions = new Tuple<int, int>[]
@@ -22,27 +22,20 @@ namespace TagsCloudVisualization
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
-            currentRectangles = new List<Rectangle>();
+            CurrentRectangles = new List<Rectangle>();
             currentRadius = 0;
             currentAngle = 0;
         }
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var point = GetNextPoint();
-            if (point == center)
-            {
-                currentRectangles.Add(new Rectangle(
-                    new Point(
-                        center.X - rectangleSize.Width / 2,
-                        center.Y - rectangleSize.Height / 2),
-                    rectangleSize));
-                return currentRectangles[0];
-            }
+            if (CurrentRectangles.Count == 0)
+                return PutFirstRectangle(rectangleSize);
             Rectangle? newRectangle = null;
             while(true)
             {
-                var newRectangles = GetRectangles(point, rectangleSize);
-                foreach (var rectangle in newRectangles)
+                var point = GetNextPoint();
+                var rectangles = GetRectangles(point, rectangleSize);
+                foreach (var rectangle in rectangles)
                 {
                     if (IntersectWithPreviousRectangles(rectangle))
                         continue;
@@ -54,11 +47,20 @@ namespace TagsCloudVisualization
                 }
                 if (newRectangle != null)
                     break;
-                point = GetNextPoint();
-
             }
-            currentRectangles.Add((Rectangle)newRectangle);
+            CurrentRectangles.Add((Rectangle)newRectangle);
             return (Rectangle)newRectangle;
+        }
+
+        private Rectangle PutFirstRectangle(Size rectangleSize)
+        {
+            var firstRectangle = new Rectangle(
+                    new Point(
+                        center.X - rectangleSize.Width / 2,
+                        center.Y - rectangleSize.Height / 2),
+                    rectangleSize);
+            CurrentRectangles.Add(firstRectangle);
+            return firstRectangle;
         }
 
         private Point GetNextPoint()
@@ -82,7 +84,7 @@ namespace TagsCloudVisualization
 
         public bool IntersectWithPreviousRectangles(Rectangle newRectangle)
         {
-            foreach (var rectangle in currentRectangles)
+            foreach (var rectangle in CurrentRectangles)
             {
                 if (newRectangle.IntersectsWith(rectangle))
                     return true;
