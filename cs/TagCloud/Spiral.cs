@@ -7,49 +7,21 @@ namespace TagCloud
     public class Spiral
     {
         private Point center;
-        private Direction lastDirection;
-        private Point lastPoint;
-        private int radius;
+        private double rayLength;
+        private double angle;
 
         public Spiral(Point center)
         {
             this.center = center;
-            lastPoint = center;
-            radius = 0;
-            lastDirection = Direction.Up;
+            rayLength = 0;
+            angle = -1 * Math.PI / 180;
         }
 
         public Point GetNextPoint()
         {
-            lastPoint = lastDirection switch
-            {
-                Direction.Up => new Point(lastPoint.X, lastPoint.Y - 1),
-                Direction.Down => new Point(lastPoint.X, lastPoint.Y + 1),
-                Direction.Left => new Point(lastPoint.X - 1, lastPoint.Y),
-                _ => new Point(lastPoint.X + 1, lastPoint.Y)
-            };
-
-            if (Math.Abs(lastPoint.X - center.X) != radius || Math.Abs(lastPoint.Y - lastPoint.Y) != radius) return lastPoint;
-            if (lastDirection == Direction.Up)
-            {
-                radius++;
-                lastPoint.X--;
-                lastPoint.Y--;
-            }
-            TurnDirection();
-
-            return lastPoint;
-        }
-
-        private void TurnDirection()
-        {
-            lastDirection = lastDirection switch
-            {
-                Direction.Down => Direction.Left,
-                Direction.Left => Direction.Up,
-                Direction.Up => Direction.Right,
-                _ => Direction.Down
-            };
+            angle += Math.PI / 180;
+            rayLength = 1d / (2 * Math.PI) * angle;
+            return new Point((int)(center.X + rayLength * Math.Cos(angle)), (int)(center.Y + rayLength * Math.Sin(angle)));
         }
     }
 }
