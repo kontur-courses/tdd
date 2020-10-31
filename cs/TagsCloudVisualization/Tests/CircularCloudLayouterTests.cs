@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization.Models;
+using TagsCloudVisualization.View;
 
 namespace TagsCloudVisualization.Tests
 {
@@ -85,6 +88,25 @@ namespace TagsCloudVisualization.Tests
         public void GetLayoutSize_ShouldThrowArgumentException_NoRectangles()
         {
             Assert.Throws<ArgumentException>(() => layouter.GetLayoutSize());
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure)
+                return;
+
+            var imagesFromTestsPath = Path.Combine(
+                TestContext.CurrentContext.TestDirectory, "ImagesTest");
+            if (!Directory.Exists(imagesFromTestsPath))
+                Directory.CreateDirectory(imagesFromTestsPath);
+
+            var testName = TestContext.CurrentContext.Test.Name;
+            var filePath = Path.Combine(imagesFromTestsPath, testName);
+            var cloudImageCreator = new TagCloudCreator(layouter);
+            cloudImageCreator.Save(filePath);
+
+            Console.WriteLine($"Tag cloud visualization saved to file {filePath}");
         }
 
         private bool HaveAnyIntersections(List<Rectangle> rects)
