@@ -11,6 +11,13 @@ namespace TagsCloudVisualization
         public readonly List<Rectangle> Rectangles;
         private readonly CircularCloudLayouter layouter;
         private Point center;
+        public Cloud(CircularCloudLayouter layouter)
+        {
+            this.layouter = layouter;
+            center = layouter.Center;
+            Rectangles = layouter.CurrentRectangles;
+        }
+
         public Cloud(string inputFileName)
         {
             Rectangles = new List<Rectangle>();

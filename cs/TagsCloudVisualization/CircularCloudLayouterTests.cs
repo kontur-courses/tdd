@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
+using System.IO;
 
 namespace TagsCloudVisualization
 {
@@ -15,6 +17,21 @@ namespace TagsCloudVisualization
         public void SetLayouter()
         {
             layouter = new CircularCloudLayouter(center);
+        }
+
+        [TearDown]
+        public void CheckTestResult()
+        {
+            if (TestContext.CurrentContext.Result.Outcome == ResultState.Failure || 
+                TestContext.CurrentContext.Result.Outcome == ResultState.Error)
+            {
+                var cloud = new Cloud(layouter);
+                var outputFile = Path.GetFullPath(Path.Combine(
+                    Directory.GetCurrentDirectory(), "..", "..", "..", "failures", 
+                    TestContext.CurrentContext.Test.Name + ".png"));
+                var imageSize = new Size(1000, 1000);
+                CloudVisualizer.VisualizeCloud(cloud, outputFile, imageSize);
+            }
         }
 
         [Test]
@@ -41,21 +58,28 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_AsCloseAsPossible_IfRectangleDoNotIntersectOther()
         {
-            var rectangles = PutRandomRectangles(10);
-            foreach (var rectangle in rectangles)
+            var rectangles = PutRandomRectangles(30);
+            for (var i = 1; i < rectangles.Count; i++)
             {
                 foreach (var direction in layouter.Directions)
                 {
-                    CheckDensity(rectangle, direction);
+                    CheckDensity(rectangles[i], direction);
                 }
             }
+        }
+
+        [Test]
+        public void TestOnlyForDemonstrationThirdTask()
+        {
+            PutRandomRectangles(15);
+            true.Should().BeFalse();
         }
 
         private void CheckDensity(Rectangle rectangle, Tuple<int, int> direction)
         {
             var tempRectangle = new Rectangle(0, 0, rectangle.Width, rectangle.Height);
             tempRectangle.X = rectangle.X + direction.Item1 * layouter.Shift;
-            tempRectangle.X = rectangle.Y + direction.Item2 * layouter.Shift;
+            tempRectangle.Y = rectangle.Y + direction.Item2 * layouter.Shift;
             if (layouter.GetDistanceToCenter(tempRectangle) < layouter.GetDistanceToCenter(rectangle))
             {
                 layouter.CurrentRectangles.Remove(rectangle);
@@ -70,7 +94,7 @@ namespace TagsCloudVisualization
             var rnd = new Random();
             for (var i = 0; i < rectanglesCount; i++)
             {
-                rectangles.Add(layouter.PutNextRectangle(new Size(rnd.Next(50), rnd.Next(50))));
+                rectangles.Add(layouter.PutNextRectangle(new Size(rnd.Next(100, 200), rnd.Next(100, 200))));
             }
             return rectangles;
         }

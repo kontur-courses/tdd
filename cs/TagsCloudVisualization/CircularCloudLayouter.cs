@@ -7,7 +7,7 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter : ICloudLayouter
     {
-        private readonly Point center;
+        public readonly Point Center;
         public readonly List<Rectangle> CurrentRectangles;
         private int currentRadius;
         private double currentAngle;
@@ -21,7 +21,7 @@ namespace TagsCloudVisualization
         public readonly int Shift = 2;
         public CircularCloudLayouter(Point center)
         {
-            this.center = center;
+            this.Center = center;
             CurrentRectangles = new List<Rectangle>();
             currentRadius = 0;
             currentAngle = 0;
@@ -56,8 +56,8 @@ namespace TagsCloudVisualization
         {
             var firstRectangle = new Rectangle(
                     new Point(
-                        center.X - rectangleSize.Width / 2,
-                        center.Y - rectangleSize.Height / 2),
+                        Center.X - rectangleSize.Width / 2,
+                        Center.Y - rectangleSize.Height / 2),
                     rectangleSize);
             CurrentRectangles.Add(firstRectangle);
             return firstRectangle;
@@ -68,11 +68,11 @@ namespace TagsCloudVisualization
             if (currentRadius == 0)
             {
                 currentRadius++;
-                return center;
+                return Center;
             }
             var point = new Point(
-                (int)(center.X + currentRadius * Math.Cos(currentAngle)),
-                (int)(center.Y + currentRadius * Math.Sin(currentAngle)));
+                (int)(Center.X + currentRadius * Math.Cos(currentAngle)),
+                (int)(Center.Y + currentRadius * Math.Sin(currentAngle)));
             currentAngle += Math.PI / (6 + currentRadius);
             if (Math.Abs(currentAngle - 2 * Math.PI) < 0.0000001)
             {
@@ -97,7 +97,7 @@ namespace TagsCloudVisualization
             var rectCenter = new Point(
                 rectangle.X + rectangle.Width / 2,
                 rectangle.Y + rectangle.Height / 2);
-            return Math.Sqrt((center.X - rectangle.X) ^ 2 + (center.Y - rectCenter.Y) ^ 2);
+            return Math.Sqrt((Center.X - rectangle.X) ^ 2 + (Center.Y - rectCenter.Y) ^ 2);
         }
 
         private Rectangle[] GetRectangles(Point point, Size size)
@@ -114,7 +114,7 @@ namespace TagsCloudVisualization
         private Rectangle MoveToCenter(Rectangle rectangle)
         {
             var resultRectangle = new Rectangle(rectangle.Location, rectangle.Size);
-            Rectangle tempRectangle = new Rectangle(rectangle.Location, rectangle.Size); ;
+            Rectangle tempRectangle = new Rectangle(rectangle.Location, rectangle.Size);
             while (true)
             {
                 var flag = false;
