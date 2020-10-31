@@ -22,5 +22,13 @@ namespace TagsCloudVisualization
             var rectangle = layouter.PutNextRectangle(new Size(50, 50));
             rectangle.Location.Should().BeEquivalentTo(new Point(475, 475));
         }
+
+        [Test]
+        public void PutNextRectangle_PutDifferentRectanglesInDifferentPlaces_Always()
+        {
+            var firstRectangle = layouter.PutNextRectangle(new Size(50, 50));
+            var secondRrectangle = layouter.PutNextRectangle(new Size(50, 50));
+            firstRectangle.Location.Should().NotBeEquivalentTo(secondRrectangle.Location);
+        }
     }
 }
