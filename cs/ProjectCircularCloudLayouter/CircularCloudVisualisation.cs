@@ -4,54 +4,51 @@ using System.Drawing.Imaging;
 
 namespace ProjectCircularCloudLayouter
 {
-    public class CircularCloudVisualisation
+    public static class CircularCloudVisualisation
     {
-        private Bitmap _circular_cloud_bitmap;
-        private CircularCloudLayouter _cloudLayouter;
-        private Random _random;
-
-        public CircularCloudVisualisation(CircularCloudLayouter cloudLayouter)
+        public static void MakeImageTagsCircularCloud(this CircularCloudLayouter circularCloudLayouter, 
+            string pathToSave, ImageFormat imageFormat)
         {
-            _cloudLayouter = cloudLayouter;
-            _circular_cloud_bitmap = new Bitmap(_cloudLayouter.CloudRadius * 2, _cloudLayouter.CloudRadius * 2);
-            _random = new Random();
-        }
-
-        public void MakeImageTagsCircularCloud(string pathToSave, ImageFormat imageFormat)
-        {
-            if (_cloudLayouter.GetRectangles.Count == 0)
+            var bitmap = new Bitmap(circularCloudLayouter.CloudRadius * 2, circularCloudLayouter.CloudRadius * 2);
+            if (circularCloudLayouter.GetRectangles.Count == 0)
                 throw new Exception("IsNotContainsRectanglesForDraw");
-            DrawCircularCloud(Graphics.FromImage(_circular_cloud_bitmap));
-            SaveBitmap(pathToSave, imageFormat);
+            DrawCircularCloud(Graphics.FromImage(bitmap), circularCloudLayouter);
+            SaveBitmap(pathToSave, imageFormat, bitmap);
         }
 
-        private void DrawCircularCloud(Graphics graphics)
+        private static void DrawCircularCloud(Graphics graphics, CircularCloudLayouter layouter)
         {
             graphics.FillRectangle(Brushes.White, new Rectangle(new Point(0,0), 
-                new Size(_cloudLayouter.CloudRadius * 2, _cloudLayouter.CloudRadius * 2)));
-            foreach (var rectangle in _cloudLayouter.GetRectangles)
+                new Size(layouter.CloudRadius * 2, layouter.CloudRadius * 2)));
+            foreach (var rectangle in layouter.GetRectangles)
             {
                 var brush = GetNewRandomBrush();
                 var currentLocation = rectangle.Location
-                                      + new Size(_cloudLayouter.CloudRadius+5, _cloudLayouter.CloudRadius+5);
+                                      + new Size(layouter.CloudRadius+5, layouter.CloudRadius+5);
                 graphics.FillRectangle(brush, new Rectangle(currentLocation, rectangle.Size));
             }
+            graphics.Flush();
         }
 
-        private Brush GetNewRandomBrush() => new SolidBrush(Color.FromArgb(_random.Next(255), 
-            _random.Next(255), _random.Next(255)));
+        private static Brush GetNewRandomBrush()
+        {
+            var random = new Random();
+            return new SolidBrush(Color.FromArgb(random.Next(255),
+                random.Next(255), random.Next(255)));
+        }
 
-        private void SaveBitmap(string path, ImageFormat imageFormat)
+        private static void SaveBitmap(string path, ImageFormat imageFormat, Bitmap circularCloudBitmap)
         {
             try
             {
-                _circular_cloud_bitmap.Save(path, imageFormat);
+                circularCloudBitmap.Save(path, imageFormat);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.StackTrace);
                 Console.WriteLine("Failed to save the file");
             }
+
         }
     }
 }

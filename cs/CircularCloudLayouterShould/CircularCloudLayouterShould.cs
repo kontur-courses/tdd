@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using ProjectCircularCloudLayouter;
 
 namespace CircularCloudLayouterShould
@@ -28,6 +30,15 @@ namespace CircularCloudLayouterShould
                 new Rectangle(new Point(7, -5), new Size(1, 3)),
                 new Rectangle(new Point(-7, -5), new Size(5, 10))
             };
+        }
+        
+        [TearDown]
+        public void DrawCloudAfterFailedTest()
+        {
+            if (!TestContext.CurrentContext.Result.Outcome.Status.Equals(TestStatus.Failed) ||
+                _layouter.GetRectangles.Count == 0) return;
+            var imageName = $"{TestContext.CurrentContext.Test.Name}_failed.bmp";
+            _layouter.MakeImageTagsCircularCloud(imageName, ImageFormat.Bmp);
         }
 
         [TestCase(0, 1, TestName = "When zero width")]
