@@ -11,6 +11,7 @@ namespace ProjectCircularCloudLayouter
         private double _spiralAngle;
         private const double SpiralStep = 0.5;
         public readonly Point Center;
+        public int CloudRadius { get; private set; }
 
         public CircularCloudLayouter(Point center)
         {
@@ -24,14 +25,15 @@ namespace ProjectCircularCloudLayouter
 
         public void PutNextRectangle(Size rectangleSize)
         {
-            if (rectangleSize.Height == 0 || rectangleSize.Width == 0)
-                throw new ArgumentException("Size width and height must be not zero");
+            if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
+                throw new ArgumentException("Size width and height must be positive");
             while (true)
             {
                 var currentSpiralPosition = GetNewSpiralPoint();
                 var rectangle = new Rectangle(currentSpiralPosition, rectangleSize);
                 if (IsAnyIntersectWithRectangles(rectangle, _rectangles)) continue;
                 _rectangles.Add(rectangle);
+                UpdateCloudRadius(rectangle);
                 break;
             }
         }
@@ -47,9 +49,21 @@ namespace ProjectCircularCloudLayouter
         {
             var position = new Point((int)(Center.X + SpiralStep*_spiralAngle * Math.Cos(_spiralAngle)), 
                 (int)(Center.Y+SpiralStep*_spiralAngle  * Math.Sin(_spiralAngle)));
-            // _spiralParameter += 40 / Math.Log2(_rectangles.Count+2)*Math.PI/180;
             _spiralAngle += 0.017;
             return position;
+        }
+        
+        private void UpdateCloudRadius(Rectangle currentRectangle)
+        {
+            var maxDistance = new []
+            {
+                GetCeilingDistanceBetweenPoints(currentRectangle.Location, Center),
+                GetCeilingDistanceBetweenPoints(currentRectangle.Location + new Size(currentRectangle.Width, 0), Center),
+                GetCeilingDistanceBetweenPoints(currentRectangle.Location + new Size(0, currentRectangle.Height), Center),
+                GetCeilingDistanceBetweenPoints(currentRectangle.Location + currentRectangle.Size, Center)
+            }.Max();
+            if (maxDistance> CloudRadius)
+                CloudRadius = maxDistance;
         }
     }
 }

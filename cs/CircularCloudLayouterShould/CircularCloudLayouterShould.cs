@@ -32,6 +32,8 @@ namespace CircularCloudLayouterShould
 
         [TestCase(0, 1, TestName = "When zero width")]
         [TestCase(1, 0, TestName = "When zero height")]
+        [TestCase(-1, 1, TestName = "When negative width")]
+        [TestCase(1, -1, TestName = "When negative height")]
         public void PutNextRectangle_ThrowArgumentException(int width, int height)
         {
             var size = new Size(width, height);
@@ -138,6 +140,16 @@ namespace CircularCloudLayouterShould
             var distanceBetweenPoints = CircularCloudLayouter.GetCeilingDistanceBetweenPoints(firstPoint, secondPoint);
                 
             distanceBetweenPoints.Should().Be(expectedDistance);
+        }
+        
+        [Test]
+        public void PutNextRectangle_IncreasedCloudRadius_WhenPutFirstRectangle()
+        {
+            var size = _rectangles[0].Size;
+            
+            _layouter.PutNextRectangle(size);
+
+            _layouter.CloudRadius.Should().Be(8);
         }
     }
 }
