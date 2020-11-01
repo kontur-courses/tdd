@@ -1,5 +1,6 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
 
@@ -8,14 +9,39 @@ namespace TagsCloudVisualization
     [TestFixture]
     public class ArchimedeanSpiralTests
     {
-        [TestCase(0, 0, 0, TestName = "Density is zero")]
-        [TestCase(0, 0, -1.0, TestName = "Density is negative")]
-        public void ThrowException_When(int x, int y, double density)
-        {
-            var point = new Point(x, y);
-            Func<ArchimedeanSpiral> putRectangle = () => new ArchimedeanSpiral(point, density);
+        private Point Center { get; set; }
+        private ArchimedeanSpiral Spiral { get; set; }
 
-            putRectangle.Should().Throw<ArgumentException>();
+        [SetUp]
+        public void SetUp()
+        {
+            Center = new Point(500, 500);
+            Spiral = new ArchimedeanSpiral(Center, 0.2, 0);
+        }
+
+        [Test]
+        public void GetNextPoint_ReturnStartPoint_OnFirstRequest()
+        {
+            Spiral.GetNextPoint().Should().Be(Center);
+        }
+
+        [Test]
+        public void GetNextPoint_ReturnDifferentPoints_OnMultipleRequest()
+        {
+            var points = new List<Point>();
+
+            for (int i = 0; i < 100; i++)
+            {
+                points.Add(Spiral.GetNextPoint());
+            }
+
+            points.First().Should().NotBe(points.Last());
+        }
+
+        [Test]
+        public void GetNextPoint_ReturnNotNull_WhenCalled()
+        {
+            Spiral.GetNextPoint().Should().NotBeNull();
         }
     }
 }

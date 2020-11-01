@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -7,24 +6,41 @@ namespace TagsCloudVisualization
 {
     public class ArchimedeanSpiral
     {
-        public Point Center { get; }
-        public double Density { get; }
+        private Point Center { get; }
+        private IEnumerator<Point> PointsGenerator { get; }
+        private double DistanceBetweenLoops { get; }
+        private double CenterOffset { get; }
 
-        public ArchimedeanSpiral(Point center, double density)
+        public ArchimedeanSpiral(Point center, double distanceBetweenLoops, double centerOffset)
         {
             Center = center;
-
-            if (density <= 0)
-            {
-                throw new ArgumentException("density cant be negative or zero");
-            }
-
-            Density = density;
+            PointsGenerator = this.GetPoints().GetEnumerator();
+            DistanceBetweenLoops = distanceBetweenLoops;
+            CenterOffset = centerOffset;
         }
 
-        public IEnumerator<PointF> GetNextPoint()
+        public Point GetNextPoint()
         {
-            yield return new PointF();
+            PointsGenerator.MoveNext();
+            return PointsGenerator.Current;
+        }
+
+        private IEnumerable<Point> GetPoints()
+        {
+            var x = Center.X;
+            var y = Center.Y;
+            var i = 0;
+
+            while (true)
+            {
+                var angle = 0.1 * i;
+                i++;
+
+                x += (int)((CenterOffset + DistanceBetweenLoops * angle) * Math.Cos(angle));
+                y += (int)((CenterOffset + DistanceBetweenLoops * angle) * Math.Sin(angle));
+
+                yield return new Point(x, y);
+            }
         }
     }
 }
