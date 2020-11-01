@@ -31,12 +31,6 @@ namespace TagsCloudVisualization
                 prevDistance = newDistance;
             }
         }
-
-        private double getDistance(Point first, Point second)
-        {
-            return Math.Sqrt(Math.Pow(first.X - second.X, 2)
-                             + Math.Pow(first.Y - second.Y, 2));
-        }
         
         [Test]
         public void Spiral_ShouldReturnCorrectPoints_AfterSomeSteps()
@@ -48,6 +42,12 @@ namespace TagsCloudVisualization
             spiral.GetNextPoint().Should().BeEquivalentTo(new Point(-2,0));
             spiral.GetNextPoint().Should().BeEquivalentTo(new Point(0,-3));
             spiral.GetNextPoint().Should().BeEquivalentTo(new Point(4,0));
+        }
+
+        private double getDistance(Point first, Point second)
+        {
+            return Math.Sqrt(Math.Pow(first.X - second.X, 2)
+                             + Math.Pow(first.Y - second.Y, 2));
         }
     }
 }
