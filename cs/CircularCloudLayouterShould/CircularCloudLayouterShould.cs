@@ -100,5 +100,12 @@ namespace CircularCloudLayouterShould
 
             isIntersect.Should().BeFalse();
         }
+        
+        [Test, Timeout(1000)]
+        public void PutNextRectangle_TimeOut_WhenPut1000ThousandRectangles()
+        {
+            for (var i = 0; i < 1000; i++)
+                _layouter.PutNextRectangle(new Size(_random.Next(50, 70), _random.Next(20, 40)));
+        }
     }
 }
