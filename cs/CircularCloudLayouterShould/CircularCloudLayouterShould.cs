@@ -107,5 +107,37 @@ namespace CircularCloudLayouterShould
             for (var i = 0; i < 1000; i++)
                 _layouter.PutNextRectangle(new Size(_random.Next(50, 70), _random.Next(20, 40)));
         }
+        
+        [TestCase(1, 5, 1, 5, TestName = "ZeroDistanceWhenPointsAreEquivalent")]
+        [TestCase(-7, 7, -7, 7, TestName = "ZeroDistanceWhenPointsAreEquivalent")]
+        public void GetDistanceBetweenPoint_ZeroDistance_WhenEquivalentPoints(int firstX, int firstY, 
+            int secondX, int secondY)
+        {
+            var firstPoint = new Point(firstX, firstY);
+            var secondPoint = new Point(secondX, secondY);
+
+            var distanceBetweenPoints = CircularCloudLayouter.GetCeilingDistanceBetweenPoints(firstPoint, secondPoint);
+                
+            distanceBetweenPoints.Should().Be(0);
+        }
+        
+        [TestCase(5, -1, 1, 2, 5, 
+            TestName = "Positive distance when points are different")]
+        [TestCase(5, -1, 5, 2, 3, 
+            TestName = "Positive distance when first coordinates are equal")]
+        [TestCase(3, -1, 5, -1, 2, 
+            TestName = "Positive distance when second coordinates are equal")]
+        [TestCase(5, -1, 2, -3, 4, 
+            TestName = "Positive ceiling distance when ceiling is needed")]
+        public void GetDistanceBetweenPoint_ZeroDistance_WhenEquivalentPoints(int firstX, int firstY, 
+            int secondX, int secondY, int expectedDistance)
+        {
+            var firstPoint = new Point(firstX, firstY);
+            var secondPoint = new Point(secondX, secondY);
+
+            var distanceBetweenPoints = CircularCloudLayouter.GetCeilingDistanceBetweenPoints(firstPoint, secondPoint);
+                
+            distanceBetweenPoints.Should().Be(expectedDistance);
+        }
     }
 }

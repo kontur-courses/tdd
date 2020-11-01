@@ -35,9 +35,13 @@ namespace ProjectCircularCloudLayouter
                 break;
             }
         }
-        
+
         public static bool IsAnyIntersectWithRectangles(Rectangle rectangleToCheck, List<Rectangle> rectangles) => 
             rectangles.Any(rec => rec.IntersectsWith(rectangleToCheck));
+        
+        public static int GetCeilingDistanceBetweenPoints(Point first, Point second) => 
+            (int)Math.Ceiling(Math.Sqrt((first.X - second.X) * (first.X - second.X) +
+                                        (first.Y - second.Y) * (first.Y - second.Y)));
         
         private Point GetNewSpiralPoint()
         {
@@ -46,6 +50,6 @@ namespace ProjectCircularCloudLayouter
             // _spiralParameter += 40 / Math.Log2(_rectangles.Count+2)*Math.PI/180;
             _spiralAngle += 0.017;
             return position;
-        } 
+        }
     }
 }
