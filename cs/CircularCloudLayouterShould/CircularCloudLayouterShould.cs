@@ -30,8 +30,8 @@ namespace CircularCloudLayouterShould
             };
         }
 
-        [TestCase(0, 1, TestName = "WhenZeroWidth")]
-        [TestCase(1, 0, TestName = "WhenZeroHeight")]
+        [TestCase(0, 1, TestName = "When zero width")]
+        [TestCase(1, 0, TestName = "When zero height")]
         public void PutNextRectangle_ThrowArgumentException(int width, int height)
         {
             var size = new Size(width, height);
@@ -41,7 +41,7 @@ namespace CircularCloudLayouterShould
             act.Should().Throw<ArgumentException>();
         }
         
-        [TestCase(1, 1, TestName = "WhenSimplePositiveSize")]
+        [TestCase(1, 1, TestName = "When simple positive size")]
         public void PutNextRectangle_DoNotThrowArgumentException(int width, int height)
         {
             var size = new Size(width, height);
@@ -76,7 +76,7 @@ namespace CircularCloudLayouterShould
         }
         
         [TestCase(-3, -6, 2, 3, 
-            TestName = "WhenRectangleToCheckWithInRectangle")]
+            TestName = "When rectangle to check within rectangle")]
         [TestCase(1, 2, 5, 7, 
             TestName = "When simple intersection")]
         public void Check_IsAnyIntersectWithRectangles(int coordinateX, int coordinateY, int width, int height)
@@ -89,9 +89,9 @@ namespace CircularCloudLayouterShould
         }
         
         [TestCase(5, 5, 3, 7, 
-            TestName = "WhenExistCommonPoints")]
+            TestName = "When exist common points")]
         [TestCase(5, 5, 3, 7, 
-            TestName = "WhenNotExistCommonPoints")]
+            TestName = "When not exist common points")]
         public void Check_IsNotIntersectWithRectangles(int coordinateX, int coordinateY, int width, int height)
         {
             var rectangle = new Rectangle(new Point(coordinateX, coordinateY), new Size(width, height));
