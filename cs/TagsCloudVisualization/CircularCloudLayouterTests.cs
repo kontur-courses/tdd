@@ -21,6 +21,21 @@ namespace TagsCloudVisualization
             rectangles = new List<Rectangle>();
             layouter = new CircularCloudLayouter(new Point(25, 25));
         }
+        
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome == ResultState.Failure)
+            {
+                Drawer.DrawRectangles(layouter.Center, rectangles);
+                
+                var fileName = $"{TestContext.CurrentContext.Test.FullName}.png";
+                var path = Path.Combine(Path.GetFullPath(@"..\..\..\"), fileName);
+                Drawer.SaveImage(path);
+                
+                Console.WriteLine($"Tag cloud visualization saved to file {path}");
+            }
+        }
 
         [Test]
         public void PutNextRectangle_LocationOfFirstRectangleIsPointEmpty()
