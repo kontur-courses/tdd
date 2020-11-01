@@ -8,7 +8,7 @@ namespace TagsCloudVisualization
 {
     internal class CircularCloudLayouter_Tests
     {
-        private const double MinDensity = 0.6;
+        private const double MinDensity = 0.5;
         private readonly Random random = new Random();
         private Point center;
         private CircularCloudLayouter cloud;

@@ -15,7 +15,7 @@ namespace TagsCloudVisualization
             spiral = new ArchimedeanSpiral(center, 0.005);
         }
 
-        public IReadOnlyCollection<Rectangle> Rectangles => rectangles.AsReadOnly();
+        public IReadOnlyCollection<Rectangle> Rectangles => rectangles;
 
         public Rectangle PutNextRectangle(Size rectSize)
         {

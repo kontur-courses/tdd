@@ -61,6 +61,7 @@
     <Compile Include="ArchimedeanSpiral_Tests.cs" />
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="CircularCloudLayouter_Tests.cs" />
+    <Compile Include="CircularCloudVisualization.cs" />
     <Compile Include="ICircularCloudLayouter.cs" />
     <Compile Include="ISpiral.cs" />
     <Compile Include="Program.cs" />
