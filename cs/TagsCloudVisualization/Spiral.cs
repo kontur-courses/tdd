@@ -7,10 +7,12 @@ namespace TagsCloudVisualization
     public class Spiral : IEnumerable<Point>
     {
         private readonly Point center;
+        private readonly HashSet<Point> usedPoints;
 
         public Spiral(Point center)
         {
             this.center = center;
+            usedPoints = new HashSet<Point>();
         }
 
         public IEnumerator<Point> GetEnumerator()
@@ -24,13 +26,15 @@ namespace TagsCloudVisualization
                 for (var i = 0; i < lineLength; i++)
                 {
                     currentPoint = Point.Add(currentPoint, new Size(sign, 0));
-                    yield return currentPoint;
+                    if (!usedPoints.Contains(currentPoint))
+                        yield return currentPoint;
                 }
 
                 for (var i = 0; i < lineLength; i++)
                 {
                     currentPoint = Point.Add(currentPoint, new Size(0, sign));
-                    yield return currentPoint;
+                    if (!usedPoints.Contains(currentPoint))
+                        yield return currentPoint;
                 }
 
                 sign *= -1;
@@ -41,6 +45,11 @@ namespace TagsCloudVisualization
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public void AddUsedPoints(List<Point> points)
+        {
+            usedPoints.UnionWith(points);
         }
     }
 }
