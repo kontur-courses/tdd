@@ -1,7 +1,10 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
+using FluentAssertions;
+
 
 
 namespace TagsCloudVisualization.Tests
@@ -9,10 +12,41 @@ namespace TagsCloudVisualization.Tests
     [TestFixture]
     public class TargetVectorShould
     {
-        [Test]
-        public void Test()
+        TargetVector vector;
+        Point target;
+        Point location;
+
+        [SetUp]
+        public void SetUp()
         {
-            Assert.IsFalse(false);
+            target = new Point(2, 3);
+            location = new Point(5, 7);
+            vector = new TargetVector(target, location);
         }
+
+        [Test]
+        public void PartialDeltaReturnMinimalOffset()
+        {
+            foreach(var delta in vector.GetPartialDelta())
+            {
+                delta.X.Should().BeInRange(-1, 1);
+                delta.Y.Should().BeInRange(-1, 1);
+            }
+        }
+
+        [Test]
+        public void PartialDeltaAllDeltaMoveToTraget()
+        {
+            var dx = 0;
+            var dy = 0;
+            foreach(var delta in vector.GetPartialDelta())
+            {
+                dx += delta.X;
+                dy += delta.Y;
+            }
+            location.Offset(dx, dy);
+            location.Should().Be(target);
+        }
+
     }
 }

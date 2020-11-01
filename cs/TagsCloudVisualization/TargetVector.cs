@@ -22,8 +22,7 @@ namespace TagsCloudVisualization
                 var delta = GetDelta();
                 yield return new Point(delta.X, 0);
                 yield return new Point(0, delta.Y);
-                location.X += delta.X;
-                location.Y += delta.Y;
+                location.Offset(delta.X, delta.Y);
             }
         }
 
