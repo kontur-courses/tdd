@@ -19,7 +19,7 @@ namespace ProjectCircularCloudLayouter
 
         public Rectangle GetCurrentRectangle => _rectangles.Last();
 
-        public List<Rectangle> GetRectangles => _rectangles;
+        public IReadOnlyList<Rectangle> GetRectangles => _rectangles;
 
         public void PutNextRectangle(Size rectangleSize)
         {
