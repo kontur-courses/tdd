@@ -8,8 +8,9 @@ namespace TagsCloudVisualization
     class CircularCloudLayouter
     {
         public Point Center { get; }
-        private Point nextRectanglePos;
+        public Rectangle BorderRectangle { get; private set; }
         
+        private Point nextRectanglePos;
         public List<Rectangle> Rectangles { get; private set; }
         
         public CircularCloudLayouter(Point center)
@@ -17,6 +18,8 @@ namespace TagsCloudVisualization
             Rectangles = new List<Rectangle>();
             Center = center;
             nextRectanglePos = Center;
+            
+            BorderRectangle = new Rectangle();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
