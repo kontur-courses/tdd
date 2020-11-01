@@ -13,10 +13,11 @@ namespace TagsCloudVisualization.Extensions
             return rectangles.Any(otherRect => rectangle.IntersectsWith(otherRect));
         }
 
-        public static void MoveOnTheDelta(this Rectangle rectangle, Point delta)
+        public static Rectangle MoveOnTheDelta(this Rectangle rectangle, Point delta)
         {
             rectangle.X += delta.X;
             rectangle.Y += delta.Y;
+            return rectangle;
         }
     }
 }
