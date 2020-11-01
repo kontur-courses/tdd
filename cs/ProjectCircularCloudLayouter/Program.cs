@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Drawing.Imaging;
 
 namespace ProjectCircularCloudLayouter
@@ -8,9 +9,10 @@ namespace ProjectCircularCloudLayouter
         static void Main()
         {
             var layouter = new CircularCloudLayouter(new Point(0, 0));
-            GenerateRectangles.MakeLayouter(layouter, 323, 50, 100, 
+            GenerateRectangles.MakeLayouter(layouter, 5000, 50, 100,
                 20, 45);
-            layouter.MakeImageTagsCircularCloud("circularCloud.jpg", ImageFormat.Jpeg);
+            layouter.MakeImageTagsCircularCloud("circularCloud.bmp", ImageFormat.Bmp);
+            Console.WriteLine("Изображение сохранено");
         }
     }
 }

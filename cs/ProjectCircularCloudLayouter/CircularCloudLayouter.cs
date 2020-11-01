@@ -8,17 +8,15 @@ namespace ProjectCircularCloudLayouter
     public class CircularCloudLayouter
     {
         private readonly List<Rectangle> _rectangles;
-        private double _spiralAngle;
-        private const double SpiralStep = 0.5;
-        public readonly Point Center;
+        public readonly ISpiral Spiral;
         public int CloudRadius { get; private set; }
 
         public CircularCloudLayouter(Point center)
         {
-            Center = center;
             _rectangles = new List<Rectangle>();
+            Spiral = new ArchimedeanSpiral(center);
         }
-        
+
         public Rectangle GetCurrentRectangle => _rectangles.Last();
 
         public List<Rectangle> GetRectangles => _rectangles;
@@ -29,7 +27,7 @@ namespace ProjectCircularCloudLayouter
                 throw new ArgumentException("Size width and height must be positive");
             while (true)
             {
-                var currentSpiralPosition = GetNewSpiralPoint();
+                var currentSpiralPosition = Spiral.GetNewSpiralPoint();
                 var rectangle = new Rectangle(currentSpiralPosition, rectangleSize);
                 if (IsAnyIntersectWithRectangles(rectangle, _rectangles)) continue;
                 _rectangles.Add(rectangle);
@@ -38,31 +36,25 @@ namespace ProjectCircularCloudLayouter
             }
         }
 
-        public static bool IsAnyIntersectWithRectangles(Rectangle rectangleToCheck, List<Rectangle> rectangles) => 
+        public static bool IsAnyIntersectWithRectangles(Rectangle rectangleToCheck, List<Rectangle> rectangles) =>
             rectangles.Any(rec => rec.IntersectsWith(rectangleToCheck));
-        
-        public static int GetCeilingDistanceBetweenPoints(Point first, Point second) => 
-            (int)Math.Ceiling(Math.Sqrt((first.X - second.X) * (first.X - second.X) +
-                                        (first.Y - second.Y) * (first.Y - second.Y)));
-        
-        private Point GetNewSpiralPoint()
-        {
-            var position = new Point((int)(Center.X + SpiralStep*_spiralAngle * Math.Cos(_spiralAngle)), 
-                (int)(Center.Y+SpiralStep*_spiralAngle  * Math.Sin(_spiralAngle)));
-            _spiralAngle += 0.017;
-            return position;
-        }
-        
+
+        public static int GetCeilingDistanceBetweenPoints(Point first, Point second) =>
+            (int) Math.Ceiling(Math.Sqrt((first.X - second.X) * (first.X - second.X) +
+                                         (first.Y - second.Y) * (first.Y - second.Y)));
+
         private void UpdateCloudRadius(Rectangle currentRectangle)
         {
-            var maxDistance = new []
+            var maxDistance = new[]
             {
-                GetCeilingDistanceBetweenPoints(currentRectangle.Location, Center),
-                GetCeilingDistanceBetweenPoints(currentRectangle.Location + new Size(currentRectangle.Width, 0), Center),
-                GetCeilingDistanceBetweenPoints(currentRectangle.Location + new Size(0, currentRectangle.Height), Center),
-                GetCeilingDistanceBetweenPoints(currentRectangle.Location + currentRectangle.Size, Center)
+                GetCeilingDistanceBetweenPoints(currentRectangle.Location, Spiral.Center),
+                GetCeilingDistanceBetweenPoints(currentRectangle.Location + new Size(currentRectangle.Width, 0),
+                    Spiral.Center),
+                GetCeilingDistanceBetweenPoints(currentRectangle.Location + new Size(0, currentRectangle.Height),
+                    Spiral.Center),
+                GetCeilingDistanceBetweenPoints(currentRectangle.Location + currentRectangle.Size, Spiral.Center)
             }.Max();
-            if (maxDistance> CloudRadius)
+            if (maxDistance > CloudRadius)
                 CloudRadius = maxDistance;
         }
     }

@@ -6,7 +6,7 @@ namespace ProjectCircularCloudLayouter
 {
     public static class CircularCloudVisualisation
     {
-        public static void MakeImageTagsCircularCloud(this CircularCloudLayouter circularCloudLayouter, 
+        public static void MakeImageTagsCircularCloud(this CircularCloudLayouter circularCloudLayouter,
             string pathToSave, ImageFormat imageFormat)
         {
             var bitmap = new Bitmap(circularCloudLayouter.CloudRadius * 2, circularCloudLayouter.CloudRadius * 2);
@@ -18,15 +18,16 @@ namespace ProjectCircularCloudLayouter
 
         private static void DrawCircularCloud(Graphics graphics, CircularCloudLayouter layouter)
         {
-            graphics.FillRectangle(Brushes.White, new Rectangle(new Point(0,0), 
+            graphics.FillRectangle(Brushes.White, new Rectangle(new Point(0, 0),
                 new Size(layouter.CloudRadius * 2, layouter.CloudRadius * 2)));
             foreach (var rectangle in layouter.GetRectangles)
             {
                 var brush = GetNewRandomBrush();
                 var currentLocation = rectangle.Location
-                                      + new Size(layouter.CloudRadius+5, layouter.CloudRadius+5);
+                                      + new Size(layouter.CloudRadius + 5, layouter.CloudRadius + 5);
                 graphics.FillRectangle(brush, new Rectangle(currentLocation, rectangle.Size));
             }
+
             graphics.Flush();
         }
 
@@ -48,7 +49,6 @@ namespace ProjectCircularCloudLayouter
                 Console.WriteLine(e.StackTrace);
                 Console.WriteLine("Failed to save the file");
             }
-
         }
     }
 }
