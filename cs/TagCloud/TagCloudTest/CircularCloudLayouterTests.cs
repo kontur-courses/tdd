@@ -11,7 +11,7 @@ namespace TagCloudTest
     public class CircularCloudLayouterTests
     {
         private CircularCloudLayouter tagCloudWithCenterInZero;
-        private Random rnd;
+        private Random rnd = new Random();
 
         [SetUp]
         public void SetUp()
