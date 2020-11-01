@@ -16,9 +16,9 @@ namespace TagsCloudVisualization
         [SetUp]
         public void SetUp()
         {
-            layouter = new CircularCloudLayouter(new Point(10, 10));
+            layouter = new CircularCloudLayouter(new Point(300, 300));
             sizes = new List<Size>() {new Size(10, 5), 
-                new Size(100, 10), new Size(10, 5), 
+                new Size(20, 10), new Size(10, 5), 
                 new Size(15, 15)};
 
         }
@@ -55,6 +55,30 @@ namespace TagsCloudVisualization
                             .Should().BeFalse();
                 }
             }
+        }
+        
+        [Test]
+        public void LayouterActualCenter_ShouldBeCloseToExpectedCenter_WhenManyRectanglesAdded()
+        {
+            fillLayouterWithSomeRectangles(layouter, sizes);
+            fillLayouterWithSomeRectangles(layouter, sizes);
+            fillLayouterWithSomeRectangles(layouter, sizes);
+
+            var borderRectangle = layouter.BorderRectangle;
+            checkNumberInMiddleBetweenOthers(layouter.Center.X, borderRectangle.X,
+                borderRectangle.X + borderRectangle.Width, 0.5);
+            checkNumberInMiddleBetweenOthers(layouter.Center.Y, borderRectangle.Y,
+                borderRectangle.Y + borderRectangle.Height, 0.5);
+        }
+
+        private void checkNumberInMiddleBetweenOthers(double targetNumber, double smallerNumber,
+            double biggerNumber, double middleSize)
+        {
+            var segmentLength = biggerNumber - smallerNumber;
+            var middleNumber = biggerNumber + smallerNumber / 2;
+            var leftMiddleCorner = middleNumber - middleSize * segmentLength / 2;
+            var rightMiddleCorner = middleNumber + middleSize * segmentLength / 2;
+            targetNumber.Should().BeInRange(leftMiddleCorner, rightMiddleCorner);
         }
 
         private void fillLayouterWithSomeRectangles(CircularCloudLayouter layouter,
