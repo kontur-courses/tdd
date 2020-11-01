@@ -110,8 +110,8 @@ namespace CircularCloudLayouterShould
                 _layouter.PutNextRectangle(new Size(_random.Next(50, 70), _random.Next(20, 40)));
         }
         
-        [TestCase(1, 5, 1, 5, TestName = "ZeroDistanceWhenPointsAreEquivalent")]
-        [TestCase(-7, 7, -7, 7, TestName = "ZeroDistanceWhenPointsAreEquivalent")]
+        [TestCase(1, 5, 1, 5, TestName = "Zero distance when points are equivalent")]
+        [TestCase(-7, 7, -7, 7, TestName = "Zero distance when points are equivalent")]
         public void GetDistanceBetweenPoint_ZeroDistance_WhenEquivalentPoints(int firstX, int firstY, 
             int secondX, int secondY)
         {
