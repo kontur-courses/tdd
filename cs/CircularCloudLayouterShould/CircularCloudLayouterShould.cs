@@ -8,13 +8,13 @@ namespace CircularCloudLayouterShould
 {
     public class Tests
     {
-        private CircularCloudLayouter _layouter;
+        private CircularCloudLayouter.CircularCloudLayouter _layouter;
         private List<Rectangle> _rectangles;
         
         [SetUp]
         public void CreateLayouter()
         {
-            _layouter = new CircularCloudLayouter(new Point(0, 0));
+            _layouter = new CircularCloudLayouter.CircularCloudLayouter(new Point(0, 0));
         }
 
         [SetUp]
@@ -47,6 +47,18 @@ namespace CircularCloudLayouterShould
             var act = new Action(() => _layouter.PutNextRectangle(size));
 
             act.Should().NotThrow<ArgumentException>();
+        }
+        
+        [TestCase(10, 5, TestName = "When rectangleWidth > height")]
+        [TestCase(3, 7, TestName = "When rectangleWidth < height")]
+        [TestCase(23, 23, TestName = "When rectangleWidth = height")]
+        public void PutNextRectangle_LocationIsEquivalentToSpiralCenterPosition(int widthRectangle, int heightRectangle)
+        {
+            var size = new Size(widthRectangle, heightRectangle);
+            
+            _layouter.PutNextRectangle(size);
+
+            _layouter.GetCurrentRectangle.Location.Should().Be(_layouter.Center);
         }
     }
 }
