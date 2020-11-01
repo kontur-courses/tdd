@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CircularCloudLayouter
+namespace ProjectCircularCloudLayouter
 {
     class Program
     {

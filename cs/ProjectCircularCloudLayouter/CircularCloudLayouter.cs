@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace CircularCloudLayouter
+namespace ProjectCircularCloudLayouter
 {
     public class CircularCloudLayouter
     {
@@ -30,10 +30,14 @@ namespace CircularCloudLayouter
             {
                 var currentSpiralPosition = GetNewSpiralPoint();
                 var rectangle = new Rectangle(currentSpiralPosition, rectangleSize);
+                if (IsAnyIntersectWithRectangles(rectangle, _rectangles)) continue;
                 _rectangles.Add(rectangle);
                 break;
             }
         }
+        
+        public static bool IsAnyIntersectWithRectangles(Rectangle rectangleToCheck, List<Rectangle> rectangles) => 
+            rectangles.Any(rec => rec.IntersectsWith(rectangleToCheck));
         
         private Point GetNewSpiralPoint()
         {

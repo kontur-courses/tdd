@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircularCloudLayouterShould", "CircularCloudLayouterShould\CircularCloudLayouterShould.csproj", "{B567CBB5-4FAC-415F-844E-5AAAFBC07FF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircularCloudLayouter", "CircularCloudLayouter\CircularCloudLayouter.csproj", "{D7102455-9A21-43E2-B1BE-348D9C77A316}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectCircularCloudLayouter", "ProjectCircularCloudLayouter\ProjectCircularCloudLayouter.csproj", "{D7102455-9A21-43E2-B1BE-348D9C77A316}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

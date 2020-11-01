@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
+using ProjectCircularCloudLayouter;
 
 namespace CircularCloudLayouterShould
 {
     public class Tests
     {
-        private CircularCloudLayouter.CircularCloudLayouter _layouter;
+        private CircularCloudLayouter _layouter;
         private List<Rectangle> _rectangles;
         private Random _random = new Random();
         
         [SetUp]
         public void CreateLayouter()
         {
-            _layouter = new CircularCloudLayouter.CircularCloudLayouter(new Point(0, 0));
+            _layouter = new CircularCloudLayouter(new Point(0, 0));
         }
 
         [SetUp]
@@ -72,6 +73,32 @@ namespace CircularCloudLayouterShould
                 _layouter.PutNextRectangle(new Size(_random.Next(50, 70), _random.Next(20, 40)));
 
             _layouter.GetRectangles.Count.Should().Be(countRectangles);
+        }
+        
+        [TestCase(-3, -6, 2, 3, 
+            TestName = "WhenRectangleToCheckWithInRectangle")]
+        [TestCase(1, 2, 5, 7, 
+            TestName = "When simple intersection")]
+        public void Check_IsAnyIntersectWithRectangles(int coordinateX, int coordinateY, int width, int height)
+        {
+            var rectangle = new Rectangle(new Point(coordinateX, coordinateY), new Size(width, height));
+
+            var isIntersect = CircularCloudLayouter.IsAnyIntersectWithRectangles(rectangle, _rectangles);
+
+            isIntersect.Should().BeTrue();
+        }
+        
+        [TestCase(5, 5, 3, 7, 
+            TestName = "WhenExistCommonPoints")]
+        [TestCase(5, 5, 3, 7, 
+            TestName = "WhenNotExistCommonPoints")]
+        public void Check_IsNotIntersectWithRectangles(int coordinateX, int coordinateY, int width, int height)
+        {
+            var rectangle = new Rectangle(new Point(coordinateX, coordinateY), new Size(width, height));
+
+            var isIntersect = CircularCloudLayouter.IsAnyIntersectWithRectangles(rectangle, _rectangles);
+
+            isIntersect.Should().BeFalse();
         }
     }
 }
