@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization
 {
@@ -10,13 +11,27 @@ namespace TagsCloudVisualization
     {
         private const double MinDensity = 0.5;
         private readonly Random random = new Random();
+
         private Point center;
+
         private CircularCloudLayouter cloud;
 
         [SetUp]
         public void SetUp()
         {
+            center = new Point(CircularCloudVisualization.WindowWidth / 2,
+                CircularCloudVisualization.WindowHeight / 2);
             cloud = new CircularCloudLayouter(center);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
+                return;
+            var path = $"../../Images/{TestContext.CurrentContext.Test.FullName}.jpg";
+            Console.WriteLine($"Tag cloud visualization saved to file {path}");
+            CircularCloudVisualization.SaveImage(cloud.Rectangles, path);
         }
 
         [TestCase(-1, 1, TestName = "WhenNotPositiveWidth")]

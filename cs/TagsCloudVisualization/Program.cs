@@ -5,20 +5,18 @@ namespace TagsCloudVisualization
 {
     internal class Program
     {
-        private const int CountWords = 1000;
-        private const int WindowWidth = 1920;
-        private const int WindowHeight = 1080;
+        private const int CountWords = 500;
         private static readonly Random Random = new Random();
 
         private static void Main()
         {
-            var cloud = new CircularCloudLayouter(new Point(WindowWidth / 2, WindowHeight / 2));
+            var cloud = new CircularCloudLayouter(new Point(CircularCloudVisualization.WindowWidth / 2,
+                CircularCloudVisualization.WindowHeight / 2));
 
             for (var i = 0; i < CountWords; ++i)
-                cloud.PutNextRectangle(new Size(Random.Next(30, 50), Random.Next(15, 20)));
+                cloud.PutNextRectangle(new Size(Random.Next(20, 80), Random.Next(15, 30)));
 
-            CircularCloudVisualization.SaveImage(cloud.Rectangles, WindowWidth, WindowHeight,
-                $"{CountWords}rectangles.jpg");
+            CircularCloudVisualization.SaveImage(cloud.Rectangles, $"../../Images/{CountWords}rectangles.jpg");
         }
     }
 }
