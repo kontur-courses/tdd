@@ -20,6 +20,8 @@ namespace ProjectCircularCloudLayouter
                 (int) (Center.Y + SpiralStep * _spiralAngle * Math.Sin(_spiralAngle)));
             _spiralAngle += 0.017;
             return position;
+            //еще варинат формулы, когда x и y находить через: Center.X + Math.Sqrt(_spiralAngle) * Math.Cos(_spiralAngle)
+            //в таком случае плотность будет больше, но меньше скорость
         }
     }
 }
