@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using TagsCloudVisualization.Extensions;
 
@@ -8,13 +6,13 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
+        public List<Rectangle> Rectangles { get; }
         Point center;
-        List<Rectangle> rectangles;
         Spiral spiral;
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
-            rectangles = new List<Rectangle>();
+            Rectangles = new List<Rectangle>();
             spiral = new Spiral(center);
         }
 
@@ -32,11 +30,11 @@ namespace TagsCloudVisualization
             {
                 rectangle.Location = point;
                 rectangle.Size = rectangleSize;
-                if (!rectangle.IsIntersectsWith(rectangles))
+                if (!rectangle.IsIntersectsWith(Rectangles))
                     break;
             }
             var compactRectangle = CompactRectangle(rectangle);
-            rectangles.Add(compactRectangle);
+            Rectangles.Add(compactRectangle);
             return compactRectangle;
         }
 
@@ -46,11 +44,23 @@ namespace TagsCloudVisualization
             foreach (var delta in targetVector.GetPartialDelta())
             {
                 var newRectangle = rectangle.MoveOnTheDelta(delta);
-                if (newRectangle.IsIntersectsWith(rectangles))
+                if (newRectangle.IsIntersectsWith(Rectangles))
                     break;
                 rectangle = newRectangle;
             }
             return rectangle;
+        }
+
+        public Size GetLayoutSize()
+        {
+            var width = 0;
+            var height = 0;
+            foreach (var rect in Rectangles)
+            {
+                width += center.X - rect.X + rect.Width;
+                height += center.Y - rect.Y + rect.Height;
+            }
+            return new Size(width, height);
         }
     }
 }

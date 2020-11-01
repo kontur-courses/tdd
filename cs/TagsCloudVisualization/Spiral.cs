@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
 
 namespace TagsCloudVisualization
@@ -8,7 +7,7 @@ namespace TagsCloudVisualization
     public class Spiral
     {
         public Point Center { get; }
-        const int PointCount = 120;
+        const int PointCount = 500;
 
         public Spiral(Point center)
         {
@@ -21,8 +20,8 @@ namespace TagsCloudVisualization
             /// y = rsin(phi)
             for (var i = 0; i < PointCount; i++)
             {
-                var x = (int)(i * 1.5 * Math.Cos(i * 0.5)) + Center.X;
-                var y = (int)(i * 1.5 * Math.Sin(i * 0.5)) + Center.Y;
+                var x = (int)(i * Math.Cos(i * 0.5)) + Center.X;
+                var y = (int)(i * Math.Sin(i * -0.5)) + Center.Y;
                 yield return new Point(x, y);
             }
         }

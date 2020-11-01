@@ -1,9 +1,6 @@
-﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using System.Drawing;
-using System.Text;
-using FluentAssertions;
 
 
 
@@ -27,7 +24,7 @@ namespace TagsCloudVisualization.Tests
         [Test]
         public void PartialDeltaReturnMinimalOffset()
         {
-            foreach(var delta in vector.GetPartialDelta())
+            foreach (var delta in vector.GetPartialDelta())
             {
                 delta.X.Should().BeInRange(-1, 1);
                 delta.Y.Should().BeInRange(-1, 1);
@@ -39,7 +36,7 @@ namespace TagsCloudVisualization.Tests
         {
             var dx = 0;
             var dy = 0;
-            foreach(var delta in vector.GetPartialDelta())
+            foreach (var delta in vector.GetPartialDelta())
             {
                 dx += delta.X;
                 dy += delta.Y;
