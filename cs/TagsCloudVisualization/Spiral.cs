@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Drawing;
 
 namespace TagsCloudVisualization
@@ -15,6 +16,11 @@ namespace TagsCloudVisualization
             this.center = center;
             this.spiralPitch = spiralPitch;
             this.angleStepRadian = angleStepRadian;
+        }
+
+        public Point GetNextPoint()
+        {
+            throw new NotImplementedException();
         }
     }
 }
