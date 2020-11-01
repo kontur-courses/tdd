@@ -76,15 +76,9 @@ namespace TagsCloudVisualization
         {
             var segmentLength = biggerNumber - smallerNumber;
             var middleNumber = biggerNumber + smallerNumber / 2;
-            var leftMiddleCorner = middleNumber - segmentLength / 2;
-            var rightMiddleCorner = middleNumber + segmentLength / 2;
-            checkNumberBetweenOthers(targetNumber, leftMiddleCorner, rightMiddleCorner);
-        }
-
-        private void checkNumberBetweenOthers(double targetNumber, double smallerNumber, double biggerNumber)
-        {
-            targetNumber.Should().BeGreaterOrEqualTo(smallerNumber)
-                .And.BeLessOrEqualTo(biggerNumber);
+            var leftMiddleCorner = middleNumber - middleSize * segmentLength / 2;
+            var rightMiddleCorner = middleNumber + middleSize * segmentLength / 2;
+            targetNumber.Should().BeInRange(leftMiddleCorner, rightMiddleCorner);
         }
 
         private void fillLayouterWithSomeRectangles(CircularCloudLayouter layouter,
