@@ -6,16 +6,17 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         private Point center;
-        private double maxDiagonalOfRectangle;
-        private double k;
+        private double maxDiagonalOfRectangleAtCurrentTurn;
+        private double coefOfSpiralEquation;
         private int turnNumber;
         private Rectangle lastRectangle;
-        private double phi;
+        private double anglePhi;
+        private double deltaOfAnglePhi = Math.PI / 36;
 
         public CircularCloudLayouter(Point point)
         {
             center = point;
-            phi = 2 * Math.PI;
+            anglePhi = 2 * Math.PI;
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -31,27 +32,31 @@ namespace TagsCloudVisualization
             var rectangle = lastRectangle;
             while (RectanglesAreCrossed(rectangle, lastRectangle))
             {
-                phi += Math.PI / 36;
-                if (phi >= 2 * Math.PI * turnNumber)
+                if (anglePhi >= 2 * Math.PI * turnNumber)
                 {
-                    k = (maxDiagonalOfRectangle + 5 + 2 * Math.PI * k * (turnNumber - 1)) / 2 / turnNumber / Math.PI;
+                    var distanceBetweenCenterAndRectangleAtPreviousTurn =
+                        2 * Math.PI * coefOfSpiralEquation * (turnNumber - 1);
+                    coefOfSpiralEquation =
+                        (maxDiagonalOfRectangleAtCurrentTurn + 5 + distanceBetweenCenterAndRectangleAtPreviousTurn) /
+                        (2 * Math.PI * turnNumber);
                     turnNumber++;
-                    maxDiagonalOfRectangle = 0;
+                    maxDiagonalOfRectangleAtCurrentTurn = 0;
                 }
                 var coordinates = GetCoordinatesOfRectangle(rectangleSize);
                 rectangle = new Rectangle(new Point(coordinates.Item1, coordinates.Item2), rectangleSize);
+                anglePhi += deltaOfAnglePhi;
             }
             var diagonal = GetDiagonalOfRectangle(rectangle);
-            if (diagonal > maxDiagonalOfRectangle)
-                maxDiagonalOfRectangle = diagonal;
+            if (diagonal > maxDiagonalOfRectangleAtCurrentTurn)
+                maxDiagonalOfRectangleAtCurrentTurn = diagonal;
             lastRectangle = rectangle;
             return rectangle;
         }
 
         private Tuple<int, int> GetCoordinatesOfRectangle(Size rectangleSize)
         {
-            var x = (int)Math.Round(k * phi * Math.Cos(phi) + center.X);
-            var y = (int)Math.Round(k * phi * Math.Sin(phi) + center.Y);
+            var x = (int)Math.Round(coefOfSpiralEquation * anglePhi * Math.Cos(anglePhi) + center.X);
+            var y = (int)Math.Round(coefOfSpiralEquation * anglePhi * Math.Sin(anglePhi) + center.Y);
             if (x >= center.X && y <= center.Y)
             {
                 y -= rectangleSize.Height;
@@ -86,7 +91,7 @@ namespace TagsCloudVisualization
             var x = center.X;
             var y = center.Y;
             var rectangle = new Rectangle(new Point(x, y), rectangleSize);
-            maxDiagonalOfRectangle = GetDiagonalOfRectangle(rectangle);
+            maxDiagonalOfRectangleAtCurrentTurn = GetDiagonalOfRectangle(rectangle);
             lastRectangle = rectangle;
             return rectangle;
         }

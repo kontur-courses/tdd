@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
@@ -15,6 +16,7 @@ namespace TagsCloudVisualization
         private int pictureWidth = 700;
         private int pictureHeight = 500;
         private Rectangle[] rectangles;
+        private readonly int rectanglesCount = 70;
 
         [SetUp]
         public void SetUp()
@@ -22,8 +24,8 @@ namespace TagsCloudVisualization
             circularCloudLayouter = new CircularCloudLayouter(new Point(pictureWidth / 2, pictureHeight / 2));
             painter = new Painter(pictureWidth, pictureHeight);
             testContext = new TestContext(TestExecutionContext.CurrentContext);
-            rectangles = new Rectangle[70];
-            for (int i = 0; i < 70; i++)
+            rectangles = new Rectangle[rectanglesCount];
+            for (int i = 0; i < rectanglesCount; i++)
             {
                 rectangles[i] = circularCloudLayouter.PutNextRectangle(MakeRandomSize());
                 painter.PaintRectangle(rectangles[i]);
@@ -51,6 +53,15 @@ namespace TagsCloudVisualization
         }
 
         [Test]
+        public void PutNextRectangle_PlaceFirstRectangleOnCenter_WhenOnlyOneRectangle()
+        {
+            var circularCloudLayouter = new CircularCloudLayouter(new Point(pictureWidth / 2, pictureHeight / 2));
+            var rectangle = circularCloudLayouter.PutNextRectangle(MakeRandomSize());
+            rectangle.X.Should().Be(pictureWidth / 2);
+            rectangle.Y.Should().Be(pictureHeight / 2);
+        }
+
+        [Test]
         public void PutNextRectangle_ThrowsException_RectangleSizeLessOrEqualZero()
         {
             Assert.Throws<ArgumentException>(() => circularCloudLayouter.PutNextRectangle(new Size(0, 0)));
@@ -59,7 +70,7 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_NotCross_PreviousRectangle()
         {
-            for (var i = 1; i < 70; i++)
+            for (var i = 1; i < rectanglesCount; i++)
             {
                 RectanglesAreCrossed(rectangles[i - 1], rectangles[i]).Should().BeFalse();
             }
@@ -68,9 +79,9 @@ namespace TagsCloudVisualization
         [Test]
         public void RectanglesNotCrossed()
         {
-            for (int i = 0; i < 70; i++)
+            for (int i = 0; i < rectanglesCount; i++)
             {
-                for (int j = i+1; j < 70; j++)
+                for (int j = i + 1; j < rectanglesCount; j++)
                 {
                     RectanglesAreCrossed(rectangles[i], rectangles[j]).Should().BeFalse();
                 }
@@ -83,16 +94,21 @@ namespace TagsCloudVisualization
             var squareOfRectangles = 0.0;
             var center = rectangles[0].Location;
             squareOfRectangles += rectangles[0].Height * rectangles[0].Width;
-            for (int i = 1; i < 70; i++)
-            {
+            for (int i = 1; i < rectanglesCount; i++)
                 squareOfRectangles += rectangles[i].Height * rectangles[i].Width;
-            }
 
-            var radius = Math.Max(Math.Max(GetDistanceBetweenPoints(center, rectangles[69].Location),
-                    GetDistanceBetweenPoints(center, new Point(rectangles[69].Left, rectangles[69].Bottom))),
-                Math.Max(GetDistanceBetweenPoints(center, new Point(rectangles[69].Right, rectangles[69].Bottom)),
-                    GetDistanceBetweenPoints(center, new Point(rectangles[69].Right, rectangles[69].Top))));
-            (squareOfRectangles / (Math.PI * radius * radius)).Should().BeGreaterThan(0.25);
+            var distanceBetweenCenterAndLeftTopAngle = GetDistanceBetweenPoints(center, rectangles[rectanglesCount-1].Location);
+            var distanceBetweenCenterAndLeftBottomAngle =
+                GetDistanceBetweenPoints(center, new Point(rectangles[69].Left, rectangles[69].Bottom));
+            var distanceBetweenCenterAndRightBottomAngle =
+                GetDistanceBetweenPoints(center, new Point(rectangles[69].Right, rectangles[69].Bottom));
+            var distanceBetweenCenterAndRightTopAngle =
+                GetDistanceBetweenPoints(center, new Point(rectangles[69].Right, rectangles[69].Top));
+            var radius = Math.Max(
+                Math.Max(distanceBetweenCenterAndLeftTopAngle, distanceBetweenCenterAndLeftBottomAngle),
+                Math.Max(distanceBetweenCenterAndRightBottomAngle, distanceBetweenCenterAndRightTopAngle));
+            var squareOfFramingCircle = Math.PI * radius * radius;
+            (squareOfRectangles / squareOfFramingCircle).Should().BeInRange(0.25, 1);
         }
 
         private double GetDistanceBetweenPoints(Point p1, Point p2)
@@ -106,7 +122,7 @@ namespace TagsCloudVisualization
             if (testContext.Result.Outcome.Status == TestStatus.Failed)
             {
                 painter.SavePicture("failed.jpeg");
-                Console.WriteLine("Tag cloud visualization saved to file \"failed.jpeg\"");
+                Console.WriteLine($"Tag cloud visualization saved to file {Path.GetFullPath("failed.jpeg")}");
             }
         }
 

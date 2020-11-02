@@ -19,8 +19,8 @@ namespace TagsCloudVisualization
         public void PaintRectangle(Rectangle rectangle)
         {
             var rand = new Random(Environment.TickCount);
-            if (rectangle.Left >= 30 && rectangle.Top >= 30 && rectangle.Right <= bitmap.Width - 30 &&
-                rectangle.Bottom <= bitmap.Height - 30)
+            if (rectangle.Left >= 0 && rectangle.Top >= 0 && rectangle.Right <= bitmap.Width  &&
+                rectangle.Bottom <= bitmap.Height)
                 graphics.DrawRectangle(
                     new Pen(Color.FromArgb(rand.Next(100, 255), rand.Next(100, 255), rand.Next(100, 255)), 2),
                     rectangle);
