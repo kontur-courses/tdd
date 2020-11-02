@@ -5,8 +5,8 @@ namespace TagCloud
 {
     public class CircularCloudLayouter
     {
-        private readonly Spiral spiral;
         internal readonly List<Rectangle> Rectangles = new List<Rectangle>();
+        private readonly Spiral spiral;
 
         public CircularCloudLayouter(Point center)
         {
