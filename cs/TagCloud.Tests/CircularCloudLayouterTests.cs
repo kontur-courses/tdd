@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
+using TagCloud.Visualizer;
 
 namespace TagCloud.Tests
 {
@@ -56,6 +59,18 @@ namespace TagCloud.Tests
             dy.Should().BeLessThan(expectedRadius);
             dx.Should().BeLessThan(expectedRadius);
             difBetweenDeltas.Should().BeLessThan(expectedRadius / 2);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            var testResult = TestContext.CurrentContext.Result.Outcome;
+            var dir = Directory.GetCurrentDirectory();
+            var path = dir.Remove(dir.IndexOf(@"\bin", StringComparison.Ordinal));
+
+            if (!Equals(testResult, ResultState.Failure) && !Equals(testResult == ResultState.Error)) return;
+            CircularCloudVisualizer.DrawAndSaveBitmap(cloudLayouter.Rectangles, "crash-report", path);
+            Console.WriteLine($"Tag cloud visualization saved to file {path}");
         }
 
         private static IEnumerable<Size> CreateSizesCollection(int amount)
