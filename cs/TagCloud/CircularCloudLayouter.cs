@@ -20,29 +20,13 @@ namespace TagCloud
         {
             get
             {
-                var i = 1;
-                var newPoint = Center;
-                yield return Center;
+                var angle = 0.0;
                 while (true)
                 {
-                    var sign = 1;
-                    if (i % 2 == 0)
-                    {
-                        sign = -1;
-                    }
-                    for (var j = 0; j < i; j++)
-                    {
-                        newPoint = new Point(newPoint.X, newPoint.Y+ sign * Step);
-
-                        yield return newPoint;
-                    }
-                    for (var j = 0; j < i; j++)
-                    {
-                        newPoint = new Point(newPoint.X - sign * Step, newPoint.Y);
-
-                        yield return newPoint;
-                    }
-                    i++;
+                    var x = (int) Math.Round(Step * angle * Math.Cos(angle)) + Center.X;
+                    var y = (int) Math.Round(Step * angle * Math.Sin(angle)) + Center.Y;
+                    yield return new Point(x, y);
+                    angle += 0.05;
                 }
             }
         }

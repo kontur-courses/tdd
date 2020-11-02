@@ -18,13 +18,13 @@ namespace TagCloud
             var layouter = new CircularCloudLayouter(new Point(350, 400));
             var width = 200;
             var height = 100;
-            for (var i = 0; i < 10; i++)
+            for (var i = 0; i < 50; i++)
             {
                 var rectangle = layouter.PutNextRectangle(new Size(width, height));
                 DrawAndFillRectangle(graphics, rectangle);
                 
-                width = (int)Math.Round(width/1.05);
-                height = (int)Math.Round(height/1.05);
+                width = (int)Math.Round(width/1.1);
+                height = (int)Math.Round(height/1.1);
             }
 
             bitmap.Save("C:\\Users\\Наталья\\Desktop\\myPng.bmp");
