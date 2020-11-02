@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -16,6 +16,19 @@ namespace TagsCloudVisualization
         public void SetUp()
         {
             layouter = new CircularCloudLayouter(new Point(540, 540));
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+            {
+                var path = Environment.CurrentDirectory;
+                var imageName = $"Failed {TestContext.CurrentContext.Test.Name}";
+                layouter.CreateImage(path, imageName);
+                TestContext.WriteLine($"Snapshot saved to {path}");
+            }
+            
         }
 
         [Test]
