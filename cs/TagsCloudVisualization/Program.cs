@@ -13,8 +13,8 @@ namespace TagsCloudVisualization
         {
             Console.WriteLine("Asdas");
             var circularCloudLayouter = new CircularCloudLayouter(new Point(50, 50));
-            for (var i = 0; i <70; i++)
-                circularCloudLayouter.PutNextRectangle(new Size(3, 3));
+            for (var i = 0; i <1000; i++)
+                circularCloudLayouter.PutNextRectangle(new Size(1, 1));
 
             ConsoleVisualization(circularCloudLayouter);
         }

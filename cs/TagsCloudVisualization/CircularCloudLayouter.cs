@@ -10,6 +10,7 @@ namespace TagsCloudVisualization
     {
         private readonly Point _center;
         private List<Rectangle> rectangles;
+        private int cloudRadius;
 
         public CircularCloudLayouter(Point center)
         {
@@ -23,7 +24,7 @@ namespace TagsCloudVisualization
         {
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException();
-            var radius = 0d;
+            var radius = Math.Max((double)cloudRadius-8, 0);
             var angle = 0d;
             while (true)
             {
@@ -41,6 +42,7 @@ namespace TagsCloudVisualization
 
                 if (availableToPlace)
                 {
+                    cloudRadius = Math.Max(currentRectangle.Right - _center.X, cloudRadius);
                     rectangles.Add(currentRectangle);
                     break;
                 }
