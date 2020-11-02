@@ -4,21 +4,6 @@ using System.Linq;
 
 namespace TagsCloudVisualisation.Visualisation
 {
-    public readonly struct ColoredRectangle
-    {
-        public readonly Rectangle Rectangle;
-        public readonly Color Color;
-
-        public ColoredRectangle(Rectangle rectangle, Color color)
-        {
-            Rectangle = rectangle;
-            Color = color;
-        }
-
-        public static implicit operator Rectangle(ColoredRectangle coloredRectangle) => coloredRectangle.Rectangle;
-        public override string ToString() => $"{Rectangle} with {nameof(Color)}: {Color}";
-    }
-
     public class RectanglesVisualiser
     {
         private const float BrushSize = 1;
@@ -73,7 +58,6 @@ namespace TagsCloudVisualisation.Visualisation
             if (bitmap == null)
             {
                 bitmap = new Bitmap(100, 100);
-                // bitmap = new Bitmap(nextRectangle.Width * 2, nextRectangle.Height * 2);
                 using var g = Graphics.FromImage(bitmap);
             }
             else
