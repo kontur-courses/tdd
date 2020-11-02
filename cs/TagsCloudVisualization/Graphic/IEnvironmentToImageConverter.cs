@@ -3,8 +3,8 @@ using TagsCloudVisualization.Infrastructure.Environment;
 
 namespace TagsCloudVisualization.Graphic
 {
-    public interface IEnvironmentToImageConverter
+    public interface IEnvironmentToImageConverter<T>
     {
-        public Image EnvironmentImage<T>(Environment<T> environment);
+        public Image GetEnvironmentImage(Environment<T> environment);
     }
 }

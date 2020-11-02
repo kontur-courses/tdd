@@ -6,4 +6,8 @@
         <LangVersion>8</LangVersion>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Folder Include="Pictures" />
+    </ItemGroup>
+
 </Project>
