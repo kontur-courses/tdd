@@ -8,9 +8,11 @@ using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTests
 {
-    public class CircularCloudLayouter_shuld
+    public class CircularCloudLayouter_Should
     {
         private CircularCloudLayouter cloud;
+
+        private double expectedAreaRatio = 1.5;
         private Point center;
 
         [SetUp]
@@ -46,7 +48,7 @@ namespace TagsCloudVisualizationTests
                 }
             }
         }
-        
+
         [Test]
         public void PutNextRectangle_LikeCircle_AfterPutting()
         {
@@ -60,18 +62,15 @@ namespace TagsCloudVisualizationTests
                 circleRadius = new[]
                 {
                     circleRadius,
-                    GetDistance(center,new Point(rectangle.Left,rectangle.Top)),
-                    GetDistance(center,new Point(rectangle.Right,rectangle.Top)),
-                    GetDistance(center,new Point(rectangle.Right,rectangle.Bottom)),
-                    GetDistance(center,new Point(rectangle.Left,rectangle.Bottom))
+                    Utils.GetDistance(center, new Point(rectangle.Left, rectangle.Top)),
+                    Utils.GetDistance(center, new Point(rectangle.Right, rectangle.Top)),
+                    Utils.GetDistance(center, new Point(rectangle.Right, rectangle.Bottom)),
+                    Utils.GetDistance(center, new Point(rectangle.Left, rectangle.Bottom))
                 }.Max();
             }
 
             var circleSquare = Math.PI * circleRadius * circleRadius;
-            (circleSquare / circleSquare).Should().BeLessThan(1.5);
+            (circleSquare / cloudSquare).Should().BeLessThan(expectedAreaRatio);
         }
-
-        private double GetDistance(Point start, Point end) =>
-            Math.Sqrt(Math.Pow(start.X - end.X, 2) + Math.Pow(start.Y - end.Y, 2));
     }
 }
