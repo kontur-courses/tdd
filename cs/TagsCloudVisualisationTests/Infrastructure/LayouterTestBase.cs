@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using TagsCloudVisualisation;
@@ -17,6 +18,8 @@ namespace TagsCloudVisualisationTests.Infrastructure
     [TestFixture]
     public abstract class LayouterTestBase
     {
+        private TestStatus[] statusesToSaveImage;
+
         private static string TestingFilesDirectory =>
             Path.Combine(TestContext.CurrentContext.WorkDirectory, "test-results");
 
@@ -31,6 +34,13 @@ namespace TagsCloudVisualisationTests.Infrastructure
 
         private CircularCloudLayouterHolder layouterHolder;
 
+        [OneTimeSetUp]
+        public virtual void OneTimeSetUp()
+        {
+            statusesToSaveImage = GetType().GetCustomAttribute<SaveResultsAttribute>()?.ValidStatuses ??
+                                  new TestStatus[0];
+        }
+
         [SetUp]
         public virtual void SetUp()
         {
@@ -40,19 +50,8 @@ namespace TagsCloudVisualisationTests.Infrastructure
         [TearDown]
         public virtual void TearDown()
         {
-            switch (TestContext.CurrentContext.Result.Outcome.Status)
-            {
-                case TestStatus.Inconclusive:
-                case TestStatus.Warning:
-                case TestStatus.Failed:
-                    SaveTestResult();
-                    break;
-                case TestStatus.Skipped:
-                case TestStatus.Passed:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(TestContext.CurrentContext.Result.Outcome.Status));
-            }
+            if (statusesToSaveImage.Contains(TestContext.CurrentContext.Result.Outcome.Status))
+                SaveTestResult();
         }
 
         private void SaveTestResult()
@@ -75,8 +74,7 @@ namespace TagsCloudVisualisationTests.Infrastructure
 
             var image = visualiser.GetImage()
                 .DrawAxis(5, 1, Color.DarkGray, Color.Black)
-                .FillBackground(Color.Bisque)
-                .MirrorY();
+                .FillBackground(Color.Bisque);
 
             if (!Directory.Exists(TestingFilesDirectory))
                 Directory.CreateDirectory(TestingFilesDirectory);
