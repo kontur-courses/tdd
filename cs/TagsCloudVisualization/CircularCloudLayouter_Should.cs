@@ -46,14 +46,6 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void assda()
-        {
-            AddRectanglesToLayouter(80, new Size(70, 50));
-            AddRectanglesToLayouter(200, new Size(20, 30));
-            AddRectanglesToLayouter(250, new Size(10, 10));
-        }
-
-        [Test]
         public void ContainAllAddedRectangles()
         {
             var sizes = new List<Size>
