@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 
 namespace TagCloud.Visualizer
 {
@@ -18,8 +20,16 @@ namespace TagCloud.Visualizer
                     graph.DrawRectangle(Pens.Aqua, rect);
                 }
 
-                bitmap.Save($"{i}.bmp");
+                SaveBmpToProjectDirectory(i, bitmap);
             }
+        }
+
+        private static void SaveBmpToProjectDirectory(int i, Bitmap bitmap)
+        {
+            var dir = Directory.GetCurrentDirectory();
+            var path = dir.Remove(dir.IndexOf(@"\bin", StringComparison.Ordinal));
+            using var fileStream = File.Create(path + $@"\{i}.bmp");
+            bitmap.Save(fileStream, ImageFormat.Bmp);
         }
 
         private static IEnumerable<Rectangle> CreateRandomRectangles(int amount)
