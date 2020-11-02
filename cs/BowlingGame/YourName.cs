@@ -5,6 +5,6 @@
         /// <summary>
         /// Ваши фамилии через пробел. Например, "Egorov Shagalina"
         /// </summary>
-        public const string Authors = "Демин Пономарев Ширинкин";
+        public const string Authors = "";
     }
 }
