@@ -6,25 +6,29 @@ using System.Linq;
 
 public class CircularCloudLayouter
 {
-    public Point CenterPoint;
-    public List<Rectangle> Rects;
+    private Point CenterPoint;
+    public List<Rectangle> Rects { get;}
     private double angle, radius;
-    private double spiralParameter = 0.010;
+    private double spiralParameter = 0.01;
 
     public CircularCloudLayouter(Point point)
     {
+        if(point.X < 0 || point.Y < 0)
+            throw new ArgumentException();
         CenterPoint = point;
         Rects = new List<Rectangle>();
     }
 
     public Rectangle PutNextRectangle(Size rectangleSize)
     {
+        if (rectangleSize.Height < 0 || rectangleSize.Width < 0)
+            throw new ArgumentException();
         var rect = GetRectangle(rectangleSize);
         Rects.Add(rect);
         return rect;
     }
 
-    public Point GetPossiblePoint()
+    private Point GetPossiblePoint()
     {
         var x = (int)Math.Round(radius * Math.Cos(angle));
         var y = (int)Math.Round(radius * Math.Sin(angle));
@@ -35,7 +39,7 @@ public class CircularCloudLayouter
         return new Point(CenterPoint.X - x, CenterPoint.Y - y);
     }
 
-    public Rectangle GetRectangle(Size rectSize)
+    private Rectangle GetRectangle(Size rectSize)
     {
         Rectangle rect;
         do
@@ -46,6 +50,17 @@ public class CircularCloudLayouter
         } while (Rects.Where(rect.IntersectsWith).Any());
 
         return rect;
+    }
+
+    public void CreateImage(string path, string fileName)
+    {
+        if (!Rects.Any())
+            throw new ArgumentException();
+        var image = new Bitmap(1920, 1080);
+        var graphics = Graphics.FromImage(image);
+        graphics.DrawRectangles(new Pen(Color.Red), Rects.ToArray());
+
+        image.Save($"{path}\\{fileName}.bmp", ImageFormat.Bmp);
     }
 }
 
