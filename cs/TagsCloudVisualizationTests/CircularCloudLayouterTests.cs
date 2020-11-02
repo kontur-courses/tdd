@@ -12,7 +12,6 @@ namespace TagsCloudVisualizationTests
     public class CircularCloudLayouterTests
     {
         private CircularCloudLayouter sut;
-        private List<Rectangle> rectangles;
         private Point anchor;
         [SetUp]
         [Timeout(1000)]
@@ -20,18 +19,39 @@ namespace TagsCloudVisualizationTests
         {
             anchor = new Point();
             sut = new CircularCloudLayouter(anchor);
-            
-            var rectangleSizes = new[]
-            {
-                new Size(100, 1),
-                new Size(1,100),
-                new Size(30,20),
-                new Size(1,1),
+        }
+
+        private IEnumerable<Rectangle> PlaceRectangles(CircularCloudLayouter layouter, IEnumerable<Size> rectangleSizes)
+        {
+            return rectangleSizes.Select(layouter.PutNextRectangle);
+        }
+        
+        public static IEnumerable<TestCaseData> DataLayouts()
+        {
+            (string dataName, Size[] sizes)[] testData = {
+                ("Long thin tiles", new[]
+                {
+                    new Size(100, 1),
+                    new Size(1, 100),
+                }),
+                ("Small tiles", new[]
+                {
+                    new Size(1, 1),
+                    new Size(1, 1),
+                }),
+                ("Quadratic tiles", new []
+                {
+                    new Size(5, 5),
+                    new Size(1,1),
+                    new Size(2,2),
+                    new Size(3,3),
+                    new Size(4,4),
+                })
+                
             };
-            
-            rectangles = rectangleSizes
-                .Select(rectangleSize => sut.PutNextRectangle(rectangleSize))
-                .ToList();
+
+            return testData.Select(test
+                => new TestCaseData(test.sizes) {TestName = test.dataName});
         }
 
         [Test]
@@ -52,12 +72,11 @@ namespace TagsCloudVisualizationTests
             Rectangle _ = layouter.PutNextRectangle(rectangleSize);
         }
 
-        [Test]
-        public void Cloud_IsCenteredByPoint()
+        [TestCaseSource(nameof(DataLayouts))]
+        public void Cloud_IsCenteredByPoint(IEnumerable<Size> rectangleSizes)
         {
-            var expectedX = rectangles.Max(rectangle => rectangle.Width);
-            var expectedY = rectangles.Max(rectangle => rectangle.Height);
-
+            var rectangles = PlaceRectangles(sut, rectangleSizes).ToList();
+            
             var centers = rectangles
                 .Select(rectangle => rectangle.GetCenter())
                 .ToList();
@@ -70,29 +89,31 @@ namespace TagsCloudVisualizationTests
                 Math.Abs(averageCenter.X - anchor.X),
                 Math.Abs(averageCenter.Y - anchor.Y)
             );
-            
-            Assert.That(deviation.X, Is.LessThan(expectedX));
-            Assert.That(deviation.Y, Is.LessThan(expectedY));
+            Assert.That(deviation.X, Is.LessThan(rectangles.Max(rectangle => rectangle.Width)));
+            Assert.That(deviation.Y, Is.LessThan(rectangles.Max(rectangle => rectangle.Height)));
         }
 
-        [Test]
-        [Timeout(500)]
-        public void Cloud_RectanglesDoNotIntersect()
+        [TestCaseSource(nameof(DataLayouts))]
+        public void Cloud_RectanglesDoNotIntersect(IEnumerable<Size> rectangleSizes)
         {
+            var rectangles = PlaceRectangles(sut, rectangleSizes).ToList();
+            
             foreach (var rectangle1 in rectangles)
             foreach (var rectangle2 in rectangles
                 .Where(rectangle2 => rectangle1 != rectangle2))
                 Assert.False(rectangle1.IntersectsWith(rectangle2), 
                     $"{rectangle1}X{rectangle2}");
         }
-
-        [Test]
-        public void Cloud_RectanglesAreArrangedCompactly()
+        
+        [TestCaseSource(nameof(DataLayouts))]
+        public void Cloud_RectanglesAreArrangedCompactly(IEnumerable<Size> rectangleSizes)
         {
             var expected = Math.Max(
-                rectangles.Max(rectangle => rectangle.Width),
-                rectangles.Max(rectangle => rectangle.Height)
+                rectangleSizes.Max(rectangle => rectangle.Width),
+                rectangleSizes.Max(rectangle => rectangle.Height)
             );
+            
+            var rectangles = PlaceRectangles(sut, rectangleSizes).ToList();
             
             var distanceSum = 0d;
             foreach (var rectangle1 in rectangles)
@@ -104,8 +125,7 @@ namespace TagsCloudVisualizationTests
                 distanceSum += center1.DistanceFrom(center2);
             }
             var distanceAverage = distanceSum / rectangles.Count;
-            
-            Assert.That(distanceAverage, Is.LessThan(expected));
+            Assert.That(distanceAverage, Is.LessThanOrEqualTo(expected));
         }
     }
 }

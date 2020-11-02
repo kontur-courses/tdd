@@ -1,9 +1,10 @@
+using System;
 using System.Drawing;
 
 namespace TagsCloudVisualization.Infrastructure.Layout
 {
     public interface ILayoutStrategy
     {
-        Point GetPlace(Size rectangleSize);
+        Point GetPlace(Func<Point, bool> IsValidPlace);
     }
 }

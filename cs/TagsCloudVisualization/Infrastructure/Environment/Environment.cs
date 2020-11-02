@@ -3,11 +3,12 @@ using System.Collections.Generic;
 
 namespace TagsCloudVisualization.Infrastructure.Environment
 {
-    public abstract class Index<T> : IEnumerable<T>
+    public abstract class Environment<T> : IEnumerable<T>, ICollisionDetector<T>
     {
         protected List<T> Elements;
         public abstract void Add(T element);
         public abstract void Remove(T element);
+        public abstract bool IsColliding(T element);
         
         public IEnumerator<T> GetEnumerator()
         {

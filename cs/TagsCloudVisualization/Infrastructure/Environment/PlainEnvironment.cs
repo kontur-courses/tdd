@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization.Infrastructure.Environment
 {
-    public class PlainIndex : Index<Rectangle>
+    public class PlainEnvironment : Environment<Rectangle>
     {
-        public PlainIndex()
+        public PlainEnvironment()
         {
             Elements = new List<Rectangle>();
         }
@@ -17,7 +18,12 @@ namespace TagsCloudVisualization.Infrastructure.Environment
 
         public override void Remove(Rectangle element)
         {
-            throw new System.NotImplementedException();
+            Elements.Remove(element);
+        }
+
+        public override bool IsColliding(Rectangle element)
+        {
+            return Elements.Any(placedRectangle => placedRectangle.IntersectsWith(element));
         }
     }
 }
