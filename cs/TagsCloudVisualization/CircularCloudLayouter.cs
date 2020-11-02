@@ -26,11 +26,11 @@ namespace TagsCloudVisualization
         {
             var rectangle = new Rectangle(nextRectanglePos, rectangleSize);
             Rectangles.Add(rectangle);
-            setNextRectanglePos(rectangleSize);
+            SetNextRectanglePos(rectangleSize);
             return rectangle;
         }
 
-        private void setNextRectanglePos(Size currentRectangleSize)
+        private void SetNextRectanglePos(Size currentRectangleSize)
         {
             nextRectanglePos.X += currentRectangleSize.Width;
         }

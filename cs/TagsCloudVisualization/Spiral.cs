@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Drawing;
 
 namespace TagsCloudVisualization
@@ -9,31 +8,26 @@ namespace TagsCloudVisualization
         private Point center;
         private int spiralPitch;
         private double angleStepRadian;
-        private double currentAngle;
+        private double nextAngle;
         
         public Spiral(Point center, int spiralPitch, double angleStepRadian)
         {
             this.center = center;
             this.spiralPitch = spiralPitch;
             this.angleStepRadian = angleStepRadian;
-
-            currentAngle = 0;
         }
 
         public Point GetNextPoint()
         {
-            var distance = getDistance();
-            var point = convertFromPolarToPoint(distance, currentAngle);
-            currentAngle += angleStepRadian;
+            var distance = GetPolarRadius();
+            var point = ConvertFromPolarToPoint(distance, nextAngle);
+            nextAngle += angleStepRadian;
             return point;
         }
 
-        private double getDistance()
-        {
-            return currentAngle * spiralPitch / (2 * Math.PI);
-        }
+        private double GetPolarRadius() => nextAngle * spiralPitch / (2 * Math.PI);
 
-        private Point convertFromPolarToPoint(double distance, double angleRadian)
+        private Point ConvertFromPolarToPoint(double distance, double angleRadian)
         {
             var pointX = center.X 
                          + Convert.ToInt32(Math.Round(distance * Math.Cos(angleRadian)));
