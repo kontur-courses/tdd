@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 
 namespace TagsCloudVisualization
@@ -27,6 +28,20 @@ namespace TagsCloudVisualization
             Rectangles.Add(rect);
             potentialPosingPoints.AddRange(GetPotentialPosingPointsFromRectangle(rect));
             return rect;
+        }
+
+        public void CreateImage(string path, string fileName)
+        {
+            if (!Rectangles.Any())
+                return;
+            var bm = new Bitmap(1080, 1080);
+            var graphics = Graphics.FromImage(bm);
+            graphics.FillRectangle(new SolidBrush(Color.Gray), new Rectangle(0, 0, 1080, 1080));
+            graphics.DrawRectangles(new Pen(Color.Red), Rectangles.ToArray());
+            graphics.DrawEllipse(new Pen(Color.GreenYellow),
+                new Rectangle(new Point(Center.X - 5, Center.Y - 5), new Size(10, 10)));
+
+            bm.Save($"{path}\\{fileName}_{DateTime.Now:dd-MM-yyyy_HH-mm-ss}.bmp", ImageFormat.Bmp);
         }
 
         public Point GetCenterPoint()
