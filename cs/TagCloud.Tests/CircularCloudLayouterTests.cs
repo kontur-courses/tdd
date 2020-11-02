@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -65,12 +64,10 @@ namespace TagCloud.Tests
         public void TearDown()
         {
             var testResult = TestContext.CurrentContext.Result.Outcome;
-            var dir = Directory.GetCurrentDirectory();
-            var path = dir.Remove(dir.IndexOf(@"\bin", StringComparison.Ordinal));
+            if (testResult != ResultState.Failure && testResult != ResultState.Error) return;
 
-            if (!Equals(testResult, ResultState.Failure) && !Equals(testResult == ResultState.Error)) return;
-            CircularCloudVisualizer.DrawAndSaveBitmap(cloudLayouter.Rectangles, "crash-report", path);
-            Console.WriteLine($"Tag cloud visualization saved to file {path}");
+            FileCreator.CreateBitmapFile(cloudLayouter.Rectangles,
+                $"crash-report \"{TestContext.CurrentContext.Test.FullName}\"", "crash-reports", "images");
         }
 
         private static IEnumerable<Size> CreateSizesCollection(int amount)

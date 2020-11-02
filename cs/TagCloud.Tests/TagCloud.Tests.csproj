@@ -20,4 +20,8 @@
       <ProjectReference Include="..\TagCloud\TagCloud.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="crash-reports\images" />
+    </ItemGroup>
+
 </Project>
