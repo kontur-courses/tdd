@@ -6,28 +6,30 @@ using TagsCloudVisualization.Infrastructure.Environment;
 
 namespace TagsCloudVisualization.Graphic
 {
-    public class BitmapDrawer : IEnvironmentToImageConverter<Rectangle>
+    public class RainbowDrawer : IDrawer<Rectangle>
     {
         private readonly int fieldSize;
+        private readonly int brushSize;
         private readonly Random random;
-        public BitmapDrawer()
+        public RainbowDrawer(int brushSize, int fieldSize = 10)
         {
-            fieldSize = 10;
+            this.brushSize = brushSize;
+            this.fieldSize = fieldSize;
             random = new Random();
         }
-        public Image GetEnvironmentImage(Environment<Rectangle> environment)
+        public Image GetImage(IEnumerable<Rectangle> rectangles)
         {
-            var (left, right, bottom, top) = GetBoarders(environment);
+            var (left, right, bottom, top) = GetBoarders(rectangles);
             var image = new Bitmap(right - left + fieldSize, bottom - top + fieldSize);
             var imageGraphics = Graphics.FromImage(image);
-            var rectangles = environment.Select(rectangle =>
+            var pen = new Pen(Color.Red, brushSize);
+
+            var preparedRectangles = rectangles.Select(rectangle =>
             {
                 rectangle.Offset(-left + fieldSize / 2, -top + fieldSize / 2);
                 return rectangle;
             });
-            
-            var pen = new Pen(Color.Red, 1);
-            foreach (var rectangle in rectangles)
+            foreach (var rectangle in preparedRectangles)
             {
                 pen.Color = GetRandomColor();
                 imageGraphics.DrawRectangle(pen, rectangle);

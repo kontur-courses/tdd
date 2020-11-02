@@ -1,6 +1,5 @@
 using System;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 
 namespace TagsCloudVisualization.Graphic
@@ -8,21 +7,22 @@ namespace TagsCloudVisualization.Graphic
     public class BitmapSaver : IImageSaver
     {
         private readonly string directory;
-        private readonly string filename;
         private const string Extension = "bmp";
 
-        public BitmapSaver(string directory, string filename)
+        public BitmapSaver(string directory)
         {
-            this.directory = directory;
-            this.filename = filename;
+            this.directory =  directory;
         }
 
-        public void Save(Image image)
+        public string GetPath(string filename)
         {
             var file = Path.ChangeExtension(filename, Extension);
             var path = Path.Combine(directory, file);
-            path = file;
-            Console.WriteLine($"saving to {path}");
+            return path;
+        }
+
+        public void Save(Image image, string path)
+        {
             image.Save(path);
         }
     }

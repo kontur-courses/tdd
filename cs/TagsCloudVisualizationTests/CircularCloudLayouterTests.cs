@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
+using TagsCloudVisualization.Graphic;
 using TagsCloudVisualization.Infrastructure;
 
 namespace TagsCloudVisualizationTests
@@ -13,13 +16,31 @@ namespace TagsCloudVisualizationTests
     {
         private CircularCloudLayouter sut;
         private Point anchor;
+        private List<Rectangle> rectangles;
         [SetUp]
         [Timeout(1000)]
         public void Setup()
         {
             anchor = new Point();
             sut = new CircularCloudLayouter(anchor);
+            rectangles = new List<Rectangle>();
         }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+            {
+                var drawer = new RainbowDrawer(1, 10);
+                var saver = new BitmapSaver(@"./FailedTestsPictures");
+                var name = TestContext.CurrentContext.Test.Name + TestContext.CurrentContext.Test.ID;
+                var path = saver.GetPath(name);
+                var image = drawer.GetImage(rectangles);
+                saver.Save(image, path);
+                Console.WriteLine($"Tag cloud visualization saved to file '{path}'");
+            }
+        }
+
 
         private IEnumerable<Rectangle> PlaceRectangles(CircularCloudLayouter layouter, IEnumerable<Size> rectangleSizes)
         {
@@ -99,7 +120,7 @@ namespace TagsCloudVisualizationTests
         [TestCaseSource(nameof(DataLayouts))]
         public void Cloud_IsCenteredByPoint(IEnumerable<Size> rectangleSizes)
         {
-            var rectangles = PlaceRectangles(sut, rectangleSizes).ToList();
+            rectangles = PlaceRectangles(sut, rectangleSizes).ToList();
             
             var centers = rectangles
                 .Select(rectangle => rectangle.GetCenter())
@@ -120,7 +141,7 @@ namespace TagsCloudVisualizationTests
         [TestCaseSource(nameof(DataLayouts))]
         public void Cloud_RectanglesDoNotIntersect(IEnumerable<Size> rectangleSizes)
         {
-            var rectangles = PlaceRectangles(sut, rectangleSizes).ToList();
+            rectangles = PlaceRectangles(sut, rectangleSizes).ToList();
             
             foreach (var rectangle1 in rectangles)
             foreach (var rectangle2 in rectangles
@@ -137,7 +158,7 @@ namespace TagsCloudVisualizationTests
                 rectangleSizes.Max(rectangle => rectangle.Height)
             );
             
-            var rectangles = PlaceRectangles(sut, rectangleSizes).ToList();
+            rectangles = PlaceRectangles(sut, rectangleSizes).ToList();
             
             foreach (var rectangle1 in rectangles)
             {
