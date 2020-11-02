@@ -46,6 +46,20 @@ namespace TagsCloudVisualizationTests
                     new Size(2,2),
                     new Size(3,3),
                     new Size(4,4),
+                }),
+                ("Growing horizontal tiles", new []
+                {
+                    new Size(10, 1),
+                    new Size(20,1),
+                    new Size(30,1),
+                    new Size(40,1),
+                }),
+                ("Growing vertical tiles", new []
+                {
+                    new Size(1, 10),
+                    new Size(1,20),
+                    new Size(1,30),
+                    new Size(1,40),
                 })
                 
             };
@@ -115,17 +129,13 @@ namespace TagsCloudVisualizationTests
             
             var rectangles = PlaceRectangles(sut, rectangleSizes).ToList();
             
-            var distanceSum = 0d;
             foreach (var rectangle1 in rectangles)
-            foreach (var rectangle2 in rectangles
-                .Where(rectangle2 => rectangle1 != rectangle2))
             {
-                var center1 = rectangle1.GetCenter();
-                var center2 = rectangle2.GetCenter();
-                distanceSum += center1.DistanceFrom(center2);
+                var neighbourDistance = rectangles
+                    .Where(rectangle2 => rectangle1 != rectangle2)
+                    .Min(rectangle2 => rectangle1.GetCenter().DistanceFrom(rectangle2.GetCenter()));
+                Assert.That(neighbourDistance, Is.LessThanOrEqualTo(expected));
             }
-            var distanceAverage = distanceSum / rectangles.Count;
-            Assert.That(distanceAverage, Is.LessThanOrEqualTo(expected));
         }
     }
 }

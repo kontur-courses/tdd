@@ -1,6 +1,5 @@
 using System;
 using System.Drawing;
-using TagsCloudVisualization.Infrastructure.Environment;
 
 namespace TagsCloudVisualization.Infrastructure.Layout
 {
@@ -29,7 +28,6 @@ namespace TagsCloudVisualization.Infrastructure.Layout
                     break;
                 angle += angleIncrement;
             }
-            Console.WriteLine(obtainedPlace);
             var optimisedPlace = CenterUntilValid(obtainedPlace, isValidPlace);
             return optimisedPlace;
         }
