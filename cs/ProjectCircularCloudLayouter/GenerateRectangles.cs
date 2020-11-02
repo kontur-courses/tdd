@@ -3,9 +3,9 @@ using System.Drawing;
 
 namespace ProjectCircularCloudLayouter
 {
-    public class GenerateRectangles
+    public static class GenerateRectangles
     {
-        public static void MakeLayouter(CircularCloudLayouter layouter, int countRectangles,
+        public static void MakeLayouter(this CircularCloudLayouter layouter, int countRectangles,
             int minRectangleWidth, int maxRectangleWidth,
             int minRectangleHeight, int maxRectangleHeight)
         {

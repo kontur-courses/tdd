@@ -13,7 +13,6 @@ namespace CircularCloudLayouterShould
     {
         private CircularCloudLayouter _layouter;
         private List<Rectangle> _rectangles;
-        private Random _random = new Random();
 
         [SetUp]
         public void CreateLayouter()
@@ -80,10 +79,10 @@ namespace CircularCloudLayouterShould
         [TestCase(100, TestName = "100 rectangles when put 100 rectangles")]
         [TestCase(10, TestName = "300 rectangles when put 300 rectangles")]
         [TestCase(0, TestName = "Zero when don't put rectangles")]
-        public void PutNextRectangle_ManyRectangles(int countRectangles)
+        public void PutNextRectangle_CountRectangles(int countRectangles)
         {
-            for (var i = 0; i < countRectangles; i++)
-                _layouter.PutNextRectangle(new Size(_random.Next(50, 70), _random.Next(20, 40)));
+            _layouter.MakeLayouter(countRectangles, 50, 
+                70, 20, 40);
 
             _layouter.GetRectangles.Count.Should().Be(countRectangles);
         }
@@ -117,13 +116,13 @@ namespace CircularCloudLayouterShould
         [Test, Timeout(1000)]
         public void PutNextRectangle_TimeOut_WhenPut1000ThousandRectangles()
         {
-            for (var i = 0; i < 1000; i++)
-                _layouter.PutNextRectangle(new Size(_random.Next(50, 70), _random.Next(20, 40)));
+            _layouter.MakeLayouter(1000, 50, 
+                70, 20, 40);
         }
 
-        [TestCase(1, 5, 1, 5, TestName = "Zero distance when points are equivalent")]
-        [TestCase(-7, 7, -7, 7, TestName = "Zero distance when points are equivalent")]
-        public void GetDistanceBetweenPoint_ZeroDistance_WhenEquivalentPoints(int firstX, int firstY,
+        [TestCase(1, 5, 1, 5, TestName = "When points are equivalent")]
+        [TestCase(-7, 7, -7, 7, TestName = "When points are equivalent")]
+        public void GetDistanceBetweenPoint_ZeroDistance(int firstX, int firstY,
             int secondX, int secondY)
         {
             var firstPoint = new Point(firstX, firstY);
@@ -135,14 +134,14 @@ namespace CircularCloudLayouterShould
         }
 
         [TestCase(5, -1, 1, 2, 5,
-            TestName = "Positive distance when points are different")]
+            TestName = "When points are different")]
         [TestCase(5, -1, 5, 2, 3,
-            TestName = "Positive distance when first coordinates are equal")]
+            TestName = "When first coordinates are equal")]
         [TestCase(3, -1, 5, -1, 2,
-            TestName = "Positive distance when second coordinates are equal")]
+            TestName = "When second coordinates are equal")]
         [TestCase(5, -1, 2, -3, 4,
             TestName = "Positive ceiling distance when ceiling is needed")]
-        public void GetDistanceBetweenPoint_ZeroDistance_WhenEquivalentPoints(int firstX, int firstY,
+        public void GetDistanceBetweenPoint_PositiveDistance(int firstX, int firstY,
             int secondX, int secondY, int expectedDistance)
         {
             var firstPoint = new Point(firstX, firstY);

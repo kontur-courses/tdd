@@ -34,7 +34,7 @@ namespace ProjectCircularCloudLayouter
                 // if (_rectangles.Count>5)
                 //     _spiralAngle -= 360 * 0.017; - в таком случае прямоуголники будут раставляться немного плотнее
                 // если же применить команду _spiralAngle = 0; то добьемся максимальной плотности, но скажется скорости
-                
+
                 UpdateCloudRadius(rectangle);
                 break;
             }

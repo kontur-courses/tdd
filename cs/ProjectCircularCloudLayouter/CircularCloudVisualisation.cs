@@ -14,6 +14,8 @@ namespace ProjectCircularCloudLayouter
                 throw new Exception("IsNotContainsRectanglesForDraw");
             DrawCircularCloud(Graphics.FromImage(bitmap), circularCloudLayouter);
             SaveBitmap(pathToSave, imageFormat, bitmap);
+            bitmap.Dispose();
+            //или через using
         }
 
         private static void DrawCircularCloud(Graphics graphics, CircularCloudLayouter layouter)
@@ -29,6 +31,7 @@ namespace ProjectCircularCloudLayouter
             }
 
             graphics.Flush();
+            graphics.Dispose();
         }
 
         private static Brush GetNewRandomBrush()
@@ -43,6 +46,7 @@ namespace ProjectCircularCloudLayouter
             try
             {
                 circularCloudBitmap.Save(path, imageFormat);
+                Console.WriteLine("Image saved");
             }
             catch (Exception e)
             {
