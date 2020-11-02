@@ -3,13 +3,13 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    internal class GetPointer
+    internal class PointGetter
     {
         private readonly Point center;
         private double angle;
         private int radius;
         private double dangle { get => Math.PI / (2 * radius); }
-        internal GetPointer(Point center) => this.center = center;
+        internal PointGetter(Point center) => this.center = center;
         internal Point GetNextPoint()
         {
             var x = (int)(radius * Math.Cos(angle));
@@ -22,9 +22,10 @@ namespace TagsCloudVisualization
             if (radius == 0 || angle > 2 * Math.PI)
             {
                 radius++;
-                angle = -dangle;
+                angle = 0;
             }
-            angle += dangle;
+            else
+                angle += dangle;
         }
     }
 }

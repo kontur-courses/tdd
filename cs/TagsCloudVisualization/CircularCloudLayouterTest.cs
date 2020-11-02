@@ -13,49 +13,29 @@ namespace TagsCloudVisualization
 
         [SetUp]
         public void SetUp() => cloud = new CircularCloudLayouter(new Point(0, 0));
-
-        [TestCase(1, 1)]
-        [TestCase(4, 4)]
-        [TestCase(1, 3)]
-        [TestCase(0, 0)]
-        [TestCase(7, 4)]
-        public void Test_PuFirstRectangleInCenterCloudZeroZero(int width, int height) 
-        {
-            var r = cloud.PutNextRectangle(new Size(width, height));
-            Assert.IsTrue(Math.Abs(r.X) <= (width + 1) / 2 && Math.Abs(r.Y) <= (height + 1) / 2);
-        }
-
-        [TestCase(6, 5, 1, 1)]
-        [TestCase(-6, 9, 4, 4)]
-        [TestCase(9, - 1, 1, 3)]
-        [TestCase(4, 0, 0, 0)]
-        [TestCase(0, -10, 7, 4)]
-        public void Test_PutFirstRectangleInCenterCloud(int x, int y, int width, int height) 
-        {
-            var r = new CircularCloudLayouter(new Point(x, y)).PutNextRectangle(new Size(width, height));
-            Assert.IsTrue(Math.Abs(x - r.X) <= (width + 1) / 2 && Math.Abs(y - r.Y) <= (height + 1) / 2);
-        }
-
+        
         [Test]
-        public void Test_PutSecondRectangleNextToFirst()
+        public void Test_PutFirstRectangleInCenterCloud() 
         {
-            var random = new Random();
-            var r1 = cloud.PutNextRectangle(new Size(random.Next(10), random.Next(10)));
-            var r2 = cloud.PutNextRectangle(new Size(random.Next(10), random.Next(10)));
-            Assert.IsTrue((r1.Top == r2.Bottom || r1.Bottom == r2.Top || 
-                           r1.Right == r2.Left || r1.Left == r2.Right) &&
-                           r2.Top >= r1.Top - r2.Height && r2.Bottom <= r1.Bottom + r2.Height &&
-                           r2.Right <= r1.Right + r2.Width && r2.Left >= r1.Left - r2.Width);
+            var random = new Random(0);
+            for (var i = 0; i < 100; i++) 
+            {
+                var center = new Point(random.Next(50), random.Next(50));
+                var size = new Size(random.Next(1, 50), random.Next(1, 50));
+                var cloud = new CircularCloudLayouter(center);
+                var r = cloud.PutNextRectangle(size);
+                Assert.IsTrue(Math.Abs(center.X - r.X) <= (size.Width + 1) / 2 && Math.Abs(center.Y - r.Y) <= (size.Height + 1) / 2);
+            }
         }
 
         [Test]
         public void Test_PutRectanglesWithoutIntersections()
         {
-            var random = new Random();
+            var random = new Random(0);
             var rectangles = new HashSet<Rectangle>();
             for(var i = 0; i < 50; i++)
             {
-                rectangles.Add(cloud.PutNextRectangle(new Size(random.Next(10), random.Next(10))));
+                rectangles.Add(cloud.PutNextRectangle(new Size(random.Next(1, 10), random.Next(1, 10))));
             }
             var intersections = rectangles.SelectMany(r => rectangles.
                                                        Where(rec => rec != r).
@@ -64,16 +44,52 @@ namespace TagsCloudVisualization
             Assert.IsFalse(intersections.Any(t => t));
         }
 
-        [Test]
-        public void Test_PutRectanglesInCircle()
+        [TestCase(100)]
+        [TestCase(500)]
+        [TestCase(1000)]
+        public void Test_PutRectanglesInCircle(int square)
         {
             var rectangles = new HashSet<Rectangle>();
-            var square = 100;
             for(var i = 0; i < square; i++)
                 rectangles.Add(cloud.PutNextRectangle(new Size(1, 1)));
             var radius = Math.Sqrt(square / Math.PI);
             var distance = GetMaxAverageDistanceToPoint(rectangles, cloud.center);
             Assert.IsTrue(distance <= radius);
+        }
+
+        [Test]
+        public void Test_PutReactanglesTight()
+        {
+            var random = new Random(0);
+            var rectangles = new HashSet<Rectangle>();
+            for(var i = 0; i < 50; i++)
+                rectangles.Add(cloud.PutNextRectangle(new Size(random.Next(1, 10), random.Next(1, 10))));
+            Assert.IsFalse(rectangles.Any(r => !RectangleNextToRectangles(r, rectangles)));
+        }
+
+        private bool RectangleNextToRectangles(Rectangle rectangle, IEnumerable<Rectangle> rectangles) => 
+            rectangles
+            .Where(r => r != rectangle)
+            .Any(r => RectanglesNextToEachOther(rectangle, r));
+
+        private bool RectanglesNextToEachOther(Rectangle reactangle1, Rectangle rectangle2) => 
+            GetAdjacentCellsWithoutAngles(reactangle1)
+            .Any(r => r.IntersectsWith(rectangle2));
+
+        private IEnumerable<Rectangle> GetAdjacentCellsWithoutAngles(Rectangle rectangle)
+        {
+            var result = new HashSet<Rectangle>();
+            for(var i = rectangle.Left; i < rectangle.Right; i++)
+            {
+                result.Add(new Rectangle(i, rectangle.Top - 1, 1, 1));
+                result.Add(new Rectangle(i, rectangle.Bottom, 1, 1));
+            }
+            for(var i = rectangle.Top; i < rectangle.Bottom; i++)
+            {
+                result.Add(new Rectangle(rectangle.Left - 1, i, 1, 1));
+                result.Add(new Rectangle(rectangle.Right, i, 1, 1));
+            }
+            return result;
         }
 
         private double GetDistancePoint(PointF p1, PointF p2) => 
@@ -88,11 +104,5 @@ namespace TagsCloudVisualization
             rectangles
             .Select(r => GetAverageDistanceToPoint(r, point))
             .Max();
-
-        private Point[] GetTops(Rectangle rectangle) => new []{ 
-            new Point(rectangle.Right, rectangle.Top), 
-            new Point(rectangle.Right, rectangle.Bottom),
-            new Point(rectangle.Left, rectangle.Top),
-            new Point(rectangle.Left, rectangle.Bottom) };
     }
 }

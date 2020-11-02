@@ -5,15 +5,15 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    internal class CircularCloudLayouter
+    public class CircularCloudLayouter
     {
         private readonly HashSet<Rectangle> rectangles = new HashSet<Rectangle>();
         internal readonly Point center;
-        private readonly GetPointer getPointer;
+        private readonly PointGetter getPointer;
         internal CircularCloudLayouter(Point center)
         {
             this.center = center;
-            getPointer = new GetPointer(center);
+            getPointer = new PointGetter(center);
         }
 
         internal Rectangle PutNextRectangle(Size rectangleSize)
@@ -25,10 +25,12 @@ namespace TagsCloudVisualization
 
         private Rectangle PutRectangleOnCircle(Size size)
         {
-            var point = getPointer.GetNextPoint();
-            var rectangle = GetRectangleFromSizeAndCenter(size, point);
-            while(HasIntersection(rectangle))
-                rectangle = GetRectangleFromSizeAndCenter(size, getPointer.GetNextPoint());
+            var rectangle = new Rectangle();
+            do
+            {
+                var point = getPointer.GetNextPoint();
+                rectangle = GetRectangleFromSizeAndCenter(size, point);
+            } while (HasIntersection(rectangle));               
             return rectangle;
         }
 
