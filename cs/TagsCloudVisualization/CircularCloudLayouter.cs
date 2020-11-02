@@ -1,57 +1,108 @@
 ﻿using System;
 using System.Collections.Generic;
-using NUnit.Framework;
 using System.Drawing;
-using FluentAssertions;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
+        private enum AngleDirection
+        {
+            LeftBottom,
+            RightBottom,
+            LeftTop,
+            RightTop
+        }
+
+        private class Angle
+        {
+            public Point Pos;
+            public AngleDirection Direction;
+        }
+
+        private Dictionary<AngleDirection, Func<Point, Size, Rectangle>> directionToRectangle;
+
         public readonly Point Center;
         private readonly List<Rectangle> rectangles;
+        private readonly List<Angle> angles;
 
         public CircularCloudLayouter(Point center)
         {
             Center = center;
             rectangles = new List<Rectangle>();
+            angles = new List<Angle>();
+            directionToRectangle = new Dictionary<AngleDirection, Func<Point, Size, Rectangle>>
+            {
+                {
+                    AngleDirection.RightBottom, (point, size) =>
+                        new Rectangle(point, size)
+                },
+                {
+                    AngleDirection.LeftBottom, (point, size) =>
+                        new Rectangle(new Point(point.X - size.Width, point.Y), size)
+                },
+                {
+                    AngleDirection.RightTop, (point, size) =>
+                        new Rectangle(new Point(point.X, point.Y - size.Height), size)
+                },
+                {
+                    AngleDirection.LeftTop, (point, size) =>
+                        new Rectangle(point - size, size)
+                }
+            };
         }
+
+        public List<Rectangle> Rectangles => rectangles.ToList();
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangles.Count == 0)
+            {
+
                 rectangles.Add(new Rectangle(Center.X - rectangleSize.Width / 2,
                     Center.Y - rectangleSize.Height / 2,
                     rectangleSize.Width, rectangleSize.Height));
-            else if (rectangles.Count == 1)
-            {
-                rectangles.Add(new Rectangle(Center.X - rectangleSize.Width / 2, rectangles[0].Y - rectangleSize.Height,
-                    rectangleSize.Width, rectangleSize.Height));
+                AddAngles(rectangles[0]);
             }
+            else AddNewRectangle(rectangleSize);
             return rectangles[rectangles.Count - 1];
         }
-    }
 
-    [TestFixture]
-    public class CircluarCloudLayouterTests
-    {
-        [Test]
-        public void FirstRectangle_ShouldBeInCenter()
+        private void AddNewRectangle(Size rectangleSize)
         {
-            var center = new Point(200, 200);
-            var layouter = new CircularCloudLayouter(center);
-            layouter.PutNextRectangle(new Size(100, 70))
-                .Should().BeEquivalentTo(new Rectangle(150, 165, 100, 70));
+            var neededRectangle = angles
+                .Select(angle => directionToRectangle[angle.Direction](angle.Pos, rectangleSize))
+                .Where(rectangle => !rectangles.Any(anotherRectangle => anotherRectangle.IntersectsWith(rectangle)))
+                .OrderBy(rect => Math.Sqrt(Math.Pow(rect.X + rect.Width / 2 - Center.X, 2) + Math.Pow(rect.Y + rect.Height / 2 - Center.Y, 2)))
+                .First();
+            rectangles.Add(neededRectangle);
+            AddAngles(neededRectangle);
+            var anglesToDelete = new List<Angle>();
+            foreach (var angle in angles)
+            {
+                if (rectangles
+                    .Any(rect => rect.IntersectsWith(directionToRectangle[angle.Direction](angle.Pos, new Size(1, 1)))))
+                    anglesToDelete.Add(angle);
+            }
+            foreach (var angle in anglesToDelete)
+                angles.Remove(angle);
         }
 
-        [Test]
-        public void SecondRectangle_ShouldBeAboveTheFirst()
+        private void AddAngles(Rectangle rect)
         {
-            var center = new Point(200, 200);
-            var layouter = new CircularCloudLayouter(center);
-            layouter.PutNextRectangle(new Size(100, 70));
-            layouter.PutNextRectangle(new Size(70, 50))
-                .Should().BeEquivalentTo(new Rectangle(165, 115, 70, 50));
+            angles.Add(new Angle { Direction = AngleDirection.LeftBottom, Pos = rect.Location });
+            angles.Add(new Angle { Direction = AngleDirection.RightTop, Pos = rect.Location });
+            angles.Add(new Angle { Direction = AngleDirection.LeftBottom, Pos = rect.Location + rect.Size });
+            angles.Add(new Angle { Direction = AngleDirection.RightTop, Pos = rect.Location + rect.Size });
+            angles.Add(new Angle
+            { Direction = AngleDirection.RightBottom, Pos = rect.Location + new Size(rect.Size.Width, 0) });
+            angles.Add(new Angle
+            { Direction = AngleDirection.LeftTop, Pos = rect.Location + new Size(rect.Size.Width, 0) });
+            angles.Add(new Angle
+            { Direction = AngleDirection.RightBottom, Pos = rect.Location + new Size(0, rect.Size.Height) });
+            angles.Add(new Angle
+            { Direction = AngleDirection.LeftTop, Pos = rect.Location + new Size(0, rect.Size.Height) });
         }
     }
 }
