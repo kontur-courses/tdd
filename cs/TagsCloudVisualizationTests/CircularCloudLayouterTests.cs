@@ -60,12 +60,22 @@ namespace TagsCloudVisualizationTests
                     new Size(1,20),
                     new Size(1,30),
                     new Size(1,40),
-                })
+                }),
+                ("Random", GetRandomSizes(300).ToArray())
                 
             };
 
             return testData.Select(test
                 => new TestCaseData(test.sizes) {TestName = test.dataName});
+        }
+
+        private static IEnumerable<Size> GetRandomSizes(int count)
+        {
+            var random = new Random();
+            var maxWidth = 50;
+            var maxHeight = 20;
+            for (int i = 0; i < count; i++)
+                yield return new Size(random.Next(maxWidth),random.Next(maxHeight));
         }
 
         [Test]

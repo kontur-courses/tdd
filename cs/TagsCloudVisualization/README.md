@@ -1,15 +1,15 @@
-![big_small_mediun_tiles.bmp](cs/TagsCloudVisualization/Pictures/big_small_mediun_tiles.bmp)
+![big_small_mediun_tiles.bmp](./Pictures/big_small_mediun_tiles.bmp)
 
-![horizontal.bmp](cs/TagsCloudVisualization/Pictures/horizontal.bmp)
+![long_tiles.bmp](./Pictures/long_tiles.bmp)
 
-![flower.bmp](cs/TagsCloudVisualization/Pictures/flower.bmp)
+![horizontal.bmp](./Pictures/horizontal.bmp)
 
-![long_tiles.bmp](cs/TagsCloudVisualization/Pictures/long_tiles.bmp)
+![flower.bmp](./Pictures/flower.bmp)
 
-![rainbow.bmp](cs/TagsCloudVisualization/Pictures/rainbow.bmp)
+![rainbow.bmp](./Pictures/rainbow.bmp)
 
-![rainbow2.bmp](cs/TagsCloudVisualization/Pictures/rainbow2.bmp)
+![rainbow2.bmp](./Pictures/rainbow2.bmp)
 
-![rainbow3.bmp](cs/TagsCloudVisualization/Pictures/rainbow3.bmp)
+![rainbow3.bmp](./Pictures/rainbow3.bmp)
 
-![random.bmp](cs/TagsCloudVisualization/Pictures/random.bmp)
+![random.bmp](./Pictures/random.bmp)
