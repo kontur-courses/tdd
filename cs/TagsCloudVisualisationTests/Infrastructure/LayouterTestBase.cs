@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal;
 using TagsCloudVisualisation;
 using TagsCloudVisualisation.Visualisation;
 
@@ -37,7 +38,7 @@ namespace TagsCloudVisualisationTests.Infrastructure
         [OneTimeSetUp]
         public virtual void OneTimeSetUp()
         {
-            statusesToSaveImage = GetType().GetCustomAttribute<SaveResultsAttribute>()?.ValidStatuses ??
+            statusesToSaveImage = GetType().GetCustomAttribute<SaveLayouterResultsAttribute>()?.ValidStatuses ??
                                   new TestStatus[0];
         }
 
@@ -70,7 +71,7 @@ namespace TagsCloudVisualisationTests.Infrastructure
 
             var visualiser = new RectanglesVisualiser(Layouter.CloudCenter);
             foreach (var rectangle in layouterHolder.ResultRectangles)
-                visualiser.Draw(rectangle.Colored(Color.OrangeRed));
+                visualiser.Draw(rectangle.Colored(RandomColor()));
 
             var image = visualiser.GetImage()
                 .DrawAxis(5, 1, Color.DarkGray, Color.Black)
@@ -92,6 +93,8 @@ namespace TagsCloudVisualisationTests.Infrastructure
 
             TestWriteLine($"Tag cloud visualization saved to file <{filePath}>");
         }
+
+        private Color RandomColor() => Color.FromKnownColor(Randomizer.CreateRandomizer().NextEnum<KnownColor>());
 
         private static void TestWriteLine(string message) => TestContext.Out.WriteLine(message);
 
