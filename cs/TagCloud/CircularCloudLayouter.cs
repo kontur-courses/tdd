@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace TagCloud
 {
-    class Spiral
+    internal class Spiral
     {
         private Point Center;
         private int Step;
