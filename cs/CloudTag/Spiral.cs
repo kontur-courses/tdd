@@ -8,18 +8,16 @@ namespace CloudTag
     {
         private readonly Point center;
         private double angle;
-        private readonly double radius;
 
-        public Spiral(Point center, double radius = 1)
+        public Spiral(Point center)
         {
             this.center = center;
-            this.radius = radius;
         }
 
         public Point GetNextPoint()
         {
-            var x = (int) (angle * Math.Cos(angle) * radius + center.X);
-            var y = (int) (angle * Math.Sin(angle) * radius + center.Y);
+            var x = (int) (angle * Math.Cos(angle) + center.X);
+            var y = (int) (angle * Math.Sin(angle) + center.Y);
             angle += Math.PI / 180;
             return new Point(x, y);
         }
