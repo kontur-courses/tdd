@@ -1,5 +1,4 @@
 using System.Drawing;
-using TagsCloudVisualization.Graphic;
 using TagsCloudVisualization.Infrastructure.Environment;
 using TagsCloudVisualization.Infrastructure.Layout;
 
@@ -9,8 +8,6 @@ namespace TagsCloudVisualization
     {
         private readonly ILayoutStrategy strategy;
         private readonly Environment<Rectangle> environment;
-        private readonly IDrawer<Rectangle> drawer;
-        private readonly IImageSaver imageSaver;
 
         public CircularCloudLayouter(Point center)
         {

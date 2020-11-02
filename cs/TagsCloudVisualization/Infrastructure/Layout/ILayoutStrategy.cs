@@ -5,6 +5,6 @@ namespace TagsCloudVisualization.Infrastructure.Layout
 {
     public interface ILayoutStrategy
     {
-        Point GetPlace(Func<Point, bool> IsValidPlace);
+        Point GetPlace(Func<Point, bool> isValidPlace);
     }
 }
