@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,8 +14,18 @@ namespace TagsCloudVisualization
         {
             Console.WriteLine("Asdas");
             var circularCloudLayouter = new CircularCloudLayouter(new Point(50, 50));
-            for (var i = 0; i <1000; i++)
+            for (var i = 0; i < 1000; i++)
                 circularCloudLayouter.PutNextRectangle(new Size(1, 1));
+            Bitmap bitmap = new Bitmap(100, 100);
+            var graphics = Graphics.FromImage(bitmap);
+            var rectangles = circularCloudLayouter.GetRectangles();
+            foreach (var rectangle in rectangles)
+            {
+                graphics.DrawRectangle(new Pen(Color.RoyalBlue), rectangle);
+            }
+
+            bitmap.Save(Environment.CurrentDirectory + "\\Cloud.png");
+
 
             ConsoleVisualization(circularCloudLayouter);
         }

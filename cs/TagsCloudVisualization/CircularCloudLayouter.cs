@@ -57,8 +57,8 @@ namespace TagsCloudVisualization
             while (true)
             {
                 var newPosition = new Point(availablePosition.X, availablePosition.Y);
-                ShiftHorizontal(rectangle, availablePosition, newPosition, step);
-                ShiftVertical(rectangle, availablePosition, newPosition, step);
+                ShiftHorizontal(rectangle, ref availablePosition, ref newPosition, step);
+                ShiftVertical(rectangle, ref availablePosition, ref newPosition, step);
 
                 if (availablePosition == newPosition)
                     break;
@@ -67,7 +67,7 @@ namespace TagsCloudVisualization
             return new Rectangle(availablePosition, rectangle.Size);
         }
 
-        private void ShiftVertical(Rectangle rectangle, Point availablePosition, Point newPosition, int step)
+        private void ShiftVertical(Rectangle rectangle, ref Point availablePosition, ref Point newPosition, int step)
         {
             if (Math.Abs(availablePosition.Y - _center.Y + rectangle.Height / 2) > 1)
             {
@@ -79,7 +79,7 @@ namespace TagsCloudVisualization
             }
         }
 
-        private void ShiftHorizontal(Rectangle rectangle, Point availablePosition, Point newPosition, int step)
+        private void ShiftHorizontal(Rectangle rectangle, ref Point availablePosition, ref Point newPosition, int step)
         {
             if (Math.Abs(availablePosition.X - _center.X + rectangle.Width / 2) > 1)
             {
