@@ -2,7 +2,7 @@
 
 namespace TagsCloud.Core
 {
-    internal interface ICircularCloudLayouter
+    public interface ICircularCloudLayouter
     {
         Rectangle PutNextRectangle(Size rectangleSize);
     }

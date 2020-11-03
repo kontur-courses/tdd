@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace TagsCloud.Core
 {
-    internal class ArchimedeanSpiral : ISpiral
+    public class ArchimedeanSpiral : ISpiral
     {
         private readonly Point center;
         private readonly double spiralParameter;

@@ -4,11 +4,9 @@ using System.Linq;
 
 namespace TagsCloud.Core
 {
-    internal static class RectangleExtensions
+    public static class RectangleExtensions
     {
-        public static bool IntersectsWith(this Rectangle rect, IEnumerable<Rectangle> rectangles)
-        {
-            return rectangles.Any(rect.IntersectsWith);
-        }
+        public static bool IntersectsWith(this Rectangle rect, IEnumerable<Rectangle> rectangles) 
+            => rectangles.Any(rect.IntersectsWith);
     }
 }

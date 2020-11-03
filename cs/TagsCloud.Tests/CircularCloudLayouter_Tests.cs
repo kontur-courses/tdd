@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using FluentAssertions;
@@ -13,8 +14,10 @@ namespace TagsCloud.Tests
         private const double MinDensity = 0.5;
         public const int ImageWidth = 1920;
         public const int ImageHeight = 1080;
+        private readonly SizeGenerator generator = new SizeGenerator(10, 40, 10, 20);
         private Point center;
         private CircularCloudLayouter cloud;
+        private IEnumerable<Rectangle> rectangles;
 
         [SetUp]
         public void SetUp()
@@ -33,12 +36,11 @@ namespace TagsCloud.Tests
         [TestCase(1, TestName = "WhenAdd1Rectangle")]
         [TestCase(10, TestName = "WhenAdd10Rectangle")]
         [TestCase(100, TestName = "WhenAdd100Rectangle")]
-        public void PutNextRectangle_CorrectCountOfRectangles(int expectedCount)
+        public void PutNextRectangle_CorrectCountOfRectangles(int count)
         {
-            for (var i = 0; i < expectedCount; ++i)
-                cloud.PutNextRectangle(new Size(1, 1));
+            rectangles = generator.GenerateSize(count).Select(cloud.PutNextRectangle);
 
-            cloud.Rectangles.Should().HaveCount(expectedCount);
+            rectangles.Should().HaveCount(count);
         }
 
         [Test]
@@ -54,52 +56,40 @@ namespace TagsCloud.Tests
         }
 
         [Timeout(1000)]
-        [TestCase(1000, 10, 10, 10, 10, TestName = "WhenAdd1000SameRectangles")]
-        [TestCase(1000, 10, 50, 10, 20, TestName = "WhenAdd1000RandomRectangles")]
-        public void PutNextRectangle_RectanglesDoesNotIntersect(int count, int minWidth, int maxWidth, int minHeight,
-            int maxHeight)
+        [TestCase(1000, TestName = "WhenAdd1000RandomRectangles")]
+        public void PutNextRectangle_RectanglesDoesNotIntersect(int count)
         {
-            for (var i = 0; i < count; ++i)
-                cloud.PutNextRectangle(SizeGenerator.GenerateSize(minWidth, maxWidth, minHeight, maxHeight));
+            rectangles = generator.GenerateSize(count).Select(cloud.PutNextRectangle).ToList();
 
-            foreach (var rect in cloud.Rectangles)
-                rect.IntersectsWith(cloud.Rectangles.Where(x => x != rect)).Should().BeFalse();
+            foreach (var rect in rectangles)
+                rect.IntersectsWith(rectangles.Where(x => x != rect)).Should().BeFalse();
         }
 
         [Timeout(1000)]
-        [TestCase(1000, 10, 10, 10, 10, TestName = "WhenAdd1000SameRectangles")]
-        [TestCase(1000, 10, 40, 10, 20, TestName = "WhenAdd1000RandomRectangles")]
-        public void PutNextRectangle_PlacedRectanglesHasNearlyCircleShape(int count, int minWidth, int maxWidth,
-            int minHeight, int maxHeight)
+        [TestCase(1000, TestName = "WhenAdd1000RandomRectangles")]
+        public void PutNextRectangle_PlacedRectanglesHasNearlyCircleShape(int count)
         {
-            for (var i = 0; i < count; ++i)
-                cloud.PutNextRectangle(SizeGenerator.GenerateSize(minWidth, maxWidth, minHeight, maxHeight));
+            rectangles = generator.GenerateSize(count).Select(cloud.PutNextRectangle).ToList();
 
-            var top = center.Y - cloud.Rectangles.Min(rect => rect.Top);
-            var left = center.X - cloud.Rectangles.Min(rect => rect.Left);
-            var right = cloud.Rectangles.Max(rect => rect.Right) - center.X;
-            var bottom = cloud.Rectangles.Max(rect => rect.Bottom) - center.Y;
+            var top = center.Y - rectangles.Min(rect => rect.Top);
+            var left = center.X - rectangles.Min(rect => rect.Left);
+            var right = rectangles.Max(rect => rect.Right) - center.X;
+            var bottom = rectangles.Max(rect => rect.Bottom) - center.Y;
             var radius = Math.Max(Math.Max(top, bottom), Math.Max(left, right));
             var fault = radius / 3.0;
 
-            foreach (var rect in cloud.Rectangles)
+            foreach (var rect in rectangles)
                 GetDistanceFromPointToCenter(rect.Location).Should().BeLessThan(radius + fault);
         }
 
         [Timeout(1000)]
-        [TestCase(1000, 15, 15, 10, 10, TestName = "WhenAdd1000SameRectangles")]
-        [TestCase(1000, 15, 40, 10, 20, TestName = "WhenAdd1000RandomRectangles")]
-        public void PutNextRectangle_RectanglesPlacedTightly(int count, int minWidth, int maxWidth, int minHeight,
-            int maxHeight)
+        [TestCase(1000, TestName = "WhenAdd1000RandomRectangles")]
+        public void PutNextRectangle_RectanglesPlacedTightly(int count)
         {
-            var allRectanglesArea = 0.0;
-            for (var i = 0; i < count; ++i)
-            {
-                var rect = cloud.PutNextRectangle(SizeGenerator.GenerateSize(minWidth, maxWidth, minHeight, maxHeight));
-                allRectanglesArea += rect.Width * rect.Height;
-            }
+            rectangles = generator.GenerateSize(count).Select(cloud.PutNextRectangle).ToList();
+            var allRectanglesArea = rectangles.Select(x => x.Width * x.Height).Sum();
 
-            var radius = cloud.Rectangles.Max(x => GetDistanceFromPointToCenter(x.Location));
+            var radius = rectangles.Max(x => GetDistanceFromPointToCenter(x.Location));
             var circleArea = Math.PI * radius * radius;
             var areaRatio = allRectanglesArea / circleArea;
 
@@ -113,7 +103,7 @@ namespace TagsCloud.Tests
                 return;
             var path = $"../../Images/{TestContext.CurrentContext.Test.FullName}.jpg";
             Console.WriteLine($"Tag cloud visualization saved to file {path}");
-            CircularCloudVisualization.SaveImage(cloud.Rectangles, ImageWidth, ImageHeight).Save(path);
+            CircularCloudVisualization.CreateImage(rectangles, ImageWidth, ImageHeight).Save(path);
         }
 
         private double GetDistanceFromPointToCenter(Point point)

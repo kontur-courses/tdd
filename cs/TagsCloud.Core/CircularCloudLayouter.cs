@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.CompilerServices;
-
-[assembly: InternalsVisibleTo("TagsCloud.Tests")]
-[assembly: InternalsVisibleTo("TagsCloud.Visualization")]
 
 namespace TagsCloud.Core
 {
-    internal class CircularCloudLayouter : ICircularCloudLayouter
+    public class CircularCloudLayouter : ICircularCloudLayouter
     {
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
         private readonly ArchimedeanSpiral spiral;
@@ -17,8 +13,6 @@ namespace TagsCloud.Core
         {
             spiral = new ArchimedeanSpiral(center, 0.005);
         }
-
-        public IReadOnlyCollection<Rectangle> Rectangles => rectangles;
 
         public Rectangle PutNextRectangle(Size rectSize)
         {
@@ -33,8 +27,8 @@ namespace TagsCloud.Core
         {
             while (true)
             {
-                var rect = new Rectangle(spiral.GetNextPoint() - new Size(rectSize.Width / 2, rectSize.Height / 2),
-                    rectSize);
+                var rectLocation = spiral.GetNextPoint() - new Size(rectSize.Width / 2, rectSize.Height / 2);
+                var rect = new Rectangle(rectLocation, rectSize);
                 if (!rect.IntersectsWith(rectangles))
                     return rect;
             }
