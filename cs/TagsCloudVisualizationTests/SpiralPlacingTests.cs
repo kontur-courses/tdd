@@ -34,7 +34,7 @@ namespace TagsCloudVisualizationTests
                 takenPlaces.Add(new Point(x, y));
             bool IsValid(Point p) => !takenPlaces.Contains(p);
 
-            var obtainedPlace = sut.GetPlace(IsValid);
+            var obtainedPlace = sut.GetPoint(IsValid);
 
             var isInBounds = obtainedPlace.X >= left
                              && obtainedPlace.X <= right

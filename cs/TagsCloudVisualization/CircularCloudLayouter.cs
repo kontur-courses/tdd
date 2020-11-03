@@ -14,21 +14,19 @@ namespace TagsCloudVisualization
             strategy = new SpiralPlacing(center, 1);
             environment = new PlainEnvironment();
         }
+        
+        private bool CanPlaceRectangle(Point possiblePoint, Size rectangleSize)
+        {
+            var rectangle = new Rectangle(possiblePoint, rectangleSize);
+            return !environment.IsColliding(rectangle);
+        }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var rectangle = new Rectangle(Point.Empty, rectangleSize);
-            var rectangleMiddleOffset = new Size(rectangle.Width / 2, rectangle.Height / 2);
+            var rectangleMiddle = new Size(rectangleSize.Width / 2, rectangleSize.Height / 2);
 
-            bool IsValid(Point possiblePoint)
-            {
-                rectangle.Location = possiblePoint - rectangleMiddleOffset;
-                var isValid = !environment.IsColliding(rectangle);
-                return isValid;
-            }
-
-            var location = strategy.GetPlace(IsValid);
-            rectangle.Location = location - rectangleMiddleOffset;
+            var possiblePoint = strategy.GetPoint(point => CanPlaceRectangle(point - rectangleMiddle, rectangleSize));
+            var rectangle = new Rectangle(possiblePoint - rectangleMiddle, rectangleSize);
             
             environment.Add(rectangle);
             return rectangle;

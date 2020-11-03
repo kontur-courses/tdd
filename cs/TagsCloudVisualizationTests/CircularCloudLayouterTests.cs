@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
@@ -108,6 +107,14 @@ namespace TagsCloudVisualizationTests
         }
         
         [Test]
+        public void Constructor_DoesNotThrow()
+        {
+            var center = new Point();
+            
+            Assert.DoesNotThrow(() => _ = new CircularCloudLayouter(center)); 
+        }
+        
+        [Test]
         public void PutNextRectangle_Exists()
         {
             var center = new Point();
@@ -115,6 +122,16 @@ namespace TagsCloudVisualizationTests
             var layouter = new CircularCloudLayouter(center);
             
             Rectangle _ = layouter.PutNextRectangle(rectangleSize);
+        }
+        
+        [Test]
+        public void PutNextRectangle_DoesNotThrow_WhenEmptySize()
+        {
+            var center = Point.Empty;
+            var rectangleSize = Size.Empty;
+            var layouter = new CircularCloudLayouter(center);
+
+            Assert.DoesNotThrow(() => _ = layouter.PutNextRectangle(rectangleSize)); 
         }
 
         [TestCaseSource(nameof(DataLayouts))]
@@ -151,7 +168,7 @@ namespace TagsCloudVisualizationTests
         }
         
         [TestCaseSource(nameof(DataLayouts))]
-        public void Cloud_RectanglesAreArrangedCompactly(IEnumerable<Size> rectangleSizes)
+        public void Cloud_RectanglesAreArrangedCompactly(Size[] rectangleSizes)
         {
             var expected = Math.Max(
                 rectangleSizes.Max(rectangle => rectangle.Width),
@@ -160,11 +177,11 @@ namespace TagsCloudVisualizationTests
             
             rectangles = PlaceRectangles(sut, rectangleSizes).ToList();
             
-            foreach (var rectangle1 in rectangles)
+            foreach (var neighbourDistance in rectangles
+                .Select(rectangle1 => rectangles
+                .Where(rectangle2 => rectangle1 != rectangle2)
+                .Min(rectangle2 => rectangle1.GetCenter().DistanceFrom(rectangle2.GetCenter()))))
             {
-                var neighbourDistance = rectangles
-                    .Where(rectangle2 => rectangle1 != rectangle2)
-                    .Min(rectangle2 => rectangle1.GetCenter().DistanceFrom(rectangle2.GetCenter()));
                 Assert.That(neighbourDistance, Is.LessThanOrEqualTo(expected));
             }
         }

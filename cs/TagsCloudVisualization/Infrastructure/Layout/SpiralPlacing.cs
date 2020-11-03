@@ -13,40 +13,36 @@ namespace TagsCloudVisualization.Infrastructure.Layout
             this.angleIncrement = angleIncrement;
         }
 
-        public Point GetPlace(Func<Point, bool> isValidPlace)
+        public Point GetPoint(Func<Point, bool> isValidPoint)
         {
-            int GetRadius(int angle) => angle;
             var angle = 0;
-
-            Point obtainedPlace;
+            
+            Point obtainedPoint;
             while (true)
             {
-                var possibleLocation = 
-                    center + new Size((int) (Math.Sin(angle) * GetRadius(angle)), (int) (Math.Cos(angle) * GetRadius(angle)));
-                obtainedPlace = possibleLocation;
-                if (isValidPlace(possibleLocation))
+                var possiblePoint = center + new Size((int) (Math.Sin(angle) * angle), (int) (Math.Cos(angle) * angle));
+                obtainedPoint = possiblePoint;
+                if (isValidPoint(possiblePoint))
                     break;
                 angle += angleIncrement;
             }
-            var optimisedPlace = CenterUntilValid(obtainedPlace, isValidPlace);
-            return optimisedPlace;
+            return OptimizePoint(obtainedPoint, isValidPoint);;
         }
 
-        private Point CenterUntilValid(Point obtainedPlace, Func<Point, bool> isValidPlace)
+        private Point OptimizePoint(Point obtainedPoint, Func<Point, bool> isValidPoint)
         {
             while (true)
             {
-                var targetTrend = new Size(
-                    Math.Sign(center.X - obtainedPlace.X),
-                    Math.Sign(center.Y - obtainedPlace.Y));
-                if (targetTrend == new Size())
-                    return obtainedPlace;
-                var possiblePosition = obtainedPlace + targetTrend;
-                if (!isValidPlace(possiblePosition))
-                    break;
-                obtainedPlace = possiblePosition;
+                var optimizationOffset = new Size(
+                    Math.Sign(center.X - obtainedPoint.X),
+                    Math.Sign(center.Y - obtainedPoint.Y));
+                if (optimizationOffset.IsEmpty)
+                    return obtainedPoint;
+                var possiblePosition = obtainedPoint + optimizationOffset;
+                if (!isValidPoint(possiblePosition))
+                    return obtainedPoint;
+                obtainedPoint = possiblePosition;
             }
-            return obtainedPlace;
         }
     }
 }
