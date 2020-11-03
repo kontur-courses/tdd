@@ -3,8 +3,9 @@ using System.Drawing;
 using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
+using TagsCloudVisualization;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualizationTests
 {
     [TestFixture]
     public class ArchimedeanSpiralTests

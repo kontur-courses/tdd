@@ -14,7 +14,7 @@ namespace TagsCloudVisualization
         public ArchimedeanSpiral(Point center, double distanceBetweenLoops, double centerOffset)
         {
             Center = center;
-            PointsGenerator = this.GetPoints().GetEnumerator();
+            PointsGenerator = GetPoints().GetEnumerator();
             DistanceBetweenLoops = distanceBetweenLoops;
             CenterOffset = centerOffset;
         }
