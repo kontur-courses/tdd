@@ -7,10 +7,6 @@ namespace TagsCloudVisualisation.Visualisation
     public static class DrawingExtensions
     {
         [Pure]
-        public static ColoredRectangle Colored(this Rectangle rectangle, Color color) =>
-            new ColoredRectangle(rectangle, color);
-
-        [Pure]
         public static Image FillBackground(this Image image, Color color) => image.ChangeCloned(
             g => g.FillRectangle(new SolidBrush(color), new Rectangle(new Point(), image.Size)));
 

@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using TagsCloudVisualisation;
+using TagsCloudVisualisation.Visualisation;
 using TagsCloudVisualisationTests.Infrastructure;
 
 namespace TagsCloudVisualisationTests
@@ -106,6 +108,30 @@ namespace TagsCloudVisualisationTests
             var height = random.Next(100, 500);
             var width = random.Next(height, height * 3);
             return new Size(width, height) * scale;
+        }
+    }
+
+    public class ManuallyExecutedTests
+    {
+        [Test]
+        public void Visualise()
+        {
+            var filename = Path.Combine(TestingHelpers.GetOutputDirectory("manual-saved"), "Words-visualisation.png");
+            DrawWords("C#", "Помогите мне", "Я не знаю где баги", "Баги повсюду", "Кажется, мы все умрем", "Web 2.0",
+                    "Ненавижу задачи с координатами", "Опять визуализатор сломался", "Fuck this shit imma out",
+                    "Четыре утра", "Боже, за что...", "Зато слова рисует", "Лучше бы не рисовал",
+                    "От этого одни проблемы", "На прямоугольниках багов не было", "#скб_шпора", "Пиво закончилось...")
+                .Save(filename);
+            TestContext.Out.WriteLine($"Saved to {filename}");
+        }
+
+        private static Image DrawWords(params string[] words)
+        {
+            var asset = new WordsLayouterAsset(new CircularCloudLayouter(new Point(0, 0)));
+            foreach (var word in words)
+                asset.DrawWord(new WordToDraw(word, SystemFonts.MessageBoxFont,
+                    new SolidBrush(TestingHelpers.RandomColor)));
+            return asset.GetImage();
         }
     }
 }

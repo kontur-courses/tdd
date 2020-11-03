@@ -79,8 +79,8 @@ namespace TagsCloudVisualisationTests.Infrastructure
                 return;
             }
 
-            var visualiser = RectanglesVisualiser.New(Layouter.CloudCenter,
-                (g, r) => RectanglesVisualiser.DrawRectangle(g, RandomColor(), r));
+            var visualiser = new RectanglesVisualiser(Layouter.CloudCenter,
+                (g, r) => RectanglesVisualiser.DrawRectangle(g, TestingHelpers.RandomColor, r));
 
             foreach (var rectangle in layouterHolder.ResultRectangles)
                 visualiser.Draw(rectangle);
@@ -98,9 +98,6 @@ namespace TagsCloudVisualisationTests.Infrastructure
 
             TestWriteLine($"Tag cloud visualization saved to file <{filePath}>");
         }
-
-        private static Color RandomColor() =>
-            Color.FromKnownColor(Randomizer.CreateRandomizer().NextEnum<KnownColor>());
 
         private static void TestWriteLine(string message) => TestContext.Out.WriteLine(message);
 

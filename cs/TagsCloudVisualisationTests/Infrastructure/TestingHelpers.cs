@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System.Drawing;
+using System.IO;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 
 namespace TagsCloudVisualisationTests.Infrastructure
 {
@@ -24,5 +26,7 @@ namespace TagsCloudVisualisationTests.Infrastructure
                 Directory.CreateDirectory(fullPath);
             return fullPath;
         }
+
+        public static Color RandomColor => Color.FromKnownColor(Randomizer.CreateRandomizer().NextEnum<KnownColor>());
     }
 }
