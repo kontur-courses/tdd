@@ -265,6 +265,28 @@ namespace TagsCloudVisualization
         }
         
         [Test]
+        public void NotHaveIntersections_WithALotRectangles()
+        {
+            var center = new Point(7, 10);
+            var layouter = new CircularCloudLayouter(center);
+
+            var rectangles = new[]
+            {
+                new Size(7, 3),
+                new Size(5, 8),
+                new Size(3, 6),
+                new Size(2, 1),
+                new Size(7, 5),
+                new Size(3, 10),
+                new Size(15, 1),
+                new Size(31, 10),
+            };
+            var result = rectangles.Select(r => layouter.PutNextRectangle(r)).ToArray();
+            result
+                .Where(r => result.Where(rr => rr != r).Any(r.IntersectsWith)).Should().BeEmpty();
+        }
+        
+        [Test]
         public void NotChangeSize_WithFourRectangles()
         {
             var center = new Point(7, 10);
