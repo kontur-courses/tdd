@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="crash-reports\images" />
+      <Folder Include="crash-reports" />
     </ItemGroup>
 
 </Project>

@@ -7,7 +7,7 @@ namespace TagCloud.Visualizer
 {
     public static class BitmapCreator
     {
-        internal static void DrawAndSaveBitmap(List<Rectangle> rectangles, string name, string path)
+        internal static Bitmap DrawBitmap(List<Rectangle> rectangles)
         {
             var bitmap = CreateBitmap(rectangles);
             var graph = Graphics.FromImage(bitmap);
@@ -16,7 +16,8 @@ namespace TagCloud.Visualizer
                 graph.FillRectangle(Brushes.Chocolate, rect);
                 graph.DrawRectangle(Pens.Aqua, rect);
             }
-            bitmap.Save(Path.Combine(path, $"{name}.bmp"));
+
+            return bitmap;
         }
 
         private static Bitmap CreateBitmap(IReadOnlyCollection<Rectangle> rectangles)

@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -17,7 +17,7 @@ namespace TagCloud.Tests
         [SetUp]
         public void SetUp()
         {
-            center = new Point(50, 50);
+            center = new Point(500, 500);
             cloudLayouter = new CircularCloudLayouter(center);
         }
 
@@ -32,7 +32,7 @@ namespace TagCloud.Tests
         [Test]
         public void PutNextRectangle_RectanglesDoNotIntersect_AfterAddition()
         {
-            var sizes = CreateSizesCollection(5);
+            var sizes = SizesCreator.CreateSizesArray(30, 80, 30, 50, 12);
 
             foreach (var size in sizes) cloudLayouter.PutNextRectangle(size);
 
@@ -43,8 +43,8 @@ namespace TagCloud.Tests
         [Test]
         public void PutNextRectangle_PutRectanglesInCircleForm_AfterAddition()
         {
-            var sizes = CreateSizesCollection(5);
-            const int expectedRadius = 15;
+            var sizes = SizesCreator.CreateSizesArray(30, 80, 30, 50, 12);
+            const int expectedRadius = 150;
 
             foreach (var size in sizes) cloudLayouter.PutNextRectangle(size);
             var mostTopRect = cloudLayouter.Rectangles.OrderBy(rect => rect.Top).First();
@@ -64,18 +64,12 @@ namespace TagCloud.Tests
         public void TearDown()
         {
             var testResult = TestContext.CurrentContext.Result.Outcome;
-            if (testResult != ResultState.Failure && testResult != ResultState.Error) return;
+            if (testResult != ResultState.Failure) return;
 
-            FileCreator.CreateBitmapFile(cloudLayouter.Rectangles,
-                $"crash-report \"{TestContext.CurrentContext.Test.FullName}\"", "crash-reports", "images");
-        }
-
-        private static IEnumerable<Size> CreateSizesCollection(int amount)
-        {
-            var sizes = new Size[amount];
-            for (var i = 0; i < amount; i++) sizes[i] = new Size(amount + 2 - i, amount - i);
-
-            return sizes;
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "crash-reports");
+            var bitmap = BitmapCreator.DrawBitmap(cloudLayouter.Rectangles);
+            bitmap.Save(Path.Combine(path, $"crash-report {TestContext.CurrentContext.Test.FullName}.bmp"));
+            Console.WriteLine($"Tag cloud visualization saved to file {path}");
         }
     }
 }

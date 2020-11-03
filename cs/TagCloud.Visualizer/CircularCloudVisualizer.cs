@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
+using System.IO;
 using System.Linq;
 
 namespace TagCloud.Visualizer
@@ -11,17 +10,13 @@ namespace TagCloud.Visualizer
         {
             for (var i = 1; i <= 3; i++)
             {
-                var rectangles = CreateRandomRectangles(i * 20);
-                FileCreator.CreateBitmapFile(rectangles.ToList(), i.ToString(), "images");
+                var cloudLayouter = new CircularCloudLayouter(new Point(600, 600));
+                var rectangles = SizesCreator.CreateSizesArray(50, 150, 50, 150, i * 20)
+                    .Select(cloudLayouter.PutNextRectangle).ToList();
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "images");
+                var bitmap = BitmapCreator.DrawBitmap(rectangles);
+                bitmap.Save(Path.Combine(path, $"{i.ToString()}.bmp"));
             }
-        }
-
-        private static IEnumerable<Rectangle> CreateRandomRectangles(int amount)
-        {
-            var rnd = new Random();
-            var cloudLayouter = new CircularCloudLayouter(new Point(600, 600));
-            for (var counter = 0; counter < amount; counter++)
-                yield return cloudLayouter.PutNextRectangle(new Size(rnd.Next(50, 150), rnd.Next(50, 150)));
         }
     }
 }
