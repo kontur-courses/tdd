@@ -9,9 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples", "Samples\Samples.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TagsCloud.Core", "TagsCloud.Core\TagsCloud.Core.csproj", "{740ECC4C-1334-4FC2-AE8E-8C9EFCBE212E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloud.Tests", "TagsCloud.Tests\TagsCloud.Tests.csproj", "{1E31E149-CA98-44BE-9C20-973F978361A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TagsCloud.Tests", "TagsCloud.Tests\TagsCloud.Tests.csproj", "{1E31E149-CA98-44BE-9C20-973F978361A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloud.Visualization", "TagsCloud.Visualization\TagsCloud.Visualization.csproj", "{15322FF1-C12D-4058-AE3C-261D19BDE732}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloud", "TagsCloud\TagsCloud.csproj", "{BAC3BE1F-A5FC-4FA1-A714-1B94418F4985}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,10 @@ Global
 		{1E31E149-CA98-44BE-9C20-973F978361A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E31E149-CA98-44BE-9C20-973F978361A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E31E149-CA98-44BE-9C20-973F978361A9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{15322FF1-C12D-4058-AE3C-261D19BDE732}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{15322FF1-C12D-4058-AE3C-261D19BDE732}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{15322FF1-C12D-4058-AE3C-261D19BDE732}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{15322FF1-C12D-4058-AE3C-261D19BDE732}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAC3BE1F-A5FC-4FA1-A714-1B94418F4985}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAC3BE1F-A5FC-4FA1-A714-1B94418F4985}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAC3BE1F-A5FC-4FA1-A714-1B94418F4985}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAC3BE1F-A5FC-4FA1-A714-1B94418F4985}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

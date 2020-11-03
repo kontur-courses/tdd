@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{15322FF1-C12D-4058-AE3C-261D19BDE732}</ProjectGuid>
+    <ProjectGuid>{BAC3BE1F-A5FC-4FA1-A714-1B94418F4985}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>TagsCloud.Visualization</RootNamespace>
-    <AssemblyName>TagsCloud.Visualization</AssemblyName>
+    <RootNamespace>TagsCloud</RootNamespace>
+    <AssemblyName>TagsCloud</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
