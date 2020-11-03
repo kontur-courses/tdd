@@ -13,11 +13,11 @@ namespace TagsCloudVisualization
         static void Main(string[] args)
         {
             Console.WriteLine("Asdas");
-            var circularCloudLayouter = new CircularCloudLayouter(new Point(250, 250));
+            var circularCloudLayouter = new CircularCloudLayouter(new Point(175, 175));
 
             for (var i = 0; i < 100; i++)
                 circularCloudLayouter.PutNextRectangle(new Size((10 + i * i) % 30, (10 + i * i) % 20));
-            Bitmap bitmap = new Bitmap(500, 500);
+            Bitmap bitmap = new Bitmap(300, 300);
             var graphics = Graphics.FromImage(bitmap);
             var rectangles = circularCloudLayouter.GetRectangles();
             foreach (var rectangle in rectangles)
