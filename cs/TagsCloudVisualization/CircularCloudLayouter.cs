@@ -26,7 +26,7 @@ namespace TagsCloudVisualization
                 throw new ArgumentException();
             var radius = Math.Max((double)cloudRadius-10, 0);
             var angle = 0d;
-            var radiusStep = 0.02;
+            var radiusStep = 0.02 * _center.X / 50;
             var angleStep = 0.3;
             while (true)
             {
