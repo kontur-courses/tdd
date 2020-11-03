@@ -57,13 +57,8 @@ namespace TagsCloudVisualization
                 actual.Add(cloud.PutNextRectangle(size));
             }
 
-            foreach (var rect in actual)
-            {
-                foreach (var other in actual.Where(r => r!=rect))
-                {
-                    rect.IntersectsWith(other).Should().BeFalse();
-                }
-            }
+            actual.SelectMany(a => actual.Where(other => other != a).Select(a.IntersectsWith))
+                .Should().AllBeEquivalentTo(false);
         }
 
         [Timeout(3000)]
@@ -84,14 +79,8 @@ namespace TagsCloudVisualization
                 actual.Add(cloud.PutNextRectangle(size));
             }
 
-            foreach (var rect in actual)
-            {
-                foreach (var other in actual.Where(r => r!=rect))
-                {
-                    
-                    rect.IntersectsWith(other).Should().BeFalse();
-                }
-            }
+            actual.SelectMany(a => actual.Where(other => other != a).Select(a.IntersectsWith))
+                .Should().AllBeEquivalentTo(false);
         }
 
         [Timeout(3000)]
