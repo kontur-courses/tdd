@@ -1,44 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Drawing;
-using System.Linq;
 
 namespace TagCloud
 {
     internal class Spiral
     {
-        private Point Center;
-        private int Step;
+        private Point center;
+        private readonly int step;
+        private double currentAngle;
         public Spiral(Point center, int step)
         {
-            this.Center = center;
-            this.Step = step;
+            this.center = center;
+            this.step = step;
+            this.currentAngle = 0;
         }
 
-        public IEnumerable<Point> GetNextPoint
+        public Point GetNextPoint()
         {
-            get
-            {
-                var angle = 0.0;
-                while (true)
-                {
-                    var x = (int) Math.Round(Step * angle * Math.Cos(angle)) + Center.X;
-                    var y = (int) Math.Round(Step * angle * Math.Sin(angle)) + Center.Y;
-                    yield return new Point(x, y);
-                    angle += 0.05;
-                }
-            }
+            var x = (int) Math.Round(step * currentAngle * Math.Cos(currentAngle)) + center.X;
+            var y = (int) Math.Round(step * currentAngle * Math.Sin(currentAngle)) + center.Y;
+            currentAngle += 0.05;
+            return new Point(x, y);
         }
     }
+    
     class CircularCloudLayouter
     {
-        private readonly Point center;
-        private Spiral spiral;
+        private readonly Spiral spiral;
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
         public CircularCloudLayouter(Point center)
         {
-            this.center = center;
+            spiral = new Spiral(center, 1);
+        }
+        
+        public Rectangle PutNextRectangle(Size rectangleSize)
+        {
+            while (true)
+            {
+                var point = spiral.GetNextPoint();
+                var newRectangle = GetRectangleByCenter(rectangleSize, point);
+                
+                if (!RectangleIntersectWithOthers(newRectangle))
+                {
+                    rectangles.Add(newRectangle);
+                    return newRectangle;
+                }
+            }
         }
 
         private Rectangle GetRectangleByCenter(Size rectangleSize, Point rectangleCenter)
@@ -59,22 +67,6 @@ namespace TagCloud
             }
 
             return false;
-        }
-
-        public Rectangle PutNextRectangle(Size rectangleSize)
-        {
-            spiral = new Spiral(center, 1);
-            foreach (var point in spiral.GetNextPoint)
-            {
-                var newRectangle = GetRectangleByCenter(rectangleSize, point);
-                
-                if (!RectangleIntersectWithOthers(newRectangle))
-                {
-                    rectangles.Add(newRectangle);
-                    return newRectangle;
-                }
-            }
-            return new Rectangle(center, rectangleSize);
         }
     }
 }
