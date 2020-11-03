@@ -77,17 +77,8 @@ namespace TagsCloudVisualisation
 
             public IEnumerable<CandidatePoint> Corners { get; }
 
-            public IList<CandidatePoint> ConnectedPoints = new List<CandidatePoint>();
-
-            public bool Intersected(Point point) =>
-                point.X > Left && point.X < Right &&
-                point.Y > Top && point.Y < Bottom;
-
-            public bool Intersected(Rectangle r2)
-            {
-                return Left < r2.Right && r2.Left < Right &&
-                       Top < r2.Bottom && r2.Top < Bottom;
-            }
+            public bool Intersected(Rectangle r2) => Left <= r2.Right && r2.Left <= Right &&
+                                                     Top <= r2.Bottom && r2.Top <= Bottom;
 
             public static implicit operator Rectangle(PlacedRectangle r) => new Rectangle(r.Location, r.Size);
         }
