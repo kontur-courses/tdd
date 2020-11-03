@@ -4,35 +4,31 @@ using System.Linq;
 
 namespace TagsCloudVisualisation.Visualisation
 {
-    public class RectanglesVisualiser
+    public abstract partial class RectanglesVisualiser
     {
         private const float BrushSize = 1;
         private readonly Point sourceCenterPoint;
         private Image image;
         private Graphics graphics;
 
-        public RectanglesVisualiser(Point sourceCenterPoint)
+        protected RectanglesVisualiser(Point sourceCenterPoint)
         {
             this.sourceCenterPoint = sourceCenterPoint;
         }
 
-        public RectanglesVisualiser PutAndDraw(ICircularCloudLayouter layouter, Size size, Color color)
+        public RectanglesVisualiser Draw(Rectangle rectangle)
         {
-            Draw(layouter.PutNextRectangle(size).Colored(color));
-            return this;
-        }
-
-        public RectanglesVisualiser Draw(ColoredRectangle colored)
-        {
-            var fixedRectangle = FixRectangleCoords(colored.Rectangle);
+            var fixedRectangle = FixRectangleCoords(rectangle);
             EnsureBitmapSize(fixedRectangle);
             var rectToDraw = new Rectangle(fixedRectangle.X + image.Width / 2, fixedRectangle.Y + image.Height / 2,
                 fixedRectangle.Width, fixedRectangle.Height);
-            graphics.DrawRectangle(new Pen(colored.Color, BrushSize), rectToDraw);
+            DrawPrepared(graphics, rectToDraw);
             return this;
         }
 
         public Image GetImage() => (Image) image.Clone();
+
+        protected abstract void DrawPrepared(Graphics g, Rectangle rectangle);
 
         private Rectangle FixRectangleCoords(Rectangle rectangle)
         {
