@@ -4,13 +4,16 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using TagsCloud.Core;
 
-namespace TagsCloudVisualization
+namespace TagsCloud.Tests
 {
     internal class CircularCloudLayouter_Tests
     {
         private const double MinDensity = 0.5;
         private readonly Random random = new Random();
+        public const int WindowWidth = 1920;
+        public const int WindowHeight = 1080;
 
         private Point center;
 
@@ -19,8 +22,7 @@ namespace TagsCloudVisualization
         [SetUp]
         public void SetUp()
         {
-            center = new Point(CircularCloudVisualization.WindowWidth / 2,
-                CircularCloudVisualization.WindowHeight / 2);
+            center = new Point(WindowWidth / 2, WindowHeight / 2);
             cloud = new CircularCloudLayouter(center);
         }
 

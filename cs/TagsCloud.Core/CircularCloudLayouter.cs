@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
-namespace TagsCloudVisualization
+[assembly: InternalsVisibleTo("TagsCloud.Tests")]
+[assembly: InternalsVisibleTo("TagsCloud.Visualization")]
+
+namespace TagsCloud.Core
 {
     internal class CircularCloudLayouter : ICircularCloudLayouter
     {

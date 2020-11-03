@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace TagsCloudVisualization
+namespace TagsCloud.Core
 {
     public class ArchimedeanSpiral : ISpiral
     {

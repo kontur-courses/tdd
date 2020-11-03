@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // Общие сведения об этой сборке предоставляются следующим набором
 // набора атрибутов. Измените значения этих атрибутов для изменения сведений,
 // связанные с этой сборкой.
-[assembly: AssemblyTitle("TagsCloudVisualization")]
+[assembly: AssemblyTitle("TagsCloud.Visualization")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("TagsCloudVisualization")]
+[assembly: AssemblyProduct("TagsCloud.Visualization")]
 [assembly: AssemblyCopyright("Copyright ©  2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // Следующий GUID представляет идентификатор typelib, если этот проект доступен из модели COM
-[assembly: Guid("ba25ecc4-4eb2-45f8-86a1-8b424a3fc486")]
+[assembly: Guid("15322ff1-c12d-4058-ae3c-261d19bde732")]
 
 // Сведения о версии сборки состоят из указанных ниже четырех значений:
 //
