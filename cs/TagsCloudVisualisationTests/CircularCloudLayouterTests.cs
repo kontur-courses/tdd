@@ -1,5 +1,8 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
@@ -8,7 +11,7 @@ using TagsCloudVisualisationTests.Infrastructure;
 
 namespace TagsCloudVisualisationTests
 {
-    [SaveResults(TestStatus.Failed, TestStatus.Inconclusive, TestStatus.Passed, TestStatus.Warning)]
+    [SaveLayouterResults(TestStatus.Failed, TestStatus.Inconclusive, TestStatus.Passed, TestStatus.Warning)]
     public class CircularCloudLayouterTests : LayouterTestBase
     {
         public override void SetUp()
@@ -17,22 +20,43 @@ namespace TagsCloudVisualisationTests
             Layouter = new CircularCloudLayouter(new Point(0, 0));
         }
 
-        [Test, Timeout(1000)]
+        [Test]
         public void PutNextRectangle_PerformanceTesting_100()
         {
-            TestWithRandomSizes(100, 1, 20);
+            this.ExecutionTimeOf(t => t.TestWithRandomSizes(100, 4, 20))
+                .Should()
+                .BeLessThan(TimeSpan.FromSeconds(0.5));
         }
 
-        [Test, Timeout(2000)]
-        public void PutNextRectangle_PerformanceTesting_WithBigSizes()
-        {
-            TestWithRandomSizes(100, 10, 1000);
-        }
-
-        [Test, Timeout(10000)]
+        [Test]
         public void PutNextRectangle_PerformanceTesting_1000()
         {
-            TestWithRandomSizes(1000, 1, 20);
+            this.ExecutionTimeOf(t => t.TestWithRandomSizes(1000, 4, 20))
+                .Should()
+                .BeLessThan(TimeSpan.FromSeconds(5));
+        }
+
+        [Test]
+        public void PutNextRectangle_PerformanceTesting_RectanglesPerMinute()
+        {
+            var random = Randomizer.CreateRandomizer();
+            var sw = Stopwatch.StartNew();
+            var count = 0;
+            while (sw.Elapsed.TotalMinutes <= 1)
+            {
+                Layouter.PutNextRectangle(new Size(random.Next(4, 20), random.Next(4, 20)));
+                count++;
+            }
+
+            TestContext.Progress.WriteLine($"Created {count} rectangles per minute, test finished");
+        }
+
+        [Test]
+        public void PutNextRectangle_PerformanceTesting_WithBigSizes()
+        {
+            this.ExecutionTimeOf(t => t.TestWithRandomSizes(100, 10, 1000))
+                .Should()
+                .BeLessThan(TimeSpan.FromSeconds(2));
         }
 
         [Test]
@@ -43,19 +67,15 @@ namespace TagsCloudVisualisationTests
         }
 
         [Test]
-        public void PutNextRectangleShould_() //TODO test name
+        public void TEST_TO_REMOVE() //TODO REMOVE
         {
             Layouter.Put(new Size(10, 10), out _)
-                .Put(new Size(2, 3), out _)
-                .Put(new Size(4, 3), out _)
-                .Put(new Size(1, 3), out _)
-                .Put(new Size(5, 2), out _)
-                .Put(new Size(6, 1), out _)
-                .Put(new Size(6, 7), out _)
-                .Put(new Size(2, 7), out _)
-                .Put(new Size(4, 10), out _)
-                .Put(new Size(10, 10), out _);
-            Assert.Fail();
+                .Put(new Size(6, 5), out _)
+                .Put(new Size(4, 5), out _)
+                .Put(new Size(4, 4), out _)
+                .Put(new Size(7, 5), out _)
+                .Put(new Size(5, 6), out _);
+            this.Should().Be("NOT EXISTING", "THIS TEST SHOULD BE REMOVED");
         }
 
         private void TestWithRandomSizes(int testsCount, int minSize, int maxSize)

@@ -48,7 +48,7 @@ namespace TagsCloudVisualisation
                 Y = y;
                 Width = width;
                 Height = height;
-                Right = Left + Height;
+                Right = Left + Width;
                 Bottom = Y + Height;
                 Location = new Point(X, Y);
                 Size = new Size(Width, Height);
