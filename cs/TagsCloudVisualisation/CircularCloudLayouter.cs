@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 
@@ -32,18 +31,12 @@ namespace TagsCloudVisualisation
         private PlacedRectangle Rectangle(Rectangle rect)
         {
             var placedRect = new PlacedRectangle(rect, CloudCenter);
-            //                                                                                        TODO wat??
-            foreach (var point in placedRect.Corners.Where(p => !IsIntersectsWithAny(p.PlaceRectangle(rect.Size))))
-            {
+            foreach (var point in placedRect.Corners)
                 points.Add(point);
-            }
 
             rectangles.Add(placedRect);
             return placedRect;
         }
-
-        private CandidatePoint Point(int x, int y, PlacedRectangle parent, PointDirection direction) =>
-            new CandidatePoint(x, y, CloudCenter, parent, direction);
 
         private bool IsIntersectsWithAny(Rectangle rectangle) => rectangles.Any(r => r.Intersected(rectangle));
     }
