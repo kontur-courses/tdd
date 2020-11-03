@@ -7,7 +7,7 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private readonly HashSet<Rectangle> rectangles = new HashSet<Rectangle>();
+        internal readonly HashSet<Rectangle> rectangles = new HashSet<Rectangle>();
         internal readonly Point center;
         private readonly PointGetter getPointer;
         internal CircularCloudLayouter(Point center)

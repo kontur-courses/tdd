@@ -100,6 +100,7 @@ namespace TagsCloudVisualization
 
         private double GetAverageDistanceToPoint(Rectangle rectangle, Point point) =>
             GetDistancePoint(GetCenterRectangle(rectangle), point);
+
         private double GetMaxAverageDistanceToPoint(IEnumerable<Rectangle> rectangles, Point point) =>
             rectangles
             .Select(r => GetAverageDistanceToPoint(r, point))
