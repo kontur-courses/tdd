@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace TagsCloudVisualisation
+namespace TagsCloudVisualisation.Utils
 {
     public sealed class OrderedList<T, TKey> : ICollection<T> where TKey : IComparable<TKey>
     {

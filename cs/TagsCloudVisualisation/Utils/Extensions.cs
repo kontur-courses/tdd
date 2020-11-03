@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Drawing;
 
-namespace TagsCloudVisualisation
+namespace TagsCloudVisualisation.Utils
 {
-    public static class Extensions
+    public static class GraphicsExtensions
     {
         public static Rectangle PlaceRectangle(this CircularCloudLayouter.CandidatePoint point, Size size) =>
             new Rectangle(point.Direction switch
