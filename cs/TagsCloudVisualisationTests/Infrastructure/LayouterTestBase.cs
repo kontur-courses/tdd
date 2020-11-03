@@ -25,7 +25,7 @@ namespace TagsCloudVisualisationTests.Infrastructure
         private static string TestingFilesDirectory =>
             Path.Combine(TestContext.CurrentContext.WorkDirectory, "test-results");
 
-        private Stopwatch testStopwatch;
+        private Measurement testTimeMeasurement;
 
         /// <summary>
         /// Test subject
@@ -49,16 +49,18 @@ namespace TagsCloudVisualisationTests.Infrastructure
         public virtual void SetUp()
         {
             layouterHolder = new CircularCloudLayouterHolder();
-            testStopwatch = Stopwatch.StartNew();
+            testTimeMeasurement = new Measurement("Test", TestContext.Progress);
         }
 
         [TearDown]
         public virtual void TearDown()
         {
-            testStopwatch.Stop();
-            TestWriteLine($"Test elapsed time {testStopwatch.Elapsed}");
+            testTimeMeasurement.Stop();
             if (statusesToSaveImage.Contains(TestContext.CurrentContext.Result.Outcome.Status))
+            {
+                using var saveMeasurement = new Measurement("Saving result", TestContext.Progress);
                 SaveTestResult();
+            }
         }
 
         private void SaveTestResult()
