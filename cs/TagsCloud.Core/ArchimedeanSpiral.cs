@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace TagsCloud.Core
 {
-    public class ArchimedeanSpiral : ISpiral
+    internal class ArchimedeanSpiral : ISpiral
     {
         private readonly Point center;
         private readonly double spiralParameter;
@@ -15,7 +15,7 @@ namespace TagsCloud.Core
             this.center = center;
             this.spiralParameter = spiralParameter;
             if (spiralParameter <= 0)
-                throw new ArgumentException("spiralParameter must be a positive number");
+                throw new ArgumentException($"{nameof(spiralParameter)} must be a positive number");
         }
 
         public Point GetNextPoint()
@@ -26,7 +26,7 @@ namespace TagsCloud.Core
             radius += spiralParameter;
             angle += Math.PI / 180;
 
-            return new Point(center.X - xLocation, center.Y - yLocation);
+            return new Point(center.X + xLocation, center.Y + yLocation);
         }
     }
 }

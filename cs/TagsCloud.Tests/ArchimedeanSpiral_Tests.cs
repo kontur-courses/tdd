@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using FluentAssertions;
@@ -24,13 +23,10 @@ namespace TagsCloud.Tests
             Assert.Throws<ArgumentException>(() => spiral = new ArchimedeanSpiral(new Point(), -1));
         }
 
-        [TestCase(0, 0, TestName = "WhenCenterHasZeroCoordinates")]
-        [TestCase(-5, -1, TestName = "WhenCenterHasNegativeCoordinates")]
-        [TestCase(10, 5, TestName = "WhenCenterHasPositiveCoordinates")]
-        [TestCase(-10, 5, TestName = "WhenCenterHasPositiveAndNegativeCoordinates")]
-        public void GetNextPoint_FirstPointEqualsCenter(int centerX, int centerY)
+        [Test]
+        public void GetNextPoint_FirstPointEqualsCenter()
         {
-            var center = new Point(centerX, centerY);
+            var center = new Point(-1, 2);
             spiral = new ArchimedeanSpiral(center, 0.1);
             spiral.GetNextPoint().Should().Be(center);
         }
@@ -38,11 +34,9 @@ namespace TagsCloud.Tests
         [TestCase(10, TestName = "WhenGet10Point")]
         [TestCase(100, TestName = "WhenGet100Point")]
         [TestCase(1000, TestName = "WhenGet1000Point")]
-        public void GetNextPoint_PointsDoesNotEquals(int count)
+        public void GetNextPointAllPointsShouldBeDifferent(int count)
         {
-            var points = new List<Point>();
-            for (var i = 0; i < count; i++)
-                points.Add(spiral.GetNextPoint());
+            var points = Enumerable.Range(0, count).Select(_ => spiral.GetNextPoint()).ToList();
 
             foreach (var point in points)
                 points.Where(x => x != point).Any(x => x == point).Should().BeFalse();

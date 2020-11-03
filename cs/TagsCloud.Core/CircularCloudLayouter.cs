@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("TagsCloud.Tests")]
@@ -36,7 +35,7 @@ namespace TagsCloud.Core
             {
                 var rect = new Rectangle(spiral.GetNextPoint() - new Size(rectSize.Width / 2, rectSize.Height / 2),
                     rectSize);
-                if (!rectangles.Where(rect.IntersectsWith).Any())
+                if (!rect.IntersectsWith(rectangles))
                     return rect;
             }
         }

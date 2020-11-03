@@ -1,23 +1,23 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using TagsCloud.Core;
 
 namespace TagsCloud.Visualization
 {
     internal class Program
     {
-        private const int CountWords = 1000;
-        private static readonly Random Random = new Random();
+        public const int ImageWidth = 1920;
+        public const int ImageHeight = 1080;
+        private const int CountWords = 1500;
 
         private static void Main()
         {
-            var cloud = new CircularCloudLayouter(new Point(CircularCloudVisualization.WindowWidth / 2,
-                CircularCloudVisualization.WindowHeight / 2));
+            var cloud = new CircularCloudLayouter(new Point(ImageWidth / 2, ImageHeight / 2));
 
             for (var i = 0; i < CountWords; ++i)
-                cloud.PutNextRectangle(new Size(Random.Next(25, 60), Random.Next(10, 20)));
+                cloud.PutNextRectangle(SizeGenerator.GenerateSize(25, 60, 10, 20));
 
-            CircularCloudVisualization.SaveImage(cloud.Rectangles, $"../../Images/{CountWords}rectangles.jpg");
+            var image = CircularCloudVisualization.SaveImage(cloud.Rectangles, ImageWidth, ImageHeight);
+            image.Save($"../../Images/{CountWords}rectangles.jpg");
         }
     }
 }
