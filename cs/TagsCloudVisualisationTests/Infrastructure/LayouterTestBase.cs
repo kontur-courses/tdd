@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -24,6 +25,8 @@ namespace TagsCloudVisualisationTests.Infrastructure
         private static string TestingFilesDirectory =>
             Path.Combine(TestContext.CurrentContext.WorkDirectory, "test-results");
 
+        private Stopwatch testStopwatch;
+
         /// <summary>
         /// Test subject
         /// </summary>
@@ -46,11 +49,14 @@ namespace TagsCloudVisualisationTests.Infrastructure
         public virtual void SetUp()
         {
             layouterHolder = new CircularCloudLayouterHolder();
+            testStopwatch = Stopwatch.StartNew();
         }
 
         [TearDown]
         public virtual void TearDown()
         {
+            testStopwatch.Stop();
+            TestWriteLine($"Test elapsed time {testStopwatch.Elapsed}");
             if (statusesToSaveImage.Contains(TestContext.CurrentContext.Result.Outcome.Status))
                 SaveTestResult();
         }
@@ -74,7 +80,6 @@ namespace TagsCloudVisualisationTests.Infrastructure
                 visualiser.Draw(rectangle.Colored(RandomColor()));
 
             var image = visualiser.GetImage()
-                .DrawAxis(5, 1, Color.DarkGray, Color.Black)
                 .FillBackground(Color.Bisque);
 
             if (!Directory.Exists(TestingFilesDirectory))
