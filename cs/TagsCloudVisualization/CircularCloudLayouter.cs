@@ -280,6 +280,14 @@ namespace TagsCloudVisualization
                 new Size(3, 10),
                 new Size(15, 1),
                 new Size(31, 10),
+                new Size(11, 26),
+                new Size(12, 25),
+                new Size(13, 24),
+                new Size(14, 23),
+                new Size(15, 22),
+                new Size(16, 21),
+                new Size(17, 20),
+                new Size(18, 19),
             };
             var result = rectangles.Select(r => layouter.PutNextRectangle(r)).ToArray();
             result
@@ -320,6 +328,14 @@ namespace TagsCloudVisualization
                 new Size(15, 1),
                 new Size(31, 10),
                 new Size(40, 12),
+                new Size(11, 26),
+                new Size(12, 25),
+                new Size(13, 24),
+                new Size(14, 23),
+                new Size(15, 22),
+                new Size(16, 21),
+                new Size(17, 20),
+                new Size(18, 19),
             };
             var result = rectangles.Select(r => layouter.PutNextRectangle(r)).ToArray();
             result.Select(r => r.Size).Should().BeEquivalentTo(rectangles, options => options.WithStrictOrdering());
