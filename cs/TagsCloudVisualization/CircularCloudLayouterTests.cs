@@ -8,15 +8,17 @@ using System.IO;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouterTests
+    internal class CircularCloudLayouterTests
     {
-        private CircularCloudLayouter layouter;
+        private ICloudLayouter layouter;
+        private List<Rectangle> rectangles;
         private Point center = new Point(500, 500);
 
         [SetUp]
         public void SetLayouter()
         {
             layouter = new CircularCloudLayouter(center);
+            rectangles = new List<Rectangle>();
         }
 
         [TearDown]
@@ -25,19 +27,19 @@ namespace TagsCloudVisualization
             if (TestContext.CurrentContext.Result.Outcome == ResultState.Failure || 
                 TestContext.CurrentContext.Result.Outcome == ResultState.Error)
             {
-                var cloud = new Cloud(layouter);
                 var outputFile = Path.GetFullPath(Path.Combine(
                     Directory.GetCurrentDirectory(), "..", "..", "..", "failures", 
                     TestContext.CurrentContext.Test.Name + ".png"));
                 var imageSize = new Size(1000, 1000);
-                CloudVisualizer.VisualizeCloud(cloud, outputFile, imageSize);
+                CloudVisualizer.VisualizeCloud(rectangles, outputFile, imageSize);
             }
         }
 
         [Test]
         public void PutNextRectangle_OnCenter_IfRectangleIsFirst()
         {
-            var rectangle = PutRandomRectangles(1)[0];
+            SetRandomRectangles(1);
+            var rectangle = rectangles[0];
             rectangle.Location.Should().BeEquivalentTo(new Point(
                 center.X - rectangle.Width / 2, 
                 center.Y - rectangle.Height / 2));
@@ -46,22 +48,21 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_NoIntersects_AfterPutting()
         {
-            var rectangles = PutRandomRectangles(10);
-            foreach (var rectangle in rectangles)
+            foreach (var rectangle in rectangles.ToArray())
             {
-                layouter.CurrentRectangles.Remove(rectangle);
-                layouter.IntersectWithPreviousRectangles(rectangle).Should().BeFalse();
-                layouter.CurrentRectangles.Add(rectangle);
+                rectangles.Remove(rectangle);
+                rectangle.IntersectsWithRectangles(rectangles).Should().BeFalse();
+                rectangles.Add(rectangle);
             }
         }
 
         [Test]
         public void PutNextRectangle_AsCloseAsPossible_IfRectangleDoNotIntersectOther()
         {
-            var rectangles = PutRandomRectangles(30);
+            SetRandomRectangles(30);
             for (var i = 1; i < rectangles.Count; i++)
             {
-                foreach (var direction in layouter.Directions)
+                foreach (var direction in Utils.GetAllDirections())
                 {
                     CheckDensity(rectangles[i], direction);
                 }
@@ -71,32 +72,29 @@ namespace TagsCloudVisualization
         [Test]
         public void TestOnlyForDemonstrationThirdTask()
         {
-            PutRandomRectangles(15);
+            SetRandomRectangles(15);
             true.Should().BeFalse();
         }
 
-        private void CheckDensity(Rectangle rectangle, Tuple<int, int> direction)
+        private void CheckDensity(Rectangle rectangle, DirectionToMove direction)
         {
-            var tempRectangle = new Rectangle(0, 0, rectangle.Width, rectangle.Height);
-            tempRectangle.X = rectangle.X + direction.Item1 * layouter.Shift;
-            tempRectangle.Y = rectangle.Y + direction.Item2 * layouter.Shift;
-            if (layouter.GetDistanceToCenter(tempRectangle) < layouter.GetDistanceToCenter(rectangle))
+            var shift = 1;
+            var tempRectangle = rectangle.GetMovedCopy(direction, shift);
+            if (tempRectangle.GetDistanceToPoint(center) < rectangle.GetDistanceToPoint(center))
             {
-                layouter.CurrentRectangles.Remove(rectangle);
-                layouter.IntersectWithPreviousRectangles(tempRectangle).Should().BeTrue();
-                layouter.CurrentRectangles.Add(rectangle);
+                rectangles.Remove(rectangle);
+                tempRectangle.IntersectsWithRectangles(rectangles).Should().BeTrue();
+                rectangles.Add(rectangle);
             }
         }
 
-        private List<Rectangle> PutRandomRectangles(int rectanglesCount)
+        private void SetRandomRectangles(int rectanglesCount)
         {
-            var rectangles = new List<Rectangle>();
             var rnd = new Random();
             for (var i = 0; i < rectanglesCount; i++)
             {
                 rectangles.Add(layouter.PutNextRectangle(new Size(rnd.Next(100, 200), rnd.Next(100, 200))));
             }
-            return rectangles;
         }
     }
 }
