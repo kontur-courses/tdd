@@ -22,8 +22,8 @@ namespace TagsCloudVisualisationTests.Infrastructure
     {
         private TestStatus[] statusesToSaveImage;
 
-        private static string TestingFilesDirectory =>
-            Path.Combine(TestContext.CurrentContext.WorkDirectory, "test-results");
+        private static string TestOutputDirectory =>
+            TestingHelpers.GetOutputDirectory(TestContext.CurrentContext.Test.ClassName);
 
         private Measurement testTimeMeasurement;
 
@@ -43,6 +43,8 @@ namespace TagsCloudVisualisationTests.Infrastructure
         {
             statusesToSaveImage = GetType().GetCustomAttribute<SaveLayouterResultsAttribute>()?.ValidStatuses ??
                                   new TestStatus[0];
+
+            TestingHelpers.ClearDirectory(TestOutputDirectory);
         }
 
         [SetUp]
@@ -84,12 +86,7 @@ namespace TagsCloudVisualisationTests.Infrastructure
                 visualiser.Draw(rectangle);
 
             var image = visualiser.GetImage().FillBackground(Color.Bisque);
-
-            if (!Directory.Exists(TestingFilesDirectory))
-                Directory.CreateDirectory(TestingFilesDirectory);
-            var filePath = Path.Combine(TestingFilesDirectory,
-                $"{TestContext.CurrentContext.Test.Name}-test-result.png");
-
+            var filePath = Path.Combine(TestOutputDirectory, $"{TestContext.CurrentContext.Test.Name}.png");
             try
             {
                 image.Save(filePath);
