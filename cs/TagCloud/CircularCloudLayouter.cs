@@ -33,32 +33,42 @@ namespace TagCloud
     }
     class CircularCloudLayouter
     {
-        private Point center;
+        private readonly Point center;
         private Spiral spiral;
-        private List<Rectangle> rectangles = new List<Rectangle>();
+        private readonly List<Rectangle> rectangles = new List<Rectangle>();
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
         }
 
+        private Rectangle GetRectangleByCenter(Size rectangleSize, Point rectangleCenter)
+        {
+            var leftTopAngle = new Point(rectangleCenter.X - rectangleSize.Width / 2,
+                rectangleCenter.Y - rectangleSize.Height / 2);
+            return new Rectangle(leftTopAngle, rectangleSize);
+        }
+        
+        private bool RectangleIntersectWithOthers(Rectangle checkedRectangle)
+        {
+            foreach (var rectangle in rectangles)
+            {
+                if (rectangle.IntersectsWith(checkedRectangle))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             spiral = new Spiral(center, 1);
-            var isSuitiablePoint = true;
             foreach (var point in spiral.GetNextPoint)
             {
-                isSuitiablePoint = true;
-                var newRectangle = new Rectangle(point, rectangleSize);
-                foreach (var rectangle in rectangles)
-                {
-                    if (rectangle.IntersectsWith(newRectangle))
-                    {
-                        isSuitiablePoint = false;
-                        break;
-                    }
-                }
-
-                if (isSuitiablePoint)
+                var newRectangle = GetRectangleByCenter(rectangleSize, point);
+                
+                if (!RectangleIntersectWithOthers(newRectangle))
                 {
                     rectangles.Add(newRectangle);
                     return newRectangle;

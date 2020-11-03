@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace TagCloud
 {
-    public class Vizualization
+    public static class Vizualizator
     {
         public static void Main()
         {
