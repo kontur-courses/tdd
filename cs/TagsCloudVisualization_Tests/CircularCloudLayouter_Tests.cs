@@ -4,8 +4,9 @@ using System.Drawing;
 using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
+using TagsCloudVisualization;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization_Tests
 {
     [TestFixture]
     public class CircularCloudLayouter_Tests
