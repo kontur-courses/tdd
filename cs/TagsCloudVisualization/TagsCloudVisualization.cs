@@ -5,7 +5,7 @@ namespace TagsCloudVisualization
 {
     public static class TagsCloudVisualization
     {
-        public static void Vizualizate(CircularCloudLayouter cloud, string path)
+        public static void Visualizate(CircularCloudLayouter cloud, string path)
         {
             var random = new Random();
             var size = GetSizeCloud();

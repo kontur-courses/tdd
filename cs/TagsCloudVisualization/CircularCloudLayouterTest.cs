@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -13,6 +14,19 @@ namespace TagsCloudVisualization
 
         [SetUp]
         public void SetUp() => cloud = new CircularCloudLayouter(new Point(0, 0));
+
+        [TearDown]
+        public void TearDown()
+        {
+            var context = TestContext.CurrentContext;
+            if(context.Result.Outcome.Status == TestStatus.Failed)
+            {
+                var path = @".\failedTest\" + context.Test.Name + ".bmp";
+                TagsCloudVisualization.Visualizate(cloud, path);
+                Console.WriteLine("Tag cloud visualization saved to file " + path);
+            }
+        }
+
         
         [Test]
         public void Test_PutFirstRectangleInCenterCloud() 
@@ -22,7 +36,7 @@ namespace TagsCloudVisualization
             {
                 var center = new Point(random.Next(50), random.Next(50));
                 var size = new Size(random.Next(1, 50), random.Next(1, 50));
-                var cloud = new CircularCloudLayouter(center);
+                cloud = new CircularCloudLayouter(center);
                 var r = cloud.PutNextRectangle(size);
                 Assert.IsTrue(Math.Abs(center.X - r.X) <= (size.Width + 1) / 2 && Math.Abs(center.Y - r.Y) <= (size.Height + 1) / 2);
             }
