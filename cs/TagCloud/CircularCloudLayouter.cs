@@ -27,15 +27,19 @@ namespace TagCloud
     
     class CircularCloudLayouter
     {
-        private readonly Spiral spiral;
-        private readonly List<Rectangle> rectangles = new List<Rectangle>();
-        public CircularCloudLayouter(Point center)
+        private readonly Point center;
+        private readonly int step;
+        private readonly List<Rectangle> rectangles;
+        public CircularCloudLayouter(Point center, int step=1)
         {
-            spiral = new Spiral(center, 1);
+            rectangles = new List<Rectangle>();
+            this.center = center;
+            this.step = step;
         }
         
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
+            var spiral = new Spiral(center, step);
             while (true)
             {
                 var point = spiral.GetNextPoint();
