@@ -6,6 +6,7 @@ using System.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
+using TagsCloudVisualizationPicture;
 
 namespace TagsCloudVisualizationTests
 {
@@ -16,13 +17,25 @@ namespace TagsCloudVisualizationTests
         private double expectedAreaRatio = 1.5;
         private Point center;
         private List<Rectangle> rectangles;
+        private TestContext TestContext { get; set; }
 
         [SetUp]
         public void Setup()
         {
-            center = new Point(0, 0);
+            center = new Point(250, 250);
             cloud = new CircularCloudLayouter(new SpiralPoints(center));
             rectangles = new List<Rectangle>();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
+                return;
+
+            var path = TestContext.CurrentContext.TestDirectory + "\\" + TestContext.CurrentContext.Test.Name + ".bmp";
+            CloudDrawer.DrawAndSaveCloud(rectangles.ToArray(), path);
+            TestContext.WriteLine("Tag cloud visualization saved to file: " + path);
         }
 
         [Test]
@@ -30,7 +43,9 @@ namespace TagsCloudVisualizationTests
         {
             var rectangleSize = new Size(100, 50);
             var expectedRectangle = new Rectangle(center - new Size(50, 25), rectangleSize);
-            cloud.PutNextRectangle(rectangleSize).Should().BeEquivalentTo(expectedRectangle);
+            var rectangle = cloud.PutNextRectangle(rectangleSize);
+            rectangles.Add(rectangle);
+            rectangle.Should().BeEquivalentTo(expectedRectangle);
         }
 
         [Test]
@@ -38,7 +53,7 @@ namespace TagsCloudVisualizationTests
         {
             var rectangleSize = new Size(10, 50);
 
-            var rectangles = new List<Rectangle>();
+            rectangles = new List<Rectangle>();
             for (var i = 0; i < 100; i++)
             {
                 rectangles.Add(cloud.PutNextRectangle(rectangleSize));
@@ -72,10 +87,11 @@ namespace TagsCloudVisualizationTests
                     Utils.GetDistance(center, new Point(rectangle.Right, rectangle.Bottom)),
                     Utils.GetDistance(center, new Point(rectangle.Left, rectangle.Bottom))
                 }.Max();
+                rectangles.Add(rectangle);
             }
 
             var circleSquare = Math.PI * circleRadius * circleRadius;
-            (circleSquare / cloudSquare).Should().BeLessThan(0);
+            (circleSquare / cloudSquare).Should().BeLessThan(expectedAreaRatio);
         }
     }
 }
