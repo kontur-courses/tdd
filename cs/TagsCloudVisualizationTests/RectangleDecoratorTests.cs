@@ -6,12 +6,13 @@ using TagsCloudVisualization;
 namespace TagsCloudVisualizationTests
 {
     [TestFixture]
-    public class RectangleExtensionTest
+    public class RectangleDecoratorTest
     {
         [Test]
         public void GetCorners_ReturnCornersOfRectangle()
         {
-            var rect = new Rectangle(-1, 1, 2, 2);
+            var rect = new RectangleDecorator(
+                new Rectangle(-1, 1, 2, 2));
 
             rect.GetCorners().Should().BeEquivalentTo(
                 new[]
@@ -26,7 +27,8 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void GetCorners_ReturnCornersOfRectangleClockwiseStartingFromLeftTop()
         {
-            var rect = new Rectangle(0, 0, 2, 2);
+            var rect = new RectangleDecorator(
+                new Rectangle(0, 0, 2, 2));
 
             rect.GetCorners().Should().BeEquivalentTo(
                 new[]
