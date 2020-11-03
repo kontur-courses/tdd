@@ -4,18 +4,18 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter : TagCloudLayouter
+    public class CircularCloudLayouter : ITagCloudLayouter
     {
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
-        private readonly Points spiralPoints;
+        private readonly IPoints Points;
 
-        public CircularCloudLayouter(Point center) : base(center) =>
-            spiralPoints = new SpiralPoints(center);
+        public CircularCloudLayouter(IPoints points) =>
+            Points = points;
 
-        public override Rectangle PutNextRectangle(Size rectangleSize)
+        public Rectangle PutNextRectangle(Size rectangleSize)
         {
             var halfRectangleSize = new Size(rectangleSize.Width / 2, rectangleSize.Height / 2);
-            foreach (var point in spiralPoints.GetPoints())
+            foreach (var point in Points.GetPoints())
             {
                 var rectangle = new Rectangle(point - halfRectangleSize, rectangleSize);
                 if (rectangles.Any(x => x.IntersectsWith(rectangle)))

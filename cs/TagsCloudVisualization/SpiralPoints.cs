@@ -4,16 +4,14 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public class SpiralPoints : Points
+    public class SpiralPoints : IPoints
     {
         private Point center;
 
-        public SpiralPoints(Point center) : base(center)
-        {
+        public SpiralPoints(Point center) =>
             this.center = center;
-        }
 
-        public override IEnumerable<Point> GetPoints()
+        public IEnumerable<Point> GetPoints()
         {
             var radius = 0;
             while (true)

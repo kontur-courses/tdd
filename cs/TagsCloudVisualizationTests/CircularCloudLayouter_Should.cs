@@ -4,6 +4,7 @@ using System.Drawing;
 using FluentAssertions;
 using System.Linq;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTests
@@ -14,12 +15,14 @@ namespace TagsCloudVisualizationTests
 
         private double expectedAreaRatio = 1.5;
         private Point center;
+        private List<Rectangle> rectangles;
 
         [SetUp]
         public void Setup()
         {
             center = new Point(0, 0);
-            cloud = new CircularCloudLayouter(center);
+            cloud = new CircularCloudLayouter(new SpiralPoints(center));
+            rectangles = new List<Rectangle>();
         }
 
         [Test]
@@ -34,6 +37,7 @@ namespace TagsCloudVisualizationTests
         public void PutNextRectangle_NoIntersects_AfterPutting()
         {
             var rectangleSize = new Size(10, 50);
+
             var rectangles = new List<Rectangle>();
             for (var i = 0; i < 100; i++)
             {
@@ -54,6 +58,7 @@ namespace TagsCloudVisualizationTests
         {
             var cloudSquare = 0;
             var circleRadius = 0.0;
+
             var random = new Random();
             for (var i = 0; i < 100; i++)
             {
@@ -70,7 +75,7 @@ namespace TagsCloudVisualizationTests
             }
 
             var circleSquare = Math.PI * circleRadius * circleRadius;
-            (circleSquare / cloudSquare).Should().BeLessThan(expectedAreaRatio);
+            (circleSquare / cloudSquare).Should().BeLessThan(0);
         }
     }
 }

@@ -2,12 +2,8 @@
 
 namespace TagsCloudVisualization
 {
-    public abstract class TagCloudLayouter
+    public interface ITagCloudLayouter
     {
-        protected TagCloudLayouter(Point center)
-        {
-        }
-
-        public abstract Rectangle PutNextRectangle(Size rectangleSize);
+        Rectangle PutNextRectangle(Size rectangleSize);
     }
 }
