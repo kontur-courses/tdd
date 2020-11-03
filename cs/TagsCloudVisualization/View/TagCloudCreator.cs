@@ -31,11 +31,12 @@ namespace TagsCloudVisualization.View
             var filePath = Path.Combine(dirPath, filename);
             var bitmap = GetFilledBitmap();
             bitmap.Save(filePath, ImageFormat.Png);
+            bitmap.Dispose();
 
             Console.WriteLine($"Cloud saved to path: {filePath}");
         }
 
-        public Bitmap GetFilledBitmap()
+        private Bitmap GetFilledBitmap()
         {
             var layoutSize = layouter.GetLayoutSize();
             var bitmap = new Bitmap(layoutSize.Width, layoutSize.Height);

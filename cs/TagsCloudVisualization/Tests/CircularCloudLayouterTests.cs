@@ -24,8 +24,7 @@ namespace TagsCloudVisualization.Tests
             layouter = new CircularCloudLayouter(center);
         }
 
-        [Test]
-        [TestCase(0, 0, TestName = "CenterInStartOfCoordinates")]
+        [TestCase(0, 0, TestName = "CenterAtOrigin")]
         [TestCase(2, 2, TestName = "CenterInFirstQuarter")]
         [TestCase(-2, -2, TestName = "CenterInThirdQuarter")]
         [TestCase(2, -2, TestName = "CenterCoordinatesHaveDifferentSigns")]
@@ -35,7 +34,6 @@ namespace TagsCloudVisualization.Tests
                 () => new CircularCloudLayouter(new Point(x, y)));
         }
 
-        [Test]
         [TestCase(0, TestName = "ZeroWhenNoPlaced")]
         [TestCase(5, TestName = "FiveWhenFivePlaced")]
         [TestCase(50, TestName = "FiftyWhenFiftyPlaced")]
@@ -43,7 +41,7 @@ namespace TagsCloudVisualization.Tests
             int rectsCount)
         {
             PutRectangles(rectsCount);
-            layouter.Rectangles.Count.Should().Be(rectsCount);
+            layouter.Rectangles.ToList().Count.Should().Be(rectsCount);
         }
 
         [Test]
@@ -53,20 +51,19 @@ namespace TagsCloudVisualization.Tests
             rect.Location.Should().Be(center);
         }
 
-        [Test]
         [TestCase(2, TestName = "TwoRectangles")]
-        [TestCase(50, TestName = "FiftyRectangles")]
+        [TestCase(60, TestName = "SixtyRectangles")]
         [TestCase(100, TestName = "OneHundredRectangles")]
         public void PutNextRectangle_ShouldPlaceRectangleWithoutIntersection(
             int rectsCount)
         {
             PutRectangles(rectsCount, 11, 22);
-            HaveAnyIntersections(layouter.Rectangles).Should().BeFalse();
+            HaveAnyIntersections(
+                    layouter.Rectangles.ToList()).Should().BeFalse();
         }
 
-        [Test]
-        [TestCase(4, 5, 5, TestName = "FourRectangles")]
-        [TestCase(50, 5, 5, TestName = "FiftyRectangles")]
+        [TestCase(20, 5, 5, TestName = "FourRectangles")]
+        [TestCase(50, 7, 7, TestName = "FiftyRectangles")]
         [TestCase(100, 10, 10, TestName = "OneHundredRectangles")]
         public void PutNextRectangle_ShouldKeepCloudShapeCloseToCircle(
             int rectsCount, int width, int height)
@@ -76,12 +73,28 @@ namespace TagsCloudVisualization.Tests
 
             var expectedRadius = Math.Sqrt(layoutArea / Math.PI);
             var deltaXFromCenter = (double)layouter.Rectangles
-                .Select(rectangle => rectangle.Right).Max() - center.X;
+                .Max(rectangle => rectangle.Right) - center.X;
             var deltaYFromCenter = (double)layouter.Rectangles
-                .Select(rectangle => rectangle.Bottom).Max() - center.Y;
+                .Max(rectangle => rectangle.Bottom) - center.Y;
 
             deltaXFromCenter.Should().BeLessThan(expectedRadius * 1.25);
             deltaYFromCenter.Should().BeLessThan(expectedRadius * 1.25);
+        }
+
+        [TestCase(4, TestName = "FourRectangles")]
+        [TestCase(20, TestName = "TwentyRectangles")]
+        [TestCase(50, TestName = "FiftyRectangles")]
+        public void PutNextRectangle_ShouldPutRectanglesTightly(int rectsCount)
+        {
+            var size = new Size(5, 5);
+            for (var i = 0; i < rectsCount - 1; i++)
+                layouter.PutNextRectangle(size);
+
+            var rect = layouter.PutNextRectangle(size);
+            Math.Abs(rect.X - center.X).Should()
+                .BeLessOrEqualTo(rectsCount * size.Width / (rectsCount / 4));
+            Math.Abs(rect.Y - center.Y).Should()
+                .BeLessOrEqualTo(rectsCount * size.Height / (rectsCount / 4));
         }
 
         [Test]
@@ -109,13 +122,13 @@ namespace TagsCloudVisualization.Tests
             Console.WriteLine($"Tag cloud visualization saved to file {filePath}");
         }
 
-        private bool HaveAnyIntersections(List<Rectangle> rects)
+        private static bool HaveAnyIntersections(List<Rectangle> rects)
         {
-            for (int i = 0; i < rects.Count; i++)
-                for (int j = i + 1; j < rects.Count; j++)
-                    if (rects[i].IntersectsWith(rects[j]))
-                        return true;
-            return false;
+            var intersectedRectsCount = rects
+                .Select((item, index) => rects
+                    .Skip(index).Count(item.IntersectsWith)).Sum();
+
+            return intersectedRectsCount == 0;
         }
 
         private void PutRectangles(int amountToPlace,

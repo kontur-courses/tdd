@@ -14,7 +14,7 @@ namespace TagsCloudVisualization.Extensions
 
         public int GetHashCode(PointF point)
         {
-            return point.GetHashCode();
+            return Point.Round(point).GetHashCode();
         }
     }
 }

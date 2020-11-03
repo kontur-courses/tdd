@@ -9,13 +9,14 @@ namespace TagsCloudVisualization.Models
     {
         private readonly Point center;
         private readonly ArchimedeanSpiral spiral;
-        public List<Rectangle> Rectangles { get; }
+        private readonly List<Rectangle> rectangles;
+        public IEnumerable<Rectangle> Rectangles => rectangles;
 
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
             this.spiral = new ArchimedeanSpiral(center);
-            this.Rectangles = new List<Rectangle>();
+            this.rectangles = new List<Rectangle>();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -27,22 +28,22 @@ namespace TagsCloudVisualization.Models
                 rectangle = new Rectangle(nextPoint, rectangleSize);
             } while (IsIntersectsWithLayout(rectangle));
 
-            if (Rectangles.Count > 0)
+            if (rectangles.Count > 0)
                 rectangle = ShiftToCenter(rectangle);
 
-            Rectangles.Add(rectangle);
+            rectangles.Add(rectangle);
             return rectangle;
         }
 
         public Size GetLayoutSize()
         {
-            if (Rectangles.Count == 0)
+            if (rectangles.Count == 0)
                 throw new ArgumentException("Layout is empty");
 
-            var deltaX = Rectangles
-                .Select(rectangle => rectangle.Right).Max() - center.X;
-            var deltaY = Rectangles
-                .Select(rectangle => rectangle.Bottom).Max() - center.Y;
+            var deltaX = rectangles
+                .Max(rectangle => rectangle.Right) - center.X;
+            var deltaY = rectangles
+                .Max(rectangle => rectangle.Bottom) - center.Y;
             var width = 2 * Math.Max(center.X, deltaX);
             var height = 2 * Math.Max(center.Y, deltaY);
 
@@ -77,7 +78,7 @@ namespace TagsCloudVisualization.Models
 
         private bool IsIntersectsWithLayout(Rectangle rectangle)
         {
-            return Rectangles.Any(rectangle.IntersectsWith);
+            return rectangles.Any(rectangle.IntersectsWith);
         }
     }
 }

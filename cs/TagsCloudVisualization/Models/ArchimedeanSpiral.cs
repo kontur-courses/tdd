@@ -11,7 +11,7 @@ namespace TagsCloudVisualization.Models
         private readonly double spiralOffset;
 
         public ArchimedeanSpiral(PointF start,
-            int step = 15, double deltaAngle = Math.PI / 360)
+            int step = 5, double deltaAngle = Math.PI / 360)
         {
             this.start = start;
             this.angle = 0d;

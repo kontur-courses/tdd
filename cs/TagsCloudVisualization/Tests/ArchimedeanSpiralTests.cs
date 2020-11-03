@@ -27,10 +27,9 @@ namespace TagsCloudVisualization.Tests
                 .Equals(spiral.GetNextPoint(), start).Should().BeTrue();
         }
 
-        [Test]
-        [TestCase(2, TestName = "GetTwoPoints")]
-        [TestCase(10, TestName = "GetTenPoints")]
-        [TestCase(50, TestName = "GetFiftyPoints")]
+        [TestCase(2)]
+        [TestCase(10)]
+        [TestCase(50)]
         public void GetNextPoint_ShouldReturnDifferentPoints(int pointsCount)
         {
             var nonRepeatingPoints = new HashSet<PointF>(new PointFComparer());
