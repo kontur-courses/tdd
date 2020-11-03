@@ -20,20 +20,16 @@ namespace TagsCloudVisualisationTests
             Layouter = new CircularCloudLayouter(new Point(0, 0));
         }
 
-        [Test]
+        [Test, MaxTime(1000)]
         public void PutNextRectangle_PerformanceTesting_100()
         {
-            this.ExecutionTimeOf(t => t.TestWithRandomSizes(100, 4, 20))
-                .Should()
-                .BeLessThan(TimeSpan.FromSeconds(0.5));
+            TestWithRandomSizes(100, 4, 20);
         }
 
-        [Test]
+        [Test, MaxTime(15000)]
         public void PutNextRectangle_PerformanceTesting_1000()
         {
-            this.ExecutionTimeOf(t => t.TestWithRandomSizes(1000, 4, 20))
-                .Should()
-                .BeLessThan(TimeSpan.FromSeconds(5));
+            TestWithRandomSizes(1000, 4, 20);
         }
 
         [Test]
@@ -51,12 +47,10 @@ namespace TagsCloudVisualisationTests
             TestContext.Progress.WriteLine($"Created {count} rectangles per minute, test finished");
         }
 
-        [Test]
+        [Test, MaxTime(1000 * 60 * 2)]
         public void PutNextRectangle_PerformanceTesting_WithBigSizes()
         {
-            this.ExecutionTimeOf(t => t.TestWithRandomSizes(100, 10, 1000))
-                .Should()
-                .BeLessThan(TimeSpan.FromSeconds(2));
+            TestBigSizes(100, 2);
         }
 
         [Test]
@@ -66,7 +60,7 @@ namespace TagsCloudVisualisationTests
             Layouter.PutAndTest(size, new Point(-5, -5));
         }
 
-        [Test]
+        [Test, Ignore("Dumb test to visualise things")]
         public void TEST_TO_REMOVE() //TODO REMOVE
         {
             Layouter.Put(new Size(10, 10), out _)
@@ -74,8 +68,15 @@ namespace TagsCloudVisualisationTests
                 .Put(new Size(4, 5), out _)
                 .Put(new Size(4, 4), out _)
                 .Put(new Size(7, 5), out _)
+                .Put(new Size(29, 10), out _)
+                .Put(new Size(10, 8), out _)
+                .Put(new Size(100, 20), out _)
+                .Put(new Size(4, 5), out _)
+                .Put(new Size(4, 4), out _)
+                .Put(new Size(7, 5), out _)
+                .Put(new Size(29, 10), out _)
                 .Put(new Size(5, 6), out _);
-            this.Should().Be("NOT EXISTING", "THIS TEST SHOULD BE REMOVED");
+            this.Should().Be("NOT EXISTING", because: "THIS TEST SHOULD BE REMOVED");
         }
 
         private void TestWithRandomSizes(int testsCount, int minSize, int maxSize)
@@ -87,6 +88,24 @@ namespace TagsCloudVisualisationTests
 
             foreach (var size in randomSizes)
                 Layouter.PutNextRectangle(size);
+        }
+
+        private void TestBigSizes(int testsCount, byte scale)
+        {
+            var random = Randomizer.CreateRandomizer();
+            var randomSizes = Enumerable.Range(0, testsCount)
+                .Select(_ => CreateBigRectangle(random, scale))
+                .ToArray();
+
+            foreach (var rect in randomSizes)
+                Layouter.PutNextRectangle(rect);
+        }
+
+        private Size CreateBigRectangle(Random random, byte scale)
+        {
+            var height = random.Next(100, 500);
+            var width = random.Next(height, height * 3);
+            return new Size(width, height) * scale;
         }
     }
 }
