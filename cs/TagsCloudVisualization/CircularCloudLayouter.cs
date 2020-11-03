@@ -59,14 +59,6 @@ namespace TagsCloudVisualization
                 Directions.Right => rectangle.Right,
                 _ => 0
             };
-
-        [TestCase(Directions.Up), TestCase(Directions.Left), TestCase(Directions.Down), TestCase(Directions.Right)]
-        public static void Test(Directions dir)
-        {
-            var rect = new Rectangle(-57, -138, 348, 3241);
-            rect.ResizedToTopInDirection(dir, 77).TopInDirection(dir).Should().Be(77);
-            rect.DisplacedToTopInDirection(dir, 77).TopInDirection(dir).Should().Be(77);
-        }
         
         public static Rectangle ResizedToTopInDirection(this Rectangle rectangle, Directions direction, int value)
         {
