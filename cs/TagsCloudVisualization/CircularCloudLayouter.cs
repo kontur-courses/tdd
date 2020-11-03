@@ -164,15 +164,15 @@ namespace TagsCloudVisualization
                         if (curTop * prevDirNormalMod > max * prevDirNormalMod) max = curTop;
                     }
 
-                    rect = rect.DisplacedToTopInDirection(previousDirection, max);
+                    rect = rect.DisplacedToTopInDirection(previousDirection.Opposite(), max);
                 }
                 currentLine.Add(rect);
                 var rectTopInDirection = rect.TopInDirection(previousDirection);
-
-                if(rect.TopInDirection(currentDirection) * curDirNormalMod > prevSizeRect.TopInDirection(currentDirection) * curDirNormalMod)
-                    Turn();
+                
                 if (rectTopInDirection * prevDirNormalMod > sizeRect.TopInDirection(previousDirection) * prevDirNormalMod)
                     sizeRect = sizeRect.ResizedToTopInDirection(currentDirection, rectTopInDirection);
+                else if(rect.TopInDirection(currentDirection) * curDirNormalMod > prevSizeRect.TopInDirection(currentDirection) * curDirNormalMod)
+                    Turn();
 
                 return rect;
             }
