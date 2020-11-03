@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using NUnit.Framework;
 using FluentAssertions;
+using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using TagsCloudVisualization;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualizationTests
 {
     [TestFixture]
     public class CircularCloudLayouterTests

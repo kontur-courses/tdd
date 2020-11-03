@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Drawing;
 using System.Linq;
-using NUnit.Framework;
 using FluentAssertions;
+using NUnit.Framework;
+using TagsCloudVisualization;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualizationTests
 {
     [TestFixture]
     public class SurfaceTests
