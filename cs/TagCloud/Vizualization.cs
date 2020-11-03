@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 
 namespace TagCloud
 {
@@ -26,11 +27,20 @@ namespace TagCloud
                 width = (int)Math.Round(width/1.1);
                 height = (int)Math.Round(height/1.1);
             }
+            Console.WriteLine(GetNewPngPath());
 
-            bitmap.Save("C:\\Users\\Наталья\\Desktop\\myPng.bmp");
+            bitmap.Save(GetNewPngPath());
         }
 
-        public static void DrawAndFillRectangle(Graphics graphics, Rectangle rectangle)
+        private static string GetNewPngPath()
+        {
+            var workingDirectory = Directory.GetCurrentDirectory();
+            var index = workingDirectory.IndexOf("TagCloud");
+            var tagCloudPath = workingDirectory.Substring(0, index);
+            return tagCloudPath + "MyPng" +  DateTime.Now.Millisecond + ".png";
+        }
+
+        private static void DrawAndFillRectangle(Graphics graphics, Rectangle rectangle)
         {
             var brushColor = Color.FromArgb(rectangle.X % 255, rectangle.Y % 255, 100);
             var brush = new SolidBrush(brushColor);
