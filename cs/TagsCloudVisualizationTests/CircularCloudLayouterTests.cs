@@ -31,7 +31,7 @@ namespace TagsCloudVisualizationTests
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
                 var drawer = new RainbowDrawer(1, 10);
-                var saver = new BitmapSaver(@"./FailedTestsPictures");
+                var saver = new BitmapSaver(AppDomain.CurrentDomain.BaseDirectory);
                 var name = TestContext.CurrentContext.Test.Name + TestContext.CurrentContext.Test.ID;
                 var path = saver.GetPath(name);
                 var image = drawer.GetImage(rectangles);
@@ -131,7 +131,7 @@ namespace TagsCloudVisualizationTests
             var rectangleSize = Size.Empty;
             var layouter = new CircularCloudLayouter(center);
 
-            Assert.DoesNotThrow(() => _ = layouter.PutNextRectangle(rectangleSize)); 
+            Assert.DoesNotThrow(() => _ = layouter.PutNextRectangle(rectangleSize));
         }
 
         [TestCaseSource(nameof(DataLayouts))]
