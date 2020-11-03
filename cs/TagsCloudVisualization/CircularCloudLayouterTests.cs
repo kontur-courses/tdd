@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization
 {
@@ -14,11 +16,36 @@ namespace TagsCloudVisualization
         private CircularCloudLayouter _circularCloudLayouter;
         private Point _center;
 
-        [SetUp] 
+        [SetUp]
         public void Initialize()
         {
             _center = new Point(50, 50);
             _circularCloudLayouter = new CircularCloudLayouter(_center);
+        }
+
+        [TearDown]
+        public void SaveImage()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+            {
+                var testName = TestContext.CurrentContext.Test.Name;
+                DrawImage(_circularCloudLayouter,
+                    $"{Environment.CurrentDirectory}\\failedTests\\{testName}.png");
+                TestContext.Error.WriteLine($"Tag cloud visualization saved to file \"failedTests\\{testName}\"");
+            }
+        }
+
+        private static void DrawImage(CircularCloudLayouter circularCloudLayouter, string path)
+        {
+            Bitmap bitmap = new Bitmap(100, 100);
+            var graphics = Graphics.FromImage(bitmap);
+            var rectangles = circularCloudLayouter.GetRectangles();
+            foreach (var rectangle in rectangles)
+            {
+                graphics.DrawRectangle(new Pen(Color.Red), rectangle);
+            }
+
+            bitmap.Save(path);
         }
 
         [TestCase(-10, 10)]
@@ -48,7 +75,7 @@ namespace TagsCloudVisualization
         {
             _circularCloudLayouter.PutNextRectangle(new Size(width, height));
             _circularCloudLayouter.GetRectangles()[0].Location.Should()
-                .Be(new Point(_center.X - width/2, _center.Y - height/2));
+                .Be(new Point(_center.X - width / 2, _center.Y - height / 2));
         }
 
 
@@ -81,10 +108,10 @@ namespace TagsCloudVisualization
 
             var rectangles = _circularCloudLayouter.GetRectangles();
             for (var j = 0; j < 9; j++)
-            for (var i = j + 1; i < 10; i++)
-            {
-                rectangles[j].IntersectsWith(rectangles[i]).Should().BeFalse();
-            }
+                for (var i = j + 1; i < 10; i++)
+                {
+                    rectangles[j].IntersectsWith(rectangles[i]).Should().BeFalse();
+                }
         }
 
         [TestCase(3, 3)]

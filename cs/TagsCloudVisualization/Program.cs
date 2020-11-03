@@ -17,6 +17,13 @@ namespace TagsCloudVisualization
 
             for (var i = 0; i < 100; i++)
                 circularCloudLayouter.PutNextRectangle(new Size((10 + i * i) % 30, (10 + i * i) % 20));
+            DrawAndSaveCloudImage(circularCloudLayouter, "Cloud2");
+
+            ConsoleVisualization(circularCloudLayouter);
+        }
+
+        private static void DrawAndSaveCloudImage(CircularCloudLayouter circularCloudLayouter, string name)
+        {
             Bitmap bitmap = new Bitmap(300, 300);
             var graphics = Graphics.FromImage(bitmap);
             var rectangles = circularCloudLayouter.GetRectangles();
@@ -25,10 +32,7 @@ namespace TagsCloudVisualization
                 graphics.DrawRectangle(new Pen(Color.RoyalBlue), rectangle);
             }
 
-            bitmap.Save(Environment.CurrentDirectory + "\\Cloud2.png");
-
-
-            ConsoleVisualization(circularCloudLayouter);
+            bitmap.Save($"{Environment.CurrentDirectory}\\{name}.png");
         }
 
         private static void ConsoleVisualization(CircularCloudLayouter circularCloudLayouter)
