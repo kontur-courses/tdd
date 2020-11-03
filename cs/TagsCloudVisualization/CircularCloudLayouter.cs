@@ -150,7 +150,7 @@ namespace TagsCloudVisualization
                     .Displaced(currentDirection.GetOffset(
                         (currentDirection.IsNormal() ? lastRect : rect).SizeInDirection(currentDirection)))
                     .DisplacedToTopInDirection(nextDirection,
-                        lastRect.TopInDirection(currentDirection.Next()));
+                        prevSizeRect.TopInDirection(previousDirection));
 
                 var previousLine = lines[(int) currentDirection];
                 var prevDirNormalMod = previousDirection.IsNormal() ? 1 : -1;
@@ -169,10 +169,10 @@ namespace TagsCloudVisualization
                 currentLine.Add(rect);
                 var rectTopInDirection = rect.TopInDirection(previousDirection);
                 
+                if(rect.TopInDirection(currentDirection) * curDirNormalMod > prevSizeRect.TopInDirection(currentDirection) * curDirNormalMod)
+                    Turn();
                 if (rectTopInDirection * prevDirNormalMod > sizeRect.TopInDirection(previousDirection) * prevDirNormalMod)
                     sizeRect = sizeRect.ResizedToTopInDirection(currentDirection, rectTopInDirection);
-                else if(rect.TopInDirection(currentDirection) * curDirNormalMod > prevSizeRect.TopInDirection(currentDirection) * curDirNormalMod)
-                    Turn();
 
                 return rect;
             }
