@@ -41,7 +41,7 @@ namespace CircularCloudTests
             map.Save("visualisation.bmp");
             Console.WriteLine(cloud.GetAllRectangles().Length);
             Console.WriteLine("Tag cloud visualization saved to file" + Directory.GetCurrentDirectory() +
-                              @"/visualisation.bmp");
+                              "\\visualisation.bmp");
         }
 
 

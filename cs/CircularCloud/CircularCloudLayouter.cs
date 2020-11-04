@@ -7,8 +7,7 @@ namespace CircularCloud
     public class CircularCloudLayouter
     {
         protected ArchimedeanSpiral Spiral;
-        protected List<Rectangle> Rectangles = new List<Rectangle>();
-        protected List<Point> FreePoints = new List<Point>();
+        protected CloudObjectsContainer Container = new CloudObjectsContainer();
 
         public Point Center => Spiral.Center;
 
@@ -16,33 +15,41 @@ namespace CircularCloud
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            FreePoints.RemoveAll(point => Rectangles.Any(rectangle => rectangle.Contains(point)));
-            Point point;
+            Point pointForRectangle;
             var result = Rectangle.Empty;
-            if (FreePoints.Count > 0 && Rectangles.Count > 0)
+            if (Container.GetFreePoints().Count > 0)
             {
-                point = FreePoints.FirstOrDefault(point =>
+                pointForRectangle = Container.GetFreePoints().FirstOrDefault(point =>
                     CouldPutRectangle(GetRectangleWithCenterInPoint(point, rectangleSize)));
-                if (point != Point.Empty) result = GetRectangleWithCenterInPoint(point, rectangleSize);
+                if (pointForRectangle != Point.Empty)
+                {
+                    result = GetRectangleWithCenterInPoint(pointForRectangle, rectangleSize);
+                    Container.AddRectangle(result);
+                    return result;
+                }
             }
 
-            while (result == Rectangle.Empty)
-            {
-                point = Spiral.GetNextPoint();
-                if (CouldPutRectangle(GetRectangleWithCenterInPoint(point, rectangleSize)))
-                    result = GetRectangleWithCenterInPoint(point, rectangleSize);
+            result = GetRectangleInNextPoint(rectangleSize);
 
-                if (!Rectangles.Any(rectangle => rectangle.Contains(point)))
-                    FreePoints.Add(point);
-            }
-
-            Rectangles.Add(result);
+            Container.AddRectangle(result);
             return result;
+        }
+
+        private Rectangle GetRectangleInNextPoint(Size rectangleSize)
+        {
+            while (true)
+            {
+                var pointForRectangle = Spiral.GetNextPoint();
+                var rectangle = GetRectangleWithCenterInPoint(pointForRectangle, rectangleSize);
+                if (CouldPutRectangle(rectangle))
+                    return rectangle;
+                Container.AddFreePoint(pointForRectangle);
+            }
         }
 
         private bool CouldPutRectangle(Rectangle rectangle)
         {
-            return !(Rectangles.Count > 0 && Rectangles.Any(rect =>
+            return !(Container.GetRectangles().Count > 0 && Container.GetRectangles().Any(rect =>
                 rect.IntersectsWith(rectangle)));
         }
 
@@ -55,7 +62,7 @@ namespace CircularCloud
 
         public Rectangle[] GetAllRectangles()
         {
-            return Rectangles.ToArray();
+            return Container.GetRectangles().ToArray();
         }
     }
 }
