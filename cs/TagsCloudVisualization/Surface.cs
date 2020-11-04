@@ -22,7 +22,7 @@ namespace TagsCloudVisualization
             }
         }
 
-        public bool IsRectangleIntersect(Rectangle rect)
+        public bool RectangleIntersectsWithOther(Rectangle rect)
         {
             var rectQuarters = FindQuartersForRectangle(rect);
 
