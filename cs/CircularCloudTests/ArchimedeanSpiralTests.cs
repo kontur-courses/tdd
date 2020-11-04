@@ -36,15 +36,16 @@ namespace CircularCloudTests
         [Test]
         public void GetNextPoint_Void_PointsLocatedCloseEnoughToEachOther()
         {
-            var a = spiral.GetNextPoint();
+            var previousPoint = spiral.GetNextPoint();
             for (var i = 0; i < 10000; i++)
             {
-                var b = spiral.GetNextPoint();
-                var distance = Math.Sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y));
+                var currentPoint = spiral.GetNextPoint();
+                var distance = Math.Sqrt((previousPoint.X - currentPoint.X) * (previousPoint.X - currentPoint.X) +
+                                         (previousPoint.Y - currentPoint.Y) * (previousPoint.Y - currentPoint.Y));
                 distance.Should().BeLessOrEqualTo(5,
                     "distance between points should be less or equal to 5 pixels. " +
-                    $"Failed with Point number {i + 1} = {a} , and point number {i + 2} = {b}");
-                a = b;
+                    $"Failed with Point number {i + 1} = {previousPoint} , and point number {i + 2} = {currentPoint}");
+                previousPoint = currentPoint;
             }
         }
     }

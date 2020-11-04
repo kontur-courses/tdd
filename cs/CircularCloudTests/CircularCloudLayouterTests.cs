@@ -40,7 +40,8 @@ namespace CircularCloudTests
             g.Save();
             map.Save("visualisation.bmp");
             Console.WriteLine(cloud.GetAllRectangles().Length);
-            Console.WriteLine("Tag cloud visualization saved to file" + Directory.GetCurrentDirectory()+@"/visualisation.bmp");
+            Console.WriteLine("Tag cloud visualization saved to file" + Directory.GetCurrentDirectory() +
+                              @"/visualisation.bmp");
         }
 
 
@@ -87,22 +88,27 @@ namespace CircularCloudTests
             }
 
 
-            var radius = rectangles.Max(rectangle =>
+            var radius = SmallestRadiusForRectangles(rectangles);
+            (square / (Math.PI * radius * radius)).Should().BeGreaterThan(0.5);
+        }
+
+        private double SmallestRadiusForRectangles(IEnumerable<Rectangle> rectangles)
+        {
+            return rectangles.Max(rectangle =>
             {
-                var points = new[]
+                var pointsOfCorners = new[]
                 {
                     new Size(rectangle.Size.Width, 0),
                     new Size(rectangle.Size.Width, rectangle.Size.Height),
                     new Size(0, rectangle.Size.Height),
                     new Size(0, 0)
                 };
-                return points.Max(size =>
+                return pointsOfCorners.Max(size =>
                 {
                     var point = rectangle.Location + size - new Size(cloud.Center);
                     return Math.Sqrt(point.X * point.X + point.Y * point.Y);
                 });
             });
-            (square / (Math.PI * radius * radius)).Should().BeGreaterThan(0.5);
         }
 
         [Test]
