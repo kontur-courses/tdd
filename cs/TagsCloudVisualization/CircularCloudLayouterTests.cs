@@ -12,7 +12,7 @@ namespace TagsCloudVisualization
         [SetUp]
         public void SetUp()
         {
-            layouter = new CircularCloudLayouter(new Point(0, 0));
+            layouter = new CircularCloudLayouter(new Point(200, 200));
         }
         
         [Test]
@@ -34,7 +34,7 @@ namespace TagsCloudVisualization
             var first = layouter.PutNextRectangle(new Size(20, 20));
             var second = layouter.PutNextRectangle(new Size(7, 10));
             var location = new Point(
-                first.X,
+                first.X + first.Width + layouter.RectangleMargin,
                 first.Y + first.Height + layouter.RectangleMargin
             );
 
@@ -71,7 +71,7 @@ namespace TagsCloudVisualization
         }
         
         [Test]
-        public void FifthRectangleShouldBeOnTheLeft()
+        public void FifthRectangleShouldBeOnTheBottom()
         {
             layouter.PutNextRectangle(new Size(20, 20));
             layouter.PutNextRectangle(new Size(30, 10));
@@ -80,7 +80,7 @@ namespace TagsCloudVisualization
             var fifth = layouter.PutNextRectangle(new Size(25, 25));
             var location = new Point(
                 fourth.X - fifth.Width - layouter.RectangleMargin,
-                fourth.Y + fourth.Height + layouter.RectangleMargin
+                fourth.Y
             );
 
             fifth.Location.Should().Be(location);
@@ -94,11 +94,29 @@ namespace TagsCloudVisualization
             layouter.PutNextRectangle(new Size(10, 25));
             layouter.PutNextRectangle(new Size(35, 25));
             layouter.PutNextRectangle(new Size(25, 25));
+            layouter.PutNextRectangle(new Size(25, 25));
+            layouter.PutNextRectangle(new Size(25, 25));
+            layouter.PutNextRectangle(new Size(25, 25));
+            layouter.PutNextRectangle(new Size(25, 25));
+            layouter.PutNextRectangle(new Size(25, 25));
+            layouter.PutNextRectangle(new Size(25, 25));
+            layouter.PutNextRectangle(new Size(30, 10));
+            layouter.PutNextRectangle(new Size(10, 25));
+            layouter.PutNextRectangle(new Size(35, 25));
+            layouter.PutNextRectangle(new Size(25, 25));
+            layouter.PutNextRectangle(new Size(25, 25));
+            layouter.PutNextRectangle(new Size(20, 20));
+            layouter.PutNextRectangle(new Size(30, 10));
+            layouter.PutNextRectangle(new Size(10, 25));
+            layouter.PutNextRectangle(new Size(35, 25));
+            new Visualization().DrawRectangles(layouter.Rectangles);
+
             for (var i = 0; i < layouter.Rectangles.Count; i++)
             {
                 for (var j = i + 1; j < layouter.Rectangles.Count; j++)
                     layouter.Rectangles[i].IntersectsWith(layouter.Rectangles[j]).Should().BeFalse();
             }
+            
         }
     }
 }

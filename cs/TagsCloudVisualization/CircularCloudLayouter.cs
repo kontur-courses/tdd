@@ -10,17 +10,39 @@ namespace TagsCloudVisualization
         Right,
         Bottom,
         Left,
-        Center
     }
-    
+
+    static class DirectionExtensions
+    {
+        public static Direction GetNextDirection(this Direction direction)
+        {
+            return direction switch
+            {
+                Direction.Bottom => Direction.Left,
+                Direction.Left => Direction.Top,
+                Direction.Top => Direction.Right,
+                Direction.Right => Direction.Bottom,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
+
+        public static int GetDirectionMultiplier(this Direction direction)
+        {
+            if (direction == Direction.Top || direction == Direction.Right)
+                return 1;
+            return -1;
+        }
+    }
+
     public class CircularCloudLayouter
     {
-        public Point Center { get; }
-        public readonly int RectangleMargin;
-        public readonly List<Rectangle> Rectangles;
-        private Direction direction = Direction.Center;
+        private Direction direction = Direction.Top;
+        private Direction nextDirection = Direction.Right;
         private Dictionary<Direction, int> extremeCoords;
         private readonly Dictionary<Direction, int> newExtremeCoords;
+        public readonly List<Rectangle> Rectangles;
+        public readonly int RectangleMargin;
+        public readonly Point Center;
 
         public CircularCloudLayouter(Point center)
         {
@@ -29,123 +51,81 @@ namespace TagsCloudVisualization
             RectangleMargin = 2;
             newExtremeCoords = new Dictionary<Direction, int>
             {
-                {Direction.Top, 0},
-                {Direction.Right, 0},
-                {Direction.Bottom, 0},
-                {Direction.Left, 0}
+                {Direction.Top, center.Y},
+                {Direction.Right, center.X},
+                {Direction.Bottom, center.Y},
+                {Direction.Left, center.X}
             };
         }
-
+        
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             var rectangle = new Rectangle {Size = rectangleSize};
-
-            switch (direction)
+            
+            if (Rectangles.Count == 0)
             {
-                case Direction.Top:
-                    if (Rectangles[^1].Location.Equals(Center))
-                    {
-                        rectangle.Location = new Point(
-                            Rectangles[^1].Location.X,
-                            extremeCoords[direction]); //+ rectangle.Height
-                    }
-                    else
-                    {
-                        rectangle.Location = new Point(
-                            Rectangles[^1].Location.X + Rectangles[^1].Width + RectangleMargin,
-                            extremeCoords[direction]
-                        );
-                    }
+                rectangle.Location = Center;
 
-                    newExtremeCoords[direction] = Math.Max(
-                        rectangle.Location.Y + rectangle.Height + RectangleMargin,
-                        newExtremeCoords[direction]);
-
-                    if (rectangle.Location.X + rectangle.Width + RectangleMargin > extremeCoords[Direction.Right])
-                    {
-                        extremeCoords[Direction.Right] = Math.Max(
-                            rectangle.Location.X + rectangle.Width + RectangleMargin,
-                            extremeCoords[Direction.Right]
-                        );
-                        extremeCoords[direction] = newExtremeCoords[direction];
-                        direction = Direction.Right;
-                    }
-                    break;
-                case Direction.Bottom:
-                    rectangle.Location = new Point(
-                        Rectangles[^1].Location.X - rectangle.Width - RectangleMargin,
-                        extremeCoords[direction] - rectangle.Height);
-                    
-                    newExtremeCoords[direction] = Math.Min(
-                        rectangle.Location.Y - rectangle.Height - RectangleMargin,
-                        newExtremeCoords[direction]);
-                    
-                    if (rectangle.Location.X - RectangleMargin < extremeCoords[Direction.Left])
-                    {
-                        extremeCoords[Direction.Left] = Math.Min(
-                            rectangle.Location.X - RectangleMargin,
-                            extremeCoords[Direction.Left]);
-                        extremeCoords[direction] = newExtremeCoords[direction];
-                        direction = Direction.Left;
-                    }
-                    break;
-                case Direction.Left:
-                    rectangle.Location = new Point(
-                        extremeCoords[direction] - rectangle.Width,
-                        Rectangles[^1].Location.Y + Rectangles[^1].Height + RectangleMargin);
-                    
-                    newExtremeCoords[direction] = Math.Min(
-                        rectangle.Location.X - RectangleMargin,
-                        newExtremeCoords[direction]);
-                    
-                    if (rectangle.Location.Y + rectangle.Height + RectangleMargin > extremeCoords[Direction.Top])
-                    {
-                        extremeCoords[Direction.Top] = Math.Max(
-                            rectangle.Location.Y + rectangle.Height + RectangleMargin,
-                            extremeCoords[Direction.Top]);
-                        extremeCoords[direction] = newExtremeCoords[direction];
-                        direction = Direction.Top;
-                    }
-                    break;
-                case Direction.Right:
-                    rectangle.Location = new Point(
-                        extremeCoords[direction],
-                        Rectangles[^1].Location.Y - rectangle.Height - RectangleMargin
-                    );
-                    
-                    newExtremeCoords[direction] = Math.Max(
-                        rectangle.Location.X + rectangle.Width + RectangleMargin,
-                        newExtremeCoords[direction]);
-                    
-                    if (rectangle.Location.Y - RectangleMargin < extremeCoords[Direction.Bottom])
-                    {
-                        extremeCoords[Direction.Bottom] = Math.Min(
-                            rectangle.Location.Y - RectangleMargin,
-                            extremeCoords[Direction.Bottom]);
-                        extremeCoords[direction] = newExtremeCoords[direction];
-                        direction = Direction.Bottom;
-                    }
-                    break;
-                case Direction.Center:
-                    direction = Direction.Top;
-                    rectangle.Location = Center;
-                    extremeCoords = new Dictionary<Direction, int>
-                    {
-                        {Direction.Top, rectangle.Height + RectangleMargin},
-                        {Direction.Right, rectangleSize.Width + RectangleMargin},
-                        {Direction.Bottom, -RectangleMargin},
-                        {Direction.Left, -RectangleMargin}
-                    };
-                    break;
+                extremeCoords = new Dictionary<Direction, int>
+                {
+                    {Direction.Top, rectangle.Y + rectangle.Height + RectangleMargin},
+                    {Direction.Right, rectangle.X + rectangle.Width + RectangleMargin},
+                    {Direction.Bottom, rectangle.Y - RectangleMargin},
+                    {Direction.Left, rectangle.X - RectangleMargin}
+                };
+                Rectangles.Add(rectangle);
+                return rectangle;
             }
+            
+            rectangle.Location = CalculateLocation(rectangle, Rectangles[^1]);
+            UpdateExtremeCoords(rectangle);
             Rectangles.Add(rectangle);
             return rectangle;
         }
 
-        private Direction GetNextDirection(Direction direction)
+        private void UpdateExtremeCoords(Rectangle rectangle)
         {
-            var newDirection = ((int) direction + 1) % 4;
-            return (Direction)newDirection;
+            var sign = direction.GetDirectionMultiplier();
+            var coord = GetNewExtremeCoordinate(rectangle, direction);
+            newExtremeCoords[direction] = sign * Math.Max(sign * coord, sign * newExtremeCoords[direction]);
+            
+            coord = GetNewExtremeCoordinate(rectangle, nextDirection);
+            sign = nextDirection.GetDirectionMultiplier();
+            if (sign * (coord - extremeCoords[nextDirection]) > 0)
+            {
+                extremeCoords[direction] = newExtremeCoords[direction];
+                extremeCoords[nextDirection] = coord;
+                direction = nextDirection;
+                nextDirection = direction.GetNextDirection();
+            }
+        }
+        
+        private int GetNewExtremeCoordinate(Rectangle rectangle, Direction d)
+        {
+            return d switch
+            {
+                Direction.Bottom => rectangle.Y - RectangleMargin,
+                Direction.Left => rectangle.X - RectangleMargin,
+                Direction.Top => rectangle.Y + rectangle.Height + RectangleMargin,
+                Direction.Right => rectangle.X + rectangle.Width + RectangleMargin,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
+
+        private Point CalculateLocation(Rectangle current, Rectangle previous)
+        {
+            return direction switch
+            {
+                Direction.Bottom => new Point(previous.X - current.Width - RectangleMargin,
+                    extremeCoords[direction] - current.Height),
+                Direction.Left => new Point(extremeCoords[direction] - current.Width,
+                    previous.Y + previous.Height + RectangleMargin),
+                Direction.Top => new Point(previous.X + previous.Width + RectangleMargin,
+                    extremeCoords[direction]),
+                Direction.Right => new Point(extremeCoords[direction],
+                    previous.Y - current.Height - RectangleMargin),
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
     }
 }
