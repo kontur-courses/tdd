@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -49,7 +50,6 @@ namespace TagsCloudVisualization.Tests
         public void PutNextRectangleShouldHaveMinimalLenWhenRectIsFirst()
         {
             var rect = layout.PutNextRectangle(new Size(10, 10));
-
             rect.Location.Should().Be(center);
         }
 
@@ -108,21 +108,31 @@ namespace TagsCloudVisualization.Tests
         {
             PutRectangles(30);
 
-            foreach(var rectangle in rectangles)
+            foreach (var rectangle in rectangles)
             {
                 var vector = new TargetVector(center, rectangle.Location);
-                foreach(var delta in vector.GetPartialDelta().Take(3))
-                {
+                foreach (var delta in vector.GetPartialDelta().Take(3))
                     TryMoveRectangle(rectangle, delta).Should().BeFalse();
-                }
             }
-
         }
 
         private bool TryMoveRectangle(Rectangle rectangle, Point delta)
         {
             var movedRectangle = rectangle.MoveOnTheDelta(delta);
             return !movedRectangle.IntersectsWith(rectangles);
+        }
+
+        [TearDown]
+        public void WriteErrorLog()
+        {
+            var testContext = TestContext.CurrentContext;
+            if (!testContext.Result.Outcome.Status.HasFlag(TestStatus.Failed))
+                return;
+            var visualization = new CircularCloudVisualization(layout);
+            visualization.DrawRectanglesOnImage();
+            var path = visualization.SaveImage(testContext.Test.Name);
+
+            TestContext.WriteLine($"Tag cloud visualization saved to file {path}");
         }
     }
 }

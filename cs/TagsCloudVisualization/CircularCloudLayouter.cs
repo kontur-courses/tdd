@@ -25,6 +25,7 @@ namespace TagsCloudVisualization
             ///     то заканчиваю перебор точек и понемногу двигаю прямоугольник по вектору center - rectangle.Location
             /// если во время перемещения прямоугольника он начинает пересекать остальные, 
             ///     то заканчиваю перемещение и возвращаю полученный прямоугольник
+            
             var rectangle = new Rectangle();
             rectangle.Size = rectangleSize;
             foreach (var point in spiral.GetPoints())

@@ -25,13 +25,14 @@ namespace TagsCloudVisualization
             graphics.Dispose();
         }
 
-        public void SaveImage(string name)
+        public string SaveImage(string name)
         {
             if (!name.EndsWith(".png"))
                 name += ".png";
             var path = GetPathToImageName(name);
             bitmap.Save(path, ImageFormat.Png);
             bitmap.Dispose();
+            return path;
         }
 
         private string GetPathToImageName(string name, int nestingInRootDirectory = 3)
