@@ -1,49 +1,54 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Linq;
 
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private Point center;
+        public Point Center { get; }
         public List<Rectangle> Rectangles { get; }
-        private SpiralProvider spiral;
-        private int maxX = -1;
-        private int maxY = -1;
+        private readonly PointProvider point;
+        
 
         public CircularCloudLayouter(Point point)
         {
             if (point.X < 0 || point.Y < 0)
-                throw new ArgumentException();
+                throw new ArgumentException("X or Y of center was negative");
 
-            center = point;
+            Center = point;
             Rectangles = new List<Rectangle>();
-            spiral = new SpiralProvider(center);
+            this.point = new PointProvider(Center);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Height < 0 || rectangleSize.Width < 0)
-                throw new ArgumentException();
+                throw new ArgumentException("Width or height of rectangle was negative");
 
-            var rectangle = spiral.GetRectangle(rectangleSize, Rectangles);
+            var rectangle = GetRectangle(rectangleSize, Rectangles);
             Rectangles.Add(rectangle);
+            
+            return rectangle;
+        }
 
-            if (rectangle.Location.X > maxX)
-                maxX = rectangle.Location.X;
+        private Rectangle GetRectangle(Size rectangleSize, List<Rectangle> rectangles)
+        {
+            Rectangle rectangle;
+            do
+            {
+                rectangle = new Rectangle(point.GetPoint() 
+                                          - new Size(rectangleSize.Width / 2, rectangleSize.Height / 2), rectangleSize);
 
-            if (rectangle.Location.Y > maxY)
-                maxY = rectangle.Location.Y;
+            } while (IsCollide(rectangles, rectangle));
 
             return rectangle;
         }
 
-        public void CreateImage(string fileName)
+        private static bool IsCollide(List<Rectangle> rectangles, Rectangle rectangle)
         {
-            Drawer.DrawImage(Rectangles, center, maxX, maxY, fileName);
+            return rectangles.Where(rectangle.IntersectsWith).Any();
         }
     }
 }
