@@ -1,14 +1,19 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal;
 
 namespace CloudTag
 {
     public class CircularCloudLayouterTests
     {
         private CircularCloudLayouter layouter;
-        private readonly Point layouterCenter = new Point(0, 0);
+        private readonly Point layouterCenter = new Point(400, 400);
 
         [SetUp]
         public void SetUp()
@@ -64,7 +69,7 @@ namespace CloudTag
         [TestCase(20, TestName = "20 rect")]
         public void GetRectangles_ReturnEmptyCollection_AddedRectsWithZeroSize(int rectCount)
         {
-            var size = new Size(0,0);
+            var size = new Size(0, 0);
             for (var i = 0; i < rectCount; i++)
                 layouter.PutNextRectangle(size);
 
@@ -80,7 +85,7 @@ namespace CloudTag
             actualRect1.Should().Be(Rectangle.Empty);
             actualRect2.Should().Be(Rectangle.Empty);
         }
-        
+
         [Timeout(1000)]
         [Test]
         public void PutNextRectangle_PerformanceTest_5000RectSameSize()
@@ -89,7 +94,48 @@ namespace CloudTag
             for (var i = 0; i < 5000; i++)
                 layouter.PutNextRectangle(size);
         }
-        
-        
+
+        [TestCase(10, TestName = "10 rect")]
+        [TestCase(20, TestName = "20 rect")]
+        [TestCase(50, TestName = "50 rect")]
+        public void PutNextRectangle_LayoutShouldBeTight_RectsDifferentSize(int rectCount)
+        {
+            for (var i = 0; i < rectCount; i++)
+                layouter.PutNextRectangle(new Size((i * 15 + 25) % 90 + 30, (i * 10 + 20) % 60 + 20));
+
+            var maxDistanceToCenter = layouter.GetRectangles().Max(rectangle =>
+                Math.Sqrt(Math.Pow(rectangle.Location.X - layouterCenter.X, 2) +
+                          Math.Pow(rectangle.Location.Y - layouterCenter.Y, 2)));
+
+            var commonArea = layouter.GetRectangles().Sum(rectangle => rectangle.Height * rectangle.Width);
+            var borderCircleArea = maxDistanceToCenter * maxDistanceToCenter * Math.PI;
+            
+            (borderCircleArea - commonArea).Should().BeLessThan(2 * borderCircleArea / 3);
+        }
+
+        [TestCase(10, TestName = "10 rect")]
+        [TestCase(20, TestName = "20 rect")]
+        [TestCase(50, TestName = "50 rect")]
+        public void PutNextRectangle_LayoutShouldBeRoundShape_RectsDifferentSize(int rectCount)
+        {
+            for (var i = 0; i < rectCount; i++)
+                layouter.PutNextRectangle(new Size((i * 15 + 25) % 90 + 30, (i * 5 + 20) % 60 + 20));
+
+            var commonArea = layouter.GetRectangles().Sum(rectangle => rectangle.Height * rectangle.Width);
+            var suggestedCircleRadius = Math.Sqrt(commonArea / Math.PI);
+
+            var l = new List<double>();
+            
+            
+            foreach (var rectangle in layouter.GetRectangles())
+            {
+                var distanceToCenter = Math.Sqrt(Math.Pow(rectangle.Location.X - layouterCenter.X, 2) +
+                                                 Math.Pow(rectangle.Location.Y - layouterCenter.Y, 2));
+                
+                l.Add(distanceToCenter);
+                
+                (distanceToCenter - suggestedCircleRadius).Should().BeLessThan(suggestedCircleRadius / 2);
+            }
+        }
     }
 }
