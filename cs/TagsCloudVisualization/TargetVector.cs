@@ -5,12 +5,13 @@ namespace TagsCloudVisualization
 {
     public class TargetVector
     {
-        Point target;
-        Point location;
-        public TargetVector(Point target, Point location)
+        private readonly Point target;
+        private Point location;
+
+        public TargetVector(Point to, Point from)
         {
-            this.target = target;
-            this.location = location;
+            target = to;
+            location = from;
         }
 
         public IEnumerable<Point> GetPartialDelta()
@@ -28,16 +29,16 @@ namespace TagsCloudVisualization
         {
             var dx = target.X - location.X;
             var dy = target.Y - location.Y;
-            return new Point(GetOffsetPerCoodinate(dx), GetOffsetPerCoodinate(dy));
+            return new Point(GetOffsetPerCoordinate(dx), GetOffsetPerCoordinate(dy));
         }
-        private int GetOffsetPerCoodinate(int coordinate)
+
+        public static int GetOffsetPerCoordinate(int coordinate)
         {
             if (coordinate > 0)
                 return 1;
-            else if (coordinate < 0)
+            if (coordinate < 0)
                 return -1;
-            else
-                return 0;
+            return 0;
         }
     }
 }

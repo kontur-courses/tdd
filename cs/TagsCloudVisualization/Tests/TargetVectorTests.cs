@@ -2,16 +2,14 @@
 using NUnit.Framework;
 using System.Drawing;
 
-
-
 namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
-    public class TargetVectorShould
+    public class TargetVectorTests
     {
-        TargetVector vector;
-        Point target;
-        Point location;
+        private TargetVector vector;
+        private Point target;
+        private Point location;
 
         [SetUp]
         public void SetUp()
@@ -24,10 +22,12 @@ namespace TagsCloudVisualization.Tests
         [Test]
         public void PartialDeltaReturnMinimalOffset()
         {
+            var minimalOffset = new[] { 1, 0, -1 };
+
             foreach (var delta in vector.GetPartialDelta())
             {
-                delta.X.Should().BeInRange(-1, 1);
-                delta.Y.Should().BeInRange(-1, 1);
+                minimalOffset.Should().Contain(delta.X);
+                minimalOffset.Should().Contain(delta.Y);
             }
         }
 
@@ -36,12 +36,14 @@ namespace TagsCloudVisualization.Tests
         {
             var dx = 0;
             var dy = 0;
+
             foreach (var delta in vector.GetPartialDelta())
             {
                 dx += delta.X;
                 dy += delta.Y;
             }
             location.Offset(dx, dy);
+
             location.Should().Be(target);
         }
 

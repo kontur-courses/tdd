@@ -1,32 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
     public class CircularCloudVisualization
     {
-        readonly CircularCloudLayouter layouter;
-        readonly Bitmap bitmap;
+        private readonly CircularCloudLayouter layouter;
+        private Bitmap bitmap;
+
         public CircularCloudVisualization(CircularCloudLayouter layouter)
         {
             this.layouter = layouter;
-            var layoutSize = layouter.GetLayoutSize();
-            bitmap = new Bitmap(layoutSize.Width, layoutSize.Height);
         }
 
         public void DrawRectanglesOnImage()
         {
+            var layoutSize = layouter.GetLayoutSize();
+            bitmap = new Bitmap(layoutSize.Width, layoutSize.Height);
             var graphics = Graphics.FromImage(bitmap);
             var pen = new Pen(Color.Red, 5);
-            graphics.DrawRectangles(pen, layouter.Rectangles.ToArray());
+            graphics.DrawRectangles(pen, layouter.ToArray());
+            graphics.Dispose();
         }
 
-        public void SaveImage(string path = @"D:\ProjectC#\tdd\tdd\cs\TagsCloudVisualization\LayoutImage\")
+        public void SaveImage(string name)
         {
-            var name = $"ImageAt{layouter.Rectangles.Count}.png";
-            bitmap.Save(path + name, ImageFormat.Png);
+            if (!name.EndsWith(".png"))
+                name += ".png";
+            var path = GetPathToImageName(name);
+            bitmap.Save(path, ImageFormat.Png);
+            bitmap.Dispose();
+        }
+
+        private string GetPathToImageName(string name, int nestingInRootDirectory = 3)
+        {
+            var directoryInfo = new DirectoryInfo(Directory.GetCurrentDirectory());
+            for (var i = 0; i < nestingInRootDirectory; i++)
+                directoryInfo = directoryInfo.Parent;
+            return Path.Combine(directoryInfo.FullName, "LayoutImage", name);
         }
     }
 }

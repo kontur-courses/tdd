@@ -9,43 +9,47 @@ using TagsCloudVisualization.Extensions;
 namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
-    public class CircularCloudLayouterShould
+    public class CircularCloudLayouterTests
     {
-        CircularCloudLayouter layouter;
-        Point center;
-        Size rectangleSize;
-        int rectangleCount;
-        List<Rectangle> rectangles;
+        private CircularCloudLayouter layout;
+        private Point center;
+        private Size rectangleSize;
+        private int rectangleCount;
+        private List<Rectangle> rectangles;
 
         [SetUp]
         public void SetUp()
         {
             center = new Point(10, 10);
-            layouter = new CircularCloudLayouter(center);
+            layout = new CircularCloudLayouter(center);
             rectangleSize = new Size(10, 10);
             rectangles = new List<Rectangle>();
             rectangleCount = 10;
         }
 
-        private void PutRectangles()
+        private void PutRectangles(int rectangleCount = 10)
         {
+            this.rectangleCount = rectangleCount;
             for (int i = 0; i < rectangleCount; i++)
-                rectangles.Add(layouter.PutNextRectangle(rectangleSize));
+                rectangles.Add(layout.PutNextRectangle(rectangleSize));
         }
 
         [Test]
-        public void PutNextRectangleDontShouldIntersect()
+        public void PutNextRectangleShouldNotIntersect()
         {
             PutRectangles();
+
             var isIntesect = rectangles
-                .Any(rect => rect.IsIntersectsWith(rectangles.Where(other => other != rect)));
+                .Any(rect => rect.IntersectsWith(rectangles.Where(other => other != rect)));
+
             isIntesect.Should().BeFalse();
         }
 
         [Test]
         public void PutNextRectangleShouldHaveMinimalLenWhenRectIsFirst()
         {
-            var rect = layouter.PutNextRectangle(new Size(10, 10));
+            var rect = layout.PutNextRectangle(new Size(10, 10));
+
             rect.Location.Should().Be(center);
         }
 
@@ -59,6 +63,7 @@ namespace TagsCloudVisualization.Tests
             ///     определяю радиус
             /// Проверка происходи на утверждении, что все прямоугольники должны быть вписаны в кадрат со стороной 2 радиуса
             ///     
+
             PutRectangles();
             var rectCountInRadius = rectangleCount / 4 + 1;
             var radius = Math.Max(rectangleSize.Height, rectangleSize.Width) * rectCountInRadius;
@@ -66,8 +71,58 @@ namespace TagsCloudVisualization.Tests
             var circumscribedRectangle = new Rectangle(circumscribedCenter, new Size(radius * 2, radius * 2));
 
             var isIntersectAll = rectangles.All(rect => rect.IntersectsWith(circumscribedRectangle));
+
             isIntersectAll.Should().BeTrue();
         }
 
+        [Test]
+        public void PutNextRectangleReturnDifferentRectangles()
+        {
+            var allRectangles = new List<Rectangle>();
+            var differentRectangles = new HashSet<Rectangle>();
+            Rectangle rectangle;
+            var size = new Size(10, 10);
+
+            for (int i = 0; i < 300; i++)
+            {
+                rectangle = layout.PutNextRectangle(size);
+                allRectangles.Add(rectangle);
+                differentRectangles.Add(rectangle);
+            }
+
+            allRectangles.Should().HaveCount(differentRectangles.Count);
+            allRectangles.Should().BeEquivalentTo(differentRectangles);
+        }
+
+        [Test]
+        public void PutNextRectangleAllRectanglesAdded()
+        {
+            PutRectangles(100);
+
+            layout.Should().HaveCount(rectangles.Count);
+            layout.Should().BeEquivalentTo(rectangles);
+        }
+
+        [Test]
+        public void PutNextRectangleAllRectangleShouldBeDense()
+        {
+            PutRectangles(30);
+
+            foreach(var rectangle in rectangles)
+            {
+                var vector = new TargetVector(center, rectangle.Location);
+                foreach(var delta in vector.GetPartialDelta().Take(3))
+                {
+                    TryMoveRectangle(rectangle, delta).Should().BeFalse();
+                }
+            }
+
+        }
+
+        private bool TryMoveRectangle(Rectangle rectangle, Point delta)
+        {
+            var movedRectangle = rectangle.MoveOnTheDelta(delta);
+            return !movedRectangle.IntersectsWith(rectangles);
+        }
     }
 }

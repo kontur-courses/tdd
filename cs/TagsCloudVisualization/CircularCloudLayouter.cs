@@ -1,18 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter
+    public class CircularCloudLayouter : IEnumerable<Rectangle>
     {
-        public List<Rectangle> Rectangles { get; }
-        Point center;
-        Spiral spiral;
+        private readonly List<Rectangle> rectangles;
+        private readonly Spiral spiral;
+
         public CircularCloudLayouter(Point center)
         {
-            this.center = center;
-            Rectangles = new List<Rectangle>();
+            rectangles = new List<Rectangle>();
             spiral = new Spiral(center);
         }
 
@@ -26,25 +26,25 @@ namespace TagsCloudVisualization
             /// если во время перемещения прямоугольника он начинает пересекать остальные, 
             ///     то заканчиваю перемещение и возвращаю полученный прямоугольник
             var rectangle = new Rectangle();
-            foreach (var point in spiral.GetSpiralPoints())
+            rectangle.Size = rectangleSize;
+            foreach (var point in spiral.GetPoints())
             {
                 rectangle.Location = point;
-                rectangle.Size = rectangleSize;
-                if (!rectangle.IsIntersectsWith(Rectangles))
+                if (!rectangle.IntersectsWith(rectangles))
                     break;
             }
-            var compactRectangle = CompactRectangle(rectangle);
-            Rectangles.Add(compactRectangle);
+            var compactRectangle = MoveToCenter(rectangle);
+            rectangles.Add(compactRectangle);
             return compactRectangle;
         }
 
-        private Rectangle CompactRectangle(Rectangle rectangle)
+        private Rectangle MoveToCenter(Rectangle rectangle)
         {
-            var targetVector = new TargetVector(center, rectangle.Location);
+            var targetVector = new TargetVector(spiral.Center, rectangle.Location);
             foreach (var delta in targetVector.GetPartialDelta())
             {
                 var newRectangle = rectangle.MoveOnTheDelta(delta);
-                if (newRectangle.IsIntersectsWith(Rectangles))
+                if (newRectangle.IntersectsWith(rectangles))
                     break;
                 rectangle = newRectangle;
             }
@@ -53,14 +53,24 @@ namespace TagsCloudVisualization
 
         public Size GetLayoutSize()
         {
-            var width = 0;
-            var height = 0;
-            foreach (var rect in Rectangles)
+            var size = new Size();
+            foreach (var rect in rectangles)
             {
-                width += center.X - rect.X + rect.Width;
-                height += center.Y - rect.Y + rect.Height;
+                size.Width += spiral.Center.X - rect.X + rect.Width;
+                size.Height += spiral.Center.Y - rect.Y + rect.Height;
             }
-            return new Size(width, height);
+            return size;
+        }
+
+        public IEnumerator<Rectangle> GetEnumerator()
+        {
+            foreach (var rect in rectangles)
+                yield return rect;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
