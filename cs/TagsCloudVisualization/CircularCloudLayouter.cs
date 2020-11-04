@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Text;
 
 namespace TagsCloudVisualization
 {
@@ -10,6 +9,7 @@ namespace TagsCloudVisualization
         private readonly List<Rectangle> _rectangles;
         private readonly ArchimedeanSpiral _spiral;
         private readonly Point _center;
+
         public CircularCloudLayouter(Point center)
         {
             _rectangles = new List<Rectangle>();
@@ -45,12 +45,13 @@ namespace TagsCloudVisualization
 
             return CreateRectangle(correctMiddlePoint, rectangle.Size);
         }
+
         /*
          * Не очень красиво, что метод, напрямую не относящийся к логике, здесь. 
          * Хотелось бы сделать его методом расширения, 
          * чтобы можно было вызывать Rectangle.CreateRectangle(...). Как лучше?
          */
-        private Rectangle CreateRectangle(Point centerOfRectangle, Size rectangleSize) 
+        private Rectangle CreateRectangle(Point centerOfRectangle, Size rectangleSize)
         {
             var x = centerOfRectangle.X - rectangleSize.Width / 2;
             var y = centerOfRectangle.Y - rectangleSize.Height / 2;

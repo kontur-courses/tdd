@@ -17,6 +17,7 @@ namespace TagsCloudVisualization
             var y = rect.Y + rect.Height / 2;
             return new Point(x, y);
         }
+
         public static Rectangle CreateRectangle(Point centerOfRectangle, Size rectangleSize)
         {
             var x = centerOfRectangle.X - rectangleSize.Width / 2;

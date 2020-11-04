@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
+﻿using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -9,6 +6,7 @@ namespace TagsCloudVisualization.Tests
 {
     class RectangleExtensionsTests
     {
+
         [Test]
         public void IntersectsWith_True_WhenEnumerableContainsIntersectingRectangle()
         {
@@ -34,7 +32,7 @@ namespace TagsCloudVisualization.Tests
         [Test]
         public void GetMiddlePoint_ReturnCorrectPoint()
         {
-            var rectangle = new Rectangle(0,0, 4, 4);
+            var rectangle = new Rectangle(0, 0, 4, 4);
             var expectedPoint = new Point(2, 2);
             rectangle.GetMiddlePoint().Should().BeEquivalentTo(expectedPoint);
         }
