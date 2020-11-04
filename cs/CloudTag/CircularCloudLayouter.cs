@@ -13,6 +13,12 @@ namespace CloudTag
         {
             spiral = new Spiral(center);
         }
+        
+        public CircularCloudLayouter(int centerX, int centerY)
+        {
+            var center = new Point(centerX, centerY);
+            spiral = new Spiral(center);
+        }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
