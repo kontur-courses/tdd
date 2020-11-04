@@ -11,9 +11,9 @@ namespace TagsCloudVisualization_Should
     [TestFixture]
     public class CircularCloudLayouterShould
     {
-        
+
         [Test]
-        public void CreateCircularCloudLayouterShould_ThrowArgumentException_CenterWithNegativeXOrY()
+        public void CreateCircularCloudLayouter_ThrowArgumentException_CenterWithNegativeXOrY()
         {
             var point = new Point(-1, -1);
 
@@ -43,7 +43,7 @@ namespace TagsCloudVisualization_Should
             actual.ShouldBeEquivalentTo(expectedRectangle);
 
         }
-        
+
         [Test]
         public void Rectangles_CountIsTen_RandomTenRectangles()
         {
@@ -186,7 +186,7 @@ namespace TagsCloudVisualization_Should
             var rectangles = new List<Rectangle>();
 
             for(var i = 0; i < count; i++)
-                rectangles.Add(new Rectangle(rnd.Next(100, 500), rnd.Next(100, 500), 
+                rectangles.Add(new Rectangle(rnd.Next(100, 500), rnd.Next(100, 500),
                     rnd.Next(100, 500), rnd.Next(100, 500)));
 
             return rectangles;
