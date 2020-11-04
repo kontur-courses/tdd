@@ -40,6 +40,8 @@ namespace TagsCloudVisualization.Layouters
 
         public Rectangle PutNextRectangle(Size size)
         {
+            if (size.Width <= 0 || size.Height <= 0)
+                throw new ArgumentException($"Some side was negative in size: {size.Width}x{size.Height}");
             var bestPoint = new Point(int.MaxValue, int.MaxValue);
             var bestDistance = double.PositiveInfinity;
             var radiusStep = LinearMath.GetDiagonal(size) / 2;

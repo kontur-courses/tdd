@@ -10,12 +10,5 @@ namespace TagsCloudVisualization.Extensions
                 rectangle.X + rectangle.Width / 2,
                 rectangle.Y + rectangle.Height / 2);
         }
-
-        public static Point CenterWith(this Point point, Size size)
-        {
-            return new Point(
-                point.X + size.Width / 2,
-                point.Y + size.Height / 2);
-        }
     }
 }

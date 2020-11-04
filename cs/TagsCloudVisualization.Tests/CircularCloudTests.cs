@@ -5,34 +5,40 @@ using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using TagsCloudVisualization.Extensions;
+using TagsCloudVisualization.Layouters;
 
 namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
     public class CircularCloudTests
     {
-        private CircularCloudLayouter layouter;
-        private List<Rectangle> rectangles;
-
         [SetUp]
         public void SetUp()
         {
-            layouter = new CircularCloudLayouter(new Point(0, 0));
+            center = new Point(0, 0);
+            layouter = new CircularCloudLayouter(center);
             rectangles = new List<Rectangle>();
+            random = new Random();
         }
 
-        [Test]
-        public void Constructor_IsEmpty_MustSetCenter()
+        [TearDown]
+        public void TearDown()
         {
-            var layouter = new CircularCloudLayouter(new Point(3, 9));
-
-            layouter.Center.Should().Be(new Point(3, 9));
+            var context = TestContext.CurrentContext;
+            if (context.Result.Outcome.Status == TestStatus.Failed)
+            {
+            }
         }
+
+        private CircularCloudLayouter layouter;
+        private Point center;
+        private List<Rectangle> rectangles;
+        private Random random;
 
         [Test]
         public void PutNextRectangle_IsEmpty_ShouldReturnCorrectSize()
         {
-            var rectangle = layouter.PutNextRectangle(new Size(4, 11));
+            var rectangle = PutRectangle(new Size(4, 11));
 
             rectangle.Width.Should().Be(4);
             rectangle.Height.Should().Be(11);
@@ -41,8 +47,8 @@ namespace TagsCloudVisualization.Tests
         [Test]
         public void PutNextRectangle_IsEmpty_RectanglesShouldNotIntersect()
         {
-            var rect1 = layouter.PutNextRectangle(new Size(200, 30));
-            var rect2 = layouter.PutNextRectangle(new Size(200, 30));
+            var rect1 = PutRectangle(new Size(200, 30));
+            var rect2 = PutRectangle(new Size(200, 30));
 
             rect1.IntersectsWith(rect2).Should().BeFalse();
         }
@@ -55,45 +61,47 @@ namespace TagsCloudVisualization.Tests
             var count = 1000;
 
             for (var i = 0; i < count; i++)
-                rectangles.Add(layouter.PutNextRectangle(size));
+                rectangles.Add(PutRectangle(size));
 
-            IntersectionsTest(rectangles);
+            ListOfRectangles_EnumerableWithRectangles_RectanglesShouldNotIntersect(rectangles);
         }
 
         [Test]
         public void PutNextRectangle_IsEmpty_FirstRectangleShouldBeAroundCenter()
         {
-            var rectangle = 
+            var rectangle =
                 new CircularCloudLayouter(new Point(-500, 4000))
-                .PutNextRectangle(new Size(1, 1));
+                    .PutNextRectangle(new Size(1, 1));
 
             rectangle.X.Should().BeInRange(-502, -498);
             rectangle.Y.Should().BeInRange(3998, 4002);
         }
 
-        [Test, Timeout(1000)]
+        [Test]
+        [Timeout(1000)]
         public void PutNextRectangle_IsEmpty_ShouldAdd1000RectanglesIn1Second()
         {
             var count = 1000;
             var size = new Size(20, 50);
 
             for (var i = 0; i < count; i++)
-                layouter.PutNextRectangle(size);
+                PutRectangle(size);
         }
 
         [Test]
         public void PutNextRectangle_IsEmpty_ShouldLooksAsCircle()
         {
-            var size = new Size(20, 40);
             var count = 1000;
-            var area = size.Width * size.Height * count;
+            var area = 0;
             var farthestPointDistance = 0d;
 
             for (var i = 0; i < count; i++)
             {
+                var size = random.GetSize(1, 100, 10);
+                area += size.Width * size.Height;
                 var rectangle = PutRectangle(size);
                 var distance = LinearMath.DistanceBetween(
-                    layouter.Center,
+                    center,
                     rectangle.Center());
                 if (distance > farthestPointDistance)
                     farthestPointDistance = distance;
@@ -105,25 +113,26 @@ namespace TagsCloudVisualization.Tests
             different.Should().BeInRange(1d, 4d);
         }
 
-        [TearDown]
-        public void TearDown()
+        [Test]
+        public void PutNextRectangle_SizeWithNegativeSide_ShouldBeThrowArgumentException()
         {
-            var context = TestContext.CurrentContext;
-            if (context.Result.Outcome.Status == TestStatus.Failed)
-            {
-            }
+            Assert.Throws<ArgumentException>(() => layouter.PutNextRectangle(new Size(-2, 3)));
         }
 
-        private void IntersectionsTest(List<Rectangle> rectangles)
+        [Test]
+        public void PutNextRectangle_SizeWithZeroArea_ShouldBeThrowArgumentException()
         {
-            for (var i = 0; i < rectangles.Count; ++i)
+            Assert.Throws<ArgumentException>(() => layouter.PutNextRectangle(new Size(0, 0)));
+        }
+
+        private void ListOfRectangles_EnumerableWithRectangles_RectanglesShouldNotIntersect(List<Rectangle> candidates)
+        {
+            for (var i = 0; i < candidates.Count; ++i)
+            for (var j = 0; j < candidates.Count; ++j)
             {
-                for (var j = 0; j < rectangles.Count; ++j)
-                {
-                    if (i == j)
-                        continue;
-                    rectangles[i].IntersectsWith(rectangles[j]).Should().Be(false);
-                }
+                if (i == j)
+                    continue;
+                candidates[i].IntersectsWith(candidates[j]).Should().Be(false);
             }
         }
 

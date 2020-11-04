@@ -41,21 +41,7 @@ namespace TagsCloudVisualization.Tests
 
             var cartesianPoint = LinearMath.PolarToCartesian(center, radius, angle);
 
-            AssertPoint(new Point(70, 70), cartesianPoint);
-        }
-
-        [Test]
-        public void CenterWith_Size100x100AndZeroPoint_ShouldBeHalfSide()
-        {
-            var center = new Point(0, 0).CenterWith(new Size(100, 100));
-
-            center.Should().Be(new Point(50, 50));
-        }
-
-        private void AssertPoint(Point expected, Point actual)
-        {
-            actual.X.Should().Be(expected.X);
-            actual.Y.Should().Be(expected.Y);
+            cartesianPoint.Should().Be(new Point(70, 70));
         }
     }
 }
