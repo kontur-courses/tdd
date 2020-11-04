@@ -14,8 +14,6 @@ namespace CircularCloud
 
         public CircularCloudLayouter(Point center) => Spiral = new ArchimedeanSpiral(center);
 
-        public CircularCloudLayouter(int x, int y) => Spiral = new ArchimedeanSpiral(x, y);
-
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             FreePoints.RemoveAll(point => Rectangles.Any(rectangle => rectangle.Contains(point)));

@@ -20,7 +20,7 @@ namespace CircularCloudTests
         public void SetUp()
         {
             random = new Random();
-            cloud = new CircularCloudLayouter(1000, 1000);
+            cloud = new CircularCloudLayouter(new Point(1000, 1000));
         }
 
         [TearDown]

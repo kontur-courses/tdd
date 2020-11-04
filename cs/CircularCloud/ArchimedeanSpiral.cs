@@ -5,30 +5,22 @@ namespace CircularCloud
 {
     public class ArchimedeanSpiral
     {
-        public Point Center { get; private set; }
+        public Point Center { get; }
         protected const double Distance = 0.5;
-        protected double Fi = 0;
-        protected Point Previous = new Point(Int32.MaxValue, Int32.MinValue);
+        protected double Angel;
+        protected Point? Previous;
 
-        public ArchimedeanSpiral(Point center)
-        {
-            Center = center;
-        }
-
-        public ArchimedeanSpiral(int x, int y)
-        {
-            Center = new Point(x, y);
-        }
+        public ArchimedeanSpiral(Point center) => Center = center;
 
         public Point GetNextPoint()
         {
             Point result;
             do
             {
-                var r = Distance * Fi;
-                var x = r * Math.Cos(Fi);
-                var y = r * Math.Sin(Fi);
-                Fi += 0.0005;
+                var radius = Distance * Angel;
+                var x = radius * Math.Cos(Angel);
+                var y = radius * Math.Sin(Angel);
+                Angel += 0.0005;
                 result = new Point((int) Math.Round(x) + Center.X, (int) Math.Round(y) + Center.Y);
             } while (result == Previous);
 

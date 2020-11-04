@@ -16,7 +16,7 @@ namespace CircularCloudTests
         [SetUp]
         public void SetUp()
         {
-            spiral = new ArchimedeanSpiral(0, 0);
+            spiral = new ArchimedeanSpiral(Point.Empty);
         }
 
         [Test]
