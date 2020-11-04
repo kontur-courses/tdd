@@ -27,17 +27,18 @@ namespace CloudTag
             if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure)
                 return;
 
-            foreach (var filePath in Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "Failures Tests Layouts")))
+            foreach (var filePath in Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "..", "..",
+                "Failures Tests Layouts")))
                 File.Delete(filePath);
-            
-            var outt = TestContext.Out;
+
+            var outWriter = TestContext.Out;
             var pic = CloudPainter.DrawTagCloud(Pens.Blue, layouter);
             var testName = $"{TestContext.CurrentContext.Test.MethodName} {TestContext.CurrentContext.Test.Name}";
             var path = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "Failures Tests Layouts",
                 $"{testName}.png");
-            
-            outt.WriteLine($"Tag cloud visualization saved to file Failures Tests Layouts/{testName}");
-            
+
+            outWriter.WriteLine($"Tag cloud visualization saved to file Failures Tests Layouts/{testName}");
+
             pic.Save(path);
         }
 
@@ -129,7 +130,7 @@ namespace CloudTag
 
             var commonArea = layouter.GetRectangles().Sum(rectangle => rectangle.Height * rectangle.Width);
             var borderCircleArea = maxDistanceToCenter * maxDistanceToCenter * Math.PI;
-            
+
             (borderCircleArea - commonArea).Should().BeLessThan(2 * borderCircleArea / 3);
         }
 
@@ -145,15 +146,15 @@ namespace CloudTag
             var suggestedCircleRadius = Math.Sqrt(commonArea / Math.PI);
 
             var l = new List<double>();
-            
-            
+
+
             foreach (var rectangle in layouter.GetRectangles())
             {
                 var distanceToCenter = Math.Sqrt(Math.Pow(rectangle.Location.X - layouterCenter.X, 2) +
                                                  Math.Pow(rectangle.Location.Y - layouterCenter.Y, 2));
-                
+
                 l.Add(distanceToCenter);
-                
+
                 (distanceToCenter - suggestedCircleRadius).Should().BeLessThan(suggestedCircleRadius / 2);
             }
         }

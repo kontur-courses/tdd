@@ -8,7 +8,7 @@ namespace CloudTag
         {
             var x = centerPoint.X - rectangle.Width / 2;
             var y = centerPoint.Y - rectangle.Height / 2;
-            rectangle.Location = new Point(x,y);
+            rectangle.Location = new Point(x, y);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace CloudTag
         {
             spiral = new Spiral(center);
         }
-        
+
         public CircularCloudLayouter(int centerX, int centerY)
         {
             var center = new Point(centerX, centerY);
@@ -24,7 +24,7 @@ namespace CloudTag
         {
             if (rectangleSize.Height == 0 || rectangleSize.Width == 0)
                 return Rectangle.Empty;
-            
+
             var rectangleToAdd = new Rectangle(Point.Empty, rectangleSize);
 
             do
