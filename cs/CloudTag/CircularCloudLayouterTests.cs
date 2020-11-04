@@ -21,6 +21,26 @@ namespace CloudTag
             layouter = new CircularCloudLayouter(layouterCenter);
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure)
+                return;
+
+            foreach (var filePath in Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "Failures Tests Layouts")))
+                File.Delete(filePath);
+            
+            var outt = TestContext.Out;
+            var pic = CloudPainter.DrawTagCloud(Pens.Blue, layouter);
+            var testName = $"{TestContext.CurrentContext.Test.MethodName} {TestContext.CurrentContext.Test.Name}";
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "Failures Tests Layouts",
+                $"{testName}.png");
+            
+            outt.WriteLine($"Tag cloud visualization saved to file Failures Tests Layouts/{testName}");
+            
+            pic.Save(path);
+        }
+
         [Test]
         public void Constructor_DoesNotThrow()
         {
