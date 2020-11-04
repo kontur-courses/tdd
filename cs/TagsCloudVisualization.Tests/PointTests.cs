@@ -19,5 +19,13 @@ namespace TagsCloudVisualization.Tests
 
             center.Should().Be(expected);
         }
+
+        [Test]
+        public void DistanceBetween_TwoPoints_ShouldBeReturnCorrectDistance()
+        {
+            var distance = new Point(0, 0).DistanceBetween(new Point(100, 120));
+
+            distance.Should().BeApproximately(156.2, 1);
+        }
     }
 }

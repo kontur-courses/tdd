@@ -49,11 +49,11 @@ namespace TagsCloudVisualization.Layouters
             while (angle < startAngle + DoublePi)
             {
                 var point = SearchBestOnAngle(angle, radiusStep, size);
-                var pointDistance = LinearMath.DistanceBetween(center, point.CenterWith(size));
+                var pointDistance = center.DistanceBetween(point.CenterWith(size));
                 if (pointDistance < bestDistance)
                 {
                     bestPoint = point;
-                    bestDistance = LinearMath.DistanceBetween(center, bestPoint.CenterWith(size));
+                    bestDistance = center.DistanceBetween(bestPoint.CenterWith(size));
                 }
 
                 angle += searchAngleStep;

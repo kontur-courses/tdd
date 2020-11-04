@@ -2,7 +2,6 @@
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
-using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization.Tests
 {
@@ -12,14 +11,6 @@ namespace TagsCloudVisualization.Tests
         [SetUp]
         public void SetUp()
         {
-        }
-
-        [Test]
-        public void DistanceBetween_TwoPoints_ShouldBeReturnCorrectDistance()
-        {
-            var distance = LinearMath.DistanceBetween(new Point(0, 0), new Point(100, 120));
-
-            distance.Should().BeApproximately(156.2, 1);
         }
 
         [Test]
@@ -42,6 +33,31 @@ namespace TagsCloudVisualization.Tests
             var cartesianPoint = LinearMath.PolarToCartesian(center, radius, angle);
 
             cartesianPoint.Should().Be(new Point(70, 70));
+        }
+
+        [Test]
+        public void LinearInterpolate_HalfOfLine_ShouldBeReturnOneHalf()
+        {
+            var value1 = 10;
+            var value2 = 30;
+            var required = 20;
+            var expected = 0.5d;
+
+            var actual = LinearMath.LinearInterpolate(value1, value2, required);
+
+            actual.Should().BeApproximately(expected, 0.01);
+        }
+        [Test]
+        public void LinearInterpolate_25of100_ShouldBeReturnOneQuarter()
+        {
+            var value1 = 10;
+            var value2 = 110;
+            var required = 35;
+            var expected = 0.25d;
+
+            var actual = LinearMath.LinearInterpolate(value1, value2, required);
+
+            actual.Should().BeApproximately(expected, 0.01);
         }
     }
 }

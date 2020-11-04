@@ -17,11 +17,9 @@ namespace TagsCloudVisualization
             return new Point(x, y);
         }
 
-        public static double DistanceBetween(Point from, Point to)
+        public static double LinearInterpolate(double leftBound, double rightBound, double value)
         {
-            var x = from.X - to.X;
-            var y = from.Y - to.Y;
-            return Math.Sqrt(x * x + y * y);
+            return Math.Min(Math.Max((value - leftBound) / (rightBound - leftBound), 0), 1);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace TagsCloudVisualization.Extensions
 {
@@ -9,6 +10,13 @@ namespace TagsCloudVisualization.Extensions
             return new Point(
                 point.X + size.Width / 2,
                 point.Y + size.Height / 2);
+        }
+
+        public static double DistanceBetween(this Point from, Point to)
+        {
+            var x = from.X - to.X;
+            var y = from.Y - to.Y;
+            return Math.Sqrt(x * x + y * y);
         }
     }
 }
