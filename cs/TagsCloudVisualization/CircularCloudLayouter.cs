@@ -21,15 +21,15 @@ namespace TagsCloudVisualization
             public AngleDirection Direction;
         }
 
-        private Dictionary<AngleDirection, Func<Point, Size, Rectangle>> directionToRectangle;
+        private readonly Dictionary<AngleDirection, Func<Point, Size, Rectangle>> directionToRectangle;
 
-        public readonly Point Center;
+        private readonly Point center;
         private readonly List<Rectangle> rectangles;
         private readonly List<Angle> angles;
 
         public CircularCloudLayouter(Point center)
         {
-            Center = center;
+            this.center = center;
             rectangles = new List<Rectangle>();
             angles = new List<Angle>();
             directionToRectangle = new Dictionary<AngleDirection, Func<Point, Size, Rectangle>>
@@ -53,40 +53,32 @@ namespace TagsCloudVisualization
             };
         }
 
-        public List<Rectangle> Rectangles => rectangles.ToList();
-
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangles.Count == 0)
             {
-
-                rectangles.Add(new Rectangle(Center.X - rectangleSize.Width / 2,
-                    Center.Y - rectangleSize.Height / 2,
-                    rectangleSize.Width, rectangleSize.Height));
+                var firstRectangle = new Rectangle(center.X - rectangleSize.Width / 2,
+                    center.Y - rectangleSize.Height / 2,
+                    rectangleSize.Width, rectangleSize.Height);
+                rectangles.Add(firstRectangle);
                 AddAngles(rectangles[0]);
+                return firstRectangle;
             }
-            else AddNewRectangle(rectangleSize);
-            return rectangles[rectangles.Count - 1];
+            return AddNewRectangle(rectangleSize);
         }
 
-        private void AddNewRectangle(Size rectangleSize)
+        private Rectangle AddNewRectangle(Size rectangleSize)
         {
-            var neededRectangle = angles
-                .Select(angle => directionToRectangle[angle.Direction](angle.Pos, rectangleSize))
-                .Where(rectangle => !rectangles.Any(anotherRectangle => anotherRectangle.IntersectsWith(rectangle)))
-                .OrderBy(rect => Math.Sqrt(Math.Pow(rect.X + rect.Width / 2 - Center.X, 2) + Math.Pow(rect.Y + rect.Height / 2 - Center.Y, 2)))
+            var resultTuple = angles
+                .Select(angle => (rectangle: directionToRectangle[angle.Direction](angle.Pos, rectangleSize), angle))
+                .Where(rectangle => !rectangles.Any(anotherRectangle => anotherRectangle.IntersectsWith(rectangle.Item1)))
+                .OrderBy(rect => 
+                    Math.Sqrt(Math.Pow(rect.rectangle.X + rect.rectangle.Width / 2 - center.X, 2) + Math.Pow(rect.rectangle.Y + rect.rectangle.Height / 2 - center.Y, 2)))
                 .First();
-            rectangles.Add(neededRectangle);
-            AddAngles(neededRectangle);
-            var anglesToDelete = new List<Angle>();
-            foreach (var angle in angles)
-            {
-                if (rectangles
-                    .Any(rect => rect.IntersectsWith(directionToRectangle[angle.Direction](angle.Pos, new Size(1, 1)))))
-                    anglesToDelete.Add(angle);
-            }
-            foreach (var angle in anglesToDelete)
-                angles.Remove(angle);
+            rectangles.Add(resultTuple.rectangle);
+            angles.Remove(resultTuple.angle);
+            AddAngles(resultTuple.rectangle);
+            return resultTuple.rectangle;
         }
 
         private void AddAngles(Rectangle rect)
@@ -95,14 +87,10 @@ namespace TagsCloudVisualization
             angles.Add(new Angle { Direction = AngleDirection.RightTop, Pos = rect.Location });
             angles.Add(new Angle { Direction = AngleDirection.LeftBottom, Pos = rect.Location + rect.Size });
             angles.Add(new Angle { Direction = AngleDirection.RightTop, Pos = rect.Location + rect.Size });
-            angles.Add(new Angle
-            { Direction = AngleDirection.RightBottom, Pos = rect.Location + new Size(rect.Size.Width, 0) });
-            angles.Add(new Angle
-            { Direction = AngleDirection.LeftTop, Pos = rect.Location + new Size(rect.Size.Width, 0) });
-            angles.Add(new Angle
-            { Direction = AngleDirection.RightBottom, Pos = rect.Location + new Size(0, rect.Size.Height) });
-            angles.Add(new Angle
-            { Direction = AngleDirection.LeftTop, Pos = rect.Location + new Size(0, rect.Size.Height) });
+            angles.Add(new Angle { Direction = AngleDirection.RightBottom, Pos = rect.Location + new Size(rect.Size.Width, 0) });
+            angles.Add(new Angle { Direction = AngleDirection.LeftTop, Pos = rect.Location + new Size(rect.Size.Width, 0) });
+            angles.Add(new Angle { Direction = AngleDirection.RightBottom, Pos = rect.Location + new Size(0, rect.Size.Height) });
+            angles.Add(new Angle { Direction = AngleDirection.LeftTop, Pos = rect.Location + new Size(0, rect.Size.Height) });
         }
     }
 }

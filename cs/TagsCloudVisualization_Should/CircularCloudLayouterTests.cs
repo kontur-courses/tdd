@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using TagsCloudVisualization_Should;
 
 namespace TagsCloudVisualization
 {
@@ -12,19 +13,25 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouterTests
     {
         private Point center = new Point(400, 400);
-        private CircularCloudLayouter layouter;
+        private TestedCloudLayouter layouter;
 
         [SetUp]
         public void SetUp()
         {
-            layouter = new CircularCloudLayouter(center);
+            layouter = new TestedCloudLayouter(center);
         }
 
         [Test]
         public void FirstRectangle_ShouldBeInCenter()
         {
-            layouter.PutNextRectangle(new Size(100, 70))
-                .Should().BeEquivalentTo(new Rectangle(350, 365, 100, 70));
+            var firstRectangle = layouter.PutNextRectangle(new Size(100, 70));
+            firstRectangle
+                .Should()
+                .BeEquivalentTo(new Rectangle(
+                    center.X - firstRectangle.Width / 2, 
+                    center.Y - firstRectangle.Height / 2, 
+                    firstRectangle.Width,
+                    firstRectangle.Height));
         }
 
         [Test]
@@ -54,25 +61,37 @@ namespace TagsCloudVisualization
         [Test]
         public void Image_ShouldBeLikeACircle()
         {
-            layouter.PutNextRectangle(new Size(50, 50));
-            layouter.PutNextRectangle(new Size(50, 50));
-            layouter.PutNextRectangle(new Size(50, 50));
-            layouter.PutNextRectangle(new Size(50, 50));
-            layouter.PutNextRectangle(new Size(50, 50));
+            var bigRectSize = new Size(50, 50);
+            var smallRectSize = new Size(20, 20);
+            layouter.PutNextRectangle(bigRectSize);
+            layouter.PutNextRectangle(bigRectSize);
+            layouter.PutNextRectangle(bigRectSize);
+            layouter.PutNextRectangle(bigRectSize);
+            layouter.PutNextRectangle(bigRectSize);
 
             var rectangles = new List<Rectangle>
             {
-                layouter.PutNextRectangle(new Size(20, 20)),
-                layouter.PutNextRectangle(new Size(20, 20)),
-                layouter.PutNextRectangle(new Size(20, 20)),
-                layouter.PutNextRectangle(new Size(20, 20))
+                layouter.PutNextRectangle(smallRectSize),
+                layouter.PutNextRectangle(smallRectSize),
+                layouter.PutNextRectangle(smallRectSize),
+                layouter.PutNextRectangle(smallRectSize)
             };
+            var rectangleToCheck = new Rectangle(
+                center.X - bigRectSize.Width / 2 - 1,
+                center.Y - bigRectSize.Height / 2 - 1,
+                bigRectSize.Width + 2,
+                bigRectSize.Height + 2);
             rectangles.All(
-                rect => rect.X >= center.X - 45
-                        && rect.X + rect.Width <= center.X + 45
-                        && rect.Y >= center.Y - 45
-                        && rect.Y + rect.Height <= center.Y + 45
+                rect => rect.IntersectsWith(rectangleToCheck)
             ).Should().BeTrue("because there is enough plase on the image to set rectangles inside");
+        }
+
+        [Test, Timeout(15000)]
+        public void Layouter_ShouldBeFastEnough()
+        {
+            var rand = new Random(); 
+            for (var i = 0; i < 600; i++)
+                layouter.PutNextRectangle(new Size(rand.Next(1, 100), rand.Next(1, 100)));
         }
 
         [TearDown]
@@ -85,16 +104,15 @@ namespace TagsCloudVisualization
                 var fileName = $"{context.WorkDirectory}\\{context.Test.Name}.png";
                 var rectangles = layouter.Rectangles;
                 TestContext.WriteLine($"Tag cloud visualization saved to file {fileName}");
-                SaveWrongImage(rectangles, center, fileName);
+                SaveImage(rectangles, center, new Size(500, 500), fileName);
             }
         }
 
-        private void SaveWrongImage(List<Rectangle> rectangles, Point center, string fileName)
+        private void SaveImage(List<Rectangle> rectangles, Point center, Size imageSize, string fileName)
         {
-            var image = new Bitmap(500, 500);
+            var image = new Bitmap(imageSize.Width, imageSize.Height);
             var graphics = Graphics.FromImage(image);
             graphics.Clear(Color.Black);
-            var rand = new Random();
             graphics.DrawRectangles(new Pen(Color.Aqua, 2), rectangles.ToArray());
             graphics.FillEllipse(Brushes.Green, new Rectangle(center - new Size(2, 2), new Size(4, 4)));
             image.Save(fileName);
