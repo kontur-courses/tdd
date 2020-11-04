@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -21,9 +22,11 @@ namespace TagsCloudVisualization
                 throw new ArgumentException();
             foreach (var point in spiral)
             {
-                var topLeftCorner = new Point();
-                topLeftCorner.X = point.X - rectangleSize.Width / 2;
-                topLeftCorner.Y = point.Y - rectangleSize.Height / 2;
+                var topLeftCorner = new Point
+                {
+                    X = point.X - rectangleSize.Width / 2,
+                    Y = point.Y - rectangleSize.Height / 2
+                };
                 var rectangle = new Rectangle(topLeftCorner, rectangleSize);
                 if (IsRectangleIntersects(rectangle)) continue;
                 placedRectangles.Add(rectangle);
@@ -36,11 +39,7 @@ namespace TagsCloudVisualization
 
         private bool IsRectangleIntersects(Rectangle rectangle)
         {
-            foreach (var placedRectangle in placedRectangles)
-                if (rectangle.IntersectsWith(placedRectangle))
-                    return true;
-
-            return false;
+            return placedRectangles.Any(rectangle.IntersectsWith);
         }
 
         private void AddUsedPointsToSpiral(Rectangle rectangle)

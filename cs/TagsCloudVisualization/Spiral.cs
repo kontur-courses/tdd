@@ -20,24 +20,25 @@ namespace TagsCloudVisualization
             var currentPoint = center;
             yield return currentPoint;
             var lineLength = 1;
-            var sign = -1;
+            var direction = -1;
+            
             while (true)
             {
                 for (var i = 0; i < lineLength; i++)
                 {
-                    currentPoint = Point.Add(currentPoint, new Size(sign, 0));
+                    currentPoint = Point.Add(currentPoint, new Size(direction, 0));
                     if (!usedPoints.Contains(currentPoint))
                         yield return currentPoint;
                 }
 
                 for (var i = 0; i < lineLength; i++)
                 {
-                    currentPoint = Point.Add(currentPoint, new Size(0, sign));
+                    currentPoint = Point.Add(currentPoint, new Size(0, direction));
                     if (!usedPoints.Contains(currentPoint))
                         yield return currentPoint;
                 }
 
-                sign *= -1;
+                direction *= -1;
                 lineLength++;
             }
         }

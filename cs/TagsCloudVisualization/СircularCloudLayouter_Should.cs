@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -79,7 +80,6 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNotIntersectedRectangles_WhenRectanglesSquareMoreThan1()
         {
-            var placedRectangles = new List<Rectangle>();
             var rectanglesSizes = new[]
             {
                 new Size(5, 5),
@@ -90,8 +90,8 @@ namespace TagsCloudVisualization
                 new Size(2, 2)
             };
 
-            foreach (var rectangleSize in rectanglesSizes)
-                placedRectangles.Add(layouter.PutNextRectangle(rectangleSize));
+            var placedRectangles = 
+                rectanglesSizes.Select(rectangleSize => layouter.PutNextRectangle(rectangleSize)).ToList();
 
             for (var i = 0; i < rectanglesSizes.Length; i++)
             for (var j = i + 1; j < rectanglesSizes.Length; j++)
@@ -101,12 +101,11 @@ namespace TagsCloudVisualization
         [Test]
         public void PutRectanglesInCircle_WhenRectanglesSquareEquals1()
         {
-            var placedRectangles = new List<Rectangle>();
             var rectanglesSizes = new Size[25];
             for (var i = 0; i < rectanglesSizes.Length; i++) rectanglesSizes[i] = new Size(1, 1);
 
-            foreach (var rectangleSize in rectanglesSizes)
-                placedRectangles.Add(layouter.PutNextRectangle(rectangleSize));
+            var placedRectangles = 
+                rectanglesSizes.Select(rectangleSize => layouter.PutNextRectangle(rectangleSize)).ToList();
 
             foreach (var placedRectangle in placedRectangles)
                 GetDistanceToCenter(placedRectangle).Should().BeLessOrEqualTo(Math.Sqrt(8));
@@ -115,12 +114,11 @@ namespace TagsCloudVisualization
         [Test]
         public void PutRectanglesInCircle_WhenRectanglesSquareEquals2()
         {
-            var placedRectangles = new List<Rectangle>();
             var rectanglesSizes = new Size[8];
             for (var i = 0; i < rectanglesSizes.Length; i++) rectanglesSizes[i] = new Size(2, 2);
 
-            foreach (var rectangleSize in rectanglesSizes)
-                placedRectangles.Add(layouter.PutNextRectangle(rectangleSize));
+            var placedRectangles = 
+                rectanglesSizes.Select(rectangleSize => layouter.PutNextRectangle(rectangleSize)).ToList();
 
             foreach (var placedRectangle in placedRectangles)
                 GetDistanceToCenter(placedRectangle).Should().BeLessOrEqualTo(Math.Sqrt(8));
