@@ -31,11 +31,26 @@ namespace TagsCloudVisualization
                     rectFromQuarter => rectFromQuarter.IntersectsWith(rect)));
         }
 
+        public Rectangle GetShiftedToCenterRectangle(Rectangle rect)
+        {
+            if (rect.Location == Point.Empty)
+                return rect;
+
+            while (true)
+            {
+                var movedRect = DoStepToCenter(rect);
+                if (RectangleIntersectsWithOther(movedRect))
+                    return rect;
+                rect = movedRect;
+            }
+        }
+
         public static IEnumerable<Quarters> FindQuartersForRectangle(Rectangle rect)
         {
             var rectangleQuarters = new HashSet<Quarters>();
+            var decoratedRectangle = new RectangleDecorator(rect);
 
-            foreach (var corner in rect.GetCorners())
+            foreach (var corner in decoratedRectangle.GetCorners())
             {
                 var quarter = GetQuarterForPoint(corner);
                 if (quarter != Quarters.Unknown)
@@ -55,6 +70,45 @@ namespace TagsCloudVisualization
                 Quarters.Second => secondQuarterRectangles,
                 Quarters.Third => thirdQuarterRectangles,
                 Quarters.Fourth => fourthQuarterRectangles,
+                _ => throw new ArgumentException()
+            };
+        }
+
+        private static Rectangle DoStepToCenter(Rectangle rect)
+        {
+            var deltaPoints = FindQuartersForRectangle(rect)
+                .Select(GetDeltaForQuarter)
+                .ToArray();
+
+            rect.Offset(GetResultDeltaPoint(deltaPoints));
+
+            return rect;
+        }
+
+        private static Point GetResultDeltaPoint(Point[] deltaPoints)
+        {
+            if (deltaPoints.Length < 2)
+                return deltaPoints[0];
+
+            var resultDelta = deltaPoints[0];
+            resultDelta.Offset(deltaPoints[1]);
+            
+            if (Math.Abs(resultDelta.X) == 2)
+                resultDelta.X /= 2;
+            if (Math.Abs(resultDelta.Y) == 2)
+                resultDelta.Y /= 2;
+
+            return resultDelta;
+        }
+
+        private static Point GetDeltaForQuarter(Quarters quarter)
+        {
+            return quarter switch
+            {
+                Quarters.First => new Point(-1, 1),
+                Quarters.Second => new Point(1, 1),
+                Quarters.Third => new Point(1, -1),
+                Quarters.Fourth => new Point(-1, -1),
                 _ => throw new ArgumentException()
             };
         }

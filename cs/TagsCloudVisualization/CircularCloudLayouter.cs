@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace TagsCloudVisualization
 {
@@ -23,46 +22,11 @@ namespace TagsCloudVisualization
             }
 
             if (rect.Location != Point.Empty)
-                rect = GetShiftedToCenterRectangle(rect);
-            
+                rect = surface.GetShiftedToCenterRectangle(rect);
+
             surface.AddRectangle(rect);
             spiral.Reset();
             return rect;
-        }
-
-        private Rectangle GetShiftedToCenterRectangle(Rectangle rect)
-        {
-            while (true)
-            {
-                var movedRect = DoStepToCenter(rect);
-                if (surface.IsRectangleIntersect(movedRect))
-                    return rect;
-                rect = movedRect;
-            }
-        }
-
-        private static Rectangle DoStepToCenter(Rectangle rect)
-        {
-            var rectQuarters = Surface.FindQuartersForRectangle(rect);
-            foreach (var quarter in rectQuarters)
-            {
-                var (dx, dy) = GetDeltaForQuarter(quarter);
-                rect.Offset(dx, dy);
-            }
-
-            return rect;
-        }
-
-        private static (int dx, int dy) GetDeltaForQuarter(Surface.Quarters quarter)
-        {
-            return quarter switch
-            {
-                Surface.Quarters.First => (-1, 1),
-                Surface.Quarters.Second => (1, 1),
-                Surface.Quarters.Third => (1, -1),
-                Surface.Quarters.Fourth => (-1, -1),
-                _ => throw new ArgumentException()
-            };
         }
     }
 }

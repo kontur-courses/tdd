@@ -79,7 +79,25 @@ namespace TagsCloudVisualizationTests
         {
             rectsToSurface.ToList().ForEach(surface.AddRectangle);
 
-            surface.IsRectangleIntersect(rectToMethod).Should().Be(expectedResult);
+            surface.RectangleIntersectsWithOther(rectToMethod).Should().Be(expectedResult);
+        }
+
+        [Test]
+        public void GetShiftedToCenterRectangle_IfRectangleAlreadyAtCenter_ReturnSameRectangle()
+        {
+            var rect = new Rectangle(0, 0, 5, 10);
+
+            surface.GetShiftedToCenterRectangle(rect).Should().Be(rect);
+        }
+
+        [Test]
+        public void GetShiftedToCenterRectangle_AtSurfaceAnotherRectangle_MoveWhileTheyNotIntersect()
+        {
+            surface.AddRectangle(new Rectangle(0, 0, 2, 2));
+            var rectangleForCentering = new Rectangle(-2, 5, 4, 2);
+
+            surface.GetShiftedToCenterRectangle(rectangleForCentering).Should()
+                .Be(new Rectangle(-2, 2, 4, 2));
         }
 
         private static IEnumerable FindQuartersForRectangle_WhenRectangleAtOneQuarterCases()
