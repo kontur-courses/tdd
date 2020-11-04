@@ -4,20 +4,19 @@ using System.Drawing;
 using System.Linq;
 using TagsCloudVisualization.Extensions;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Layouters
 {
     public class CircularCloudLayouter : ILayouter
     {
-        public Point Center { get; }
-
         private const double DoublePi = Math.PI * 2;
-        private double startAngle = 0;
-        private readonly double radiusThreshold = 0;
         private readonly double searchAngleStep = Math.PI / 2;
         private readonly double offsetAngleStep = Math.PI / 180;
-        private readonly double minStep = 30d;
+        private readonly double radiusThreshold;
+        private readonly double minStep = 1d;
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
         private readonly Random random = new Random();
+        private readonly Point center;
+        private double startAngle;
 
 #if DEBUG
         public delegate void CircularLayoutState(
@@ -31,7 +30,12 @@ namespace TagsCloudVisualization
 
         public CircularCloudLayouter(Point center)
         {
-            Center = center;
+            this.center = center;
+        }
+
+        public CircularCloudLayouter(Point center, double startRadius) : this(center)
+        {
+            radiusThreshold = startRadius;
         }
 
         public Rectangle PutNextRectangle(Size size)
@@ -43,11 +47,11 @@ namespace TagsCloudVisualization
             while (angle < startAngle + DoublePi)
             {
                 var point = SearchBestOnAngle(angle, radiusStep, size);
-                var pointDistance = LinearMath.DistanceBetween(Center, point.CenterWith(size));
+                var pointDistance = LinearMath.DistanceBetween(center, point.CenterWith(size));
                 if (pointDistance < bestDistance)
                 {
                     bestPoint = point;
-                    bestDistance = LinearMath.DistanceBetween(Center, bestPoint.CenterWith(size));
+                    bestDistance = LinearMath.DistanceBetween(center, bestPoint.CenterWith(size));
                 }
 
                 angle += searchAngleStep;
@@ -63,14 +67,14 @@ namespace TagsCloudVisualization
         {
             var direction = -1;
             var radius = radiusThreshold;
-            var rectangle = new Rectangle(LinearMath.PolarToCartesian(Center, radius, angle), size);
+            var rectangle = new Rectangle(LinearMath.PolarToCartesian(center, radius, angle), size);
             
             while (!CanPlaced(rectangle))
-                rectangle.Location = LinearMath.PolarToCartesian(Center, radius += step, angle); 
+                rectangle.Location = LinearMath.PolarToCartesian(center, radius += step, angle); 
             var bestPoint = rectangle.Location;
             while (step > minStep)
             {
-                rectangle.Location = LinearMath.PolarToCartesian(Center, radius += step * direction, angle);
+                rectangle.Location = LinearMath.PolarToCartesian(center, radius += step * direction, angle);
                 if (CanPlaced(rectangle))
                 {
                     bestPoint = rectangle.Location;
