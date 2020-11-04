@@ -5,9 +5,9 @@ using System.Drawing.Imaging;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using ProjectCircularCloudLayouter;
+using TagsCloudVisualization;
 
-namespace CircularCloudLayouterShould
+namespace TagsCloudVisualizationTests
 {
     public class Tests
     {

@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace ProjectCircularCloudLayouter
+namespace TagsCloudVisualization
 {
     public interface ISpiral
     {

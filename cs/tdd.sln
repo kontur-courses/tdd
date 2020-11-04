@@ -7,9 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BowlingGame", "BowlingGame\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.csproj", "{B5108E20-2ACF-4ED9-84FE-2A718050FC94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircularCloudLayouterShould", "CircularCloudLayouterShould\CircularCloudLayouterShould.csproj", "{B567CBB5-4FAC-415F-844E-5AAAFBC07FF7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualizationTests", "TagsCloudVisualizationTests\TagsCloudVisualizationTests.csproj", "{B567CBB5-4FAC-415F-844E-5AAAFBC07FF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectCircularCloudLayouter", "ProjectCircularCloudLayouter\ProjectCircularCloudLayouter.csproj", "{D7102455-9A21-43E2-B1BE-348D9C77A316}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{D7102455-9A21-43E2-B1BE-348D9C77A316}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
