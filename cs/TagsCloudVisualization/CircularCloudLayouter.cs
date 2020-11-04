@@ -8,24 +8,56 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         internal readonly HashSet<Rectangle> rectangles = new HashSet<Rectangle>();
-        internal readonly Point center;
+        public readonly Point center;
         private readonly PointGetter getPointer;
+        internal int Top { get; private set; }
+        internal int Bottom { get; private set; }
+        internal int Right { get; private set; }
+        internal int Left { get; private set; }
+
+        public bool IsEmpty => !rectangles.Any();
+
+        public Size Size => new Size(Right - Left, Bottom - Top);
         internal CircularCloudLayouter(Point center)
         {
             this.center = center;
             getPointer = new PointGetter(center);
+            Top = center.Y;
+            Bottom = center.Y;
+            Right = center.X;
+            Left = center.X;
         }
 
         internal Rectangle PutNextRectangle(Size rectangleSize)
         {
             var result = MoveToCentre(PutRectangleOnCircle(rectangleSize));
+            ChangeSize(result);
             rectangles.Add(result);
             return result;
         }
 
+        private void ChangeSize(Rectangle rectangle) 
+        {
+            if (IsEmpty)
+            {
+                Top = rectangle.Top;
+                Bottom = rectangle.Bottom;
+                Right = rectangle.Right;
+                Left = rectangle.Left;
+            }
+            if (rectangle.Top < Top)
+                Top = rectangle.Top;
+            if (rectangle.Bottom > Bottom)
+                Bottom = rectangle.Bottom;
+            if (rectangle.Left < Left)
+                Left = rectangle.Left;
+            if (rectangle.Right > Right)
+                Right = rectangle.Right;
+        }
+
         private Rectangle PutRectangleOnCircle(Size size)
         {
-            var rectangle = new Rectangle();
+            Rectangle rectangle;
             do
             {
                 var point = getPointer.GetNextPoint();
