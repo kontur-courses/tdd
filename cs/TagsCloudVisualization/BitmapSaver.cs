@@ -12,5 +12,8 @@ namespace TagsCloudVisualization
             var projectDirectory = new DirectoryInfo(Directory.GetCurrentDirectory()).Parent.Parent.Parent;
             bitmap.Save(Path.Combine(projectDirectory.FullName, directoryToSave, filename));
         }
+
+        public static string GetRelativePath(string filename) =>
+            Path.Combine(directoryToSave, filename);
     }
 }
