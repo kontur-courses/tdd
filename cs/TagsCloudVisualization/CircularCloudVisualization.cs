@@ -1,4 +1,7 @@
-﻿using System.Drawing;
+﻿using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -7,42 +10,24 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudVisualization
     {
-        private readonly CircularCloudLayouter layouter;
-        private Bitmap bitmap;
-        private readonly int sideSize;
-
-        public CircularCloudVisualization(CircularCloudLayouter layouter, int sideSize = 5)
-        {
-            this.layouter = layouter;
-            this.sideSize = sideSize;
-        }
-
-        private void DrawRectanglesOnImage()
+        private static Bitmap DrawRectanglesOnImage(CircularCloudLayouter layouter, int sideSize)
         {
             var layoutSize = layouter.GetLayoutSize();
-            bitmap = new Bitmap(layoutSize.Width, layoutSize.Height);
+            var bitmap = new Bitmap(layoutSize.Width, layoutSize.Height);
             using var graphics = Graphics.FromImage(bitmap);
             using var pen = new Pen(Color.Red, sideSize);
             graphics.DrawRectangles(pen, layouter.ToArray());
+            return bitmap;
         }
 
-        public string SaveImage(string name)
+        public static string SaveImageFromLayout(string name, CircularCloudLayouter layout, int penSize = 5)
         {
             if (!name.EndsWith(".png"))
                 name += ".png";
-            DrawRectanglesOnImage();
-            var path = GetPathToImageName(name);
+            using var bitmap = DrawRectanglesOnImage(layout, penSize);
+            var path = PathCreator.GetPathToFileWithName(3, "LayoutImage", name);
             bitmap.Save(path, ImageFormat.Png);
-            bitmap.Dispose();
             return path;
-        }
-
-        private string GetPathToImageName(string name, int nestingInRootDirectory = 3)
-        {
-            var directoryInfo = new DirectoryInfo(Directory.GetCurrentDirectory());
-            for (var i = 0; i < nestingInRootDirectory; i++)
-                directoryInfo = directoryInfo.Parent;
-            return Path.Combine(directoryInfo.FullName, "LayoutImage", name);
         }
     }
 }

@@ -4,6 +4,7 @@ using NUnit.Framework.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using TagsCloudVisualization.Extensions;
 
@@ -14,7 +15,7 @@ namespace TagsCloudVisualization.Tests
     {
         private CircularCloudLayouter layout;
         private Point center;
-        private Size rectangleSize;
+        private Size[] rectangleSizes;
         private int rectangleCount;
         private List<Rectangle> rectangles;
 
@@ -23,16 +24,31 @@ namespace TagsCloudVisualization.Tests
         {
             center = new Point(100, 100);
             layout = new CircularCloudLayouter(center);
-            rectangleSize = new Size(10, 10);
+            rectangleSizes = GetRandomSizeSet();
             rectangles = new List<Rectangle>();
             rectangleCount = 10;
         }
 
-        private void PutRectangles(int rectangleCount = 10)
+        private Size[] GetRandomSizeSet(int length = 4, int maxSideSize = 40, int minSideSize = 10)
         {
+            var sizes = new Size[length];
+            var random = new Random();
+            for (int i = 0; i < length; i++)
+                sizes[i] = new Size(random.Next(minSideSize, minSideSize), random.Next(minSideSize, maxSideSize));
+            return sizes;
+        }
+
+        private void PutRectangles(int rectangleCount = 10, Size[] sizes = null)
+        {
+            sizes ??= rectangleSizes;
             this.rectangleCount = rectangleCount;
+            var sizesLenght = sizes.Length;
+            Size size;
             for (int i = 0; i < rectangleCount; i++)
-                rectangles.Add(layout.PutNextRectangle(rectangleSize));
+            {
+                size = sizes[i % sizesLenght];
+                rectangles.Add(layout.PutNextRectangle(size));
+            }
         }
 
         [Test]
@@ -63,10 +79,10 @@ namespace TagsCloudVisualization.Tests
             ///     определяю радиус
             /// Проверка происходи на утверждении, что все прямоугольники должны быть вписаны в кадрат со стороной 2 радиуса
             ///     
-
-            PutRectangles();
+            var size = new Size(20, 20);
+            PutRectangles(20, new[] { size });
             var rectCountInRadius = rectangleCount / 4 + 1;
-            var radius = Math.Max(rectangleSize.Height, rectangleSize.Width) * rectCountInRadius;
+            var radius = Math.Max(size.Height, size.Width) * rectCountInRadius;
             var circumscribedCenter = new Point(center.X - radius, center.Y - radius);
             var circumscribedRectangle = new Rectangle(circumscribedCenter, new Size(radius * 2, radius * 2));
 
@@ -122,8 +138,13 @@ namespace TagsCloudVisualization.Tests
             var testContext = TestContext.CurrentContext;
             if (!testContext.Result.Outcome.Status.HasFlag(TestStatus.Failed))
                 return;
-            var visualization = new CircularCloudVisualization(layout, 2);
-            var path = visualization.SaveImage(testContext.Test.Name);
+
+            var fileName = testContext.Test.Name + ".png";
+            var path = CircularCloudVisualization.SaveImageFromLayout(fileName, layout, 2);
+            var pathToGitIgnore = PathCreator.GetPathToFileWithName(5, ".gitignore");
+
+            using var file = new StreamWriter(pathToGitIgnore, true);
+            file.Write("\n" + fileName);
 
             TestContext.WriteLine($"Tag cloud visualization saved to file {path}");
         }

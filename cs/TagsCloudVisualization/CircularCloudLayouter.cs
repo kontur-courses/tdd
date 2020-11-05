@@ -46,9 +46,9 @@ namespace TagsCloudVisualization
             var targetVector = new TargetVector(spiral.Center, rectangle.Location);
             foreach (var delta in targetVector.GetPartialDelta())
             {
-                if (!rectangle.TryMoveRectangle(delta, rectangles))
-                    continue;
                 var newRectangle = rectangle.MoveOnTheDelta(delta);
+                if (newRectangle.IntersectsWith(rectangles))
+                    continue;
                 rectangle = newRectangle;
             }
             return rectangle;
