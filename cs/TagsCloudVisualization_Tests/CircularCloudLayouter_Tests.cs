@@ -32,7 +32,7 @@ namespace TagsCloudVisualization_Tests
         }
         
         [Test]
-        public void Layouter_ShouldContainsAllRectangles_WhenSomeSizesAdded()
+        public void Layout_ShouldContainsAllRectangles_WhenSomeSizesAdded()
         {
             var sizes = SizesGenerator.GenerateSizesList(5, minSize, maxSize);
             FillLayoutWithSomeRectangles(layouter, sizes);
