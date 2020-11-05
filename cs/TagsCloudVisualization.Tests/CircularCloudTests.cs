@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using TagsCloudVisualization.Extensions;
 using TagsCloudVisualization.Layouters;
+using TagsCloudVisualization.Renders;
+using TagsCloudVisualization.TagClouds;
+using TagsCloudVisualization.Visualizer;
 
 namespace TagsCloudVisualization.Tests
 {
@@ -27,8 +31,14 @@ namespace TagsCloudVisualization.Tests
             var context = TestContext.CurrentContext;
             if (context.Result.Outcome.Status == TestStatus.Failed)
             {
+                Directory.CreateDirectory(PathToDebugImages);
+                var name = $"{context.Test.Name} {DateTime.Now:HH-mm-ss tt zz}.png";
+                var vis = new RectangleVisualizer(new ImmutableTagCloud(rectangles.ToArray()));
+                new FileCloudRender(vis, Path.Combine(PathToDebugImages, name)).Render();
             }
         }
+
+        private const string PathToDebugImages = "testFails/";
 
         private CircularCloudLayouter layouter;
         private Point center;
@@ -69,9 +79,8 @@ namespace TagsCloudVisualization.Tests
         [Test]
         public void PutNextRectangle_IsEmpty_FirstRectangleShouldBeAroundCenter()
         {
-            var rectangle =
-                new CircularCloudLayouter(new Point(-500, 4000))
-                    .PutNextRectangle(new Size(1, 1));
+            layouter = new CircularCloudLayouter(new Point(-500, 4000));
+            var rectangle = PutRectangle(new Size(1, 1));
 
             rectangle.X.Should().BeInRange(-502, -498);
             rectangle.Y.Should().BeInRange(3998, 4002);

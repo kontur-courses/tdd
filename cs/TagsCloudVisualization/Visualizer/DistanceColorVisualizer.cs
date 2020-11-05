@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.Linq;
 using TagsCloudVisualization.Extensions;
 using TagsCloudVisualization.TagClouds;
 
@@ -26,6 +25,8 @@ namespace TagsCloudVisualization.Visualizer
             this.toColor = toColor;
             this.toRadius = toRadius;
         }
+
+        public TagCloud Cloud => cloud;
 
         public void Draw(Graphics graphics)
         {

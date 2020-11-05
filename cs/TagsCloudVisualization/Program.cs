@@ -36,15 +36,15 @@ namespace TagsCloudVisualization
                 Color.FromArgb(0, 11, 47, 84),
                 700);
 
-            new FileCloudRender(cloud, solidVisualizer, Path.Combine(examplesPath, "solid.png")).Render();
-            new FileCloudRender(cloud, distanceVisualizer, Path.Combine(examplesPath, "distance.png")).Render();
+            new FileCloudRender(solidVisualizer, Path.Combine(examplesPath, "solid.png")).Render();
+            new FileCloudRender(distanceVisualizer, Path.Combine(examplesPath, "distance.png")).Render();
 
             cloud = new CircleTagCloud(Point.Empty, 400);
             for (var i = 0; i < 2000; i++)
                 cloud.PutNextRectangle(random.GetSize(2, 20, random.NextDouble() * 4 + 2));
 
             solidVisualizer = new SolidVisualizer(cloud, Color.MediumSeaGreen);
-            new FileCloudRender(cloud, solidVisualizer, Path.Combine(examplesPath, "ring.png")).Render();
+            new FileCloudRender(solidVisualizer, Path.Combine(examplesPath, "ring.png")).Render();
         }
     }
 }

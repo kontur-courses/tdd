@@ -6,7 +6,7 @@ using TagsCloudVisualization.Layouters;
 
 namespace TagsCloudVisualization.TagClouds
 {
-    public class TagCloud : IEnumerable<Rectangle>
+    public abstract class TagCloud : IEnumerable<Rectangle>
     {
         public int Count => Rectangles.Count;
 
@@ -18,7 +18,7 @@ namespace TagsCloudVisualization.TagClouds
         public Point LeftUpBound => new Point(leftUpBound.X, leftUpBound.Y);
         public Point RightDownBound => new Point(rightDownBound.X, rightDownBound.Y);
 
-        public TagCloud(ILayouter layouter)
+        protected TagCloud(ILayouter layouter)
         {
             this.layouter = layouter;
         }
@@ -26,12 +26,17 @@ namespace TagsCloudVisualization.TagClouds
         public virtual Rectangle PutNextRectangle(Size size)
         {
             var rectangle = layouter.PutNextRectangle(size);
+            AddRectangle(rectangle);
+            return rectangle;
+        }
+
+        protected void AddRectangle(Rectangle rectangle)
+        {
             leftUpBound.X = Math.Min(leftUpBound.X, rectangle.X);
             leftUpBound.Y = Math.Min(leftUpBound.Y, rectangle.Y);
             rightDownBound.X = Math.Max(rightDownBound.X, rectangle.X + rectangle.Width);
             rightDownBound.Y = Math.Max(rightDownBound.Y, rectangle.Y + rectangle.Height);
             Rectangles.Add(rectangle);
-            return rectangle;
         }
 
         public IEnumerator<Rectangle> GetEnumerator()
