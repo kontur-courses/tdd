@@ -19,7 +19,7 @@ namespace TagsCloudVisualisation
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangles.Count == 0)
-                return CreateAndRegisterRectangle(new Point(rectangleSize / -2), rectangleSize);
+                return CreateAndRegisterRectangle(new Point(rectangleSize / -2) + (Size) CloudCenter, rectangleSize);
 
             var position = points
                 .OrderBy(p => p.CloudCenterDistance)
@@ -36,9 +36,7 @@ namespace TagsCloudVisualisation
 
         private Rectangle CreateAndRegisterRectangle(Rectangle rectangle)
         {
-            foreach (var point in GetCornersOfRectangle(rectangle))
-                points.Add(point); //TODO add only non-intersecting points
-
+            points.AddRange(GetCornersOfRectangle(rectangle));
             rectangles.Add(rectangle);
             return rectangle;
         }
@@ -51,7 +49,7 @@ namespace TagsCloudVisualisation
             new CandidatePoint(rectangle.Right, rectangle.Bottom, CloudCenter, PointDirection.Down)
         };
 
-        private bool IntersectsWithAny(Rectangle rect) => rectangles.Any(r => r.IntersectsWith(rect));
+        private bool IntersectsWithAny(Rectangle rect) => rectangles.Any(r => IntersectsOrConnected(r, rect));
 
         private static Rectangle PlaceRectangle(CandidatePoint point, Size size) =>
             new Rectangle(point.Direction switch
@@ -62,5 +60,9 @@ namespace TagsCloudVisualisation
                 PointDirection.Right => new Point(point.X + 1, point.Y),
                 _ => throw new ArgumentOutOfRangeException(nameof(point.Direction))
             }, size);
+
+        private static bool IntersectsOrConnected(Rectangle r1, Rectangle r2) =>
+            r1.Left <= r2.Right && r2.Left <= r1.Right &&
+            r1.Top <= r2.Bottom && r2.Top <= r1.Bottom;
     }
 }
