@@ -61,14 +61,14 @@ namespace TagsCloudVisualization_Tests
         [Test]
         public void LayoutShape_ShouldBeCloseToCircle_WhenManySizesAdded()
         {
-            var sizes = SizesGenerator.GenerateSizesList(20, minSize, maxSize);
+            var sizes = SizesGenerator.GenerateSizesList(400, minSize, maxSize);
             FillLayoutWithSomeRectangles(layouter, sizes);
             
             var occupiedArea = 0;
             foreach (var rectangle in layouter.Rectangles)
                 occupiedArea += rectangle.Width * rectangle.Height;
 
-            var allowedDistance = GetMaxAllowedDistance(occupiedArea, 0.26);
+            var allowedDistance = GetMaxAllowedDistance(occupiedArea, 0.4);
 
             foreach (var rectangle in layouter.Rectangles)
             {
