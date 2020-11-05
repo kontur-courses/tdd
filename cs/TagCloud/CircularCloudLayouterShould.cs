@@ -1,37 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
+using NUnit.Framework.Interfaces;
 
 namespace TagCloud
 {
     [TestFixture]
     public class CircularCloudLayouterShould
     {
-        [Test]
-        public void PutNextRectangle_ReturnRectangleWithCorrectSize()
+        private Point center;
+        private CircularCloudLayouter layouter;
+        private List<Rectangle> rectangles;
+
+        [SetUp]
+        public void SetUp()
         {
-            var layouter = new CircularCloudLayouter(new Point(0, 0));
-            var size = new Size(10, 10);
-            layouter.PutNextRectangle(size).Size.Should().Be(size);
+            center = new Point(350, 400);
+            layouter = new CircularCloudLayouter(center, 1);
+            rectangles = new List<Rectangle>();
         }
         
         [Test]
-        public void PutNextRectangle_ReturnNotIntersectedRectangles()
+        public void PutNextRectangle_ReturnRectangleWithCorrectSize()
         {
-            var layouter  = new CircularCloudLayouter(new Point(0, 0));
-            var firstRectangle = layouter.PutNextRectangle(new Size(10, 10));
-            var secondRectangle = layouter.PutNextRectangle(new Size(10, 10));
-            firstRectangle.IntersectsWith(secondRectangle).Should().BeFalse();
+            var size = new Size(10, 10);
+            var rectangle = layouter.PutNextRectangle(size);
+            rectangles.Add(rectangle);
+            rectangle.Size.Should().Be(size);
         }
 
         [Test]
         public void PutNextRectangle_ManyRectangles_ReturnNotIntersectRectangles()
         {
-            var layouter  = new CircularCloudLayouter(new Point(0, 0));
             var size = new Size(2, 1);
-            var rectangles = new List<Rectangle>();
             for (var i = 0; i < 10; i++)
             {
                 rectangles.Add(layouter.PutNextRectangle(size));
@@ -49,24 +53,39 @@ namespace TagCloud
         [Test]
         public void PutNextRectangles_LayoutRectanglesInCircle()
         {
-            var center = new Point(0, 0);
-            var layouter  = new CircularCloudLayouter(center);
-            var size = new Size(2, 1);
-            var rectangles = new List<Rectangle>();
-            for (var i = 0; i < 10; i++)
+            var random = new Random();
+            var width = random.Next(300);
+            var height = random.Next(200);
+            var count = random.Next(100);
+            var size = new Size(width, height);
+            for (var i = 0; i < count; i++)
             {
                 rectangles.Add(layouter.PutNextRectangle(size));
             }
 
             foreach (var rectangle in rectangles)
             {
-                GetDistance(rectangle.Location, center).Should().BeLessThan(5);
+                GetDistance(rectangle.Location, center).Should()
+                    .BeLessThan(Math.Sqrt(width * height * count));
             }
         }
         
         private double GetDistance(Point a, Point b)
         {
             return Math.Sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y));
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome == ResultState.Failure)
+            {
+                var vizualizator = new Vizualizator();
+                var path = vizualizator.Draw(rectangles, center);
+                Console.WriteLine(TestContext.CurrentContext.Test.Name + " failed");
+                Console.WriteLine("Tag cloud visualization saved to file " + path);
+                
+            }
         }
     }
 }

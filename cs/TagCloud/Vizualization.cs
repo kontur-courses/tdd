@@ -5,28 +5,20 @@ using System.IO;
 
 namespace TagCloud
 {
-    public static class Vizualizator
+    public class Vizualizator
     {
-        public static void Draw(IEnumerable<Size> rectangleSizes, Point center)
+        public string Draw(IEnumerable<Rectangle> rectangles, Point center)
         {
-            var bitmap = new Bitmap(700, 800);
+            var bitmap = new Bitmap(800, 700);
             var graphics = Graphics.FromImage(bitmap);
-            DrawCenter(graphics, center);
 
-            var layouter = new CircularCloudLayouter(center);
-            foreach (var rectangleSize in rectangleSizes)
+            foreach (var rectangle in rectangles)
             {
-                var rectangle = layouter.PutNextRectangle(rectangleSize);
                 DrawAndFillRectangle(graphics, rectangle);
             }
-
-            bitmap.Save(GetNewPngPath());
-        }
-
-        private static void DrawCenter(Graphics graphics, Point center)
-        {
-            var brush = new SolidBrush(Color.Red);
-            graphics.FillRectangle(brush, center.X, center.Y, 1, 1);
+            var path = GetNewPngPath();
+            bitmap.Save(path);
+            return path;
         }
 
         private static string GetNewPngPath()
