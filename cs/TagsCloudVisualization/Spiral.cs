@@ -25,6 +25,25 @@ namespace TagsCloudVisualization
             return point;
         }
 
+        public Quadrant Quadrant {
+            get
+            {
+                switch ((int)((nextAngle % (2 * Math.PI)) / (0.5 * Math.PI)))
+                {
+                    case 0:
+                        return Quadrant.First;
+                    case 1:
+                        return Quadrant.Second;
+                    case 2:
+                        return Quadrant.Third;
+                    case 3:
+                        return Quadrant.Fourth;
+                    default:
+                        throw new Exception();
+                }
+            }
+        }
+        
         private double GetPolarRadius() => nextAngle * spiralPitch / (2 * Math.PI);
 
         private Point ConvertFromPolarToPoint(double distance, double angleRadian)

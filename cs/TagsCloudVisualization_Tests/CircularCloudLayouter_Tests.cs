@@ -12,27 +12,21 @@ namespace TagsCloudVisualization_Tests
     public class CircularCloudLayouter_Tests
     {
         private CircularCloudLayouter layouter;
-        private List<Size> sizes;
+        private Size minSize;
+        private Size maxSize;
         
         [SetUp]
         public void SetUp()
         {
             layouter = new CircularCloudLayouter(new Point(300, 300));
-            
-            // TODO: Задавать параметрически
-            sizes = new List<Size>() 
-            {
-                new Size(10, 5), 
-                new Size(20, 10), 
-                new Size(10, 5), 
-                new Size(15, 15)
-            };
+            minSize = new Size(5, 5);
+            maxSize = new Size(20, 20);
         }
         
         [Test]
         public void PutNextRectangle_ShouldReturnRectangleWithSameSize_WhenSomeSizesAdded()
         {
-            foreach (var size in sizes)
+            foreach (var size in SizesGenerator.GenerateSizesList(5, minSize, maxSize))
                 layouter.PutNextRectangle(size).Size
                     .Should().BeEquivalentTo(size);
         }
@@ -40,6 +34,7 @@ namespace TagsCloudVisualization_Tests
         [Test]
         public void Layouter_ShouldContainsAllRectangles_WhenSomeSizesAdded()
         {
+            var sizes = SizesGenerator.GenerateSizesList(5, minSize, maxSize);
             FillLayoutWithSomeRectangles(layouter, sizes);
 
             layouter.Rectangles.Select(rect => rect.Size)
@@ -49,6 +44,7 @@ namespace TagsCloudVisualization_Tests
         [Test]
         public void LayoutRectangles_ShouldNotIntersectEachOther_WhenSomeRectanglesAdded()
         {
+            var sizes = SizesGenerator.GenerateSizesList(5, minSize, maxSize);
             FillLayoutWithSomeRectangles(layouter, sizes);
 
             foreach (var rectangle in layouter.Rectangles)
@@ -65,10 +61,9 @@ namespace TagsCloudVisualization_Tests
         [Test]
         public void LayoutShape_ShouldBeCloseToCircle_WhenManySizesAdded()
         {
+            var sizes = SizesGenerator.GenerateSizesList(20, minSize, maxSize);
             FillLayoutWithSomeRectangles(layouter, sizes);
-            FillLayoutWithSomeRectangles(layouter, sizes);
-            FillLayoutWithSomeRectangles(layouter, sizes);
-
+            
             var occupiedArea = 0;
             foreach (var rectangle in layouter.Rectangles)
                 occupiedArea += rectangle.Width * rectangle.Height;
