@@ -9,5 +9,9 @@
 ### 3) 100 рандомных прямоугольников
 ![](https://github.com/Scindapsus345/tdd/raw/master/cs/TagsCloudVisualization/Cloud2.png)
 
-### 3) 1000 разноцветных рандомных прямоугольников
+### 4) 1000 разноцветных рандомных прямоугольников
 ![](https://github.com/Scindapsus345/tdd/raw/master/cs/TagsCloudVisualization/Cloud3.png)
+
+### 5) Красивый круг из 1000 разноцветных прямоугольников
+![](https://github.com/Scindapsus345/tdd/raw/master/cs/TagsCloudVisualization/Cloud4.png)
+
