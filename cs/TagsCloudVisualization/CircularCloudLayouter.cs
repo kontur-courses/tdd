@@ -36,24 +36,24 @@ namespace TagsCloudVisualization
                 if (Math.Abs(lastRectTop) > Math.Abs(sizeRect.TopInDirection(currentDirection)))
                     sizeRect = sizeRect.ResizedToTopInDirection(currentDirection, lastRectTop);
 
-                currentDirection = currentDirection.Next();
+                currentDirection = currentDirection.CounterClockwise();
             }
 
             public Rectangle PutNextRectangle(Size size)
             {
                 var lastRect = currentLine[currentLine.Count - 1];
-                var previousDirection = currentDirection.Previous();
-                var nextDirection = currentDirection.Next();
+                var previousDirection = currentDirection.Clockwise();
+                var nextDirection = currentDirection.CounterClockwise();
                 var rect = new Rectangle(lastRect.Location, size);
                 rect = rect
                     .Displaced(currentDirection.GetOffset(
-                        (currentDirection.IsNormal() ? lastRect : rect).SizeInDirection(currentDirection)))
+                        (currentDirection.IsPositive() ? lastRect : rect).SizeInDirection(currentDirection)))
                     .DisplacedToTopInDirection(nextDirection,
                         prevSizeRect.TopInDirection(previousDirection));
 
                 var previousLine = lines[(int) currentDirection];
-                var prevDirNormalMod = previousDirection.IsNormal() ? 1 : -1;
-                var curDirNormalMod = currentDirection.IsNormal() ? 1 : -1;
+                var prevDirNormalMod = previousDirection.IsPositive() ? 1 : -1;
+                var curDirNormalMod = currentDirection.IsPositive() ? 1 : -1;
                 if (previousLine != null)
                 {
                     var max = int.MinValue;

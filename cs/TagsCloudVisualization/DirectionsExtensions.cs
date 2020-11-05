@@ -1,23 +1,41 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace TagsCloudVisualization
 {
     public static class DirectionsExtensions
     {
-        public static Directions Next(this Directions direction) =>
-            (Directions) ((int) (direction + 1) % 4);
-
-        public static Directions Previous(this Directions direction)
+        public static Directions CounterClockwise(this Directions direction) => direction switch
         {
-            var result = (int) direction - 1;
-            if (result == -1) result = 3;
-            return (Directions) result;
-        }
+            Directions.Up => Directions.Left,
+            Directions.Left => Directions.Down,
+            Directions.Down => Directions.Right,
+            Directions.Right => Directions.Up,
+            _ => throw new InvalidOperationException("Unknown direcion")
+        };
 
-        public static Directions Opposite(this Directions direction) => direction.Next().Next();
+        public static Directions Clockwise(this Directions direction) => direction switch
+        {
+            Directions.Up => Directions.Right,
+            Directions.Right => Directions.Down,
+            Directions.Down => Directions.Left,
+            Directions.Left => Directions.Up,
+            _ => throw new InvalidOperationException("Unknown direcion")
+        };
 
-        public static bool IsNormal(this Directions direction) =>
+        public static Directions Opposite(this Directions direction) => direction switch
+        {
+            Directions.Up => Directions.Down,
+            Directions.Left => Directions.Right,
+            Directions.Down => Directions.Up,
+            Directions.Right => Directions.Left,
+            _ => throw new InvalidOperationException("Unknown direcion")
+        };
+
+        public static bool IsPositive(this Directions direction) =>
             direction == Directions.Right || direction == Directions.Down;
+
+        public static int IsPositiveModifier(this Directions direction) => direction.IsPositive() ? 1 : -1;
 
         public static Size GetOffset(this Directions direction, int offset = 1) =>
             direction switch

@@ -55,7 +55,7 @@ namespace TagsCloudVisualization
         {
             var result = new Rectangle(rectangle.Location, rectangle.Size);
             result.Location += direction.GetOffset((value - result.TopInDirection(direction))
-                                                   * (direction.IsNormal() ? 1 : -1));
+                                                   * (direction.IsPositive() ? 1 : -1));
             return result;
         }
 
