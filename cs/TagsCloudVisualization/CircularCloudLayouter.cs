@@ -24,10 +24,32 @@ namespace TagsCloudVisualization
             var rectangle = new Rectangle();
             do
             {
-                rectangle = new Rectangle(spiral.GetNextPoint(), rectangleSize);
+                rectangle = GetNextRectangle(rectangleSize);
             } while (IsRectangleIntersectOther(rectangle));
             Rectangles.Add(rectangle);
             return rectangle;
+        }
+
+        private Rectangle GetNextRectangle(Size rectangleSize)
+        {
+            var position = spiral.GetNextPoint();
+            switch (spiral.Quadrant)
+            {
+                case Quadrant.First:
+                    position.Y -= rectangleSize.Height;
+                    break;
+                case Quadrant.Second:
+                    position.X -= rectangleSize.Width;
+                    position.Y -= rectangleSize.Height;
+                    break;
+                case Quadrant.Third:
+                    position.X -= rectangleSize.Width;
+                    break;
+                case Quadrant.Fourth:
+                    break;
+            }
+
+            return new Rectangle(position, rectangleSize);
         }
 
         private bool IsRectangleIntersectOther(Rectangle rectangle)
