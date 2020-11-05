@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization
 {
@@ -15,30 +16,32 @@ namespace TagsCloudVisualization
         {
             center = new Point(10, 10);
             layouter = new CircularCloudLayouter(center);
+            placedRectangles = new List<Rectangle>();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
+            var bitmap = CircularCloudDrawer.GetBitmap(placedRectangles, center);
+            var fileName = $"Test_{TestContext.CurrentContext.Test.Name}_failed.jpg";
+            BitmapSaver.Save(bitmap, fileName);
+            TestContext.WriteLine(
+                $"Tag cloud visualization saved to file {BitmapSaver.GetRelativePath(fileName)}");
         }
 
         private CircularCloudLayouter layouter;
         private Point center;
+        private List<Rectangle> placedRectangles;
 
         [Test]
         public void PutRectangleWithCorrectSize()
         {
             var size = new Size(5, 5);
-            layouter.PutNextRectangle(size).Size.Should().Be(size);
-        }
-
-        [Test]
-        public void PutFirstRectangleInCenter_WhenRectangleSquareEquals1()
-        {
-            GetRectangleCenter(layouter.PutNextRectangle(new Size(1, 1)))
-                .Should().Be(center);
-        }
-
-        [Test]
-        public void PutFirstRectangleInCenter_WhenRectangleWidthIsEven()
-        {
-            GetRectangleCenter(layouter.PutNextRectangle(new Size(1, 2)))
-                .Should().Be(center);
+            
+            placedRectangles.Add(layouter.PutNextRectangle(size));
+            
+            placedRectangles[0].Size.Should().Be(size);
         }
 
         [Test]
