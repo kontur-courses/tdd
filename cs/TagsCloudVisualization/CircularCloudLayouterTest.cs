@@ -22,7 +22,7 @@ namespace TagsCloudVisualization
             if(context.Result.Outcome.Status == TestStatus.Failed)
             {
                 var path = @".\failedTest\" + context.Test.Name + ".bmp";
-                TagsCloudVisualization.Visualizate(cloud, path);
+                TagsCloudVisualization.Visualizate(cloud.rectangles, cloud.center, cloud.Size, path);
                 Console.WriteLine("Tag cloud visualization saved to file " + path);
             }
         }

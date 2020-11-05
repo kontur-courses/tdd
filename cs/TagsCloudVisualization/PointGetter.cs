@@ -8,7 +8,7 @@ namespace TagsCloudVisualization
         private readonly Point center;
         private double angle;
         private int radius;
-        private double Dangle => Math.PI / (2 * radius);
+        private double dangle => Math.PI / (2 * radius);
         internal PointGetter(Point center) => this.center = center;
         internal Point GetNextPoint()
         {
@@ -25,7 +25,7 @@ namespace TagsCloudVisualization
                 angle = 0;
             }
             else
-                angle += Dangle;
+                angle += dangle;
         }
     }
 }

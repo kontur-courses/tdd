@@ -10,10 +10,10 @@ namespace TagsCloudVisualization
         internal readonly HashSet<Rectangle> rectangles = new HashSet<Rectangle>();
         public readonly Point center;
         private readonly PointGetter getPointer;
-        internal int Top { get; private set; }
-        internal int Bottom { get; private set; }
-        internal int Right { get; private set; }
-        internal int Left { get; private set; }
+        public int Top { get; private set; }
+        public int Bottom { get; private set; }
+        public int Right { get; private set; }
+        public int Left { get; private set; }
 
         public bool IsEmpty => !rectangles.Any();
 
