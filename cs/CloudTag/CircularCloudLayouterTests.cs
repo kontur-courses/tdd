@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using NUnit.Framework.Internal;
 
 namespace CloudTag
 {
@@ -14,7 +12,19 @@ namespace CloudTag
     {
         private CircularCloudLayouter layouter;
         private readonly Point layouterCenter = new Point(0, 0);
+        private string failTestsImgsPath;
 
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
+        {
+            failTestsImgsPath = Path.Combine(Environment.CurrentDirectory, "Failures Tests Layouts");
+            if (!Directory.Exists(failTestsImgsPath))
+                Directory.CreateDirectory(failTestsImgsPath);
+
+            foreach (var filePath in Directory.GetFiles(failTestsImgsPath))
+                File.Delete(filePath);
+        }
+        
         [SetUp]
         public void SetUp()
         {
@@ -27,7 +37,14 @@ namespace CloudTag
             if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure)
                 return;
 
-           
+            var name = TestContext.CurrentContext.Test.MethodName;
+            if (TestContext.CurrentContext.Test.MethodName != TestContext.CurrentContext.Test.Name)
+                name += $" {TestContext.CurrentContext.Test.Name}";
+
+            var fullPath = Path.Combine(failTestsImgsPath, $"{name}.png");
+            CloudPainter.DrawAndSaveToFile(Color.Red, layouter.GetRectangles(), fullPath);
+            
+            TestContext.Out.WriteLine($"Tag cloud visualization saved to file {fullPath}");
         }
 
         [Test]
@@ -144,7 +161,7 @@ namespace CloudTag
                 var distanceToCenter = Math.Sqrt(Math.Pow(rectangle.Location.X, 2) +
                                                  Math.Pow(rectangle.Location.Y, 2));
 
-                distanceToCenter.Should().BeLessThan(3 * suggestedCircleRadius / 2);
+                distanceToCenter.Should().BeLessThan(1 * suggestedCircleRadius / 2);
             }
         }
     }
