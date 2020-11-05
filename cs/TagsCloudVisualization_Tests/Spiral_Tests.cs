@@ -2,11 +2,12 @@
 using System.Drawing;
 using NUnit.Framework;
 using FluentAssertions;
+using TagsCloudVisualization;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization_Tests
 {
     [TestFixture]
-    public class Spiral_should
+    public class Spiral_Tests
     {
         [Test]
         public void Spiral_ShouldStartInCenter()
@@ -22,11 +23,11 @@ namespace TagsCloudVisualization
             var center = new Point(0,0);
             var spiral = new Spiral(center, 100, 0.05 * Math.PI);
             
-            var prevDistance = getDistance(spiral.GetNextPoint(), center);
+            var prevDistance = GetDistance(spiral.GetNextPoint(), center);
             
             for (var i = 0; i < 100; i++)
             {
-                var newDistance = getDistance(spiral.GetNextPoint(), center);
+                var newDistance = GetDistance(spiral.GetNextPoint(), center);
                 newDistance.Should().BeGreaterThan(prevDistance);
                 prevDistance = newDistance;
             }
@@ -44,7 +45,7 @@ namespace TagsCloudVisualization
             spiral.GetNextPoint().Should().BeEquivalentTo(new Point(4,0));
         }
 
-        private double getDistance(Point first, Point second)
+        private double GetDistance(Point first, Point second)
         {
             return Math.Sqrt(Math.Pow(first.X - second.X, 2)
                              + Math.Pow(first.Y - second.Y, 2));

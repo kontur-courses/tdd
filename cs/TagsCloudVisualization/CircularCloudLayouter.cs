@@ -5,34 +5,38 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    class CircularCloudLayouter
+    public class CircularCloudLayouter
     {
         public Point Center { get; }
-        public Rectangle BorderRectangle { get; private set; }
-        
-        private Point nextRectanglePos;
         public List<Rectangle> Rectangles { get; private set; }
+
+        private Spiral spiral;
         
         public CircularCloudLayouter(Point center)
         {
             Rectangles = new List<Rectangle>();
             Center = center;
-            nextRectanglePos = Center;
-            
-            BorderRectangle = new Rectangle();
+            spiral = new Spiral(Center, 4, 0.125);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var rectangle = new Rectangle(nextRectanglePos, rectangleSize);
+            var rectangle = new Rectangle();
+            do
+            {
+                rectangle = new Rectangle(spiral.GetNextPoint(), rectangleSize);
+            } while (IsRectangleIntersectOther(rectangle));
             Rectangles.Add(rectangle);
-            setNextRectanglePos(rectangleSize);
             return rectangle;
         }
 
-        private void setNextRectanglePos(Size currentRectangleSize)
+        private bool IsRectangleIntersectOther(Rectangle rectangle)
         {
-            nextRectanglePos.X += currentRectangleSize.Width;
+            foreach (var otherRectangle in Rectangles)
+                if (rectangle.IntersectsWith(otherRectangle))
+                    return true;
+            
+            return false;
         }
     }
 }
