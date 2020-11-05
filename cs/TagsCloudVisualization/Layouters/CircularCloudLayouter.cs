@@ -8,95 +8,48 @@ namespace TagsCloudVisualization.Layouters
 {
     public class CircularCloudLayouter : ILayouter
     {
-        private const double DoublePi = Math.PI * 2;
-        private readonly double searchAngleStep;
-        private readonly double offsetAngleStep;
-        private readonly double radiusThreshold;
-        private readonly double minStep = 1d;
-        private readonly List<Rectangle> rectangles = new List<Rectangle>();
-        private readonly Random random = new Random();
         private readonly Point center;
-        private double startAngle;
+        private readonly CircularPositioner positioner;
+        private readonly List<Rectangle> rectangles = new List<Rectangle>();
 
-#if DEBUG
-        public delegate void CircularLayoutState(
-            List<Rectangle> rectangles,
-            double radius,
-            double angle,
-            Rectangle currentRectangle);
-
-        public event CircularLayoutState DebugStateChange;
-#endif
-
-        public CircularCloudLayouter(Point center)
+        public CircularCloudLayouter(Point center) : this(center, 0)
         {
-            this.center = center;
         }
 
         public CircularCloudLayouter(Point center,
             double startRadius,
             double searchAngleStep = Math.PI / 2,
-            double iterationOffsetAngle = Math.PI / 180) : this(center)
+            double iterationOffsetAngle = Math.PI / 180)
         {
-            radiusThreshold = startRadius;
-            this.searchAngleStep = searchAngleStep;
-            offsetAngleStep = iterationOffsetAngle;
+            this.center = center;
+            positioner = new CircularPositioner(
+                center,
+                startRadius,
+                searchAngleStep,
+                iterationOffsetAngle);
         }
 
         public Rectangle PutNextRectangle(Size size)
         {
             if (size.Width <= 0 || size.Height <= 0)
                 throw new ArgumentException($"Some side was negative in size: {size.Width}x{size.Height}");
+
+            positioner.RadiusStep = LinearMath.GetDiagonal(size) / 2;
             var bestPoint = new Point(int.MaxValue, int.MaxValue);
             var bestDistance = double.PositiveInfinity;
-            var radiusStep = LinearMath.GetDiagonal(size) / 2;
-            var angle = startAngle;
-            while (angle < startAngle + DoublePi)
+            foreach (var point in positioner.Iteration(point => CanBePlaced(new Rectangle(point, size))))
             {
-                var point = SearchBestPlaceOnAngle(angle, radiusStep, size);
                 var pointDistance = center.DistanceBetween(point.CenterWith(size));
-                if (pointDistance < bestDistance)
-                {
-                    bestPoint = point;
-                    bestDistance = center.DistanceBetween(bestPoint.CenterWith(size));
-                }
+                if (pointDistance > bestDistance)
+                    continue;
 
-                angle += searchAngleStep;
+                bestPoint = point;
+                bestDistance = pointDistance;
             }
 
-            startAngle += offsetAngleStep + (random.NextDouble() - 0.5) * 2;
             var rectangle = new Rectangle(bestPoint, size);
             rectangles.Add(rectangle);
             return rectangle;
-        }
-
-        public Point SearchBestPlaceOnAngle(double angle, double step, Size size)
-        {
-            var direction = -1;
-            var radius = radiusThreshold;
-            var rectangle = new Rectangle(LinearMath.PolarToCartesian(center, radius, angle), size);
-            
-            while (!CanBePlaced(rectangle))
-                rectangle.Location = LinearMath.PolarToCartesian(center, radius += step, angle); 
-            var bestPoint = rectangle.Location;
-            while (step > minStep)
-            {
-                rectangle.Location = LinearMath.PolarToCartesian(center, radius += step * direction, angle);
-                if (CanBePlaced(rectangle))
-                {
-                    bestPoint = rectangle.Location;
-                    direction = -1;
-                }
-                else
-                    direction = 1;
-
-                step /= 2;
-#if DEBUG
-                DebugStateChange?.Invoke(rectangles, radius, angle, rectangle);
-#endif
-            }
-
-            return bestPoint;
         }
 
         private bool CanBePlaced(Rectangle targetRectangle)
