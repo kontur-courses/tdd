@@ -1,62 +1,62 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace TagsCloudVisualization
 {
     public static class RectangleExtensions
     {
-        public static Rectangle Displaced(this Rectangle rectangle, Size offset) =>
+        public static Rectangle Shifted(this Rectangle rectangle, Size offset) =>
             new Rectangle(rectangle.Location + offset, rectangle.Size);
 
-        public static Rectangle Displaced(this Rectangle rectangle, Point offset) => rectangle.Displaced(new Size(offset));
+        public static Rectangle Shifted(this Rectangle rectangle, Point offset) => rectangle.Shifted(new Size(offset));
 
-        public static int SizeInDirection(this Rectangle rectangle, Directions direction) =>
-            direction switch
-            {
-                Directions.Up => rectangle.Height,
-                Directions.Left => rectangle.Width,
-                Directions.Down => rectangle.Height,
-                Directions.Right => rectangle.Width,
-                _ => 0
-            };
-        
-        public static int TopInDirection(this Rectangle rectangle, Directions direction) =>
-            direction switch
-            {
-                Directions.Up => rectangle.Top,
-                Directions.Left => rectangle.Left,
-                Directions.Down => rectangle.Bottom,
-                Directions.Right => rectangle.Right,
-                _ => 0
-            };
-        
-        public static Rectangle ResizedToTopInDirection(this Rectangle rectangle, Directions direction, int value)
+        public static int SizeInDirection(this Rectangle rectangle, Directions direction) => direction switch
         {
-            var result = new Rectangle(rectangle.Location, rectangle.Size);
+            Directions.Up => rectangle.Height,
+            Directions.Left => rectangle.Width,
+            Directions.Down => rectangle.Height,
+            Directions.Right => rectangle.Width,
+            _ => throw new InvalidOperationException("Unknown direction")
+        };
+
+        public static int BorderInDirection(this Rectangle rectangle, Directions direction) => direction switch
+        {
+            Directions.Up => rectangle.Top,
+            Directions.Left => rectangle.Left,
+            Directions.Down => rectangle.Bottom,
+            Directions.Right => rectangle.Right,
+            _ => throw new InvalidOperationException("Unknown direction")
+        };
+        
+        public static Rectangle ResizedToBorderInDirection(this Rectangle rectangle, Directions direction, int value)
+        {
             switch (direction)
             {
                 case Directions.Up:
-                    var offset = direction.GetOffset(value - result.Top);
-                    result.Location -= offset;
-                    result.Size += offset;
-                    break;
+                    var offset = direction.GetOffset(value - rectangle.Top);
+                    rectangle.Location -= offset;
+                    rectangle.Size += offset;
+                    return rectangle;
                 case Directions.Left:
-                    offset = direction.GetOffset(value - result.Left);
-                    result.Location -= offset;
-                    result.Size += offset;
-                    break;
-                case Directions.Down: result.Size += direction.GetOffset(value - result.Bottom); break;
-                case Directions.Right:result.Size += direction.GetOffset(value - result.Right); break;
+                    offset = direction.GetOffset(value - rectangle.Left);
+                    rectangle.Location -= offset;
+                    rectangle.Size += offset;
+                    return rectangle;
+                case Directions.Down:
+                    rectangle.Size += direction.GetOffset(value - rectangle.Bottom);
+                    return rectangle;
+                case Directions.Right:
+                    rectangle.Size += direction.GetOffset(value - rectangle.Right);
+                    return rectangle;
+                default: throw new InvalidOperationException("Unknown direction");
             }
-
-            return result;
         }
         
-        public static Rectangle DisplacedToTopInDirection(this Rectangle rectangle, Directions direction, int value)
+        public static Rectangle ShiftedToBorderInDirection(this Rectangle rectangle, Directions direction, int value)
         {
-            var result = new Rectangle(rectangle.Location, rectangle.Size);
-            result.Location += direction.GetOffset((value - result.TopInDirection(direction))
-                                                   * (direction.IsPositive() ? 1 : -1));
-            return result;
+            rectangle.Location += direction.GetOffset((value - rectangle.BorderInDirection(direction))
+                                                      * direction.IsPositiveModifier());
+            return rectangle;
         }
 
         public static bool IntersectInDirection(this Rectangle r1, Rectangle r2, Directions direction)

@@ -32,9 +32,9 @@ namespace TagsCloudVisualization
                 
                 prevSizeRect = sizeRect;
                 
-                var lastRectTop = lastRect.TopInDirection(currentDirection);
-                if (Math.Abs(lastRectTop) > Math.Abs(sizeRect.TopInDirection(currentDirection)))
-                    sizeRect = sizeRect.ResizedToTopInDirection(currentDirection, lastRectTop);
+                var lastRectTop = lastRect.BorderInDirection(currentDirection);
+                if (Math.Abs(lastRectTop) > Math.Abs(sizeRect.BorderInDirection(currentDirection)))
+                    sizeRect = sizeRect.ResizedToBorderInDirection(currentDirection, lastRectTop);
 
                 currentDirection = currentDirection.CounterClockwise();
             }
@@ -46,10 +46,10 @@ namespace TagsCloudVisualization
                 var nextDirection = currentDirection.CounterClockwise();
                 var rect = new Rectangle(lastRect.Location, size);
                 rect = rect
-                    .Displaced(currentDirection.GetOffset(
+                    .Shifted(currentDirection.GetOffset(
                         (currentDirection.IsPositive() ? lastRect : rect).SizeInDirection(currentDirection)))
-                    .DisplacedToTopInDirection(nextDirection,
-                        prevSizeRect.TopInDirection(previousDirection));
+                    .ShiftedToBorderInDirection(nextDirection,
+                        prevSizeRect.BorderInDirection(previousDirection));
 
                 var previousLine = lines[(int) currentDirection];
                 var prevDirNormalMod = previousDirection.IsPositive() ? 1 : -1;
@@ -59,19 +59,19 @@ namespace TagsCloudVisualization
                     var max = int.MinValue;
                     foreach (var intersectedRectangle in previousLine.Where(r => r.IntersectInDirection(rect, currentDirection)))
                     {
-                        var curTop = intersectedRectangle.TopInDirection(previousDirection);
+                        var curTop = intersectedRectangle.BorderInDirection(previousDirection);
                         if (curTop * prevDirNormalMod > max * prevDirNormalMod) max = curTop;
                     }
 
-                    rect = rect.DisplacedToTopInDirection(previousDirection.Opposite(), max);
+                    rect = rect.ShiftedToBorderInDirection(previousDirection.Opposite(), max);
                 }
                 currentLine.Add(rect);
-                var rectTopInDirection = rect.TopInDirection(previousDirection);
+                var rectTopInDirection = rect.BorderInDirection(previousDirection);
                 
-                if(rect.TopInDirection(currentDirection) * curDirNormalMod > prevSizeRect.TopInDirection(currentDirection) * curDirNormalMod)
+                if(rect.BorderInDirection(currentDirection) * curDirNormalMod > prevSizeRect.BorderInDirection(currentDirection) * curDirNormalMod)
                     Turn();
-                if (rectTopInDirection * prevDirNormalMod > sizeRect.TopInDirection(previousDirection) * prevDirNormalMod)
-                    sizeRect = sizeRect.ResizedToTopInDirection(currentDirection, rectTopInDirection);
+                if (rectTopInDirection * prevDirNormalMod > sizeRect.BorderInDirection(previousDirection) * prevDirNormalMod)
+                    sizeRect = sizeRect.ResizedToBorderInDirection(currentDirection, rectTopInDirection);
 
                 return rect;
             }
@@ -91,7 +91,7 @@ namespace TagsCloudVisualization
                 return new Rectangle(center, size);
             }
 
-            return spiral.PutNextRectangle(size).Displaced(center);
+            return spiral.PutNextRectangle(size).Shifted(center);
         }
     }
 }
