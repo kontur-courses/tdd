@@ -19,4 +19,8 @@
       <ProjectReference Include="..\TagsCloudVisualisation\TagsCloudVisualisation.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="TestData\Lorem Ipsum.txt" CopyToOutputDirectory="Always" />
+    </ItemGroup>
+
 </Project>

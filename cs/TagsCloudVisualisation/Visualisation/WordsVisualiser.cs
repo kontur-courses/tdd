@@ -8,10 +8,10 @@ namespace TagsCloudVisualisation.Visualisation
         private readonly ICircularCloudLayouter layouter;
         private WordToDraw currentWord;
 
-        public WordsLayouterAsset DrawWord(WordToDraw toDraw)
+        public void DrawWord(WordToDraw toDraw)
         {
-            var graphics = Graphics ?? Graphics.FromImage(new Bitmap(100, 100));
-            var wordSize = graphics.MeasureString(currentWord.Word, currentWord.Font);
+            var graphics = Graphics ?? Graphics.FromImage(new Bitmap(1, 1));
+            var wordSize = graphics.MeasureString(toDraw.Word, toDraw.Font);
             var computedPosition = layouter.PutNextRectangle(Size.Ceiling(wordSize));
 
             if (wordSize.Height > computedPosition.Size.Height && wordSize.Width > computedPosition.Size.Width)
@@ -22,16 +22,13 @@ namespace TagsCloudVisualisation.Visualisation
                 wordSize.Width, wordSize.Height);
 
             currentWord = toDraw;
-            Draw(wordPosition);
-            return this;
+            PrepareAndDraw(wordPosition);
         }
 
         public WordsLayouterAsset(ICircularCloudLayouter layouter) : base(layouter.CloudCenter)
         {
             this.layouter = layouter;
+            OnDraw += rect => Graphics.DrawString(currentWord.Word, currentWord.Font, currentWord.Brush, rect);
         }
-
-        protected override void DrawPrepared(RectangleF rectangle) =>
-            Graphics.DrawString(currentWord.Word, currentWord.Font, currentWord.Brush, rectangle);
     }
 }

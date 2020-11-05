@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace TagsCloudVisualisation.Visualisation
 {
-    public abstract partial class BaseCloudVisualiser
+    public abstract class BaseCloudVisualiser
     {
         private readonly Point sourceCenterPoint;
         private Image image;
@@ -15,38 +15,24 @@ namespace TagsCloudVisualisation.Visualisation
             this.sourceCenterPoint = sourceCenterPoint;
         }
 
-        /// <summary>
-        /// Entry point, initializes drawing of next rectangle
-        /// </summary>
-        /// <param name="rectangle">Size & position of rectangle to draw</param>
-        protected void Draw(RectangleF rectangle)
-        {
-            var fixedRectangle = FixRectangleCoords(rectangle);
-            EnsureBitmapSize(Rectangle.Ceiling(fixedRectangle));
-            var rectToDraw = new RectangleF(
-                fixedRectangle.X + (float) image.Width / 2,
-                fixedRectangle.Y + (float) image.Height / 2,
-                fixedRectangle.Width,
-                fixedRectangle.Height);
-            DrawPrepared(rectToDraw);
-        }
-
         public Image GetImage() => (Image) image.Clone();
+        protected event Action<RectangleF> OnDraw;
 
-        protected abstract void DrawPrepared(RectangleF positionRectangle);
-
-        private RectangleF FixRectangleCoords(RectangleF rectangle)
+        protected void PrepareAndDraw(RectangleF rectangle)
         {
-            return new RectangleF(
-                rectangle.Location.X + sourceCenterPoint.X,
-                rectangle.Location.Y + sourceCenterPoint.Y,
-                rectangle.Size.Width,
-                rectangle.Size.Height);
+            rectangle.Location = GetPositionToDraw(rectangle.Location);
+            EnsureBitmapSize(rectangle);
+            rectangle.Location += image.Size / 2;
+            OnDraw?.Invoke(rectangle);
         }
 
-        private void EnsureBitmapSize(Rectangle nextRectangle)
+        private PointF GetPositionToDraw(PointF rectangle) => new PointF(
+            rectangle.X - sourceCenterPoint.X,
+            rectangle.Y - sourceCenterPoint.Y);
+
+        private void EnsureBitmapSize(RectangleF nextRectangle)
         {
-            var newBitmap = EnsureBitmapSize(image, nextRectangle);
+            var newBitmap = EnsureBitmapSize(image, Rectangle.Ceiling(nextRectangle));
             if (newBitmap == image)
                 return;
             image = newBitmap;
@@ -58,14 +44,19 @@ namespace TagsCloudVisualisation.Visualisation
         {
             if (bitmap == null)
             {
-                bitmap = new Bitmap(100, 100);
+                var xSize = MaxAbs(nextRectangle.Right, nextRectangle.Left) + nextRectangle.Width;
+                var ySize = MaxAbs(nextRectangle.Top, nextRectangle.Bottom) + nextRectangle.Height;
+                bitmap = new Bitmap(xSize, ySize);
                 using var g = Graphics.FromImage(bitmap);
             }
             else
             {
-                var xMaxDistance = MaxAbs(nextRectangle.Left, nextRectangle.Right, bitmap.Width / 2);
-                var yMaxDistance = MaxAbs(nextRectangle.Top, nextRectangle.Bottom, bitmap.Height / 2);
-                return ExtendBitmap(bitmap, new Size(xMaxDistance * 2, yMaxDistance * 2));
+                var halfSize = bitmap.Size / 2;
+                var xMaxDistance = MaxAbs(nextRectangle.Left, nextRectangle.Right, halfSize.Width);
+                var yMaxDistance = MaxAbs(nextRectangle.Top, nextRectangle.Bottom, halfSize.Height);
+
+                if (halfSize.Width != xMaxDistance || halfSize.Height != yMaxDistance)
+                    return ExtendBitmap(bitmap, new Size(xMaxDistance * 2, yMaxDistance * 2));
             }
 
             return bitmap;
@@ -73,12 +64,6 @@ namespace TagsCloudVisualisation.Visualisation
 
         private static Image ExtendBitmap(Image bitmap, Size newSize)
         {
-            if (newSize.Width < bitmap.Width || newSize.Height < bitmap.Height)
-                throw new ArgumentException($"{nameof(newSize)} is less than actual bitmap size", nameof(newSize));
-
-            if (newSize == bitmap.Size)
-                return bitmap;
-
             var newBitmap = new Bitmap(newSize.Width, newSize.Height);
             using var g = Graphics.FromImage(newBitmap);
 

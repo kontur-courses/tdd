@@ -5,22 +5,23 @@ namespace TagsCloudVisualisation.Visualisation
 {
     public class RectanglesVisualiser : BaseCloudVisualiser
     {
-        private const float BrushSize = 1;
+        private readonly uint scale;
 
-        private readonly VisualisationDrawer drawer;
-
-        public RectanglesVisualiser(Point sourceCenterPoint, VisualisationDrawer drawer) : base(
-            sourceCenterPoint)
+        public RectanglesVisualiser(Point sourceCenterPoint, VisualisationDrawer drawer, uint scale)
+            : base(sourceCenterPoint)
         {
-            this.drawer = drawer ?? throw new ArgumentNullException(nameof(drawer));
+            if (drawer == null)
+                throw new ArgumentNullException(nameof(drawer));
+            this.scale = scale;
+            OnDraw += rect => drawer.Invoke(Graphics, rect);
         }
 
-        public void Draw(Rectangle rectangle) => base.Draw(rectangle);
+        public void Draw(Rectangle rectangle) => base.PrepareAndDraw(
+            new RectangleF(rectangle.X * scale, rectangle.Y * scale,
+                rectangle.Width * scale, rectangle.Height * scale));
 
-        protected override void DrawPrepared(RectangleF rectangle) => drawer.Invoke(Graphics, rectangle);
-
-        public static void DrawRectangle(Graphics g, Color color, RectangleF rectangle) =>
-            g.DrawRectangle(new Pen(color, BrushSize), rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+        public static void DrawRectangle(Graphics g, Pen pen, RectangleF rectangle) =>
+            g.DrawRectangle(pen, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 
         public delegate void VisualisationDrawer(Graphics g, RectangleF rectangle);
     }

@@ -13,6 +13,9 @@ namespace TagsCloudVisualisationTests.Infrastructure
         public static string GetOutputDirectory(string directoryName) =>
             CreateDirectory(Path.Combine(BaseOutputFilePath, directoryName));
 
+        public static FileInfo GetTestFile(string fileName) =>
+            new FileInfo(Path.Combine(TestContext.CurrentContext.WorkDirectory, "TestData", fileName));
+
         public static void ClearDirectory(string fullPath)
         {
             if (Directory.Exists(fullPath))
