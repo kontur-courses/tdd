@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Text.Json;
 
-namespace TagsCloudVisualization.VisualizationSettings
+namespace TagsCloudVisualization.Visualization
 {
     public class VisualizerSettings
     {

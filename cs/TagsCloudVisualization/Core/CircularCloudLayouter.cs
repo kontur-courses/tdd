@@ -13,7 +13,7 @@ namespace TagsCloudVisualization.Core
         public CircularCloudLayouter(Point center)
         {
             Center = center;
-            Spiral = new ArchimedeanSpiral(center);
+            Spiral = new ArchimedeanSpiral(center, 0.5);
             Rectangles = new List<Rectangle>();
         }
 
@@ -36,7 +36,7 @@ namespace TagsCloudVisualization.Core
             var queue = new Queue<Rectangle>();
             queue.Enqueue(shiftedRectangle);
 
-            while (queue.Count != 0)
+            while (queue.Any())
             {
                 var currentRectangle = queue.Dequeue();
                 var distanceToCenter = currentRectangle.Location.DistanceTo(Center);

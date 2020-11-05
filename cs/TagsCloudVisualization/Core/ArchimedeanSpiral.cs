@@ -6,13 +6,14 @@ namespace TagsCloudVisualization.Core
     public class ArchimedeanSpiral
     {
         private Point Center { get; }
-        private const double Theta = 0.5;
+        private double Theta { get; }
 
         private double polarArgument;
 
-        public ArchimedeanSpiral(Point center)
+        public ArchimedeanSpiral(Point center, double theta)
         {
             Center = center;
+            Theta = theta;
             polarArgument = 0;
         }
 

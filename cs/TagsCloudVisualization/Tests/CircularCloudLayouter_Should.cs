@@ -59,8 +59,8 @@ namespace TagsCloudVisualization.Tests
                 .Select(i => layouter.PutNextRectangle(new Size(i, i)))
                 .ToArray();
             IsAnyTwoRectanglesAreIntersect(rectangles).Should().BeFalse();
-            
-            bool IsAnyTwoRectanglesAreIntersect(Rectangle[] rectangleArray)
+
+            static bool IsAnyTwoRectanglesAreIntersect(Rectangle[] rectangleArray)
             {
                 for (var i = 0; i < rectangleArray.Length; i++)
                     for (var j = i + 1; j < rectangleArray.Length; j++)

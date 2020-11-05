@@ -118,7 +118,7 @@
         <Compile Include="Tests\CircularCloudLayouter_Should.cs" />
         <Compile Include="Visualization\CircularCloudLayouterVisualizer.cs" />
         <Compile Include="Visualization\CloudSamples\VisualizationSamples.cs" />
-        <Compile Include="Visualization\VisualizationSettings\VisualizerSettings.cs" />
+        <Compile Include="Visualization\VisualizerSettings.cs" />
     </ItemGroup>
     <ItemGroup>
       <None Include="packages.config" />

@@ -1,7 +1,6 @@
 using System;
 using System.Drawing;
 using TagsCloudVisualization.Core;
-using TagsCloudVisualization.VisualizationSettings;
 
 namespace TagsCloudVisualization.Visualization.CloudSamples
 {
