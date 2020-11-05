@@ -33,8 +33,32 @@ namespace TagsCloudVisualization_Tests
             }
         }
         
+        
         [Test]
-        public void Spiral_ShouldReturnCorrectPoints_AfterSomeSteps()
+        public void GetQuadrant_ShouldReturnCorrectQuadrant_AfterSomeSteps()
+        {
+            var center = new Point(0,0);
+            var spiral = new Spiral(center, 100, 0.25 * Math.PI);
+
+            spiral.GetNextPoint();
+            spiral.Quadrant.Should().BeEquivalentTo(Quadrant.First);
+            spiral.GetNextPoint();
+            spiral.GetNextPoint();
+            spiral.Quadrant.Should().BeEquivalentTo(Quadrant.Second);
+            spiral.GetNextPoint();
+            spiral.GetNextPoint();
+            spiral.Quadrant.Should().BeEquivalentTo(Quadrant.Third);
+            spiral.GetNextPoint();
+            spiral.GetNextPoint();
+            spiral.Quadrant.Should().BeEquivalentTo(Quadrant.Fourth);
+            spiral.GetNextPoint();
+            spiral.GetNextPoint();
+            spiral.Quadrant.Should().BeEquivalentTo(Quadrant.First);
+            
+        }
+        
+        [Test]
+        public void GetNextPoint_ShouldReturnCorrectPoints_AfterSomeSteps()
         {
             var center = new Point(0,0);
             var spiral = new Spiral(center, 4, 0.5 * Math.PI);
