@@ -9,14 +9,18 @@ namespace TagsCloudVisualization
         private Point Center { get; }
         private IEnumerator<Point> PointsGenerator { get; }
         private double DistanceBetweenLoops { get; }
-        private double CenterOffset { get; }
 
-        public ArchimedeanSpiral(Point center, double distanceBetweenLoops, double centerOffset)
+        public ArchimedeanSpiral(Point center, double distanceBetweenLoops)
         {
             Center = center;
             PointsGenerator = GetPoints().GetEnumerator();
+
+            if (distanceBetweenLoops <= 0)
+            {
+                throw new ArgumentException("distanceBetweenLoops should not be negative or zero");
+            }
+
             DistanceBetweenLoops = distanceBetweenLoops;
-            CenterOffset = centerOffset;
         }
 
         public Point GetNextPoint()
@@ -33,11 +37,9 @@ namespace TagsCloudVisualization
 
             while (true)
             {
-                var angle = 0.1 * i;
+                x += (int)(DistanceBetweenLoops * i * Math.Cos(i));
+                y += (int)(DistanceBetweenLoops * i * Math.Sin(i));
                 i++;
-
-                x += (int)((CenterOffset + DistanceBetweenLoops * angle) * Math.Cos(angle));
-                y += (int)((CenterOffset + DistanceBetweenLoops * angle) * Math.Sin(angle));
 
                 yield return new Point(x, y);
             }
