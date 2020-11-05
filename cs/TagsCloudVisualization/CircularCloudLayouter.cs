@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 
 namespace TagsCloudVisualization
@@ -9,27 +8,23 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         private Point Center { get; }
-        private ArchimedeanSpiral Spiral { get; }
-        private List<Rectangle> Rectangles { get; }
-        private string Root { get; }
-        private int RightBorder { get; set; }
-        private int BottomBorder { get; set; }
+        private ArchimedeanSpiral ArchimedeanSpiral { get; }
+        public List<Rectangle> Rectangles { get; }
+        private double DistanceBetweenLoops { get; }
 
         public CircularCloudLayouter(Point center)
         {
+            DistanceBetweenLoops = 0.2;
             Center = center;
-            Spiral = new ArchimedeanSpiral(Center, 0.2, 0);
+            ArchimedeanSpiral = new ArchimedeanSpiral(Center, DistanceBetweenLoops);
             Rectangles = new List<Rectangle>();
-            Root = new DirectoryInfo("..\\..\\..\\Data").FullName;
-            RightBorder = 0;
-            BottomBorder = 0;
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("rectangle Height or Size should not be negative or zero");
             }
 
             return GetNewRectangle(rectangleSize);
@@ -37,28 +32,22 @@ namespace TagsCloudVisualization
 
         private Rectangle GetNewRectangle(Size rectangleSize)
         {
-            var location = Spiral.GetNextPoint();
+            var location = ArchimedeanSpiral.GetNextPoint();
             var rectangle = new Rectangle(location, rectangleSize);
 
             while (Collided(rectangle))
             {
-                location = Spiral.GetNextPoint();
+                location = ArchimedeanSpiral.GetNextPoint();
                 rectangle = new Rectangle(location, rectangleSize);
             }
 
-            if (rectangle.Left < 0 || rectangle.Top < 0)
-            {
-                throw new ArgumentException();
-            }
-
-            rectangle = MoveToCenter(rectangle);
-            UpdateImageBorers(rectangle);
+            rectangle = MoveCloserToCenter(rectangle);
             Rectangles.Add(rectangle);
 
             return rectangle;
         }
 
-        private Rectangle MoveToCenter(Rectangle rectangle)
+        private Rectangle MoveCloserToCenter(Rectangle rectangle)
         {
             var movedRectangle = rectangle;
 
@@ -77,42 +66,7 @@ namespace TagsCloudVisualization
             return movedRectangle;
         }
 
-        private void UpdateImageBorers(Rectangle rectangle)
-        {
-            if (RightBorder < rectangle.Right)
-            {
-                RightBorder = rectangle.Right;
-            }
-
-            if (BottomBorder < rectangle.Bottom)
-            {
-                BottomBorder = rectangle.Bottom;
-            }
-        }
-
         private bool Collided(Rectangle newRectangle) =>
             Rectangles.Any(rectangle => rectangle.IntersectsWith(newRectangle));
-
-        public string GenerateNewFilePath()
-        {
-            var dateTime = DateTime.Now;
-            return $"{Root}\\{dateTime:MMddyy-HHmmssffffff}.jpg";
-        }
-
-        public void SaveDrawing(string savePath)
-        {
-            var pen = new Pen(Color.MediumVioletRed, 4);
-            var bitmap = new Bitmap(RightBorder + (int)pen.Width, BottomBorder + (int)pen.Width);
-            var graphics = Graphics.FromImage(bitmap);
-
-            graphics.DrawRectangles(pen, Rectangles.ToArray());
-
-            if (!Directory.Exists(savePath) || !savePath.EndsWith(".jpg"))
-            {
-                throw new ArgumentException();
-            }
-
-            bitmap.Save(savePath);
-        }
     }
 }
