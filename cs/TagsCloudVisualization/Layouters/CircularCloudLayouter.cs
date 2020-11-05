@@ -9,8 +9,8 @@ namespace TagsCloudVisualization.Layouters
     public class CircularCloudLayouter : ILayouter
     {
         private const double DoublePi = Math.PI * 2;
-        private readonly double searchAngleStep = Math.PI / 2;
-        private readonly double offsetAngleStep = Math.PI / 180;
+        private readonly double searchAngleStep;
+        private readonly double offsetAngleStep;
         private readonly double radiusThreshold;
         private readonly double minStep = 1d;
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
@@ -33,9 +33,14 @@ namespace TagsCloudVisualization.Layouters
             this.center = center;
         }
 
-        public CircularCloudLayouter(Point center, double startRadius) : this(center)
+        public CircularCloudLayouter(Point center,
+            double startRadius,
+            double searchAngleStep = Math.PI / 2,
+            double iterationOffsetAngle = Math.PI / 180) : this(center)
         {
             radiusThreshold = startRadius;
+            this.searchAngleStep = searchAngleStep;
+            offsetAngleStep = iterationOffsetAngle;
         }
 
         public Rectangle PutNextRectangle(Size size)
@@ -48,7 +53,7 @@ namespace TagsCloudVisualization.Layouters
             var angle = startAngle;
             while (angle < startAngle + DoublePi)
             {
-                var point = SearchBestOnAngle(angle, radiusStep, size);
+                var point = SearchBestPlaceOnAngle(angle, radiusStep, size);
                 var pointDistance = center.DistanceBetween(point.CenterWith(size));
                 if (pointDistance < bestDistance)
                 {
@@ -65,19 +70,19 @@ namespace TagsCloudVisualization.Layouters
             return rectangle;
         }
 
-        public Point SearchBestOnAngle(double angle, double step, Size size)
+        public Point SearchBestPlaceOnAngle(double angle, double step, Size size)
         {
             var direction = -1;
             var radius = radiusThreshold;
             var rectangle = new Rectangle(LinearMath.PolarToCartesian(center, radius, angle), size);
             
-            while (!CanPlaced(rectangle))
+            while (!CanBePlaced(rectangle))
                 rectangle.Location = LinearMath.PolarToCartesian(center, radius += step, angle); 
             var bestPoint = rectangle.Location;
             while (step > minStep)
             {
                 rectangle.Location = LinearMath.PolarToCartesian(center, radius += step * direction, angle);
-                if (CanPlaced(rectangle))
+                if (CanBePlaced(rectangle))
                 {
                     bestPoint = rectangle.Location;
                     direction = -1;
@@ -94,7 +99,7 @@ namespace TagsCloudVisualization.Layouters
             return bestPoint;
         }
 
-        private bool CanPlaced(Rectangle targetRectangle)
+        private bool CanBePlaced(Rectangle targetRectangle)
         {
             // TODO: Not best algorithm
             return rectangles.All(rectangle => !targetRectangle.IntersectsWith(rectangle));
