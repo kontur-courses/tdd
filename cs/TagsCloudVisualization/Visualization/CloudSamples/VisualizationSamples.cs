@@ -1,15 +1,14 @@
 using System;
 using System.Drawing;
 using TagsCloudVisualization.Core;
-using TagsCloudVisualization.Visualization;
 using TagsCloudVisualization.VisualizationSettings;
 
-namespace TagsCloudVisualization.CloudSamples
+namespace TagsCloudVisualization.Visualization.CloudSamples
 {
     public static class VisualizationSamples
     {
-        private static VisualizerSettings setting = VisualizerSettings.ReadSettingsFromConfig();
-        private static readonly Point Center = new Point(setting.ImageWidth / 2, setting.ImageHeight / 2);
+        private static readonly VisualizerSettings Setting = VisualizerSettings.ReadSettingsFromConfig();
+        private static readonly Point Center = new Point(Setting.ImageWidth / 2, Setting.ImageHeight / 2);
 
         public static void SampleWithSameRectangleSize(int count)
         {

@@ -1,4 +1,4 @@
-﻿using TagsCloudVisualization.CloudSamples;
+﻿using TagsCloudVisualization.Visualization.CloudSamples;
 using TagsCloudVisualization.VisualizationSettings;
 
 namespace TagsCloudVisualization
