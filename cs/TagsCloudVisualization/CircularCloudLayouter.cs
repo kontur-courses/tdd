@@ -24,15 +24,10 @@ namespace TagsCloudVisualization
         {
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException();
-            var radius = Math.Max((double)cloudRadius-10, 0);
-            var angle = 0d;
-            var radiusStep = 0.02 * _center.X / 50;
-            var angleStep = 0.3;
+            var spiral = new Spiral(cloudRadius, _center);
             while (true)
             {
-                var currentCoordinate = new Point(
-                    (int)(_center.X + radius * Math.Cos(angle) - rectangleSize.Width / 2),
-                    (int)(_center.Y - radius * Math.Sin(angle)) - rectangleSize.Height / 2);
+                var currentCoordinate = spiral.GetCurrentPosition(rectangleSize);
                 var currentRectangle = new Rectangle(currentCoordinate, rectangleSize);
 
                 if (!CheckIntersections(currentRectangle))
@@ -42,9 +37,7 @@ namespace TagsCloudVisualization
                     rectangles.Add(currentRectangle);
                     break;
                 }
-
-                radius += radiusStep;
-                angle += angleStep;
+                spiral.TakeStep();
             }
 
             return rectangles.Last();

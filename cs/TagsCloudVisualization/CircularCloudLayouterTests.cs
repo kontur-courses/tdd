@@ -19,7 +19,7 @@ namespace TagsCloudVisualization
         [SetUp]
         public void Initialize()
         {
-            _center = new Point(50, 50);
+            _center = new Point(200, 200);
             _circularCloudLayouter = new CircularCloudLayouter(_center);
         }
 
@@ -37,7 +37,7 @@ namespace TagsCloudVisualization
 
         private static void DrawImage(CircularCloudLayouter circularCloudLayouter, string path)
         {
-            Bitmap bitmap = new Bitmap(100, 100);
+            Bitmap bitmap = new Bitmap(400, 400);
             var graphics = Graphics.FromImage(bitmap);
             var rectangles = circularCloudLayouter.GetRectangles();
             foreach (var rectangle in rectangles)
@@ -91,6 +91,14 @@ namespace TagsCloudVisualization
             for (var i = 0; i < 10; i++)
                 _circularCloudLayouter.PutNextRectangle(new Size(10, 10));
             _circularCloudLayouter.GetRectangles().Should().HaveCount(10);
+        }
+
+        [Test, Timeout(100)]
+        public void PutNextRectangle_HasSufficientPerformance()
+        {
+            for (var i = 0; i < 1000; i++)
+                _circularCloudLayouter.PutNextRectangle(new Size(10, 10));
+            _circularCloudLayouter.GetRectangles().Should().HaveCount(1000);
         }
 
         [Test]

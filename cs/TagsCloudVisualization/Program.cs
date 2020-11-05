@@ -12,22 +12,23 @@ namespace TagsCloudVisualization
     {
         static void Main(string[] args)
         {
-            var circularCloudLayouter = new CircularCloudLayouter(new Point(300, 300));
+            var circularCloudLayouter = new CircularCloudLayouter(new Point(500, 500));
             for (var i = 0; i < 1000; i++)
-                circularCloudLayouter.PutNextRectangle(new Size((10 + i * i) % 30, (10 + i * i * i) % 20));
+                circularCloudLayouter.PutNextRectangle(new Size(15, 10));
+            Console.WriteLine("Cloud Filled");
             DrawAndSaveCloudImage(circularCloudLayouter, "Cloud2");
-
-            ConsoleVisualization(circularCloudLayouter);
+            Console.WriteLine("Image Generated");
+            Console.ReadKey();
         }
 
         private static void DrawAndSaveCloudImage(CircularCloudLayouter circularCloudLayouter, string name)
         {
-            Bitmap bitmap = new Bitmap(600, 600);
+            Bitmap bitmap = new Bitmap(1000, 1000);
             var graphics = Graphics.FromImage(bitmap);
             var rectangles = circularCloudLayouter.GetRectangles();
             foreach (var rectangle in rectangles)
             {
-                var rnd = new Random(rectangle.Left);
+                var rnd = new Random(rectangle.Left * rectangle.Right - rectangle.Bottom);
                 graphics.FillRectangle(new SolidBrush(
                     Color.FromArgb(rnd.Next(0, 255), rnd.Next(0, 255), rnd.Next(0, 255))), rectangle);
             }
