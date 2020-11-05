@@ -6,7 +6,7 @@ namespace TagsCloudVisualization.VisualizationSettings
     public class VisualizerSettings
     {
         private static readonly string ConfigPath =
-            Path.Combine(Directory.GetCurrentDirectory(), "VisualizationSettings", "config.json");
+            Path.Combine(Directory.GetCurrentDirectory(), "config.json");
 
         public string WorkDirectory { get; set; }
         public int ImageWidth { get; set; }
@@ -18,7 +18,7 @@ namespace TagsCloudVisualization.VisualizationSettings
             return JsonSerializer.Deserialize<VisualizerSettings>(jsonString);
         }
 
-        public void SaveSettingsIntoConfig(string workDir = "TagClouds", int imageWidth = 1280, int imageHeight = 720)
+        public void SaveSettingsIntoConfig(string workDir, int imageWidth, int imageHeight)
         {
             WorkDirectory = workDir;
             ImageWidth = imageWidth;

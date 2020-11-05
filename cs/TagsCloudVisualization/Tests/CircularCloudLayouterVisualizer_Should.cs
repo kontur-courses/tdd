@@ -19,7 +19,7 @@ namespace TagsCloudVisualization.Tests
         public void SetUp()
         {
             var settings = new VisualizerSettings();
-            settings.SaveSettingsIntoConfig();
+            settings.SaveSettingsIntoConfig("TagClouds", 700, 700);
             cloudLayouter = new CircularCloudLayouter(Point.Empty);
             visualizer = new CircularCloudLayouterVisualizer(cloudLayouter);
         }
@@ -40,7 +40,7 @@ namespace TagsCloudVisualization.Tests
             Action saveInFile = () => visualizer.SaveInFile(input);
             saveInFile.Should().Throw<ArgumentException>();
         }
-        
+
         [Test]
         public void SaveInFile_ForbiddenCharsForFilename_ThrowArgumentException()
         {
