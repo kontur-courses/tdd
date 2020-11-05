@@ -6,12 +6,12 @@ using TagsCloudVisualization;
 
 namespace TagsCloudVisualization_Should
 {
-    class TestedCloudLayouter
+    class CircularCloudLayouterTestWrapper
     {
-        public readonly List<Rectangle> Rectangles;
+        internal readonly List<Rectangle> Rectangles;
         private readonly CircularCloudLayouter layouter;
 
-        public TestedCloudLayouter(Point center)
+        public CircularCloudLayouterTestWrapper(Point center)
         {
             layouter = new CircularCloudLayouter(center);
             Rectangles = new List<Rectangle>();

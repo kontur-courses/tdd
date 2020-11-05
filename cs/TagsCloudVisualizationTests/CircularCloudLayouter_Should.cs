@@ -10,15 +10,15 @@ using TagsCloudVisualization_Should;
 namespace TagsCloudVisualization
 {
     [TestFixture]
-    public class CircularCloudLayouterTests
+    public class CircularCloudLayouter_Should
     {
         private Point center = new Point(400, 400);
-        private TestedCloudLayouter layouter;
+        private CircularCloudLayouterTestWrapper layouter;
 
         [SetUp]
         public void SetUp()
         {
-            layouter = new TestedCloudLayouter(center);
+            layouter = new CircularCloudLayouterTestWrapper(center);
         }
 
         [Test]
@@ -84,14 +84,6 @@ namespace TagsCloudVisualization
             rectangles.All(
                 rect => rect.IntersectsWith(rectangleToCheck)
             ).Should().BeTrue("because there is enough plase on the image to set rectangles inside");
-        }
-
-        [Test, Timeout(15000)]
-        public void Layouter_ShouldBeFastEnough()
-        {
-            var rand = new Random(); 
-            for (var i = 0; i < 600; i++)
-                layouter.PutNextRectangle(new Size(rand.Next(1, 100), rand.Next(1, 100)));
         }
 
         [TearDown]
