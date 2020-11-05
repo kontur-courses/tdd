@@ -9,26 +9,28 @@ namespace TagsCloudVisualization
     {
         private readonly CircularCloudLayouter layouter;
         private Bitmap bitmap;
+        private readonly int sideSize;
 
-        public CircularCloudVisualization(CircularCloudLayouter layouter)
+        public CircularCloudVisualization(CircularCloudLayouter layouter, int sideSize = 5)
         {
             this.layouter = layouter;
+            this.sideSize = sideSize;
         }
 
-        public void DrawRectanglesOnImage()
+        private void DrawRectanglesOnImage()
         {
             var layoutSize = layouter.GetLayoutSize();
             bitmap = new Bitmap(layoutSize.Width, layoutSize.Height);
-            var graphics = Graphics.FromImage(bitmap);
-            var pen = new Pen(Color.Red, 5);
+            using var graphics = Graphics.FromImage(bitmap);
+            using var pen = new Pen(Color.Red, sideSize);
             graphics.DrawRectangles(pen, layouter.ToArray());
-            graphics.Dispose();
         }
 
         public string SaveImage(string name)
         {
             if (!name.EndsWith(".png"))
                 name += ".png";
+            DrawRectanglesOnImage();
             var path = GetPathToImageName(name);
             bitmap.Save(path, ImageFormat.Png);
             bitmap.Dispose();

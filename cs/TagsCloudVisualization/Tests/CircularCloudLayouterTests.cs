@@ -21,7 +21,7 @@ namespace TagsCloudVisualization.Tests
         [SetUp]
         public void SetUp()
         {
-            center = new Point(10, 10);
+            center = new Point(100, 100);
             layout = new CircularCloudLayouter(center);
             rectangleSize = new Size(10, 10);
             rectangles = new List<Rectangle>();
@@ -89,7 +89,6 @@ namespace TagsCloudVisualization.Tests
                 allRectangles.Add(rectangle);
                 differentRectangles.Add(rectangle);
             }
-
             allRectangles.Should().HaveCount(differentRectangles.Count);
             allRectangles.Should().BeEquivalentTo(differentRectangles);
         }
@@ -98,7 +97,6 @@ namespace TagsCloudVisualization.Tests
         public void PutNextRectangleAllRectanglesAdded()
         {
             PutRectangles(100);
-
             layout.Should().HaveCount(rectangles.Count);
             layout.Should().BeEquivalentTo(rectangles);
         }
@@ -107,19 +105,12 @@ namespace TagsCloudVisualization.Tests
         public void PutNextRectangleAllRectangleShouldBeDense()
         {
             PutRectangles(30);
-
             foreach (var rectangle in rectangles)
             {
                 var vector = new TargetVector(center, rectangle.Location);
                 foreach (var delta in vector.GetPartialDelta().Take(3))
-                    TryMoveRectangle(rectangle, delta).Should().BeFalse();
+                    rectangle.TryMoveRectangle(delta, rectangles).Should().BeFalse();
             }
-        }
-
-        private bool TryMoveRectangle(Rectangle rectangle, Point delta)
-        {
-            var movedRectangle = rectangle.MoveOnTheDelta(delta);
-            return !movedRectangle.IntersectsWith(rectangles);
         }
 
         [TearDown]
@@ -128,8 +119,7 @@ namespace TagsCloudVisualization.Tests
             var testContext = TestContext.CurrentContext;
             if (!testContext.Result.Outcome.Status.HasFlag(TestStatus.Failed))
                 return;
-            var visualization = new CircularCloudVisualization(layout);
-            visualization.DrawRectanglesOnImage();
+            var visualization = new CircularCloudVisualization(layout, 2);
             var path = visualization.SaveImage(testContext.Test.Name);
 
             TestContext.WriteLine($"Tag cloud visualization saved to file {path}");
