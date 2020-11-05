@@ -16,14 +16,6 @@ namespace TagsCloudVisualisationTests
             return expected;
         }
 
-        public static ICircularCloudLayouter PutAndTest(this ICircularCloudLayouter layouter,
-            Size size, Point expectedPosition, out Rectangle result)
-        {
-            layouter.Put(size, out result);
-            result.Should().Be(new Rectangle(expectedPosition, size));
-            return layouter;
-        }
-
         public static ICircularCloudLayouter Put(this ICircularCloudLayouter layouter, Size size, out Rectangle result)
         {
             result = layouter.PutNextRectangle(size);

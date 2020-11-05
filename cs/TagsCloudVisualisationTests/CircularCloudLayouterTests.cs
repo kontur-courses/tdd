@@ -38,13 +38,20 @@ namespace TagsCloudVisualisationTests
             var random = Randomizer.CreateRandomizer();
             var sw = Stopwatch.StartNew();
             var count = 0;
+            var currentRank = 1;
             while (sw.Elapsed.TotalMinutes <= 1)
             {
-                Layouter.PutNextRectangle(new Size(random.Next(4, 20), random.Next(4, 20)));
                 count++;
+                if (count % currentRank == 0)
+                {
+                    PrintTestingMessage($"Created {count} rectangles, elapsed {sw.Elapsed}");
+                    currentRank *= 10;
+                }
+
+                Layouter.PutNextRectangle(new Size(random.Next(4, 20), random.Next(4, 20)));
             }
 
-            TestContext.Progress.WriteLine($"Created {count} rectangles per minute, test finished");
+            PrintTestingMessage($"Created {count} rectangles per minute");
         }
 
         [Test, MaxTime(1000 * 60 * 2)]

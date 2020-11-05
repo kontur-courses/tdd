@@ -69,13 +69,13 @@ namespace TagsCloudVisualisationTests.Infrastructure
         {
             if (layouterHolder.Layouter == null)
             {
-                TestWriteLine($"Test subject {nameof(Layouter)} is null, can't save");
+                PrintTestingMessage($"Test subject {nameof(Layouter)} is null, can't save");
                 return;
             }
 
             if (!layouterHolder.ResultRectangles.Any())
             {
-                TestWriteLine("Nothing to save, output is empty");
+                PrintTestingMessage("Nothing to save, output is empty");
                 return;
             }
 
@@ -93,16 +93,16 @@ namespace TagsCloudVisualisationTests.Infrastructure
             }
             catch (Exception e)
             {
-                TestWriteLine($"Can't save cloud visualisation: {e}");
+                PrintTestingMessage($"Can't save cloud visualisation: {e}");
             }
 
-            TestWriteLine($"Tag cloud visualization saved to file <{filePath}>");
+            PrintTestingMessage($"Tag cloud visualization saved to file <{filePath}>");
         }
 
         private static Color RandomColor() =>
             Color.FromKnownColor(Randomizer.CreateRandomizer().NextEnum<KnownColor>());
 
-        private static void TestWriteLine(string message) => TestContext.Out.WriteLine(message);
+        protected static void PrintTestingMessage(string message) => TestContext.Progress.WriteLine(message);
 
         private class CircularCloudLayouterHolder : ICircularCloudLayouter
         {
