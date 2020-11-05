@@ -60,7 +60,7 @@ namespace TagsCloudVisualisationTests
             Layouter.PutAndTest(size, new Point(-5, -5));
         }
 
-        [Test, Ignore("Dumb test to visualise things")]
+        [Test]
         public void TEST_TO_REMOVE() //TODO REMOVE
         {
             Layouter.Put(new Size(10, 10), out _)
@@ -70,7 +70,7 @@ namespace TagsCloudVisualisationTests
                 .Put(new Size(7, 5), out _)
                 .Put(new Size(29, 10), out _)
                 .Put(new Size(10, 8), out _)
-                .Put(new Size(100, 20), out _)
+                .Put(new Size(10, 20), out _)
                 .Put(new Size(4, 5), out _)
                 .Put(new Size(4, 4), out _)
                 .Put(new Size(7, 5), out _)

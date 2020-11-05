@@ -4,9 +4,8 @@ using System.Linq;
 
 namespace TagsCloudVisualisation.Visualisation
 {
-    public abstract partial class RectanglesVisualiser
+    public abstract class RectanglesVisualiser
     {
-        private const float BrushSize = 1;
         private readonly Point sourceCenterPoint;
         private Image image;
         private Graphics graphics;
