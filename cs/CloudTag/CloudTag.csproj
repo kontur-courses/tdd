@@ -1,12 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <Import Project="..\packages\NUnit.3.12.0\build\NUnit.props" Condition="Exists('..\packages\NUnit.3.12.0\build\NUnit.props')" />
     <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
     <PropertyGroup>
         <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
         <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
         <ProjectGuid>{22B7C5EA-CF87-4E64-999E-5ECD9FD03620}</ProjectGuid>
-        <OutputType>WinExe</OutputType>
+        <OutputType>Library</OutputType>
         <RootNamespace>CloudTag</RootNamespace>
         <AssemblyName>CloudTag</AssemblyName>
         <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
@@ -34,14 +33,6 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="FluentAssertions, Version=6.0.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a">
-          <HintPath>..\packages\FluentAssertions.6.0.0-alpha0001\lib\net47\FluentAssertions.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="nunit.framework, Version=3.12.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb">
-          <HintPath>..\packages\NUnit.3.12.0\lib\net45\nunit.framework.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
         <Reference Include="System" />
         <Reference Include="System.Configuration" />
         <Reference Include="System.Core" />
@@ -66,8 +57,6 @@
     <ItemGroup>
         <Compile Include="CloudPainter.cs" />
         <Compile Include="CircularCloudLayouter.cs" />
-        <Compile Include="CircularCloudLayouterTests.cs" />
-        <Compile Include="Program.cs" />
         <Compile Include="RectangleExtensions.cs" />
         <Compile Include="Spiral.cs" />
         <None Include="packages.config" />
@@ -76,10 +65,4 @@
         <None Include="App.config" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-    <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-      <PropertyGroup>
-        <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
-      </PropertyGroup>
-      <Error Condition="!Exists('..\packages\NUnit.3.12.0\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NUnit.3.12.0\build\NUnit.props'))" />
-    </Target>
 </Project>

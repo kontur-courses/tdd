@@ -5,6 +5,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using CloudTag;
 
 namespace CloudTag
 {
@@ -161,7 +162,7 @@ namespace CloudTag
                 var distanceToCenter = Math.Sqrt(Math.Pow(rectangle.Location.X, 2) +
                                                  Math.Pow(rectangle.Location.Y, 2));
 
-                distanceToCenter.Should().BeLessThan(1 * suggestedCircleRadius / 2);
+                distanceToCenter.Should().BeLessThan(3 * suggestedCircleRadius / 2);
             }
         }
     }
