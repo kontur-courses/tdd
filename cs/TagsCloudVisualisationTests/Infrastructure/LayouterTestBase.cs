@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -79,13 +78,15 @@ namespace TagsCloudVisualisationTests.Infrastructure
                 return;
             }
 
-            var visualiser = RectanglesVisualiser.New(Layouter.CloudCenter,
-                (g, r) => RectanglesVisualiser.DrawRectangle(g, RandomColor(), r));
+            var visualiser = new RectanglesVisualiser(scale: 3,
+                sourceCenterPoint: Layouter.CloudCenter,
+                drawer: (g, r) => RectanglesVisualiser.DrawRectangle(g, new Pen(RandomColor(), 3), r));
 
             foreach (var rectangle in layouterHolder.ResultRectangles)
                 visualiser.Draw(rectangle);
 
-            var image = visualiser.GetImage().FillBackground(Color.Bisque);
+            var image = visualiser.GetImage()
+                .FillBackground(Color.Bisque);
             var filePath = Path.Combine(TestOutputDirectory, $"{TestContext.CurrentContext.Test.Name}.png");
             try
             {
