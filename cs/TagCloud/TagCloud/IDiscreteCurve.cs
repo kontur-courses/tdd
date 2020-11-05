@@ -6,6 +6,5 @@ namespace TagCloud
     {
         void Next();
         Point CurrentPoint { get; }
-        // void SetStartingPoint(Point point);
     }
 }
