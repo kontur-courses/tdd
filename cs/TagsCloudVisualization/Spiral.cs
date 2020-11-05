@@ -18,22 +18,18 @@ namespace TagsCloudVisualization
         public IEnumerator<Point> GetEnumerator()
         {
             var currentPoint = center;
-            yield return currentPoint;
+            if (!usedPoints.Contains(currentPoint))
+                yield return currentPoint;
             var lineLength = 1;
             var direction = -1;
-            
+
             while (true)
             {
-                for (var i = 0; i < lineLength; i++)
+                for (var i = 0; i < lineLength * 2; i++)
                 {
-                    currentPoint = Point.Add(currentPoint, new Size(direction, 0));
-                    if (!usedPoints.Contains(currentPoint))
-                        yield return currentPoint;
-                }
-
-                for (var i = 0; i < lineLength; i++)
-                {
-                    currentPoint = Point.Add(currentPoint, new Size(0, direction));
+                    currentPoint = Point.Add(currentPoint, i < lineLength
+                        ? new Size(direction, 0)
+                        : new Size(0, direction));
                     if (!usedPoints.Contains(currentPoint))
                         yield return currentPoint;
                 }
