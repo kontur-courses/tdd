@@ -31,6 +31,8 @@ namespace TagsCloudVisualization.Layouters
 
         public Rectangle PutNextRectangle(Size size)
         {
+            if (size == null)
+                throw new ArgumentException("Size should not be null");
             if (size.Width <= 0 || size.Height <= 0)
                 throw new ArgumentException($"Some side was negative in size: {size.Width}x{size.Height}");
 
@@ -47,14 +49,18 @@ namespace TagsCloudVisualization.Layouters
                 bestDistance = pointDistance;
             }
 
-            var rectangle = new Rectangle(bestPoint, size);
+            return CreateRectangle(bestPoint, size);
+        }
+
+        private Rectangle CreateRectangle(Point point, Size size)
+        {
+            var rectangle = new Rectangle(point, size);
             rectangles.Add(rectangle);
             return rectangle;
         }
 
         private bool CanBePlaced(Rectangle targetRectangle)
         {
-            // TODO: Not best algorithm
             return rectangles.All(rectangle => !targetRectangle.IntersectsWith(rectangle));
         }
     }
