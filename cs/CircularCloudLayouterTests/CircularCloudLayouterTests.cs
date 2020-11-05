@@ -1,18 +1,16 @@
-﻿using System;
-using System.Drawing;
-using System.IO;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using NUnit.Framework.Internal;
+using System;
+using System.Drawing;
+using System.IO;
 
-namespace TagsCloudVisualization
+namespace CircularCloudLayouterTests
 {
-    public class TestsForCircularCloudLayouter
+    public class CircularCloudLayouterTests
     {
         private CircularCloudLayouter circularCloudLayouter;
         private Painter painter;
-        private TestContext testContext;
         private int pictureWidth = 700;
         private int pictureHeight = 500;
         private Rectangle[] rectangles;
@@ -23,7 +21,6 @@ namespace TagsCloudVisualization
         {
             circularCloudLayouter = new CircularCloudLayouter(new Point(pictureWidth / 2, pictureHeight / 2));
             painter = new Painter(pictureWidth, pictureHeight);
-            testContext = new TestContext(TestExecutionContext.CurrentContext);
             rectangles = new Rectangle[rectanglesCount];
             for (int i = 0; i < rectanglesCount; i++)
             {
@@ -35,14 +32,7 @@ namespace TagsCloudVisualization
         private Size MakeRandomSize()
         {
             var rand = new Random(Environment.TickCount);
-            return new Size(rand.Next(10, 50), rand.Next(5, 30));
-        }
-
-
-        private bool RectanglesAreCrossed(Rectangle rectangle1, Rectangle rectangle2)
-        {
-            return (Math.Min(rectangle1.Right, rectangle2.Right) - Math.Max(rectangle1.Left, rectangle2.Left) > 0)
-                   && (Math.Min(rectangle1.Bottom, rectangle2.Bottom) - Math.Max(rectangle1.Top, rectangle2.Top) > 0);
+            return new Size(rand.Next(10, 50), rand.Next(10, 30));
         }
 
         [Test]
@@ -72,7 +62,7 @@ namespace TagsCloudVisualization
         {
             for (var i = 1; i < rectanglesCount; i++)
             {
-                RectanglesAreCrossed(rectangles[i - 1], rectangles[i]).Should().BeFalse();
+                rectangles[i - 1].IntersectsWith(rectangles[i]).Should().BeFalse();
             }
         }
 
@@ -83,7 +73,7 @@ namespace TagsCloudVisualization
             {
                 for (int j = i + 1; j < rectanglesCount; j++)
                 {
-                    RectanglesAreCrossed(rectangles[i], rectangles[j]).Should().BeFalse();
+                    rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse();
                 }
             }
         }
@@ -92,39 +82,42 @@ namespace TagsCloudVisualization
         public void CloudIsDense()
         {
             var squareOfRectangles = 0.0;
-            var center = rectangles[0].Location;
-            squareOfRectangles += rectangles[0].Height * rectangles[0].Width;
-            for (int i = 1; i < rectanglesCount; i++)
+            var radius = 0.0;
+            for (int i = 0; i < rectanglesCount; i++)
+            {
+                radius = Math.Max(GetRadiusOfFramingCircle(rectangles[i]), radius);
                 squareOfRectangles += rectangles[i].Height * rectangles[i].Width;
+            }
 
-            var distanceBetweenCenterAndLeftTopAngle = GetDistanceBetweenPoints(center, rectangles[rectanglesCount-1].Location);
-            var distanceBetweenCenterAndLeftBottomAngle =
-                GetDistanceBetweenPoints(center, new Point(rectangles[69].Left, rectangles[69].Bottom));
-            var distanceBetweenCenterAndRightBottomAngle =
-                GetDistanceBetweenPoints(center, new Point(rectangles[69].Right, rectangles[69].Bottom));
-            var distanceBetweenCenterAndRightTopAngle =
-                GetDistanceBetweenPoints(center, new Point(rectangles[69].Right, rectangles[69].Top));
-            var radius = Math.Max(
-                Math.Max(distanceBetweenCenterAndLeftTopAngle, distanceBetweenCenterAndLeftBottomAngle),
-                Math.Max(distanceBetweenCenterAndRightBottomAngle, distanceBetweenCenterAndRightTopAngle));
+            painter.PaintCircle(rectangles[0].Location, radius);
             var squareOfFramingCircle = Math.PI * radius * radius;
-            (squareOfRectangles / squareOfFramingCircle).Should().BeInRange(0.25, 1);
+            (squareOfRectangles / squareOfFramingCircle).Should().BeInRange(0.6, 1);
         }
 
-        private double GetDistanceBetweenPoints(Point p1, Point p2)
+        private double GetRadiusOfFramingCircle(Rectangle rectangle)
         {
-            return Math.Sqrt((p1.X - p2.X) * (p1.X - p2.X) + (p1.Y - p2.Y) * (p1.Y - p2.Y));
+            var center = rectangles[0].Location;
+            var distanceBetweenCenterAndLeftTopAngle = center.GetDistanceTo(rectangle.Location);
+            var distanceBetweenCenterAndLeftBottomAngle = center.GetDistanceTo(new Point(rectangle.Left,
+                rectangle.Bottom));
+            var distanceBetweenCenterAndRightBottomAngle = center.GetDistanceTo(new Point(rectangle.Right,
+                rectangle.Bottom));
+            var distanceBetweenCenterAndRightTopAngle =
+                center.GetDistanceTo(new Point(rectangle.Right,
+                    rectangle.Top));
+            return Math.Max(
+                Math.Max(distanceBetweenCenterAndLeftTopAngle, distanceBetweenCenterAndLeftBottomAngle),
+                Math.Max(distanceBetweenCenterAndRightBottomAngle, distanceBetweenCenterAndRightTopAngle));
         }
 
         [TearDown]
         public void TearDown()
         {
-            if (testContext.Result.Outcome.Status == TestStatus.Failed)
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
                 painter.SavePicture("failed.jpeg");
                 Console.WriteLine($"Tag cloud visualization saved to file {Path.GetFullPath("failed.jpeg")}");
             }
         }
-
     }
 }

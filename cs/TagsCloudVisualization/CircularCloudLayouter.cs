@@ -1,21 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
-namespace TagsCloudVisualization
+namespace CircularCloudLayouterTests
 {
     public class CircularCloudLayouter
     {
         private Point center;
-        private double maxDiagonalOfRectangleAtCurrentTurn;
-        private double coefOfSpiralEquation;
-        private int turnNumber;
-        private Rectangle lastRectangle;
+        private double coefOfSpiralEquation = 0.5;
+        private int spiralTurnoverNumber;
         private double anglePhi;
-        private double deltaOfAnglePhi = Math.PI / 36;
+        private double deltaOfAnglePhi = Math.PI / 90;
+        private List<Rectangle> rectangles;
 
         public CircularCloudLayouter(Point point)
         {
             center = point;
+            rectangles = new List<Rectangle>();
             anglePhi = 2 * Math.PI;
         }
 
@@ -23,40 +25,29 @@ namespace TagsCloudVisualization
         {
             if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
                 throw new ArgumentException();
-            if (turnNumber == 0)
+            if (spiralTurnoverNumber == 0)
             {
-                turnNumber++;
+                spiralTurnoverNumber++;
                 return PutFirstRectangle(rectangleSize);
             }
 
-            var rectangle = lastRectangle;
-            while (RectanglesAreCrossed(rectangle, lastRectangle))
+            var rectangle = rectangles.Last();
+            while (RectangleIntersectAnyRectangles(rectangle))
             {
-                if (anglePhi >= 2 * Math.PI * turnNumber)
-                {
-                    var distanceBetweenCenterAndRectangleAtPreviousTurn =
-                        2 * Math.PI * coefOfSpiralEquation * (turnNumber - 1);
-                    coefOfSpiralEquation =
-                        (maxDiagonalOfRectangleAtCurrentTurn + 5 + distanceBetweenCenterAndRectangleAtPreviousTurn) /
-                        (2 * Math.PI * turnNumber);
-                    turnNumber++;
-                    maxDiagonalOfRectangleAtCurrentTurn = 0;
-                }
                 var coordinates = GetCoordinatesOfRectangle(rectangleSize);
-                rectangle = new Rectangle(new Point(coordinates.Item1, coordinates.Item2), rectangleSize);
+                rectangle = new Rectangle(new Point(coordinates.X, coordinates.Y), rectangleSize);
                 anglePhi += deltaOfAnglePhi;
             }
-            var diagonal = GetDiagonalOfRectangle(rectangle);
-            if (diagonal > maxDiagonalOfRectangleAtCurrentTurn)
-                maxDiagonalOfRectangleAtCurrentTurn = diagonal;
-            lastRectangle = rectangle;
+
+            rectangles.Add(rectangle);
             return rectangle;
         }
 
-        private Tuple<int, int> GetCoordinatesOfRectangle(Size rectangleSize)
+        private Point GetCoordinatesOfRectangle(Size rectangleSize)
         {
-            var x = (int)Math.Round(coefOfSpiralEquation * anglePhi * Math.Cos(anglePhi) + center.X);
-            var y = (int)Math.Round(coefOfSpiralEquation * anglePhi * Math.Sin(anglePhi) + center.Y);
+            var pointOnSpiral = GetNextPointOnSpiral();
+            var x = pointOnSpiral.X + center.X;
+            var y = pointOnSpiral.Y + center.Y;
             if (x >= center.X && y <= center.Y)
             {
                 y -= rectangleSize.Height;
@@ -65,25 +56,31 @@ namespace TagsCloudVisualization
             {
                 y -= rectangleSize.Height;
                 x -= rectangleSize.Width;
-
             }
             else if (x <= center.X && y >= center.Y)
             {
                 x -= rectangleSize.Width;
             }
 
-            return Tuple.Create(x, y);
+            return new Point(x, y);
         }
 
-        private double GetDiagonalOfRectangle(Rectangle rectangle)
+        private bool RectangleIntersectAnyRectangles(Rectangle rectangle)
         {
-            return Math.Sqrt(rectangle.Height * rectangle.Height + rectangle.Width * rectangle.Width);
+            foreach (var rectangle1 in rectangles)
+            {
+                if (rectangle.IntersectsWith(rectangle1))
+                    return true;
+            }
+
+            return false;
         }
 
-        private bool RectanglesAreCrossed(Rectangle rectangle1, Rectangle rectangle2)
+        private Point GetNextPointOnSpiral()
         {
-            return (Math.Min(rectangle1.Right, rectangle2.Right) - Math.Max(rectangle1.Left, rectangle2.Left) >= 0)
-                   && (Math.Min(rectangle1.Bottom, rectangle2.Bottom) - Math.Max(rectangle1.Top, rectangle2.Top) >= 0);
+            var x = (int) Math.Round(coefOfSpiralEquation * anglePhi * Math.Cos(anglePhi));
+            var y = (int) Math.Round(coefOfSpiralEquation * anglePhi * Math.Sin(anglePhi));
+            return new Point(x, y);
         }
 
         private Rectangle PutFirstRectangle(Size rectangleSize)
@@ -91,8 +88,7 @@ namespace TagsCloudVisualization
             var x = center.X;
             var y = center.Y;
             var rectangle = new Rectangle(new Point(x, y), rectangleSize);
-            maxDiagonalOfRectangleAtCurrentTurn = GetDiagonalOfRectangle(rectangle);
-            lastRectangle = rectangle;
+            rectangles.Add(rectangle);
             return rectangle;
         }
     }
