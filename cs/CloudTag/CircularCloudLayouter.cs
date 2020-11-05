@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -14,31 +15,31 @@ namespace CloudTag
             spiral = new Spiral(center);
         }
 
-        public CircularCloudLayouter(int centerX, int centerY)
+        public CircularCloudLayouter(int centerX, int centerY) : this(new Point(centerX, centerY))
         {
-            var center = new Point(centerX, centerY);
-            spiral = new Spiral(center);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
+            if (rectangleSize.Height < 0 || rectangleSize.Width < 0)
+                throw new ArgumentException();
+
             if (rectangleSize.Height == 0 || rectangleSize.Width == 0)
                 return Rectangle.Empty;
 
-            var rectangleToAdd = new Rectangle(Point.Empty, rectangleSize);
+            var rectangleToAdd = new Rectangle {Size = rectangleSize};
 
             do
-            {
                 rectangleToAdd.SetCenter(spiral.GetNextPoint());
-            } while (rectangles.Any(rectangle => rectangle.IntersectsWith(rectangleToAdd)));
+            while (rectangles.Any(rectangle => rectangle.IntersectsWith(rectangleToAdd)));
 
             rectangles.Add(rectangleToAdd);
-            return rectangles.Last();
+            return rectangleToAdd;
         }
 
-        public IEnumerable<Rectangle> GetRectangles()
+        public Rectangle[] GetRectangles()
         {
-            return rectangles;
+            return rectangles.ToArray();
         }
     }
 }

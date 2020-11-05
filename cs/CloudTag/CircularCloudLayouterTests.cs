@@ -13,7 +13,7 @@ namespace CloudTag
     public class CircularCloudLayouterTests
     {
         private CircularCloudLayouter layouter;
-        private readonly Point layouterCenter = new Point(400, 400);
+        private readonly Point layouterCenter = new Point(0, 0);
 
         [SetUp]
         public void SetUp()
@@ -27,19 +27,7 @@ namespace CloudTag
             if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure)
                 return;
 
-            foreach (var filePath in Directory.GetFiles(Path.Combine(Directory.GetCurrentDirectory(), "..", "..",
-                "Failures Tests Layouts")))
-                File.Delete(filePath);
-
-            var outWriter = TestContext.Out;
-            var pic = CloudPainter.DrawTagCloud(Pens.Blue, layouter);
-            var testName = $"{TestContext.CurrentContext.Test.MethodName} {TestContext.CurrentContext.Test.Name}";
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "Failures Tests Layouts",
-                $"{testName}.png");
-
-            outWriter.WriteLine($"Tag cloud visualization saved to file Failures Tests Layouts/{testName}");
-
-            pic.Save(path);
+           
         }
 
         [Test]
@@ -49,34 +37,32 @@ namespace CloudTag
         }
 
         [Test]
-        public void PutNextRectangle_ReturnsRectangle_FirstAdding()
+        public void PutNextRectangle_ReturnsFirstRectangle_WithCenterInLayouterCenter()
         {
             var size = new Size(10, 10);
             var actualRectangle = layouter.PutNextRectangle(size);
-            var expectedRectangle = new Rectangle(Point.Empty, size);
+            var expectedRectangle = new Rectangle {Size = size};
+
             expectedRectangle.SetCenter(layouterCenter);
+
             actualRectangle.Should().Be(expectedRectangle);
         }
 
-        [TestCase(2, TestName = "2 rect")]
-        [TestCase(10, TestName = "10 rect")]
-        [TestCase(80, TestName = "80 rect")]
-        [TestCase(200, TestName = "200 rect")]
+        [TestCase(2)]
+        [TestCase(10)]
+        [TestCase(80)]
+        [TestCase(200)]
         public void PutNextRectangle_ShouldNotIntersect_RectSameSize(int rectCount)
         {
             var size = new Size(10, 10);
-            for (var i = 0; i < rectCount; i++)
-                layouter.PutNextRectangle(size);
+            var rectangles = Enumerable.Range(0, rectCount)
+                .Select(i => layouter.PutNextRectangle(size))
+                .ToArray();
 
-            var rectsInLayout = layouter.GetRectangles().ToArray();
             for (var i = 0; i < rectCount; i++)
-            {
-                rectsInLayout[i].Should().Match<Rectangle>(
-                    rect1 => !rectsInLayout
-                        .Skip(i + 1)
-                        .Any(rect1.IntersectsWith)
-                );
-            }
+            for (var j = i + 1; j < rectCount; j++)
+                rectangles[i].IntersectsWith(rectangles[j]).Should()
+                    .BeFalse($"{rectangles[i]} should not intersect {rectangles[j]}");
         }
 
         [Test]
@@ -86,8 +72,16 @@ namespace CloudTag
             actualRect.Should().Be(Rectangle.Empty);
         }
 
-        [TestCase(1, TestName = "1 rect")]
-        [TestCase(20, TestName = "20 rect")]
+        [TestCase(-10, 10)]
+        [TestCase(10, -10)]
+        [TestCase(-10, -10)]
+        public void PutNextRectangle_ShouldThrow_SizeWithNegativeSides(int width, int height)
+        {
+            Assert.Throws<ArgumentException>(() => layouter.PutNextRectangle(new Size(width, height)));
+        }
+
+        [TestCase(1)]
+        [TestCase(20)]
         public void GetRectangles_ReturnEmptyCollection_AddedRectsWithZeroSize(int rectCount)
         {
             var size = new Size(0, 0);
@@ -116,27 +110,27 @@ namespace CloudTag
                 layouter.PutNextRectangle(size);
         }
 
-        [TestCase(10, TestName = "10 rect")]
-        [TestCase(20, TestName = "20 rect")]
-        [TestCase(50, TestName = "50 rect")]
+        [TestCase(10)]
+        [TestCase(20)]
+        [TestCase(50)]
         public void PutNextRectangle_LayoutShouldBeTight_RectsDifferentSize(int rectCount)
         {
             for (var i = 0; i < rectCount; i++)
                 layouter.PutNextRectangle(new Size((i * 15 + 25) % 90 + 30, (i * 10 + 20) % 60 + 20));
 
             var maxDistanceToCenter = layouter.GetRectangles().Max(rectangle =>
-                Math.Sqrt(Math.Pow(rectangle.Location.X - layouterCenter.X, 2) +
-                          Math.Pow(rectangle.Location.Y - layouterCenter.Y, 2)));
+                Math.Sqrt(Math.Pow(rectangle.Location.X, 2) +
+                          Math.Pow(rectangle.Location.Y, 2)));
 
             var commonArea = layouter.GetRectangles().Sum(rectangle => rectangle.Height * rectangle.Width);
             var borderCircleArea = maxDistanceToCenter * maxDistanceToCenter * Math.PI;
 
-            (borderCircleArea - commonArea).Should().BeLessThan(2 * borderCircleArea / 3);
+            borderCircleArea.Should().BeLessThan(3 * commonArea);
         }
 
-        [TestCase(10, TestName = "10 rect")]
-        [TestCase(20, TestName = "20 rect")]
-        [TestCase(50, TestName = "50 rect")]
+        [TestCase(10)]
+        [TestCase(20)]
+        [TestCase(50)]
         public void PutNextRectangle_LayoutShouldBeRoundShape_RectsDifferentSize(int rectCount)
         {
             for (var i = 0; i < rectCount; i++)
@@ -145,17 +139,12 @@ namespace CloudTag
             var commonArea = layouter.GetRectangles().Sum(rectangle => rectangle.Height * rectangle.Width);
             var suggestedCircleRadius = Math.Sqrt(commonArea / Math.PI);
 
-            var l = new List<double>();
-
-
             foreach (var rectangle in layouter.GetRectangles())
             {
-                var distanceToCenter = Math.Sqrt(Math.Pow(rectangle.Location.X - layouterCenter.X, 2) +
-                                                 Math.Pow(rectangle.Location.Y - layouterCenter.Y, 2));
+                var distanceToCenter = Math.Sqrt(Math.Pow(rectangle.Location.X, 2) +
+                                                 Math.Pow(rectangle.Location.Y, 2));
 
-                l.Add(distanceToCenter);
-
-                (distanceToCenter - suggestedCircleRadius).Should().BeLessThan(suggestedCircleRadius / 2);
+                distanceToCenter.Should().BeLessThan(3 * suggestedCircleRadius / 2);
             }
         }
     }
