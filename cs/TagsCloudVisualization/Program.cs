@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace TagsCloudVisualization
@@ -7,11 +8,12 @@ namespace TagsCloudVisualization
     {
         static void Main()
         {
-            var l = new CircularCloudLayouter(new Point(1, 2));
-            l.PutNextRectangle(new Size(10, 10));
-            var c = new CircularCloudVisualization(l);
+            var layout = new CircularCloudLayouter(new Point(200, 200));
+            var random = new Random();
+            for (int i = 1; i < 50; i++)
+                layout.PutNextRectangle(new Size(random.Next(30, 60), random.Next(20, 60)));
+            var c = new CircularCloudVisualization(layout);
             c.SaveImage("Test");
-
         }
     }
 }

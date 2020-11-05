@@ -89,6 +89,7 @@ namespace TagsCloudVisualization.Tests
                 allRectangles.Add(rectangle);
                 differentRectangles.Add(rectangle);
             }
+
             allRectangles.Should().HaveCount(differentRectangles.Count);
             allRectangles.Should().BeEquivalentTo(differentRectangles);
         }
@@ -97,6 +98,7 @@ namespace TagsCloudVisualization.Tests
         public void PutNextRectangleAllRectanglesAdded()
         {
             PutRectangles(100);
+
             layout.Should().HaveCount(rectangles.Count);
             layout.Should().BeEquivalentTo(rectangles);
         }
@@ -105,6 +107,7 @@ namespace TagsCloudVisualization.Tests
         public void PutNextRectangleAllRectangleShouldBeDense()
         {
             PutRectangles(30);
+
             foreach (var rectangle in rectangles)
             {
                 var vector = new TargetVector(center, rectangle.Location);
