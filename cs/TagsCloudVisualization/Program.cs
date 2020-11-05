@@ -1,14 +1,18 @@
-﻿using TagsCloudVisualization.CloudSamples;
+﻿using System;
+using TagsCloudVisualization.CloudSamples;
+using System.CommandLine;
+using TagsCloudVisualization.VisualizationSettings;
 
 namespace TagsCloudVisualization
 {
     internal static class Program
     {
-        public static void Main()
+        public static void Main(string[] args)
         {
-            VisualizationSamples.SampleWithSameRectangleSize();
+            new VisualizerSettings().SaveSettingsIntoConfig();
             VisualizationSamples.SampleWithIncreasingRectangleSize();
-            VisualizationSamples.SampleWithRandomRectangleSize();
+            // var settings = new VisualizerSettings();
+            // settings.SaveSettingsIntoConfig();
         }
     }
 }

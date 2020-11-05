@@ -5,6 +5,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization.Core;
 using TagsCloudVisualization.Visualization;
+using TagsCloudVisualization.VisualizationSettings;
 
 namespace TagsCloudVisualization.Tests
 {
@@ -17,6 +18,8 @@ namespace TagsCloudVisualization.Tests
         [SetUp]
         public void SetUp()
         {
+            var settings = new VisualizerSettings();
+            settings.SaveSettingsIntoConfig();
             cloudLayouter = new CircularCloudLayouter(Point.Empty);
             visualizer = new CircularCloudLayouterVisualizer(cloudLayouter);
         }

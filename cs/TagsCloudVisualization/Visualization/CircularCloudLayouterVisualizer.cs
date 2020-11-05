@@ -31,8 +31,19 @@ namespace TagsCloudVisualization.Visualization
             if (!filename.EndsWith(".jpg"))
                 filename += ".jpg";
 
-            var bmp = new Bitmap(Settings.ImageWidth, Settings.ImageWidth);
-            var graphics = Graphics.FromImage(bmp);
+            var bmp = DrawRectanglesInBitMap();
+
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
+                Settings.WorkDirectory, filename);
+            bmp.Save(path);
+
+            Console.WriteLine($"Tag cloud visualization saved to file {path}");
+        }
+
+        private Bitmap DrawRectanglesInBitMap()
+        {
+             var bmp = new Bitmap(Settings.ImageWidth, Settings.ImageHeight);
+             var graphics = Graphics.FromImage(bmp);
 
             graphics.FillRectangle(Brushes.White, 0, 0, Settings.ImageWidth, Settings.ImageHeight);
             foreach (var rectangle in CloudLayouter.Rectangles)
@@ -41,11 +52,7 @@ namespace TagsCloudVisualization.Visualization
                 graphics.DrawRectangle(penForFrame, rectangle);
             }
 
-            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                Settings.WorkDirectory, filename);
-            bmp.Save(path, ImageFormat.Jpeg);
-
-            Console.WriteLine($"Tag cloud visualization saved to file {path}");
+            return bmp;
         }
     }
 }

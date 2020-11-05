@@ -18,14 +18,14 @@ namespace TagsCloudVisualization.VisualizationSettings
             return JsonSerializer.Deserialize<VisualizerSettings>(jsonString);
         }
 
-        public void SaveSettingsIntoConfig(string workDir = "TagsCloud", int imageWidth = 1280, int imageHeight = 720)
+        public void SaveSettingsIntoConfig(string workDir = "TagClouds", int imageWidth = 1280, int imageHeight = 720)
         {
             WorkDirectory = workDir;
             ImageWidth = imageWidth;
             ImageHeight = imageHeight;
             
             var jsonString = JsonSerializer.Serialize(this);
-            File.WriteAllText(jsonString, ConfigPath);
+            File.WriteAllText(ConfigPath, jsonString);
         }
     }
 }
