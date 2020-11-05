@@ -110,6 +110,7 @@
     <ItemGroup>
         <Compile Include="Core\ArchimedeanSpiral.cs" />
         <Compile Include="Core\CircularCloudLayouter.cs" />
+        <Compile Include="Core\PointExtension.cs" />
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="Tests\ArchimedeanSprial_Should.cs" />

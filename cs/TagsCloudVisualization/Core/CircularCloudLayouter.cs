@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -20,15 +19,14 @@ namespace TagsCloudVisualization.Core
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var nextRectangle = GetRectangleWith(rectangleSize);
-            while (IsAnyRectangleIntersectWith(nextRectangle))
-                nextRectangle = GetRectangleWith(rectangleSize);
+            Rectangle nextRectangle;
+            
+            do nextRectangle = new Rectangle(Spiral.GetNextPoint(), rectangleSize);
+            while (Rectangles.Any(r => r.IntersectsWith(nextRectangle)));
 
             var shiftedNextRectangle = GetShiftedToCenterRectangle(nextRectangle);
             Rectangles.Add(shiftedNextRectangle);
             return shiftedNextRectangle;
-
-            Rectangle GetRectangleWith(Size size) => new Rectangle(Spiral.GetNextPoint(), size);
         }
 
         private Rectangle GetShiftedToCenterRectangle(Rectangle initialRectangle)
@@ -41,8 +39,8 @@ namespace TagsCloudVisualization.Core
             while (queue.Count != 0)
             {
                 var currentRectangle = queue.Dequeue();
-                var distanceToCenter = DistanceBetween(currentRectangle.Location, Center);
-                if (IsAnyRectangleIntersectWith(currentRectangle) || minDistanceToCenter <= distanceToCenter)
+                var distanceToCenter = currentRectangle.Location.DistanceTo(Center);
+                if (Rectangles.Any(r => r.IntersectsWith(currentRectangle)) || minDistanceToCenter <= distanceToCenter)
                     continue;
                 minDistanceToCenter = distanceToCenter;
                 shiftedRectangle = currentRectangle;
@@ -50,13 +48,8 @@ namespace TagsCloudVisualization.Core
             }
 
             return shiftedRectangle;
-
-            double DistanceBetween(Point first, Point second) => Math.Sqrt((first.X - second.X) * (first.X - second.X) +
-                                                                           (first.Y - second.Y) * (first.Y - second.Y));
         }
 
-        private bool IsAnyRectangleIntersectWith(Rectangle currentRectangle) =>
-            Rectangles.Any(r => r.IntersectsWith(currentRectangle));
 
         private static List<Rectangle> GetNeighboursFor(Rectangle rectangle)
         {
