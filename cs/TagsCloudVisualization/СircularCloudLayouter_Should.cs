@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -44,56 +45,18 @@ namespace TagsCloudVisualization
             placedRectangles[0].Size.Should().Be(size);
         }
 
-        [Test]
-        public void PutFirstRectangleInCenter_WhenRectangleHeightIsEven()
+        [TestCaseSource(nameof(GetDataForTestRectangleCenter))]
+        public void PutFirstRectangleInCenter(Size rectangleSize)
         {
-            GetRectangleCenter(layouter.PutNextRectangle(new Size(1, 2)))
-                .Should().Be(center);
+            placedRectangles.Add(layouter.PutNextRectangle(rectangleSize));
+
+            GetRectangleCenter(placedRectangles[0]).Should().Be(center);
         }
 
-        [Test]
-        public void PutFirstRectangleInCenter_WhenRectangleWidthIsOddAndMoreThan1()
+        [TestCaseSource(nameof(GetDataForTestIntersectionRectangles))]
+        public void PutNotIntersectedRectangles(Size[] rectanglesSizes)
         {
-            GetRectangleCenter(layouter.PutNextRectangle(new Size(3, 1)))
-                .Should().Be(center);
-        }
-
-        [Test]
-        public void PutFirstRectangleInCenter_WhenRectangleHeightIsOddAndMoreThan1()
-        {
-            GetRectangleCenter(layouter.PutNextRectangle(new Size(1, 3)))
-                .Should().Be(center);
-        }
-
-        [Test]
-        public void PutFirstRectangleInCenter_WhenRectangleHeightAndWidthMoreThan1()
-        {
-            GetRectangleCenter(layouter.PutNextRectangle(new Size(5, 8)))
-                .Should().Be(center);
-        }
-
-        [Test]
-        public void PutNotIntersectedRectangles_WhenRectanglesSquareEquals1()
-        {
-            var firstRectangle = layouter.PutNextRectangle(new Size(1, 1));
-            var secondRectangle = layouter.PutNextRectangle(new Size(1, 1));
-            firstRectangle.IntersectsWith(secondRectangle).Should().BeFalse();
-        }
-
-        [Test]
-        public void PutNotIntersectedRectangles_WhenRectanglesSquareMoreThan1()
-        {
-            var rectanglesSizes = new[]
-            {
-                new Size(5, 5),
-                new Size(2, 8),
-                new Size(7, 3),
-                new Size(1, 1),
-                new Size(3, 4),
-                new Size(2, 2)
-            };
-
-            var placedRectangles = 
+            placedRectangles =
                 rectanglesSizes.Select(rectangleSize => layouter.PutNextRectangle(rectangleSize)).ToList();
 
             for (var i = 0; i < rectanglesSizes.Length; i++)
@@ -101,32 +64,15 @@ namespace TagsCloudVisualization
                 placedRectangles[i].IntersectsWith(placedRectangles[j]).Should().BeFalse();
         }
 
-        [Test]
-        public void PutRectanglesInCircle_WhenRectanglesSquareEquals1()
+        [TestCaseSource(nameof(GetDataForTestPuttingRectangleInCircle))]
+        public void PutRectanglesInCircle(Size[] rectanglesSizes, double maxRadius)
         {
-            var rectanglesSizes = new Size[25];
-            for (var i = 0; i < rectanglesSizes.Length; i++) rectanglesSizes[i] = new Size(1, 1);
-
-            var placedRectangles = 
+            placedRectangles =
                 rectanglesSizes.Select(rectangleSize => layouter.PutNextRectangle(rectangleSize)).ToList();
 
             foreach (var placedRectangle in placedRectangles)
-                GetDistanceToCenter(placedRectangle).Should().BeLessOrEqualTo(Math.Sqrt(8));
+                GetDistanceToCenter(placedRectangle).Should().BeLessOrEqualTo(maxRadius);
         }
-
-        [Test]
-        public void PutRectanglesInCircle_WhenRectanglesSquareEquals2()
-        {
-            var rectanglesSizes = new Size[8];
-            for (var i = 0; i < rectanglesSizes.Length; i++) rectanglesSizes[i] = new Size(2, 2);
-
-            var placedRectangles = 
-                rectanglesSizes.Select(rectangleSize => layouter.PutNextRectangle(rectangleSize)).ToList();
-
-            foreach (var placedRectangle in placedRectangles)
-                GetDistanceToCenter(placedRectangle).Should().BeLessOrEqualTo(Math.Sqrt(8));
-        }
-
 
         [Test]
         public void ThrowArgumentException_WhenSizeIsEmpty()
@@ -148,6 +94,60 @@ namespace TagsCloudVisualization
             var rectangleCenter = GetRectangleCenter(rectangle);
             return Math.Sqrt((rectangleCenter.X - center.X) * (rectangleCenter.X - center.X)
                              + (rectangleCenter.Y - center.Y) * (rectangleCenter.Y - center.Y));
+        }
+
+        private static IEnumerable GetDataForTestPuttingRectangleInCircle()
+        {
+            yield return new TestCaseData(GetRectanglesSizes(25, 1, 1), Math.Sqrt(8))
+                .SetName("when rectangles square = 1");
+            yield return new TestCaseData(GetRectanglesSizes(8, 2, 2), Math.Sqrt(8))
+                .SetName("when rectangles square = 2");
+        }
+
+        private static IEnumerable GetDataForTestRectangleCenter()
+        {
+            yield return new TestCaseData(new Size(1, 1))
+                .SetName("when rectangle square = 1");
+            yield return new TestCaseData(new Size(2, 1))
+                .SetName("when rectangle width is even");
+            yield return new TestCaseData(new Size(1, 2))
+                .SetName("when rectangle height is even");
+            yield return new TestCaseData(new Size(3, 1))
+                .SetName("when rectangle width is odd and more than 1");
+            yield return new TestCaseData(new Size(1, 3))
+                .SetName("when rectangle height is odd and more than 1");
+            yield return new TestCaseData(new Size(5, 8))
+                .SetName("when rectangle height and width more than 1");
+        }
+
+        private static IEnumerable GetDataForTestIntersectionRectangles()
+        {
+            var rectanglesSizes = new[]
+            {
+                new Size(1, 1),
+                new Size(1, 1)
+            };
+            yield return new TestCaseData(rectanglesSizes)
+                .SetName("when rectangle square = 1");
+
+            rectanglesSizes = new[]
+            {
+                new Size(5, 5),
+                new Size(2, 8),
+                new Size(7, 3),
+                new Size(1, 1),
+                new Size(3, 4),
+                new Size(2, 2)
+            };
+            yield return new TestCaseData(rectanglesSizes)
+                .SetName("when rectangle square > 1");
+        }
+
+        private static Size[] GetRectanglesSizes(int count, int width, int height)
+        {
+            var rectanglesSizes = new Size[count];
+            for (var i = 0; i < rectanglesSizes.Length; i++) rectanglesSizes[i] = new Size(width, height);
+            return rectanglesSizes;
         }
     }
 }
