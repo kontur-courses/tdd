@@ -5,7 +5,7 @@ namespace TagsCloudVisualization
 {
     public class BitmapSaver
     {
-        public const string directoryToSave = "pictures";
+        private const string directoryToSave = "pictures";
 
         public static void Save(Bitmap bitmap, string filename)
         {
