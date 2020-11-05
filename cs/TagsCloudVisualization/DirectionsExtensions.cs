@@ -37,6 +37,9 @@ namespace TagsCloudVisualization
 
         public static int IsPositiveModifier(this Directions direction) => direction.IsPositive() ? 1 : -1;
 
+        public static int CompareInDirection(this Directions direction, int first, int second) =>
+            (first * direction.IsPositiveModifier()).CompareTo(second * direction.IsPositiveModifier());
+
         public static Size GetOffset(this Directions direction, int offset = 1) =>
             direction switch
             {

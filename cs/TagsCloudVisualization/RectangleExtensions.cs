@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -27,6 +29,10 @@ namespace TagsCloudVisualization
             Directions.Right => rectangle.Right,
             _ => throw new InvalidOperationException("Unknown direction")
         };
+
+        public static int MaxBorderInDirection(this IEnumerable<Rectangle> rectangles, Directions direction) =>
+            rectangles.Max(r => r.BorderInDirection(direction) * direction.IsPositiveModifier())
+            * direction.IsPositiveModifier();
         
         public static Rectangle ResizedToBorderInDirection(this Rectangle rectangle, Directions direction, int value)
         {
@@ -58,6 +64,10 @@ namespace TagsCloudVisualization
                                                       * direction.IsPositiveModifier());
             return rectangle;
         }
+
+        public static Rectangle ShiftedToRectangleBorder(this Rectangle rectangle, Directions direction,
+            Rectangle otherRectangle) =>
+            rectangle.ShiftedToBorderInDirection(direction.Opposite(), otherRectangle.BorderInDirection(direction));
 
         public static bool IntersectInDirection(this Rectangle r1, Rectangle r2, Directions direction)
         {
