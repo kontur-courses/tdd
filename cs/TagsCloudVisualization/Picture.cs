@@ -5,7 +5,7 @@ using System.IO;
 
 namespace TagsCloudVisualization
 {
-    public class Picture
+    public class Picture : IDisposable
     {
         private Bitmap pictureBitmap;
         private Graphics graphics;
@@ -53,6 +53,13 @@ namespace TagsCloudVisualization
                     random.Next(0, 256),
                     random.Next(0, 256)
                     );
+        }
+
+        public void Dispose()
+        {
+            pictureBitmap?.Dispose();
+            graphics?.Dispose();
+            brush?.Dispose();
         }
     }
 }
