@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -72,7 +73,7 @@ namespace TagsCloudVisualization
             var center = new Point(7, 10);
             var layouter = new CircularCloudLayouter(center);
 
-            var rectangles = new[]
+            var rectangleSizes = new[]
             {
                 new Size(7, 3),
                 new Size(5, 8),
@@ -90,10 +91,55 @@ namespace TagsCloudVisualization
                 new Size(16, 21),
                 new Size(17, 20),
                 new Size(18, 19),
-            };
-            var result = rectangles.Select(r => layouter.PutNextRectangle(r)).ToArray();
-            result
-                .Where(r => result.Where(rr => rr != r).Any(r.IntersectsWith)).Should().BeEmpty();
+                new Size(31, 10),
+                new Size(11, 26),
+                new Size(12, 25),
+                new Size(13, 24),
+                new Size(14, 23),
+                new Size(15, 22),
+                new Size(16, 21),
+                new Size(17, 20),
+                new Size(18, 19),
+                new Size(31, 10),
+                new Size(11, 26),
+                new Size(12, 25),
+                new Size(13, 24),
+                new Size(14, 23),
+                new Size(15, 22),
+                new Size(16, 21),
+                new Size(17, 20),
+                new Size(18, 19),
+                new Size(31, 10),
+                new Size(11, 26),
+                new Size(12, 25),
+                new Size(13, 24),
+                new Size(14, 23),
+                new Size(15, 22),
+                new Size(16, 21),
+                new Size(17, 20),
+                new Size(18, 19),
+                new Size(31, 10),
+                new Size(11, 26),
+                new Size(12, 25),
+                new Size(13, 24),
+            }.Select(s => new Size(s.Width * 5, s.Height * 5)).ToArray();
+            var rectangles = rectangleSizes.Select(r => layouter.PutNextRectangle(r)).ToArray();
+            var intersectionIndices = Enumerable.Range(0, rectangles.Length)
+                .Where(i => rectangles.Any(r => r != rectangles[i] && r.IntersectsWith(rectangles[i])))
+                .ToArray();
+            if (intersectionIndices.Length != 0)
+            {
+                var directory = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory)
+                    .Parent?.Parent?
+                    .CreateSubdirectory("Images") ?? new DirectoryInfo(".");
+                var outputFile = $"{directory.FullName}\\intersections_fail.bmp";
+                ImageGenerator.GenerateImageWithRectanglesFromLayouter(rectangleSizes, outputFile,
+                    (i) => intersectionIndices.Contains(i)
+                        ? Color.Red
+                        : Color.Green);
+                intersectionIndices.Should()
+                    .BeEmpty($"rectangles shouldn't intersect with each other. See \"{outputFile}\" for info");
+            }
         }
         
         [Test]
