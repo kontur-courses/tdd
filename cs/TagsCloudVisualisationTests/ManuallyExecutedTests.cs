@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal;
 using TagsCloudVisualisation;
 using TagsCloudVisualisation.Visualisation;
 using TagsCloudVisualisationTests.Infrastructure;
@@ -20,7 +21,7 @@ namespace TagsCloudVisualisationTests
         {
             base.SetUp();
             Layouter = new CircularCloudLayouter(new Point(0, 0));
-            asset = new WordsLayouterAsset(Layouter);
+            asset = new WordsLayouterAsset(Layouter, 2);
         }
 
         [Test]
@@ -31,10 +32,14 @@ namespace TagsCloudVisualisationTests
 
         private void DrawWords(params string[] words)
         {
+            var randomizer = new Randomizer();
+            var fonts = Enumerable.Range(1, 4)
+                .Select(i => WordToDraw.MultiplyFontSize(SystemFonts.CaptionFont, i * i))
+                .ToArray();
             foreach (var word in words)
             {
-                var wordToDraw = new WordToDraw(word, SystemFonts.CaptionFont, 
-                    new SolidBrush(TestingHelpers.RandomColor));
+                var font = fonts[randomizer.Next(0, fonts.Length)];
+                var wordToDraw = new WordToDraw(word, font, new SolidBrush(TestingHelpers.RandomColor));
                 asset.DrawWord(wordToDraw);
             }
         }

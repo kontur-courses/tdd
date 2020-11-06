@@ -14,5 +14,9 @@ namespace TagsCloudVisualisation.Visualisation
         public string Word { get; }
         public Font Font { get; }
         public Brush Brush { get; }
+
+        public static Font MultiplyFontSize(Font fontPrototype, int coefficient) =>
+            new Font(fontPrototype.FontFamily, fontPrototype.Size * coefficient, fontPrototype.Style,
+                fontPrototype.Unit, fontPrototype.GdiCharSet, fontPrototype.GdiVerticalFont);
     }
 }
