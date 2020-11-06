@@ -15,13 +15,14 @@ namespace TagsCloudVisualization_Tests
         private IRectangleLayouter layouter;
         private Size minSize;
         private Size maxSize;
+        private const double MinOccupiedAreaRatio = 0.75;
         
         [SetUp]
         public void SetUp()
         {
             // Закомментируйте одну из строк ниже
-            layouter = new CircularCloudLayouter(new Point(1000, 1000));
-            // layouter = new BadLayouter(new Point(1000, 1000));
+            // layouter = new CircularCloudLayouter(new Point(1000, 1000));
+            layouter = new BadLayouter(new Point(1000, 1000));
             minSize = new Size(5, 5);
             maxSize = new Size(20, 20);
         }
@@ -31,11 +32,16 @@ namespace TagsCloudVisualization_Tests
         {
             if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
             var picture = new Picture(new Size(2000, 2000));
+            var expectedMaximumRadius = GetExpectedMaximumLayoutRadius(layouter);
+
+            Color color;
             foreach (var rectangle in layouter.Rectangles)
             {
-                
-                picture.FillRectangle(rectangle, Color.Lime);
+                color = GetRectangleColor(rectangle, layouter, expectedMaximumRadius);
+                picture.FillRectangle(rectangle, color);
             }
+            picture.DrawCircle(layouter.Center,
+                (float)expectedMaximumRadius, Color.Cyan);
             picture.Save(outputFileName:"failed_layout");
         }
 
@@ -65,16 +71,12 @@ namespace TagsCloudVisualization_Tests
 
             foreach (var rectangle in layouter.Rectangles)
             {
-                foreach (var otherRectangle in layouter.Rectangles.Where(otherRectangle => rectangle != otherRectangle))
-                {
-                    rectangle.IntersectsWith(otherRectangle)
-                        .Should().BeFalse();
-                }
+                IsRectangleIntersectOther(layouter, rectangle).Should().BeFalse();
             }
         }
         
         [Test]
-        public void LayoutShape_ShouldBeCloseToCircle_WhenManySizesAdded()
+        public void LayoutOccupiedArea_ShouldBeGreaterOrEqualThanMinimal_WhenManySizesAdded()
         {
             var sizes = SizesGenerator.GenerateSizes(600, minSize, maxSize, seed:128);
             FillLayoutWithSomeRectangles(layouter, sizes);
@@ -82,14 +84,18 @@ namespace TagsCloudVisualization_Tests
             var occupiedArea = layouter.Rectangles
                 .Sum(rectangle => rectangle.Width * rectangle.Height);
 
-            var allowedDistance = GetMaxAllowedDistance(occupiedArea, 0.65);
+            var maxLayoutRadius = 0.0;
 
             foreach (var rectangle in layouter.Rectangles)
             {
-                GetMaxDistanceToRectangle(layouter.Center, rectangle)
-                    .Should().BeLessOrEqualTo(allowedDistance, 
-                        $"rectangle must be in a circle with a radius {allowedDistance}");
+                var maxDistanceToRectangle = GetMaxDistanceToRectangle(layouter.Center, rectangle);
+                if (maxLayoutRadius < maxDistanceToRectangle)
+                    maxLayoutRadius = maxDistanceToRectangle;
             }
+
+            var totalArea = GetCircleAreaFromRadius(maxLayoutRadius);
+            var actualOccupiedAreaRatio = occupiedArea / totalArea;
+            actualOccupiedAreaRatio.Should().BeGreaterOrEqualTo(MinOccupiedAreaRatio);
         }
 
         private static double GetMaxDistanceToRectangle(Point center, Rectangle rectangle)
@@ -108,12 +114,12 @@ namespace TagsCloudVisualization_Tests
                 ? firstNumber
                 : secondNumber;
         } 
-
-        private static double GetMaxAllowedDistance(int occupiedArea, double occupiedAreaRatio)
-            => GetCircleRadiusFromArea(occupiedArea / occupiedAreaRatio);
         
         private static double GetCircleRadiusFromArea(double circleArea) 
             => Math.Sqrt(circleArea / Math.PI);
+        
+        private static double GetCircleAreaFromRadius(double radius) 
+            => Math.PI * Math.Pow(radius, 2);
         
         private static double GetDistance(Point first, Point second)
             => Math.Sqrt(Math.Pow(first.X - second.X, 2)
@@ -124,6 +130,42 @@ namespace TagsCloudVisualization_Tests
         {
             foreach (var size in rectangleSizes)
                 layouter.PutNextRectangle(size);
+        }
+
+        private static bool IsRectangleIntersectOther(IRectangleLayouter layouter, Rectangle rectangle)
+        {
+            foreach (var otherRectangle in layouter.Rectangles)
+            {
+                if (rectangle != otherRectangle 
+                    && rectangle.IntersectsWith(otherRectangle))
+                    return true;
+            }
+
+            return false;
+        }
+        
+        private static bool IsDistanceToRectangleOverLimit(Rectangle rectangle,
+            Point point, double limit)
+        {
+            var distance = GetMaxDistanceToRectangle(point, rectangle);
+
+            return distance > limit;
+        }
+        
+        private static double GetExpectedMaximumLayoutRadius(IRectangleLayouter layouter)
+        {
+            var occupiedArea = layouter.Rectangles
+                .Sum(rectangle => rectangle.Width * rectangle.Height);
+            return GetCircleRadiusFromArea(occupiedArea / MinOccupiedAreaRatio);
+        }
+
+        private static Color GetRectangleColor(Rectangle rectangle, IRectangleLayouter layouter, double layoutRadius)
+        {
+            if (IsRectangleIntersectOther(layouter, rectangle))
+                return Color.Red;
+            if (IsDistanceToRectangleOverLimit(rectangle, layouter.Center, layoutRadius))
+                return Color.Yellow;
+            return Color.LawnGreen;
         }
     }
 }
