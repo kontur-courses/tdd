@@ -50,6 +50,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="ArchimedeanSpiralTests.cs" />
+        <Compile Include="CircularCloudLayouterTests.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>
     <ItemGroup>
