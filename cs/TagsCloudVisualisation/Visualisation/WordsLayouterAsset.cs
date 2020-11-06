@@ -1,41 +1,48 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Drawing;
 
 namespace TagsCloudVisualisation.Visualisation
 {
-    public sealed class WordsLayouterAsset : BaseCloudVisualiser
+    public sealed class WordsLayouterAsset
     {
         private readonly ICircularCloudLayouter layouter;
+        private readonly WordsVisualiser wordsVisualiser;
         private readonly int scale;
-        private WordToDraw currentWord;
+        private readonly List<(WordToDraw toDraw, Rectangle position)> words = new List<(WordToDraw, Rectangle)>();
+
+        public WordsLayouterAsset(ICircularCloudLayouter layouter, int scale)
+        {
+            this.layouter = layouter;
+            wordsVisualiser = new WordsVisualiser(layouter.CloudCenter, 1);
+            this.scale = scale;
+        }
 
         public void DrawWord(WordToDraw toDraw)
         {
-            toDraw = new WordToDraw(toDraw.Word, WordToDraw.MultiplyFontSize(toDraw.Font, scale), toDraw.Brush);
-
-            var graphics = Graphics ?? Graphics.FromHwnd(IntPtr.Zero);
-            var wordSize = graphics.MeasureString(toDraw.Word, toDraw.Font);
-            if (graphics != Graphics)
-                graphics.Dispose();
-
-            var computedPosition = layouter.PutNextRectangle(Size.Ceiling(wordSize));
-
-            if (wordSize.Height > computedPosition.Size.Height || wordSize.Width > computedPosition.Size.Width)
-                throw new ArgumentException("Actual word size is larger than computed values");
-
-            var offset = (wordSize - computedPosition.Size) / 2;
-            var wordPosition = new RectangleF(computedPosition.X - offset.Width, computedPosition.Y - offset.Height,
-                wordSize.Width, wordSize.Height);
-
-            currentWord = toDraw;
-            PrepareAndDraw(wordPosition);
+            var position = PutNextWord(ref toDraw);
+            wordsVisualiser.Draw(position, toDraw);
         }
 
-        public WordsLayouterAsset(ICircularCloudLayouter layouter, int scale) : base(layouter.CloudCenter)
+        public void EnqueueWord(WordToDraw toDraw)
         {
-            this.layouter = layouter;
-            this.scale = scale;
-            OnDraw += rect => Graphics.DrawString(currentWord.Word, currentWord.Font, currentWord.Brush, rect);
+            var position = PutNextWord(ref toDraw);
+            words.Add((toDraw, position));
+        }
+
+        public void DrawQueuedWords()
+        {
+            foreach (var (toDraw, position) in words)
+                wordsVisualiser.Draw(position, toDraw);
+            words.Clear();
+        }
+
+        public Image GetImage() => wordsVisualiser.GetImage();
+
+        private Rectangle PutNextWord(ref WordToDraw toDraw)
+        {
+            toDraw = new WordToDraw(toDraw.Word, WordToDraw.MultiplyFontSize(toDraw.Font, scale), toDraw.Brush);
+            var wordSize = wordsVisualiser.MeasureString(toDraw);
+            return layouter.PutNextRectangle(Size.Ceiling(wordSize));
         }
     }
 }

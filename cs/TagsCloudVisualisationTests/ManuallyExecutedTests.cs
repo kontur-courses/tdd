@@ -40,11 +40,15 @@ namespace TagsCloudVisualisationTests
             {
                 var font = fonts[randomizer.Next(0, fonts.Length)];
                 var wordToDraw = new WordToDraw(word, font, new SolidBrush(TestingHelpers.RandomColor));
-                asset.DrawWord(wordToDraw);
+                asset.EnqueueWord(wordToDraw);
             }
         }
 
-        protected override Image RenderResultImage(IList<Rectangle> resultRectangles) => asset.GetImage();
+        protected override Image RenderResultImage(IList<Rectangle> resultRectangles)
+        {
+            asset.DrawQueuedWords();
+            return asset.GetImage();
+        }
 
         private static string[] GetLoremIpsum()
         {
