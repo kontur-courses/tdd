@@ -32,8 +32,7 @@ namespace TagsCloudVisualization.Visualization
 
             var bmp = DrawRectanglesInBitMap();
 
-            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal),
-                Settings.WorkDirectory, filename);
+            var path = Path.Combine(Settings.RootDirectory, Settings.WorkDirectory, filename);
             bmp.Save(path);
 
             Console.WriteLine($"Tag cloud visualization saved to file {path}");
