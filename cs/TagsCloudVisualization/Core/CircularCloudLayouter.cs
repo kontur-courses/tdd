@@ -6,7 +6,7 @@ namespace TagsCloudVisualization.Core
 {
     public class CircularCloudLayouter
     {
-        public List<Rectangle> Rectangles { get; }
+        private List<Rectangle> Rectangles { get; }
         private ArchimedeanSpiral Spiral { get; }
         private Point Center { get; }
 
@@ -20,13 +20,24 @@ namespace TagsCloudVisualization.Core
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             Rectangle nextRectangle;
-            
+
             do nextRectangle = new Rectangle(Spiral.GetNextPoint(), rectangleSize);
             while (Rectangles.Any(r => r.IntersectsWith(nextRectangle)));
 
             var shiftedNextRectangle = GetShiftedToCenterRectangle(nextRectangle);
             Rectangles.Add(shiftedNextRectangle);
             return shiftedNextRectangle;
+        }
+
+        public void SaveLayouterIntoBitmap(Bitmap bmp)
+        {
+            if (!Rectangles.Any())
+                return;
+
+            using var graphics = Graphics.FromImage(bmp);
+            graphics.FillRectangle(Brushes.White, 0, 0, bmp.Width, bmp.Height);
+            graphics.FillRectangles(Brushes.Yellow, Rectangles.ToArray());
+            graphics.DrawRectangles(Pens.Black, Rectangles.ToArray());
         }
 
         private Rectangle GetShiftedToCenterRectangle(Rectangle initialRectangle)

@@ -1,6 +1,5 @@
 using System;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using TagsCloudVisualization.Core;
@@ -12,8 +11,6 @@ namespace TagsCloudVisualization.Visualization
     {
         private CircularCloudLayouter CloudLayouter { get; }
         private VisualizerSettings Settings { get; }
-        private readonly Brush brushForRect = Brushes.Yellow;
-        private readonly Pen penForFrame = Pens.Black;
 
         public CircularCloudLayouterVisualizer(CircularCloudLayouter cloudLayouter)
         {
@@ -31,27 +28,13 @@ namespace TagsCloudVisualization.Visualization
             if (!filename.EndsWith(".jpg"))
                 filename += ".jpg";
 
-            var bmp = DrawRectanglesInBitMap();
+            using var bmp = new Bitmap(Settings.ImageWidth, Settings.ImageHeight);
+            CloudLayouter.SaveLayouterIntoBitmap(bmp);
 
             var path = Path.Combine(Settings.RootDirectory, Settings.WorkDirectory, filename);
             bmp.Save(path);
 
             Console.WriteLine($"Tag cloud visualization saved to file {path}");
-        }
-
-        private Bitmap DrawRectanglesInBitMap()
-        {
-             var bmp = new Bitmap(Settings.ImageWidth, Settings.ImageHeight);
-             var graphics = Graphics.FromImage(bmp);
-
-            graphics.FillRectangle(Brushes.White, 0, 0, Settings.ImageWidth, Settings.ImageHeight);
-            foreach (var rectangle in CloudLayouter.Rectangles)
-            {
-                graphics.FillRectangle(brushForRect, rectangle);
-                graphics.DrawRectangle(penForFrame, rectangle);
-            }
-
-            return bmp;
         }
     }
 }
