@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Drawing;
 using System.Collections.Generic;
-using System.Linq;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("TagsCloudVisualization_Tests")]
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
         public Point Center { get; }
-        public List<Rectangle> Rectangles { get; private set; }
+        internal List<Rectangle> Rectangles { get; private set; }
 
         private Spiral spiral;
         
@@ -16,12 +17,12 @@ namespace TagsCloudVisualization
         {
             Rectangles = new List<Rectangle>();
             Center = center;
-            spiral = new Spiral(Center, 4, 0.125);
+            spiral = new Spiral(Center, 4, 0.005);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var rectangle = new Rectangle();
+            Rectangle rectangle;
             do
             {
                 rectangle = GetNextRectangle(rectangleSize);
@@ -35,17 +36,17 @@ namespace TagsCloudVisualization
             var position = spiral.GetNextPoint();
             switch (spiral.Quadrant)
             {
-                case Quadrant.First:
+                case Quadrant.BottomRight:
                     position.Y -= rectangleSize.Height;
                     break;
-                case Quadrant.Second:
+                case Quadrant.BottomLeft:
                     position.X -= rectangleSize.Width;
                     position.Y -= rectangleSize.Height;
                     break;
-                case Quadrant.Third:
+                case Quadrant.TopLeft:
                     position.X -= rectangleSize.Width;
                     break;
-                case Quadrant.Fourth:
+                case Quadrant.TopRight:
                     break;
             }
 

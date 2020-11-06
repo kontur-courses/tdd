@@ -5,7 +5,7 @@ using System.IO;
 
 namespace TagsCloudVisualization
 {
-    public class Picture
+    public class Picture : IDisposable
     {
         private Bitmap pictureBitmap;
         private Graphics graphics;
@@ -35,9 +35,8 @@ namespace TagsCloudVisualization
 
         public void Save(string path = null, string outputFileName = "output")
         {
-            if (path == null)
-                path = Directory.GetCurrentDirectory();
-            
+            path ??= Directory.GetCurrentDirectory();
+            Console.WriteLine($"Try to save in {path}");
             pictureBitmap.Save($"{path}/{outputFileName}.bmp");
         }
 
@@ -54,6 +53,13 @@ namespace TagsCloudVisualization
                     random.Next(0, 256),
                     random.Next(0, 256)
                     );
+        }
+
+        public void Dispose()
+        {
+            pictureBitmap?.Dispose();
+            graphics?.Dispose();
+            brush?.Dispose();
         }
     }
 }
