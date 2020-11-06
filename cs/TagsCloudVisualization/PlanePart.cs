@@ -9,8 +9,7 @@ namespace TagsCloudVisualization
     {
         private readonly Point center;
         private readonly int rectangleMargin;
-        private HashSet<Rectangle> extremeRectanglesVertically;
-        private HashSet<Rectangle> extremeRectanglesHorizontally;
+        private HashSet<Rectangle> rectangles;
         private bool hasEmptyRectangle;
         private readonly PartType partType;
 
@@ -19,26 +18,22 @@ namespace TagsCloudVisualization
             this.center = center;
             this.partType = partType;
             this.rectangleMargin = rectangleMargin;
-            extremeRectanglesVertically = new HashSet<Rectangle>();
-            extremeRectanglesHorizontally = new HashSet<Rectangle>();
+            rectangles = new HashSet<Rectangle>();
         }
 
         public PlacementInfo GetBestLocation(Size rectangleSize)
         {
             // Добавлять прямоугольники можно по горизонтали и по вертикали, среди результатов беру лучший
-            var (horizontalDistance, horizontalPoint) = GetLocation(extremeRectanglesHorizontally, rectangleSize, true);
-            var (verticalDistance, verticalPoint) = GetLocation(extremeRectanglesVertically, rectangleSize, false);
+            var (horizontalDistance, horizontalPoint) = GetLocation(rectangleSize, true);
+            var (verticalDistance, verticalPoint) = GetLocation(rectangleSize, false);
 
             return horizontalDistance < verticalDistance
-                ? new PlacementInfo(false, rectangleSize, horizontalPoint, horizontalDistance)
-                : new PlacementInfo(true, rectangleSize, verticalPoint, verticalDistance);
+                ? new PlacementInfo(true, rectangleSize, horizontalPoint, horizontalDistance)
+                : new PlacementInfo(false, rectangleSize, verticalPoint, verticalDistance);
         }
 
-        private Tuple<double, Point> GetLocation(IEnumerable<Rectangle> rectangles, Size rectangleSize,
-            bool isHorizontal)
+        private Tuple<double, Point> GetLocation(Size rectangleSize, bool isHorizontal)
         {
-            // Считаю расстояние и координаты относительно внешних прямоугольников, внутренние(закрытые другими) нас не
-            // интересуют
             var shorterDistance = double.MaxValue;
             var bestLocation = new Point();
             foreach (var rect in rectangles)
@@ -66,8 +61,7 @@ namespace TagsCloudVisualization
 
         private bool IntersectWithOtherRectangles(Rectangle rectangle)
         {
-            return extremeRectanglesVertically.Any(rect => rect.IntersectsWith(rectangle)) ||
-                   extremeRectanglesHorizontally.Any(rect => rect.IntersectsWith(rectangle));
+            return rectangles.Any(rect => rect.IntersectsWith(rectangle));
         }
 
         private Point GetVerticalOffset(Size rectangleSize, Rectangle previous)
@@ -100,11 +94,10 @@ namespace TagsCloudVisualization
 
         public void AddRectangle(PlacementInfo placementInfo)
         {
-            if (extremeRectanglesVertically.Count == 0)
+            if (rectangles.Count == 0)
             {
                 // Добавляю пустой прямоугольник
-                extremeRectanglesVertically.Add(placementInfo.Rectangle);
-                extremeRectanglesHorizontally.Add(placementInfo.Rectangle);
+                rectangles.Add(placementInfo.Rectangle);
                 hasEmptyRectangle = true;
                 return;
             }
@@ -113,54 +106,12 @@ namespace TagsCloudVisualization
             {
                 // Костыль, появившийся вследствие костыля с пустыми прямоугольниками
                 // Если присутствует только пустой прямоугольник, заменяю его на нормальный
-                extremeRectanglesVertically = new HashSet<Rectangle> {placementInfo.Rectangle};
-                extremeRectanglesHorizontally = new HashSet<Rectangle> {placementInfo.Rectangle};
+                rectangles = new HashSet<Rectangle> {placementInfo.Rectangle};
                 hasEmptyRectangle = false;
                 return;
             }
 
-            var newExtremeRectangles = new HashSet<Rectangle>();
-            // В зависомомсти от того, куда добавляется прямоугольник, выбираем соответствубщее множество
-            var extremeRectangles =
-                placementInfo.ToHorizontal ? extremeRectanglesHorizontally : extremeRectanglesVertically;
-            foreach (var rectangle in extremeRectangles)
-            {
-                // Если прямоугольник, который мы хотим добавить, перекрывает уже существующий, то существующий
-                // перестает быть крайним, и его добавлять в обновленное множество крайних не нужно
-                if (placementInfo.ToHorizontal && placementInfo.Rectangle.OnSameHeight(rectangle) ||
-                    placementInfo.ToVertical && placementInfo.Rectangle.OnSameLatitude(rectangle))
-                    newExtremeRectangles.Add(placementInfo.Rectangle);
-                else
-                    newExtremeRectangles.Add(rectangle);
-            }
-
-            // Добавляем новый прямоугольник
-            newExtremeRectangles.Add(placementInfo.Rectangle);
-
-            // Обновляем множество крайних
-            if (placementInfo.ToHorizontal)
-                extremeRectanglesHorizontally = newExtremeRectangles;
-            else
-                extremeRectanglesVertically = newExtremeRectangles;
-
-            if (placementInfo.ToVertical)
-                extremeRectanglesHorizontally.Add(placementInfo.Rectangle);
-
-            if (placementInfo.ToHorizontal)
-                extremeRectanglesHorizontally.Add(placementInfo.Rectangle);
-        }
-    }
-
-    public static class RectangleExtensions
-    {
-        public static bool OnSameLatitude(this Rectangle rect1, Rectangle rect2)
-        {
-            return rect1.X <= rect2.X + rect2.Width && rect1.X + rect1.Width >= rect2.X;
-        }
-
-        public static bool OnSameHeight(this Rectangle rect1, Rectangle rect2)
-        {
-            return rect1.Y <= rect2.Y + rect2.Height && rect1.Y + rect1.Height >= rect2.Y;
+            rectangles.Add(placementInfo.Rectangle);
         }
     }
 }
