@@ -15,14 +15,14 @@ namespace TagsCloudVisualization_Tests
         private IRectangleLayouter layouter;
         private Size minSize;
         private Size maxSize;
-        private const double MinOccupiedAreaRatio = 0.75;
+        private const double MinOccupiedAreaRatio = 0.65;
         
         [SetUp]
         public void SetUp()
         {
             // Закомментируйте одну из строк ниже
-            // layouter = new CircularCloudLayouter(new Point(1000, 1000));
-            layouter = new BadLayouter(new Point(1000, 1000));
+            layouter = new CircularCloudLayouter(new Point(1000, 1000));
+            // layouter = new BadLayouter(new Point(1000, 1000));
             minSize = new Size(5, 5);
             maxSize = new Size(20, 20);
         }
