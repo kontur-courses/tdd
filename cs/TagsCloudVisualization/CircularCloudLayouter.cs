@@ -74,16 +74,22 @@ namespace TagsCloudVisualization
                     .ShiftedToRectangleBorder(fromCenterDirection, previousSizeRectangle);
 
                 var previousLine = lines[(int) currentDirection];
-                if (previousLine != null)
-                {
-                    var intersectedRectangles = previousLine
-                        .Where(r => r.IntersectInDirection(currentRectangle, currentDirection)).ToArray();
-                    var max = intersectedRectangles.Length > 0
-                        ? intersectedRectangles.MaxBorderInDirection(fromCenterDirection)
-                        : previousSizeRectangle.BorderInDirection(fromCenterDirection);
+                var intersectedRectangles = previousLine
+                    ?.Where(r => r.IntersectInDirection(currentRectangle, currentDirection)).ToArray()
+                    ?? Array.Empty<Rectangle>();
+                var max = intersectedRectangles.Length > 0
+                    ? intersectedRectangles.MaxBorderInDirection(fromCenterDirection)
+                    : previousSizeRectangle.BorderInDirection(fromCenterDirection);
+                currentRectangle = currentRectangle.ShiftedToBorderInDirection(toCenterDirection, max);
 
-                    currentRectangle = currentRectangle.ShiftedToBorderInDirection(toCenterDirection, max);
-                }
+                intersectedRectangles = lines[(int) fromCenterDirection]
+                    ?.Where(r => r.IntersectsWith(currentRectangle)).ToArray()
+                    ?? Array.Empty<Rectangle>();
+                max = intersectedRectangles.Length > 0
+                    ? intersectedRectangles.MaxBorderInDirection(fromCenterDirection)
+                    : max;
+                currentRectangle = currentRectangle.ShiftedToBorderInDirection(toCenterDirection, max);
+                
                 currentLine.Add(currentRectangle);
                 
                 var currentRectangleBorder = currentRectangle.BorderInDirection(fromCenterDirection);
