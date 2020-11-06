@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using TagCloud;
 
 namespace TagCloudTest
@@ -10,13 +11,25 @@ namespace TagCloudTest
     [TestFixture]
     public class CircularCloudLayouterTests
     {
-        private CircularCloudLayouter tagCloudWithCenterInZero;
+        private ITagCloud tagCloudWithCenterInZero;
         private Random rnd = new Random();
 
         [SetUp]
         public void SetUp()
         {
             tagCloudWithCenterInZero = new CircularCloudLayouter(new Point(0, 0));
+        }
+        
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
+                return;
+            var fileName = $"{TestContext.CurrentContext.Test.Name}_Failed.jpg";
+            var path = $"../../../FailedTests/{fileName}";
+            var visualizer = new TagCloudVisualizer(tagCloudWithCenterInZero);
+            var image = visualizer.CreateBitMap(1920, 1080);
+            image.Save(path);
         }
 
         private Size GetRandomSize()
