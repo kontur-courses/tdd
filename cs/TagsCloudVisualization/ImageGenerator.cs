@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -9,38 +8,40 @@ namespace TagsCloudVisualization
 {
     public class ImageGenerator
     {
-        public void GenerateImage(IEnumerable<Size> rectangleSizes, string outputFile)
+        public static void GenerateImageWithRectangles(Rectangle[] rectangles, string outputFile,
+            Func<int, Color> colorFunc = null, Func<int, string> textFunc = null)
         {
-            var layouter = new CircularCloudLayouter(new Point(400, 400));
-            var rectangles = rectangleSizes.Select(s => layouter.PutNextRectangle(s)).ToArray();
+            colorFunc ??= i => Color.FromArgb(
+                0 + 255 / rectangles.Length * (i + 1),
+                255 - 255 / rectangles.Length * (i + 1),
+                0);
+            textFunc ??= i => $"{i}";
             
             var bitmap = new Bitmap(800, 800);
             var graphics = Graphics.FromImage(bitmap);
-            var currentColor = Color.FromArgb(0, 255, 0);
             for(var i = 0; i < rectangles.Length; i++)
             {
-                graphics.FillRectangle(new SolidBrush(currentColor), rectangles[i]);
-                currentColor = Color.FromArgb(
-                    currentColor.R + 255 / rectangles.Length,
-                    currentColor.G - 255 / rectangles.Length,
-                    currentColor.B);
+                graphics.FillRectangle(new SolidBrush(colorFunc(i)), rectangles[i]);
                 graphics.DrawRectangle(Pens.Black, rectangles[i]);
                 var font = new Font("Arial", 24, GraphicsUnit.Pixel);
-                graphics.DrawString($"{i}", font, Brushes.Black, rectangles[i]);
+                graphics.DrawString(textFunc(i), font, Brushes.Black, rectangles[i]);
             }
             
             bitmap.Save(outputFile);
         }
+        
+        public static void GenerateImageWithRectanglesFromLayouter(Size[] rectangleSizes, string outputFile,
+            Func<int, Color> colorFunc = null, Func<int, string> textFunc = null,
+            CircularCloudLayouter layouter = null)
+        {
+            layouter ??= new CircularCloudLayouter(new Point(400, 400));
+            var rectangles = rectangleSizes.Select(s => layouter.PutNextRectangle(s)).ToArray();
+            GenerateImageWithRectangles(rectangles, outputFile, colorFunc, textFunc);
+        }
 
-        public Size[][] Images = {
-            new[]
-            {
-                new Size(25, 30),
-                new Size(30, 40),
-                new Size(50, 60),
-                new Size(70, 80),
-            },
-            new[]
+        public static readonly (string outputFile, Size[] rectangleSizes)[] TestImages =
+        {
+            ("18_rectangles", new[]
             {
                 new Size(25, 160),
                 new Size(30, 150),
@@ -60,36 +61,8 @@ namespace TagsCloudVisualization
                 new Size(160, 25),
                 new Size(160, 25),
                 new Size(160, 25),
-            },
-            new []
-            {
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-                new Size(40, 40),
-            },
-            new []
+            }),
+            ("26_horizontal_rectangles", new[]
             {
                 new Size(20, 40),
                 new Size(25, 40),
@@ -117,17 +90,17 @@ namespace TagsCloudVisualization
                 new Size(135, 40),
                 new Size(140, 40),
                 new Size(145, 40),
-                
-            }
+            })
         };
-        
-        [Test]
-        public void GenerateTestImages()
+
+        [TestCaseSource(nameof(TestImages))]
+        public void GenerateTestImages((string outputFile, Size[] rectangleSizes) data)
         {
             var directory = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory)
-                .Parent.Parent.CreateSubdirectory("Images");
-            for (var i = 0; i < Images.Length; i++)
-                GenerateImage(Images[i], $"{directory.FullName}/Image{i}.bmp");
+                .Parent?.Parent?
+                .CreateSubdirectory("Images") ?? new DirectoryInfo(".");
+            data.outputFile = $"{directory}\\{data.outputFile}.bmp";
+            GenerateImageWithRectanglesFromLayouter(data.rectangleSizes, data.outputFile);
         }
     }
 }
