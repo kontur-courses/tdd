@@ -2,7 +2,7 @@
 
 namespace TagCloud
 {
-    public interface IDiscreteCurve
+    public interface ISpiral
     {
         void Next();
         Point CurrentPoint { get; }
