@@ -35,9 +35,8 @@ namespace TagsCloudVisualization
 
         public void Save(string path = null, string outputFileName = "output")
         {
-            if (path == null)
-                path = Directory.GetCurrentDirectory();
-            
+            path ??= Directory.GetCurrentDirectory();
+            Console.WriteLine($"Try to save in {path}");
             pictureBitmap.Save($"{path}/{outputFileName}.bmp");
         }
 

@@ -26,7 +26,7 @@ namespace TagsCloudVisualization_Tests
         [Test]
         public void PutNextRectangle_ShouldReturnRectangleWithSameSize_WhenSomeSizesAdded()
         {
-            foreach (var size in SizesGenerator.GenerateSizesList(5, minSize, maxSize))
+            foreach (var size in SizesGenerator.GenerateSizes(5, minSize, maxSize, seed:128))
                 layouter.PutNextRectangle(size).Size
                     .Should().BeEquivalentTo(size);
         }
@@ -34,7 +34,7 @@ namespace TagsCloudVisualization_Tests
         [Test]
         public void Layout_ShouldContainsAllRectangles_WhenSomeSizesAdded()
         {
-            var sizes = SizesGenerator.GenerateSizesList(5, minSize, maxSize);
+            var sizes = SizesGenerator.GenerateSizes(5, minSize, maxSize, seed:128);
             FillLayoutWithSomeRectangles(layouter, sizes);
 
             layouter.Rectangles.Select(rect => rect.Size)
@@ -44,7 +44,7 @@ namespace TagsCloudVisualization_Tests
         [Test]
         public void LayoutRectangles_ShouldNotIntersectEachOther_WhenSomeRectanglesAdded()
         {
-            var sizes = SizesGenerator.GenerateSizesList(5, minSize, maxSize);
+            var sizes = SizesGenerator.GenerateSizes(5, minSize, maxSize, seed:128);
             FillLayoutWithSomeRectangles(layouter, sizes);
 
             foreach (var rectangle in layouter.Rectangles)
@@ -61,7 +61,7 @@ namespace TagsCloudVisualization_Tests
         [Test]
         public void LayoutShape_ShouldBeCloseToCircle_WhenManySizesAdded()
         {
-            var sizes = SizesGenerator.GenerateSizesList(400, minSize, maxSize);
+            var sizes = SizesGenerator.GenerateSizes(400, minSize, maxSize, seed:128);
             FillLayoutWithSomeRectangles(layouter, sizes);
             
             var occupiedArea = 0;
@@ -108,7 +108,7 @@ namespace TagsCloudVisualization_Tests
                          + Math.Pow(first.Y - second.Y, 2));
         
         private static void FillLayoutWithSomeRectangles(CircularCloudLayouter layouter,
-            List<Size> rectangleSizes)
+            Size[] rectangleSizes)
         {
             foreach (var size in rectangleSizes)
                 layouter.PutNextRectangle(size);

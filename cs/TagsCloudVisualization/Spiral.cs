@@ -28,16 +28,17 @@ namespace TagsCloudVisualization
         public Quadrant Quadrant {
             get
             {
-                switch ((int)((nextAngle % (2 * Math.PI)) / (0.5 * Math.PI)))
+                switch ((int)((nextAngle  % (2 * Math.PI))
+                    / (0.5 * Math.PI)))
                 {
                     case 0:
-                        return Quadrant.First;
+                        return Quadrant.TopRight;
                     case 1:
-                        return Quadrant.Second;
+                        return Quadrant.TopLeft;
                     case 2:
-                        return Quadrant.Third;
+                        return Quadrant.BottomLeft;
                     case 3:
-                        return Quadrant.Fourth;
+                        return Quadrant.BottomRight;
                     default:
                         throw new Exception();
                 }

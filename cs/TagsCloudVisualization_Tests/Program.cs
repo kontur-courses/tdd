@@ -9,15 +9,15 @@ namespace TagsCloudVisualization_Tests
         // Пример раскладки
         static void Main()
         {
-            var sizes = SizesGenerator.GenerateSizesList(500,
+            var sizes = SizesGenerator.GenerateSizes(500,
                 new Size(100, 100), new Size(300, 300));
             DrawLayout(sizes, "random");
-            var stringLikeSizes = SizesGenerator.GenerateSizesList(300,
+            var stringLikeSizes = SizesGenerator.GenerateSizes(300,
                 new Size(300, 100), new Size(1000, 300));
             DrawLayout(stringLikeSizes, "string_like");
         }
         
-        private static void DrawLayout(List<Size> sizes, string fileName)
+        private static void DrawLayout(Size[] sizes, string fileName)
         {
             var layouter = new CircularCloudLayouter(new Point(5000, 5000));
             
