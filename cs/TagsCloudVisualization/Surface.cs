@@ -94,9 +94,9 @@ namespace TagsCloudVisualization
             resultDelta.Offset(deltaPoints[1]);
             
             if (Math.Abs(resultDelta.X) == 2)
-                resultDelta.X /= 2;
+                resultDelta.X = 1 * Math.Sign(resultDelta.X);
             if (Math.Abs(resultDelta.Y) == 2)
-                resultDelta.Y /= 2;
+                resultDelta.Y = 1 * Math.Sign(resultDelta.Y);
 
             return resultDelta;
         }
