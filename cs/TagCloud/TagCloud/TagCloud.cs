@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace TagCloud
 {
-    public class CircularCloudLayouter
+    public class CircularCloudLayouter : ITagCloud
     {
         private readonly Point center;
         public List<Rectangle> Rectangles { get; }
-        private readonly IDiscreteCurve spiral;
+        private readonly ISpiral spiral;
 
         public CircularCloudLayouter(Point center)
         {

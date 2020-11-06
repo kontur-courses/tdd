@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace TagCloud
 {
-    public class Spiral : IDiscreteCurve
+    public class Spiral : ISpiral
     {
         private double DistanceFromCenter { get; set; }
         private double Angle { get; set; }
@@ -13,7 +13,7 @@ namespace TagCloud
 
         public Point CurrentPoint => ShiftPoint(ConvertToCartesianCoordinates());
 
-        public Spiral(Point center, double density = 1, int angleStep = 5)
+        public Spiral(Point center, double density = 0.05, int angleStep = 5)
         {
             Center = center;
             Density = density;
