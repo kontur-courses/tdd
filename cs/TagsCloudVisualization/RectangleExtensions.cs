@@ -12,15 +12,6 @@ namespace TagsCloudVisualization
 
         public static Rectangle Shifted(this Rectangle rectangle, Point offset) => rectangle.Shifted(new Size(offset));
 
-        public static int SizeInDirection(this Rectangle rectangle, Directions direction) => direction switch
-        {
-            Directions.Up => rectangle.Height,
-            Directions.Left => rectangle.Width,
-            Directions.Down => rectangle.Height,
-            Directions.Right => rectangle.Width,
-            _ => throw new InvalidOperationException("Unknown direction")
-        };
-
         public static int BorderInDirection(this Rectangle rectangle, Directions direction) => direction switch
         {
             Directions.Up => rectangle.Top,
