@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
     public static class RectangleExtensions
     {
-        public static bool IntersectsWithRectangles(this Rectangle currentRectangle, List<Rectangle> rectangles)
+        public static bool IntersectsWithRectangles(this Rectangle currentRectangle, IEnumerable<Rectangle> rectangles)
         {
-            foreach (var rectangle in rectangles)
-            {
-                if (currentRectangle.IntersectsWith(rectangle))
-                    return true;
-            }
-            return false;
+            return rectangles.Any(rect => currentRectangle.IntersectsWith(rect));
         }
 
         public static double GetDistanceToPoint(this Rectangle rectangle, Point point)
@@ -21,7 +17,7 @@ namespace TagsCloudVisualization
             var rectCenter = new Point(
                 rectangle.X + rectangle.Width / 2,
                 rectangle.Y + rectangle.Height / 2);
-            return Math.Sqrt((point.X - rectangle.X) ^ 2 + (point.Y - rectCenter.Y) ^ 2);
+            return Math.Sqrt(Math.Pow(point.X - rectangle.X, 2) + Math.Pow(point.Y - rectCenter.Y, 2));
         }
 
         public static Rectangle GetMovedCopy(this Rectangle rectangle, DirectionToMove direction, int shift)
@@ -43,6 +39,11 @@ namespace TagsCloudVisualization
                     break;
             }
             return new Rectangle(location, rectangle.Size);
+        }
+
+        public static int GetArea(this Rectangle rectangle)
+        {
+            return rectangle.Height * rectangle.Width;
         }
     }
 }

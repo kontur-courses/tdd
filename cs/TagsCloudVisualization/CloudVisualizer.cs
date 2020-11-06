@@ -15,8 +15,8 @@ namespace TagsCloudVisualization
         public static void VisualizeCloud(IEnumerable<Rectangle> rectangles, string outputFileName, Size imageSize)
         {
             using (var image = new Bitmap(imageSize.Width, imageSize.Height))
-            {
-                var g = Graphics.FromImage(image);
+            using (var g = Graphics.FromImage(image)) 
+            { 
                 var pen = new Pen(Color.Black);
                 g.FillRectangle(new SolidBrush(Color.Red), rectangles.First());
                 foreach (var rectangle in rectangles)
@@ -33,7 +33,6 @@ namespace TagsCloudVisualization
             {
                 var center = GetPointFromLine(reader.ReadLine());
                 var layouter = new CircularCloudLayouter(center);
-                var sizes = new List<Size>();
                 while (!reader.EndOfStream)
                 {
                     yield return layouter.PutNextRectangle(GetSizeFromLine(reader.ReadLine()));

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -26,16 +27,14 @@ namespace TagsCloudVisualization
             while(true)
             {
                 var point = GetNextPoint();
-                var rectangles = GetRectangles(point, rectangleSize);
-                foreach (var rectangle in rectangles)
+                var movedRectangles = GetRectanglesAroundPoint(point, rectangleSize)
+                    .Where(rect => !rect.IntersectsWithRectangles(currentRectangles))
+                    .Select(rect => MoveToCenter(rect));
+                foreach (var rectangle in movedRectangles)
                 {
-                    if (rectangle.IntersectsWithRectangles(currentRectangles))
-                        continue;
-                    var movedRectangle = MoveToCenter(rectangle);
-                    if (newRectangle == null)
-                        newRectangle = movedRectangle;
-                    else if (movedRectangle.GetDistanceToPoint(Center) < newRectangle.Value.GetDistanceToPoint(Center))
-                        newRectangle = movedRectangle;
+                    if (newRectangle == null 
+                        || rectangle.GetDistanceToPoint(Center) < newRectangle.Value.GetDistanceToPoint(Center))
+                        newRectangle = rectangle;
                 }
                 if (newRectangle != null)
                 {
@@ -75,12 +74,12 @@ namespace TagsCloudVisualization
             return point;
         }
 
-        private Rectangle[] GetRectangles(Point point, Size size)
+        private static Rectangle[] GetRectanglesAroundPoint(Point point, Size size)
         {
             return new Rectangle[]
             {
-                new Rectangle(point.X - size.Width, point.Y, size.Width, size.Height),
                 new Rectangle(point, size),
+                new Rectangle(point.X - size.Width, point.Y, size.Width, size.Height),
                 new Rectangle(point.X, point.Y - size.Height, size.Width, size.Height),
                 new Rectangle(point.X - size.Width, point.Y - size.Height, size.Width, size.Height)
             };
@@ -89,24 +88,27 @@ namespace TagsCloudVisualization
         private Rectangle MoveToCenter(Rectangle rectangle)
         {
             var resultRectangle = new Rectangle(rectangle.Location, rectangle.Size);
-            while (true)
+            Rectangle? result;
+            while ((result = GetMovedRectangle(resultRectangle)) != null)
             {
-                var wasMoved = false;
-                foreach (var direction in Utils.GetAllDirections())
-                {
-                    var tempRectangle = resultRectangle.GetMovedCopy(direction, shift);
-                    if (!tempRectangle.IntersectsWithRectangles(currentRectangles)
-                        && tempRectangle.GetDistanceToPoint(Center) < resultRectangle.GetDistanceToPoint(Center))
-                    {
-                        resultRectangle.X = tempRectangle.X;
-                        resultRectangle.Y = tempRectangle.Y;
-                        wasMoved = true;
-                        break;
-                    }
-                }
-                if (!wasMoved)
-                    return resultRectangle;
+                resultRectangle = result.Value;
             }
+            return resultRectangle;
+        }
+
+        private Rectangle? GetMovedRectangle(Rectangle rectangle)
+        {
+            foreach (var direction in DirectionUtils.GetAllDirections())
+            {
+                var tempRectangle = rectangle.GetMovedCopy(direction, shift);
+                if (tempRectangle.IntersectsWithRectangles(currentRectangles)
+                    || tempRectangle.GetDistanceToPoint(Center) >= rectangle.GetDistanceToPoint(Center))
+                {
+                    continue;
+                }
+                return tempRectangle;
+            }
+            return null;
         }
     }
 }
