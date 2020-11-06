@@ -44,6 +44,16 @@ namespace TagCloudTest
         }
 
         [Test]
+        public void PutNextRectangle_PutsAllRectangles()
+        {
+            var expectedRectanglesCount = 15;
+            for (var i = 0; i < expectedRectanglesCount; i++)
+                tagCloudWithCenterInZero.PutNextRectangle(GetRandomSize());
+
+            tagCloudWithCenterInZero.Rectangles.Should().HaveCount(expectedRectanglesCount);
+        }
+
+        [Test]
         public void PutNextRectangle_PutsFirstRectangleInCenter()
         {
             var center = new Point(10, 18);
