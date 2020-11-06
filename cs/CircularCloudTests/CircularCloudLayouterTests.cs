@@ -28,18 +28,7 @@ namespace CircularCloudTests
         {
             if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
                 return;
-            Bitmap map = new Bitmap(2000, 2000);
-            var g = Graphics.FromImage(map);
-            g.FillRectangle(new SolidBrush(Color.White), new Rectangle(0, 0, 2000, 2000));
-            foreach (var rectangle in cloud.GetAllRectangles())
-            {
-                g.FillRectangle(new SolidBrush(Color.Chartreuse), rectangle);
-                g.DrawRectangle(new Pen(Color.Red, 3), rectangle);
-            }
-
-            g.Save();
-            map.Save("visualisation.bmp");
-            Console.WriteLine(cloud.GetAllRectangles().Length);
+            RectanglePainter.DrawRectanglesInFile(cloud.GetAllRectangles());
             Console.WriteLine("Tag cloud visualization saved to file" + Directory.GetCurrentDirectory() +
                               "\\visualisation.bmp");
         }
@@ -88,11 +77,11 @@ namespace CircularCloudTests
             }
 
 
-            var radius = SmallestRadiusForRectangles(rectangles);
+            var radius = GetSmallestRadiusForRectangles(rectangles);
             (square / (Math.PI * radius * radius)).Should().BeGreaterThan(0.5);
         }
 
-        private double SmallestRadiusForRectangles(IEnumerable<Rectangle> rectangles)
+        private double GetSmallestRadiusForRectangles(IEnumerable<Rectangle> rectangles)
         {
             return rectangles.Max(rectangle =>
             {
