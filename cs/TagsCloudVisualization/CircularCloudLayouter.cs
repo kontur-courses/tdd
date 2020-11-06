@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Text.RegularExpressions;
 using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization

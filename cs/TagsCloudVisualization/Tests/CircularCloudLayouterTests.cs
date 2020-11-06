@@ -4,7 +4,6 @@ using NUnit.Framework.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using TagsCloudVisualization.Extensions;
 
@@ -34,7 +33,7 @@ namespace TagsCloudVisualization.Tests
             var sizes = new Size[length];
             var random = new Random();
             for (int i = 0; i < length; i++)
-                sizes[i] = new Size(random.Next(minSideSize, minSideSize), random.Next(minSideSize, maxSideSize));
+                sizes[i] = new Size(random.Next(minSideSize, maxSideSize), random.Next(minSideSize, maxSideSize));
             return sizes;
         }
 
@@ -139,12 +138,7 @@ namespace TagsCloudVisualization.Tests
             if (!testContext.Result.Outcome.Status.HasFlag(TestStatus.Failed))
                 return;
 
-            var fileName = testContext.Test.Name + ".png";
-            var path = CircularCloudVisualization.SaveImageFromLayout(fileName, layout, 2);
-            var pathToGitIgnore = PathCreator.GetPathToFileWithName(5, ".gitignore");
-
-            using var file = new StreamWriter(pathToGitIgnore, true);
-            file.Write("\n" + fileName);
+            var path = CircularCloudVisualization.SaveImageFromLayout(testContext.Test.Name, layout, 2);
 
             TestContext.WriteLine($"Tag cloud visualization saved to file {path}");
         }
