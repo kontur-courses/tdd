@@ -2,9 +2,9 @@
 {
     public enum Quadrant
     {
-        TopRight,
-        TopLeft,
-        BottomLeft,
-        BottomRight
+        Top,
+        Left,
+        Bottom,
+        Right
     }
 }
