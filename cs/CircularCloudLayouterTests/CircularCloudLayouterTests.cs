@@ -4,6 +4,7 @@ using NUnit.Framework.Interfaces;
 using System;
 using System.Drawing;
 using System.IO;
+using TagsCloudVisualization;
 
 namespace CircularCloudLayouterTests
 {
@@ -45,8 +46,8 @@ namespace CircularCloudLayouterTests
         [Test]
         public void PutNextRectangle_PlaceFirstRectangleOnCenter_WhenOnlyOneRectangle()
         {
-            var circularCloudLayouter = new CircularCloudLayouter(new Point(pictureWidth / 2, pictureHeight / 2));
-            var rectangle = circularCloudLayouter.PutNextRectangle(MakeRandomSize());
+            var rectangle = new CircularCloudLayouter(new Point(pictureWidth / 2, pictureHeight / 2))
+                .PutNextRectangle(MakeRandomSize());
             rectangle.X.Should().Be(pictureWidth / 2);
             rectangle.Y.Should().Be(pictureHeight / 2);
         }
@@ -85,7 +86,7 @@ namespace CircularCloudLayouterTests
             var radius = 0.0;
             for (int i = 0; i < rectanglesCount; i++)
             {
-                radius = Math.Max(GetRadiusOfFramingCircle(rectangles[i]), radius);
+                radius = Math.Max(GetRadiusOfFramingCircle(rectangles[0].Location, rectangles[i]), radius);
                 squareOfRectangles += rectangles[i].Height * rectangles[i].Width;
             }
 
@@ -94,9 +95,25 @@ namespace CircularCloudLayouterTests
             (squareOfRectangles / squareOfFramingCircle).Should().BeInRange(0.6, 1);
         }
 
-        private double GetRadiusOfFramingCircle(Rectangle rectangle)
+        [Test]
+        public void RectanglesPlacedOnSpiral()
         {
             var center = rectangles[0].Location;
+            var circularCloudLayouter = new CircularCloudLayouter(center);
+            var coefOfSpiral = this.circularCloudLayouter.Spiral.CoefOfSpiralEquation;
+            foreach (var rectangle in rectangles)
+            {
+                var placedRectangle = circularCloudLayouter.PutNextRectangle(rectangle.Size);
+                var anglePhi = circularCloudLayouter.Spiral.AnglePhi - circularCloudLayouter.Spiral.DeltaOfAnglePhi;
+                var pointOnSpiral = new Point((int) (coefOfSpiral * anglePhi * Math.Cos(anglePhi)) + center.X,
+                    (int) (coefOfSpiral * anglePhi * Math.Sin(anglePhi)) + center.Y);
+                placedRectangle.Location.GetDistanceTo(pointOnSpiral).Should()
+                    .BeLessOrEqualTo(placedRectangle.GetDiagonal() + 2);
+            }
+        }
+
+        private double GetRadiusOfFramingCircle(Point center, Rectangle rectangle)
+        {
             var distanceBetweenCenterAndLeftTopAngle = center.GetDistanceTo(rectangle.Location);
             var distanceBetweenCenterAndLeftBottomAngle = center.GetDistanceTo(new Point(rectangle.Left,
                 rectangle.Bottom));

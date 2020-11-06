@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace CircularCloudLayouterTests
+namespace TagsCloudVisualization
 {
     public static class PointExtensions
     {

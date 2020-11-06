@@ -3,40 +3,31 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace CircularCloudLayouterTests
+namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private Point center;
-        private double coefOfSpiralEquation = 0.5;
-        private int spiralTurnoverNumber;
-        private double anglePhi;
-        private double deltaOfAnglePhi = Math.PI / 90;
+        public readonly Spiral Spiral;
         private List<Rectangle> rectangles;
 
-        public CircularCloudLayouter(Point point)
+        public CircularCloudLayouter(Point center)
         {
-            center = point;
+            Spiral = new Spiral(center);
             rectangles = new List<Rectangle>();
-            anglePhi = 2 * Math.PI;
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
                 throw new ArgumentException();
-            if (spiralTurnoverNumber == 0)
-            {
-                spiralTurnoverNumber++;
-                return PutFirstRectangle(rectangleSize);
-            }
 
-            var rectangle = rectangles.Last();
+            var rectangle = rectangles.Count == 0
+                ? new Rectangle(GetCoordinatesOfRectangle(rectangleSize), rectangleSize)
+                : rectangles.Last();
             while (RectangleIntersectAnyRectangles(rectangle))
             {
                 var coordinates = GetCoordinatesOfRectangle(rectangleSize);
                 rectangle = new Rectangle(new Point(coordinates.X, coordinates.Y), rectangleSize);
-                anglePhi += deltaOfAnglePhi;
             }
 
             rectangles.Add(rectangle);
@@ -45,51 +36,25 @@ namespace CircularCloudLayouterTests
 
         private Point GetCoordinatesOfRectangle(Size rectangleSize)
         {
-            var pointOnSpiral = GetNextPointOnSpiral();
-            var x = pointOnSpiral.X + center.X;
-            var y = pointOnSpiral.Y + center.Y;
-            if (x >= center.X && y <= center.Y)
-            {
+            var pointOnSpiral = Spiral.GetNextPointOnSpiral();
+            var x = pointOnSpiral.X;
+            var y = pointOnSpiral.Y;
+            if (y < Spiral.Center.Y)
                 y -= rectangleSize.Height;
-            }
-            else if (x <= center.X && y <= center.Y)
-            {
-                y -= rectangleSize.Height;
+            if (x < Spiral.Center.X)
                 x -= rectangleSize.Width;
-            }
-            else if (x <= center.X && y >= center.Y)
-            {
-                x -= rectangleSize.Width;
-            }
-
             return new Point(x, y);
         }
 
         private bool RectangleIntersectAnyRectangles(Rectangle rectangle)
         {
-            foreach (var rectangle1 in rectangles)
+            foreach (var anotherRectangle in rectangles)
             {
-                if (rectangle.IntersectsWith(rectangle1))
+                if (rectangle.IntersectsWith(anotherRectangle))
                     return true;
             }
 
             return false;
-        }
-
-        private Point GetNextPointOnSpiral()
-        {
-            var x = (int) Math.Round(coefOfSpiralEquation * anglePhi * Math.Cos(anglePhi));
-            var y = (int) Math.Round(coefOfSpiralEquation * anglePhi * Math.Sin(anglePhi));
-            return new Point(x, y);
-        }
-
-        private Rectangle PutFirstRectangle(Size rectangleSize)
-        {
-            var x = center.X;
-            var y = center.Y;
-            var rectangle = new Rectangle(new Point(x, y), rectangleSize);
-            rectangles.Add(rectangle);
-            return rectangle;
         }
     }
 }
