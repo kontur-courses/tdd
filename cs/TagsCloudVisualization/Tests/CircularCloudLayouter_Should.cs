@@ -70,6 +70,21 @@ namespace TagsCloudVisualization.Tests
             }
         }
 
+        [Test]
+        public void SaveLayoutIntoBitmap_WithNullReference_ThrowNewException()
+        {
+            Action callSave = () => layouter.SaveLayoutIntoBitmap(null);
+            callSave.Should().Throw<ArgumentNullException>();
+        }
+
+        [Test]
+        public void SaveLayoutIntoBitmap_WhenEmptyRectangles_DoesNotThrow()
+        {
+            Action callSave = () => new CircularCloudLayouter(center).SaveLayoutIntoBitmap(new Bitmap(10, 10));
+            callSave.Should().NotThrow<ArgumentNullException>();
+        }
+        
+
         [TearDown]
         public void TearDown()
         {

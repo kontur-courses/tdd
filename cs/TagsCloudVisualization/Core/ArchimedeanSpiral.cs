@@ -7,7 +7,6 @@ namespace TagsCloudVisualization.Core
     {
         private Point Center { get; }
         private double Theta { get; }
-
         private double polarArgument;
 
         public ArchimedeanSpiral(Point center, double theta)

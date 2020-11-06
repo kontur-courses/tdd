@@ -9,6 +9,11 @@ namespace TagsCloudVisualization.Tests
     [TestFixture]
     public class VisualizerSettings_Should
     {
+        private VisualizerSettings settings;
+
+        [SetUp]
+        public void SetUp() => settings = new VisualizerSettings();
+
         [Test]
         public void ReadSettingsFromConfig_CallMethod_ConfigFileExists()
         {
@@ -20,7 +25,6 @@ namespace TagsCloudVisualization.Tests
         [Test]
         public void ReadSettings_AfterSaveNewSettings_CorrectReadingFromNewConfig()
         {
-            var settings = new VisualizerSettings();
             settings.SaveSettingsIntoConfig("Temp", 800, 850);
             var changedSettings = VisualizerSettings.ReadSettingsFromConfig();
             changedSettings.WorkDirectory.Should().Be("Temp");
@@ -31,7 +35,6 @@ namespace TagsCloudVisualization.Tests
         [Test]
         public void ReadSettings_AfterSaveNewSettings_BeSaveSettings()
         {
-            var settings = new VisualizerSettings();
             settings.SaveSettingsIntoConfig("Temp", 800, 850);
             var changedSettings = VisualizerSettings.ReadSettingsFromConfig();
             changedSettings.Should().BeEquivalentTo(settings);
@@ -40,39 +43,39 @@ namespace TagsCloudVisualization.Tests
         [Test]
         public void SaveSettings_WorkDirIsNull_ThrowArgumentException()
         {
-            var settings = new VisualizerSettings();
             Action callSave = () => settings.SaveSettingsIntoConfig(null, 100, 100);
-            callSave.Should().Throw<ArgumentException>();
+            callSave.Should().Throw<ArgumentNullException>();
         }
 
         [Test]
         public void SaveSettings_NonexistentDirectory_MakeDirectory()
         {
-            var settings = new VisualizerSettings();
-            settings.RootDirectory = Path.GetTempPath();
-            
+            var tempSettings = new VisualizerSettings {RootDirectory = Path.GetTempPath()};
+
             const string workDir = "newDirectory";
-            var pathToDir = Path.Combine(Path.Combine(settings.RootDirectory, workDir));
+            var pathToDir = Path.Combine(Path.Combine(tempSettings.RootDirectory, workDir));
             DeleteDirectoryIfExists(pathToDir);
-            
-            settings.SaveSettingsIntoConfig(workDir, 100, 100);
+
+            tempSettings.SaveSettingsIntoConfig(workDir, 100, 100);
             Directory.Exists(pathToDir).Should().BeTrue();
-            DeleteDirectoryIfExists(pathToDir);
             
-            ReturnToDefaultSettings();
+            DeleteDirectoryIfExists(pathToDir);
 
             static void DeleteDirectoryIfExists(string path)
             {
                 if (Directory.Exists(path))
                     Directory.Delete(path);
             }
+        }
 
-            void ReturnToDefaultSettings()
+        [TearDown]
+        public static void ReturnToDefaultSettings()
+        {
+            var defaultSettings = new VisualizerSettings
             {
-                var oldSettings = new VisualizerSettings();
-                settings.RootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-                settings.SaveSettingsIntoConfig("TagClouds", 100, 100);
-            }
+                RootDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Personal)
+            };
+            defaultSettings.SaveSettingsIntoConfig("TagClouds", 700, 700);
         }
     }
 }

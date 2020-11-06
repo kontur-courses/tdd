@@ -29,7 +29,7 @@ namespace TagsCloudVisualization.Visualization
                 filename += ".jpg";
 
             using var bmp = new Bitmap(Settings.ImageWidth, Settings.ImageHeight);
-            CloudLayouter.SaveLayouterIntoBitmap(bmp);
+            CloudLayouter.SaveLayoutIntoBitmap(bmp);
 
             var path = Path.Combine(Settings.RootDirectory, Settings.WorkDirectory, filename);
             bmp.Save(path);

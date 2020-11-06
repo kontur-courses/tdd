@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -29,8 +30,11 @@ namespace TagsCloudVisualization.Core
             return shiftedNextRectangle;
         }
 
-        public void SaveLayouterIntoBitmap(Bitmap bmp)
+        public void SaveLayoutIntoBitmap(Bitmap bmp)
         {
+            if (bmp is null)
+                throw new ArgumentNullException();
+            
             if (!Rectangles.Any())
                 return;
 
