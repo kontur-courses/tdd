@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.IO;
 
 namespace TagsCloudVisualisation.Visualisation
 {
@@ -12,9 +11,13 @@ namespace TagsCloudVisualisation.Visualisation
 
         public void DrawWord(WordToDraw toDraw)
         {
-            var graphics = Graphics ?? Graphics.FromImage(new Bitmap(1, 1));
             toDraw = new WordToDraw(toDraw.Word, WordToDraw.MultiplyFontSize(toDraw.Font, scale), toDraw.Brush);
+
+            var graphics = Graphics ?? Graphics.FromHwnd(IntPtr.Zero);
             var wordSize = graphics.MeasureString(toDraw.Word, toDraw.Font);
+            if (graphics != Graphics)
+                graphics.Dispose();
+
             var computedPosition = layouter.PutNextRectangle(Size.Ceiling(wordSize));
 
             if (wordSize.Height > computedPosition.Size.Height || wordSize.Width > computedPosition.Size.Width)
