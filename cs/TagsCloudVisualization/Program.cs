@@ -9,6 +9,7 @@ namespace TagsCloudVisualization
         {
             var settings = new VisualizerSettings();
             settings.SaveSettingsIntoConfig(workDir, imageWidth, imageHeight);
+            
             VisualizationSamples.SampleWithIncreasingRectangleSize(count);
             VisualizationSamples.SampleWithRandomRectangleSize(count);
             VisualizationSamples.SampleWithSameRectangleSize(count);

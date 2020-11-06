@@ -6,7 +6,8 @@ namespace TagsCloudVisualization.Visualization
 {
     public class VisualizerSettings
     {
-        private static readonly string ConfigPath = Path.Combine(Directory.GetCurrentDirectory(), "config.json");
+        private static readonly string ConfigPath = Path.Combine(Directory.GetCurrentDirectory(), "Visualization",
+            "VisualizerSettings", "config.json");
 
         public string RootDirectory { get; set; } = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
 

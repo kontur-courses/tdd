@@ -118,7 +118,7 @@
         <Compile Include="Tests\CircularCloudLayouter_Should.cs" />
         <Compile Include="Visualization\CircularCloudLayouterVisualizer.cs" />
         <Compile Include="Visualization\CloudSamples\VisualizationSamples.cs" />
-        <Compile Include="Visualization\VisualizerSettings.cs" />
+        <Compile Include="Visualization\VisualizerSettings\VisualizerSettings.cs" />
     </ItemGroup>
     <ItemGroup>
       <None Include="packages.config" />
@@ -128,6 +128,9 @@
       <Content Include="Visualization\CloudSamples\TagClouds\increasing_rectangle_cloud_sample.jpg" />
       <Content Include="Visualization\CloudSamples\TagClouds\random_rectangle_cloud_sample.jpg" />
       <Content Include="Visualization\CloudSamples\TagClouds\same_rectangle_cloud_sample.jpg" />
+      <Content Include="Visualization\VisualizerSettings\config.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

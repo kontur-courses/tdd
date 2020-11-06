@@ -17,8 +17,6 @@ namespace TagsCloudVisualization.Tests
         [SetUp]
         public void SetUp()
         {
-            var settings = new VisualizerSettings();
-            settings.SaveSettingsIntoConfig("TagClouds", 700, 700);
             cloudLayouter = new CircularCloudLayouter(Point.Empty);
             visualizer = new CircularCloudLayouterVisualizer(cloudLayouter);
         }
