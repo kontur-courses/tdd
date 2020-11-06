@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.Collections.Generic;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualization_Tests
