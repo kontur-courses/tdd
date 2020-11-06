@@ -12,31 +12,64 @@ namespace TagsCloudVisualisation
             CloudCenter = cloudCenter;
         }
 
+        private readonly Size minRectangleSize = new Size(3, 3);
         public Point CloudCenter { get; }
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
-        private readonly List<CandidatePoint> points = new List<CandidatePoint>();
+
+        private readonly ISet<CandidatePoint> points = new SortedSet<CandidatePoint>(Comparer<CandidatePoint>.Create(
+            (p1, p2) => p1.CloudCenterDistance.CompareTo(p2.CloudCenterDistance)));
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangles.Count == 0)
                 return CreateAndRegisterRectangle(new Point(rectangleSize / -2) + (Size) CloudCenter, rectangleSize);
 
-            var position = points
-                .OrderBy(p => p.CloudCenterDistance)
-                .First(p => !IntersectsWithAny(PlaceRectangle(p, rectangleSize)));
+            // Некрасивый код ниже является оптимизацией и дает хороший буст к скорости
+            var pointsToRemove = new List<CandidatePoint>();
+            Rectangle? result = null;
+            foreach (var point in points)
+            {
+                var minRectangle = PlaceRectangle(point, minRectangleSize);
+                result = PlaceRectangle(point, rectangleSize);
+                foreach (var existingRectangle in rectangles)
+                {
+                    if (IntersectsOrConnected(existingRectangle, minRectangle))
+                    {
+                        pointsToRemove.Add(point);
+                        result = null;
+                        break;
+                    }
 
-            points.Remove(position);
-            return CreateAndRegisterRectangle(PlaceRectangle(position, rectangleSize));
+                    if (IntersectsOrConnected(existingRectangle, result.Value))
+                    {
+                        result = null;
+                        break;
+                    }
+                }
+
+                if (result.HasValue)
+                {
+                    pointsToRemove.Add(point);
+                    result = RegisterRectangle(result.Value);
+                    break;
+                }
+            }
+
+            foreach (var point in pointsToRemove)
+                points.Remove(point);
+
+            return result!.Value;
         }
 
         private Rectangle CreateAndRegisterRectangle(Point position, Size size)
         {
-            return CreateAndRegisterRectangle(new Rectangle(position, size));
+            return RegisterRectangle(new Rectangle(position, size));
         }
 
-        private Rectangle CreateAndRegisterRectangle(Rectangle rectangle)
+        private Rectangle RegisterRectangle(Rectangle rectangle)
         {
-            points.AddRange(GetCornersOfRectangle(rectangle));
+            foreach (var point in GetCornersOfRectangle(rectangle))
+                points.Add(point);
             rectangles.Add(rectangle);
             return rectangle;
         }
