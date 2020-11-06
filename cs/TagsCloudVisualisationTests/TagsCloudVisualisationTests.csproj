@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="TestData\Lorem Ipsum.txt" CopyToOutputDirectory="Always" />
+      <None Update="TestData\**" CopyToOutputDirectory="Always" />
     </ItemGroup>
 
 </Project>

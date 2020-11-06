@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace TagsCloudVisualisation.Visualisation
+namespace TagsCloudVisualisation.Visualisation.TextVisualisation
 {
     public readonly struct WordToDraw
     {

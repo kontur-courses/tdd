@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace TagsCloudVisualisation.Visualisation
+namespace TagsCloudVisualisation.Visualisation.TextVisualisation
 {
     public sealed class WordsVisualiser : BaseCloudVisualiser
     {

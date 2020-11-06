@@ -2,7 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.Drawing;
 
-namespace TagsCloudVisualisation.Visualisation
+namespace TagsCloudVisualisation.Extensions
 {
     public static class DrawingExtensions
     {
