@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 
 namespace TagsCloudVisualisation
 {
@@ -81,8 +80,6 @@ namespace TagsCloudVisualisation
             new CandidatePoint(rectangle.Left, rectangle.Bottom, CloudCenter, PointDirection.Left),
             new CandidatePoint(rectangle.Right, rectangle.Bottom, CloudCenter, PointDirection.Down)
         };
-
-        private bool IntersectsWithAny(Rectangle rect) => rectangles.Any(r => IntersectsOrConnected(r, rect));
 
         private static Rectangle PlaceRectangle(CandidatePoint point, Size size) =>
             new Rectangle(point.Direction switch

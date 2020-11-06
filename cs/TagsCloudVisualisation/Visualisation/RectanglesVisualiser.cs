@@ -16,7 +16,7 @@ namespace TagsCloudVisualisation.Visualisation
             OnDraw += rect => drawer.Invoke(Graphics, rect);
         }
 
-        public void Draw(Rectangle rectangle) => base.PrepareAndDraw(
+        public void Draw(Rectangle rectangle) => PrepareAndDraw(
             new RectangleF(rectangle.X * scale, rectangle.Y * scale,
                 rectangle.Width * scale, rectangle.Height * scale));
 
