@@ -1,21 +1,23 @@
 ﻿using System;
 using System.Drawing;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("TagsCloudVisualization_Tests")]
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter
+    public class CircularCloudLayouter : IRectangleLayouter
     {
         public Point Center { get; }
-        internal List<Rectangle> Rectangles { get; private set; }
+        public List<Rectangle> Rectangles => rectangles.ToList();
 
+        private List<Rectangle> rectangles;
         private Spiral spiral;
         
         public CircularCloudLayouter(Point center)
         {
-            Rectangles = new List<Rectangle>();
+            rectangles = new List<Rectangle>();
             Center = center;
             spiral = new Spiral(Center, 4, 0.005);
         }
@@ -27,7 +29,7 @@ namespace TagsCloudVisualization
             {
                 rectangle = GetNextRectangle(rectangleSize);
             } while (IsRectangleIntersectOther(rectangle));
-            Rectangles.Add(rectangle);
+            rectangles.Add(rectangle);
             return rectangle;
         }
 
@@ -55,7 +57,7 @@ namespace TagsCloudVisualization
 
         private bool IsRectangleIntersectOther(Rectangle rectangle)
         {
-            foreach (var otherRectangle in Rectangles)
+            foreach (var otherRectangle in rectangles)
                 if (rectangle.IntersectsWith(otherRectangle))
                     return true;
             

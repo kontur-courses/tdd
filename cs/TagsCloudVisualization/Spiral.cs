@@ -28,7 +28,7 @@ namespace TagsCloudVisualization
         public Quadrant Quadrant {
             get
             {
-                switch ((int)((nextAngle  % (2 * Math.PI))
+                switch ((int)((nextAngle - angleStepRadian) % (2 * Math.PI)
                     / (0.5 * Math.PI)))
                 {
                     case 0:

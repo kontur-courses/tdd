@@ -36,8 +36,9 @@ namespace TagsCloudVisualization
         public void Save(string path = null, string outputFileName = "output")
         {
             path ??= Directory.GetCurrentDirectory();
-            Console.WriteLine($"Try to save in {path}");
-            pictureBitmap.Save($"{path}/{outputFileName}.bmp");
+            var fileName = $"{path}/{outputFileName}.bmp";
+            pictureBitmap.Save(fileName);
+            Console.WriteLine($"Tag cloud visualization saved to file {fileName}");
         }
 
         private void SetBrushColor(Color? color = null)
