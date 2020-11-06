@@ -15,12 +15,6 @@ namespace TagsCloudVisualization
             environment = new PlainEnvironment();
         }
         
-        private bool CanPlaceRectangle(Point possiblePoint, Size rectangleSize)
-        {
-            var rectangle = new Rectangle(possiblePoint, rectangleSize);
-            return !environment.IsColliding(rectangle);
-        }
-
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             var rectangleMiddle = new Size(rectangleSize.Width / 2, rectangleSize.Height / 2);
@@ -30,6 +24,12 @@ namespace TagsCloudVisualization
             
             environment.Add(rectangle);
             return rectangle;
+        }
+        
+        private bool CanPlaceRectangle(Point possiblePoint, Size rectangleSize)
+        {
+            var rectangle = new Rectangle(possiblePoint, rectangleSize);
+            return !environment.IsColliding(rectangle);
         }
     }
 }
