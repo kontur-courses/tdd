@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualization_Tests
@@ -11,18 +12,33 @@ namespace TagsCloudVisualization_Tests
     [TestFixture]
     public class CircularCloudLayouter_Tests
     {
-        private CircularCloudLayouter layouter;
+        private IRectangleLayouter layouter;
         private Size minSize;
         private Size maxSize;
         
         [SetUp]
         public void SetUp()
         {
-            layouter = new CircularCloudLayouter(new Point(300, 300));
+            // Закомментируйте одну из строк ниже
+            layouter = new CircularCloudLayouter(new Point(1000, 1000));
+            // layouter = new BadLayouter(new Point(1000, 1000));
             minSize = new Size(5, 5);
             maxSize = new Size(20, 20);
         }
-        
+
+        [TearDown]
+        public void DrawLayoutAfterTestFailed()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
+            var picture = new Picture(new Size(2000, 2000));
+            foreach (var rectangle in layouter.Rectangles)
+            {
+                
+                picture.FillRectangle(rectangle, Color.Lime);
+            }
+            picture.Save(outputFileName:"failed_layout");
+        }
+
         [Test]
         public void PutNextRectangle_ShouldReturnRectangleWithSameSize_WhenSomeSizesAdded()
         {
@@ -44,16 +60,15 @@ namespace TagsCloudVisualization_Tests
         [Test]
         public void LayoutRectangles_ShouldNotIntersectEachOther_WhenSomeRectanglesAdded()
         {
-            var sizes = SizesGenerator.GenerateSizes(5, minSize, maxSize, seed:128);
+            var sizes = SizesGenerator.GenerateSizes(25, minSize, maxSize, seed:128);
             FillLayoutWithSomeRectangles(layouter, sizes);
 
             foreach (var rectangle in layouter.Rectangles)
             {
-                foreach (var otherRectangle in layouter.Rectangles)
+                foreach (var otherRectangle in layouter.Rectangles.Where(otherRectangle => rectangle != otherRectangle))
                 {
-                    if (rectangle != otherRectangle)
-                        rectangle.IntersectsWith(otherRectangle)
-                            .Should().BeFalse();
+                    rectangle.IntersectsWith(otherRectangle)
+                        .Should().BeFalse();
                 }
             }
         }
@@ -61,14 +76,13 @@ namespace TagsCloudVisualization_Tests
         [Test]
         public void LayoutShape_ShouldBeCloseToCircle_WhenManySizesAdded()
         {
-            var sizes = SizesGenerator.GenerateSizes(400, minSize, maxSize, seed:128);
+            var sizes = SizesGenerator.GenerateSizes(600, minSize, maxSize, seed:128);
             FillLayoutWithSomeRectangles(layouter, sizes);
             
-            var occupiedArea = 0;
-            foreach (var rectangle in layouter.Rectangles)
-                occupiedArea += rectangle.Width * rectangle.Height;
+            var occupiedArea = layouter.Rectangles
+                .Sum(rectangle => rectangle.Width * rectangle.Height);
 
-            var allowedDistance = GetMaxAllowedDistance(occupiedArea, 0.4);
+            var allowedDistance = GetMaxAllowedDistance(occupiedArea, 0.65);
 
             foreach (var rectangle in layouter.Rectangles)
             {
@@ -80,16 +94,14 @@ namespace TagsCloudVisualization_Tests
 
         private static double GetMaxDistanceToRectangle(Point center, Rectangle rectangle)
         {
-            var cornerX = GetNumberWithBiggerDistanceFromGivenNumber(center.X, 
+            var cornerX = GetNumberWithBiggerDistanceFromGiven(center.X, 
                 rectangle.X, rectangle.X + rectangle.Width);
-            var cornerY = GetNumberWithBiggerDistanceFromGivenNumber(center.Y, 
+            var cornerY = GetNumberWithBiggerDistanceFromGiven(center.Y, 
                 rectangle.Y, rectangle.Y + rectangle.Height);
             return GetDistance(center, new Point(cornerX, cornerY));
         }
-
-        //Очень не нравится имя данного метода, но короче я сейчас придумать не могу
-        // TODO: поправить имя!!
-        private static int GetNumberWithBiggerDistanceFromGivenNumber(int givenNumber, 
+        
+        private static int GetNumberWithBiggerDistanceFromGiven(int givenNumber, 
             int firstNumber, int secondNumber)
         {
             return Math.Abs(givenNumber - firstNumber) >= Math.Abs(givenNumber - secondNumber)
@@ -107,8 +119,8 @@ namespace TagsCloudVisualization_Tests
             => Math.Sqrt(Math.Pow(first.X - second.X, 2)
                          + Math.Pow(first.Y - second.Y, 2));
         
-        private static void FillLayoutWithSomeRectangles(CircularCloudLayouter layouter,
-            Size[] rectangleSizes)
+        private static void FillLayoutWithSomeRectangles(IRectangleLayouter layouter,
+            IEnumerable<Size> rectangleSizes)
         {
             foreach (var size in rectangleSizes)
                 layouter.PutNextRectangle(size);
