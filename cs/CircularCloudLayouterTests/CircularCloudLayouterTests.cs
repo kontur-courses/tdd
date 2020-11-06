@@ -14,7 +14,6 @@ namespace CircularCloudLayouterTests
         private Painter painter;
         private int pictureWidth = 700;
         private int pictureHeight = 500;
-        private Rectangle[] rectangles;
         private readonly int rectanglesCount = 70;
 
         [SetUp]
@@ -22,11 +21,10 @@ namespace CircularCloudLayouterTests
         {
             circularCloudLayouter = new CircularCloudLayouter(new Point(pictureWidth / 2, pictureHeight / 2));
             painter = new Painter(pictureWidth, pictureHeight);
-            rectangles = new Rectangle[rectanglesCount];
             for (int i = 0; i < rectanglesCount; i++)
             {
-                rectangles[i] = circularCloudLayouter.PutNextRectangle(MakeRandomSize());
-                painter.PaintRectangle(rectangles[i]);
+                var rectangle = circularCloudLayouter.PutNextRectangle(MakeRandomSize());
+                painter.PaintRectangle(rectangle);
             }
         }
 
@@ -39,8 +37,8 @@ namespace CircularCloudLayouterTests
         [Test]
         public void PutNextRectangle_PlaceFirstRectangleOnCenter()
         {
-            rectangles[0].X.Should().Be(pictureWidth / 2);
-            rectangles[0].Y.Should().Be(pictureHeight / 2);
+            circularCloudLayouter.Rectangles[0].X.Should().Be(pictureWidth / 2);
+            circularCloudLayouter.Rectangles[0].Y.Should().Be(pictureHeight / 2);
         }
 
         [Test]
@@ -63,52 +61,54 @@ namespace CircularCloudLayouterTests
         {
             for (var i = 1; i < rectanglesCount; i++)
             {
-                rectangles[i - 1].IntersectsWith(rectangles[i]).Should().BeFalse();
+                circularCloudLayouter.Rectangles[i - 1].IntersectsWith(circularCloudLayouter.Rectangles[i]).Should().BeFalse();
             }
         }
 
         [Test]
-        public void RectanglesNotCrossed()
+        public void PutNextRectangle_NotCross_AllPlacedRectangles()
         {
             for (int i = 0; i < rectanglesCount; i++)
             {
                 for (int j = i + 1; j < rectanglesCount; j++)
                 {
-                    rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse();
+                    circularCloudLayouter.Rectangles[i].IntersectsWith(circularCloudLayouter.Rectangles[j]).Should().BeFalse();
                 }
             }
         }
 
         [Test]
-        public void CloudIsDense()
+        public void PutNextRectangle_PlaceRectanglesTightly()
         {
             var squareOfRectangles = 0.0;
             var radius = 0.0;
             for (int i = 0; i < rectanglesCount; i++)
             {
-                radius = Math.Max(GetRadiusOfFramingCircle(rectangles[0].Location, rectangles[i]), radius);
-                squareOfRectangles += rectangles[i].Height * rectangles[i].Width;
+                radius = Math.Max(GetRadiusOfFramingCircle(circularCloudLayouter.Rectangles[0].Location, circularCloudLayouter.Rectangles[i]), radius);
+                squareOfRectangles += circularCloudLayouter.Rectangles[i].Height * circularCloudLayouter.Rectangles[i].Width;
             }
 
-            painter.PaintCircle(rectangles[0].Location, radius);
+            painter.PaintCircle(circularCloudLayouter.Rectangles[0].Location, radius);
             var squareOfFramingCircle = Math.PI * radius * radius;
             (squareOfRectangles / squareOfFramingCircle).Should().BeInRange(0.6, 1);
         }
 
         [Test]
-        public void RectanglesPlacedOnSpiral()
+        public void PutNextRectangle_PlaceRectangleOnSpiral()
         {
-            var center = rectangles[0].Location;
-            var circularCloudLayouter = new CircularCloudLayouter(center);
-            var coefOfSpiral = this.circularCloudLayouter.Spiral.CoefOfSpiralEquation;
-            foreach (var rectangle in rectangles)
+            var circularCloudLayouter = new CircularCloudLayouter(new Point(0, 0));
+            var coordinates = new[]
             {
-                var placedRectangle = circularCloudLayouter.PutNextRectangle(rectangle.Size);
-                var anglePhi = circularCloudLayouter.Spiral.AnglePhi - circularCloudLayouter.Spiral.DeltaOfAnglePhi;
-                var pointOnSpiral = new Point((int) (coefOfSpiral * anglePhi * Math.Cos(anglePhi)) + center.X,
-                    (int) (coefOfSpiral * anglePhi * Math.Sin(anglePhi)) + center.Y);
-                placedRectangle.Location.GetDistanceTo(pointOnSpiral).Should()
-                    .BeLessOrEqualTo(placedRectangle.GetDiagonal() + 2);
+                new Point(0, 0), new Point(0, 1),  new Point(-1, 1), new Point(-1,0),
+                new Point(-2,0), new Point(-2,-1), new Point(-1,-2), new Point(-1,-3),
+                new Point(0,-3), new Point(1,-3), new Point(2,-3), new Point(3, -2),
+            };
+            painter = new Painter(pictureWidth, pictureHeight);
+            foreach (var pointOnSpiral in coordinates)
+            {
+                var rectangle = circularCloudLayouter.PutNextRectangle(new Size(1, 1));
+                rectangle.Location.GetDistanceTo(pointOnSpiral).Should().BeLessOrEqualTo(1.05 * rectangle.GetDiagonal());
+                painter.PaintRectangle(rectangle);
             }
         }
 
@@ -132,8 +132,8 @@ namespace CircularCloudLayouterTests
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                painter.SavePicture("failed.jpeg");
-                Console.WriteLine($"Tag cloud visualization saved to file {Path.GetFullPath("failed.jpeg")}");
+                painter.SavePicture($"{TestContext.CurrentContext.Test.Name}.jpeg");
+                Console.WriteLine($"Tag cloud visualization saved to file {Path.GetFullPath($"{TestContext.CurrentContext.Test.Name}.jpeg")}");
             }
         }
     }
