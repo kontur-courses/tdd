@@ -17,13 +17,11 @@ namespace TagsCloudVisualization.Infrastructure.Layout
         {
             var angle = 0;
             
-            Point obtainedPoint;
-            while (true)
+            var obtainedPoint = Point.Empty;
+            while (!isValidPoint(obtainedPoint))
             {
                 var possiblePoint = center + new Size((int) (Math.Sin(angle) * angle), (int) (Math.Cos(angle) * angle));
                 obtainedPoint = possiblePoint;
-                if (isValidPoint(possiblePoint))
-                    break;
                 angle += angleIncrement;
             }
             return OptimizePoint(obtainedPoint, isValidPoint);;
@@ -31,18 +29,18 @@ namespace TagsCloudVisualization.Infrastructure.Layout
 
         private Point OptimizePoint(Point obtainedPoint, Func<Point, bool> isValidPoint)
         {
-            while (true)
+            var possiblePosition = obtainedPoint;
+            while (isValidPoint(possiblePosition))
             {
+                obtainedPoint = possiblePosition;
                 var optimizationOffset = new Size(
                     Math.Sign(center.X - obtainedPoint.X),
                     Math.Sign(center.Y - obtainedPoint.Y));
                 if (optimizationOffset.IsEmpty)
                     return obtainedPoint;
-                var possiblePosition = obtainedPoint + optimizationOffset;
-                if (!isValidPoint(possiblePosition))
-                    return obtainedPoint;
-                obtainedPoint = possiblePosition;
+                possiblePosition = obtainedPoint + optimizationOffset;
             }
+            return obtainedPoint;
         }
     }
 }
