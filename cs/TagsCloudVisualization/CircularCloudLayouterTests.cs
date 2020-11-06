@@ -1,3 +1,4 @@
+using System;
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
@@ -12,7 +13,7 @@ namespace TagsCloudVisualization
         [SetUp]
         public void SetUp()
         {
-            layouter = new CircularCloudLayouter(new Point(200, 200));
+            layouter = new CircularCloudLayouter(new Point(600, 600));
         }
         
         [Test]
@@ -25,96 +26,22 @@ namespace TagsCloudVisualization
         public void FirstRectangleShouldBeCentral()
         {
             layouter.PutNextRectangle(new Size(10, 10)).Location
-                .Should().Be(layouter.Center);
-        }
-        
-        [Test]
-        public void SecondRectangleShouldBeHigherThanFirst()
-        {
-            var first = layouter.PutNextRectangle(new Size(20, 20));
-            var second = layouter.PutNextRectangle(new Size(7, 10));
-            var location = new Point(
-                first.X + first.Width + layouter.RectangleMargin,
-                first.Y + first.Height + layouter.RectangleMargin
-            );
-
-            second.Location.Should().Be(location);
-        }
-
-        [Test]
-        public void ThirdRectangleShouldBeOnTheRight()
-        {
-            layouter.PutNextRectangle(new Size(20, 20));
-            var second = layouter.PutNextRectangle(new Size(30, 10));
-            var third = layouter.PutNextRectangle(new Size(10, 25));
-            var location = new Point(
-                second.X + second.Width + layouter.RectangleMargin,
-                second.Y - third.Height - layouter.RectangleMargin
-            );
-
-            third.Location.Should().Be(location);
-        }
-        
-        [Test]
-        public void FourthRectangleShouldBeOnTheBottom()
-        {
-            layouter.PutNextRectangle(new Size(20, 20));
-            layouter.PutNextRectangle(new Size(30, 10));
-            var third = layouter.PutNextRectangle(new Size(10, 25));
-            var fourth = layouter.PutNextRectangle(new Size(35, 25));
-            var location = new Point(
-                third.X - layouter.RectangleMargin - fourth.Width,
-                third.Y - fourth.Height - layouter.RectangleMargin
-            );
-
-            fourth.Location.Should().Be(location);
-        }
-        
-        [Test]
-        public void FifthRectangleShouldBeOnTheBottom()
-        {
-            layouter.PutNextRectangle(new Size(20, 20));
-            layouter.PutNextRectangle(new Size(30, 10));
-            layouter.PutNextRectangle(new Size(10, 25));
-            var fourth = layouter.PutNextRectangle(new Size(35, 25));
-            var fifth = layouter.PutNextRectangle(new Size(25, 25));
-            var location = new Point(
-                fourth.X - fifth.Width - layouter.RectangleMargin,
-                fourth.Y
-            );
-
-            fifth.Location.Should().Be(location);
+                .Should().Be(new Point(layouter.Center.X - 5, layouter.Center.Y - 5));
         }
 
         [Test]
         public void RectanglesShouldntIntersect()
         {
-            layouter.PutNextRectangle(new Size(20, 20));
-            layouter.PutNextRectangle(new Size(30, 10));
-            layouter.PutNextRectangle(new Size(10, 25));
-            layouter.PutNextRectangle(new Size(35, 25));
-            layouter.PutNextRectangle(new Size(25, 25));
-            layouter.PutNextRectangle(new Size(25, 25));
-            layouter.PutNextRectangle(new Size(25, 25));
-            layouter.PutNextRectangle(new Size(25, 25));
-            layouter.PutNextRectangle(new Size(25, 25));
-            layouter.PutNextRectangle(new Size(25, 25));
-            layouter.PutNextRectangle(new Size(25, 25));
-            layouter.PutNextRectangle(new Size(30, 10));
-            layouter.PutNextRectangle(new Size(10, 25));
-            layouter.PutNextRectangle(new Size(35, 25));
-            layouter.PutNextRectangle(new Size(25, 25));
-            layouter.PutNextRectangle(new Size(25, 25));
-            layouter.PutNextRectangle(new Size(20, 20));
-            layouter.PutNextRectangle(new Size(30, 10));
-            layouter.PutNextRectangle(new Size(10, 25));
-            layouter.PutNextRectangle(new Size(35, 25));
-            new Visualization().DrawRectangles(layouter.Rectangles);
+            var rng = new Random();
+            for (var i = 0; i < 200; i++)
+                layouter.PutNextRectangle(new Size(rng.Next(10, 40), rng.Next(10, 40)));
+
+            new Visualization(layouter.Center.X * 2, layouter.Center.Y * 2).DrawRectangles(layouter.Rectangles);
 
             for (var i = 0; i < layouter.Rectangles.Count; i++)
             {
                 for (var j = i + 1; j < layouter.Rectangles.Count; j++)
-                    layouter.Rectangles[i].IntersectsWith(layouter.Rectangles[j]).Should().BeFalse();
+                    Rectangle.Intersect(layouter.Rectangles[j], layouter.Rectangles[i]).Should().Be(Rectangle.Empty);
             }
             
         }
