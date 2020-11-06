@@ -2,15 +2,13 @@
 using System.IO;
 using System.Text.Json;
 
-namespace TagsCloudVisualization.Visualization
+namespace TagsCloudVisualization.Visualization.VisualizationSettings
 {
     public class VisualizerSettings
     {
-        private static readonly string ConfigPath = Path.Combine(Directory.GetCurrentDirectory(), "Visualization",
-            "VisualizerSettings", "config.json");
-
+        private static readonly string ConfigPath = Path.Combine(Environment.CurrentDirectory, "Visualization",
+            "VisualizationSettings", "config.json");
         public string RootDirectory { get; set; } = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-
         public string WorkDirectory { get; set; }
         public int ImageWidth { get; set; }
         public int ImageHeight { get; set; }
@@ -23,7 +21,7 @@ namespace TagsCloudVisualization.Visualization
 
         public void SaveSettingsIntoConfig(string workDir, int imageWidth, int imageHeight)
         {
-            if (string.IsNullOrEmpty(workDir))
+            if (workDir is null)
                 throw new ArgumentException("WorkDirectory shouldn't be null or empty");
 
             var outputDirectory = Path.Combine(RootDirectory, workDir);

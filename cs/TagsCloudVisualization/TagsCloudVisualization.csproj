@@ -116,9 +116,10 @@
         <Compile Include="Tests\ArchimedeanSprial_Should.cs" />
         <Compile Include="Tests\CircularCloudLayouterVisualizer_Should.cs" />
         <Compile Include="Tests\CircularCloudLayouter_Should.cs" />
+        <Compile Include="Tests\VisualizerSettings_Should.cs" />
         <Compile Include="Visualization\CircularCloudLayouterVisualizer.cs" />
         <Compile Include="Visualization\CloudSamples\VisualizationSamples.cs" />
-        <Compile Include="Visualization\VisualizerSettings\VisualizerSettings.cs" />
+        <Compile Include="Visualization\VisualizationSettings\VisualizerSettings.cs" />
     </ItemGroup>
     <ItemGroup>
       <None Include="packages.config" />
@@ -128,7 +129,7 @@
       <Content Include="Visualization\CloudSamples\TagClouds\increasing_rectangle_cloud_sample.jpg" />
       <Content Include="Visualization\CloudSamples\TagClouds\random_rectangle_cloud_sample.jpg" />
       <Content Include="Visualization\CloudSamples\TagClouds\same_rectangle_cloud_sample.jpg" />
-      <Content Include="Visualization\VisualizerSettings\config.json">
+      <Content Include="Visualization\VisualizationSettings\config.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
