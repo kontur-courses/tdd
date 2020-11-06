@@ -1,11 +1,12 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using TagsCloudVisualisation;
+using TagsCloudVisualisation.Extensions;
+using TagsCloudVisualisation.Visualisation;
 using TagsCloudVisualisationTests.Infrastructure;
 
 namespace TagsCloudVisualisationTests
@@ -53,13 +54,6 @@ namespace TagsCloudVisualisationTests
             PrintTestingMessage($"Created {count} rectangles per minute");
         }
 
-
-        [Test, MaxTime(1000 * 60 * 2)]
-        public void PutNextRectangle_PerformanceTesting_WithBigSizes()
-        {
-            TestBigSizes(100, 2);
-        }
-
         private void TestWithRandomSizes(int testsCount, int minSize, int maxSize)
         {
             var random = Randomizer.CreateRandomizer();
@@ -71,22 +65,15 @@ namespace TagsCloudVisualisationTests
                 Layouter.PutNextRectangle(size);
         }
 
-        private void TestBigSizes(int testsCount, byte scale)
+        protected override Image RenderResultImage()
         {
-            var random = Randomizer.CreateRandomizer();
-            var randomSizes = Enumerable.Range(0, testsCount)
-                .Select(_ => CreateBigRectangle(random, scale))
-                .ToArray();
+            var visualiser = new RectanglesVisualiser(scale: 3, sourceCenterPoint: Layouter.CloudCenter,
+                drawer: (g, r) => RectanglesVisualiser.DrawRectangle(g, new Pen(TestingHelpers.RandomColor, 3), r));
 
-            foreach (var rect in randomSizes)
-                Layouter.PutNextRectangle(rect);
-        }
+            foreach (var rectangle in ResultRectangles)
+                visualiser.Draw(rectangle);
 
-        private Size CreateBigRectangle(Random random, byte scale)
-        {
-            var height = random.Next(100, 500);
-            var width = random.Next(height, height * 3);
-            return new Size(width, height) * scale;
+            return visualiser.GetImage().FillBackground(Color.Bisque);
         }
     }
 }

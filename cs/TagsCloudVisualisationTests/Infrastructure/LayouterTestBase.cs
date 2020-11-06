@@ -6,10 +6,7 @@ using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using NUnit.Framework.Internal;
 using TagsCloudVisualisation;
-using TagsCloudVisualisation.Extensions;
-using TagsCloudVisualisation.Visualisation;
 
 namespace TagsCloudVisualisationTests.Infrastructure
 {
@@ -79,7 +76,7 @@ namespace TagsCloudVisualisationTests.Infrastructure
                 return;
             }
 
-            var image = RenderResultImage(layouterHolder.ResultRectangles);
+            var image = RenderResultImage();
             var filePath = Path.Combine(TestOutputDirectory, $"{TestContext.CurrentContext.Test.Name}.png");
             try
             {
@@ -93,22 +90,10 @@ namespace TagsCloudVisualisationTests.Infrastructure
             PrintTestingMessage($"Tag cloud visualization saved to file <{filePath}>");
         }
 
-        protected virtual Image RenderResultImage(IList<Rectangle> resultRectangles)
-        {
-            var visualiser = new RectanglesVisualiser(scale: 3,
-                sourceCenterPoint: Layouter.CloudCenter,
-                drawer: (g, r) => RectanglesVisualiser.DrawRectangle(g, new Pen(RandomColor(), 3), r));
-
-            foreach (var rectangle in resultRectangles)
-                visualiser.Draw(rectangle);
-
-            return visualiser.GetImage().FillBackground(Color.Bisque);
-        }
-
-        private static Color RandomColor() =>
-            Color.FromKnownColor(Randomizer.CreateRandomizer().NextEnum<KnownColor>());
+        protected abstract Image RenderResultImage();
 
         protected static void PrintTestingMessage(string message) => TestContext.Progress.WriteLine(message);
+        protected ICollection<Rectangle> ResultRectangles => layouterHolder.ResultRectangles;
 
         private class CircularCloudLayouterHolder : ICircularCloudLayouter
         {

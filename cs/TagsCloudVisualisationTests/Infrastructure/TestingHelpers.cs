@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.IO;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
@@ -31,5 +32,12 @@ namespace TagsCloudVisualisationTests.Infrastructure
         }
 
         public static Color RandomColor => Color.FromKnownColor(Randomizer.CreateRandomizer().NextEnum<KnownColor>());
+
+        public static DirectoryInfo GoParentUntil(this DirectoryInfo baseDirectory, Func<DirectoryInfo, bool> predicate)
+        {
+            while (!predicate.Invoke(baseDirectory))
+                baseDirectory = baseDirectory.Parent ?? throw new InvalidOperationException($"No directories left");
+            return baseDirectory;
+        }
     }
 }

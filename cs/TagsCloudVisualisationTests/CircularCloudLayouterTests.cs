@@ -2,6 +2,8 @@
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using TagsCloudVisualisation;
+using TagsCloudVisualisation.Extensions;
+using TagsCloudVisualisation.Visualisation;
 using TagsCloudVisualisationTests.Infrastructure;
 
 namespace TagsCloudVisualisationTests
@@ -27,6 +29,17 @@ namespace TagsCloudVisualisationTests
         {
             Layouter.Put(new Size(10, 10), out _)
                 .PutAndTest(new Size(7, 5), new Point(-5, -11));
+        }
+
+        protected override Image RenderResultImage()
+        {
+            var visualiser = new RectanglesVisualiser(scale: 3, sourceCenterPoint: Layouter.CloudCenter,
+                drawer: (g, r) => RectanglesVisualiser.DrawRectangle(g, new Pen(TestingHelpers.RandomColor, 3), r));
+
+            foreach (var rectangle in ResultRectangles)
+                visualiser.Draw(rectangle);
+
+            return visualiser.GetImage().FillBackground(Color.Bisque);
         }
     }
 }
