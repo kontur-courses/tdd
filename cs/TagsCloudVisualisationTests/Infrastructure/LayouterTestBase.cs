@@ -78,15 +78,7 @@ namespace TagsCloudVisualisationTests.Infrastructure
                 return;
             }
 
-            var visualiser = new RectanglesVisualiser(scale: 3,
-                sourceCenterPoint: Layouter.CloudCenter,
-                drawer: (g, r) => RectanglesVisualiser.DrawRectangle(g, new Pen(RandomColor(), 3), r));
-
-            foreach (var rectangle in layouterHolder.ResultRectangles)
-                visualiser.Draw(rectangle);
-
-            var image = visualiser.GetImage()
-                .FillBackground(Color.Bisque);
+            var image = RenderResultImage(layouterHolder.ResultRectangles);
             var filePath = Path.Combine(TestOutputDirectory, $"{TestContext.CurrentContext.Test.Name}.png");
             try
             {
@@ -98,6 +90,18 @@ namespace TagsCloudVisualisationTests.Infrastructure
             }
 
             PrintTestingMessage($"Tag cloud visualization saved to file <{filePath}>");
+        }
+
+        protected virtual Image RenderResultImage(IList<Rectangle> resultRectangles)
+        {
+            var visualiser = new RectanglesVisualiser(scale: 3,
+                sourceCenterPoint: Layouter.CloudCenter,
+                drawer: (g, r) => RectanglesVisualiser.DrawRectangle(g, new Pen(RandomColor(), 3), r));
+
+            foreach (var rectangle in resultRectangles)
+                visualiser.Draw(rectangle);
+
+            return visualiser.GetImage().FillBackground(Color.Bisque);
         }
 
         private static Color RandomColor() =>

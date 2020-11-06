@@ -25,7 +25,7 @@ namespace TagsCloudVisualisationTests
             TestWithRandomSizes(100, 4, 20);
         }
 
-        [Test, MaxTime(10000)]
+        [Test, MaxTime(11000)]
         public void PutNextRectangle_PerformanceTesting_1000()
         {
             TestWithRandomSizes(1000, 4, 20);
