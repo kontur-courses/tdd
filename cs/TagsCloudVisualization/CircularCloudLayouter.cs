@@ -13,7 +13,6 @@ namespace TagsCloudVisualization
         // Для каждой плоскости получается 4 расстояния, и уже среди них беру лучшее и добавляю прямоугольник с
         // получившимися координатами
         // Долго думал над спиралью, но так и не надумал ничего((( Поэтому написал то, что написал
-        public readonly List<Rectangle> Rectangles;
         private readonly int rectangleMargin;
         public Point Center { get; }
         private readonly List<PlanePart> parts;
@@ -21,7 +20,6 @@ namespace TagsCloudVisualization
         public CircularCloudLayouter(Point center)
         {
             Center = center;
-            Rectangles = new List<Rectangle>();
             rectangleMargin = 2;
             parts = new List<PlanePart>();
         }
@@ -29,16 +27,15 @@ namespace TagsCloudVisualization
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             var rectangle = new Rectangle {Size = rectangleSize, Location = CalculateLocation(rectangleSize)};
-            Rectangles.Add(rectangle);
             return rectangle;
         }
 
         private Point CalculateLocation(Size rectangleSize)
         {
-            if (rectangleSize.Height == 0 || rectangleSize.Width == 0)
+            if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
                 throw new ArgumentException("Rectangle size should be positive.");
             
-            if (Rectangles.Count == 0)
+            if (parts.Count == 0)
             {
                 var location = new Point(Center.X - rectangleSize.Width / 2, Center.Y - rectangleSize.Height / 2);
                 InitializePlaneParts(new Rectangle{Size = rectangleSize, Location = location});
@@ -47,23 +44,23 @@ namespace TagsCloudVisualization
 
             var bestDistance = double.MaxValue;
             var bestLocation = new Point();
-            var bestPlacementInfo = new PlacementInfo(new Rectangle());
             var bestPartIndex = 0;
 
             for (var i = 0; i < 4; i++)
             {
-                var placementInfo = parts[i].GetBestLocation(rectangleSize);
+                var location = parts[i].GetBestLocation(rectangleSize);
+                var distance = CalculateDistance(location.X + rectangleSize.Width / 2.0,
+                    location.Y + rectangleSize.Height / 2.0, Center.X, Center.Y);
 
-                if (placementInfo.Distance < bestDistance)
+                if (distance < bestDistance)
                 {
-                    bestPlacementInfo = placementInfo;
-                    bestDistance = placementInfo.Distance;
-                    bestLocation = placementInfo.Rectangle.Location;
+                    bestDistance = distance;
+                    bestLocation =location;
                     bestPartIndex = i;
                 }
             }
 
-            parts[bestPartIndex].AddRectangle(bestPlacementInfo);
+            parts[bestPartIndex].AddRectangle(new Rectangle{Size = rectangleSize, Location = bestLocation});
 
             return bestLocation;
         }
@@ -85,7 +82,7 @@ namespace TagsCloudVisualization
             var part = new PlanePart(Center, partType, rectangleMargin);
             // Т.к. вначале в каждой из частей плоскости нет прямоугольникв, но отталкиваться от чего-то нужно, добавляю
             // в нее пустой прямоугольник
-            part.AddRectangle(new PlacementInfo(new Rectangle{Size = new Size(0, 0), Location = rectangleLocation}));
+            part.AddRectangle(new Rectangle{Size = new Size(0, 0), Location = rectangleLocation});
             parts.Add(part);
         }
         

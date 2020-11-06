@@ -9,8 +9,7 @@ namespace TagsCloudVisualization
     {
         private readonly Point center;
         private readonly int rectangleMargin;
-        private HashSet<Rectangle> rectangles;
-        private bool hasEmptyRectangle;
+        private readonly HashSet<Rectangle> rectangles;
         private readonly PartType partType;
 
         public PlanePart(Point center, PartType partType, int rectangleMargin)
@@ -21,15 +20,13 @@ namespace TagsCloudVisualization
             rectangles = new HashSet<Rectangle>();
         }
 
-        public PlacementInfo GetBestLocation(Size rectangleSize)
+        public Point GetBestLocation(Size rectangleSize)
         {
             // Добавлять прямоугольники можно по горизонтали и по вертикали, среди результатов беру лучший
             var (horizontalDistance, horizontalPoint) = GetLocation(rectangleSize, true);
             var (verticalDistance, verticalPoint) = GetLocation(rectangleSize, false);
 
-            return horizontalDistance < verticalDistance
-                ? new PlacementInfo(true, rectangleSize, horizontalPoint, horizontalDistance)
-                : new PlacementInfo(false, rectangleSize, verticalPoint, verticalDistance);
+            return horizontalDistance < verticalDistance ? horizontalPoint : verticalPoint;
         }
 
         private Tuple<double, Point> GetLocation(Size rectangleSize, bool isHorizontal)
@@ -61,7 +58,7 @@ namespace TagsCloudVisualization
 
         private bool IntersectWithOtherRectangles(Rectangle rectangle)
         {
-            return rectangles.Any(rect => rect.IntersectsWith(rectangle));
+            return rectangles.Any(rect => !Rectangle.Intersect(rect, rectangle).Equals(Rectangle.Empty));
         }
 
         private Point GetVerticalOffset(Size rectangleSize, Rectangle previous)
@@ -92,26 +89,9 @@ namespace TagsCloudVisualization
             };
         }
 
-        public void AddRectangle(PlacementInfo placementInfo)
+        public void AddRectangle(Rectangle rectangle)
         {
-            if (rectangles.Count == 0)
-            {
-                // Добавляю пустой прямоугольник
-                rectangles.Add(placementInfo.Rectangle);
-                hasEmptyRectangle = true;
-                return;
-            }
-
-            if (hasEmptyRectangle)
-            {
-                // Костыль, появившийся вследствие костыля с пустыми прямоугольниками
-                // Если присутствует только пустой прямоугольник, заменяю его на нормальный
-                rectangles = new HashSet<Rectangle> {placementInfo.Rectangle};
-                hasEmptyRectangle = false;
-                return;
-            }
-
-            rectangles.Add(placementInfo.Rectangle);
+            rectangles.Add(rectangle);
         }
     }
 }
