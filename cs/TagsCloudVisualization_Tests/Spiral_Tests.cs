@@ -41,19 +41,20 @@ namespace TagsCloudVisualization_Tests
             var spiral = new Spiral(center, 100, 0.25 * Math.PI);
 
             spiral.GetNextPoint();
-            spiral.Quadrant.Should().BeEquivalentTo(Quadrant.TopRight);
+            spiral.GetNextPoint();
+            spiral.Quadrant.Should().BeEquivalentTo(Quadrant.Top);
             spiral.GetNextPoint();
             spiral.GetNextPoint();
-            spiral.Quadrant.Should().BeEquivalentTo(Quadrant.TopLeft);
+            spiral.Quadrant.Should().BeEquivalentTo(Quadrant.Left);
             spiral.GetNextPoint();
             spiral.GetNextPoint();
-            spiral.Quadrant.Should().BeEquivalentTo(Quadrant.BottomLeft);
+            spiral.Quadrant.Should().BeEquivalentTo(Quadrant.Bottom);
             spiral.GetNextPoint();
             spiral.GetNextPoint();
-            spiral.Quadrant.Should().BeEquivalentTo(Quadrant.BottomRight);
+            spiral.Quadrant.Should().BeEquivalentTo(Quadrant.Right);
             spiral.GetNextPoint();
             spiral.GetNextPoint();
-            spiral.Quadrant.Should().BeEquivalentTo(Quadrant.TopRight);
+            spiral.Quadrant.Should().BeEquivalentTo(Quadrant.Top);
             
         }
         

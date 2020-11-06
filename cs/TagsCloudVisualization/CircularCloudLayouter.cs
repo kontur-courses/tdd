@@ -37,17 +37,19 @@ namespace TagsCloudVisualization
             var position = spiral.GetNextPoint();
             switch (spiral.Quadrant)
             {
-                case Quadrant.BottomRight:
+                case Quadrant.Right:
+                    position.Y -= rectangleSize.Height / 2;
+                    break;
+                case Quadrant.Bottom:
+                    position.X -= rectangleSize.Width / 2;
                     position.Y -= rectangleSize.Height;
                     break;
-                case Quadrant.BottomLeft:
+                case Quadrant.Left:
                     position.X -= rectangleSize.Width;
-                    position.Y -= rectangleSize.Height;
+                    position.Y -= rectangleSize.Height / 2;
                     break;
-                case Quadrant.TopLeft:
-                    position.X -= rectangleSize.Width;
-                    break;
-                case Quadrant.TopRight:
+                case Quadrant.Top:
+                    position.X -= rectangleSize.Width / 2;
                     break;
             }
 
