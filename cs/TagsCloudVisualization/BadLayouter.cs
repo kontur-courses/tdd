@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using NUnit.Framework;
 
 [assembly: InternalsVisibleTo("TagsCloudVisualization_Tests")]
 namespace TagsCloudVisualization

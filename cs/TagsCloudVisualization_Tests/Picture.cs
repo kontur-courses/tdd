@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization_Tests
 {
     public class Picture : IDisposable
     {
