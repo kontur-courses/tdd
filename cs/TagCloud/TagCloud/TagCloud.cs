@@ -10,11 +10,11 @@ namespace TagCloud
         public List<Rectangle> Rectangles { get; }
         private readonly ISpiral spiral;
 
-        public CircularCloudLayouter(Point center)
+        public CircularCloudLayouter(Point center, double spiralDensity = 0.05)
         {
             this.center = center;
             Rectangles = new List<Rectangle>();
-            spiral = new Spiral(center);
+            spiral = new Spiral(center, spiralDensity);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
