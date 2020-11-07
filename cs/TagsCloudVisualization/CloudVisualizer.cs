@@ -12,12 +12,13 @@ namespace TagsCloudVisualization
         {
             VisualizeCloud(GetRectanglesFromFile(inputFileName), outputFileName, imageSize);
         }
+
         public static void VisualizeCloud(IEnumerable<Rectangle> rectangles, string outputFileName, Size imageSize)
         {
             using (var image = new Bitmap(imageSize.Width, imageSize.Height))
             using (var g = Graphics.FromImage(image)) 
+            using (var pen = new Pen(Color.Black))
             { 
-                var pen = new Pen(Color.Black);
                 g.FillRectangle(new SolidBrush(Color.Red), rectangles.First());
                 foreach (var rectangle in rectangles)
                 {

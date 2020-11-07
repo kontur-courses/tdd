@@ -19,23 +19,27 @@ namespace TagsCloudVisualization
             currentRadius = 0;
             currentAngle = 0;
         }
+
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (currentRectangles.Count == 0)
                 return PutFirstRectangle(rectangleSize);
+
             Rectangle? newRectangle = null;
             while(true)
             {
                 var point = GetNextPoint();
                 var movedRectangles = GetRectanglesAroundPoint(point, rectangleSize)
-                    .Where(rect => !rect.IntersectsWithRectangles(currentRectangles))
+                    .Where(rect => !rect.IntersectsWith(currentRectangles))
                     .Select(rect => MoveToCenter(rect));
+
                 foreach (var rectangle in movedRectangles)
                 {
                     if (newRectangle == null 
                         || rectangle.GetDistanceToPoint(Center) < newRectangle.Value.GetDistanceToPoint(Center))
                         newRectangle = rectangle;
                 }
+
                 if (newRectangle != null)
                 {
                     currentRectangles.Add(newRectangle.Value);
@@ -101,12 +105,11 @@ namespace TagsCloudVisualization
             foreach (var direction in DirectionUtils.GetAllDirections())
             {
                 var tempRectangle = rectangle.GetMovedCopy(direction, shift);
-                if (tempRectangle.IntersectsWithRectangles(currentRectangles)
-                    || tempRectangle.GetDistanceToPoint(Center) >= rectangle.GetDistanceToPoint(Center))
+                if (!tempRectangle.IntersectsWith(currentRectangles)
+                    && !(tempRectangle.GetDistanceToPoint(Center) >= rectangle.GetDistanceToPoint(Center)))
                 {
-                    continue;
+                    return tempRectangle;
                 }
-                return tempRectangle;
             }
             return null;
         }

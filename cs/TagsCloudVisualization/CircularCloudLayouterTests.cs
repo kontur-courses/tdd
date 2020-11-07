@@ -52,7 +52,7 @@ namespace TagsCloudVisualization
             foreach (var rectangle in rectangles.ToArray())
             {
                 rectangles.Remove(rectangle);
-                rectangle.IntersectsWithRectangles(rectangles).Should().BeFalse();
+                rectangle.IntersectsWith(rectangles).Should().BeFalse();
                 rectangles.Add(rectangle);
             }
         }
@@ -82,35 +82,35 @@ namespace TagsCloudVisualization
             (Math.Abs(cloudVerticalDiameter - diameter) <= GetMaxRectangleHeightInCloud()).Should().BeTrue();
         }
 
-        private int GetCloudHorizontalDiameter()
-        {
-            var top = rectangles.Select(rectangle => rectangle.Top).Min();
-            var bottom = rectangles.Select(rectangle => rectangle.Bottom).Max();
-            return bottom - top;
-        }
-
-        private int GetCloudVerticalDiameter()
-        {
-            var left = rectangles.Select(rectangle => rectangle.Left).Min();
-            var right = rectangles.Select(rectangle => rectangle.Right).Max();
-            return right - left;
-        }
-
-        private int GetMaxRectangleHeightInCloud()
-        {
-            return rectangles.Select(rectangle => rectangle.Height).Max();
-        }
-
-        private int GetMaxRectangleWidthInCloud()
-        {
-            return rectangles.Select(rectangle => rectangle.Width).Max();
-        }
-
         [Test]
         public void TestOnlyForDemonstrationThirdTask()
         {
             SetRandomRectangles(15);
             true.Should().BeFalse();
+        }
+
+        private int GetCloudHorizontalDiameter()
+        {
+            var top = rectangles.Min(rectangle => rectangle.Top);
+            var bottom = rectangles.Max(rectangle => rectangle.Bottom);
+            return bottom - top;
+        }
+
+        private int GetCloudVerticalDiameter()
+        {
+            var left = rectangles.Min(rectangle => rectangle.Left);
+            var right = rectangles.Max(rectangle => rectangle.Right);
+            return right - left;
+        }
+
+        private int GetMaxRectangleHeightInCloud()
+        {
+            return rectangles.Max(rectangle => rectangle.Height);
+        }
+
+        private int GetMaxRectangleWidthInCloud()
+        {
+            return rectangles.Max(rectangle => rectangle.Width);
         }
 
         private void CheckDensity(Rectangle rectangle, DirectionToMove direction)
@@ -119,7 +119,7 @@ namespace TagsCloudVisualization
             var tempRectangle = rectangle.GetMovedCopy(direction, shift);
             if (tempRectangle.GetDistanceToPoint(center) < rectangle.GetDistanceToPoint(center))
             {
-                tempRectangle.IntersectsWithRectangles(rectangles.Except(new[] {rectangle})).Should().BeTrue();
+                tempRectangle.IntersectsWith(rectangles.Except(new[] {rectangle})).Should().BeTrue();
             }
         }
 
