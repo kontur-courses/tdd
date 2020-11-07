@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Text.RegularExpressions;
 
 namespace TagsCloudVisualization
 {
@@ -16,17 +13,12 @@ namespace TagsCloudVisualization
             Rectangles = rectangles;
         }
 
-        public void SaveVisualizationToDirectory(string savePath)
+        public Bitmap GetBitmap()
         {
-            if (!PathInRightFormat(savePath))
-            {
-                throw new ArgumentException("wrong path format");
-            }
-
             var imageSize = GetImageSize();
             var pen = new Pen(Color.MediumVioletRed, 4);
 
-            using var bitmap = new Bitmap(imageSize.Width + (int)pen.Width,
+            var bitmap = new Bitmap(imageSize.Width + (int)pen.Width,
                 imageSize.Width + (int)pen.Width);
             using var graphics = Graphics.FromImage(bitmap);
 
@@ -35,16 +27,7 @@ namespace TagsCloudVisualization
                 graphics.DrawRectangles(pen, Rectangles.ToArray());
             }
 
-            bitmap.Save(savePath, ImageFormat.Jpeg);
-        }
-
-        private bool PathInRightFormat(string path)
-        {
-            var pattern = @"((?:[^\\]*\\)*)(.*[.].+)";
-            var match = Regex.Match(path, pattern);
-            var directoryPath = match.Groups[1].ToString();
-
-            return Directory.Exists(directoryPath) && match.Groups[2].Success;
+            return bitmap;
         }
 
         private Size GetImageSize()

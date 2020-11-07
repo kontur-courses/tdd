@@ -27,29 +27,9 @@ namespace TagsCloudVisualizationTests
             rectangles.Add(new Rectangle(location, size));
             Sut = new TagsVisualizator(rectangles);
 
-            Action saveImage = () => Sut.SaveVisualizationToDirectory(path);
+            Action saveImage = () => Sut.GetBitmap();
 
             saveImage.Should().Throw<ArgumentException>();
-        }
-
-        [TestCase(@"<html></html>", TestName = "Directory dont exist")]
-        [TestCase(@"C:/Dir/image.jpg", TestName = "Not backslash separator")]
-        [TestCase(@"C:\image jpg", TestName = "Doesnt have dot separator")]
-        [TestCase(@"C:\image.", TestName = "Doesnt have filename extension")]
-        public void SaveVisualizationToDirectory_ThrowException_When(string path)
-        {
-            Action saveImage = () => Sut.SaveVisualizationToDirectory(path);
-
-            saveImage.Should().Throw<ArgumentException>();
-        }
-
-        [TestCase(@"C:\image.jpg", TestName = "Relative path")]
-        [TestCase(@"..\image.jpg", TestName = "Absolute path")]
-        public void SaveVisualizationToDirectory_DoesntThrowException_When(string path)
-        {
-            Action saveImage = () => Sut.SaveVisualizationToDirectory(path);
-
-            saveImage.Should().NotThrow<ArgumentException>();
         }
     }
 }

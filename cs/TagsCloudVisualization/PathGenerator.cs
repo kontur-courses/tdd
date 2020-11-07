@@ -8,7 +8,7 @@ namespace TagsCloudVisualization
 
         public PathGenerator()
         {
-            Root = new DirectoryInfo("..\\..\\..\\Sampels").FullName;
+            Root = Directory.GetCurrentDirectory();
         }
 
         public string GetNewFilePath()

@@ -13,25 +13,29 @@ namespace TagsCloudVisualization
 
         public ArchimedeanSpiral(Point center, double distanceBetweenLoops, double angleDelta)
         {
-            if (center.X < 0 || center.Y < 0)
+            Angle = 0;
+            Center = center;
+            AngleDelta = angleDelta;
+            DistanceBetweenLoops = distanceBetweenLoops;
+            CurrentPoint = Center;
+
+            ValidateSpiralParameters();
+        }
+
+        private void ValidateSpiralParameters()
+        {
+            if (Center.X < 0 || Center.Y < 0)
             {
                 throw new ArgumentException("center coordinates should not be negative numbers");
             }
-            Center = center;
-
-            if (angleDelta <= 0)
+            if (AngleDelta <= 0)
             {
                 throw new ArgumentException("angleDelta should not be negative or zero");
             }
-            AngleDelta = angleDelta;
-
-            if (distanceBetweenLoops <= 0)
+            if (DistanceBetweenLoops <= 0)
             {
                 throw new ArgumentException("distanceBetweenLoops should not be negative or zero");
             }
-            DistanceBetweenLoops = distanceBetweenLoops;
-            Angle = 0;
-            CurrentPoint = Center;
         }
 
         public Point GetNextPoint()

@@ -16,7 +16,7 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
-        public void GenerateNewFilePath_ReturnExistingDirectory_WhenCalled()
+        public void GetNewFilePath_ReturnExistingDirectory_WhenCalled()
         {
             var path = Sut.GetNewFilePath().Split('\\');
             path[^1] = "";
