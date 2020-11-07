@@ -6,12 +6,13 @@ namespace TagsCloudVisualisation.Layouter
 {
     public class CircularCloudLayouter : ICircularCloudLayouter
     {
-        public CircularCloudLayouter(Point cloudCenter)
+        public CircularCloudLayouter(Point cloudCenter, Size minRectangleSize)
         {
             CloudCenter = cloudCenter;
+            this.minRectangleSize = minRectangleSize;
         }
 
-        private readonly Size minRectangleSize = new Size(3, 3);
+        private readonly Size minRectangleSize;
         public Point CloudCenter { get; }
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
 

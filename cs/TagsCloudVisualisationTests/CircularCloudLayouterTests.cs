@@ -14,7 +14,7 @@ namespace TagsCloudVisualisationTests
         public override void SetUp()
         {
             base.SetUp();
-            Layouter = new CircularCloudLayouter(new Point(0, 0));
+            Layouter = new CircularCloudLayouter(new Point(0, 0), new Size(3, 3));
         }
 
         [Test]

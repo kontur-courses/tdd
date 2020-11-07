@@ -21,7 +21,7 @@ namespace TagsCloudVisualisationTests.Samples
         public override void SetUp()
         {
             base.SetUp();
-            Layouter = new CircularCloudLayouter(new Point(0, 0));
+            Layouter = new CircularCloudLayouter(new Point(0, 0), new Size(5, 5));
             WordsLayouterAsset = new WordsLayouterAsset(Layouter, 1);
 
             textCloudGenerator = new TextCloudGenerator(
