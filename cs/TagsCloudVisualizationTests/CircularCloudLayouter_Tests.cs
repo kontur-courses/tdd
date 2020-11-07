@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using TagsCloudVisualization;
+
 namespace TagsCloudVisualizationTests
 {
     [TestFixture]
@@ -44,7 +44,7 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
-        public void Rectangle_ShouldFindClosestPosition()
+        public void AnotherRectangle_ShouldFindClosestPosition()
         {
             layouter.PutNextRectangle(new Size(50, 50));
             layouter.PutNextRectangle(new Size(50, 50));
@@ -52,8 +52,7 @@ namespace TagsCloudVisualizationTests
             layouter.PutNextRectangle(new Size(50, 50));
 
             var rectangle = layouter.PutNextRectangle(new Size(50, 50));
-            var rectangleCenter = new Point(rectangle.X + rectangle.Width / 2, rectangle.Y + rectangle.Height / 2);
-            var distanceToCenter = Math.Sqrt(Math.Pow(rectangleCenter.X - center.X, 2) + Math.Pow(rectangleCenter.Y - center.Y, 2));
+            var distanceToCenter = CalculateDistance(center, CalculateCenterPosition(rectangle));
             distanceToCenter.Should().Be(50, "because last closest position is near the central rectangle");
         }
 
@@ -95,7 +94,7 @@ namespace TagsCloudVisualizationTests
                 var fileName = $"{context.WorkDirectory}\\{context.Test.Name}.png";
                 var rectangles = layouter.Rectangles;
                 TestContext.WriteLine($"Tag cloud visualization saved to file {fileName}");
-                DrawRectangles(rectangles, center, new Size(500, 500), fileName);
+                DrawRectangles(rectangles, center, new Size(800, 800), fileName);
             }
         }
 
@@ -107,6 +106,16 @@ namespace TagsCloudVisualizationTests
             graphics.DrawRectangles(new Pen(Color.Aqua, 2), rectangles.ToArray());
             graphics.FillEllipse(Brushes.Green, new Rectangle(center - new Size(2, 2), new Size(4, 4)));
             image.Save(fileName);
+        }
+
+        private Point CalculateCenterPosition(Rectangle rectangle)
+        {
+            return rectangle.Location + rectangle.Size / 2;
+        }
+
+        private double CalculateDistance(Point point1, Point point2)
+        {
+            return Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y, 2));
         }
     }
 }
