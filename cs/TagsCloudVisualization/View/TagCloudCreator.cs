@@ -6,7 +6,7 @@ using TagsCloudVisualization.Models;
 
 namespace TagsCloudVisualization.View
 {
-    class TagCloudCreator
+    class TagCloudCreator : IDisposable
     {
         private readonly CircularCloudLayouter layouter;
         private readonly Brush layoutBrush;
@@ -48,12 +48,15 @@ namespace TagsCloudVisualization.View
 
                 foreach (var rectangle in layouter.Rectangles)
                     graphics.DrawRectangle(rectanglePen, rectangle);
-
-                layoutBrush.Dispose();
-                rectanglePen.Dispose();
             }
 
             return bitmap;
+        }
+
+        public void Dispose()
+        {
+            layoutBrush?.Dispose();
+            rectanglePen?.Dispose();
         }
     }
 }

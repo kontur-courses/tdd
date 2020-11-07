@@ -21,10 +21,10 @@ namespace TagsCloudVisualization
             foreach (var namesToLayoutFiller in CloudNamesToLayoutFillers)
             {
                 var circularCloudLayouter = new CircularCloudLayouter(new Point(800, 600));
-                var cloudImageCreator = new TagCloudCreator(circularCloudLayouter);
-
                 namesToLayoutFiller.Value(circularCloudLayouter);
-                cloudImageCreator.Save(namesToLayoutFiller.Key);
+
+                using (var cloudImageCreator = new TagCloudCreator(circularCloudLayouter))
+                    cloudImageCreator.Save(namesToLayoutFiller.Key);
             }
         }
 
