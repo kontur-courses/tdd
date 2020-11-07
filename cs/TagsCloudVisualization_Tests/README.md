@@ -1,10 +1,10 @@
 ﻿# Примеры раскладки
 
 ## На полностью случайных данных
-![TagCloud](https://github.com/CaptainBelyash/tdd/blob/master/cs/TagsCloudVisualization_Tests/random.bmp)
+![RandomCloud](https://github.com/CaptainBelyash/tdd/blob/master/cs/TagsCloudVisualization_Tests/random.bmp)
 
 ## На строкоподобных данных
-![TagCloud](https://github.com/CaptainBelyash/tdd/blob/master/cs/TagsCloudVisualization_Tests/string_like.bmp)
+![StringCloud](https://github.com/CaptainBelyash/tdd/blob/master/cs/TagsCloudVisualization_Tests/string_like.bmp)
 
 ## Визуализация проваленных тестов
 Зеленым обозначены прямоугольники, расположенные с соблюдением требований
@@ -12,6 +12,6 @@
 Красным - прямоугольники, пересекающие другие прямоугольники
 
 
-![TagCloud](https://github.com/CaptainBelyash/tdd/blob/master/cs/TagsCloudVisualization_Tests/failed1.jpg)
+![FailedLayout](https://github.com/CaptainBelyash/tdd/blob/master/cs/TagsCloudVisualization_Tests/failed1.jpg)
 
-![TagCloud](https://github.com/CaptainBelyash/tdd/blob/master/cs/TagsCloudVisualization_Tests/failed2.jpg)
+![LowDensityLayout](https://github.com/CaptainBelyash/tdd/blob/master/cs/TagsCloudVisualization_Tests/failed2.jpg)
