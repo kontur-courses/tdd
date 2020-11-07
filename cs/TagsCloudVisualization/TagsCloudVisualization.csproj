@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\PointExtension.cs" />
     <Compile Include="Extensions\PointFComparer.cs" />
     <Compile Include="Models\ArchimedeanSpiral.cs" />
     <Compile Include="Models\CircularCloudLayouter.cs" />

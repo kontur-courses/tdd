@@ -15,7 +15,7 @@ namespace TagsCloudVisualization.View
         public TagCloudCreator(CircularCloudLayouter layouter)
         {
             this.layouter = layouter;
-            this.layoutBrush = Brushes.AliceBlue;
+            this.layoutBrush = new SolidBrush(Color.AliceBlue);
             this.rectanglePen = new Pen(Color.DodgerBlue, 2);
         }
 
@@ -39,6 +39,7 @@ namespace TagsCloudVisualization.View
         private Bitmap GetFilledBitmap()
         {
             var layoutSize = layouter.GetLayoutSize();
+
             var bitmap = new Bitmap(layoutSize.Width, layoutSize.Height);
 
             using (var graphics = Graphics.FromImage(bitmap))

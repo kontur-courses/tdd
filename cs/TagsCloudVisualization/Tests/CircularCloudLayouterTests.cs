@@ -6,6 +6,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using TagsCloudVisualization.Extensions;
 using TagsCloudVisualization.Models;
 using TagsCloudVisualization.View;
 
@@ -71,7 +72,7 @@ namespace TagsCloudVisualization.Tests
             PutRectangles(rectsCount, width, height);
 
             var expectedRadius = Math.Sqrt(layoutArea / Math.PI);
-            var maxDelta = GetMaxDeltaFromCenter();
+            var maxDelta = center.GetMaxDistanceToLayoutBorder(layouter.Rectangles);
 
             ((double)maxDelta.X).Should().BeLessThan(expectedRadius * 1.25);
             ((double)maxDelta.Y).Should().BeLessThan(expectedRadius * 1.25);
@@ -132,24 +133,6 @@ namespace TagsCloudVisualization.Tests
         {
             for (int i = 0; i < amountToPlace; i++)
                 layouter.PutNextRectangle(new Size(width, height));
-        }
-
-        private Point GetMaxDeltaFromCenter()
-        {
-            var deltaXToRight = layouter.Rectangles
-                .Max(rectangle => rectangle.Right - center.X);
-            var deltaXToLeft = layouter.Rectangles
-                .Max(rectangle => center.X - rectangle.Left);
-
-            var deltaYToBottom = layouter.Rectangles
-                .Max(rectangle => rectangle.Bottom - center.Y);
-            var deltaYToUp = layouter.Rectangles
-                .Max(rectangle => center.Y - rectangle.Top);
-
-            var maxDeltaX = Math.Max(deltaXToLeft, deltaXToRight);
-            var maxDeltaY = Math.Max(deltaYToBottom, deltaYToUp);
-
-            return new Point(maxDeltaX, maxDeltaY);
         }
     }
 }

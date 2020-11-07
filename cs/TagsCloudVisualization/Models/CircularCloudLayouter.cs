@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization.Models
 {
@@ -40,12 +41,9 @@ namespace TagsCloudVisualization.Models
             if (rectangles.Count == 0)
                 throw new ArgumentException("Layout is empty");
 
-            var deltaX = rectangles
-                .Max(rectangle => rectangle.Right) - center.X;
-            var deltaY = rectangles
-                .Max(rectangle => rectangle.Bottom) - center.Y;
-            var width = 2 * Math.Max(center.X, deltaX);
-            var height = 2 * Math.Max(center.Y, deltaY);
+            var maxDeltaFromCenter = center.GetMaxDistanceToLayoutBorder(rectangles);
+            var width = 2 * Math.Max(center.X, maxDeltaFromCenter.X);
+            var height = 2 * Math.Max(center.Y, maxDeltaFromCenter.Y);
 
             return new Size(width, height);
         }
