@@ -23,7 +23,7 @@ namespace CloudTag
 
             var shiftVector = new Point(-minX, -minY);
 
-            using (var bitmap = new Bitmap(width, height))
+            using (var bitmap = new Bitmap(width + 100, height + 100))
             {
                 using (var pen = new Pen(penColor))
                 using (var graphics = Graphics.FromImage(bitmap))
