@@ -8,7 +8,7 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private readonly List<Rectangle> Rectangles = new List<Rectangle>();
+        private readonly List<Rectangle> rectangles = new List<Rectangle>();
         private readonly List<Point> potentialPosingPoints;
         private Point Center { get; }
         private bool isFirst = true;
@@ -24,22 +24,27 @@ namespace TagsCloudVisualization
             if (isFirst)
                 return PutFirstRectangle(rectangleSize);
 
-            var rect = ChangeRectanglePosition(new Rectangle(Center, rectangleSize));
-            Rectangles.Add(rect);
+            var rect = PlaceRectangle(new Rectangle(Center, rectangleSize));
+            rectangles.Add(rect);
             potentialPosingPoints.AddRange(GetPotentialPosingPointsFromRectangle(rect));
+
+            RemovePoints();
             return rect;
         }
 
         public void CreateImage(string path, string fileName)
         {
-            if (!Rectangles.Any())
+            if (!rectangles.Any())
                 return;
             var bm = new Bitmap(1080, 1080);
             var graphics = Graphics.FromImage(bm);
             graphics.FillRectangle(new SolidBrush(Color.Gray), new Rectangle(0, 0, 1080, 1080));
-            graphics.DrawRectangles(new Pen(Color.Red), Rectangles.ToArray());
+            graphics.DrawRectangles(new Pen(Color.Red), rectangles.ToArray());
             graphics.DrawEllipse(new Pen(Color.GreenYellow),
                 new Rectangle(new Point(Center.X - 5, Center.Y - 5), new Size(10, 10)));
+
+            foreach (var point in potentialPosingPoints)
+                graphics.DrawEllipse(new Pen(Color.Aqua), new Rectangle(point.X - 1, point.Y - 1, 2, 2));
 
             bm.Save($"{path}\\{fileName}_{DateTime.Now:dd-MM-yyyy_HH-mm-ss}.bmp", ImageFormat.Bmp);
         }
@@ -49,19 +54,31 @@ namespace TagsCloudVisualization
             return Center;
         }
 
+        public void RemovePoints()
+        {
+            var pointsToRemove = potentialPosingPoints.Where(point =>
+                GetLocationVariations(point, new Rectangle(0, 0, 1, 1))
+                    .Select(x => new Rectangle(x, new Size(1, 1)))
+                    .All(rect => rectangles.Any(x => x.IntersectsWith(rect))))
+                .ToHashSet();
+
+            potentialPosingPoints.RemoveAll(x => pointsToRemove.Contains(x));
+            
+        }
+
         private Rectangle PutFirstRectangle(Size rectangleSize)
         {
             var rect = new Rectangle(
                 new Point(Center.X - rectangleSize.Width / 2, (Center.Y - rectangleSize.Height / 2)),
                 rectangleSize);
-            Rectangles.Add(rect);
+            rectangles.Add(rect);
             potentialPosingPoints.AddRange(GetPotentialPosingPointsFromRectangle(rect));
             isFirst = false;
-            return rect;
 
+            return rect;
         }
 
-        private Rectangle ChangeRectanglePosition(Rectangle rect)
+        private Rectangle PlaceRectangle(Rectangle rect)
         {
             var orderedPoints = potentialPosingPoints.OrderBy(GetDistanceToCenter);
             foreach (var point in orderedPoints)
@@ -69,7 +86,7 @@ namespace TagsCloudVisualization
                 foreach (var location in GetLocationVariations(point, rect))
                 {
                     rect.Location = location;
-                    if (Rectangles.All(x => !x.IntersectsWith(rect)))
+                    if (rectangles.All(x => !x.IntersectsWith(rect)))
                         return rect;
                 }
             }
