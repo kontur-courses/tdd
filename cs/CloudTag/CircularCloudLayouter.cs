@@ -17,11 +17,8 @@ namespace CloudTag
 
        public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            if (rectangleSize.Height < 0 || rectangleSize.Width < 0)
-                throw new ArgumentException($"{(rectangleSize.Height < 0 ? rectangleSize.Height : rectangleSize.Width)} cant be negative");
-
-            if (rectangleSize.Height == 0 || rectangleSize.Width == 0)
-                return Rectangle.Empty;
+            if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
+                throw new ArgumentException($"{(rectangleSize.Height < 0 ? rectangleSize.Height : rectangleSize.Width)} cant be negative or zero");
 
             var rectangleToAdd = new Rectangle {Size = rectangleSize};
 
