@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -11,9 +11,9 @@ using TagsCloudVisualisationTests.Infrastructure;
 namespace TagsCloudVisualisationTests.Samples
 {
     [Explicit]
-    [SaveLayouterResults(TestStatus.Failed, TestStatus.Inconclusive, TestStatus.Passed, TestStatus.Warning)]
     public abstract class BaseSampleGenerator : LayouterTestBase
     {
+        private const string ReadmeHeader = "Вот что удалось навизуализировать:";
         private const string ReadmeFileName = "README.md";
         private const string ReadmeResourcesFolderName = "readme-resources";
         private Image renderedImage;
@@ -34,7 +34,7 @@ namespace TagsCloudVisualisationTests.Samples
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Passed)
             {
                 using (new Measurement($"Save to {ReadmeResourcesFolderName}", TestContext.Progress))
-                    SaveReadmeImage(RenderResultImage());
+                    SaveReadmeResourceImage(RenderResultImage());
             }
         }
 
@@ -42,7 +42,7 @@ namespace TagsCloudVisualisationTests.Samples
         public virtual void OneTimeTearDown()
         {
             using (new Measurement("Create README.md", TestContext.Progress))
-                CreateReadme();
+                SaveReadme();
         }
 
         protected sealed override Image RenderResultImage()
@@ -56,29 +56,34 @@ namespace TagsCloudVisualisationTests.Samples
             return renderedImage;
         }
 
-        private static void CreateReadme()
+        private static void SaveReadme()
         {
             var readmeBaseDirectory = GetReadmeBaseDirectory();
-            var markdownContent = string.Join(Environment.NewLine + Environment.NewLine,
-                GetReadmeResourcesDirectory()
-                    .EnumerateFiles("*.png")
-                    .Select(x => MarkdownElements.Image($@"{ReadmeResourcesFolderName}/{x.Name}"))
-                    .OrderBy(x => x));
-
             var readmeFile = readmeBaseDirectory.GetFiles(ReadmeFileName).Single();
-            using var writer = new StreamWriter(readmeFile.Open(FileMode.Create));
-            writer.Write(markdownContent);
+            var resourcesDirectory = GetResourcesDirectory(readmeBaseDirectory);
+
+            var readmeBuilder = new ReadmeBuilder(readmeFile, ReadmeHeader);
+            foreach (var file in EnumerateResourcesIn(resourcesDirectory))
+                readmeBuilder.AddResource(file);
+            readmeBuilder.Save();
         }
 
-        private static void SaveReadmeImage(Image image) => image.Save(Path.Combine(
-            GetReadmeResourcesDirectory().FullName,
-            $"{TestContext.CurrentContext.Test.Name}.png"));
+        private static void SaveReadmeResourceImage(Image image)
+        {
+            const string extension = ".png";
+            var testName = TestContext.CurrentContext.Test.Name;
+            var resourcesDirectory = GetResourcesDirectory(GetReadmeBaseDirectory());
+            image.Save(Path.Combine(resourcesDirectory.FullName, testName + extension));
+        }
 
-        private static DirectoryInfo GetReadmeResourcesDirectory() => GetReadmeBaseDirectory()
+        private static IEnumerable<FileInfo> EnumerateResourcesIn(DirectoryInfo resourcesDirectory) =>
+            resourcesDirectory.EnumerateFiles("*.png").OrderBy(x => x.Name);
+
+        private static DirectoryInfo GetResourcesDirectory(DirectoryInfo baseDirectory) => baseDirectory
             .CreateSubdirectory(ReadmeResourcesFolderName);
 
         private static DirectoryInfo GetReadmeBaseDirectory() =>
-            new DirectoryInfo(TestContext.CurrentContext.WorkDirectory)
-                .GoParentUntil(di => di.EnumerateFiles(ReadmeFileName, SearchOption.TopDirectoryOnly).Any());
+            new DirectoryInfo(TestContext.CurrentContext.WorkDirectory).GoParentUntil(di =>
+                di.EnumerateFiles(ReadmeFileName, SearchOption.TopDirectoryOnly).Any());
     }
 }

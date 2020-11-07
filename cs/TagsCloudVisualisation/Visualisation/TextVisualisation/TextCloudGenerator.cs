@@ -25,11 +25,16 @@ namespace TagsCloudVisualisation.Visualisation.TextVisualisation
         }
 
         public void RegisterText(string text) => textAnalyzer.RegisterText(text);
+        
+        public void GenerateCloud(params int[] wordsSizeCoefficients) => GenerateCloud(-1, wordsSizeCoefficients);
 
-        public void GenerateCloud(params int[] wordsSizeCoefficients)
+        public void GenerateCloud(int maxWordsCount, params int[] wordsSizeCoefficients)
         {
             wordsSizeCoefficients = wordsSizeCoefficients.OrderByDescending(x => x).ToArray();
-            var words = textAnalyzer.GetSortedWords().ToArray();
+            var wordsEnumerable = textAnalyzer.GetSortedWords();
+            var words = (maxWordsCount > 0
+                    ? wordsEnumerable.Take(maxWordsCount)
+                    : wordsEnumerable).ToArray();
 
             for (var i = 0; i < wordsSizeCoefficients.Length; i++)
             {

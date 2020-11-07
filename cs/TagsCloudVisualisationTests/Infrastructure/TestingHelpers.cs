@@ -39,5 +39,8 @@ namespace TagsCloudVisualisationTests.Infrastructure
                 baseDirectory = baseDirectory.Parent ?? throw new InvalidOperationException($"No directories left");
             return baseDirectory;
         }
+        
+        public static string FileNameOnly(this FileInfo fileInfo) => 
+            fileInfo.Name.Substring(0, fileInfo.Name.Length - fileInfo.Extension.Length);
     }
 }

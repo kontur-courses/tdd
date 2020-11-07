@@ -5,18 +5,24 @@ namespace TagsCloudVisualisation.Visualisation.TextVisualisation
 {
     public class SimpleTextAnalyzer : ITextAnalyzer
     {
-        public int TotalWordsCount => wordsWithCount?.Count ?? 0;
+        private readonly int minWordLength;
         private readonly char[] separators;
         private readonly Dictionary<string, uint> wordsWithCount = new Dictionary<string, uint>();
 
-        public SimpleTextAnalyzer(char[] separators)
+        public SimpleTextAnalyzer(int minWordLength, char[] separators)
         {
+            this.minWordLength = minWordLength;
             this.separators = separators;
         }
 
         public void RegisterText(string text)
         {
-            foreach (var word in text.Split(separators).Where(x => !string.IsNullOrEmpty(x)).Select(w => w.ToLower()))
+            var words = text.Split(separators)
+                .Where(x => !string.IsNullOrEmpty(x))
+                .Where(w => w.Length >= minWordLength)
+                .Select(w => w.ToLower());
+
+            foreach (var word in words)
                 wordsWithCount[word] = wordsWithCount.GetValueOrDefault(word, 0U) + 1;
         }
 
