@@ -56,8 +56,8 @@ namespace TagsCloudVisualization.View
 
         public void Dispose()
         {
-            layoutBrush?.Dispose();
-            rectanglePen?.Dispose();
+            layoutBrush.Dispose();
+            rectanglePen.Dispose();
         }
     }
 }
