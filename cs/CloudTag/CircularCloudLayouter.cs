@@ -24,9 +24,6 @@ namespace CloudTag
             if (rectangleSize.Height < 0 || rectangleSize.Width < 0)
                 throw new ArgumentException();
 
-            if (rectangleSize.Height == 0 || rectangleSize.Width == 0)
-                return Rectangle.Empty;
-
             var rectangleToAdd = new Rectangle {Size = rectangleSize};
 
             do
