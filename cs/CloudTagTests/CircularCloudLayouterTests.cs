@@ -61,7 +61,7 @@ namespace CloudTag
             var actualRectangle = layouter.PutNextRectangle(size);
             var expectedRectangle = new Rectangle {Size = size};
 
-            expectedRectangle.SetCenter(layouterCenter);
+            expectedRectangle = expectedRectangle.SetCenter(layouterCenter);
 
             actualRectangle.Should().Be(expectedRectangle);
         }

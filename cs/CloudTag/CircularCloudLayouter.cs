@@ -30,7 +30,7 @@ namespace CloudTag
             var rectangleToAdd = new Rectangle {Size = rectangleSize};
 
             do
-                rectangleToAdd.SetCenter(spiral.GetNextPoint());
+                rectangleToAdd = rectangleToAdd.SetCenter(spiral.GetNextPoint());
             while (rectangles.Any(rectangle => rectangle.IntersectsWith(rectangleToAdd)));
 
             rectangles.Add(rectangleToAdd);
