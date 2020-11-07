@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 
 
@@ -23,8 +22,7 @@ namespace TagsCloudVisualization
             sizes = sizes.OrderByDescending(x => x.Height * x.Width).ToList();
             foreach (var size in sizes)
                 layouter.PutNextRectangle(size);
-
-            layouter.CreateImage($"{Environment.CurrentDirectory}", "image");
+            layouter.CreateImage($"{AppDomain.CurrentDomain.BaseDirectory}", "image");
         }
     }
 }

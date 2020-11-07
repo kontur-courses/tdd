@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Linq;
 
 namespace TagsCloudVisualization
@@ -12,6 +11,10 @@ namespace TagsCloudVisualization
         private readonly List<Point> potentialPosingPoints;
         private Point Center { get; }
         private bool isFirst = true;
+
+        public void CreateImage(string path, string fileName) =>
+            ImageCreator.CreateImageFromRectangles(rectangles, Center, path, fileName);
+        public Point GetCenterPoint() => Center;
 
         public CircularCloudLayouter(Point center)
         {
@@ -32,28 +35,6 @@ namespace TagsCloudVisualization
             return rect;
         }
 
-        public void CreateImage(string path, string fileName)
-        {
-            if (!rectangles.Any())
-                return;
-            var bm = new Bitmap(1080, 1080);
-            var graphics = Graphics.FromImage(bm);
-            graphics.FillRectangle(new SolidBrush(Color.Gray), new Rectangle(0, 0, 1080, 1080));
-            graphics.DrawRectangles(new Pen(Color.Red), rectangles.ToArray());
-            graphics.DrawEllipse(new Pen(Color.GreenYellow),
-                new Rectangle(new Point(Center.X - 5, Center.Y - 5), new Size(10, 10)));
-
-            foreach (var point in potentialPosingPoints)
-                graphics.DrawEllipse(new Pen(Color.Aqua), new Rectangle(point.X - 1, point.Y - 1, 2, 2));
-
-            bm.Save($"{path}\\{fileName}_{DateTime.Now:dd-MM-yyyy_HH-mm-ss}.bmp", ImageFormat.Bmp);
-        }
-
-        public Point GetCenterPoint()
-        {
-            return Center;
-        }
-
         public void RemovePoints()
         {
             var pointsToRemove = potentialPosingPoints.Where(point =>
@@ -63,7 +44,6 @@ namespace TagsCloudVisualization
                 .ToHashSet();
 
             potentialPosingPoints.RemoveAll(x => pointsToRemove.Contains(x));
-            
         }
 
         private Rectangle PutFirstRectangle(Size rectangleSize)
@@ -82,15 +62,13 @@ namespace TagsCloudVisualization
         {
             var orderedPoints = potentialPosingPoints.OrderBy(GetDistanceToCenter);
             foreach (var point in orderedPoints)
-            {
                 foreach (var location in GetLocationVariations(point, rect))
                 {
                     rect.Location = location;
                     if (rectangles.All(x => !x.IntersectsWith(rect)))
                         return rect;
                 }
-            }
-            
+
             throw new ArithmeticException("Unknown error");
         }
 
