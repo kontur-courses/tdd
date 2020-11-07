@@ -4,9 +4,8 @@ using TagsCloudVisualization.TagClouds;
 
 namespace TagsCloudVisualization.Visualizer
 {
-    public class DistanceColorVisualizer : IVisualizer
+    public class DistanceColorVisualizer : IVisualizer<CircleTagCloud>
     {
-        private readonly CircleTagCloud cloud;
         private readonly Color fromColor;
         private readonly double fromRadius;
         private readonly Color toColor;
@@ -19,39 +18,39 @@ namespace TagsCloudVisualization.Visualizer
             Color toColor,
             double toRadius)
         {
-            this.cloud = cloud;
+            VisualizeTarget = cloud;
             this.fromColor = fromColor;
             this.fromRadius = fromRadius;
             this.toColor = toColor;
             this.toRadius = toRadius;
         }
 
-        public TagCloud Cloud => cloud;
+        public CircleTagCloud VisualizeTarget { get; }
 
         public void Draw(Graphics graphics)
         {
-            var leftUpBound = cloud.LeftUpBound;
+            var leftUpBound = VisualizeTarget.LeftUpBound;
             graphics.TranslateTransform(-leftUpBound.X, -leftUpBound.Y);
-            foreach (var rectangle in cloud)
+            foreach (var rectangle in VisualizeTarget)
             {
-                var distance = cloud.Center.DistanceBetween(rectangle.Center());
+                var distance = VisualizeTarget.Center.DistanceBetween(rectangle.Center());
                 using var brush = GetBrush(LinearMath.LinearInterpolate(fromRadius, toRadius, distance));
                 graphics.FillRectangle(brush, rectangle);
             }
         }
 
-        private SolidBrush GetBrush(double fraction)
+        private SolidBrush GetBrush(double gradientBlend)
         {
-            var a = GetColorComponent(fromColor.A, toColor.A, fraction);
-            var r = GetColorComponent(fromColor.R, toColor.R, fraction);
-            var g = GetColorComponent(fromColor.G, toColor.G, fraction);
-            var b = GetColorComponent(fromColor.B, toColor.B, fraction);
+            var a = GetColorComponent(fromColor.A, toColor.A, gradientBlend);
+            var r = GetColorComponent(fromColor.R, toColor.R, gradientBlend);
+            var g = GetColorComponent(fromColor.G, toColor.G, gradientBlend);
+            var b = GetColorComponent(fromColor.B, toColor.B, gradientBlend);
             return new SolidBrush(Color.FromArgb(a, r, g, b));
         }
 
-        private int GetColorComponent(int from, int to, double fraction)
+        private int GetColorComponent(int from, int to, double blend)
         {
-            return (int)((to - from) * fraction + from);
+            return (int)((to - from) * blend + from);
         }
     }
 }

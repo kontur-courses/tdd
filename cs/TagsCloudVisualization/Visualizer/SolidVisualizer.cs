@@ -4,26 +4,27 @@ using TagsCloudVisualization.TagClouds;
 
 namespace TagsCloudVisualization.Visualizer
 {
-    public class SolidVisualizer : IVisualizer
+    public class SolidVisualizer : IVisualizer<TagCloud>
     {
         private readonly SolidBrush brush;
 
         public SolidVisualizer(TagCloud cloud, Color color)
         {
-            Cloud = cloud;
+            VisualizeTarget = cloud;
             Color = color;
             brush = new SolidBrush(color);
         }
 
-        public TagCloud Cloud { get; }
         public Color Color { get; }
+
+        public TagCloud VisualizeTarget { get; }
 
         public void Draw(Graphics graphics)
         {
-            var leftUpBound = Cloud.LeftUpBound;
+            var leftUpBound = VisualizeTarget.LeftUpBound;
             graphics.TranslateTransform(-leftUpBound.X, -leftUpBound.Y);
-            if (Cloud.Count > 0)
-                graphics.FillRectangles(brush, Cloud.ToArray());
+            if (VisualizeTarget.Count > 0)
+                graphics.FillRectangles(brush, VisualizeTarget.ToArray());
         }
     }
 }

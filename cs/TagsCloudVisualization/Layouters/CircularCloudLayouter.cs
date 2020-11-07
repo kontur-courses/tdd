@@ -36,10 +36,10 @@ namespace TagsCloudVisualization.Layouters
             if (size.Width <= 0 || size.Height <= 0)
                 throw new ArgumentException($"Some side was negative in size: {size.Width}x{size.Height}");
 
-            positioner.RadiusStep = LinearMath.GetDiagonal(size) / 2;
+            var stepRadius = LinearMath.GetDiagonal(size) / 2;
             var bestPoint = new Point(int.MaxValue, int.MaxValue);
             var bestDistance = double.PositiveInfinity;
-            foreach (var point in positioner.Iteration(point => CanBePlaced(new Rectangle(point, size))))
+            foreach (var point in positioner.GetIteration(point => CanBePlaced(new Rectangle(point, size)), stepRadius))
             {
                 var pointDistance = center.DistanceBetween(point.CenterWith(size));
                 if (pointDistance > bestDistance)

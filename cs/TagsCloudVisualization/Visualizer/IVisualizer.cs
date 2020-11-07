@@ -1,11 +1,10 @@
 ﻿using System.Drawing;
-using TagsCloudVisualization.TagClouds;
 
 namespace TagsCloudVisualization.Visualizer
 {
-    public interface IVisualizer
+    public interface IVisualizer<out T>
     {
-        TagCloud Cloud { get; }
+        T VisualizeTarget { get; }
         void Draw(Graphics graphics);
     }
 }

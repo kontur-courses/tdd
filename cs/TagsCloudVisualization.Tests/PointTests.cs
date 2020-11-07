@@ -21,7 +21,7 @@ namespace TagsCloudVisualization.Tests
         }
 
         [Test]
-        public void DistanceBetween_TwoPoints_ShouldBeReturnCorrectDistance()
+        public void DistanceBetween_TwoPoints_ShouldReturnCorrectDistance()
         {
             var distance = new Point(0, 0).DistanceBetween(new Point(100, 120));
 

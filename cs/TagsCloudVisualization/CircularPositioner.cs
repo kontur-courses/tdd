@@ -8,6 +8,7 @@ namespace TagsCloudVisualization
     {
         private const double DoublePi = Math.PI * 2;
         private const double MinStep = 1d;
+        private const double RandomRadius = 2;
 
         private readonly Point center;
         private readonly double iterationOffset;
@@ -28,28 +29,26 @@ namespace TagsCloudVisualization
             this.iterationOffset = iterationOffset;
         }
 
-        public double RadiusStep { get; set; } = 20;
-
-        public IEnumerable<Point> Iteration(Func<Point, bool> isValid)
+        public IEnumerable<Point> GetIteration(Func<Point, bool> isValid, double radiusStep)
         {
             var angle = startAngle;
             while (angle < startAngle + DoublePi)
             {
-                var point = SearchBestPlaceOnAngle(angle, isValid);
+                var point = GetClosestPlaceToCenter(angle, isValid, radiusStep);
                 yield return point;
 
                 angle += searchAngleStep;
             }
 
-            startAngle += iterationOffset + (random.NextDouble() - 0.5) * 2;
+            startAngle += iterationOffset + GetRandomScalar(RandomRadius);
         }
 
-        private Point SearchBestPlaceOnAngle(double angle, Func<Point, bool> isValid)
+        private Point GetClosestPlaceToCenter(double angle, Func<Point, bool> isValid, double radiusStep)
         {
             var direction = -1;
             var radius = radiusThreshold;
             var point = LinearMath.PolarToCartesian(center, radius, angle);
-            var step = RadiusStep;
+            var step = radiusStep;
 
             while (!isValid(point))
                 point = LinearMath.PolarToCartesian(center, radius += step, angle);
@@ -71,6 +70,11 @@ namespace TagsCloudVisualization
             }
 
             return bestPoint;
+        }
+
+        private double GetRandomScalar(double radius)
+        {
+            return (random.NextDouble() - 0.5) * radius;
         }
     }
 }

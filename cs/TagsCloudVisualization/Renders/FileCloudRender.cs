@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using TagsCloudVisualization.TagClouds;
 using TagsCloudVisualization.Visualizer;
 
 namespace TagsCloudVisualization.Renders
@@ -6,20 +7,18 @@ namespace TagsCloudVisualization.Renders
     public class FileCloudRender : IRender
     {
         private readonly string fileName;
-        private readonly IVisualizer visualizer;
-        private int safeZone;
+        private readonly IVisualizer<TagCloud> visualizer;
 
-        public FileCloudRender(IVisualizer visualizer, string fileName, int safeZone = 24)
+        public FileCloudRender(IVisualizer<TagCloud> visualizer, string fileName)
         {
             this.visualizer = visualizer;
             this.fileName = fileName;
-            this.safeZone = safeZone;
         }
 
         public void Render()
         {
-            var leftUpBound = visualizer.Cloud.LeftUpBound;
-            var rightDownBound = visualizer.Cloud.RightDownBound;
+            var leftUpBound = visualizer.VisualizeTarget.LeftUpBound;
+            var rightDownBound = visualizer.VisualizeTarget.RightDownBound;
 
             var image = new Bitmap(
                 rightDownBound.X - leftUpBound.X,

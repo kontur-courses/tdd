@@ -32,7 +32,7 @@ namespace TagsCloudVisualization.Tests
             if (context.Result.Outcome.Status == TestStatus.Failed)
             {
                 Directory.CreateDirectory(PathToDebugImages);
-                var name = $"{context.Test.Name} {DateTime.Now:HH-mm-ss tt zz}.png";
+                var name = $"{context.Test.Name}_{DateTime.Now:HH-mm-ss_tt-zz}.png";
                 var vis = new RectangleVisualizer(new ImmutableTagCloud(rectangles.ToArray()));
                 new FileCloudRender(vis, Path.Combine(PathToDebugImages, name)).Render();
             }
@@ -66,12 +66,11 @@ namespace TagsCloudVisualization.Tests
         [Test]
         public void PutNextRectangle_ManyRectangles_RectanglesShouldNotIntersect()
         {
-            var rectangles = new List<Rectangle>();
             var size = new Size(300, 20);
             var count = 1000;
 
             for (var i = 0; i < count; i++)
-                rectangles.Add(PutRectangle(size));
+                PutRectangle(size);
 
             ListOfRectangles_EnumerableWithRectangles_RectanglesShouldNotIntersect(rectangles);
         }
