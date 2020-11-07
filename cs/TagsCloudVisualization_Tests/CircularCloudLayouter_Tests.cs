@@ -71,7 +71,8 @@ namespace TagsCloudVisualization_Tests
 
             foreach (var rectangle in layouter.Rectangles)
             {
-                IsRectangleIntersectOther(layouter, rectangle).Should().BeFalse();
+                IsRectangleIntersectOther(layouter, rectangle)
+                    .Should().BeFalse("rectangles must not intersect");
             }
         }
         
