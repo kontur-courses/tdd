@@ -2,17 +2,16 @@
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using CloudTag;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using CloudTag;
 
-namespace CloudTag
+namespace CloudTagTests
 {
     public class CircularCloudLayouterTests
     {
         private CircularCloudLayouter layouter;
-        private readonly Point layouterCenter = new Point(0, 0);
         private string failTestsImagesPath;
 
         [OneTimeSetUp]
@@ -29,7 +28,7 @@ namespace CloudTag
         [SetUp]
         public void SetUp()
         {
-            layouter = new CircularCloudLayouter(layouterCenter);
+            layouter = new CircularCloudLayouter(new Point(0, 0));
         }
 
         [TearDown]
@@ -43,25 +42,25 @@ namespace CloudTag
                 name += $" {TestContext.CurrentContext.Test.Name}";
 
             var fullPath = Path.Combine(failTestsImagesPath, $"{name}.png");
-            CloudPainter.DrawAndSaveToFile(Color.Red, layouter.GetRectangles(), fullPath);
+            var savingResult = RectanglePainter.TryDrawAndSaveToFile(layouter.GetRectangles(), Color.Red, fullPath);
             
-            TestContext.Out.WriteLine($"Tag cloud visualization saved to file {fullPath}");
+            TestContext.Out.WriteLine(savingResult ? $"Tag cloud visualization saved to file {fullPath}" : "Error while saving file");
         }
 
         [Test]
         public void Constructor_DoesNotThrow()
         {
-            Assert.DoesNotThrow(() => new CircularCloudLayouter(new Point(0, 0)));
+            Action action = () => new CircularCloudLayouter(new Point(0, 0));
+            action.Should().NotThrow();
         }
 
         [Test]
         public void PutNextRectangle_ReturnsFirstRectangle_WithCenterInLayouterCenter()
         {
             var size = new Size(10, 10);
+            var expectedRectangle = new Rectangle {Size = size}.SetCenter(new Point(0, 0));
+            
             var actualRectangle = layouter.PutNextRectangle(size);
-            var expectedRectangle = new Rectangle {Size = size};
-
-            expectedRectangle = expectedRectangle.SetCenter(layouterCenter);
 
             actualRectangle.Should().Be(expectedRectangle);
         }
@@ -94,7 +93,8 @@ namespace CloudTag
         [TestCase(-10, -10)]
         public void PutNextRectangle_ShouldThrow_SizeWithNegativeSides(int width, int height)
         {
-            Assert.Throws<ArgumentException>(() => layouter.PutNextRectangle(new Size(width, height)));
+            Action action = () => layouter.PutNextRectangle(new Size(width, height));
+            action.Should().Throw<ArgumentException>();
         }
 
         [Test]

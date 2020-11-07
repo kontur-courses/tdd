@@ -15,14 +15,13 @@ namespace CloudTag
             spiral = new Spiral(center);
         }
 
-        public CircularCloudLayouter(int centerX, int centerY) : this(new Point(centerX, centerY))
-        {
-        }
-
-        public Rectangle PutNextRectangle(Size rectangleSize)
+       public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Height < 0 || rectangleSize.Width < 0)
-                throw new ArgumentException();
+                throw new ArgumentException($"{(rectangleSize.Height < 0 ? rectangleSize.Height : rectangleSize.Width)} cant be negative");
+
+            if (rectangleSize.Height == 0 || rectangleSize.Width == 0)
+                return Rectangle.Empty;
 
             var rectangleToAdd = new Rectangle {Size = rectangleSize};
 

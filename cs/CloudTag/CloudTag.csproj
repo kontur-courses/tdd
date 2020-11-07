@@ -55,7 +55,7 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="CloudPainter.cs" />
+        <Compile Include="RectanglePainter.cs" />
         <Compile Include="CircularCloudLayouter.cs" />
         <Compile Include="RectangleExtensions.cs" />
         <Compile Include="Spiral.cs" />
