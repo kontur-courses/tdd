@@ -19,7 +19,7 @@ namespace TagsCloudVisualization
             var pen = new Pen(Color.MediumVioletRed, 4);
 
             var bitmap = new Bitmap(imageSize.Width + (int)pen.Width,
-                imageSize.Width + (int)pen.Width);
+                imageSize.Height + (int)pen.Width);
             using var graphics = Graphics.FromImage(bitmap);
 
             if (Rectangles.Count != 0)

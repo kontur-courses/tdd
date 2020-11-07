@@ -9,13 +9,15 @@ namespace TagsCloudVisualizationTests
     public class BitmapSaverTests
     {
         private BitmapSaver Sut { get; set; }
+        private Bitmap ImageBitmap { get; set; }
 
         [SetUp]
         public void SetUp()
         {
             const int height = 10;
             const int width = 10;
-            Sut = new BitmapSaver(new Bitmap(width, height));
+            ImageBitmap = new Bitmap(width, height);
+            Sut = new BitmapSaver();
         }
 
         [TestCase(@"<html></html>", TestName = "Directory dont exist")]
@@ -24,7 +26,7 @@ namespace TagsCloudVisualizationTests
         [TestCase(@"C:\image.", TestName = "Doesnt have filename extension")]
         public void SaveBitmapToDirectory_ThrowException_When(string path)
         {
-            Action saveImage = () => Sut.SaveBitmapToDirectory(path);
+            Action saveImage = () => BitmapSaver.SaveBitmapToDirectory(ImageBitmap, path);
 
             saveImage.Should().Throw<ArgumentException>();
         }
@@ -33,7 +35,7 @@ namespace TagsCloudVisualizationTests
         [TestCase(@"..\image.jpg", TestName = "Absolute path")]
         public void SaveBitmapToDirectory_DoesntThrowException_When(string path)
         {
-            Action saveImage = () => Sut.SaveBitmapToDirectory(path);
+            Action saveImage = () => BitmapSaver.SaveBitmapToDirectory(ImageBitmap, path);
 
             saveImage.Should().NotThrow<ArgumentException>();
         }

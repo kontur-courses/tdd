@@ -5,16 +5,17 @@ namespace TagsCloudVisualization
     public class PathGenerator
     {
         private string Root { get; }
+        private IDateTimeProvider DateTimeProvider { get; }
 
-        public PathGenerator()
+        public PathGenerator(IDateTimeProvider dateTimeProvider)
         {
             Root = Directory.GetCurrentDirectory();
+            DateTimeProvider = dateTimeProvider;
         }
 
         public string GetNewFilePath()
         {
-            var dateTimeProvider = new DateTimeProvider();
-            var dateTime = dateTimeProvider.GetDateTimeNow();
+            var dateTime = DateTimeProvider.GetDateTimeNow();
             return $"{Root}\\{dateTime:MMddyy-HHmmssffffff}.jpg";
         }
     }

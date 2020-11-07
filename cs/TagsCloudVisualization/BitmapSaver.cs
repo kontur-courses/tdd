@@ -8,23 +8,16 @@ namespace TagsCloudVisualization
 {
     public class BitmapSaver
     {
-        private Bitmap ImageBitmap { get; }
-
-        public BitmapSaver(Bitmap imageBitmap)
-        {
-            ImageBitmap = imageBitmap;
-        }
-
-        public void SaveBitmapToDirectory(string savePath)
+        public static void SaveBitmapToDirectory(Bitmap imageBitmap, string savePath)
         {
             if (!PathInRightFormat(savePath))
             {
                 throw new ArgumentException("wrong path format");
             }
 
-            using (ImageBitmap)
+            using (imageBitmap)
             {
-                ImageBitmap.Save(savePath, ImageFormat.Jpeg);
+                imageBitmap.Save(savePath, ImageFormat.Jpeg);
             }
         }
 

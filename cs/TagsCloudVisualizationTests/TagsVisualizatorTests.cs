@@ -18,9 +18,8 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
-        public void SaveVisualizationToDirectory_GetImageSizeThrowException_WhenRectangleOutOfBoundaries()
+        public void GetBitmap_GetImageSizeThrowException_WhenRectangleOutOfBoundaries()
         {
-            var path = new PathGenerator().GetNewFilePath();
             var rectangles = new List<Rectangle>();
             var location = new Point(-100, -100);
             var size = new Size(50, 50);

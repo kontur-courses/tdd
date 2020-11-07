@@ -27,15 +27,6 @@ namespace TagsCloudVisualizationTests
             Sut.GetNextPoint().Should().Be(Center);
         }
 
-        [Test]
-        public void GetNextPoint_ReturnDifferentPoints_OnMultipleRequest()
-        {
-            var firstPoint = Sut.GetNextPoint();
-            var secondPoint = Sut.GetNextPoint();
-
-            secondPoint.Should().NotBe(firstPoint);
-        }
-
         [TestCase(-1, 0, 1, -1, TestName = "angleDelta is negative")]
         [TestCase(-1, 0, 1, 0, TestName = "angleDelta is zero")]
         [TestCase(-1, 0, 1, 1, TestName = "center X coordinate is negative")]

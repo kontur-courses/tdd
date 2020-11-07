@@ -12,7 +12,7 @@ namespace TagsCloudVisualizationTests
         [SetUp]
         public void SetUp()
         {
-            Sut = new PathGenerator();
+            Sut = new PathGenerator(new DateTimeProvider());
         }
 
         [Test]

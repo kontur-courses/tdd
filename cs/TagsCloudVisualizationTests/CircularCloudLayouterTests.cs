@@ -26,10 +26,9 @@ namespace TagsCloudVisualizationTests
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                var path = new PathGenerator().GetNewFilePath();
+                var path = new PathGenerator(new DateTimeProvider()).GetNewFilePath();
                 var visualizator = new TagsVisualizator(Sut.Rectangles);
-                var bitmapSaver = new BitmapSaver(visualizator.GetBitmap());
-                bitmapSaver.SaveBitmapToDirectory(path);
+                BitmapSaver.SaveBitmapToDirectory(visualizator.GetBitmap(), path);
 
                 Console.WriteLine($"Tag cloud visualization saved to file {path}");
             }

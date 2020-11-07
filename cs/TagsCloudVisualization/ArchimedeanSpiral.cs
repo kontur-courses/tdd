@@ -6,7 +6,6 @@ namespace TagsCloudVisualization
     public class ArchimedeanSpiral
     {
         private Point Center { get; }
-        private Point CurrentPoint { get; set; }
         private double DistanceBetweenLoops { get; }
         private double Angle { get; set; }
         private double AngleDelta { get; }
@@ -17,7 +16,6 @@ namespace TagsCloudVisualization
             Center = center;
             AngleDelta = angleDelta;
             DistanceBetweenLoops = distanceBetweenLoops;
-            CurrentPoint = Center;
 
             ValidateSpiralParameters();
         }
@@ -40,23 +38,11 @@ namespace TagsCloudVisualization
 
         public Point GetNextPoint()
         {
-            if (Angle == 0)
-            {
-                Angle += AngleDelta;
-                return Center;
-            }
+            var x = Center.X + (int) (DistanceBetweenLoops * Angle * Math.Cos(Angle));
+            var y = Center.Y + (int) (DistanceBetweenLoops * Angle * Math.Sin(Angle));
+            Angle += AngleDelta;
 
-            var nextPoint = CurrentPoint;
-            while (CurrentPoint.Equals(nextPoint))
-            {
-                var x = Center.X + (int) (DistanceBetweenLoops * Angle * Math.Cos(Angle));
-                var y = Center.Y + (int) (DistanceBetweenLoops * Angle * Math.Sin(Angle));
-                Angle += AngleDelta;
-                nextPoint = new Point(x, y);
-            }
-
-            CurrentPoint = nextPoint;
-            return CurrentPoint;
+            return new Point(x, y);;
         }
     }
 }
