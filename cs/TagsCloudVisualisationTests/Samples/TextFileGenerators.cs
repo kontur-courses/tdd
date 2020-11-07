@@ -3,12 +3,13 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using TagsCloudVisualisation;
+using TagsCloudVisualisation.Layouter;
 using TagsCloudVisualisation.Visualisation.TextVisualisation;
 using TagsCloudVisualisationTests.Infrastructure;
 
 namespace TagsCloudVisualisationTests.Samples
 {
+    [Explicit]
     [SaveLayouterResults(TestStatus.Failed, TestStatus.Inconclusive, TestStatus.Passed, TestStatus.Warning)]
     public class TextFileGenerators : BaseSampleGenerator
     {

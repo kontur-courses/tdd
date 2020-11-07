@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace TagsCloudVisualisation
+namespace TagsCloudVisualisation.Layouter
 {
-    public partial class CircularCloudLayouter : ICircularCloudLayouter
+    public class CircularCloudLayouter : ICircularCloudLayouter
     {
         public CircularCloudLayouter(Point cloudCenter)
         {
@@ -15,49 +15,56 @@ namespace TagsCloudVisualisation
         public Point CloudCenter { get; }
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
 
-        private readonly ISet<CandidatePoint> points = new SortedSet<CandidatePoint>(Comparer<CandidatePoint>.Create(
-            (p1, p2) => p1.CloudCenterDistance.CompareTo(p2.CloudCenterDistance)));
+        private readonly ISet<CandidatePoint> points = new SortedSet<CandidatePoint>(CandidatePoint.ByDistanceComparer);
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangles.Count == 0)
                 return CreateAndRegisterRectangle(new Point(rectangleSize / -2) + (Size) CloudCenter, rectangleSize);
 
-            // Некрасивый код ниже является оптимизацией и дает хороший буст к скорости
-            var pointsToRemove = new List<CandidatePoint>();
-            Rectangle? result = null;
-            foreach (var point in points)
-            {
-                var minRectangle = PlaceRectangle(point, minRectangleSize);
-                result = PlaceRectangle(point, rectangleSize);
-                foreach (var existingRectangle in rectangles)
-                {
-                    if (IntersectsOrConnected(existingRectangle, minRectangle))
-                    {
-                        pointsToRemove.Add(point);
-                        result = null;
-                        break;
-                    }
-
-                    if (IntersectsOrConnected(existingRectangle, result.Value))
-                    {
-                        result = null;
-                        break;
-                    }
-                }
-
-                if (result.HasValue)
-                {
-                    pointsToRemove.Add(point);
-                    result = RegisterRectangle(result.Value);
-                    break;
-                }
-            }
-
+            var createdRectangle = PutRectangleAndGetOutdatedPoints(rectangleSize, out var pointsToRemove);
             foreach (var point in pointsToRemove)
                 points.Remove(point);
 
-            return result!.Value;
+            return RegisterRectangle(createdRectangle);
+        }
+
+        private Rectangle PutRectangleAndGetOutdatedPoints(Size rectangleSize, out IList<CandidatePoint> toRemove)
+        {
+            toRemove = new List<CandidatePoint>();
+            foreach (var point in points)
+            {
+                var isCreated = TryCreateRectangle(point, rectangleSize, out var createdRectangle,
+                    out var intersectsWithMinRect);
+
+                if (isCreated || intersectsWithMinRect)
+                    toRemove.Add(point);
+
+                if (isCreated)
+                    return createdRectangle;
+            }
+
+            throw new InvalidOperationException($"Can't find point to place rectangle {rectangleSize}");
+        }
+
+        private bool TryCreateRectangle(CandidatePoint location, Size nextRectangleSize, out Rectangle result,
+            out bool intersectsWithMinRectangle)
+        {
+            var minSizedRectangle = PlaceRectangle(location, minRectangleSize);
+            result = PlaceRectangle(location, nextRectangleSize);
+            intersectsWithMinRectangle = false;
+
+            foreach (var existingRectangle in rectangles)
+            {
+                intersectsWithMinRectangle = IntersectsOrConnected(minSizedRectangle, existingRectangle);
+                if (intersectsWithMinRectangle || IntersectsOrConnected(result, existingRectangle))
+                {
+                    result = default;
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private Rectangle CreateAndRegisterRectangle(Point position, Size size)

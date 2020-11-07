@@ -4,8 +4,8 @@ using System.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
-using TagsCloudVisualisation;
 using TagsCloudVisualisation.Extensions;
+using TagsCloudVisualisation.Layouter;
 using TagsCloudVisualisation.Visualisation;
 using TagsCloudVisualisationTests.Infrastructure;
 

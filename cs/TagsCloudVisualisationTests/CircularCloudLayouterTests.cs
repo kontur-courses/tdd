@@ -1,8 +1,8 @@
 ﻿using System.Drawing;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using TagsCloudVisualisation;
 using TagsCloudVisualisation.Extensions;
+using TagsCloudVisualisation.Layouter;
 using TagsCloudVisualisation.Visualisation;
 using TagsCloudVisualisationTests.Infrastructure;
 
