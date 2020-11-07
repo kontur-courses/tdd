@@ -100,7 +100,7 @@ namespace CloudTagTests
 
         [Timeout(1000)]
         [Test]
-        public void PutNextRectangle_PerformanceTest_5000RectSameSize()
+        public void PutNextRectangle_PerformanceTest_2500RectSameSize()
         {
             var size = new Size(10, 10);
             for (var i = 0; i < 2500; i++)
