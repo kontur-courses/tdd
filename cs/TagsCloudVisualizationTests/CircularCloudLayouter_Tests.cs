@@ -5,12 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using TagsCloudVisualization_Should;
-
-namespace TagsCloudVisualization
+using TagsCloudVisualization;
+namespace TagsCloudVisualizationTests
 {
     [TestFixture]
-    public class CircularCloudLayouter_Should
+    public class CircularCloudLayouter_Tests
     {
         private Point center = new Point(400, 400);
         private CircularCloudLayouterTestWrapper layouter;
@@ -96,11 +95,11 @@ namespace TagsCloudVisualization
                 var fileName = $"{context.WorkDirectory}\\{context.Test.Name}.png";
                 var rectangles = layouter.Rectangles;
                 TestContext.WriteLine($"Tag cloud visualization saved to file {fileName}");
-                SaveImage(rectangles, center, new Size(500, 500), fileName);
+                DrawRectangles(rectangles, center, new Size(500, 500), fileName);
             }
         }
 
-        private void SaveImage(List<Rectangle> rectangles, Point center, Size imageSize, string fileName)
+        private void DrawRectangles(List<Rectangle> rectangles, Point center, Size imageSize, string fileName)
         {
             var image = new Bitmap(imageSize.Width, imageSize.Height);
             var graphics = Graphics.FromImage(image);

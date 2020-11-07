@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Text;
 using TagsCloudVisualization;
 
-namespace TagsCloudVisualization_Should
+namespace TagsCloudVisualizationTests
 {
     class CircularCloudLayouterTestWrapper
     {
