@@ -13,14 +13,12 @@ namespace TagsCloudVisualizationTests
     {
         private Point Center { get; set; }
         private CircularCloudLayouter Sut { get; set; }
-        private TagsVisualizator Visualizator { get; set; }
 
         [SetUp]
         public void SetUp()
         {
-            Center = new Point(0, 0);
+            Center = new Point(300, 300);
             Sut = new CircularCloudLayouter(Center);
-            Visualizator = new TagsVisualizator();
         }
 
         [TearDown]
@@ -28,8 +26,10 @@ namespace TagsCloudVisualizationTests
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                var path = Visualizator.GenerateNewFilePath();
-                Visualizator.SaveVisualization(Sut.Rectangles, path);
+                var path = new PathGenerator().GetNewFilePath();
+                var visualizator = new TagsVisualizator(Sut.Rectangles);
+
+                visualizator.SaveVisualizationToDirectory(path);
                 Console.WriteLine($"Tag cloud visualization saved to file {path}");
             }
         }

@@ -10,13 +10,13 @@ namespace TagsCloudVisualization
         private Point Center { get; }
         private ArchimedeanSpiral ArchimedeanSpiral { get; }
         public List<Rectangle> Rectangles { get; }
-        private double DistanceBetweenLoops { get; }
 
         public CircularCloudLayouter(Point center)
         {
-            DistanceBetweenLoops = 0.2;
+            const double distanceBetweenLoops = 0.2;
+            const double angleDelta = 1;
             Center = center;
-            ArchimedeanSpiral = new ArchimedeanSpiral(Center, DistanceBetweenLoops);
+            ArchimedeanSpiral = new ArchimedeanSpiral(Center, distanceBetweenLoops, angleDelta);
             Rectangles = new List<Rectangle>();
         }
 
@@ -32,14 +32,14 @@ namespace TagsCloudVisualization
 
         private Rectangle GetNewRectangle(Size rectangleSize)
         {
-            var location = ArchimedeanSpiral.GetNextPoint();
-            var rectangle = new Rectangle(location, rectangleSize);
+            Rectangle rectangle;
 
-            while (Collided(rectangle))
+            do
             {
-                location = ArchimedeanSpiral.GetNextPoint();
+                var location = ArchimedeanSpiral.GetNextPoint();
                 rectangle = new Rectangle(location, rectangleSize);
             }
+            while (Collided(rectangle));
 
             rectangle = MoveCloserToCenter(rectangle);
             Rectangles.Add(rectangle);

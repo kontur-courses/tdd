@@ -3,62 +3,73 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace TagsCloudVisualization
 {
     public class TagsVisualizator
     {
-        private string Root { get; }
-        private int RightBorder { get; set; }
-        private int BottomBorder { get; set; }
+        private List<Rectangle> Rectangles { get; }
 
-        public TagsVisualizator()
+        public TagsVisualizator(List<Rectangle> rectangles)
         {
-            Root = new DirectoryInfo("..\\..\\..\\Sampels").FullName;
-            RightBorder = 0;
-            BottomBorder = 0;
+            Rectangles = rectangles;
         }
 
-        public void SaveVisualization(List<Rectangle> rectangles, string savePath)
+        public void SaveVisualizationToDirectory(string savePath)
         {
-            rectangles.ForEach(UpdateImageBorders);
-
-            var pen = new Pen(Color.MediumVioletRed, 4);
-            using var bitmap = new Bitmap(RightBorder + (int)pen.Width, BottomBorder + (int)pen.Width);
-
-            var graphics = Graphics.FromImage(bitmap);
-            graphics.DrawRectangles(pen, rectangles.ToArray());
-
-            if (!Directory.Exists(savePath))
+            if (!PathInRightFormat(savePath))
             {
-                throw new ArgumentException("directory doesn't exist");
+                throw new ArgumentException("wrong path format");
+            }
+
+            var imageSize = GetImageSize();
+            var pen = new Pen(Color.MediumVioletRed, 4);
+
+            using var bitmap = new Bitmap(imageSize.Width + (int)pen.Width,
+                imageSize.Width + (int)pen.Width);
+            using var graphics = Graphics.FromImage(bitmap);
+
+            if (Rectangles.Count != 0)
+            {
+                graphics.DrawRectangles(pen, Rectangles.ToArray());
             }
 
             bitmap.Save(savePath, ImageFormat.Jpeg);
         }
 
-        private void UpdateImageBorders(Rectangle rectangle)
+        private bool PathInRightFormat(string path)
         {
-            if (rectangle.Left < 0 || rectangle.Top < 0)
-            {
-                throw new ArgumentException("rectangle out of image boundaries");
-            }
+            var pattern = @"((?:[^\\]*\\)*)(.*[.].+)";
+            var match = Regex.Match(path, pattern);
+            var directoryPath = match.Groups[1].ToString();
 
-            if (RightBorder < rectangle.Right)
-            {
-                RightBorder = rectangle.Right;
-            }
-
-            if (BottomBorder < rectangle.Bottom)
-            {
-                BottomBorder = rectangle.Bottom;
-            }
+            return Directory.Exists(directoryPath) && match.Groups[2].Success;
         }
 
-        public string GenerateNewFilePath()
+        private Size GetImageSize()
         {
-            var dateTime = DateTime.Now;
-            return $"{Root}\\{dateTime:MMddyy-HHmmssffffff}.jpg";
+            var width = 0;
+            var height = 0;
+
+            foreach (var rectangle in Rectangles)
+            {
+                if (rectangle.Left < 0 || rectangle.Top < 0)
+                {
+                    throw new ArgumentException("rectangle out of image boundaries");
+                }
+
+                if (width < rectangle.Right)
+                {
+                    width = rectangle.Right;
+                }
+                if (height < rectangle.Bottom)
+                {
+                    height = rectangle.Bottom;
+                }
+            }
+
+            return new Size(width, height);
         }
     }
 }

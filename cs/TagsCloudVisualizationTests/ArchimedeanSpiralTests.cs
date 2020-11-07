@@ -15,7 +15,10 @@ namespace TagsCloudVisualizationTests
         public void SetUp()
         {
             Center = new Point(500, 500);
-            Sut = new ArchimedeanSpiral(Center, 2);
+            const double distanceBetweenLoops = 1;
+            const double angleDelta = 1;
+
+            Sut = new ArchimedeanSpiral(Center, distanceBetweenLoops, angleDelta);
         }
 
         [Test]
@@ -33,17 +36,17 @@ namespace TagsCloudVisualizationTests
             secondPoint.Should().NotBe(firstPoint);
         }
 
-        [Test]
-        public void GetNextPoint_ReturnPoint_WhenCalled()
+        [TestCase(-1, 0, 1, -1, TestName = "angleDelta is negative")]
+        [TestCase(-1, 0, 1, 0, TestName = "angleDelta is zero")]
+        [TestCase(-1, 0, 1, 1, TestName = "center X coordinate is negative")]
+        [TestCase(0, -1, 1, 1, TestName = "center Y coordinate is negative")]
+        [TestCase(0, 0, 0, 1, TestName = "distanceBetweenLoops is zero")]
+        [TestCase(0, 0, -1, 1, TestName = "distanceBetweenLoops is negative")]
+        public void ThrowException_When(
+            int centerX, int centerY, double distanceBetweenLoops, double angleDelta)
         {
-            Sut.GetNextPoint().Should().BeOfType(typeof(Point));
-        }
-
-        [TestCase(0 ,TestName = "distanceBetweenLoops is zero")]
-        [TestCase(-1 ,TestName = "distanceBetweenLoops is negative")]
-        public void ThrowException_When(double distanceBetweenLoops)
-        {
-            Func<ArchimedeanSpiral> sut  = () => new ArchimedeanSpiral(Center, distanceBetweenLoops);
+            var center = new Point(centerX, centerY);
+            Func<ArchimedeanSpiral> sut  = () => new ArchimedeanSpiral(center, distanceBetweenLoops, angleDelta);
 
             sut.Should().Throw<ArgumentException>();
         }

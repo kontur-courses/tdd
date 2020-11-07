@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization;
@@ -15,40 +14,42 @@ namespace TagsCloudVisualizationTests
         [SetUp]
         public void SetUp()
         {
-            Sut = new TagsVisualizator();
+            Sut = new TagsVisualizator(new List<Rectangle>());
         }
 
         [Test]
-        public void SaveVisualization_UpdateImageBordersThrowException_WhenRectangleOutOfBoundaries()
+        public void SaveVisualizationToDirectory_GetImageSizeThrowException_WhenRectangleOutOfBoundaries()
         {
-            var path = Sut.GenerateNewFilePath();
+            var path = new PathGenerator().GetNewFilePath();
             var rectangles = new List<Rectangle>();
             var location = new Point(-100, -100);
             var size = new Size(50, 50);
             rectangles.Add(new Rectangle(location, size));
+            Sut = new TagsVisualizator(rectangles);
 
-            Action saveImage = () => Sut.SaveVisualization(rectangles, path);
-
-            saveImage.Should().Throw<ArgumentException>();
-        }
-
-        [TestCase(@"C:\image.gif", TestName = "Wrong image format")]
-        [TestCase(@"S:Nonexistent\Dir\image.jpg", TestName = "Directory dont exist")]
-        public void TagsVisualizator_ThrowException_When(string path)
-        {
-            Action saveImage = () => Sut.SaveVisualization(new List<Rectangle>(), path);
+            Action saveImage = () => Sut.SaveVisualizationToDirectory(path);
 
             saveImage.Should().Throw<ArgumentException>();
         }
 
-        [Test]
-        public void GenerateNewFilePath_ReturnExistingDirectory_WhenCalled()
+        [TestCase(@"<html></html>", TestName = "Directory dont exist")]
+        [TestCase(@"C:/Dir/image.jpg", TestName = "Not backslash separator")]
+        [TestCase(@"C:\image jpg", TestName = "Doesnt have dot separator")]
+        [TestCase(@"C:\image.", TestName = "Doesnt have filename extension")]
+        public void SaveVisualizationToDirectory_ThrowException_When(string path)
         {
-            var path = Sut.GenerateNewFilePath().Split('\\');
-            path[^1] = "";
-            var directoryPath = String.Join('\\', path);
+            Action saveImage = () => Sut.SaveVisualizationToDirectory(path);
 
-            Directory.Exists(directoryPath).Should().BeTrue();
+            saveImage.Should().Throw<ArgumentException>();
+        }
+
+        [TestCase(@"C:\image.jpg", TestName = "Relative path")]
+        [TestCase(@"..\image.jpg", TestName = "Absolute path")]
+        public void SaveVisualizationToDirectory_DoesntThrowException_When(string path)
+        {
+            Action saveImage = () => Sut.SaveVisualizationToDirectory(path);
+
+            saveImage.Should().NotThrow<ArgumentException>();
         }
     }
 }
