@@ -13,16 +13,16 @@ namespace CloudTag
     {
         private CircularCloudLayouter layouter;
         private readonly Point layouterCenter = new Point(0, 0);
-        private string failTestsImgsPath;
+        private string failTestsImagesPath;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            failTestsImgsPath = Path.Combine(Environment.CurrentDirectory, "Failures Tests Layouts");
-            if (!Directory.Exists(failTestsImgsPath))
-                Directory.CreateDirectory(failTestsImgsPath);
+            failTestsImagesPath = Path.Combine(Environment.CurrentDirectory, "Failures Tests Layouts");
+            if (!Directory.Exists(failTestsImagesPath))
+                Directory.CreateDirectory(failTestsImagesPath);
 
-            foreach (var filePath in Directory.GetFiles(failTestsImgsPath))
+            foreach (var filePath in Directory.GetFiles(failTestsImagesPath))
                 File.Delete(filePath);
         }
         
@@ -42,7 +42,7 @@ namespace CloudTag
             if (TestContext.CurrentContext.Test.MethodName != TestContext.CurrentContext.Test.Name)
                 name += $" {TestContext.CurrentContext.Test.Name}";
 
-            var fullPath = Path.Combine(failTestsImgsPath, $"{name}.png");
+            var fullPath = Path.Combine(failTestsImagesPath, $"{name}.png");
             CloudPainter.DrawAndSaveToFile(Color.Red, layouter.GetRectangles(), fullPath);
             
             TestContext.Out.WriteLine($"Tag cloud visualization saved to file {fullPath}");
@@ -73,9 +73,7 @@ namespace CloudTag
         public void PutNextRectangle_ShouldNotIntersect_RectSameSize(int rectCount)
         {
             var size = new Size(10, 10);
-            var rectangles = Enumerable.Range(0, rectCount)
-                .Select(i => layouter.PutNextRectangle(size))
-                .ToArray();
+            var rectangles = Enumerable.Range(0, rectCount).Select(i => layouter.PutNextRectangle(size)).ToArray();
 
             for (var i = 0; i < rectCount; i++)
             for (var j = i + 1; j < rectCount; j++)
@@ -87,6 +85,7 @@ namespace CloudTag
         public void PutNextRectangle_ReturnEmptyRect_SizeIsZero()
         {
             var actualRect = layouter.PutNextRectangle(new Size(0, 0));
+            
             actualRect.Should().Be(Rectangle.Empty);
         }
 
@@ -96,17 +95,6 @@ namespace CloudTag
         public void PutNextRectangle_ShouldThrow_SizeWithNegativeSides(int width, int height)
         {
             Assert.Throws<ArgumentException>(() => layouter.PutNextRectangle(new Size(width, height)));
-        }
-
-        [TestCase(1)]
-        [TestCase(20)]
-        public void GetRectangles_ReturnEmptyCollection_AddedRectsWithZeroSize(int rectCount)
-        {
-            var size = new Size(0, 0);
-            for (var i = 0; i < rectCount; i++)
-                layouter.PutNextRectangle(size);
-
-            layouter.GetRectangles().Should().BeEmpty();
         }
 
         [Test]
@@ -124,7 +112,7 @@ namespace CloudTag
         public void PutNextRectangle_PerformanceTest_5000RectSameSize()
         {
             var size = new Size(10, 10);
-            for (var i = 0; i < 5000; i++)
+            for (var i = 0; i < 2500; i++)
                 layouter.PutNextRectangle(size);
         }
 
@@ -133,14 +121,14 @@ namespace CloudTag
         [TestCase(50)]
         public void PutNextRectangle_LayoutShouldBeTight_RectsDifferentSize(int rectCount)
         {
-            for (var i = 0; i < rectCount; i++)
-                layouter.PutNextRectangle(new Size((i * 15 + 25) % 90 + 30, (i * 10 + 20) % 60 + 20));
-
-            var maxDistanceToCenter = layouter.GetRectangles().Max(rectangle =>
+            var rectangles = Enumerable.Range(0, rectCount).Select(i =>
+                layouter.PutNextRectangle(new Size((i * 15 + 25) % 90 + 30, (i * 10 + 20) % 60 + 20))).ToArray();
+            
+            var maxDistanceToCenter = rectangles.Max(rectangle =>
                 Math.Sqrt(Math.Pow(rectangle.Location.X, 2) +
                           Math.Pow(rectangle.Location.Y, 2)));
 
-            var commonArea = layouter.GetRectangles().Sum(rectangle => rectangle.Height * rectangle.Width);
+            var commonArea = rectangles.Sum(rectangle => rectangle.Height * rectangle.Width);
             var borderCircleArea = maxDistanceToCenter * maxDistanceToCenter * Math.PI;
 
             borderCircleArea.Should().BeLessThan(3 * commonArea);
@@ -151,13 +139,13 @@ namespace CloudTag
         [TestCase(50)]
         public void PutNextRectangle_LayoutShouldBeRoundShape_RectsDifferentSize(int rectCount)
         {
-            for (var i = 0; i < rectCount; i++)
-                layouter.PutNextRectangle(new Size((i * 15 + 25) % 90 + 30, (i * 5 + 20) % 60 + 20));
+            var rectangles = Enumerable.Range(0, rectCount).Select(i =>
+                layouter.PutNextRectangle(new Size((i * 15 + 25) % 90 + 30, (i * 5 + 20) % 60 + 20))).ToArray();
 
-            var commonArea = layouter.GetRectangles().Sum(rectangle => rectangle.Height * rectangle.Width);
+            var commonArea = rectangles.Sum(rectangle => rectangle.Height * rectangle.Width);
             var suggestedCircleRadius = Math.Sqrt(commonArea / Math.PI);
 
-            foreach (var rectangle in layouter.GetRectangles())
+            foreach (var rectangle in rectangles)
             {
                 var distanceToCenter = Math.Sqrt(Math.Pow(rectangle.Location.X, 2) +
                                                  Math.Pow(rectangle.Location.Y, 2));
