@@ -8,23 +8,23 @@ namespace TagsCloudVisualization
 {
     class CircularCloudLayouter
     {
-        private readonly Point _center;
-        private List<Rectangle> rectangles;
+        public Point Center { get; }
+        public List<Rectangle> Rectangles { get; }
         private int cloudRadius;
 
         public CircularCloudLayouter(Point center)
         {
             if (center.X < 0 || center.Y < 0)
-                throw new ArgumentException();
-            _center = center;
-            rectangles = new List<Rectangle>();
+                throw new ArgumentException($"Invalid coordinates of center = ({center.X}, {center.Y})");
+            Center = center;
+            Rectangles = new List<Rectangle>();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
-                throw new ArgumentException();
-            var spiral = new Spiral(cloudRadius, _center);
+                throw new ArgumentException($"Invalid rectangleSize = ({rectangleSize.Width}, {rectangleSize.Height})");
+            var spiral = new Spiral(cloudRadius, Center);
             while (true)
             {
                 var currentCoordinate = spiral.GetCurrentPosition(rectangleSize);
@@ -32,67 +32,57 @@ namespace TagsCloudVisualization
 
                 if (!CheckIntersections(currentRectangle))
                 {
-                    currentRectangle = ShiftRectangleToCenter(currentRectangle);
-                    cloudRadius = Math.Max(currentRectangle.Right - _center.X, cloudRadius);
-                    rectangles.Add(currentRectangle);
-                    break;
+                    ShiftRectangleToCenter(ref currentRectangle);
+                    cloudRadius = Math.Max(currentRectangle.Right - Center.X, cloudRadius);
+                    Rectangles.Add(currentRectangle);
+                    return currentRectangle;
                 }
                 spiral.TakeStep();
             }
-
-            return rectangles.Last();
         }
 
-        private Rectangle ShiftRectangleToCenter(Rectangle rectangle)
+        private void ShiftRectangleToCenter(ref Rectangle rectangle, int step = 1)
         {
-            var step = 1;
-            var availablePosition = rectangle.Location;
+            var previousPosition = rectangle.Location;
             while (true)
             {
-                var newPosition = new Point(availablePosition.X, availablePosition.Y);
-                ShiftHorizontal(rectangle, ref availablePosition, ref newPosition, step);
-                ShiftVertical(rectangle, ref availablePosition, ref newPosition, step);
-
-                if (availablePosition == newPosition)
+                ShiftHorizontal(ref rectangle, previousPosition.X, step);
+                ShiftVertical(ref rectangle, previousPosition.Y, step);
+                if (previousPosition == rectangle.Location)
                     break;
-                availablePosition = newPosition;
-            }
-            return new Rectangle(availablePosition, rectangle.Size);
-        }
-
-        private void ShiftVertical(Rectangle rectangle, ref Point availablePosition, ref Point newPosition, int step)
-        {
-            if (Math.Abs(availablePosition.Y - _center.Y + rectangle.Height / 2) > 1)
-            {
-                newPosition.Y = availablePosition.Y >= _center.Y - rectangle.Height / 2
-                    ? availablePosition.Y - step
-                    : availablePosition.Y + step;
-                if (CheckIntersections(new Rectangle(newPosition, rectangle.Size)))
-                    newPosition.Y = availablePosition.Y;
+                previousPosition = rectangle.Location;
             }
         }
 
-        private void ShiftHorizontal(Rectangle rectangle, ref Point availablePosition, ref Point newPosition, int step)
+        private void ShiftVertical(ref Rectangle rectangle, int availablePositionY, int step)
         {
-            if (Math.Abs(availablePosition.X - _center.X + rectangle.Width / 2) > 1)
+            if (Math.Abs(availablePositionY - Center.Y + rectangle.Height / 2) > 1)
             {
-                newPosition.X = availablePosition.X >= _center.X - rectangle.Width / 2
-                    ? availablePosition.X - step
-                    : availablePosition.X + step;
-                if (CheckIntersections(new Rectangle(newPosition, rectangle.Size)))
-                    newPosition.X = availablePosition.X;
+                step = availablePositionY >= Center.Y - rectangle.Height / 2 ? -step : step;
+                rectangle.Offset(0, step);
+                if (CheckIntersections(rectangle))
+                    rectangle.Offset(0, -step);
+            }
+        }
+
+        private void ShiftHorizontal(ref Rectangle rectangle, int availablePositionX, int step)
+        {
+            if (Math.Abs(availablePositionX - Center.X + rectangle.Width / 2) > 1)
+            {
+                step = availablePositionX >= Center.X - rectangle.Width / 2 ? -step : step;
+                rectangle.Offset(step, 0);
+                if (CheckIntersections(rectangle))
+                    rectangle.Offset(-step, 0);
             }
         }
 
         private bool CheckIntersections(Rectangle rectangle)
         { 
-            foreach (var otherRectangle in rectangles)
+            foreach (var otherRectangle in Rectangles)
                 if (rectangle.IntersectsWith(otherRectangle))
                     return true; 
 
             return false;
         }
-
-        public List<Rectangle> GetRectangles() => rectangles;
     }
 }

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
@@ -12,16 +8,18 @@ namespace TagsCloudVisualization
         private double _radius;
         private double _angle;
         private readonly double _radiusStep;
-        private readonly double _angleStep;
+        private const double AngleStep = 0.1;
         private Point _center;
+        private const int StartRadiusDelay = 10;
+        private const double RadiusStepCoefficient = 0.06;
+        private const int ScaleDivider = 50;
+
 
         public Spiral(double cloudRadius, Point center)
         {
             _center = center;
-            _radius = Math.Max(cloudRadius - 10, 0);
-            _angle = 0d;
-            _radiusStep = 0.06 * center.X / 50;
-            _angleStep = 0.1;
+            _radius = Math.Max(cloudRadius - StartRadiusDelay, 0);
+            _radiusStep = RadiusStepCoefficient * center.X / ScaleDivider;
         }
 
         public Point GetCurrentPosition(Size rectangleSize)
@@ -34,7 +32,7 @@ namespace TagsCloudVisualization
         public void TakeStep()
         {
             _radius += _radiusStep;
-            _angle += _angleStep;
+            _angle += AngleStep;
         }
     }
 }

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
@@ -14,7 +12,7 @@ namespace TagsCloudVisualization
         {
             var circularCloudLayouter = new CircularCloudLayouter(new Point(500, 500));
             for (var i = 0; i < 1000; i++)
-                circularCloudLayouter.PutNextRectangle(new Size(15, 10));
+                circularCloudLayouter.PutNextRectangle(new Size(20, 3));
             Console.WriteLine("Cloud Filled");
             DrawAndSaveCloudImage(circularCloudLayouter, "Cloud2");
             Console.WriteLine("Image Generated");
@@ -23,22 +21,22 @@ namespace TagsCloudVisualization
 
         private static void DrawAndSaveCloudImage(CircularCloudLayouter circularCloudLayouter, string name)
         {
-            Bitmap bitmap = new Bitmap(1000, 1000);
+            var imageSize = circularCloudLayouter.Center.X * 2;
+            Bitmap bitmap = new Bitmap(imageSize, imageSize);
             var graphics = Graphics.FromImage(bitmap);
-            var rectangles = circularCloudLayouter.GetRectangles();
-            foreach (var rectangle in rectangles)
+            foreach (var rectangle in circularCloudLayouter.Rectangles)
             {
                 var rnd = new Random(rectangle.Left * rectangle.Right - rectangle.Bottom);
                 graphics.FillRectangle(new SolidBrush(
                     Color.FromArgb(rnd.Next(0, 255), rnd.Next(0, 255), rnd.Next(0, 255))), rectangle);
             }
 
-            bitmap.Save($"{Environment.CurrentDirectory}\\{name}.png");
+            bitmap.Save($"{Environment.CurrentDirectory}\\{name}.png", ImageFormat.Png);
         }
 
         private static void ConsoleVisualization(CircularCloudLayouter circularCloudLayouter)
         {
-            var coords = circularCloudLayouter.GetRectangles()
+            var coords = circularCloudLayouter.Rectangles
                 .SelectMany(rect =>
                 {
                     var points = new List<Point>();

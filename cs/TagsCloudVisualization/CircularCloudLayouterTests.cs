@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
@@ -21,31 +19,6 @@ namespace TagsCloudVisualization
         {
             _center = new Point(200, 200);
             _circularCloudLayouter = new CircularCloudLayouter(_center);
-        }
-
-        [TearDown]
-        public void SaveImage()
-        {
-            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
-            {
-                var testName = TestContext.CurrentContext.Test.Name;
-                DrawImage(_circularCloudLayouter,
-                    $"{Environment.CurrentDirectory}\\failedTests\\{testName}.png");
-                TestContext.Error.WriteLine($"Tag cloud visualization saved to file \"failedTests\\{testName}\"");
-            }
-        }
-
-        private static void DrawImage(CircularCloudLayouter circularCloudLayouter, string path)
-        {
-            Bitmap bitmap = new Bitmap(400, 400);
-            var graphics = Graphics.FromImage(bitmap);
-            var rectangles = circularCloudLayouter.GetRectangles();
-            foreach (var rectangle in rectangles)
-            {
-                graphics.DrawRectangle(new Pen(Color.Red), rectangle);
-            }
-
-            bitmap.Save(path);
         }
 
         [TestCase(-10, 10)]
@@ -71,18 +44,18 @@ namespace TagsCloudVisualization
 
         [TestCase(4, 4)]
         [TestCase(7, 5)]
-        public void PutNextRectangle_PlaceFirstRectangleInCenter(int width, int height)
+        public void PutNextRectangle_PlacesFirstRectangleInCenter(int width, int height)
         {
             _circularCloudLayouter.PutNextRectangle(new Size(width, height));
-            _circularCloudLayouter.GetRectangles()[0].Location.Should()
+            _circularCloudLayouter.Rectangles[0].Location.Should()
                 .Be(new Point(_center.X - width / 2, _center.Y - height / 2));
         }
 
 
         [Test]
-        public void CircularCloudLayouter_DoesNotContainsAnyRectangles_AfterCreating()
+        public void CircularCloudLayouter_DoesNotContainAnyRectangles_AfterCreating()
         {
-            _circularCloudLayouter.GetRectangles().Should().BeEmpty();
+            _circularCloudLayouter.Rectangles.Should().BeEmpty();
         }
 
         [Test]
@@ -90,22 +63,22 @@ namespace TagsCloudVisualization
         {
             for (var i = 0; i < 10; i++)
                 _circularCloudLayouter.PutNextRectangle(new Size(10, 10));
-            _circularCloudLayouter.GetRectangles().Should().HaveCount(10);
+            _circularCloudLayouter.Rectangles.Should().HaveCount(10);
         }
 
-        [Test, Timeout(100)]
+        [Test, Timeout(1000)]
         public void PutNextRectangle_HasSufficientPerformance()
         {
             for (var i = 0; i < 1000; i++)
                 _circularCloudLayouter.PutNextRectangle(new Size(10, 10));
-            _circularCloudLayouter.GetRectangles().Should().HaveCount(1000);
+            _circularCloudLayouter.Rectangles.Should().HaveCount(1000);
         }
 
         [Test]
         public void CircularCloudLayouter_ContainsCorrectRectangle_AfterAdding()
         {
             _circularCloudLayouter.PutNextRectangle(new Size(10, 10));
-            _circularCloudLayouter.GetRectangles()[0].Size.Should().Be(new Size(10, 10));
+            _circularCloudLayouter.Rectangles[0].Size.Should().Be(new Size(10, 10));
         }
 
         [Test]
@@ -114,7 +87,7 @@ namespace TagsCloudVisualization
             for (var i = 0; i < 10; i++)
                 _circularCloudLayouter.PutNextRectangle(new Size(5, 2));
 
-            var rectangles = _circularCloudLayouter.GetRectangles();
+            var rectangles = _circularCloudLayouter.Rectangles;
             for (var j = 0; j < 9; j++)
                 for (var i = j + 1; i < 10; i++)
                 {
@@ -129,7 +102,7 @@ namespace TagsCloudVisualization
             for (var i = 0; i < 20; i++)
                 _circularCloudLayouter.PutNextRectangle(new Size(width, height));
 
-            var rectangles = _circularCloudLayouter.GetRectangles();
+            var rectangles = _circularCloudLayouter.Rectangles;
             var leftRadius = rectangles.Select(r => Math.Abs(r.Left)).Max();
             var rightRadius = rectangles.Select(r => Math.Abs(r.Right)).Max();
             var topRadius = rectangles.Select(r => Math.Abs(r.Left)).Max();
@@ -137,6 +110,31 @@ namespace TagsCloudVisualization
 
             leftRadius.Should().BeCloseTo(rightRadius, (uint)rightRadius / 10);
             topRadius.Should().BeCloseTo(bottomRadius, (uint)bottomRadius / 10);
+        }
+
+        [TearDown]
+        public void SaveImage()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+            {
+                var testName = TestContext.CurrentContext.Test.Name;
+                DrawImage(_circularCloudLayouter,
+                    $"{Environment.CurrentDirectory}\\failedTests\\{testName}.png");
+                TestContext.Error.WriteLine($"Tag cloud visualization saved to file \"failedTests\\{testName}\"");
+            }
+        }
+
+        private static void DrawImage(CircularCloudLayouter circularCloudLayouter, string path)
+        {
+            var imageSize = circularCloudLayouter.Center.X * 2;
+            Bitmap bitmap = new Bitmap(imageSize, imageSize);
+            var graphics = Graphics.FromImage(bitmap);
+            foreach (var rectangle in circularCloudLayouter.Rectangles)
+            {
+                graphics.DrawRectangle(new Pen(Color.Red), rectangle);
+            }
+
+            bitmap.Save(path, ImageFormat.Png);
         }
     }
 }
