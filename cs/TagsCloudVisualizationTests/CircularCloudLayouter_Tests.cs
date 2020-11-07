@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTests
 {
@@ -40,7 +41,8 @@ namespace TagsCloudVisualizationTests
             var secondRect = layouter.PutNextRectangle(new Size(70, 50));
             var firstRectCenterY = firstRect.Y + firstRect.Height / 2;
             var secondRectCenterY = secondRect.Y + secondRect.Height / 2;
-            Math.Abs(firstRectCenterY - secondRectCenterY).Should().Be((firstRect.Height + secondRect.Height) / 2);
+            Math.Abs(firstRectCenterY - secondRectCenterY)
+                .Should().Be((firstRect.Height + secondRect.Height) / 2, "because secondhorizontal rectangle should be above or below first");
         }
 
         [Test]
@@ -52,36 +54,23 @@ namespace TagsCloudVisualizationTests
             layouter.PutNextRectangle(new Size(50, 50));
 
             var rectangle = layouter.PutNextRectangle(new Size(50, 50));
-            var distanceToCenter = CalculateDistance(center, CalculateCenterPosition(rectangle));
+            var distanceToCenter = 
+                CircularCloudLayouter.CalculateDistance(center, CircularCloudLayouter.CalculateCenterPosition(rectangle));
             distanceToCenter.Should().Be(50, "because last closest position is near the central rectangle");
         }
 
         [Test]
         public void Image_ShouldBeLikeACircle()
         {
-            var bigRectSize = new Size(50, 50);
-            var smallRectSize = new Size(20, 20);
-            layouter.PutNextRectangle(bigRectSize);
-            layouter.PutNextRectangle(bigRectSize);
-            layouter.PutNextRectangle(bigRectSize);
-            layouter.PutNextRectangle(bigRectSize);
-            layouter.PutNextRectangle(bigRectSize);
-
-            var rectangles = new List<Rectangle>
-            {
-                layouter.PutNextRectangle(smallRectSize),
-                layouter.PutNextRectangle(smallRectSize),
-                layouter.PutNextRectangle(smallRectSize),
-                layouter.PutNextRectangle(smallRectSize)
-            };
-            var rectangleToCheck = new Rectangle(
-                center.X - bigRectSize.Width / 2 - 1,
-                center.Y - bigRectSize.Height / 2 - 1,
-                bigRectSize.Width + 2,
-                bigRectSize.Height + 2);
-            rectangles.All(
-                rect => rect.IntersectsWith(rectangleToCheck)
-            ).Should().BeTrue("because there is enough plase on the image to set rectangles inside");
+            var squareSize = new Size(30, 30);
+            for (var i = 0;
+                i < 5 * (5 * 3) + 2 * (2 * 13 + 11 + 9 + 5); // ровно столько квадратиков создают красивый круг
+                i++)
+                layouter.PutNextRectangle(squareSize);
+            layouter.Rectangles
+                .Select(rectangle => 
+                    CircularCloudLayouter.CalculateDistance(center, CircularCloudLayouter.CalculateCenterPosition(rectangle)))
+                .Should().BeInAscendingOrder();
         }
 
         [TearDown]
@@ -106,16 +95,6 @@ namespace TagsCloudVisualizationTests
             graphics.DrawRectangles(new Pen(Color.Aqua, 2), rectangles.ToArray());
             graphics.FillEllipse(Brushes.Green, new Rectangle(center - new Size(2, 2), new Size(4, 4)));
             image.Save(fileName);
-        }
-
-        private Point CalculateCenterPosition(Rectangle rectangle)
-        {
-            return rectangle.Location + rectangle.Size / 2;
-        }
-
-        private double CalculateDistance(Point point1, Point point2)
-        {
-            return Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y, 2));
         }
     }
 }

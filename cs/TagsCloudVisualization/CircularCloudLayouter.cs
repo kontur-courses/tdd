@@ -67,13 +67,23 @@ namespace TagsCloudVisualization
             return AddNewRectangle(rectangleSize);
         }
 
+        public static Point CalculateCenterPosition(Rectangle rectangle)
+        {
+            return rectangle.Location + rectangle.Size / 2;
+        }
+
+        public static double CalculateDistance(Point point1, Point point2)
+        {
+            return Math.Sqrt(Math.Pow(point1.X - point2.X, 2) + Math.Pow(point1.Y - point2.Y, 2));
+        }
+
         private Rectangle AddNewRectangle(Size rectangleSize)
         {
             var resultTuple = angles
                 .Select(angle => (rectangle: directionToRectangle[angle.Direction](angle.Pos, rectangleSize), angle))
-                .Where(rectangle => !rectangles.Any(anotherRectangle => anotherRectangle.IntersectsWith(rectangle.Item1)))
-                .OrderBy(rect => 
-                    Math.Sqrt(Math.Pow(rect.rectangle.X + rect.rectangle.Width / 2 - center.X, 2) + Math.Pow(rect.rectangle.Y + rect.rectangle.Height / 2 - center.Y, 2)))
+                .Where(tuple => !rectangles.Any(anotherRectangle => anotherRectangle.IntersectsWith(tuple.Item1)))
+                .OrderBy(tuple => 
+                    CalculateDistance(center, CalculateCenterPosition(tuple.rectangle)))
                 .First();
             rectangles.Add(resultTuple.rectangle);
             angles.Remove(resultTuple.angle);
