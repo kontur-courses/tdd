@@ -1,5 +1,5 @@
 # Примеры работы 
 
-![pic1](https://downloader.disk.yandex.ru/preview/2375eba2ef1c428bdcf1576d2e607c76e69462e4926b402eb7ed3e11bcb22abf/5fa5e4d5/GFbcyNGxuDxJ5mAvs-vfj_n5cg1vAlrK-vqWnM9G_fqHofAWe4rv5BiwE1YNbaO6N6w4JTT9yvSoNDOq-JSJEg==?uid=0&filename=pic1.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&tknv=v2&owner_uid=446973669&size=2048x2048 "Пример 1")
-![pic2](https://downloader.disk.yandex.ru/preview/7e44133e12ebe48f33e4e1f501a302ebb36c26564599ac38155122f772406162/5fa5e70e/hxIHya2ZCGtlFPn9E7VllVbQf0mN4tUnNpejBcdQYfDWFcXRcxZbpvAV23KUtJNGrHh3yjY_yIHod9tgDHLZeA==?uid=0&filename=pic2.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&tknv=v2&owner_uid=446973669&size=2048x2048 "Пример 2")
-![pic3](https://downloader.disk.yandex.ru/preview/a5e3843e39aaf643ed0e6d27c777f98231c46c7c2b21cffc2918dcbb9c549eed/5fa5e72e/zKEv9JAg41ZPlcX26Vk-XVbQf0mN4tUnNpejBcdQYfA8YW8ADd5nqX0WnTU-k4p-HYZ1mgpugeqbzBkETf3G7Q==?uid=0&filename=pic3.png&disposition=inline&hash=&limit=0&content_type=image%2Fpng&tknv=v2&owner_uid=446973669&size=2048x2048 "Пример 3")
+![pic1](https://github.com/TerribleVoice/tdd/blob/master/cs/CloudTag/Example%20Images/pic1.png "Пример 1")
+![pic2](https://github.com/TerribleVoice/tdd/blob/master/cs/CloudTag/Example%20Images/pic2.png "Пример 2")
+![pic3](https://github.com/TerribleVoice/tdd/blob/master/cs/CloudTag/Example%20Images/pic3.png "Пример 3")
