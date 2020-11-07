@@ -44,11 +44,11 @@ namespace TagsCloudVisualization
             {
                 foreach (var direction in directions)
                 {
-                    var offset = GetOffset(rectangleSize, rectangle, direction);
+                    var offset = LayouterTools.GetOffset(rectangleSize, rectangle, direction);
                     var location = new Point(rectangle.X + offset.X, rectangle.Y + offset.Y);
                     var currentRectangleCenter = new Point(location.X + rectangleSize.Width / 2,
                         location.Y + rectangleSize.Height / 2);
-                    var distance = CalculateDistance(currentRectangleCenter, Center);
+                    var distance = LayouterTools.CalculateDistance(currentRectangleCenter, Center);
                     var currentRectangle = new Rectangle {Size = rectangleSize, Location = location};
 
                     if (!(distance < bestDistance) || IntersectWithOtherRectangles(currentRectangle)) continue;
@@ -65,21 +65,6 @@ namespace TagsCloudVisualization
             return Rectangles.Any(previous => previous.IntersectsWith(rectangle));
         }
 
-        private Point GetOffset(Size rectangleSize, Rectangle previous, Direction direction)
-        {
-            return direction switch
-            {
-                Direction.Top => new Point(0, previous.Height),
-                Direction.Right => new Point(previous.Width, previous.Height - rectangleSize.Height),
-                Direction.Bottom => new Point(previous.Width - rectangleSize.Width, -rectangleSize.Height),
-                Direction.Left => new Point(-rectangleSize.Width, 0),
-                _ => throw new ArgumentOutOfRangeException()
-            };
-        }
-
-        private double CalculateDistance(Point point1, Point point2)
-        {
-            return Math.Sqrt(Math.Pow(point2.X - point1.X, 2) + Math.Pow(point2.Y - point1.Y, 2));
-        }
+        
     }
 }
