@@ -29,9 +29,9 @@ namespace TagsCloudVisualization.View
                 Directory.CreateDirectory(dirPath);
 
             var filePath = Path.Combine(dirPath, filename);
-            var bitmap = GetFilledBitmap();
-            bitmap.Save(filePath, ImageFormat.Png);
-            bitmap.Dispose();
+
+            using (var bitmap = GetFilledBitmap())
+                bitmap.Save(filePath, ImageFormat.Png);
 
             Console.WriteLine($"Cloud saved to path: {filePath}");
         }
@@ -40,13 +40,18 @@ namespace TagsCloudVisualization.View
         {
             var layoutSize = layouter.GetLayoutSize();
             var bitmap = new Bitmap(layoutSize.Width, layoutSize.Height);
-            var graphics = Graphics.FromImage(bitmap);
 
-            graphics.FillRectangle(layoutBrush,
-                new Rectangle(0, 0, layoutSize.Width, layoutSize.Height));
+            using (var graphics = Graphics.FromImage(bitmap))
+            {
+                graphics.FillRectangle(layoutBrush,
+                    new Rectangle(0, 0, layoutSize.Width, layoutSize.Height));
 
-            foreach (var rectangle in layouter.Rectangles)
-                graphics.DrawRectangle(rectanglePen, rectangle);
+                foreach (var rectangle in layouter.Rectangles)
+                    graphics.DrawRectangle(rectanglePen, rectangle);
+
+                layoutBrush.Dispose();
+                rectanglePen.Dispose();
+            }
 
             return bitmap;
         }

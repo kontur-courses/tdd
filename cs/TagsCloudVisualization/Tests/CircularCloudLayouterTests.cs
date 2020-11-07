@@ -41,7 +41,7 @@ namespace TagsCloudVisualization.Tests
             int rectsCount)
         {
             PutRectangles(rectsCount);
-            layouter.Rectangles.ToList().Count.Should().Be(rectsCount);
+            layouter.Rectangles.Count().Should().Be(rectsCount);
         }
 
         [Test]
@@ -58,8 +58,7 @@ namespace TagsCloudVisualization.Tests
             int rectsCount)
         {
             PutRectangles(rectsCount, 11, 22);
-            HaveAnyIntersections(
-                    layouter.Rectangles.ToList()).Should().BeFalse();
+            HaveAnyIntersections(layouter.Rectangles).Should().BeFalse();
         }
 
         [TestCase(20, 5, 5, TestName = "FourRectangles")]
@@ -72,13 +71,10 @@ namespace TagsCloudVisualization.Tests
             PutRectangles(rectsCount, width, height);
 
             var expectedRadius = Math.Sqrt(layoutArea / Math.PI);
-            var deltaXFromCenter = (double)layouter.Rectangles
-                .Max(rectangle => rectangle.Right) - center.X;
-            var deltaYFromCenter = (double)layouter.Rectangles
-                .Max(rectangle => rectangle.Bottom) - center.Y;
+            var maxDelta = GetMaxDeltaFromCenter();
 
-            deltaXFromCenter.Should().BeLessThan(expectedRadius * 1.25);
-            deltaYFromCenter.Should().BeLessThan(expectedRadius * 1.25);
+            ((double)maxDelta.X).Should().BeLessThan(expectedRadius * 1.25);
+            ((double)maxDelta.Y).Should().BeLessThan(expectedRadius * 1.25);
         }
 
         [TestCase(4, TestName = "FourRectangles")]
@@ -122,7 +118,7 @@ namespace TagsCloudVisualization.Tests
             Console.WriteLine($"Tag cloud visualization saved to file {filePath}");
         }
 
-        private static bool HaveAnyIntersections(List<Rectangle> rects)
+        private static bool HaveAnyIntersections(IEnumerable<Rectangle> rects)
         {
             var intersectedRectsCount = rects
                 .Select((item, index) => rects
@@ -136,6 +132,24 @@ namespace TagsCloudVisualization.Tests
         {
             for (int i = 0; i < amountToPlace; i++)
                 layouter.PutNextRectangle(new Size(width, height));
+        }
+
+        private Point GetMaxDeltaFromCenter()
+        {
+            var deltaXToRight = layouter.Rectangles
+                .Max(rectangle => rectangle.Right - center.X);
+            var deltaXToLeft = layouter.Rectangles
+                .Max(rectangle => center.X - rectangle.Left);
+
+            var deltaYToBottom = layouter.Rectangles
+                .Max(rectangle => rectangle.Bottom - center.Y);
+            var deltaYToUp = layouter.Rectangles
+                .Max(rectangle => center.Y - rectangle.Top);
+
+            var maxDeltaX = Math.Max(deltaXToLeft, deltaXToRight);
+            var maxDeltaY = Math.Max(deltaYToBottom, deltaYToUp);
+
+            return new Point(maxDeltaX, maxDeltaY);
         }
     }
 }
