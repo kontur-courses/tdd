@@ -19,7 +19,8 @@ namespace TagsCloudVisualisationTests.Samples
 
         public void AddResource(FileInfo resourceFile)
         {
-            var relativePath = Path.GetRelativePath(readmeFile.Directory!.FullName, resourceFile.FullName);
+            var relativePath = Path.GetRelativePath(readmeFile.Directory!.FullName, resourceFile.FullName)
+                .Replace('\\', '/');
 
             stringBuilder.AppendLine(MarkdownElements.H2(resourceFile.FileNameOnly()));
             stringBuilder.AppendLine(MarkdownElements.Image(relativePath));
