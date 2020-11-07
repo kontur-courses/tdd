@@ -12,12 +12,11 @@ namespace CloudTagTests
     public class CircularCloudLayouterTests
     {
         private CircularCloudLayouter layouter;
-        private string failTestsImagesPath;
+        private readonly string failTestsImagesPath = Path.Combine(Environment.CurrentDirectory, "Failures Tests Layouts");
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            failTestsImagesPath = Path.Combine(Environment.CurrentDirectory, "Failures Tests Layouts");
             if (!Directory.Exists(failTestsImagesPath))
                 Directory.CreateDirectory(failTestsImagesPath);
 
