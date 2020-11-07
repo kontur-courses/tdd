@@ -23,7 +23,7 @@ namespace TagsCloudVisualization
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                var path = Environment.CurrentDirectory;
+                var path = AppDomain.CurrentDomain.BaseDirectory;
                 var imageName = $"Failed {TestContext.CurrentContext.Test.Name}";
                 layouter.CreateImage(path, imageName);
                 TestContext.WriteLine($"Snapshot saved to {path}");
@@ -65,6 +65,13 @@ namespace TagsCloudVisualization
             rects
                 .Should().OnlyContain(rect => 
                     rects.All(y => !y.IntersectsWith(rect) || y == rect));
+        }
+
+        [Test]
+        [Timeout(10000)]
+        public void BeEfficient_WithManyWords()
+        {
+            AddRectanglesToLayouter(1650, new Size(1, 1));
         }
 
         private List<Rectangle> AddRectanglesToLayouter(int amount, Size size)
