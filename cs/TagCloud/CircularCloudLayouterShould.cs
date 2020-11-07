@@ -81,7 +81,7 @@ namespace TagCloud
             if (TestContext.CurrentContext.Result.Outcome == ResultState.Failure)
             {
                 var vizualizator = new Vizualizator();
-                var path = vizualizator.Draw(rectangles, center);
+                var path = vizualizator.Draw(rectangles);
                 Console.WriteLine(TestContext.CurrentContext.Test.Name + " failed");
                 Console.WriteLine("Tag cloud visualization saved to file " + path);
                 
