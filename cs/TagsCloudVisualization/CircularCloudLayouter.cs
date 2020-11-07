@@ -5,21 +5,16 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter
+    public class CircularCloudLayouter : ICloudLayout
     {
-        public Point Center { get; }
-        public List<Rectangle> Rectangles { get; }
-        private readonly PointProvider point;
+        private List<Rectangle> Rectangles { get; }
+        private readonly IPointProvider pointProvider;
         
 
-        public CircularCloudLayouter(Point point)
+        public CircularCloudLayouter(Point point, IPointProvider provider)
         {
-            if (point.X < 0 || point.Y < 0)
-                throw new ArgumentException("X or Y of center was negative");
-
-            Center = point;
             Rectangles = new List<Rectangle>();
-            this.point = new PointProvider(Center);
+            pointProvider = provider;
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -27,28 +22,32 @@ namespace TagsCloudVisualization
             if (rectangleSize.Height < 0 || rectangleSize.Width < 0)
                 throw new ArgumentException("Width or height of rectangle was negative");
 
-            var rectangle = GetRectangle(rectangleSize, Rectangles);
+            var rectangle = GetRectangle(rectangleSize);
             Rectangles.Add(rectangle);
             
             return rectangle;
         }
 
-        private Rectangle GetRectangle(Size rectangleSize, List<Rectangle> rectangles)
+        private Rectangle GetRectangle(Size rectangleSize)
         {
             Rectangle rectangle;
             do
             {
-                rectangle = new Rectangle(point.GetPoint() 
-                                          - new Size(rectangleSize.Width / 2, rectangleSize.Height / 2), rectangleSize);
+                rectangle = new Rectangle(pointProvider.GetPoint(), rectangleSize);
 
-            } while (IsCollide(rectangles, rectangle));
+            } while (IsCollide(rectangle));
 
             return rectangle;
         }
 
-        private static bool IsCollide(List<Rectangle> rectangles, Rectangle rectangle)
+        private bool IsCollide(Rectangle rectangle)
         {
-            return rectangles.Where(rectangle.IntersectsWith).Any();
+            return Rectangles.Any(rectangle.IntersectsWith) || rectangle.X < 0 || rectangle.Y < 0;
+        }
+
+        public List<Rectangle> GetListRectangles()
+        {
+            return Rectangles;
         }
     }
 }

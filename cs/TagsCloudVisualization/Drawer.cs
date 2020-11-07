@@ -1,52 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
 
 namespace TagsCloudVisualization
 {
     public static class Drawer
     {       
-        public static void DrawImage(List<Rectangle> rectangles, Point center ,string fileName)
+        public static Bitmap DrawImage(List<Rectangle> rectangles, Point center)
         {
-            if(!fileName.All(char.IsLetter))
-                throw new ArgumentException("File name contains invalid characters");
+            CheckParameters(rectangles, center);
 
+            var image = new Bitmap( center.X + GetDeltaX(rectangles), center.Y + GetDeltaY(rectangles));
+            using var graphics = Graphics.FromImage(image);
+
+            graphics.DrawRectangles(new Pen(Color.Red), rectangles.ToArray());
+
+            return image;
+
+        }
+        
+        private static void CheckParameters(List<Rectangle> rectangles, Point center)
+        {
             if (center.X < 0 || center.Y < 0)
                 throw new ArgumentException("X or Y of center was negative");
 
             if (!rectangles.Any())
                 throw new ArgumentException("The sequence contains no elements");
-
-            var path = Directory.GetCurrentDirectory();
-
-            var deltaXAndY = GetDeltaXAndY(rectangles);
-
-            using var image = new Bitmap( center.X + deltaXAndY[0], center.Y + deltaXAndY[1]);
-            using var graphics = Graphics.FromImage(image);
-
-            graphics.DrawRectangles(new Pen(Color.Red), rectangles.ToArray());
-
-            image.Save($"{path}\\{fileName}.bmp", ImageFormat.Bmp);
         }
 
-        private static int[] GetDeltaXAndY(List<Rectangle> rectangles)
+        private static int GetDeltaX(List<Rectangle> rectangles)
         {
-            var maxX = -1; 
-            var maxY = -1;
+            var maxX = int.MinValue;
 
-            foreach (var elem in rectangles)
+            foreach (var elem in rectangles.Where(elem => elem.Right > maxX))
             {
-                if (elem.X > maxX)
-                    maxX = elem.X;
-                if (elem.Y > maxY)
-                    maxY = elem.Y;
+                maxX = elem.Right;
             }
 
-            return new[] {maxX, maxY};
+            return maxX;
         }
 
+        private static int GetDeltaY(List<Rectangle> rectangles)
+        {
+            var maxY = int.MinValue;
+
+            foreach (var elem in rectangles.Where(elem => elem.Bottom > maxY))
+            {
+                maxY = elem.Bottom;
+            }
+
+            return maxY;
+        }
     }
 }

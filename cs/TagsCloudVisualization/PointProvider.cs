@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public class PointProvider
+    public class PointProvider : IPointProvider
     {
         private double angle, radius;
         private const double SpiralParameter = 0.01;
