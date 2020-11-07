@@ -1,94 +1,85 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        // Идея такова
-        // При добавлении первого прямоугольника делю плоскость на 4 части: верхнюю, правую, нижнюю и левую
-        // Делю ее для удобства (ничего лучше не придумал)
-        // В каждой из частей пытаюсь размместить другие прямоугольники так, чтобы расстояние до центра было минимальным
-        // Для каждой плоскости получается 4 расстояния, и уже среди них беру лучшее и добавляю прямоугольник с
-        // получившимися координатами
-        // Долго думал над спиралью, но так и не надумал ничего((( Поэтому написал то, что написал
-        private readonly int rectangleMargin;
         public Point Center { get; }
-        private readonly List<PlanePart> parts;
+        public readonly List<Rectangle> Rectangles;
+        private readonly List<Direction> directions;
 
         public CircularCloudLayouter(Point center)
         {
             Center = center;
-            rectangleMargin = 2;
-            parts = new List<PlanePart>();
+            Rectangles = new List<Rectangle>();
+            directions = new List<Direction> {Direction.Top, Direction.Right, Direction.Bottom, Direction.Left};
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var rectangle = new Rectangle {Size = rectangleSize, Location = CalculateLocation(rectangleSize)};
+            var rectangle = GetRectangle(rectangleSize);
+            Rectangles.Add(rectangle);
             return rectangle;
         }
 
-        private Point CalculateLocation(Size rectangleSize)
+        private Rectangle GetRectangle(Size rectangleSize)
         {
             if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
                 throw new ArgumentException("Rectangle size should be positive.");
-            
-            if (parts.Count == 0)
-            {
-                var location = new Point(Center.X - rectangleSize.Width / 2, Center.Y - rectangleSize.Height / 2);
-                InitializePlaneParts(new Rectangle{Size = rectangleSize, Location = location});
-                return location;
-            }
+
+            if (Rectangles.Count == 0)
+                return new Rectangle
+                {
+                    Size = rectangleSize,
+                    Location = new Point(Center.X - rectangleSize.Width / 2, Center.Y - rectangleSize.Height / 2)
+                };
 
             var bestDistance = double.MaxValue;
-            var bestLocation = new Point();
-            var bestPartIndex = 0;
+            var bestRectangle = new Rectangle();
 
-            for (var i = 0; i < 4; i++)
+            foreach (var rectangle in Rectangles)
             {
-                var location = parts[i].GetBestLocation(rectangleSize);
-                var distance = CalculateDistance(location.X + rectangleSize.Width / 2.0,
-                    location.Y + rectangleSize.Height / 2.0, Center.X, Center.Y);
-
-                if (distance < bestDistance)
+                foreach (var direction in directions)
                 {
+                    var offset = GetOffset(rectangleSize, rectangle, direction);
+                    var location = new Point(rectangle.X + offset.X, rectangle.Y + offset.Y);
+                    var currentRectangleCenter = new Point(location.X + rectangleSize.Width / 2,
+                        location.Y + rectangleSize.Height / 2);
+                    var distance = CalculateDistance(currentRectangleCenter, Center);
+                    var currentRectangle = new Rectangle {Size = rectangleSize, Location = location};
+
+                    if (!(distance < bestDistance) || IntersectWithOtherRectangles(currentRectangle)) continue;
                     bestDistance = distance;
-                    bestLocation =location;
-                    bestPartIndex = i;
+                    bestRectangle = currentRectangle;
                 }
             }
 
-            parts[bestPartIndex].AddRectangle(new Rectangle{Size = rectangleSize, Location = bestLocation});
-
-            return bestLocation;
+            return bestRectangle;
         }
 
-        private void InitializePlaneParts(Rectangle central)
+        private bool IntersectWithOtherRectangles(Rectangle rectangle)
         {
-            InitializePlanePart(PartType.Top,
-                new Point(central.X - rectangleMargin, central.Y + central.Height + rectangleMargin));
-            InitializePlanePart(PartType.Right, new Point(central.X + central.Width + rectangleMargin,
-                central.Y + central.Height + rectangleMargin));
-            InitializePlanePart(PartType.Bottom, new Point(central.X + central.Width + rectangleMargin,
-                central.Y - rectangleMargin));
-            InitializePlanePart(PartType.Left, new Point(central.X - rectangleMargin,
-                central.Y - rectangleMargin));
+            return Rectangles.Any(previous => previous.IntersectsWith(rectangle));
         }
 
-        private void InitializePlanePart(PartType partType, Point rectangleLocation)
+        private Point GetOffset(Size rectangleSize, Rectangle previous, Direction direction)
         {
-            var part = new PlanePart(Center, partType, rectangleMargin);
-            // Т.к. вначале в каждой из частей плоскости нет прямоугольникв, но отталкиваться от чего-то нужно, добавляю
-            // в нее пустой прямоугольник
-            part.AddRectangle(new Rectangle{Size = new Size(0, 0), Location = rectangleLocation});
-            parts.Add(part);
+            return direction switch
+            {
+                Direction.Top => new Point(0, previous.Height),
+                Direction.Right => new Point(previous.Width, previous.Height - rectangleSize.Height),
+                Direction.Bottom => new Point(previous.Width - rectangleSize.Width, -rectangleSize.Height),
+                Direction.Left => new Point(-rectangleSize.Width, 0),
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
-        
-        public static double CalculateDistance(double x1, double y1, double x2, double y2)
+
+        private double CalculateDistance(Point point1, Point point2)
         {
-            return Math.Sqrt(Math.Pow(x2 - x1, 2) + Math.Pow(y2 - y1, 2));
+            return Math.Sqrt(Math.Pow(point2.X - point1.X, 2) + Math.Pow(point2.Y - point1.Y, 2));
         }
     }
 }

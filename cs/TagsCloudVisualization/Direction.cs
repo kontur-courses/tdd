@@ -1,6 +1,6 @@
 ﻿namespace TagsCloudVisualization
 {
-    public enum PartType
+    public enum Direction
     {
         Top,
         Right,
