@@ -21,7 +21,8 @@ namespace TagsCloudVisualization
             var placedRectangles =
                 rectanglesSizes.Select(x => layouter.PutNextRectangle(x)).ToList();
             var bitmap = CircularCloudDrawer.GetBitmap(placedRectangles, center);
-            BitmapSaver.Save(bitmap, "random.jpg");
+            var bitmapSaver = new BitmapSaver(bitmap, "pictures", "random.jpg");
+            bitmapSaver.Save();
         }
     }
 }

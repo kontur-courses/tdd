@@ -5,15 +5,23 @@ namespace TagsCloudVisualization
 {
     public class BitmapSaver
     {
-        private const string directoryToSave = "pictures";
+        private readonly Bitmap bitmap;
+        private readonly string directoryToSave;
+        private readonly string fileName;
 
-        public static void Save(Bitmap bitmap, string filename)
+        public BitmapSaver(Bitmap bitmap, string directoryToSave, string fileName)
         {
-            var projectDirectory = new DirectoryInfo(Directory.GetCurrentDirectory()).Parent.Parent.Parent;
-            bitmap.Save(Path.Combine(projectDirectory.FullName, directoryToSave, filename));
+            this.directoryToSave = directoryToSave;
+            this.fileName = fileName;
+            this.bitmap = bitmap;
         }
 
-        public static string GetRelativePath(string filename) =>
-            Path.Combine(directoryToSave, filename);
+        public string RelativePath =>
+            Path.Combine(directoryToSave, fileName);
+
+        public void Save()
+        {
+            bitmap.Save(Path.Combine("..", "..", "..", directoryToSave, fileName));
+        }
     }
 }

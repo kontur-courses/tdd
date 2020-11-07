@@ -26,9 +26,9 @@ namespace TagsCloudVisualization
             if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
             var bitmap = CircularCloudDrawer.GetBitmap(placedRectangles, center);
             var fileName = $"Test_{TestContext.CurrentContext.Test.Name}_failed.jpg";
-            BitmapSaver.Save(bitmap, fileName);
+            var bitmapSaver = new BitmapSaver(bitmap, "pictures", fileName);
             TestContext.WriteLine(
-                $"Tag cloud visualization saved to file {BitmapSaver.GetRelativePath(fileName)}");
+                $"Tag cloud visualization saved to file {bitmapSaver.RelativePath}");
         }
 
         private CircularCloudLayouter layouter;
