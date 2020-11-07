@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("TagsCloudVisualizationTests")]
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
@@ -24,13 +26,13 @@ namespace TagsCloudVisualization
         private readonly Dictionary<AngleDirection, Func<Point, Size, Rectangle>> directionToRectangle;
 
         private readonly Point center;
-        private readonly List<Rectangle> rectangles;
+        internal readonly List<Rectangle> Rectangles;
         private readonly List<Angle> angles;
 
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
-            rectangles = new List<Rectangle>();
+            Rectangles = new List<Rectangle>();
             angles = new List<Angle>();
             directionToRectangle = new Dictionary<AngleDirection, Func<Point, Size, Rectangle>>
             {
@@ -55,13 +57,13 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            if (rectangles.Count == 0)
+            if (Rectangles.Count == 0)
             {
                 var firstRectangle = new Rectangle(center.X - rectangleSize.Width / 2,
                     center.Y - rectangleSize.Height / 2,
                     rectangleSize.Width, rectangleSize.Height);
-                rectangles.Add(firstRectangle);
-                AddAngles(rectangles[0]);
+                Rectangles.Add(firstRectangle);
+                AddAngles(Rectangles[0]);
                 return firstRectangle;
             }
             return AddNewRectangle(rectangleSize);
@@ -81,11 +83,11 @@ namespace TagsCloudVisualization
         {
             var resultTuple = angles
                 .Select(angle => (rectangle: directionToRectangle[angle.Direction](angle.Pos, rectangleSize), angle))
-                .Where(tuple => !rectangles.Any(anotherRectangle => anotherRectangle.IntersectsWith(tuple.Item1)))
+                .Where(tuple => !Rectangles.Any(anotherRectangle => anotherRectangle.IntersectsWith(tuple.Item1)))
                 .OrderBy(tuple => 
                     CalculateDistance(center, CalculateCenterPosition(tuple.rectangle)))
                 .First();
-            rectangles.Add(resultTuple.rectangle);
+            Rectangles.Add(resultTuple.rectangle);
             angles.Remove(resultTuple.angle);
             AddAngles(resultTuple.rectangle);
             return resultTuple.rectangle;

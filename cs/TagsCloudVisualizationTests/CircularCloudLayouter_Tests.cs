@@ -13,12 +13,12 @@ namespace TagsCloudVisualizationTests
     public class CircularCloudLayouter_Tests
     {
         private Point center = new Point(400, 400);
-        private CircularCloudLayouterTestWrapper layouter;
+        private CircularCloudLayouter layouter;
 
         [SetUp]
         public void SetUp()
         {
-            layouter = new CircularCloudLayouterTestWrapper(center);
+            layouter = new CircularCloudLayouter(center);
         }
 
         [Test]
