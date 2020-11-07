@@ -80,14 +80,6 @@ namespace CloudTagTests
                     .BeFalse($"{rectangles[i]} should not intersect {rectangles[j]}");
         }
 
-        [Test]
-        public void PutNextRectangle_ReturnEmptyRect_SizeIsZero()
-        {
-            var actualRect = layouter.PutNextRectangle(new Size(0, 0));
-            
-            actualRect.Should().Be(Rectangle.Empty);
-        }
-
         [TestCase(-10, 10)]
         [TestCase(10, -10)]
         [TestCase(-10, -10)]
@@ -97,14 +89,13 @@ namespace CloudTagTests
             action.Should().Throw<ArgumentException>();
         }
 
-        [Test]
-        public void PutNextRectangle_ReturnsEmptyRect_OneOfSidesIs0()
+        [TestCase(0, 10)]
+        [TestCase(10, 0)]
+        [TestCase(0, 0)]
+        public void PutNextRectangle_ReturnsEmptyRect_OneOfSidesIs0(int width, int height)
         {
-            var actualRect1 = layouter.PutNextRectangle(new Size(0, 10));
-            var actualRect2 = layouter.PutNextRectangle(new Size(10, 0));
-
-            actualRect1.Should().Be(Rectangle.Empty);
-            actualRect2.Should().Be(Rectangle.Empty);
+            Action action = () => layouter.PutNextRectangle(new Size(width, height));
+            action.Should().Throw<ArgumentException>();
         }
 
         [Timeout(1000)]
