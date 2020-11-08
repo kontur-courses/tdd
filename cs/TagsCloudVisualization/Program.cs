@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Linq;
 using TagsCloudVisualization.PointsGenerators;
 using TagsCloudVisualization.TagCloud;
@@ -10,34 +9,42 @@ namespace TagsCloudVisualization
 {
     class Program
     {
+        private static int rectCount = 100;
+        private static int maxRectWidth = 80;
+        private static int maxRectHeight = 100;
+        
         private static void Main()
         {
-            var canvasSize = new Size(500, 500);
-            var centerPoint = new Point(canvasSize.Width / 2, canvasSize.Height / 2);
-            var pointGenerator = new ArchimedesSpiral(centerPoint, canvasSize);
-            
+            var pointGenerator = new ArchimedesSpiral(new Point(50, 50));
             var cloudLayouter = new CircularCloudLayouter(pointGenerator);
-            var rectanglesToAdd = GetSortedRectanglesToAdd(canvasSize);
+            var rectanglesToAdd = GetSortedRectanglesToAdd(rectCount, maxRectWidth, maxRectHeight);
 
-            foreach (var rectangleSize in rectanglesToAdd) 
+            foreach (var rectangleSize in rectanglesToAdd)
                 cloudLayouter.PutNextRectangle(rectangleSize);
 
-            TagCloudVisualizer.PrintTagCloud(cloudLayouter, ImageFormat.Png);
+            PrintTagCloud(cloudLayouter);
         }
-
-        private static IEnumerable<Size> GetSortedRectanglesToAdd(Size canvasSize)
+        
+        private static IEnumerable<Size> GetSortedRectanglesToAdd(int count, int maxWidth, int maxHeight)
         {
             var rand = new Random();
             var rectangleSizes = new List<Size>();
-            
-            for (var i = 0; i < 120; i++)
+
+            for (var i = 0; i < count; i++)
             {
-                var width = rand.Next(1, canvasSize.Width / 8);
-                var height = rand.Next(1, canvasSize.Height / 8);
+                var width = rand.Next(1, maxWidth);
+                var height = rand.Next(1, maxHeight);
                 rectangleSizes.Add(new Size(width, height));
             }
 
             return rectangleSizes.OrderByDescending(rect => rect.Width * rect.Height);
+        }
+        
+        private static void PrintTagCloud(ICloudLayouter cloudLayouter)
+        {
+            var addedRectangles = cloudLayouter.GetAddedRectangles().ToList();
+            TagCloudVisualizer.PrintTagCloud(addedRectangles, cloudLayouter.Center, 
+                maxRectWidth, maxRectHeight);
         }
     }
 }
