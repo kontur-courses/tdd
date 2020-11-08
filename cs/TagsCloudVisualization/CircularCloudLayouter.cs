@@ -61,15 +61,24 @@ namespace TagsCloudVisualization
         private Rectangle PlaceRectangle(Rectangle rect)
         {
             var orderedPoints = potentialPosingPoints.OrderBy(GetDistanceToCenter);
+            var isPlaced = false;
+
             foreach (var point in orderedPoints)
+            {
                 foreach (var location in GetLocationVariations(point, rect))
                 {
                     rect.Location = location;
-                    if (rectangles.All(x => !x.IntersectsWith(rect)))
-                        return rect;
+                    if (rectangles.Any(x => x.IntersectsWith(rect))) 
+                        continue;
+                    isPlaced = true;
+                    break;
                 }
 
-            throw new ArithmeticException("Unknown error");
+                if (isPlaced)
+                    break;
+            }
+
+            return rect;
         }
 
         private double GetDistanceToCenter(Point firstPoint)
