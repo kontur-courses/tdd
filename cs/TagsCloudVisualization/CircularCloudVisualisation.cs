@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 
@@ -6,32 +7,31 @@ namespace TagsCloudVisualization
 {
     public static class CircularCloudVisualisation
     {
-        public static void MakeImageTagsCircularCloud(this CircularCloudLayouter circularCloudLayouter,
+        public static void MakeImageTagsCircularCloud(List<Rectangle> rectangles, int cloudRadius,
             string pathToSave, ImageFormat imageFormat)
         {
-            var bitmap = new Bitmap(circularCloudLayouter.CloudRadius * 2, circularCloudLayouter.CloudRadius * 2);
-            if (circularCloudLayouter.GetRectangles.Count == 0)
+            if (rectangles.Count == 0)
                 throw new Exception("IsNotContainsRectanglesForDraw");
-            DrawCircularCloud(Graphics.FromImage(bitmap), circularCloudLayouter);
-            SaveBitmap(pathToSave, imageFormat, bitmap);
-            bitmap.Dispose();
-            //или через using
+            var imageSize = new Size(cloudRadius * 2, cloudRadius * 2);
+            using var bitmap =
+                new Bitmap(imageSize.Width, imageSize.Height);
+            DrawCircularCloud(bitmap, rectangles, imageSize);
+            bitmap.Save(pathToSave, imageFormat);
         }
 
-        private static void DrawCircularCloud(Graphics graphics, CircularCloudLayouter layouter)
+        private static void DrawCircularCloud(Bitmap bitmap, List<Rectangle> rectangles, Size imageSize)
         {
-            graphics.FillRectangle(Brushes.White, new Rectangle(new Point(0, 0),
-                new Size(layouter.CloudRadius * 2, layouter.CloudRadius * 2)));
-            foreach (var rectangle in layouter.GetRectangles)
+            using var graphics = Graphics.FromImage(bitmap);
+            graphics.Clear(Color.White);
+            foreach (var rectangle in rectangles)
             {
                 var brush = GetNewRandomBrush();
                 var currentLocation = rectangle.Location
-                                      + new Size(layouter.CloudRadius + 5, layouter.CloudRadius + 5);
+                                      + imageSize / 2;
                 graphics.FillRectangle(brush, new Rectangle(currentLocation, rectangle.Size));
             }
 
             graphics.Flush();
-            graphics.Dispose();
         }
 
         private static Brush GetNewRandomBrush()
@@ -39,20 +39,6 @@ namespace TagsCloudVisualization
             var random = new Random();
             return new SolidBrush(Color.FromArgb(random.Next(255),
                 random.Next(255), random.Next(255)));
-        }
-
-        private static void SaveBitmap(string path, ImageFormat imageFormat, Bitmap circularCloudBitmap)
-        {
-            try
-            {
-                circularCloudBitmap.Save(path, imageFormat);
-                Console.WriteLine("Image saved");
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.StackTrace);
-                Console.WriteLine("Failed to save the file");
-            }
         }
     }
 }

@@ -8,55 +8,44 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         private readonly List<Rectangle> _rectangles;
-        public readonly ISpiral Spiral;
+        private readonly ISpiral _spiral;
         public int CloudRadius { get; private set; }
 
         public CircularCloudLayouter(Point center)
         {
             _rectangles = new List<Rectangle>();
-            Spiral = new ArchimedeanSpiral(center);
+            _spiral = new ArchimedeanSpiral(center);
         }
 
         public Rectangle GetCurrentRectangle => _rectangles.Last();
 
-        public IReadOnlyList<Rectangle> GetRectangles => _rectangles;
+        public int RectanglesCount => _rectangles.Count;
 
-        public void PutNextRectangle(Size rectangleSize)
+        public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
                 throw new ArgumentException("Size width and height must be positive");
-            while (true)
-            {
-                var currentSpiralPosition = Spiral.GetNewSpiralPoint();
-                var rectangle = new Rectangle(currentSpiralPosition, rectangleSize);
-                if (IsAnyIntersectWithRectangles(rectangle, _rectangles)) continue;
-                _rectangles.Add(rectangle);
-                // if (_rectangles.Count>5)
-                //     _spiralAngle -= 360 * 0.017; - в таком случае прямоуголники будут раставляться немного плотнее
-                // если же применить команду _spiralAngle = 0; то добьемся максимальной плотности, но скажется скорости
-
-                UpdateCloudRadius(rectangle);
-                break;
-            }
+            var rectangle = new Rectangle(_spiral.GetNewSpiralPoint(), rectangleSize);
+            while (RectanglesIntersection.IsAnyIntersectWithRectangles(rectangle, _rectangles))
+                rectangle = new Rectangle(_spiral.GetNewSpiralPoint(), rectangleSize);
+            _rectangles.Add(rectangle);
+            UpdateCloudRadius(rectangle);
+            return rectangle;
         }
-
-        public static bool IsAnyIntersectWithRectangles(Rectangle rectangleToCheck, List<Rectangle> rectangles) =>
-            rectangles.Any(rec => rec.IntersectsWith(rectangleToCheck));
-
-        public static int GetCeilingDistanceBetweenPoints(Point first, Point second) =>
-            (int) Math.Ceiling(Math.Sqrt((first.X - second.X) * (first.X - second.X) +
-                                         (first.Y - second.Y) * (first.Y - second.Y)));
 
         private void UpdateCloudRadius(Rectangle currentRectangle)
         {
             var maxDistance = new[]
             {
-                GetCeilingDistanceBetweenPoints(currentRectangle.Location, Spiral.Center),
-                GetCeilingDistanceBetweenPoints(currentRectangle.Location + new Size(currentRectangle.Width, 0),
-                    Spiral.Center),
-                GetCeilingDistanceBetweenPoints(currentRectangle.Location + new Size(0, currentRectangle.Height),
-                    Spiral.Center),
-                GetCeilingDistanceBetweenPoints(currentRectangle.Location + currentRectangle.Size, Spiral.Center)
+                PointsDistance.GetCeilingDistanceBetweenPoints(currentRectangle.Location, _spiral.Center),
+                PointsDistance.GetCeilingDistanceBetweenPoints(
+                    currentRectangle.Location + new Size(currentRectangle.Width, 0),
+                    _spiral.Center),
+                PointsDistance.GetCeilingDistanceBetweenPoints(
+                    currentRectangle.Location + new Size(0, currentRectangle.Height),
+                    _spiral.Center),
+                PointsDistance.GetCeilingDistanceBetweenPoints(currentRectangle.Location + currentRectangle.Size,
+                    _spiral.Center)
             }.Max();
             if (maxDistance > CloudRadius)
                 CloudRadius = maxDistance;
