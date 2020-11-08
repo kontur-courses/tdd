@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 
 namespace HomeExerciseTDD
@@ -7,13 +6,15 @@ namespace HomeExerciseTDD
     public class Spiral
     {
         private Point center;
-        private const float step = 0.0005f;
-        private Point previousPoint;
-        private float previousAngle;
+        private readonly float step;
+        private Point? previousPoint;
+        private float angle;
 
-        public Spiral(Point center)
+        public Spiral(Point center, float step = 0.0005f, float angle = 0f)
         {
-            previousPoint = center;
+            this.step = step;
+            this.angle = angle;
+            previousPoint = null;
             this.center = center;
         }
 
@@ -21,26 +22,30 @@ namespace HomeExerciseTDD
         {
             while (true)
             {
-                if (previousPoint == center)
+                if (previousPoint == null)
                 {
-                    previousPoint = new Point(Size.Empty);
+                    previousPoint = center;
                     return center;
                 }
-                var angle = previousAngle;
+                
                 angle++;
-
-                var distance = angle * step;
-                var currentX = distance * (float) Math.Cos(angle) + center.X;
-                var currentY = distance * (float) Math.Sin(angle) + center.Y;
-
-                var currentPoint = new Point((int) currentX, (int) currentY);
-                previousAngle = angle;
+                var currentPoint = CalculateCurrentPoint();
+                
                 if (previousPoint.Equals(currentPoint))
                     continue;
                 
                 previousPoint = currentPoint;
                 return currentPoint;
             }
+        }
+
+        private Point CalculateCurrentPoint()
+        {
+            var distance = angle * step;
+            var currentX = distance * (float) Math.Cos(angle) + center.X;
+            var currentY = distance * (float) Math.Sin(angle) + center.Y;
+            
+            return new Point((int) currentX, (int) currentY);
         }
     }
 }
