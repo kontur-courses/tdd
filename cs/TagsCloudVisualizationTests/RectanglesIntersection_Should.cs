@@ -22,11 +22,10 @@ namespace TagsCloudVisualizationTests
             };
         }
 
-        [TestCase(-5, -4, 2, 3,
-            TestName = "When rectangle to check within rectangle")]
-        [TestCase(1, 2, 5, 7,
-            TestName = "When simple intersection")]
-        public void IsAnyIntersectWithRectangles_ExistIntersections(int coordinateX, int coordinateY, int width,
+        [TestCase(-5, -4, 2, 3)]
+        [TestCase(1, 2, 5, 7)]
+        public void IsAnyIntersectWithRectangles_ExistIntersections_WhenIntersectionAreaIsPositive(int coordinateX,
+            int coordinateY, int width,
             int height)
         {
             var rectangle = new Rectangle(new Point(coordinateX, coordinateY), new Size(width, height));
@@ -36,11 +35,10 @@ namespace TagsCloudVisualizationTests
             isIntersect.Should().BeTrue();
         }
 
-        [TestCase(5, 5, 3, 7,
-            TestName = "When exist common points")]
-        [TestCase(6, 6, 3, 7,
-            TestName = "When not exist common points")]
-        public void IsAnyIntersectWithRectangles_NotIntersections(int coordinateX, int coordinateY, int width,
+        [TestCase(5, 5, 3, 7)]
+        [TestCase(6, 6, 3, 7)]
+        public void IsAnyIntersectWithRectangles_NotIntersections_WhenIntersectionAreaIsZero(int coordinateX,
+            int coordinateY, int width,
             int height)
         {
             var rectangle = new Rectangle(new Point(coordinateX, coordinateY), new Size(width, height));

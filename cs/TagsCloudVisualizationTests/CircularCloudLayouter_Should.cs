@@ -35,11 +35,11 @@ namespace TagsCloudVisualizationTests
                 ImageFormat.Bmp);
         }
 
-        [TestCase(0, 1, TestName = "When zero width")]
-        [TestCase(1, 0, TestName = "When zero height")]
-        [TestCase(-1, 1, TestName = "When negative width")]
-        [TestCase(1, -1, TestName = "When negative height")]
-        public void PutNextRectangle_ThrowArgumentException(int width, int height)
+        [TestCase(0, 1)]
+        [TestCase(1, 0)]
+        [TestCase(-1, 1)]
+        [TestCase(1, -1)]
+        public void PutNextRectangle_ThrowArgumentException_WhenSizeParametersNotPositive(int width, int height)
         {
             var size = new Size(width, height);
 
@@ -48,8 +48,8 @@ namespace TagsCloudVisualizationTests
             act.Should().Throw<ArgumentException>();
         }
 
-        [TestCase(1, 1, TestName = "When simple positive size")]
-        public void PutNextRectangle_DoNotThrowArgumentException(int width, int height)
+        [TestCase(1, 1)]
+        public void PutNextRectangle_DoNotThrowArgumentException_WhenSimplePositiveSize(int width, int height)
         {
             var size = new Size(width, height);
 
@@ -58,10 +58,11 @@ namespace TagsCloudVisualizationTests
             act.Should().NotThrow<ArgumentException>();
         }
 
-        [TestCase(10, 5, TestName = "When rectangleWidth > height")]
-        [TestCase(3, 7, TestName = "When rectangleWidth < height")]
-        [TestCase(23, 23, TestName = "When rectangleWidth = height")]
-        public void PutNextRectangle_LocationIsEquivalentToSpiralCenterPosition(int widthRectangle, int heightRectangle)
+        [TestCase(10, 5)]
+        [TestCase(3, 7)]
+        [TestCase(23, 23)]
+        public void PutNextRectangle_LocationIsEquivalentToSpiralCenterPosition_WhenPutFirstRectangleAnySize(
+            int widthRectangle, int heightRectangle)
         {
             var size = new Size(widthRectangle, heightRectangle);
 
@@ -70,11 +71,11 @@ namespace TagsCloudVisualizationTests
             _sut.GetCurrentRectangle.Location.Should().Be(new Point(0, 0));
         }
 
-        [TestCase(10, TestName = "10 rectangles when put 10 rectangles")]
-        [TestCase(100, TestName = "100 rectangles when put 100 rectangles")]
-        [TestCase(10, TestName = "300 rectangles when put 300 rectangles")]
-        [TestCase(0, TestName = "Zero when don't put rectangles")]
-        public void PutNextRectangle_CountRectangles(int countRectangles)
+        [TestCase(10)]
+        [TestCase(100)]
+        [TestCase(10)]
+        [TestCase(0)]
+        public void PutNextRectangle_SameCountOfRectangles_WhenPutCertainCountOfRectangles(int countRectangles)
         {
             _rectangles.AddRange(_sut.MakeLayouter(countRectangles, 50,
                 70, 20, 40));
