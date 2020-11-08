@@ -120,7 +120,7 @@ namespace TagsCloudVisualization
                 new Point(rect.Location.X + rect.Width / 2, rect.Location.Y),
                 new Point(rect.Location.X, rect.Location.Y + rect.Height / 2),
                 new Point(rect.Location.X + rect.Width / 2, rect.Location.Y + rect.Height),
-                new Point(rect.Location.X, rect.Location.Y + rect.Height / 2)
+                new Point(rect.Location.X + rect.Width, rect.Location.Y + rect.Height / 2)
             };
         }
     }
