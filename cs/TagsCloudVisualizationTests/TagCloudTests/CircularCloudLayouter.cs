@@ -20,6 +20,21 @@ namespace TagsCloudVisualizationTests.TagCloudTests
             sut = new TagsCloudVisualization.TagCloud.CircularCloudLayouter(pointGenerator);
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.FailCount == 0)
+                return;
+            
+            var pathToDirectory = @"..\..\..\FailedTests\";
+            var fileName = TestContext.CurrentContext.Test.Name;
+            TagCloudVisualizer.PrintTagCloud(sut.GetAddedRectangles().ToList(),
+                sut.Center, 100, 100, 
+                pathToDirectory, fileName);
+            
+            Console.WriteLine($"Tag cloud visualization saved to file {pathToDirectory}{fileName}");
+        }
+        
         private ICloudLayouter sut;
         private IPointGenerator pointGenerator;
 
