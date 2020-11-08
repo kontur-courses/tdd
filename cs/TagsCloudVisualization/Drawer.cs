@@ -6,20 +6,19 @@ using System.Linq;
 namespace TagsCloudVisualization
 {
     public static class Drawer
-    {       
+    {
         public static Bitmap DrawImage(List<Rectangle> rectangles, Point center)
         {
             CheckParameters(rectangles, center);
 
-            var image = new Bitmap( center.X + GetDeltaX(rectangles), center.Y + GetDeltaY(rectangles));
+            var image = new Bitmap(center.X + GetDeltaX(rectangles), center.Y + GetDeltaY(rectangles));
             using var graphics = Graphics.FromImage(image);
 
             graphics.DrawRectangles(new Pen(Color.Red), rectangles.ToArray());
 
             return image;
-
         }
-        
+
         private static void CheckParameters(List<Rectangle> rectangles, Point center)
         {
             if (center.X < 0 || center.Y < 0)
@@ -31,26 +30,12 @@ namespace TagsCloudVisualization
 
         private static int GetDeltaX(List<Rectangle> rectangles)
         {
-            var maxX = int.MinValue;
-
-            foreach (var elem in rectangles.Where(elem => elem.Right > maxX))
-            {
-                maxX = elem.Right;
-            }
-
-            return maxX;
+            return rectangles.Select(elem => elem.Right).Prepend(int.MinValue).Max();
         }
 
         private static int GetDeltaY(List<Rectangle> rectangles)
         {
-            var maxY = int.MinValue;
-
-            foreach (var elem in rectangles.Where(elem => elem.Bottom > maxY))
-            {
-                maxY = elem.Bottom;
-            }
-
-            return maxY;
+            return rectangles.Select(elem => elem.Bottom).Prepend(int.MinValue).Max();
         }
     }
 }
