@@ -11,7 +11,7 @@ namespace TagsCloudVisualization
 
         public PointProvider(Point center)
         {
-            if(center.X < 0 || center.Y < 0)
+            if (center.X < 0 || center.Y < 0)
                 throw new ArgumentException("X or Y of center was negative");
 
             this.center = center;

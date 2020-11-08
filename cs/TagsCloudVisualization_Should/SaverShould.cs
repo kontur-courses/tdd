@@ -14,7 +14,7 @@ namespace TagsCloudVisualization_Should
         public void SaveImage_ThrowArgumentException_FileNameContainsInvalidCharacters(string fileName)
         {
             var bitmap = new Bitmap(1, 1);
-            var saver = new SaverToBmp();
+            var saver = new BmpSaver();
 
             Action act = () => saver.SaveImage(bitmap, fileName);
 
@@ -26,7 +26,7 @@ namespace TagsCloudVisualization_Should
         public void SaveImage_ImageExist_CorrectData()
         {
             var bitmap = new Bitmap(100, 100);
-            var saver = new SaverToBmp();
+            var saver = new BmpSaver();
             var fileName = "ImageExist";
             var path = Directory.GetCurrentDirectory();
 
