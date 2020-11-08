@@ -40,8 +40,8 @@ namespace TagsCloudVisualization
 
             public Spiral(Size firstRectangleSize)
             {
-                currentLine = new List<Rectangle> {new Rectangle(Point.Empty, firstRectangleSize)};
                 borders = new Rectangle(Point.Empty, firstRectangleSize);
+                currentLine = new List<Rectangle> {borders};
             }
 
             public Rectangle PutNextRectangle(Size size)
