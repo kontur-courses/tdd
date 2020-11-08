@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 
 
@@ -12,12 +13,12 @@ namespace HomeExerciseTDD
         private readonly List<Rectangle> rectanglesInCloud = new List<Rectangle>();
         private readonly Spiral spiral;
 
-
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
             spiral = new Spiral(this.center);
         }
+        
         private bool IsIntersect(Rectangle currentRectangle)
         {
             return rectanglesInCloud.Any(currentRectangle.IntersectsWith);
@@ -25,6 +26,8 @@ namespace HomeExerciseTDD
         
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
+            if(CheckSizeValidity(rectangleSize) == false)
+                throw new ArgumentException();
             while (true)
             {
                 var rectangleLocation = spiral.GetNextPoint();
@@ -35,6 +38,17 @@ namespace HomeExerciseTDD
                     return currentRectangle;
                 }
             }
+        }
+
+        public void DrawCircularCloud(int width, int height, string fileName, ImageFormat format)
+        {
+            var painter = new LayouterPainter(width, height, rectanglesInCloud,fileName,format);
+            painter.DrawFigures();
+        }
+
+        private bool CheckSizeValidity(Size size)
+        {
+            return size.Height > 0 && size.Width > 0;
         }
     }
 }
