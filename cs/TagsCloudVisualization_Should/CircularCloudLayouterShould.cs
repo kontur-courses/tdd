@@ -3,16 +3,20 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualization_Should
 {
     public class CircularCloudLayouterShould
     {
+        private List<Rectangle> actualRectangles;
+        private Point center;
+
         [Test]
         public void PutNextRectangle_ThrowArgumentException_SizeOfRectangleHaveNegativeValue()
         {
-            var center = new Point(100, 100);
+            center = new Point(100, 100);
             var pointProvider = new PointProvider(center);
             var cloud = new CircularCloudLayouter(pointProvider);
 
@@ -24,7 +28,7 @@ namespace TagsCloudVisualization_Should
         [Test]
         public void PutNextRectangle_ReturnSameRectangle_OneRectangle()
         {
-            var center = new Point(40, 40);
+            center = new Point(40, 40);
             var pointProvider = new PointProvider(center);
             var expectedRectangle = new Rectangle(new Point(40, 40), new Size(30, 30));
             var cloud = new CircularCloudLayouter(pointProvider);
@@ -39,7 +43,7 @@ namespace TagsCloudVisualization_Should
         public void Rectangles_CountIsTen_RandomTenRectangles()
         {
             var rnd = new Random();
-            var center = new Point(500, 500);
+            center = new Point(500, 500);
             var pointProvider = new PointProvider(center);
             var cloud = new CircularCloudLayouter(pointProvider);
             const int expectedLength = 10;
@@ -50,6 +54,7 @@ namespace TagsCloudVisualization_Should
                 cloud.PutNextRectangle(size);
             }
             var actualLength = cloud.Rectangles.Count;
+            actualRectangles = cloud.Rectangles;
 
             actualLength.Should().Be(expectedLength);
         }
@@ -57,7 +62,7 @@ namespace TagsCloudVisualization_Should
         [Test]
         public void Rectangles_SameOrderLikeAdded_ThreeRectangles()
         {
-            var center = new Point(500, 500);
+            center = new Point(500, 500);
             var pointProvider = new PointProvider(center);
             var cloud = new CircularCloudLayouter(pointProvider);
             var expectedRectangles = new List<Rectangle>
@@ -70,10 +75,20 @@ namespace TagsCloudVisualization_Should
             cloud.PutNextRectangle(new Size(30, 30));
             cloud.PutNextRectangle(new Size(40, 40));
             cloud.PutNextRectangle(new Size(20, 20));
-            var actualRectangles = cloud.Rectangles;
+            actualRectangles = cloud.Rectangles;
 
             actualRectangles.ShouldAllBeEquivalentTo(expectedRectangles);
 
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
+            var image = Drawer.DrawImage(actualRectangles, center);
+            var saver = new BmpSaver();
+            var name = TestContext.CurrentContext.Test.Name;
+            saver.SaveImage(image,name);
         }
     }
 }
