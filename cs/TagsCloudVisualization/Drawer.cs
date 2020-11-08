@@ -30,12 +30,12 @@ namespace TagsCloudVisualization
 
         private static int GetDeltaX(List<Rectangle> rectangles)
         {
-            return rectangles.Select(elem => elem.Right).Prepend(int.MinValue).Max();
+            return rectangles.Select(elem => elem.Right).Max();
         }
 
         private static int GetDeltaY(List<Rectangle> rectangles)
         {
-            return rectangles.Select(elem => elem.Bottom).Prepend(int.MinValue).Max();
+            return rectangles.Select(elem => elem.Bottom).Max();
         }
     }
 }
