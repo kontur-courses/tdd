@@ -1,12 +1,12 @@
-﻿using System;
-using System.Drawing;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
+using System;
+using System.Drawing;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualization_Should
 {
-    class PointProviderShould
+    public class PointProviderShould
     {
         [Test]
         public void GetPoint_ReturnPoint_AfterCallingMethod()

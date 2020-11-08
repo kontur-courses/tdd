@@ -1,14 +1,14 @@
-﻿using System;
+﻿using FluentAssertions;
+using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using FluentAssertions;
-using NUnit.Framework;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualization_Should
 {
-    class DrawerShould
+    public class DrawerShould
     {
 
         [Test]
@@ -28,17 +28,17 @@ namespace TagsCloudVisualization_Should
 
             act.ShouldThrow<ArgumentException>().WithMessage("The sequence contains no elements");
         }
-        
+
         [Test]
         public void DrawImage_CorrectImageSize_TenRectangles()
         {
             var rectangles = GetRectangles(10);
-            var expectedSize = new Size(518,518);
+            var expectedSize = new Size(518, 518);
 
             var actualBitmap = Drawer.DrawImage(rectangles, new Point(500, 500));
 
             actualBitmap.Size.Should().Be(expectedSize);
-            
+
         }
 
 
@@ -48,7 +48,7 @@ namespace TagsCloudVisualization_Should
             var rectangles = GetRectangles(100);
             var expectedFormat = ImageFormat.MemoryBmp;
 
-            var actualBitmap =  Drawer.DrawImage(rectangles, new Point(500, 500));
+            var actualBitmap = Drawer.DrawImage(rectangles, new Point(500, 500));
 
             actualBitmap.RawFormat.Should().Be(expectedFormat);
 
@@ -60,7 +60,7 @@ namespace TagsCloudVisualization_Should
 
             for (var i = 0; i < count; i++)
             {
-                rectangles.Add(new Rectangle(i,i,i,i));
+                rectangles.Add(new Rectangle(i, i, i, i));
             }
 
             return rectangles;
