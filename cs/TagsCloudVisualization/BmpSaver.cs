@@ -10,12 +10,19 @@ namespace TagsCloudVisualization
     {
         public void SaveImage(Bitmap bitmap, string fileName)
         {
-            if (!fileName.All(char.IsLetter))
-                throw new ArgumentException("File name contains invalid characters");
-
+            CheckValidFileName(fileName);
             var path = Directory.GetCurrentDirectory();
 
             bitmap.Save($"{path}\\{fileName}.bmp", ImageFormat.Bmp);
+        }
+
+        private static void CheckValidFileName(string name)
+        {
+            var invalidSpecialCharacters = "/\\:*?\"<>|".ToCharArray();
+            if (name.Any(letter => invalidSpecialCharacters.Contains(letter)))
+            {
+                throw new ArgumentException("File name contains invalid characters");
+            }
         }
     }
 }
