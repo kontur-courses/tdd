@@ -1,9 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualization_Should
@@ -88,7 +88,7 @@ namespace TagsCloudVisualization_Should
             var image = Drawer.DrawImage(actualRectangles, center);
             var saver = new BmpSaver();
             var name = TestContext.CurrentContext.Test.Name;
-            saver.SaveImage(image,name);
+            saver.SaveImage(image, name);
         }
     }
 }
