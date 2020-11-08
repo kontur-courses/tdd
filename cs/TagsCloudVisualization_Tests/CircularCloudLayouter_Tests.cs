@@ -16,12 +16,13 @@ namespace TagsCloudVisualization_Tests
         private Size minSize;
         private Size maxSize;
         private const double MinOccupiedAreaRatio = 0.65;
-        
+        private static readonly Point layoutCenter = new Point(1000, 1000);
+
         [SetUp]
         public void SetUp()
         {
             // Закомментируйте одну из строк ниже
-            layouter = new CircularCloudLayouter(new Point(1000, 1000));
+            layouter = new CircularCloudLayouter(layoutCenter);
             // layouter = new BadLayouter(new Point(1000, 1000));
             minSize = new Size(5, 5);
             maxSize = new Size(20, 20);
@@ -31,7 +32,7 @@ namespace TagsCloudVisualization_Tests
         public void DrawLayoutAfterTestFailed()
         {
             if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
-            var picture = new Picture(new Size(2000, 2000));
+            var picture = new Picture(new Size(2 * layoutCenter.X, 2 * layoutCenter.Y));
             var expectedMaximumRadius = GetExpectedMaximumLayoutRadius(layouter);
 
             Color color;
@@ -40,9 +41,10 @@ namespace TagsCloudVisualization_Tests
                 color = GetRectangleColor(rectangle, layouter, expectedMaximumRadius);
                 picture.FillRectangle(rectangle, color);
             }
+            
             picture.DrawCircle(layouter.Center,
                 (float)expectedMaximumRadius, Color.Cyan);
-            picture.Save(outputFileName:"failed_layout");
+            picture.Save(outputFileName:$"Layout failed test {TestContext.CurrentContext.Test.Name}");
         }
 
         [Test]

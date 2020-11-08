@@ -9,10 +9,12 @@ namespace TagsCloudVisualization_Tests
             int? seed = null)
         {
             if (minSize.Height >= maxSize.Height 
-                || minSize.Width >= maxSize.Width
-                || count <= 0)
+                || minSize.Width >= maxSize.Width)
                 throw new ArgumentException("minSizes fields must be less than maxSizes fields");
             
+            if (count <= 0)
+                throw new ArgumentException("Count must be greater than 0");
+
             Random random;
             random = seed != null ? new Random((int)seed) : new Random();
             

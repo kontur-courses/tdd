@@ -1,10 +1,9 @@
 ﻿using System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using TagsCloudVisualization;
 
-[assembly: InternalsVisibleTo("TagsCloudVisualization_Tests")]
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization_Tests
 {
     public class BadLayouter : IRectangleLayouter
     {

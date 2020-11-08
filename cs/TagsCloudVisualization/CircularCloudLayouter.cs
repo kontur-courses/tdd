@@ -1,9 +1,7 @@
 ﻿using System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("TagsCloudVisualization_Tests")]
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter : IRectangleLayouter
