@@ -9,9 +9,8 @@ namespace TagsCloudVisualization.TagCloud
     public class CircularCloudLayouter : ICloudLayouter
     {
         public Point Center { get; }
-        public int AddedRectanglesCount => cloudRectangles.Count;
-        public IPointGenerator PointGenerator { get; }
-
+        
+        private readonly IPointGenerator pointGenerator;
         private readonly List<Rectangle> cloudRectangles;
 
         public CircularCloudLayouter(IPointGenerator pointGenerator)
@@ -20,48 +19,29 @@ namespace TagsCloudVisualization.TagCloud
                 throw new ArgumentException("Point generator cannot be null");
             
             Center = pointGenerator.Center;
-            PointGenerator = pointGenerator;
-            cloudRectangles = new List<Rectangle>(5);
+            this.pointGenerator = pointGenerator;
+            cloudRectangles = new List<Rectangle>();
         }
-        
-        public Rectangle GetAddedRectangle(int index)
-        {
-            if (index < 0 || index >= cloudRectangles.Count)
-                throw new ArgumentException("Index must be positive and less than collection elements count");
-            
-            return cloudRectangles[index];
-        }
+
+        public IEnumerable<Rectangle> GetAddedRectangles() => cloudRectangles;
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            if (rectangleSize.Height >= PointGenerator.CanvasSize.Height ||
-                rectangleSize.Width >= PointGenerator.CanvasSize.Width)
-                throw new ArgumentException("Rectangle size must be less than canvas size");
-
             if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
                 throw new ArgumentException("Rectangle size must be more than zero");
-            
-            var point = PointGenerator.GetNextPoint();
-            var countIterations = 0;
 
-            while (!CheckRectanglePosition(point, rectangleSize))
+            var point = pointGenerator.GetNextPoint();
+            
+            while (!CheckRectanglePosition(point!.Value, rectangleSize))
             {
-                point = PointGenerator.GetNextPoint();
-
-                if (countIterations > 600)
-                {
-                    rectangleSize /= 2;
-                    countIterations = 0;
-                    PointGenerator.StartOver();
-                }
-
-                countIterations++;
+                point = pointGenerator.GetNextPoint();
+                if (!point.HasValue)
+                    throw new ArgumentException($"Location for rectangle with size {rectangleSize} not found");
             }
-            
-            
-            var rectangle = GetLocatedRectangle(point, rectangleSize);
+
+            var rectangle = GetLocatedRectangle(point.Value, rectangleSize);
             cloudRectangles.Add(rectangle);
-            PointGenerator.StartOver();
+            pointGenerator.StartOver();
             
             return rectangle;
         }
@@ -76,11 +56,8 @@ namespace TagsCloudVisualization.TagCloud
 
         private bool CheckRectanglePosition(Point position, Size rectangleSize)
         {
-            if (cloudRectangles.Count == 0)
-                return true;
-
-            return cloudRectangles.All(
-                rectangle => !rectangle.IntersectsWith(GetLocatedRectangle(position, rectangleSize)));
+            return !cloudRectangles.Any(
+                rectangle => rectangle.IntersectsWith(GetLocatedRectangle(position, rectangleSize)));
         }
     }
 }
