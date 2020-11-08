@@ -1,9 +1,10 @@
 ﻿using System.Drawing;
 using TagsCloudVisualization;
+using TagsCloudVisualization_Tests;
 
-namespace TagsCloudVisualization_Tests
+namespace TagCloudExample
 {
-    public class Program
+    class Program
     {
         // Пример раскладки
         static void Main()
