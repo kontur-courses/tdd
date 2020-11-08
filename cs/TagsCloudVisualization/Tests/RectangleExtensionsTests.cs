@@ -8,7 +8,7 @@ namespace TagsCloudVisualization.Tests
     {
 
         [Test]
-        public void IntersectsWith_True_WhenEnumerableContainsIntersectingRectangle()
+        public void IntersectsWith_ShouldTrue_WhenEnumerableContainsIntersectingRectangle()
         {
             var rectangles = new Rectangle[]
             {
@@ -19,9 +19,9 @@ namespace TagsCloudVisualization.Tests
         }
 
         [Test]
-        public void IntersectsWith_False_WhenEnumerableDoNotContainsIntersectingRectangle()
+        public void IntersectsWith_ShouldFalse_WhenEnumerableDoNotContainsIntersectingRectangle()
         {
-            var rectangles = new Rectangle[]
+            var rectangles = new[]
             {
                 new Rectangle(-1, -1, 2, 2)
             };
@@ -30,11 +30,29 @@ namespace TagsCloudVisualization.Tests
         }
 
         [Test]
-        public void GetMiddlePoint_ReturnCorrectPoint()
+        public void GetMiddlePoint_ShouldReturnCorrectPoint()
         {
             var rectangle = new Rectangle(0, 0, 4, 4);
             var expectedPoint = new Point(2, 2);
             rectangle.GetMiddlePoint().Should().BeEquivalentTo(expectedPoint);
+        }
+
+        [Test]
+        public void CreateRectangleFromMiddlePointAndSize_ShouldReturnCorrectRectangle()
+        {
+            var expectedRectangle = new Rectangle(new Point(0, 0), new Size(4,4));
+            var result = RectangleExtensions.CreateRectangleFromMiddlePointAndSize(new Point(2, 2), new Size(4, 4));
+            result.Should().BeEquivalentTo(expectedRectangle);
+        }
+
+        [Test]
+        public void MoveOneStepTowardsPoint_ShouldReturnCorrectRectangle()
+        {
+            var expectedRectangle = new Rectangle(new Point(2, 2), new Size(2,2));
+            var rectangle = new Rectangle(new Point(3, 3), new Size(2, 2));
+            var moveToPoint = new Point(0, 0);
+            var result = rectangle.MoveOneStepTowardsPoint(moveToPoint, 1);
+            result.Should().BeEquivalentTo(expectedRectangle);
         }
     }
 }

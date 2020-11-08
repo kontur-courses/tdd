@@ -6,11 +6,11 @@ namespace TagsCloudVisualization
     class ArchimedeanSpiral
     {
         private Point _center;
-        private double _deltaAngle;
+        private readonly double _deltaAngle;
         private double _angle;
-        private double _step;
+        private readonly double _step;
 
-        public ArchimedeanSpiral(Point center, double deltaAngle = Math.PI / 360, double step = 5)
+        public ArchimedeanSpiral(Point center, double deltaAngle = Math.PI / 360, double step = 1)
         {
             _center = center;
             _deltaAngle = deltaAngle;
@@ -21,7 +21,7 @@ namespace TagsCloudVisualization
         public Point GetNextPoint()
         {
             var x = (int) Math.Round(_center.X + (_step * _angle * Math.Cos(_angle)));
-            var y = (int) Math.Round(_center.X + (_step * _angle * Math.Sin(_angle)));
+            var y = (int) Math.Round(_center.Y + (_step * _angle * Math.Sin(_angle)));
             var point = new Point(x, y);
             _angle += _deltaAngle;
             return point;

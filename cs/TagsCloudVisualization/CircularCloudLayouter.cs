@@ -4,58 +4,51 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    class CircularCloudLayouter
+    class CircularCloudLayouter : ICloudLayouter
     {
         private readonly List<Rectangle> _rectangles;
         private readonly ArchimedeanSpiral _spiral;
-        private readonly Point _center;
+        private readonly Point _canvasCenter;
 
-        public CircularCloudLayouter(Point center)
+        public CircularCloudLayouter(Point canvasCenter)
         {
             _rectangles = new List<Rectangle>();
-            _center = center;
-            _spiral = new ArchimedeanSpiral(_center);
+            _canvasCenter = canvasCenter;
+            _spiral = new ArchimedeanSpiral(_canvasCenter);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
-                throw new ArgumentException("Width and height of the rectangle must be non-negative");
-            var result = CreateRectangle(_spiral.GetNextPoint(), rectangleSize);
-            while (result.IntersectsWith(_rectangles))
-                result = CreateRectangle(_spiral.GetNextPoint(), rectangleSize);
-            result = MoveToCenter(result);
+                throw new ArgumentException("Width and height of the rectangle must be positive");
+
+            Rectangle rectangle;
+            do
+            {
+                var possiblePoint = _spiral.GetNextPoint();
+                rectangle = RectangleExtensions.CreateRectangleFromMiddlePointAndSize(possiblePoint, rectangleSize);
+            } while (rectangle.IntersectsWith(_rectangles)); 
+            var result = MoveToCanvasCenter(rectangle);
             _rectangles.Add(result);
             return result;
         }
 
-        private Rectangle MoveToCenter(Rectangle rectangle)
+        private Rectangle MoveToCanvasCenter(Rectangle rectangle, int axisStep = 1)
         {
-            var correctMiddlePoint = rectangle.GetMiddlePoint();
-            var currentMiddlePoint = rectangle.GetMiddlePoint();
-            while (currentMiddlePoint.X != _center.X && currentMiddlePoint.Y != _center.Y)
+            if (rectangle.GetMiddlePoint().Equals(_canvasCenter))
+                return rectangle;
+
+            var currentRectangle = rectangle;
+            Rectangle result;
+
+            do
             {
-                var offsetX = currentMiddlePoint.X < _center.X ? 1 : -1;
-                var offsetY = currentMiddlePoint.Y < _center.Y ? 1 : -1;
-                currentMiddlePoint.Offset(offsetX, offsetY);
-                var tempRectangle = CreateRectangle(currentMiddlePoint, rectangle.Size);
-                if (!tempRectangle.IntersectsWith(_rectangles))
-                    correctMiddlePoint = currentMiddlePoint;
-            }
-
-            return CreateRectangle(correctMiddlePoint, rectangle.Size);
+                result = currentRectangle;
+                currentRectangle = currentRectangle.MoveOneStepTowardsPoint(_canvasCenter, axisStep);
+            } while (!currentRectangle.IntersectsWith(_rectangles));
+            
+            return result;
         }
 
-        /*
-         * Не очень красиво, что метод, напрямую не относящийся к логике, здесь. 
-         * Хотелось бы сделать его методом расширения, 
-         * чтобы можно было вызывать Rectangle.CreateRectangle(...). Как лучше?
-         */
-        private Rectangle CreateRectangle(Point centerOfRectangle, Size rectangleSize)
-        {
-            var x = centerOfRectangle.X - rectangleSize.Width / 2;
-            var y = centerOfRectangle.Y - rectangleSize.Height / 2;
-            return new Rectangle(new Point(x, y), rectangleSize);
-        }
     }
 }
