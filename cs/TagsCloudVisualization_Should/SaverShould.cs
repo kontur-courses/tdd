@@ -9,10 +9,10 @@ namespace TagsCloudVisualization_Should
 {
     public class SaverShould
     {
-        [TestCase("1234567890", TestName = "FileNameContainsNumbers")]
-        [TestCase(".,/\\!@#$%^&*()\";:?+-~`", TestName = "FileNameContainsSpecialSymbols")]
-        public void SaveImage_ThrowArgumentException_FileNameContainsInvalidCharacters(string fileName)
+        [Test]
+        public void SaveImage_ThrowArgumentException_FileNameContainsInvalidCharacters()
         {
+            var fileName = "/\\:*?\"<>|";
             var bitmap = new Bitmap(1, 1);
             var saver = new BmpSaver();
 
