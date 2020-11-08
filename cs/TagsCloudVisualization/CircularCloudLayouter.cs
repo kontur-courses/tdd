@@ -7,11 +7,10 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter : ICloudLayout
     {
-        private List<Rectangle> Rectangles { get; }
+        public List<Rectangle> Rectangles { get; }
         private readonly IPointProvider pointProvider;
-        
 
-        public CircularCloudLayouter(Point point, IPointProvider provider)
+        public CircularCloudLayouter(IPointProvider provider)
         {
             Rectangles = new List<Rectangle>();
             pointProvider = provider;
@@ -24,7 +23,7 @@ namespace TagsCloudVisualization
 
             var rectangle = GetRectangle(rectangleSize);
             Rectangles.Add(rectangle);
-            
+
             return rectangle;
         }
 
@@ -43,11 +42,6 @@ namespace TagsCloudVisualization
         private bool IsCollide(Rectangle rectangle)
         {
             return Rectangles.Any(rectangle.IntersectsWith) || rectangle.X < 0 || rectangle.Y < 0;
-        }
-
-        public List<Rectangle> GetListRectangles()
-        {
-            return Rectangles;
         }
     }
 }
