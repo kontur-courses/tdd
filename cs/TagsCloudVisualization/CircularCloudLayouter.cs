@@ -20,23 +20,26 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var rectangle = GetRectangle(rectangleSize);
+            if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
+                throw new ArgumentException("Rectangle size should be positive.");
+            Rectangle rectangle;
+            if (Rectangles.Count == 0)
+            {
+                rectangle = new Rectangle
+                {
+                    Size = rectangleSize,
+                    Location = new Point(Center.X - rectangleSize.Width / 2, Center.Y - rectangleSize.Height / 2)
+                };
+            }
+            else
+                rectangle = GetRectangle(rectangleSize);
+
             Rectangles.Add(rectangle);
             return rectangle;
         }
 
         private Rectangle GetRectangle(Size rectangleSize)
         {
-            if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
-                throw new ArgumentException("Rectangle size should be positive.");
-
-            if (Rectangles.Count == 0)
-                return new Rectangle
-                {
-                    Size = rectangleSize,
-                    Location = new Point(Center.X - rectangleSize.Width / 2, Center.Y - rectangleSize.Height / 2)
-                };
-
             var bestDistance = double.MaxValue;
             var bestRectangle = new Rectangle();
 
@@ -44,27 +47,52 @@ namespace TagsCloudVisualization
             {
                 foreach (var direction in directions)
                 {
-                    var offset = LayouterTools.GetOffset(rectangleSize, rectangle, direction);
-                    var location = new Point(rectangle.X + offset.X, rectangle.Y + offset.Y);
-                    var currentRectangleCenter = new Point(location.X + rectangleSize.Width / 2,
-                        location.Y + rectangleSize.Height / 2);
-                    var distance = LayouterTools.CalculateDistance(currentRectangleCenter, Center);
-                    var currentRectangle = new Rectangle {Size = rectangleSize, Location = location};
+                    var newRectangle = new Rectangle
+                    {
+                        Size = rectangleSize,
+                        Location = CalculateRectangleLocation(rectangle, rectangleSize, direction)
+                    };
+                    var distance = GetDistanceToCenter(newRectangle);
 
-                    if (!(distance < bestDistance) || IntersectWithOtherRectangles(currentRectangle)) continue;
-                    bestDistance = distance;
-                    bestRectangle = currentRectangle;
+                    if (distance < bestDistance && !IntersectsWithOtherRectangles(newRectangle))
+                    {
+                        bestDistance = distance;
+                        bestRectangle = newRectangle;
+                    }
                 }
             }
 
             return bestRectangle;
         }
 
-        private bool IntersectWithOtherRectangles(Rectangle rectangle)
+        private double GetDistanceToCenter(Rectangle rectangle)
+        {
+            var rectangleCenter = new Point(rectangle.X + rectangle.Width / 2,
+                rectangle.Y + rectangle.Height / 2);
+            return LayouterTools.CalculateDistance(rectangleCenter, Center);
+        }
+
+        private bool IntersectsWithOtherRectangles(Rectangle rectangle)
         {
             return Rectangles.Any(previous => previous.IntersectsWith(rectangle));
         }
 
-        
+        private static Point GetOffset(Size rectangleSize, Rectangle previous, Direction direction)
+        {
+            return direction switch
+            {
+                Direction.Top => new Point(0, previous.Height),
+                Direction.Right => new Point(previous.Width, previous.Height - rectangleSize.Height),
+                Direction.Bottom => new Point(previous.Width - rectangleSize.Width, -rectangleSize.Height),
+                Direction.Left => new Point(-rectangleSize.Width, 0),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
+
+        private static Point CalculateRectangleLocation(Rectangle previous, Size rectangleSize, Direction direction)
+        {
+            var offset = GetOffset(rectangleSize, previous, direction);
+            return new Point(previous.X + offset.X, previous.Y + offset.Y);
+        }
     }
 }

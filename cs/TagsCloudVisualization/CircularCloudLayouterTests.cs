@@ -16,7 +16,7 @@ namespace TagsCloudVisualization
         [SetUp]
         public void SetUp()
         {
-            layouter = new CircularCloudLayouter(new Point(1200, 1200));
+            layouter = new CircularCloudLayouter(new Point(500, 500));
         }
 
         [TearDown]
@@ -24,9 +24,10 @@ namespace TagsCloudVisualization
         {
             if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
             var testName = TestContext.CurrentContext.Test.Name;
-            var drawer = new LayoutDrawer(layouter);
-            drawer.DrawRectangles(layouter.Rectangles);
-            drawer.DrawCircle(layouter.Center, GetCircleRadius(layouter.Rectangles));
+            var drawer = new LayoutDrawer();
+            drawer.AddRectangles(layouter.Rectangles);
+            drawer.AddCircle(layouter.Center, GetCircleRadius(layouter.Rectangles));
+            drawer.Draw();
             drawer.Save(testName);
         }
 
@@ -86,20 +87,21 @@ namespace TagsCloudVisualization
                 .ToList();
 
             var radius = GetCircleRadius(rectangles);
-            
+
             foreach (var rectangle in rectangles)
             {
-                var distance = GetMaximumDistance(rectangle, layouter.Center);
-                distance.Should().BeLessThan(radius);
+                var distanceToCenter = GetMaximumDistance(rectangle, layouter.Center);
+                distanceToCenter.Should().BeLessThan(radius);
             }
         }
 
-        private static int GetCircleRadius(List<Rectangle> rectangles)
+        private static int GetCircleRadius(IEnumerable<Rectangle> rectangles)
         {
+            const double radiusMultiplier = 1.25;
             var square = rectangles
                 .Select(rectangle => rectangle.Width * rectangle.Height)
                 .Sum();
-            return (int) (Math.Sqrt(square / Math.PI) * 1.25);
+            return (int) (Math.Sqrt(square / Math.PI) * radiusMultiplier);
         }
 
         private static double GetMaximumDistance(Rectangle rectangle, Point center)
