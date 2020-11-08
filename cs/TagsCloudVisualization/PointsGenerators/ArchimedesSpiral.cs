@@ -1,22 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 
 namespace TagsCloudVisualization.PointsGenerators
 {
     public class ArchimedesSpiral : IPointGenerator
     {
         public Point Center { get; }
-        public Size CanvasSize { get; }
-        public int SpiralParameter { get; }
-        public float AngleStep { get; }
-
+        
+        private readonly int spiralParameter;
+        private readonly float angleStep;
         private IEnumerator<Point> spiralPoints;
 
         public ArchimedesSpiral(
             Point center,
-            Size? canvasSize = null,
             int spiralParameter = 2,
             float angleStep = 0.2f)
         {
@@ -27,13 +24,8 @@ namespace TagsCloudVisualization.PointsGenerators
                 throw new ArgumentException("Spiral parameter must be not equal zero");
             
             Center = center;
-            SpiralParameter = spiralParameter;
-            AngleStep = angleStep;
-            CanvasSize = canvasSize ?? new Size(500, 500);
-            
-            if (CanvasSize.Width <= 0 || CanvasSize.Height <= 0)
-                throw new ArgumentException("Canvas size must be more than zero");
-            
+            this.spiralParameter = spiralParameter;
+            this.angleStep = angleStep;
             spiralPoints = GetSpiralPoints().GetEnumerator();
         }
 
@@ -44,28 +36,30 @@ namespace TagsCloudVisualization.PointsGenerators
             var angle = 0.0f;
             var currentPoint = Center;
 
-            while (currentPoint.X < CanvasSize.Width && currentPoint.Y < CanvasSize.Height)
+            while (currentPoint.X < int.MaxValue && currentPoint.Y < int.MaxValue)
             {
-                var x = SpiralParameter * (int) Math.Round(angle * Math.Cos(angle)) + Center.X;
-                var y = SpiralParameter * (int) Math.Round(angle * Math.Sin(angle)) + Center.Y;
+                var x = spiralParameter * (int) Math.Round(angle * Math.Cos(angle)) + Center.X;
+                var y = spiralParameter * (int) Math.Round(angle * Math.Sin(angle)) + Center.Y;
                 var nextPoint = new Point(x, y);
 
                 if (!nextPoint.Equals(currentPoint))
                     yield return nextPoint;
 
                 currentPoint = nextPoint;
-                angle += AngleStep;
+                angle += angleStep;
             }
         }
-
-        public Point GetNextPoint()
+        
+        public Point? GetNextPoint()
         {
-            spiralPoints.MoveNext();
-            return spiralPoints.Current;
+            if (spiralPoints.MoveNext())
+                return spiralPoints.Current;
+            return null;
         }
 
         public void StartOver()
         {
+            spiralPoints.Dispose();
             spiralPoints = GetSpiralPoints().GetEnumerator();
         }
     }
