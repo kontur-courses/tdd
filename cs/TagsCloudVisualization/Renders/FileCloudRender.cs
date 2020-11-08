@@ -7,9 +7,9 @@ namespace TagsCloudVisualization.Renders
     public class FileCloudRender : IRender
     {
         private readonly string fileName;
-        private readonly IVisualizer<TagCloud> visualizer;
+        private readonly IVisualizer<RectangleTagCloud> visualizer;
 
-        public FileCloudRender(IVisualizer<TagCloud> visualizer, string fileName)
+        public FileCloudRender(IVisualizer<RectangleTagCloud> visualizer, string fileName)
         {
             this.visualizer = visualizer;
             this.fileName = fileName;

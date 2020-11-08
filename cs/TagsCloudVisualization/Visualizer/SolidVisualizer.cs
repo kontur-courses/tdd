@@ -4,11 +4,11 @@ using TagsCloudVisualization.TagClouds;
 
 namespace TagsCloudVisualization.Visualizer
 {
-    public class SolidVisualizer : IVisualizer<TagCloud>
+    public class SolidVisualizer : IVisualizer<RectangleTagCloud>
     {
         private readonly SolidBrush brush;
 
-        public SolidVisualizer(TagCloud cloud, Color color)
+        public SolidVisualizer(RectangleTagCloud cloud, Color color)
         {
             VisualizeTarget = cloud;
             Color = color;
@@ -17,7 +17,7 @@ namespace TagsCloudVisualization.Visualizer
 
         public Color Color { get; }
 
-        public TagCloud VisualizeTarget { get; }
+        public RectangleTagCloud VisualizeTarget { get; }
 
         public void Draw(Graphics graphics)
         {

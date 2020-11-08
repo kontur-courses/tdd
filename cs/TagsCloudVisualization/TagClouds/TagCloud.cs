@@ -1,52 +1,38 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
-using TagsCloudVisualization.Layouters;
 
 namespace TagsCloudVisualization.TagClouds
 {
-    public abstract class TagCloud : IEnumerable<Rectangle>
+    public abstract class TagCloud<T> : IEnumerable<T>
     {
-        public int Count => Rectangles.Count;
+        protected List<T> Elements = new List<T>();
+        protected Point LeftUp = new Point(int.MaxValue, int.MaxValue);
+        protected Point RightDown = new Point(int.MinValue, int.MinValue);
+        public int Count => Elements.Count;
 
-        protected List<Rectangle> Rectangles = new List<Rectangle>();
-        private readonly ILayouter layouter;
-        private Point leftUpBound = new Point(int.MaxValue, int.MaxValue);
-        private Point rightDownBound = new Point(int.MinValue, int.MinValue);
+        public Point LeftUpBound => new Point(LeftUp.X, LeftUp.Y);
+        public Point RightDownBound => new Point(RightDown.X, RightDown.Y);
 
-        public Point LeftUpBound => new Point(leftUpBound.X, leftUpBound.Y);
-        public Point RightDownBound => new Point(rightDownBound.X, rightDownBound.Y);
-
-        protected TagCloud(ILayouter layouter)
+        public IEnumerator<T> GetEnumerator()
         {
-            this.layouter = layouter;
-        }
-
-        public virtual Rectangle PutNextRectangle(Size size)
-        {
-            var rectangle = layouter.PutNextRectangle(size);
-            AddRectangle(rectangle);
-            return rectangle;
-        }
-
-        protected void AddRectangle(Rectangle rectangle)
-        {
-            leftUpBound.X = Math.Min(leftUpBound.X, rectangle.X);
-            leftUpBound.Y = Math.Min(leftUpBound.Y, rectangle.Y);
-            rightDownBound.X = Math.Max(rightDownBound.X, rectangle.X + rectangle.Width);
-            rightDownBound.Y = Math.Max(rightDownBound.Y, rectangle.Y + rectangle.Height);
-            Rectangles.Add(rectangle);
-        }
-
-        public IEnumerator<Rectangle> GetEnumerator()
-        {
-            return ((IEnumerable<Rectangle>) Rectangles).GetEnumerator();
+            return ((IEnumerable<T>)Elements).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public virtual void AddElement(T element)
+        {
+            Elements.Add(element);
+        }
+
+        public void AddElements(IEnumerable<T> rectangles)
+        {
+            foreach (var rectangle in rectangles)
+                AddElement(rectangle);
         }
     }
 }

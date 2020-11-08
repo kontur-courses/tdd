@@ -33,7 +33,9 @@ namespace TagsCloudVisualization.Tests
             {
                 Directory.CreateDirectory(PathToDebugImages);
                 var name = $"{context.Test.Name}_{DateTime.Now:HH-mm-ss_tt-zz}.png";
-                var vis = new RectangleVisualizer(new ImmutableTagCloud(rectangles.ToArray()));
+                var tagCloud = new RectangleTagCloud();
+                tagCloud.AddElements(rectangles);
+                var vis = new RectangleVisualizer(tagCloud);
                 new FileCloudRender(vis, Path.Combine(PathToDebugImages, name)).Render();
             }
         }
