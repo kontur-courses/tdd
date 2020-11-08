@@ -9,6 +9,7 @@ namespace TagsCloudVisualization
         private const double DoublePi = Math.PI * 2;
         private const double MinStep = 1d;
         private const double RandomRadius = 2;
+        private const double OneHalf = 0.5;
 
         private readonly Point center;
         private readonly double iterationOffset;
@@ -74,7 +75,7 @@ namespace TagsCloudVisualization
 
         private double GetRandomScalar(double radius)
         {
-            return (random.NextDouble() - 0.5) * radius;
+            return (random.NextDouble() - OneHalf) * radius;
         }
     }
 }

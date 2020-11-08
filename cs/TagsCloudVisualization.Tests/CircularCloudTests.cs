@@ -110,7 +110,7 @@ namespace TagsCloudVisualization.Tests
                 var size = random.GetSize(1, 100, 10);
                 area += size.Width * size.Height;
                 var rectangle = PutRectangle(size);
-                var distance = center.DistanceBetween(rectangle.Center());
+                var distance = rectangle.MaxDistanceFromCorner(center);
                 if (distance > farthestPointDistance)
                     farthestPointDistance = distance;
             }
