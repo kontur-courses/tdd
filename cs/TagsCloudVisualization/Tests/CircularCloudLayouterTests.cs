@@ -4,47 +4,59 @@ using System.Drawing;
 using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization.Tests
 {
     class CircularCloudLayouterTests
     {
-        private CircularCloudLayouter _layourter;
+        private CircularCloudLayouter _layouter;
         private Point _canvasCenter;
 
         [SetUp]
         public void SetUp()
         {
-            _canvasCenter = Point.Empty;
-            _layourter = new CircularCloudLayouter(_canvasCenter);
+            _canvasCenter = new Point(200, 200);
+            _layouter = new CircularCloudLayouter(_canvasCenter);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+            {
+                var tg = new TagCloudVisualizer(_layouter.GetRectangles());
+                tg.CreateImageWithRectangles(_layouter.GetSize());
+            }
         }
 
         [Test]
         public void PutNextRectangle_ShouldPutCorrect_WhenPutFirstRectangleWithEvenSize()
         {
-            var expectedRectangle = new Rectangle(new Point(-5, -5), new Size(10, 10));
-            _layourter.PutNextRectangle(new Size(10, 10)).Should().BeEquivalentTo(expectedRectangle);
+            var expectedRectangle = new Rectangle(new Point(195, 195), new Size(10, 10));
+            _layouter.PutNextRectangle(new Size(10, 10)).Should().BeEquivalentTo(expectedRectangle);
         }
 
         [Test]
         public void PutNextRectangle_ShouldPutCorrect_WhenPutFirstRectangleWithOddSize()
         {
-            var expectedRectangle = new Rectangle(new Point(-4, -4), new Size(9, 9));
-            _layourter.PutNextRectangle(new Size(9, 9)).Should().BeEquivalentTo(expectedRectangle);
+            var expectedRectangle = new Rectangle(new Point(196, 196), new Size(9, 9));
+            _layouter.PutNextRectangle(new Size(9, 9)).Should().BeEquivalentTo(expectedRectangle);
         }
 
         [Test]
         public void PutNextRectangle_ShouldNotIntersect_WhenPutRectangles()
         {
             var random = new Random();
-            var rectangles = new List<Rectangle>();
+            
             for (var i = 0; i < 50; i++)
-                rectangles.Add(_layourter.PutNextRectangle(new Size(random.Next(1, 5), random.Next(1, 5))));
+                _layouter.PutNextRectangle(new Size(random.Next(10, 50), random.Next(10, 50)));
 
             ContainsAnyIntersections().Should().BeFalse();
 
             bool ContainsAnyIntersections()
             {
+                var rectangles = _layouter.GetRectangles();
                 for (var i = 0; i < rectangles.Count; i++)
                 {
                     if (rectangles[i].IntersectsWith(rectangles.Take(i).Skip(1)))
@@ -58,11 +70,10 @@ namespace TagsCloudVisualization.Tests
         [Test]
         public void PutNextRectangle_AllRectanglesShouldLieInsideCircle_WhenPutRectangles()
         {
-            const int radius = 8;
-            var rectangles = new List<Rectangle>();
+            const int radius = 106;
             for(var i = 0; i < 20; i++)
-                rectangles.Add(_layourter.PutNextRectangle(new Size(2, 2)));
-            rectangles.Any(x => GetDistance(x.GetMiddlePoint(), _canvasCenter) >= radius).Should().BeFalse();
+                _layouter.PutNextRectangle(new Size(40, 40));
+            _layouter.GetRectangles().Any(x => GetDistance(x.GetMiddlePoint(), _canvasCenter) >= radius).Should().BeFalse();
 
             static double GetDistance(Point p1, Point p2)
             {
@@ -73,13 +84,13 @@ namespace TagsCloudVisualization.Tests
         [Test]
         public void PutNextRectangle_AllRectanglesShouldMoveToCanvasCenter_WhenPutRectangles()
         {
-            var rectangles = new List<Rectangle>();
             for (var i = 0; i < 20; i++)
             {
-                rectangles.Add(_layourter.PutNextRectangle(new Size(2,4)));
+                _layouter.PutNextRectangle(new Size(40,40));
             }
 
-            rectangles.Any(x => !CanMove(x, rectangles, _canvasCenter, 1)).Should().BeTrue();
+            var _rectangles = _layouter.GetRectangles();
+            _rectangles.Any(x => !CanMove(x, _rectangles, _canvasCenter, 1)).Should().BeTrue();
 
             static bool CanMove(Rectangle rectangle, IEnumerable<Rectangle> rectangles, Point toPoint, int axisPoint)
             {
@@ -94,7 +105,7 @@ namespace TagsCloudVisualization.Tests
         public void PutNextRectangle_ShouldThrowException_WhenSizeIncorrect(int width, int height)
         {
             var rectangleSize = new Size(width, height);
-            Action act = () => _layourter.PutNextRectangle(rectangleSize);
+            Action act = () => _layouter.PutNextRectangle(rectangleSize);
             act.Should().Throw<ArgumentException>().WithMessage("Width and height of the rectangle must be positive");
         }
     }

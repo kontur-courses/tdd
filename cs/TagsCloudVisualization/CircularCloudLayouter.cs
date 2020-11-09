@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -30,7 +31,41 @@ namespace TagsCloudVisualization
             } while (rectangle.IntersectsWith(_rectangles)); 
             var result = MoveToCanvasCenter(rectangle);
             _rectangles.Add(result);
+
             return result;
+        }
+
+        public List<Rectangle> GetRectangles()
+        {
+            return _rectangles;
+        }
+
+        public Size GetSize()
+        {
+            if (!_rectangles.Any())
+                throw new InvalidOperationException("Can't get the size if there are no rectangles");
+
+            var maxX = int.MinValue;
+            var minX = int.MaxValue;
+            var maxY = int.MinValue;
+            var minY = int.MaxValue;
+
+            foreach (var rect in _rectangles)
+            {
+                if (rect.Right > maxX)
+                    maxX = rect.Right;
+                if (rect.Bottom > maxY)
+                    maxY = rect.Bottom;
+                if (rect.Left < minX)
+                    minX = rect.Left;
+                if (rect.Top < minY)
+                    minY = rect.Top;
+            }
+
+            var width = maxX + minX;
+            var height = maxY + minY;
+
+            return new Size(width, height);
         }
 
         private Rectangle MoveToCanvasCenter(Rectangle rectangle, int axisStep = 1)
