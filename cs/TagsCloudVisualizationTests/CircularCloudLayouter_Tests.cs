@@ -62,15 +62,24 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void Image_ShouldBeLikeACircle()
         {
-            var squareSize = new Size(30, 30);
-            for (var i = 0;
-                i < 5 * (5 * 3) + 2 * (2 * 13 + 11 + 9 + 5); // ровно столько квадратиков создают красивый круг
-                i++)
-                layouter.PutNextRectangle(squareSize);
-            layouter.Rectangles
-                .Select(rectangle => 
-                    CircularCloudLayouter.CalculateDistance(center, CircularCloudLayouter.CalculateCenterPosition(rectangle)))
-                .Should().BeInAscendingOrder();
+            var rand = new Random();
+            var letterSize = new Size(3, 4);
+            var maxRadius = 0d;
+            var rectanglesArea = 0d;
+            for (var i = 0; i < 500; i++)
+            {
+                var lettersCount = rand.Next(3, 6);
+                var wordSize = new Size(letterSize.Width * lettersCount, letterSize.Height) * rand.Next(2, 10);
+                if (rand.Next(2) == 0)
+                    wordSize = new Size(wordSize.Height, wordSize.Width);
+                rectanglesArea += wordSize.Width * wordSize.Height;
+                var newRect = layouter.PutNextRectangle(wordSize);
+                maxRadius = Math.Max(maxRadius,
+                    CircularCloudLayouter.CalculateDistance(center,
+                        CircularCloudLayouter.CalculateCenterPosition(newRect)));
+            }
+            var circleArea = Math.PI * maxRadius * maxRadius;
+            rectanglesArea.Should().BeGreaterOrEqualTo(circleArea * 0.9f);
         }
 
         [TearDown]
