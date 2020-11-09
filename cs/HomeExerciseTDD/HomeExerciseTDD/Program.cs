@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 
@@ -42,6 +43,7 @@ namespace HomeExerciseTDD
 
         static void Main(string[] args)
         {
+            var rectanglesInCloud = new List<Rectangle>();
             var helper = new Helper();
             var center = new Point(35, 35);
             var layouter = new CircularCloudLayouter(center);
@@ -50,14 +52,18 @@ namespace HomeExerciseTDD
             for (var j = 0; j < 500; j++)
             {
                 var newRectangle = layouter.PutNextRectangle(helper.GetRandomSize(30, 40));
+                rectanglesInCloud.Add(newRectangle);
                 var distant = helper.GetMaxDistance(center, newRectangle);
                 radius = distant > radius ? distant : radius;
             }
 
-            var imageSize = (int)(radius + 20)*2;
+            var cloudDiameter =  (int)Math.Ceiling(radius) * 2;
+            var indent = 20;
+            var imageSize = cloudDiameter + indent; 
 
             var format = ImageFormat.Png;
-            layouter.DrawCircularCloud(imageSize, imageSize, "2.png", format);
+            var painter = new LayouterPainter(imageSize, imageSize, rectanglesInCloud,$"example.png",format);
+            painter.DrawFigures();
         }
     }
 }
