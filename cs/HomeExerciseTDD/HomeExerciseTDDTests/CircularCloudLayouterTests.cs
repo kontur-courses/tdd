@@ -20,13 +20,9 @@ namespace TestProject1
         [SetUp]
         public void Init()
         {
-            
             radius = double.MinValue;
             rectanglesInCloud = new List<Rectangle>();
-            var random = new Random();
-            var x = random.Next(0, 40);
-            var y = random.Next(0, 40);
-            center = new Point(x,y);
+            center = new Point(23,32);
             layouter = new CircularCloudLayouter(center);
         }
         
@@ -38,10 +34,9 @@ namespace TestProject1
 
             for (var i = 0; i < 100; i++)
             {
-                var newRectangle = layouter.PutNextRectangle(GetRandomSize(17,22));
-                rectanglesInCloud.Add(newRectangle);
+                var newRectangle = MakeNewRectangle(17,22);
                 totalRectanglesArea += newRectangle.Width * newRectangle.Height;
-                var distance = GetMaxDistance(center, newRectangle);
+                var distance = GetMaxDistance(newRectangle);
                 radius = distance > radius ? distance : radius;
             }
             controlCircleArea = Math.PI * Math.Pow(radius, 2);
@@ -53,8 +48,7 @@ namespace TestProject1
         [Test]
         public void PutNextRectangle_ReturnNotNull_WhenPutSize()
         {
-            var newRectangle = layouter.PutNextRectangle(GetRandomSize(4,8));
-            rectanglesInCloud.Add(newRectangle);
+            var newRectangle = MakeNewRectangle(7,12);
             
             newRectangle.Should().NotBe(null);
         }
@@ -62,9 +56,8 @@ namespace TestProject1
         [Test]
         public void PutNextRectangle_ReturnRectangleInCenter_WhenAddedFirstRectangle()
         {
-            var firstRectangle = layouter.PutNextRectangle(GetRandomSize(19, 25));
-            rectanglesInCloud.Add(firstRectangle);
-            
+            var firstRectangle = MakeNewRectangle(19,25);
+
             firstRectangle.Location.Should().BeEquivalentTo(center);
         }
         
@@ -85,7 +78,7 @@ namespace TestProject1
             
             for (var i = 0; i < 1000; i++)
             {
-                var newRectangle = layouter.PutNextRectangle(GetRandomSize(20,23));
+                var newRectangle = layouter.PutNextRectangle(new Size(20,23));
                 foreach (var rectangle in rectanglesInCloud)
                 {
                     isIntersect = newRectangle.IntersectsWith(rectangle);
@@ -106,13 +99,16 @@ namespace TestProject1
             {
                 foreach (var rectangle in rectanglesInCloud)
                 {
-                    var distance = GetMaxDistance(center, rectangle);
+                    var distance = GetMaxDistance(rectangle);
                     radius = distance > radius ? distance : radius;
                 }
 
-                var imageSize = (int)(radius + 20) * 2;
+                var cloudDiameter =  (int)Math.Ceiling(radius) * 2;
+                var indent = 20;
+                var imageSize = cloudDiameter + indent; 
                 var format = ImageFormat.Png;
-                layouter.DrawCircularCloud(imageSize, imageSize, $"{testName}.png", format);
+                var painter = new LayouterPainter(imageSize, imageSize, rectanglesInCloud,$"{testName}.png",format);
+                painter.DrawFigures();
                 TestContext.Error.WriteLine($"Tag cloud visualization saved to file {testDir}\\{testName}.png");
             }
         }
@@ -122,7 +118,7 @@ namespace TestProject1
             return Math.Sqrt(Math.Pow(second.X-first.X,2)+Math.Pow(second.Y-first.Y,2));
         }
 
-        private double GetMaxDistance(Point center, Rectangle rectangle)
+        private double GetMaxDistance(Rectangle rectangle)
         {
             var maxDistant = double.MinValue;
             var rectanglePoints = new []
@@ -138,15 +134,17 @@ namespace TestProject1
                 var distance = GetDistantBetweenPoints(point, center);
                 maxDistant = distance > maxDistant ? distance : maxDistant;
             }
+            
             return maxDistant;
         }
 
-        private Size GetRandomSize(int LeftBorder, int RightBorder)
+        private Rectangle MakeNewRectangle(int width, int height)
         {
-            var randomazer = new Random();
-            var width = randomazer.Next(LeftBorder, RightBorder);
-            var height = randomazer.Next(LeftBorder, RightBorder);
-            return new Size(width,height);
+            var size = new Size(width, height);
+            var newRectangle = layouter.PutNextRectangle(size);
+            rectanglesInCloud.Add(newRectangle);
+            
+            return newRectangle;
         }
     }
 }
