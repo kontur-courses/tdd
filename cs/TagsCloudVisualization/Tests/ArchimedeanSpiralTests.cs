@@ -14,7 +14,6 @@ namespace TagsCloudVisualization.Tests
         [SetUp]
         public void SetUp()
         {
-            
             _spiral = new ArchimedeanSpiral(new Point(5, 7));
         }
 
@@ -22,6 +21,7 @@ namespace TagsCloudVisualization.Tests
         public void GetNextPoint_ShouldReturnCenterPoint_WhenFirstCall()
         {
             var center = new Point(5,7);
+
             _spiral.GetNextPoint().Should().BeEquivalentTo(center);
         }
 
@@ -29,6 +29,7 @@ namespace TagsCloudVisualization.Tests
         public void GetNextPoint_ShouldNotContainsDuplicatePoints_WhenMoreThanOneCall()
         {
             var pointsFromSpiral = new List<Point>();
+
             for (var i = 0; i < 10; i++)
             {
                 var point = _spiral.GetNextPoint();

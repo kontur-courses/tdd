@@ -7,20 +7,22 @@ using System.Text;
 
 namespace TagsCloudVisualization
 {
-    class BitmapSaver
+    public static class BitmapSaver
     {
-        public void Save(Bitmap bitmap, string directoryPath = ".")
+        public static void Save(Bitmap bitmap, string directoryPath)
         {
             if (!Directory.Exists(directoryPath))
                 throw new ArgumentException("This directory does not exist.");
+
             var filePath = Path.GetFullPath(CreateFilePath(directoryPath));
+
             bitmap.Save(filePath, ImageFormat.Png);
-            Console.WriteLine(@$"Tag cloud visualization saved to file <{filePath}>");
         }
 
-        private string CreateFilePath(string directoryPath)
+        private static string CreateFilePath(string directoryPath)
         {
-            var fileName = DateTime.Now.ToString("yyyyMMddhhmmss");;
+            var fileName = DateTime.Now.ToString("yyyyMMddhhmmss");
+
             return $@"{directoryPath}\{fileName}.png";
         }
     }
