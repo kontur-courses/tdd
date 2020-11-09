@@ -26,7 +26,7 @@ namespace HomeExerciseTDD
         
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            if(CheckSizeValidity(rectangleSize) == false)
+            if (CheckSizeValidity(rectangleSize) == false)
                 throw new ArgumentException();
             while (true)
             {
@@ -38,12 +38,6 @@ namespace HomeExerciseTDD
                     return currentRectangle;
                 }
             }
-        }
-
-        public void DrawCircularCloud(int width, int height, string fileName, ImageFormat format)
-        {
-            var painter = new LayouterPainter(width, height, rectanglesInCloud,fileName,format);
-            painter.DrawFigures();
         }
 
         private bool CheckSizeValidity(Size size)
