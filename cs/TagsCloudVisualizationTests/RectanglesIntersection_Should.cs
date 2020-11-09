@@ -9,12 +9,12 @@ namespace TagsCloudVisualizationTests
     [TestFixture]
     public class RectanglesIntersection_Should
     {
-        private List<Rectangle> _sut;
+        private List<Rectangle> _rectangles;
 
         [SetUp]
         public void SetUp()
         {
-            _sut = new List<Rectangle>
+            _rectangles = new List<Rectangle>
             {
                 new Rectangle(new Point(0, 0), new Size(5, 5)),
                 new Rectangle(new Point(7, -5), new Size(1, 3)),
@@ -30,7 +30,7 @@ namespace TagsCloudVisualizationTests
         {
             var rectangle = new Rectangle(new Point(coordinateX, coordinateY), new Size(width, height));
 
-            var isIntersect = RectanglesIntersection.IsAnyIntersectWithRectangles(rectangle, _sut);
+            var isIntersect = RectanglesIntersection.IsAnyIntersectWithRectangles(rectangle, _rectangles);
 
             isIntersect.Should().BeTrue();
         }
@@ -43,7 +43,7 @@ namespace TagsCloudVisualizationTests
         {
             var rectangle = new Rectangle(new Point(coordinateX, coordinateY), new Size(width, height));
 
-            var isIntersect = RectanglesIntersection.IsAnyIntersectWithRectangles(rectangle, _sut);
+            var isIntersect = RectanglesIntersection.IsAnyIntersectWithRectangles(rectangle, _rectangles);
 
             isIntersect.Should().BeFalse();
         }

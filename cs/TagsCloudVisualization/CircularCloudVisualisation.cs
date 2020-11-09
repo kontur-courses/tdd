@@ -7,6 +7,8 @@ namespace TagsCloudVisualization
 {
     public static class CircularCloudVisualisation
     {
+        private static Random _random = new Random();
+        
         public static void MakeImageTagsCircularCloud(List<Rectangle> rectangles, int cloudRadius,
             string pathToSave, ImageFormat imageFormat)
         {
@@ -36,9 +38,8 @@ namespace TagsCloudVisualization
 
         private static Brush GetNewRandomBrush()
         {
-            var random = new Random();
-            return new SolidBrush(Color.FromArgb(random.Next(255),
-                random.Next(255), random.Next(255)));
+            return new SolidBrush(Color.FromArgb(_random.Next(255),
+                _random.Next(255), _random.Next(255)));
         }
     }
 }
