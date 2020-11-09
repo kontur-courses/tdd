@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -32,27 +30,6 @@ namespace TagsCloudVisualization
             }
 
             bitmap.Save($"{Environment.CurrentDirectory}\\{name}.png", ImageFormat.Png);
-        }
-
-        private static void ConsoleVisualization(CircularCloudLayouter circularCloudLayouter)
-        {
-            var coords = circularCloudLayouter.Rectangles
-                .SelectMany(rect =>
-                {
-                    var points = new List<Point>();
-                    for (var i = rect.Left; i < rect.Right; i++)
-                    for (var j = rect.Top; j < rect.Bottom; j++)
-                        points.Add(new Point(i, j));
-                    return points;
-                }).ToList();
-            for (var i = 0; i < 40; i++)
-            {
-                for (var j = 0; j < 40; j++) 
-                    Console.Write(coords.Contains(new Point(j + 30, i + 30)) ? "|||" : "...");
-                Console.Write("\n");
-            }
-
-            Console.ReadKey();
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 
 namespace TagsCloudVisualization
 {
@@ -10,34 +8,36 @@ namespace TagsCloudVisualization
     {
         public Point Center { get; }
         public List<Rectangle> Rectangles { get; }
-        private int cloudRadius;
+        private const int RollBackPixelsCount = 10; // Оптимальное значение величины отката радиуса спирали в пикселях
+        private readonly Spiral _spiral;
 
         public CircularCloudLayouter(Point center)
         {
             if (center.X < 0 || center.Y < 0)
-                throw new ArgumentException($"Invalid coordinates of center = ({center.X}, {center.Y})");
+                throw new ArgumentException(
+                    $"Invalid coordinates of center = ({center.X}, {center.Y})", nameof(center));
             Center = center;
             Rectangles = new List<Rectangle>();
+            _spiral = new Spiral(center);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
-                throw new ArgumentException($"Invalid rectangleSize = ({rectangleSize.Width}, {rectangleSize.Height})");
-            var spiral = new Spiral(cloudRadius, Center);
+                throw new ArgumentException(
+                    $"Invalid rectangleSize = ({rectangleSize.Width}, {rectangleSize.Height})", nameof(rectangleSize));
+            _spiral.RollBackRadius(RollBackPixelsCount);
             while (true)
             {
-                var currentCoordinate = spiral.GetCurrentPosition(rectangleSize);
+                var currentCoordinate = _spiral.GetNextPosition(rectangleSize);
                 var currentRectangle = new Rectangle(currentCoordinate, rectangleSize);
 
                 if (!CheckIntersections(currentRectangle))
                 {
                     ShiftRectangleToCenter(ref currentRectangle);
-                    cloudRadius = Math.Max(currentRectangle.Right - Center.X, cloudRadius);
                     Rectangles.Add(currentRectangle);
                     return currentRectangle;
                 }
-                spiral.TakeStep();
             }
         }
 
@@ -56,23 +56,25 @@ namespace TagsCloudVisualization
 
         private void ShiftVertical(ref Rectangle rectangle, int availablePositionY, int step)
         {
-            if (Math.Abs(availablePositionY - Center.Y + rectangle.Height / 2) > 1)
+            var relativeCoordinateY = availablePositionY - Center.Y + rectangle.Height / 2;
+            if (Math.Abs(relativeCoordinateY) > 1)
             {
-                step = availablePositionY >= Center.Y - rectangle.Height / 2 ? -step : step;
-                rectangle.Offset(0, step);
-                if (CheckIntersections(rectangle))
-                    rectangle.Offset(0, -step);
+                step = relativeCoordinateY >= 0 ? -step : step;
+                var checkRectangle = new Rectangle(new Point(rectangle.X, rectangle.Y + step), rectangle.Size);
+                if (!CheckIntersections(checkRectangle))
+                    rectangle.Offset(0, step);
             }
         }
 
         private void ShiftHorizontal(ref Rectangle rectangle, int availablePositionX, int step)
         {
-            if (Math.Abs(availablePositionX - Center.X + rectangle.Width / 2) > 1)
+            var relativeCoordinateX = availablePositionX - Center.X + rectangle.Width / 2;
+            if (Math.Abs(relativeCoordinateX) > 1)
             {
-                step = availablePositionX >= Center.X - rectangle.Width / 2 ? -step : step;
-                rectangle.Offset(step, 0);
-                if (CheckIntersections(rectangle))
-                    rectangle.Offset(-step, 0);
+                step = relativeCoordinateX >= 0 ? -step : step;
+                var checkRectangle = new Rectangle(new Point(rectangle.X + step, rectangle.Y), rectangle.Size);
+                if (!CheckIntersections(checkRectangle))
+                    rectangle.Offset(step, 0);
             }
         }
 
