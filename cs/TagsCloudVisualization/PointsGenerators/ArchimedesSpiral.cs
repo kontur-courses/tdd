@@ -7,7 +7,7 @@ namespace TagsCloudVisualization.PointsGenerators
     public class ArchimedesSpiral : IPointGenerator
     {
         public Point Center { get; }
-        
+
         private readonly int spiralParameter;
         private readonly float angleStep;
         private IEnumerator<Point> spiralPoints;
@@ -19,10 +19,10 @@ namespace TagsCloudVisualization.PointsGenerators
         {
             if (Math.Abs(angleStep) < 1e-3)
                 throw new ArgumentException("Angle step must be not equal zero");
-                
+
             if (spiralParameter == 0)
                 throw new ArgumentException("Spiral parameter must be not equal zero");
-            
+
             Center = center;
             this.spiralParameter = spiralParameter;
             this.angleStep = angleStep;
@@ -32,16 +32,29 @@ namespace TagsCloudVisualization.PointsGenerators
         private IEnumerable<Point> GetSpiralPoints()
         {
             yield return Center;
-            
+
             var angle = 0.0f;
             var currentPoint = Center;
 
-            while (currentPoint.X < int.MaxValue && currentPoint.Y < int.MaxValue)
+            while (true)
             {
-                var x = spiralParameter * (int) Math.Round(angle * Math.Cos(angle)) + Center.X;
-                var y = spiralParameter * (int) Math.Round(angle * Math.Sin(angle)) + Center.Y;
-                var nextPoint = new Point(x, y);
+                int x;
+                int y;
+                checked
+                {
+                    try
+                    {
+                        x = spiralParameter * (int)Math.Round(angle * Math.Cos(angle)) + Center.X;
+                        y = spiralParameter * (int)Math.Round(angle * Math.Sin(angle)) + Center.Y;
+                    }
+                    catch (OverflowException)
+                    {
+                        throw new OverflowException(
+                            "Int32 overflow occurred when generating a new point to put the rectangle");
+                    }
+                }
 
+                var nextPoint = new Point(x, y);
                 if (!nextPoint.Equals(currentPoint))
                     yield return nextPoint;
 
@@ -49,17 +62,15 @@ namespace TagsCloudVisualization.PointsGenerators
                 angle += angleStep;
             }
         }
-        
-        public Point? GetNextPoint()
+
+        public Point GetNextPoint()
         {
-            if (spiralPoints.MoveNext())
-                return spiralPoints.Current;
-            return null;
+            spiralPoints.MoveNext();
+            return spiralPoints.Current;
         }
 
         public void StartOver()
         {
-            spiralPoints.Dispose();
             spiralPoints = GetSpiralPoints().GetEnumerator();
         }
     }
