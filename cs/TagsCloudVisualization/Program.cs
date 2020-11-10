@@ -18,11 +18,12 @@ namespace TagsCloudVisualization
             var pointGenerator = new ArchimedesSpiral(new Point(50, 50));
             var cloudLayouter = new CircularCloudLayouter(pointGenerator);
             var rectanglesToAdd = GetSortedRectanglesToAdd(rectCount, maxRectWidth, maxRectHeight);
+            var cloudRectangles = rectanglesToAdd
+                .Select(rectangleSize => cloudLayouter.PutNextRectangle(rectangleSize)).ToList();
 
-            foreach (var rectangleSize in rectanglesToAdd)
-                cloudLayouter.PutNextRectangle(rectangleSize);
-
-            PrintTagCloud(cloudLayouter);
+            TagCloudVisualizer.PrintTagCloud(cloudRectangles, cloudLayouter.Center, 
+                maxRectWidth, maxRectHeight, 
+                fileName: $"TagCloudWith{rectCount}Rects");
         }
         
         private static IEnumerable<Size> GetSortedRectanglesToAdd(int count, int maxWidth, int maxHeight)
@@ -38,13 +39,6 @@ namespace TagsCloudVisualization
             }
 
             return rectangleSizes.OrderByDescending(rect => rect.Width * rect.Height);
-        }
-        
-        private static void PrintTagCloud(ICloudLayouter cloudLayouter)
-        {
-            var addedRectangles = cloudLayouter.GetAddedRectangles().ToList();
-            TagCloudVisualizer.PrintTagCloud(addedRectangles, cloudLayouter.Center, 
-                maxRectWidth, maxRectHeight);
         }
     }
 }
