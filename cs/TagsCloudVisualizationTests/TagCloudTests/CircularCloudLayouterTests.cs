@@ -10,14 +10,15 @@ using TagsCloudVisualization.TagCloud;
 namespace TagsCloudVisualizationTests.TagCloudTests
 {
     [TestFixture]
-    public class CircularCloudLayouter
+    public class CircularCloudLayouterTests
     {
         [SetUp]
         public void SetUp()
         {
             var centerPoint = new Point(250, 250);
             pointGenerator = new ArchimedesSpiral(centerPoint);
-            sut = new TagsCloudVisualization.TagCloud.CircularCloudLayouter(pointGenerator);
+            sut = new CircularCloudLayouter(pointGenerator);
+            addedRectangles = new List<Rectangle>();
         }
 
         [TearDown]
@@ -28,8 +29,7 @@ namespace TagsCloudVisualizationTests.TagCloudTests
             
             var pathToDirectory = @"..\..\..\FailedTests\";
             var fileName = TestContext.CurrentContext.Test.Name;
-            TagCloudVisualizer.PrintTagCloud(sut.GetAddedRectangles().ToList(),
-                sut.Center, 100, 100, 
+            TagCloudVisualizer.PrintTagCloud(addedRectangles, sut.Center, 100, 100, 
                 pathToDirectory, fileName);
             
             Console.WriteLine($"Tag cloud visualization saved to file {pathToDirectory}{fileName}");
@@ -37,34 +37,35 @@ namespace TagsCloudVisualizationTests.TagCloudTests
         
         private ICloudLayouter sut;
         private IPointGenerator pointGenerator;
+        private List<Rectangle> addedRectangles;
 
         [Test]
         public void InitializeCircularCloudLayouter_Throw_NullPointGenerator()
         {
             Assert.Throws<ArgumentException>(
-                () => new TagsCloudVisualization.TagCloud.CircularCloudLayouter(null));
+                () => new CircularCloudLayouter(null));
         }
 
         [Test]
         public void GetAddedRectangle_RectCentralPointInCenter_WhenPutOneRectangle()
         {
             var size = new Size(200, 200);
-            sut.PutNextRectangle(size);
+            addedRectangles.Add(sut.PutNextRectangle(size));
 
-            var firstAddedRect = sut.GetAddedRectangles().First();
+            var firstAddedRect = addedRectangles.First();
 
             firstAddedRect.Location.Should().Be(new Point(sut.Center.X - firstAddedRect.Width / 2,
                 sut.Center.Y - firstAddedRect.Height / 2));
         }
 
-        [TestCase(0, TestName = "Put 0 rectangles")]
-        [TestCase(5, TestName = "Put 5 rectangles")]
+        [TestCase(0)]
+        [TestCase(5)]
         public void PutNextRectangle_CorrectRectanglesCount_ReturnPutRectangles(int expectedCount)
         {
             for (int i = 0; i < expectedCount; i++)
-                sut.PutNextRectangle(new Size(200, 200));
+                addedRectangles.Add(sut.PutNextRectangle(new Size(200, 200)));
 
-            sut.GetAddedRectangles().Count().Should().Be(expectedCount);
+            addedRectangles.Count().Should().Be(expectedCount);
         }
 
         [Test]
@@ -77,17 +78,16 @@ namespace TagsCloudVisualizationTests.TagCloudTests
                     new Point(sut.Center.X - size.Width / 2,
                         sut.Center.Y - size.Height / 2), size)
             };
-            sut.PutNextRectangle(size);
-
-            var addedRects = sut.GetAddedRectangles();
-
-            addedRects.Should().Equal(expectedRects);
+            
+            addedRectangles.Add(sut.PutNextRectangle(size));
+            
+            addedRectangles.Should().Equal(expectedRects);
         }
 
-        [TestCase(100, -100, TestName = "Height is negative")]
-        [TestCase(-100, 100, TestName = "Width is negative")]
-        [TestCase(100, 0, TestName = "Height equal 0")]
-        [TestCase(0, 100, TestName = "Width equal 0")]
+        [TestCase(100, -100)]
+        [TestCase(-100, 100)]
+        [TestCase(100, 0)]
+        [TestCase(0, 100)]
         public void PutNextRectangle_Throws_IncorrectArguments(int width, int height)
         {
             Assert.Throws<ArgumentException>(() => sut.PutNextRectangle(new Size(width, height)));
@@ -96,11 +96,11 @@ namespace TagsCloudVisualizationTests.TagCloudTests
         [Test]
         public void PutNextRectangle_ReturnsCorrectSecondRectPosition_WhenPutTwoRectangles()
         {
-            sut.PutNextRectangle(new Size(50, 50));
-            sut.PutNextRectangle(new Size(50, 50));
+            addedRectangles.Add(sut.PutNextRectangle(new Size(50, 50)));
+            addedRectangles.Add(sut.PutNextRectangle(new Size(50, 50)));
             var expectedPosition = new Point(275, 219);
 
-            var secondAddedRectangle = sut.GetAddedRectangles().Skip(1).First();
+            var secondAddedRectangle = addedRectangles.Skip(1).First();
 
             secondAddedRectangle.Location.Should().Be(expectedPosition);
         }
@@ -113,15 +113,13 @@ namespace TagsCloudVisualizationTests.TagCloudTests
             pointGenerator.GetNextPoint().Should().Be(sut.Center);
         }
         
-        [TestCase(2, TestName = "Added 2 rectangles")]
-        [TestCase(10, TestName = "Added 10 rectangles")]
-        [TestCase(100, TestName = "Added 100 rectangles")]
+        [TestCase(2)]
+        [TestCase(10)]
+        [TestCase(100)]
         public void GetAddedRectangles_RectanglesShouldNotIntersect_WhenPutManyRectangles(int addedRectanglesCount)
         {
             for (int i = 0; i < addedRectanglesCount; i++)
-                sut.PutNextRectangle(new Size(50, 50));
-
-            var addedRectangles = sut.GetAddedRectangles().ToList();
+                addedRectangles.Add(sut.PutNextRectangle(new Size(50, 50)));
 
             foreach (var addedRectangle in addedRectangles)
                 addedRectangles.All(

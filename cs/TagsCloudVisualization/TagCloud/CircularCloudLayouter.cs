@@ -23,8 +23,6 @@ namespace TagsCloudVisualization.TagCloud
             cloudRectangles = new List<Rectangle>();
         }
 
-        public IEnumerable<Rectangle> GetAddedRectangles() => cloudRectangles;
-
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
@@ -32,14 +30,10 @@ namespace TagsCloudVisualization.TagCloud
 
             var point = pointGenerator.GetNextPoint();
             
-            while (!CheckRectanglePosition(point!.Value, rectangleSize))
-            {
+            while (!CheckRectanglePosition(point, rectangleSize)) 
                 point = pointGenerator.GetNextPoint();
-                if (!point.HasValue)
-                    throw new ArgumentException($"Location for rectangle with size {rectangleSize} not found");
-            }
 
-            var rectangle = GetLocatedRectangle(point.Value, rectangleSize);
+            var rectangle = GetLocatedRectangle(point, rectangleSize);
             cloudRectangles.Add(rectangle);
             pointGenerator.StartOver();
             
