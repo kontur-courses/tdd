@@ -13,14 +13,14 @@ namespace TagsCloudVisualization
         private Size pictureSize;
         private readonly Random random;
         private List<Rectangle> rectangles;
-        private readonly List<Tuple<Point, int>> circles;
+        private readonly List<Circle> circles;
         private readonly StringBuilder svg;
 
         public LayoutDrawer()
         {
             random = new Random();
             svg = new StringBuilder();
-            circles = new List<Tuple<Point, int>>();
+            circles = new List<Circle>();
         }
 
         public void AddRectangles(List<Rectangle> rectangles)
@@ -28,9 +28,9 @@ namespace TagsCloudVisualization
             this.rectangles = rectangles;
         }
 
-        public void AddCircle(Point center, int radius)
+        public void AddCircle(Circle circle)
         {
-            circles.Add(new Tuple<Point, int>(center, radius));
+            circles.Add(circle);
         }
 
         public void Draw()
@@ -40,8 +40,8 @@ namespace TagsCloudVisualization
                        $"width=\"{pictureSize.Width}\" height=\"{pictureSize.Height}\">\n");
             foreach (var rectangle in rectangles)
                 svg.Append(RectangleToSvgString(rectangle));
-            foreach (var (center, radius) in circles)
-                svg.Append(CircleToSvgString(center, radius));
+            foreach (var circle in circles)
+                svg.Append(CircleToSvgString(circle));
             svg.Append("</svg>");
         }
 
@@ -53,10 +53,10 @@ namespace TagsCloudVisualization
                    $"style=\"fill:rgb({random.Next(0, 255)}, {random.Next(0, 255)}, {random.Next(0, 255)});\" />\n";
         }
 
-        private string CircleToSvgString(Point center, int radius)
+        private string CircleToSvgString(Circle circle)
         {
-            return $"<circle cx=\"{center.X + objectsOffset.X}\" cy=\"{center.Y + objectsOffset.Y}\" " +
-                   $"r=\"{radius}\" stroke=\"black\" stroke-width=\"2\" fill-opacity=\"0\"/>\n";
+            return $"<circle cx=\"{circle.Center.X + objectsOffset.X}\" cy=\"{circle.Center.Y + objectsOffset.Y}\" " +
+                   $"r=\"{circle.Radius}\" stroke=\"black\" stroke-width=\"2\" fill-opacity=\"0\"/>\n";
         }
 
         private void SetParameters()
@@ -74,25 +74,25 @@ namespace TagsCloudVisualization
         private int GetExtremeLeftCoordinate()
         {
             return Math.Min(rectangles.Select(rectangle => rectangle.X).Min(),
-                circles.Select(circle => circle.Item1.X - circle.Item2).Min());
+                circles.Select(circle => circle.Center.X - circle.Radius).Min());
         }
 
         private int GetExtremeRightCoordinate()
         {
             return Math.Max(rectangles.Select(rectangle => rectangle.X + rectangle.Width).Max(),
-                circles.Select(circle => circle.Item1.X + circle.Item2).Max());
+                circles.Select(circle => circle.Center.X + circle.Radius).Max());
         }
 
         private int GetExtremeTopCoordinate()
         {
             return Math.Max(rectangles.Select(rectangle => rectangle.Y + rectangle.Height).Max(),
-                circles.Select(circle => circle.Item1.X + circle.Item2).Max());
+                circles.Select(circle => circle.Center.X + circle.Radius).Max());
         }
 
         private int GetExtremeBottomCoordinate()
         {
             return Math.Min(rectangles.Select(rectangle => rectangle.Y).Min(),
-                circles.Select(circle => circle.Item1.Y - circle.Item2).Min());
+                circles.Select(circle => circle.Center.Y - circle.Radius).Min());
         }
 
         public void Save(string filename, string path = null)

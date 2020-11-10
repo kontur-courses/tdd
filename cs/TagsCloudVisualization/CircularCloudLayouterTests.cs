@@ -26,7 +26,7 @@ namespace TagsCloudVisualization
             var testName = TestContext.CurrentContext.Test.Name;
             var drawer = new LayoutDrawer();
             drawer.AddRectangles(layouter.Rectangles);
-            drawer.AddCircle(layouter.Center, GetCircleRadius(layouter.Rectangles));
+            drawer.AddCircle(new Circle(layouter.Center, GetCircleRadius(layouter.Rectangles)));
             drawer.Draw();
             drawer.Save(testName);
         }
