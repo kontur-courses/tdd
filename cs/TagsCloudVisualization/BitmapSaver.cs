@@ -10,10 +10,7 @@ namespace TagsCloudVisualization
     {
         public static void SaveBitmapToDirectory(Bitmap imageBitmap, string savePath)
         {
-            if (!PathInRightFormat(savePath))
-            {
-                throw new ArgumentException("wrong path format");
-            }
+            if (!PathInRightFormat(savePath)) throw new ArgumentException("wrong path format");
 
             using (imageBitmap)
             {

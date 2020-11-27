@@ -9,14 +9,6 @@ namespace TagsCloudVisualizationTests
 {
     public class TagsVisualizatorTests
     {
-        private TagsVisualizator Sut { get; set; }
-
-        [SetUp]
-        public void SetUp()
-        {
-            Sut = new TagsVisualizator(new List<Rectangle>());
-        }
-
         [Test]
         public void GetBitmap_GetImageSizeThrowException_WhenRectangleOutOfBoundaries()
         {
@@ -24,9 +16,8 @@ namespace TagsCloudVisualizationTests
             var location = new Point(-100, -100);
             var size = new Size(50, 50);
             rectangles.Add(new Rectangle(location, size));
-            Sut = new TagsVisualizator(rectangles);
 
-            Action saveImage = () => Sut.GetBitmap();
+            Action saveImage = () => TagsVisualizator.GetBitmap(rectangles);
 
             saveImage.Should().Throw<ArgumentException>();
         }

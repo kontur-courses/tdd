@@ -7,10 +7,6 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private Point Center { get; }
-        private ArchimedeanSpiral ArchimedeanSpiral { get; }
-        public List<Rectangle> Rectangles { get; }
-
         public CircularCloudLayouter(Point center)
         {
             const double distanceBetweenLoops = 0.2;
@@ -20,12 +16,14 @@ namespace TagsCloudVisualization
             Rectangles = new List<Rectangle>();
         }
 
+        private Point Center { get; }
+        private ArchimedeanSpiral ArchimedeanSpiral { get; }
+        public List<Rectangle> Rectangles { get; }
+
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
-            {
                 throw new ArgumentException("rectangle Height or Size should not be negative or zero");
-            }
 
             return GetNewRectangle(rectangleSize);
         }
@@ -38,8 +36,7 @@ namespace TagsCloudVisualization
             {
                 var location = ArchimedeanSpiral.GetNextPoint();
                 rectangle = new Rectangle(location, rectangleSize);
-            }
-            while (Collided(rectangle));
+            } while (Collided(rectangle));
 
             rectangle = MoveCloserToCenter(rectangle);
             Rectangles.Add(rectangle);
@@ -66,7 +63,9 @@ namespace TagsCloudVisualization
             return movedRectangle;
         }
 
-        private bool Collided(Rectangle newRectangle) =>
-            Rectangles.Any(rectangle => rectangle.IntersectsWith(newRectangle));
+        private bool Collided(Rectangle newRectangle)
+        {
+            return Rectangles.Any(rectangle => rectangle.IntersectsWith(newRectangle));
+        }
     }
 }

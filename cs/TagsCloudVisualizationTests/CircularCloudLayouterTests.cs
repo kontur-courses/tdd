@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using NUnit.Framework;
 using FluentAssertions;
+using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
 
@@ -27,8 +27,7 @@ namespace TagsCloudVisualizationTests
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
                 var path = new PathGenerator(new DateTimeProvider()).GetNewFilePath();
-                var visualizator = new TagsVisualizator(Sut.Rectangles);
-                BitmapSaver.SaveBitmapToDirectory(visualizator.GetBitmap(), path);
+                BitmapSaver.SaveBitmapToDirectory(TagsVisualizator.GetBitmap(Sut.Rectangles), path);
 
                 Console.WriteLine($"Tag cloud visualization saved to file {path}");
             }

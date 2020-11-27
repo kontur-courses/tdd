@@ -8,7 +8,6 @@ namespace TagsCloudVisualizationTests
 {
     public class BitmapSaverTests
     {
-        private BitmapSaver Sut { get; set; }
         private Bitmap ImageBitmap { get; set; }
 
         [SetUp]
@@ -17,7 +16,6 @@ namespace TagsCloudVisualizationTests
             const int height = 10;
             const int width = 10;
             ImageBitmap = new Bitmap(width, height);
-            Sut = new BitmapSaver();
         }
 
         [TestCase(@"<html></html>", TestName = "Directory dont exist")]

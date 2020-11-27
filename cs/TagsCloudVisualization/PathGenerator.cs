@@ -4,14 +4,14 @@ namespace TagsCloudVisualization
 {
     public class PathGenerator
     {
-        private string Root { get; }
-        private IDateTimeProvider DateTimeProvider { get; }
-
         public PathGenerator(IDateTimeProvider dateTimeProvider)
         {
             Root = Directory.GetCurrentDirectory();
             DateTimeProvider = dateTimeProvider;
         }
+
+        private string Root { get; }
+        private IDateTimeProvider DateTimeProvider { get; }
 
         public string GetNewFilePath()
         {

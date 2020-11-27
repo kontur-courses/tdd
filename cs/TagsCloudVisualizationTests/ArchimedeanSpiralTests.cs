@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
-using NUnit.Framework;
 using FluentAssertions;
+using NUnit.Framework;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTests
@@ -37,7 +37,7 @@ namespace TagsCloudVisualizationTests
             int centerX, int centerY, double distanceBetweenLoops, double angleDelta)
         {
             var center = new Point(centerX, centerY);
-            Func<ArchimedeanSpiral> sut  = () => new ArchimedeanSpiral(center, distanceBetweenLoops, angleDelta);
+            Func<ArchimedeanSpiral> sut = () => new ArchimedeanSpiral(center, distanceBetweenLoops, angleDelta);
 
             sut.Should().Throw<ArgumentException>();
         }
