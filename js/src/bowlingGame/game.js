@@ -1,6 +1,10 @@
 import "chai/register-should";
 import {beginAndEndWithReporting} from "./infrastructure/reportingTest";
 
+// cd js
+// npm install
+// npm run bowling
+
 class Game {
     roll(pins) {
     }
