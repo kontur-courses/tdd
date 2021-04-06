@@ -45,7 +45,7 @@ class Game {
                 frame.bonus = nextFrame.rolls[0] || 0;
             }
             if (frame.strike) {
-                frame.bonus = this.getRollsSum(nextFrame.rolls);
+                frame.bonus = this.getRollsSum(nextFrame.rolls)
             }
         })
         return this.history.reduce((prev, current) => {
@@ -113,7 +113,18 @@ describe("Боулинг", () => {
         game.getScore().should.be.eq(27);
     });
 
-    it("double strike");
+    it("Несколько страйков подряд", () => {
+        const game = new Game();
+
+        game.roll(10); // + 10 + 10 + 10
+
+        game.roll(10); // + 10 + 10
+
+        game.roll(10); // + 10
+
+        game.getScore().should.be.eq(60);
+    });
+
     it("all strikes");
     it("Третий бросок в последнем фрейме");
 
