@@ -3,4 +3,4 @@
  * @const
  * @type {string}
  */
-export const AUTHORS = "";
+export const AUTHORS = "User";
