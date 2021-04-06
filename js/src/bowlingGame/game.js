@@ -15,6 +15,7 @@ class Game {
             score: 0,
             bonus: 0,
             spare: false,
+            strike: false,
         }
     }
 
@@ -29,15 +30,22 @@ class Game {
         frame.score = this.getRollsSum(frame.rolls);
         if (frame.score >= 10 || frame.rolls.length > 1) {
             frame.spare = frame.score === 10 && frame.rolls.length === 2;
+            frame.strike = frame.score === 10 && frame.rolls.length === 1;
             this.history[++this.frameIndex] = this.getEmptyFrame();
         }
     }
 
     getScore() {
         this.history.forEach((frame, index) => {
+            const nextFrame = this.history[index + 1];
+            if (!nextFrame) {
+                return true;
+            }
             if (frame.spare) {
-                const nextFrame = this.history[index + 1];
-                frame.bonus = nextFrame && nextFrame.rolls[0] || 0;
+                frame.bonus = nextFrame.rolls[0] || 0;
+            }
+            if (frame.strike) {
+                frame.bonus = this.getRollsSum(nextFrame.rolls);
             }
         })
         return this.history.reduce((prev, current) => {
