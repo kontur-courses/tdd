@@ -72,7 +72,21 @@ describe("Боулинг", () => {
         game.getScore().should.be.eq(16);
     });
 
-    it("Два spare подряд");
+    it("Два spare подряд", () => {
+        const game = new Game();
+
+        game.roll(3);
+        game.roll(7); // 10 + 5
+
+        game.roll(5);
+        game.roll(5); // + 10 + 4
+
+        game.roll(4);
+        game.roll(6); // + 10
+
+        game.getScore().should.be.eq(39);
+    });
+
     it("strike");
     it("double strike");
     it("all strikes");
