@@ -46,6 +46,10 @@ class Game {
             }
             if (frame.strike) {
                 frame.bonus = this.getRollsSum(nextFrame.rolls)
+                if (nextFrame.strike) {
+                    const nextNextFrame = this.history[index + 2];
+                    frame.bonus += nextNextFrame && nextNextFrame.rolls[0] || 0;
+                }
             }
         })
         return this.history.reduce((prev, current) => {
