@@ -13,6 +13,7 @@ class Game {
         return {
             rolls: [],
             score: 0,
+            bonus: 0,
             spare: false,
         }
     }
@@ -26,22 +27,22 @@ class Game {
         const frame = this.history[this.frameIndex];
         frame.rolls.push(pins);
         frame.score = this.getRollsSum(frame.rolls);
-        if (frame.score >= 10) {
-            frame.spare = frame.rolls.length === 2;
+        if (frame.score >= 10 || frame.rolls.length > 1) {
+            frame.spare = frame.score === 10 && frame.rolls.length === 2;
             this.history[++this.frameIndex] = this.getEmptyFrame();
         }
     }
 
     getScore() {
-        let score = 0;
         this.history.forEach((frame, index) => {
-            score += frame.score;
             if (frame.spare) {
                 const nextFrame = this.history[index + 1];
-                score += nextFrame && nextFrame.rolls[0] || 0;
+                frame.bonus = nextFrame && nextFrame.rolls[0] || 0;
             }
         })
-        return score;
+        return this.history.reduce((prev, current) => {
+            return prev + current.score + current.bonus;
+        }, 0)
     }
 }
 
