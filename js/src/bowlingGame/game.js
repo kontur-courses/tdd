@@ -44,6 +44,10 @@ class Game {
             return prev + current.score + current.bonus;
         }, 0)
     }
+
+    debug() {
+        console.table(this.history);
+    }
 }
 
 describe("Боулинг", () => {
@@ -88,7 +92,19 @@ describe("Боулинг", () => {
         game.getScore().should.be.eq(39);
     });
 
-    it("strike");
+    it("strike", () => {
+        const game = new Game();
+        game.roll(1);
+        game.roll(4); // + 5
+
+        game.roll(10); // + 10 + 4 + 2
+
+        game.roll(4);
+        game.roll(2); // + 6
+
+        game.getScore().should.be.eq(27);
+    });
+
     it("double strike");
     it("all strikes");
     it("Третий бросок в последнем фрейме");
