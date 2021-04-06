@@ -5,33 +5,43 @@ class Game {
     constructor() {
         this.frameIndex = 0;
         this.history = [
-            {rolls: []}
+            this.getEmptyFrame()
         ];
     }
 
-    roll(pins) {
-        const rolls = this.history[this.frameIndex].rolls;
-        rolls.push(pins);
-        if (rolls.length > 1) {
-            this.frameUp();
+    getEmptyFrame() {
+        return {
+            rolls: [],
+            score: 0,
+            spare: false,
         }
     }
 
-    frameUp() {
-        this.frameIndex++;
-        this.history[this.frameIndex] = {rolls: []};
+    getRollsSum(rolls) {
+        return rolls.reduce((prev, current) => prev + current, 0);
+    }
+
+
+    roll(pins) {
+        const frame = this.history[this.frameIndex];
+        frame.rolls.push(pins);
+        frame.score = this.getRollsSum(frame.rolls);
+        if (frame.score >= 10) {
+            frame.spare = frame.rolls.length === 2;
+            this.history[++this.frameIndex] = this.getEmptyFrame();
+        }
     }
 
     getScore() {
-        return this.history.reduce((accumulator, currentValue)=>{
-            let current = currentValue.rolls.reduce((a, b) => a + b, 0);
-
-            if (currentValue.rolls.length === 2 && current === 10) { // spare
-                current ++;
+        let score = 0;
+        this.history.forEach((frame, index) => {
+            score += frame.score;
+            if (frame.spare) {
+                const nextFrame = this.history[index + 1];
+                score += nextFrame && nextFrame.rolls[0] || 0;
             }
-
-            return accumulator + current;
-        }, 0);
+        })
+        return score;
     }
 }
 
