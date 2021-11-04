@@ -36,5 +36,16 @@ namespace TagsCloudVisualization
             var rectangle = layouter.PutNextRectangle(rectangleSize);
             rectangle.Location.Should().Be(new Point(5, 5));
         }
+
+        [TestCase(-5,10)]
+        [TestCase(5,-5)]
+        public void ShouldNotPutInvalidRectangle(int width, int height)
+        {
+            var rectangleSize = new Size(width, height);
+            var layouterCenter = new Point(20, 10);
+            var layouter = new CircularCloudLayouter(layouterCenter);
+            Action put = () => layouter.PutNextRectangle(rectangleSize);
+            put.Should().Throw<ArgumentException>();
+        }
     }
 }
