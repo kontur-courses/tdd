@@ -3,25 +3,43 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace TagsCloudVisualization
 {
     [TestFixture]
     public class CircularCloudLayouterTests
     {
+        private CircularCloudLayouter layouter;
+
+        [TearDown]
+        public void TearDown()
+        {
+            var context = TestContext.CurrentContext;
+            if (context.Result.Outcome.Status == NUnit.Framework.Interfaces.TestStatus.Failed)
+            {
+                if (!Directory.Exists("testresults"))
+                    Directory.CreateDirectory("testresults");
+                var rectangles = (List<Rectangle>)typeof(CircularCloudLayouter).GetField("lastRectangles", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(layouter);
+                Visualizer.GetBitmapFromRectangles(rectangles.ToArray(), true).Save($"testresults/{context.Test.Name}.png", ImageFormat.Png);
+            }
+        }
+
         [Test]
         public void ShouldHaveSetCenter_OnCreation()
         {
             var expectedCenter = new Point(10, 11);
-            var layouter = new CircularCloudLayouter(expectedCenter);
+            layouter = new CircularCloudLayouter(expectedCenter);
             layouter.Center.Should().Be(expectedCenter);
         }
 
         [Test]
         public void ShouldReturnRectangleWithSetSize()
         {
-            var layouter = new CircularCloudLayouter(Point.Empty);
+            layouter = new CircularCloudLayouter(Point.Empty);
             var expectedSize = new Size(10, 11);
 
             var resulRectangle = layouter.PutNextRectangle(expectedSize);
@@ -33,7 +51,7 @@ namespace TagsCloudVisualization
         public void ShouldThrow_WhenTryingToPutNegativeSizedRectangle()
         {
             var expectedCenter = Point.Empty;
-            var layouter = new CircularCloudLayouter(expectedCenter);
+            layouter = new CircularCloudLayouter(expectedCenter);
             Action action = () => layouter.PutNextRectangle(new Size(-1, -1));
             action.Should().Throw<ArgumentOutOfRangeException>();
         }
@@ -44,7 +62,7 @@ namespace TagsCloudVisualization
         public void ShouldThrow_WhenTryingToPutDegenerateRectangle(int width, int height)
         {
             var expectedCenter = Point.Empty;
-            var layouter = new CircularCloudLayouter(expectedCenter);
+            layouter = new CircularCloudLayouter(expectedCenter);
             Action action = () => layouter.PutNextRectangle(new Size(width, height));
             action.Should().Throw<ArgumentOutOfRangeException>();
         }
@@ -54,7 +72,7 @@ namespace TagsCloudVisualization
         public void FirstRectangle_ShouldHaveSameCenter(int x, int y)
         {
             var expectedCenter = new Point(x, y);
-            var layouter = new CircularCloudLayouter(expectedCenter);
+            layouter = new CircularCloudLayouter(expectedCenter);
 
             var resultRectangle = layouter.PutNextRectangle(new Size(10, 11));
             var resultCenter = resultRectangle.GetCenter();
@@ -66,7 +84,7 @@ namespace TagsCloudVisualization
         public void SecondRectangle_ShouldBePlacedNextToFirst()
         {
             var expectedCenter = Point.Empty;
-            var layouter = new CircularCloudLayouter(expectedCenter);
+            layouter = new CircularCloudLayouter(expectedCenter);
 
             var firstRectangle = layouter.PutNextRectangle(new Size(10, 11));
             var secondRectangle = layouter.PutNextRectangle(new Size(11, 10));
@@ -83,7 +101,7 @@ namespace TagsCloudVisualization
         public void SecondRectangle_ShouldBePlacedAsCloseToCenterAsPossible()
         {
             var expectedCenter = Point.Empty;
-            var layouter = new CircularCloudLayouter(expectedCenter);
+            layouter = new CircularCloudLayouter(expectedCenter);
             var firstSize = new Size(10, 11);
             var secondSize = new Size(10, 11);
             var maximumExpectedDistance = (((Point)(firstSize / 2)).Length() + ((Point)(secondSize / 2)).Length()) / Math.Sqrt(2);
@@ -99,7 +117,7 @@ namespace TagsCloudVisualization
         public void ThirdRectangle_ShouldBePlacedAsCloseToCenterAsPossible()
         {
             var expectedCenter = Point.Empty;
-            var layouter = new CircularCloudLayouter(expectedCenter);
+            layouter = new CircularCloudLayouter(expectedCenter);
             var firstSize = new Size(10, 11);
             var secondSize = new Size(10, 11);
             var maximumExpectedDistance = ((Point)(firstSize / 2)).Length() + ((Point)(secondSize / 2)).Length();
@@ -117,7 +135,7 @@ namespace TagsCloudVisualization
         public void EveryRectangle_ShouldNotIntersectWithEachOther(int count)
         {
             var expectedCenter = Point.Empty;
-            var layouter = new CircularCloudLayouter(expectedCenter);
+            layouter = new CircularCloudLayouter(expectedCenter);
             var size = new Size(10, 11);
 
             var rectangles = new List<Rectangle>(count);
@@ -138,7 +156,7 @@ namespace TagsCloudVisualization
         [TestCase(20000)]
         public void PuttingRectanglesShouldBeFast(int milliseconds)
         {
-            var layouter = new CircularCloudLayouter(Point.Empty);
+            layouter = new CircularCloudLayouter(Point.Empty);
             var size = new Size(10, 11);
 
             Action action = () =>
