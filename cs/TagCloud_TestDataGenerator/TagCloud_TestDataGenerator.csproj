@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5CBE717A-D750-45BE-B9E0-46CB36DDEA00}</ProjectGuid>
+    <ProjectGuid>{D0469A17-DF29-4344-8247-3959715BAABB}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>TagCloud</RootNamespace>
-    <AssemblyName>TagCloud</AssemblyName>
+    <RootNamespace>TagCloud_TestDataGenerator</RootNamespace>
+    <AssemblyName>TagCloud_TestDataGenerator</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -44,19 +44,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CircularCloudLayouter.cs" />
+    <Compile Include="DataGenerator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="LayoutVisualizator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\TagCloud_TestDataGenerator\TagCloud_TestDataGenerator.csproj">
-      <Project>{d0469a17-df29-4344-8247-3959715baabb}</Project>
-      <Name>TagCloud_TestDataGenerator</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
