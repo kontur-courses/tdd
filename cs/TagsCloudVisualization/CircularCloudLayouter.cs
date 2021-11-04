@@ -8,7 +8,7 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         public readonly Point Center;
-        private readonly List<(double distance, Rectangle rectangle)> lastRectangles = new();
+        private readonly List<Rectangle> lastRectangles = new();
         private int area = 0;
         public CircularCloudLayouter(Point center)
         {
@@ -23,17 +23,17 @@ namespace TagsCloudVisualization
             {
                 var location = rectangleSize / 2 * -1;
                 var rectangle = new Rectangle(new Point(location + new Size(Center)), rectangleSize);
-                lastRectangles.Add((rectangle.GetCenter().DistanceTo(Center), rectangle));
+                lastRectangles.Add(rectangle);
             }
             else
             {
                 var rectangle = CreateNextRectangle(rectangleSize);
-                lastRectangles.Add((rectangle.GetCenter().DistanceTo(Center), rectangle));
+                lastRectangles.Add(rectangle);
             }
 
             area += rectangleSize.Width * rectangleSize.Height;
 
-            return lastRectangles[^1].rectangle;
+            return lastRectangles[^1];
         }
 
         private Rectangle CreateNextRectangle(Size nextSize)
@@ -44,17 +44,17 @@ namespace TagsCloudVisualization
             {
                 var possiblePositions = new[]
                 {
-                    new Point(currRectangle.rectangle.Left, currRectangle.rectangle.Top - nextSize.Height),
-                    new Point(currRectangle.rectangle.Left, currRectangle.rectangle.Bottom),
-                    new Point(currRectangle.rectangle.Right, currRectangle.rectangle.Top),
-                    new Point(currRectangle.rectangle.Left - nextSize.Width, currRectangle.rectangle.Top),
+                    new Point(currRectangle.Left, currRectangle.Top - nextSize.Height),
+                    new Point(currRectangle.Left, currRectangle.Bottom),
+                    new Point(currRectangle.Right, currRectangle.Top),
+                    new Point(currRectangle.Left - nextSize.Width, currRectangle.Top),
                 };
                 var result = possiblePositions.Select(x => new Rectangle?(new Rectangle(x, nextSize)))
-                    .Where(x => x != currRectangle.rectangle)
+                    .Where(x => x != currRectangle)
                     .Select(x => (distance: x.Value.GetCenter().DistanceTo(Center), rectangle: x))
                     .Where(x => x.distance >= minimalDistance)
                     .Where(rectangle => lastRectangles
-                        .All(x => !x.rectangle.IntersectsWith(rectangle.rectangle.Value)))
+                        .All(x => !x.IntersectsWith(rectangle.rectangle.Value)))
                     .MinBy(x => x.distance);
                 if (result.rectangle.HasValue)
                     pendingRectangles.Add(result);
