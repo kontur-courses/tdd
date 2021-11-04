@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 using TagCloud_TestDataGenerator;
 
 namespace TagCloud
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var vs = new LayoutVisualizator();
             var layouter = new CircularCloudLayouter(new Point(0, 0));

@@ -28,10 +28,10 @@ namespace TagCloud
             canvas = CreateCanvas(rectangles);
             var g = Graphics.FromImage(canvas);
 
-            foreach (var rectangle in rectangles)
-                g.DrawRectangle(DefaultPen, rectangle);
-
             DrawBoundary(g);
+            DrawAxis(g);
+            DrawRectangles(g, rectangles);
+
             return canvas;
         }
 
@@ -50,30 +50,11 @@ namespace TagCloud
                 OpenLayout(fullFileName);
         }
 
-        private void DrawBoundary(Graphics g)
-        {
-            DefaultPen.Color = Color.Red;
-            DefaultPen.Width = 3;
-
-            var location = new Point(0, 0);
-            var boundarySize = new Size(canvas.Width - 1, canvas.Height - 1);
-            var boundary = new Rectangle(location, boundarySize);
-
-            g.DrawRectangle(DefaultPen, boundary);
-            DefaultPen.Color = ParametersKeeper.DefaultColor;
-            DefaultPen.Width = ParametersKeeper.DefaultPenWidth;
-        }
-
         private Bitmap CreateCanvas(List<Rectangle> rectangles)
         {
             var canvasSize = GetSize(rectangles);
             rectangles = RelocateRectangles(rectangles, canvasSize);
             return new Bitmap(canvasSize.Width, canvasSize.Height);
-        }
-
-        private void OpenLayout(string fileName)
-        {
-            Process.Start(fileName);
         }
 
         private Size GetSize(List<Rectangle> rectangles)
@@ -99,6 +80,48 @@ namespace TagCloud
             }
 
             return rectangles;
+        }
+
+        private void DrawBoundary(Graphics g)
+        {
+            DefaultPen.Color = Color.Red;
+            DefaultPen.Width = 3;
+
+            var location = new Point(0, 0);
+            var boundarySize = new Size(canvas.Width - 1, canvas.Height - 1);
+            var boundary = new Rectangle(location, boundarySize);
+
+            g.DrawRectangle(DefaultPen, boundary);
+
+            ResetPenToDefault();
+        }
+
+        private void DrawAxis(Graphics g)
+        {
+            DefaultPen.Color = Color.Green;
+            DefaultPen.Width = 2;
+
+            g.DrawLine(DefaultPen, canvas.Width / 2, 0, canvas.Width / 2, canvas.Height);
+            g.DrawLine(DefaultPen, 0, canvas.Height / 2, canvas.Width, canvas.Height / 2);
+
+            ResetPenToDefault();
+        }
+
+        private void DrawRectangles(Graphics g, List<Rectangle> rectangles)
+        {
+            foreach (var rectangle in rectangles)
+                g.DrawRectangle(DefaultPen, rectangle);
+        }
+
+        private void ResetPenToDefault()
+        {
+            DefaultPen.Color = ParametersKeeper.DefaultColor;
+            DefaultPen.Width = ParametersKeeper.DefaultPenWidth;
+        }
+
+        private void OpenLayout(string fileName)
+        {
+            Process.Start(fileName);
         }
 
         private static string GetDesktopPath()

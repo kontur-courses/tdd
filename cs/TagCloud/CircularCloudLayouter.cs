@@ -6,13 +6,14 @@ namespace TagCloud
 {
     public class CircularCloudLayouter
     {
-        private readonly Point CENTER;
+        private const int DefaultSpaceBetweenRectangles = 5;
+
+        private readonly Point center;
         private readonly List<Rectangle> rectangles;
-        private const int DEFAULT_SPACE_BETWEEN_RECTANGLES = 5;
 
         public CircularCloudLayouter(Point center)
         {
-            CENTER = center;
+            this.center = center;
             rectangles = new List<Rectangle>();
         }
 
@@ -22,13 +23,15 @@ namespace TagCloud
             var rectangle = new Rectangle(Point.Empty, rectangleSize);
 
             if (rectangles.Count == 0)
+            {
                 rectangle.Location = GetOffsetFromCenter(rectangleSize);
+            }
             else
             {
                 var prevRect = rectangles[rectangles.Count - 1];
                 rectangle.Location =
-                    new Point(prevRect.Location.X + prevRect.Width + DEFAULT_SPACE_BETWEEN_RECTANGLES,
-                        prevRect.Location.Y + prevRect.Height + DEFAULT_SPACE_BETWEEN_RECTANGLES);
+                    new Point(prevRect.Location.X + prevRect.Width + DefaultSpaceBetweenRectangles,
+                        prevRect.Location.Y + prevRect.Height + DefaultSpaceBetweenRectangles);
             }
 
             rectangles.Add(rectangle);
@@ -37,12 +40,12 @@ namespace TagCloud
 
         public Point GetCenterPoint()
         {
-            return CENTER;
+            return center;
         }
 
-        public Point GetOffsetFromCenter(Size rectangleSize)
+        public List<Rectangle> GetRectangles()
         {
-            return new Point(CENTER.X - rectangleSize.Width / 2, CENTER.Y - rectangleSize.Height / 2);
+            return new List<Rectangle>(rectangles);
         }
 
         private void ThrowIfIncorrectSize(Size rectangleSize)
@@ -51,9 +54,9 @@ namespace TagCloud
                 throw new ArgumentException("Width and height of rectangle must be a positive numbers");
         }
 
-        public List<Rectangle> GetRectangles()
+        private Point GetOffsetFromCenter(Size rectangleSize)
         {
-            return new List<Rectangle>(rectangles);
+            return new Point(center.X - rectangleSize.Width / 2, center.Y - rectangleSize.Height / 2);
         }
     }
 }

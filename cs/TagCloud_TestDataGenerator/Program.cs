@@ -5,7 +5,6 @@ namespace TagCloud_TestDataGenerator
     {
         static void Main(string[] args)
         {
-
         }
     }
 }
