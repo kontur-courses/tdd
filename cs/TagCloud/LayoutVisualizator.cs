@@ -10,11 +10,18 @@ namespace TagCloud
 {
     public class LayoutVisualizator
     {
-        private static readonly string DefaultSavePath = GetDesktopPath();
-        private static readonly Pen DefaultPen = new Pen(Color.Black, 1);
-        private static readonly string DefaultFileNamePrefix = "TagCloud";
+        private static readonly Pen DefaultPen;
+        private static readonly string DefaultSavePath;
+        private static readonly string DefaultFileNamePrefix;
 
         private Bitmap canvas;
+
+        static LayoutVisualizator()
+        {
+            DefaultPen = new Pen(ParametersKeeper.DefaultColor, ParametersKeeper.DefaultPenWidth);
+            DefaultSavePath = GetDesktopPath();
+            DefaultFileNamePrefix = "TagCloud";
+        }
 
         public Bitmap VisualizeCloud(List<Rectangle> rectangles)
         {
@@ -24,6 +31,7 @@ namespace TagCloud
             foreach (var rectangle in rectangles)
                 g.DrawRectangle(DefaultPen, rectangle);
 
+            DrawBoundary(g);
             return canvas;
         }
 
@@ -42,15 +50,30 @@ namespace TagCloud
                 OpenLayout(fullFileName);
         }
 
-        private void OpenLayout(string fileName)
+        private void DrawBoundary(Graphics g)
         {
-            Process.Start(fileName);
+            DefaultPen.Color = Color.Red;
+            DefaultPen.Width = 3;
+
+            var location = new Point(0, 0);
+            var boundarySize = new Size(canvas.Width - 1, canvas.Height - 1);
+            var boundary = new Rectangle(location, boundarySize);
+
+            g.DrawRectangle(DefaultPen, boundary);
+            DefaultPen.Color = ParametersKeeper.DefaultColor;
+            DefaultPen.Width = ParametersKeeper.DefaultPenWidth;
         }
 
         private Bitmap CreateCanvas(List<Rectangle> rectangles)
         {
             var canvasSize = GetSize(rectangles);
+            rectangles = RelocateRectangles(rectangles, canvasSize);
             return new Bitmap(canvasSize.Width, canvasSize.Height);
+        }
+
+        private void OpenLayout(string fileName)
+        {
+            Process.Start(fileName);
         }
 
         private Size GetSize(List<Rectangle> rectangles)
@@ -60,13 +83,34 @@ namespace TagCloud
             var height
                 = rectangles.Max(rect => rect.Y + rect.Height) - rectangles.Min(rect => rect.Y);
 
-            return new Size(width, height);
+            var sizeMultiplier = 2;
+            return new Size(width * sizeMultiplier, height * sizeMultiplier);
+        }
+
+        private List<Rectangle> RelocateRectangles(List<Rectangle> rectangles, Size canvasSize)
+        {
+            for (var i = 0; i < rectangles.Count; i++)
+            {
+                var newX = rectangles[i].X + canvasSize.Width / 2;
+                var newY = rectangles[i].Y + canvasSize.Height / 2;
+
+                var newRect = new Rectangle(new Point(newX, newY), rectangles[i].Size);
+                rectangles[i] = newRect;
+            }
+
+            return rectangles;
         }
 
         private static string GetDesktopPath()
         {
             var desktopPathSuffix = Path.Combine("desktop", "layouts");
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), desktopPathSuffix);
+        }
+
+        private static class ParametersKeeper
+        {
+            public static readonly Color DefaultColor = Color.Black;
+            public static readonly int DefaultPenWidth = 1;
         }
     }
 }
