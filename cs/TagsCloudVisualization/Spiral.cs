@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
-    class Spiral
+    public class Spiral
     {
-        public Double CurrentAngle { get; set; }
-        public Double Step { get; set; }
-        public Double AngleStep { get; set; }
+        public double CurrentAngle { get; set; }
+        public double Step { get; set; }
+        public double AngleStep { get; set; }
 
         public Point Central { get; set; }
 
