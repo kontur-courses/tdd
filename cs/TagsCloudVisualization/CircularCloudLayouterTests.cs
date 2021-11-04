@@ -25,6 +25,7 @@ namespace TagsCloudVisualization
                     Directory.CreateDirectory("testresults");
                 var rectangles = (List<Rectangle>)typeof(CircularCloudLayouter).GetField("lastRectangles", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(layouter);
                 Visualizer.GetBitmapFromRectangles(rectangles.ToArray(), true).Save($"testresults/{context.Test.Name}.png", ImageFormat.Png);
+                TestContext.Out.WriteLine($"Tag cloud visualization saved to file <testresults/{context.Test.Name}.png>");
             }
         }
 
