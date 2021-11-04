@@ -5,7 +5,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using TagCloud;
 
-namespace TagCloud_Tests
+namespace TagCloudVisualization_Tests
 {
     public class CircularLayouter_Should
     {
@@ -52,7 +52,7 @@ namespace TagCloud_Tests
             [ValueSource(nameof(IncorrectRectangleSizes))]
             Size rectSize)
         {
-            var layouter = new CircularCloudLayouter(new Point(0,0));
+            var layouter = new CircularCloudLayouter(new Point(0, 0));
 
             Action act = () => layouter.PutNextRectangle(rectSize);
 

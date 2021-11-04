@@ -50,5 +50,10 @@ namespace TagCloud
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException("Width and height of rectangle must be a positive numbers");
         }
+
+        public List<Rectangle> GetRectangles()
+        {
+            return new List<Rectangle>(rectangles);
+        }
     }
 }
