@@ -14,7 +14,11 @@ namespace TagsCloudVisualization
         public Spiral(Point centralPoint)
         {
             Central = centralPoint;
+
+            //????
             CurrentAngle = 0;
+            Step = 1;
+            AngleStep = Math.PI / 360;
         }
 
         public Point GetNextPoint()
@@ -26,7 +30,6 @@ namespace TagsCloudVisualization
             var nextPoint = new Point(roundNextX, roundNextY);
             CurrentAngle += AngleStep;
             return nextPoint;
-
         }
     }
 }

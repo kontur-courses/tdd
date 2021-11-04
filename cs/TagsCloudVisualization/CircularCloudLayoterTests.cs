@@ -1,15 +1,12 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
-    class CircularCloudLayoterTests
+    public class CircularCloudLayoterTests
     {
         [Test]
         public void ShouldCreateCircularCloud()
@@ -37,6 +34,19 @@ namespace TagsCloudVisualization
             rectangle.Location.Should().Be(new Point(5, 5));
         }
 
+        [TestCase(10)]
+        [TestCase(100)]
+        [TestCase(1000)]
+        public void ShouldPutManyRectangles(int numberOfRactangles)
+        {
+            var rectangleSize = new Size(30, 10);
+            var layouterCenter = new Point(20, 10);
+            var layouter = new CircularCloudLayouter(layouterCenter);
+            for (int i = 0; i < numberOfRactangles; i ++)
+                layouter.PutNextRectangle(rectangleSize);
+            layouter.RectangleList.Count.Should().Be(numberOfRactangles);
+        }
+
         [TestCase(-5,10)]
         [TestCase(5,-5)]
         public void ShouldNotPutInvalidRectangle(int width, int height)
@@ -46,6 +56,26 @@ namespace TagsCloudVisualization
             var layouter = new CircularCloudLayouter(layouterCenter);
             Action put = () => layouter.PutNextRectangle(rectangleSize);
             put.Should().Throw<ArgumentException>();
+        }
+        
+        [Test]
+        public void RectanglesShouldNotIntersect()
+        {
+            var rectangleSize = new Size(2, 2);
+            var layouterCenter = new Point(20, 10);
+            var layouter = new CircularCloudLayouter(layouterCenter);
+            for (int i = 0; i < 10; i++)
+            {
+                layouter.PutNextRectangle(rectangleSize);
+            }
+            for (int i = 0; i < layouter.RectangleList.Count; i++)
+            {
+                var currentRectangle = layouter.RectangleList[i];
+                var act = layouter.RectangleList
+                    .Where(rectangle => rectangle != currentRectangle)
+                    .Any(rectangle => rectangle.IntersectsWith(currentRectangle));
+                act.Should().BeFalse();
+            }
         }
     }
 }
