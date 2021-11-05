@@ -4,28 +4,16 @@ using System.Linq;
 
 namespace TagsCloudVisualizationTests
 {
-    public class PointsVisualizer
+    public class PointsVisualizer : Visualizer
     {
-        private readonly Size size;
         private readonly List<Point> points;
 
-        public PointsVisualizer(Size bitmapSize, IEnumerable<Point> points)
+        public PointsVisualizer(Size bitmapSize, IEnumerable<Point> points) : base(bitmapSize)
         {
-            size = bitmapSize;
             this.points = points.ToList();
         }
 
-        public void SaveToBitmap(string filename)
-        {
-            var bitmap = new Bitmap(size.Width, size.Height);
-            var graphics = Graphics.FromImage(bitmap);
-
-            DrawPoints(graphics);
-            graphics.Save();
-            bitmap.Save(filename);
-        }
-
-        private void DrawPoints(Graphics graphics)
+        protected override void Draw(Graphics graphics)
         {
             var pen = new Pen(Color.OrangeRed, 1);
             var pointsList = points.ToList();
