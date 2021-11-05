@@ -1,19 +1,72 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using TagsCloudVisualization.Extensions;
+using TagsCloudVisualization.Interfaces;
 
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
         private readonly Point _center;
+        private readonly List<Rectangle> _rectangles = new();
+        private readonly IVectorsGenerator _vectorsGenerator = new CircularVectorsGenerator(0.005, 360);
 
         public CircularCloudLayouter(Point center)
         {
+            _center = center;
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            throw new NotImplementedException();
+            if (rectangleSize.Width <= 0) throw new ArgumentException("Width should be positive");
+            if (rectangleSize.Height <= 0) throw new ArgumentException("Height should be positive");
+
+            var rectangle = CreateCorrectRectangle(rectangleSize);
+            ShiftRectangleToCenter(rectangle);
+            _rectangles.Add(rectangle);
+            return rectangle;
+        }
+
+        private Rectangle CreateCorrectRectangle(Size rectangleSize)
+        {
+            var rectangle = new Rectangle(_center, rectangleSize);
+            foreach (var vector in _vectorsGenerator.Generate())
+            {
+                rectangle.X = _center.X + vector.X - rectangleSize.Width / 2;
+                rectangle.Y = _center.Y + vector.Y - rectangleSize.Height / 2;
+                if (!_rectangles.Any(x => x.IntersectsWith(rectangle))) return rectangle;
+            }
+
+            throw new Exception();
+        }
+
+        private void ShiftRectangleToCenter(Rectangle rectangle)
+        {
+            var center = rectangle.GetCenter();
+            var dir = new Point(_center.X - center.X, _center.Y - center.Y);
+            var shift = new Point(Math.Sign(dir.X), Math.Sign(dir.Y));
+
+            while (Math.Abs(_center.X - rectangle.GetCenter().X) > 0)
+            {
+                rectangle.X += shift.X;
+                if (_rectangles.Any(rect => rect.IntersectsWith(rectangle)))
+                {
+                    rectangle.X -= shift.X;
+                    break;
+                }
+            }
+
+            while (Math.Abs(_center.Y - rectangle.GetCenter().Y) > 0)
+            {
+                rectangle.Y += shift.Y;
+                if (_rectangles.Any(rect => rect.IntersectsWith(rectangle)))
+                {
+                    rectangle.Y -= shift.Y;
+                    break;
+                }
+            }
         }
     }
 }
