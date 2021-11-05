@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using TagsCloudVisualization;
 using FluentAssertions;
@@ -8,6 +10,21 @@ namespace TagsCloudVisualizationTests
 {
     public class ArchimedeanSpiralTests
     {
+        [Test]
+        [Explicit]
+        public void GetPoint_SaveToBitmap()
+        {
+            var size = new Size(500, 500);
+            var spiral = new ArchimedeanSpiral(new Point(size.Width / 2, size.Height / 2), 10);
+            var points = Enumerable.Range(0, 360 * 3).Select(spiral.GetPoint);
+            var visualizer = new PointsVisualizer(size, points);
+
+            var filename = "ArchimedeanSpiral.GetPoint_" + DateTime.Now.Ticks;
+            var savePath = Path.Combine(Directory.GetCurrentDirectory(), $"{filename}.bmp");
+            visualizer.SaveToBitmap(savePath);
+            TestContext.Out.WriteLine($"Saved to '{savePath}'");
+        }
+
         [TestCase(0, 0)]
         [TestCase(1, 2)]
         [TestCase(-1, -2)]
