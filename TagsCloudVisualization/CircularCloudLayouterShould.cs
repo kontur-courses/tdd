@@ -17,7 +17,7 @@ namespace TagsCloudVisualization
             var layouter = new CircularCloudLayouter(center);
 
             layouter.Rectangles.Should().NotBeNull();
-            layouter.CloudCenter.Should().Equals(center);
+            layouter.CloudCenter.Should().BeEquivalentTo(center);
         }
 
         [TestCase(-1, 20, TestName = "width or height is negative")]
