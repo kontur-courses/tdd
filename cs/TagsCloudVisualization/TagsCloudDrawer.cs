@@ -22,23 +22,35 @@ namespace TagsCloudVisualization
             Validate(imageSize, cloudScale);
             var bitmap = new Bitmap(imageSize.Width, imageSize.Height);
             var graphics = Graphics.FromImage(bitmap);
-            var brush = new SolidBrush(new Color());
-
-            var bounds = GetBoundingSize(rectangles);
-            var scaleX = bounds.Width / (bitmap.Width * cloudScale.Width);
-            var scaleY = bounds.Height / (bitmap.Height * cloudScale.Height);
 
             graphics.FillRectangle(Brushes.Gray, 0, 0, bitmap.Width, bitmap.Height);
             graphics.TranslateTransform(bitmap.Width / 2f, bitmap.Height / 2f);
-            graphics.ScaleTransform(1 / scaleX, 1 / scaleY);
 
+            if (rectangles.Length > 0)
+            {
+                ScaleClouds(graphics, imageSize, cloudScale, rectangles);
+                FillWithRectangles(graphics, rectangles);
+            }
+
+            return bitmap;
+        }
+
+        private void ScaleClouds(Graphics graphics, Size imageSize, SizeF cloudScale, Rectangle[] rectangles)
+        {
+            var bounds = GetBoundingSize(rectangles);
+            var scaleX = bounds.Width / (imageSize.Width * cloudScale.Width);
+            var scaleY = bounds.Height / (imageSize.Height * cloudScale.Height);
+            graphics.ScaleTransform(1 / scaleX, 1 / scaleY);
+        }
+
+        private void FillWithRectangles(Graphics graphics, Rectangle[] rectangles)
+        {
+            var brush = new SolidBrush(new Color());
             foreach (var rectangle in rectangles)
             {
                 brush.Color = _colorGenerator.Generate();
                 graphics.FillRectangle(brush, rectangle);
             }
-
-            return bitmap;
         }
 
         private static void Validate(Size imageSize, SizeF cloudScale)
