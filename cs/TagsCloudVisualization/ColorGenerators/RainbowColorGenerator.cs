@@ -6,9 +6,8 @@ namespace TagsCloudVisualization.ColorGenerators
 {
     public class RainbowColorGenerator : IColorGenerator
     {
-        private readonly Random _random;
-
-        private static readonly Color[] RainbowColors = {
+        private static readonly Color[] RainbowColors =
+        {
             Color.Red,
             Color.Orange,
             Color.Yellow,
@@ -17,7 +16,9 @@ namespace TagsCloudVisualization.ColorGenerators
             Color.Blue,
             Color.Purple
         };
-        
+
+        private readonly Random _random;
+
         public RainbowColorGenerator(Random random)
         {
             _random = random;

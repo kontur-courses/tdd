@@ -8,7 +8,7 @@ namespace TagsCloudVisualization.ColorGenerators
     {
         private readonly Random _random;
 
-        public  RandomColorGenerator(Random random)
+        public RandomColorGenerator(Random random)
         {
             _random = random;
         }
@@ -16,9 +16,9 @@ namespace TagsCloudVisualization.ColorGenerators
         public Color Generate()
         {
             return Color.FromArgb(
-                _random.Next(175, 256), 
-                _random.Next(256), 
-                _random.Next(256), 
+                _random.Next(175, 256),
+                _random.Next(256),
+                _random.Next(256),
                 _random.Next(256));
         }
     }
