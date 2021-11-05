@@ -16,9 +16,8 @@ namespace TagsCloudVisualizationTests
         protected override void Draw(Graphics graphics)
         {
             var pen = new Pen(Color.OrangeRed, 1);
-            var pointsList = points.ToList();
-            var startPoint = pointsList.First();
-            foreach (var point in pointsList.Skip(1))
+            var startPoint = points.First();
+            foreach (var point in points.Skip(1))
             {
                 graphics.DrawLine(pen, startPoint, point);
                 startPoint = point;
