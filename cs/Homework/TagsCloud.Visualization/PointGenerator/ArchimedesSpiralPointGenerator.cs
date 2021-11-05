@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace TagsCloud.Visualization
+namespace TagsCloud.Visualization.PointGenerator
 {
     public class ArchimedesSpiralPointGenerator : IPointGenerator
     {
@@ -15,7 +15,7 @@ namespace TagsCloud.Visualization
         public ArchimedesSpiralPointGenerator(
             Point center,
             double angleDelta = Math.PI / 360,
-            double xAxisCompression = 1, 
+            double xAxisCompression = 1,
             double yAxisCompression = 1)
         {
             this.center = center;

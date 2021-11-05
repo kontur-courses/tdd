@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using TagsCloud.Visualization.Extensions;
+using TagsCloud.Visualization.PointGenerator;
 
 namespace TagsCloud.Visualization
 {
-    public class CircularCloudLayouter
+    public class CircularCloudLayouter : ICloudLayouter
     {
         private readonly Point center;
         private readonly IPointGenerator pointGenerator;
@@ -55,7 +57,7 @@ namespace TagsCloud.Visualization
         private Rectangle Shift(Rectangle rectangle, Point offset)
         {
             var shiftingRectangle = rectangle;
-            while (!shiftingRectangle.IntersectsWith(rectangles) 
+            while (!shiftingRectangle.IntersectsWith(rectangles)
                    && !IsOnTheSameAxis(shiftingRectangle.GetCenter(), center))
             {
                 rectangle = shiftingRectangle;
@@ -65,7 +67,9 @@ namespace TagsCloud.Visualization
             return rectangle;
         }
 
-        private bool IsOnTheSameAxis(Point point, Point otherPoint) 
-            => point.X == otherPoint.X || point.Y == otherPoint.Y;
+        private bool IsOnTheSameAxis(Point point, Point otherPoint)
+        {
+            return point.X == otherPoint.X || point.Y == otherPoint.Y;
+        }
     }
 }

@@ -2,7 +2,7 @@
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using TagsCloud.Visualization;
+using TagsCloud.Visualization.PointGenerator;
 
 namespace TagsCloud.Tests
 {

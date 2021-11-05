@@ -5,6 +5,8 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using TagsCloud.Visualization;
+using TagsCloud.Visualization.Extensions;
+using TagsCloud.Visualization.PointGenerator;
 
 namespace TagsCloud.Tests
 {
@@ -88,15 +90,13 @@ namespace TagsCloud.Tests
             var width = random.Next(300);
             var height = random.Next(200);
             var size = new Size(width, height);
-            
+
             var rectangles = Enumerable.Range(0, count)
                 .Select(_ => layouter.PutNextRectangle(size));
 
             foreach (var rectangle in rectangles)
-            {
                 rectangle.Location.GetDistance(center).Should()
                     .BeLessThan(Math.Sqrt(width * height * count));
-            }
         }
 
         [TestCase(1000, TestName = "Big count")]

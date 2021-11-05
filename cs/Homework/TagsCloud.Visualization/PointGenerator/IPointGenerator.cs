@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 
-namespace TagsCloud.Visualization
+namespace TagsCloud.Visualization.PointGenerator
 {
     public interface IPointGenerator
     {
