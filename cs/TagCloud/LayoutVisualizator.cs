@@ -15,6 +15,7 @@ namespace TagCloud
         private static readonly string DefaultFileNamePrefix;
 
         private Bitmap canvas;
+        private int circleCloudRadius;
 
         static LayoutVisualizator()
         {
@@ -26,13 +27,31 @@ namespace TagCloud
         public Bitmap VisualizeCloud(List<Rectangle> rectangles)
         {
             canvas = CreateCanvas(rectangles);
-            var g = Graphics.FromImage(canvas);
+            circleCloudRadius = GetCircleRadius(rectangles);
+            RelocateRectangles(rectangles);
 
+            var g = Graphics.FromImage(canvas);
             DrawBoundary(g);
             DrawAxis(g);
+            DrawCloudBoundary(g);
             DrawRectangles(g, rectangles);
 
             return canvas;
+        }
+
+        private void DrawCloudBoundary(Graphics g)
+        {
+            var location = new Point((-circleCloudRadius) + canvas.Width / 2,
+                (-circleCloudRadius) + canvas.Height / 2);
+
+            g.DrawEllipse(DefaultPen, new Rectangle(location,
+                new Size(circleCloudRadius * 2, circleCloudRadius * 2)));
+        }
+
+        private int GetCircleRadius(List<Rectangle> rectangles)
+        {
+            var boundaryBox = GetRectanglesBoundaryBox(rectangles);
+            return Math.Max(boundaryBox.Width, boundaryBox.Height) / 2;
         }
 
         public void SaveToDesktop(bool shouldOpenAfterCreate = true)
@@ -52,34 +71,32 @@ namespace TagCloud
 
         private Bitmap CreateCanvas(List<Rectangle> rectangles)
         {
-            var canvasSize = GetSize(rectangles);
-            rectangles = RelocateRectangles(rectangles, canvasSize);
-            return new Bitmap(canvasSize.Width, canvasSize.Height);
+            var canvasSize = GetRectanglesBoundaryBox(rectangles);
+            var multiplier = 2;
+
+            return new Bitmap(canvasSize.Width * multiplier, canvasSize.Height * multiplier);
         }
 
-        private Size GetSize(List<Rectangle> rectangles)
+        private Size GetRectanglesBoundaryBox(List<Rectangle> rectangles)
         {
             var width
                 = rectangles.Max(rect => rect.X + rect.Width) - rectangles.Min(rect => rect.X);
             var height
                 = rectangles.Max(rect => rect.Y + rect.Height) - rectangles.Min(rect => rect.Y);
 
-            var sizeMultiplier = 2;
-            return new Size(width * sizeMultiplier, height * sizeMultiplier);
+            return new Size(width, height);
         }
 
-        private List<Rectangle> RelocateRectangles(List<Rectangle> rectangles, Size canvasSize)
+        private void RelocateRectangles(List<Rectangle> rectangles)
         {
             for (var i = 0; i < rectangles.Count; i++)
             {
-                var newX = rectangles[i].X + canvasSize.Width / 2;
-                var newY = rectangles[i].Y + canvasSize.Height / 2;
+                var newX = rectangles[i].X + canvas.Width / 2;
+                var newY = rectangles[i].Y + canvas.Height / 2;
 
                 var newRect = new Rectangle(new Point(newX, newY), rectangles[i].Size);
                 rectangles[i] = newRect;
             }
-
-            return rectangles;
         }
 
         private void DrawBoundary(Graphics g)
