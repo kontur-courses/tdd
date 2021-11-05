@@ -1,0 +1,71 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+
+namespace TagsCloud.Visualization
+{
+    public class CircularCloudLayouter
+    {
+        private readonly Point center;
+        private readonly IPointGenerator pointGenerator;
+        private readonly List<Rectangle> rectangles = new();
+
+        public CircularCloudLayouter(Point center, IPointGenerator pointGenerator)
+        {
+            this.center = center;
+            this.pointGenerator = pointGenerator;
+        }
+
+        public Rectangle PutNextRectangle(Size rectangleSize)
+        {
+            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+                throw new ArgumentException($"rectangle's width and height must be positive, but was: {rectangleSize}");
+
+            var rectangle = GetFirstCorrectRectangle(rectangleSize);
+
+            rectangle = ShiftRectangleToCenter(rectangle);
+
+            rectangles.Add(rectangle);
+
+            return rectangle;
+        }
+
+        private Rectangle GetFirstCorrectRectangle(Size rectangleSize)
+        {
+            var rectangleCenter = new Size(rectangleSize.Width / 2, rectangleSize.Height / 2);
+            foreach (var point in pointGenerator.GenerateNextPoint())
+            {
+                var rectangle = new Rectangle(Point.Round(point) - rectangleCenter, rectangleSize);
+                if (!rectangle.IntersectsWith(rectangles))
+                    return rectangle;
+            }
+
+            throw new Exception();
+        }
+
+        private Rectangle ShiftRectangleToCenter(Rectangle rectangle)
+        {
+            var rectangleCenter = rectangle.GetCenter();
+            var direction = new Point(center.X - rectangleCenter.X, center.Y - rectangleCenter.Y);
+            var offset = new Point(Math.Sign(direction.X), Math.Sign(direction.Y));
+
+            return Shift(Shift(rectangle, new Point(offset.X, 0)), new Point(0, offset.Y));
+        }
+
+        private Rectangle Shift(Rectangle rectangle, Point offset)
+        {
+            var shiftingRectangle = rectangle;
+            while (!shiftingRectangle.IntersectsWith(rectangles) 
+                   && !IsOnTheSameAxis(shiftingRectangle.GetCenter(), center))
+            {
+                rectangle = shiftingRectangle;
+                shiftingRectangle.Offset(offset);
+            }
+
+            return rectangle;
+        }
+
+        private bool IsOnTheSameAxis(Point point, Point otherPoint) 
+            => point.X == otherPoint.X || point.Y == otherPoint.Y;
+    }
+}
