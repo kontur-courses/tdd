@@ -33,7 +33,7 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void PutFirstRectangleInTheCenterOfCloud()
+        public void PutFirstRectangleInTheCloudCenter()
         {
             var rectangleSize = new Size(100, 100);
             var center = new Point(0, 0);
