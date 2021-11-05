@@ -1,12 +1,17 @@
-﻿using System;
+﻿using System.Drawing;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
-    class CircularCloudLayouter
-    {
+    public class CircularCloudLayouter
+    { 
+        public readonly List<Rectangle> Rectangles;
+        public readonly Point CloudCenter;
+
+        public CircularCloudLayouter(Point center)
+        {
+            Rectangles = new List<Rectangle>();
+            CloudCenter = center;
+        }
     }
 }
