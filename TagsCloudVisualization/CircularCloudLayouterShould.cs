@@ -31,5 +31,18 @@ namespace TagsCloudVisualization
 
             act.Should().Throw<ArgumentException>();
         }
+
+        [Test]
+        public void PutFirstRectangleInTheCenterOfCloud()
+        {
+            var rectangleSize = new Size(100, 100);
+            var center = new Point(0, 0);
+            var layouter = new CircularCloudLayouter(center);
+            var expectedLocation = new Point(-50, 50);
+
+            var firstRectangle = layouter.PutNextRectangle(rectangleSize);
+
+            firstRectangle.Location.Should().BeEquivalentTo(expectedLocation);
+        }
     }
 }

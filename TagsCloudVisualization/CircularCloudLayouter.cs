@@ -18,7 +18,13 @@ namespace TagsCloudVisualization
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             CheckRectangleSizeCorrectness(rectangleSize);
-            return new Rectangle();
+            var result = new Rectangle();
+            if (Rectangles.Count == 0)
+            {
+                result.Location = new Point(-1 * rectangleSize.Width / 2, rectangleSize.Height / 2);
+                Rectangles.Add(result);
+            }
+            return result;
         }
 
         private void CheckRectangleSizeCorrectness(Size rectangleSize)
