@@ -35,7 +35,6 @@ namespace TagsCloud.Visualization.PointGenerator
 
                 yield return new Point(x, y);
             }
-
             // ReSharper disable once IteratorNeverReturns
         }
     }

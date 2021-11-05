@@ -37,7 +37,7 @@ namespace TagsCloud.Visualization
             var rectangleCenter = new Size(rectangleSize.Width / 2, rectangleSize.Height / 2);
             foreach (var point in pointGenerator.GenerateNextPoint())
             {
-                var rectangle = new Rectangle(Point.Round(point) - rectangleCenter, rectangleSize);
+                var rectangle = new Rectangle(point - rectangleCenter, rectangleSize);
                 if (!rectangle.IntersectsWith(rectangles))
                     return rectangle;
             }
@@ -67,9 +67,7 @@ namespace TagsCloud.Visualization
             return rectangle;
         }
 
-        private bool IsOnTheSameAxis(Point point, Point otherPoint)
-        {
-            return point.X == otherPoint.X || point.Y == otherPoint.Y;
-        }
+        private bool IsOnTheSameAxis(Point point, Point otherPoint) 
+            => point.X == otherPoint.X || point.Y == otherPoint.Y;
     }
 }

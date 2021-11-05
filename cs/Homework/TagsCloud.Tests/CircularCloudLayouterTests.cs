@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using TagsCloud.Visualization;
 using TagsCloud.Visualization.Extensions;
 using TagsCloud.Visualization.PointGenerator;
@@ -14,13 +16,33 @@ namespace TagsCloud.Tests
     {
         private Point center;
         private CircularCloudLayouter layouter;
+        private List<Rectangle> rectangles;
 
         [SetUp]
         public void InitLayouter()
         {
+            rectangles = new List<Rectangle>();
             center = new Point(10, 10);
             layouter = new CircularCloudLayouter(center, new ArchimedesSpiralPointGenerator(center));
         }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome == ResultState.Failure
+                && rectangles.Count > 0)
+            {
+                var testName = TestContext.CurrentContext.Test.Name;
+                var drawer = new TestDrawer();
+                var image = drawer.Draw(rectangles.ToArray());
+                var path = Path.Combine(GetDirectoryForSavingFailedTest(), $"{testName}.png");
+                image.Save(path);
+
+                Console.WriteLine(TestContext.CurrentContext.Test.Name + " failed");
+                Console.WriteLine("Tag cloud visualization saved to file " + path);
+            }
+        }
+
 
         [TestCase(0, 1, TestName = "Only one is zero")]
         [TestCase(0, 0, TestName = "Both coordinates are zero")]
@@ -37,7 +59,7 @@ namespace TagsCloud.Tests
         [TestCase(10)]
         public void PutNextRectangle_RectanglesAmount_ShouldBeEqual_AmountOfAdded(int count)
         {
-            var rectangles = PutRandomRectangles(count);
+            rectangles = PutRandomRectangles(count);
 
             rectangles.Should().HaveCount(count);
         }
@@ -68,7 +90,7 @@ namespace TagsCloud.Tests
         [Test]
         public void PutNextRectangle_Rectangles_Should_HaveDifferentCentres()
         {
-            var rectangles = PutRandomRectangles(1000);
+            rectangles = PutRandomRectangles(10);
 
             rectangles.Should().OnlyHaveUniqueItems(x => x.GetCenter());
         }
@@ -76,7 +98,7 @@ namespace TagsCloud.Tests
         [Test]
         public void Rectangles_ShouldNot_Intersect()
         {
-            var rectangles = PutRandomRectangles(1000).ToList();
+            rectangles = PutRandomRectangles(20);
 
             foreach (var (rectangle, otherRectangles) in GetItemAndListWithoutIt(rectangles))
                 rectangle.IntersectsWith(otherRectangles).Should().BeFalse();
@@ -91,8 +113,9 @@ namespace TagsCloud.Tests
             var height = random.Next(200);
             var size = new Size(width, height);
 
-            var rectangles = Enumerable.Range(0, count)
-                .Select(_ => layouter.PutNextRectangle(size));
+            rectangles = Enumerable.Range(0, count)
+                .Select(_ => layouter.PutNextRectangle(size))
+                .ToList();
 
             foreach (var rectangle in rectangles)
                 rectangle.Location.GetDistance(center).Should()
@@ -103,7 +126,7 @@ namespace TagsCloud.Tests
         [TestCase(5, TestName = "Little count")]
         public void Rectangles_Should_BeTightlySpaced(int count)
         {
-            var rectangles = PutRandomRectangles(count).ToList();
+            rectangles = PutRandomRectangles(count);
 
             var expected = Math.Max(
                 rectangles.Max(rectangle => rectangle.Width),
@@ -119,7 +142,7 @@ namespace TagsCloud.Tests
             }
         }
 
-        private IEnumerable<Rectangle> PutRandomRectangles(int count)
+        private List<Rectangle> PutRandomRectangles(int count)
         {
             const int maxWidth = 100;
             const int maxHeight = 100;
@@ -127,13 +150,24 @@ namespace TagsCloud.Tests
             var sizes = Enumerable.Range(0, count)
                 .Select(_ => new Size(rnd.Next(1, maxWidth), rnd.Next(1, maxHeight)));
 
-            return sizes.Select(x => layouter.PutNextRectangle(x));
+            return sizes.Select(x => layouter.PutNextRectangle(x)).ToList();
         }
 
         private IEnumerable<(Rectangle, IEnumerable<Rectangle>)> GetItemAndListWithoutIt(
-            IReadOnlyCollection<Rectangle> rectangles)
+            List<Rectangle> rects)
         {
-            return rectangles.Select(x => (x, rectangles.Where(y => y != x)));
+            return rects.Select(x => (x, rects.Where(y => y != x)));
+        }
+
+        private static string GetDirectoryForSavingFailedTest()
+        {
+            var workingDirectory = Directory.GetCurrentDirectory();
+            var index = workingDirectory.IndexOf("TagsCloud", StringComparison.Ordinal);
+            var tagCloudPath = workingDirectory.Substring(0, index);
+            var path = Path.Combine(tagCloudPath, "FailedTestsPictures");
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            return path;
         }
     }
 }

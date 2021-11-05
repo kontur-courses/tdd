@@ -1,32 +1,27 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Linq;
+using TagsCloud.Visualization.Extensions;
 
 namespace TagsCloud.Visualization.Drawer
 {
-    public class Drawer : IDrawer
+    public abstract class Drawer : IDrawer
     {
         public Image Draw(Rectangle[] rectangles)
         {
             var (width, height) = GetWidthAndHeight(rectangles);
-            var (widthWithOffset, heightWithOffset) = (width + 10, height + 10);
+            var (widthWithOffset, heightWithOffset) = (width + 100, height + 100);
+            var center = rectangles.First().GetCenter(); //TODO extract new entity that will encapsulate cloud
             var bitmap = new Bitmap(widthWithOffset, heightWithOffset);
             using var graphics = Graphics.FromImage(bitmap);
 
-            graphics.TranslateTransform(widthWithOffset / 2f, heightWithOffset / 2f);
+            graphics.TranslateTransform(center.X + widthWithOffset / 2, center.Y + heightWithOffset / 2);
             Transform(graphics, rectangles);
 
             return bitmap;
         }
 
-        protected virtual void Transform(Graphics graphics, Rectangle[] rectangles)
-        {
-            var pen = new Pen(Color.Chocolate);
-            graphics.SmoothingMode = SmoothingMode.HighQuality;
-            graphics.DrawRectangles(pen, rectangles);
-            graphics.FillRectangles(Brushes.Chartreuse, rectangles);
-        }
+        protected abstract void Transform(Graphics graphics, Rectangle[] rectangles);
 
         private (int width, int height) GetWidthAndHeight(Rectangle[] rectangles)
         {
