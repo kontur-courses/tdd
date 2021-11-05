@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -127,6 +128,21 @@ namespace TagsCloudVisualization.Tests
             var rectanglesToCircleRatio = CalculateDensityForRectangles(_rectangles);
 
             rectanglesToCircleRatio.Should().BeGreaterOrEqualTo(expectedRatio);
+        }
+
+        [TestCase(10, 1_000)]
+        [TestCase(100, 10_000)]
+        [TestCase(1_000, 30_000, Ignore = "Take too much time")]
+        public void PutNextRectangle_ShouldGenerateRectanglesFast_WhenSameSize(int rectanglesCount, int maxMilliseconds)
+        {
+            var size = new Size(10, 10);
+            _rectangles = new Rectangle[rectanglesCount];
+
+            var stopWatch = Stopwatch.StartNew();
+            for (var i = 0; i < rectanglesCount; i++) _rectangles[i] = _layouter.PutNextRectangle(size);
+            stopWatch.Stop();
+
+            stopWatch.Elapsed.Milliseconds.Should().BeLessOrEqualTo(maxMilliseconds);
         }
 
         private double CalculateDensityForRectangles(Rectangle[] rectangles)
