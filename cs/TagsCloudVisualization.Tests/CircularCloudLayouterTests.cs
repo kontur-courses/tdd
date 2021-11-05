@@ -1,15 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization.Tests
 {
     public class CircularCloudLayouterTests
     {
+        private readonly CircularCloudLayouterTestsLogger _logger = new();
         private Point _center;
         private CircularCloudLayouter _layouter;
         private Rectangle[] _rectangles;
@@ -20,6 +23,23 @@ namespace TagsCloudVisualization.Tests
             _center = new Point(0, 0);
             _layouter = new CircularCloudLayouter(_center);
             _rectangles = Array.Empty<Rectangle>();
+        }
+
+        [OneTimeSetUp]
+        public void Initialize()
+        {
+            _logger.Init(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestFails"));
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            var ctx = TestContext.CurrentContext;
+            if (ctx.Result.Outcome.Status == TestStatus.Failed)
+            {
+                var testName = ctx.Test.Name;
+                _logger.Log(_rectangles, testName);
+            }
         }
 
         [TestCase(0, 1)]
@@ -39,7 +59,7 @@ namespace TagsCloudVisualization.Tests
 
             var rectangle = _layouter.PutNextRectangle(size);
             _rectangles = new[] { rectangle };
-            
+
             rectangle.Size.Should().Be(size);
         }
 
@@ -51,7 +71,7 @@ namespace TagsCloudVisualization.Tests
             var firstRectangle = _layouter.PutNextRectangle(size);
             var secondRectangle = _layouter.PutNextRectangle(size);
             _rectangles = new[] { firstRectangle, secondRectangle };
-            
+
             firstRectangle.IntersectsWith(secondRectangle).Should().BeFalse();
         }
 
@@ -64,7 +84,7 @@ namespace TagsCloudVisualization.Tests
             var firstRectangle = _layouter.PutNextRectangle(firstSize);
             var secondRectangle = _layouter.PutNextRectangle(secondSize);
             _rectangles = new[] { firstRectangle, secondRectangle };
-            
+
             firstRectangle.Size.Should().NotBe(secondRectangle.Size);
         }
 
@@ -76,7 +96,7 @@ namespace TagsCloudVisualization.Tests
         {
             var size = new Size(sideLength, sideLength);
             _rectangles = GenerateRectangles(rectanglesCount, () => size);
-            
+
             _rectangles.Should().OnlyContain(rect => AreAllBoundsInCircle(rect, boundingRadius));
         }
 
@@ -103,7 +123,7 @@ namespace TagsCloudVisualization.Tests
         {
             var rnd = new Random();
             _rectangles = GenerateRectangles(rectanglesCount, () => new Size(rnd.Next(1, 100), rnd.Next(1, 100)));
-            
+
             var rectanglesToCircleRatio = CalculateDensityForRectangles(_rectangles);
 
             rectanglesToCircleRatio.Should().BeGreaterOrEqualTo(expectedRatio);
