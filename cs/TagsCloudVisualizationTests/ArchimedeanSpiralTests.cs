@@ -38,6 +38,24 @@ namespace TagsCloudVisualizationTests
             actualPoint.Should().Be(center);
         }
 
+        [TestCase(0)]
+        [TestCase(-1)]
+        public void Constructor_Radius_ShouldBePositive(int radius)
+        {
+            Action act = () => new ArchimedeanSpiral(new Point(0, 0), radius);
+            act.Should().Throw<ArgumentException>();
+        }
+
+        [Test]
+        public void GetPoint_Degree_CantBeNegative()
+        {
+            var spiral = new ArchimedeanSpiral(new Point(0, 0), 1);
+
+            Action act = () => spiral.GetPoint(-1);
+
+            act.Should().Throw<ArgumentException>();
+        }
+
         [Test]
         public void GetPoint_Every90DegreePeriod_YProportionalToRadius() =>
             AssertProportionAlongAngle(90, period => -(0.5 + period * 2), point => point.Y);
