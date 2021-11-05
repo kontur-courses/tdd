@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Collections.Generic;
 
 namespace TagsCloudVisualization
@@ -12,6 +13,18 @@ namespace TagsCloudVisualization
         {
             Rectangles = new List<Rectangle>();
             CloudCenter = center;
+        }
+
+        public Rectangle PutNextRectangle(Size rectangleSize)
+        {
+            CheckRectangleSizeCorrectness(rectangleSize);
+            return new Rectangle();
+        }
+
+        private void CheckRectangleSizeCorrectness(Size rectangleSize)
+        {
+            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+                throw new ArgumentException();
         }
     }
 }
