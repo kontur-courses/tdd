@@ -6,9 +6,9 @@ namespace TagsCloudVisualization
     public class ArchimedeanSpiral
     {
         private readonly Point center;
-        private readonly int radius;
+        private readonly double radius;
 
-        public ArchimedeanSpiral(Point center, int radius)
+        public ArchimedeanSpiral(Point center, double radius)
         {
             if (radius <= 0)
                 throw new ArgumentException("Radius should be positive.", nameof(radius));
@@ -22,12 +22,12 @@ namespace TagsCloudVisualization
             if (degree < 0)
                 throw new ArgumentException("Degree can't be negative.", nameof(degree));
 
-            var angle = degree * Math.PI / 180;
-            var length = radius * angle;
+            var radians = degree * Math.PI / 180;
+            var length = radius * radians;
             return new Point
             {
-                X = (int)(length * Math.Cos(angle)) + center.X,
-                Y = -(int)(length * Math.Sin(angle)) + center.Y
+                X = (int)(length * Math.Cos(radians)) + center.X,
+                Y = -(int)(length * Math.Sin(radians)) + center.Y
             };
         }
     }

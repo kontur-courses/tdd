@@ -19,8 +19,7 @@ namespace TagsCloudVisualizationTests
             var points = Enumerable.Range(0, 360 * 3).Select(spiral.GetPoint);
             var visualizer = new PointsVisualizer(size, points);
 
-            var filename = "ArchimedeanSpiral.GetPoint_" + DateTime.Now.Ticks;
-            var savePath = Path.Combine(Directory.GetCurrentDirectory(), $"{filename}.bmp");
+            var savePath = Path.Combine(Directory.GetCurrentDirectory(), "ArchimedeanSpiral.GetPoint.bmp");
             visualizer.SaveToBitmap(savePath);
             TestContext.Out.WriteLine($"Saved to '{savePath}'");
         }
