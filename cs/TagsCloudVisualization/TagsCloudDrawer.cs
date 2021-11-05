@@ -23,7 +23,7 @@ namespace TagsCloudVisualization
             var bitmap = new Bitmap(imageSize.Width, imageSize.Height);
             var graphics = Graphics.FromImage(bitmap);
 
-            graphics.FillRectangle(Brushes.Gray, 0, 0, bitmap.Width, bitmap.Height);
+            graphics.Clear(Color.Gray);
             graphics.TranslateTransform(bitmap.Width / 2f, bitmap.Height / 2f);
 
             if (rectangles.Length > 0)
