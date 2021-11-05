@@ -8,7 +8,7 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter : ICircularCloudLayouter
     {
-        public Point Center { get; set; } //????
+        public Point Center { get; set; }
 
         public Spiral LayouterSpiral { get; set; }
 
@@ -21,7 +21,6 @@ namespace TagsCloudVisualization
         {
             Center = center;
             LayouterSpiral = new Spiral(Center);
-            //NoInrtersections = true;
             RectangleList = new List<Rectangle>();
         }
 
@@ -29,22 +28,26 @@ namespace TagsCloudVisualization
         {
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException();
-            var nextRectangle = CreteNewRectangle(rectangleSize);
-            while (RectangleList.Any(rectangle => rectangle.IntersectsWith(nextRectangle)))
+            Rectangle nextRectangle;
+            if (RectangleList.Count == 0)
             {
-                nextRectangle = CreteNewRectangle(rectangleSize);
+                nextRectangle = new Rectangle(Center, rectangleSize);
+                RectangleList.Add(nextRectangle);
+                return nextRectangle;
             }
-
+            nextRectangle = CreteNewRectangle(rectangleSize);
+            while (RectangleList.Any(rectangle => rectangle.IntersectsWith(nextRectangle)))
+                nextRectangle = CreteNewRectangle(rectangleSize);
             RectangleList.Add(nextRectangle);
-            //NoInrtersections = !LayouterSpiral.CheckOutIntersections(RectangleList);
-            //var result = (NoInrtersections) ? nextRectangle : PutNextRectangle(nextRectangle.Size);
             return nextRectangle;
         }
 
         private Rectangle CreteNewRectangle(Size rectangleSize)
         {
             var rectangleCenterLocation = LayouterSpiral.GetNextPoint();
-            var rectangleLocation = new Point(rectangleCenterLocation.X - rectangleSize.Width / 2, rectangleCenterLocation.Y - rectangleSize.Height / 2);
+            var rectangleX = rectangleCenterLocation.X - rectangleSize.Width / 2;
+            var rectangleY = rectangleCenterLocation.Y - rectangleSize.Height / 2;
+            var rectangleLocation = new Point(rectangleX,rectangleY);
             var rectangle = new Rectangle(rectangleLocation, rectangleSize);
             return rectangle;
         }

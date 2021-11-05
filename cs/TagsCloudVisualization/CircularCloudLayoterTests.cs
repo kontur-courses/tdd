@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -31,13 +32,13 @@ namespace TagsCloudVisualization
             var layouterCenter = new Point(20, 10);
             var layouter = new CircularCloudLayouter(layouterCenter);
             var rectangle = layouter.PutNextRectangle(rectangleSize);
-            rectangle.Location.Should().Be(new Point(5, 5));
+            rectangle.Location.Should().Be(layouterCenter);
         }
 
         [TestCase(10)]
         [TestCase(100)]
         [TestCase(1000)]
-        public void ShouldPutManyRectangles(int numberOfRactangles)
+        public void ShouldPutTheExactNumberOfRectangles(int numberOfRactangles)
         {
             var rectangleSize = new Size(30, 10);
             var layouterCenter = new Point(20, 10);
@@ -47,8 +48,34 @@ namespace TagsCloudVisualization
             layouter.RectangleList.Count.Should().Be(numberOfRactangles);
         }
 
+        public List<Point> CheckForDuplicates(List<Point> array)
+        {
+            var duplicates = array
+                .GroupBy(p => p)
+                .Where(g => g.Count() > 1)
+                .Select(g => g.Key).ToList();
+            return duplicates;
+        }
+
+        [Test]
+        public void ShouldNotPutOneRectangleTwice()
+        {
+            var rectangleSize = new Size(30, 10);
+            var layouterCenter = new Point(20, 10);
+            var layouter = new CircularCloudLayouter(layouterCenter);
+            for (int i = 0; i < 30; i++)
+                layouter.PutNextRectangle(rectangleSize);
+            var duplicates = layouter.RectangleList
+                .GroupBy(p => p)
+                .Where(g => g.Count() > 1)
+                .Select(g => g.Key).ToList();
+            duplicates.Count.Should().Be(0);
+        }
+
+
         [TestCase(-5,10)]
         [TestCase(5,-5)]
+        [TestCase(0,0)]
         public void ShouldNotPutInvalidRectangle(int width, int height)
         {
             var rectangleSize = new Size(width, height);
@@ -59,21 +86,37 @@ namespace TagsCloudVisualization
         }
         
         [Test]
-        public void RectanglesShouldNotIntersect()
+        public void SameRectanglesShouldNotIntersect()
         {
             var rectangleSize = new Size(2, 2);
             var layouterCenter = new Point(20, 10);
             var layouter = new CircularCloudLayouter(layouterCenter);
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 100; i++)
+                layouter.PutNextRectangle(rectangleSize);
+            foreach (var rectangle in layouter.RectangleList)
             {
+                var act = layouter.RectangleList
+                    .Where(r => r != rectangle)
+                    .Any(r => r.IntersectsWith(rectangle));
+                act.Should().BeFalse();
+            }
+        }
+
+        [Test]
+        public void RandomRectanglesShouldNotIntersect()
+        {
+            var layouterCenter = new Point(20, 10);
+            var layouter = new CircularCloudLayouter(layouterCenter);
+            for (int i = 0; i < 100; i++)
+            {
+                var rectangleSize = new Size(new Random().Next(1, 20), new Random().Next(1, 20));
                 layouter.PutNextRectangle(rectangleSize);
             }
-            for (int i = 0; i < layouter.RectangleList.Count; i++)
+            foreach (var rectangle in layouter.RectangleList)
             {
-                var currentRectangle = layouter.RectangleList[i];
                 var act = layouter.RectangleList
-                    .Where(rectangle => rectangle != currentRectangle)
-                    .Any(rectangle => rectangle.IntersectsWith(currentRectangle));
+                    .Where(r => r != rectangle)
+                    .Any(r => r.IntersectsWith(rectangle));
                 act.Should().BeFalse();
             }
         }
