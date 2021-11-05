@@ -12,12 +12,14 @@ namespace TagsCloudVisualization.Tests
     {
         private Point _center;
         private CircularCloudLayouter _layouter;
+        private Rectangle[] _rectangles;
 
         [SetUp]
         public void Setup()
         {
             _center = new Point(0, 0);
             _layouter = new CircularCloudLayouter(_center);
+            _rectangles = Array.Empty<Rectangle>();
         }
 
         [TestCase(0, 1)]
@@ -36,7 +38,8 @@ namespace TagsCloudVisualization.Tests
             var size = new Size(100, 100);
 
             var rectangle = _layouter.PutNextRectangle(size);
-
+            _rectangles = new[] { rectangle };
+            
             rectangle.Size.Should().Be(size);
         }
 
@@ -47,7 +50,8 @@ namespace TagsCloudVisualization.Tests
 
             var firstRectangle = _layouter.PutNextRectangle(size);
             var secondRectangle = _layouter.PutNextRectangle(size);
-
+            _rectangles = new[] { firstRectangle, secondRectangle };
+            
             firstRectangle.IntersectsWith(secondRectangle).Should().BeFalse();
         }
 
@@ -59,7 +63,8 @@ namespace TagsCloudVisualization.Tests
 
             var firstRectangle = _layouter.PutNextRectangle(firstSize);
             var secondRectangle = _layouter.PutNextRectangle(secondSize);
-
+            _rectangles = new[] { firstRectangle, secondRectangle };
+            
             firstRectangle.Size.Should().NotBe(secondRectangle.Size);
         }
 
@@ -70,10 +75,9 @@ namespace TagsCloudVisualization.Tests
             double boundingRadius)
         {
             var size = new Size(sideLength, sideLength);
-
-            var rectangles = GenerateRectangles(rectanglesCount, size);
-
-            rectangles.Should().OnlyContain(rect => AreAllBoundsInCircle(rect, boundingRadius));
+            _rectangles = GenerateRectangles(rectanglesCount, () => size);
+            
+            _rectangles.Should().OnlyContain(rect => AreAllBoundsInCircle(rect, boundingRadius));
         }
 
         [TestCase(50, 0.7)]
@@ -83,12 +87,9 @@ namespace TagsCloudVisualization.Tests
             int rectanglesCount,
             double expectedRatio)
         {
-            Size SizeFactory()
-            {
-                return new Size(10, 10);
-            }
+            _rectangles = GenerateRectangles(rectanglesCount, () => new Size(10, 10));
 
-            var rectanglesToCircleRatio = CalculateDensityForRectangles(rectanglesCount, SizeFactory);
+            var rectanglesToCircleRatio = CalculateDensityForRectangles(_rectangles);
 
             rectanglesToCircleRatio.Should().BeGreaterOrEqualTo(expectedRatio);
         }
@@ -101,30 +102,25 @@ namespace TagsCloudVisualization.Tests
             double expectedRatio)
         {
             var rnd = new Random();
-
-            Size SizeFactory()
-            {
-                return new Size(rnd.Next(1, 100), rnd.Next(1, 100));
-            }
-
-            var rectanglesToCircleRatio = CalculateDensityForRectangles(rectanglesCount, SizeFactory);
+            _rectangles = GenerateRectangles(rectanglesCount, () => new Size(rnd.Next(1, 100), rnd.Next(1, 100)));
+            
+            var rectanglesToCircleRatio = CalculateDensityForRectangles(_rectangles);
 
             rectanglesToCircleRatio.Should().BeGreaterOrEqualTo(expectedRatio);
         }
 
-        private double CalculateDensityForRectangles(int count, Func<Size> sizeFactory)
+        private double CalculateDensityForRectangles(Rectangle[] rectangles)
         {
-            var rectangles = GenerateRectangles(count, sizeFactory());
             var circleRadius = GetBoundingCircleRadius(rectangles);
             var rectanglesSquare = rectangles.Sum(rect => rect.CalculateSquare());
             var circleSquare = SquareCalculator.CalculateCircleSquare(circleRadius);
             return rectanglesSquare / circleSquare;
         }
 
-        private Rectangle[] GenerateRectangles(int count, Size size)
+        private Rectangle[] GenerateRectangles(int count, Func<Size> sizeFactory)
         {
             return Enumerable.Range(0, count)
-                .Select(_ => _layouter.PutNextRectangle(size))
+                .Select(_ => _layouter.PutNextRectangle(sizeFactory()))
                 .ToArray();
         }
 
