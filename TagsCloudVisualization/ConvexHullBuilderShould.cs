@@ -13,14 +13,14 @@ namespace TagsCloudVisualization
     public class ConvexHullBuilderShould
     {
         [TestCaseSource(nameof(RotationDirectionTestData))]
-        public void ShowCorrectRotationDirection(Vector vector, Point point, int expectedResult)
+        public void GetCorrectRotationDirection(Vector vector, Point point, int expectedResult)
         {
             ConvexHullBuilder.GetRotationDirection(vector, point)
                 .Should().Be(expectedResult);
         }
 
         [Test]
-        public void ExtractCorrectRectanglePointsSet()
+        public void BuildCorrectRectanglePointsSet()
         {
             var rectangles = new List<Rectangle>
             {
@@ -50,17 +50,17 @@ namespace TagsCloudVisualization
                     new Vector(new Point(1,1), new Point(4,3)),
                     new Point(3, 5),
                     1)
-                    .SetName("the point is located to the left of the vector");
+                    .SetName("when point is located to the left of the vector");
                 yield return new TestCaseData(
                     new Vector(new Point(0, 0), new Point(3, 6)),
                     new Point(4, -2),
                     -1)
-                    .SetName("the point is located to the right of the vector");
+                    .SetName("when point is located to the right of the vector");
                 yield return new TestCaseData(
                     new Vector(new Point(0, 0), new Point(5, 5)),
                     new Point(3, 3),
                     0)
-                    .SetName("the point is located on the vector");
+                    .SetName("when point is located on the vector");
             }
         }
     }

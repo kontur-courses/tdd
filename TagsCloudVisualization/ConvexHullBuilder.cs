@@ -26,7 +26,7 @@ namespace TagsCloudVisualization
             return Math.Sign(vectorProduct);
         }
 
-        public static IEnumerable<Point> BuildPointsSet(IEnumerable<Rectangle> rectangles)
+        public static IEnumerable<Point> BuildRectanglePointsSet(IEnumerable<Rectangle> rectangles)
         {
             return rectangles
                 .Select(rect => new Point[]
