@@ -19,18 +19,18 @@ namespace TagsCloudVisualization
         {
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentOutOfRangeException(nameof(rectangleSize));
+            Rectangle rectangle;
             if (lastRectangles.Count == 0)
             {
                 var location = rectangleSize / 2 * -1;
-                var rectangle = new Rectangle(new Point(location + new Size(Center)), rectangleSize);
-                lastRectangles.Add(rectangle);
+                rectangle = new Rectangle(new Point(location + new Size(Center)), rectangleSize);
             }
             else
             {
-                var rectangle = CreateNextRectangle(rectangleSize);
-                lastRectangles.Add(rectangle);
+                rectangle = CreateNextRectangle(rectangleSize);
             }
 
+            lastRectangles.Add(rectangle);
             area += rectangleSize.Width * rectangleSize.Height;
 
             return lastRectangles[^1];
@@ -42,14 +42,8 @@ namespace TagsCloudVisualization
             var minimalDistance = Math.Sqrt((nextSize.Width * nextSize.Height + area) / (Math.PI * 2));
             foreach (var currRectangle in lastRectangles)
             {
-                var possiblePositions = new[]
-                {
-                    new Point(currRectangle.Left, currRectangle.Top - nextSize.Height),
-                    new Point(currRectangle.Left, currRectangle.Bottom),
-                    new Point(currRectangle.Right, currRectangle.Top),
-                    new Point(currRectangle.Left - nextSize.Width, currRectangle.Top),
-                };
-                var result = possiblePositions.Select(x => new Rectangle?(new Rectangle(x, nextSize)))
+                var result = GetPossiblePositions(currRectangle, nextSize)
+                    .Select(x => new Rectangle?(new Rectangle(x, nextSize)))
                     .Where(x => x != currRectangle)
                     .Select(x => (distance: x.Value.GetCenter().DistanceTo(Center), rectangle: x))
                     .Where(x => x.distance >= minimalDistance)
@@ -61,6 +55,14 @@ namespace TagsCloudVisualization
             }
 
             return pendingRectangles.MinBy(x => x.distance).rectangle.Value;
+        }
+
+        private IEnumerable<Point> GetPossiblePositions(Rectangle anchor, Size size)
+        {
+            yield return new Point(anchor.Left, anchor.Top - size.Height);
+            yield return new Point(anchor.Left, anchor.Bottom);
+            yield return new Point(anchor.Right, anchor.Top);
+            yield return new Point(anchor.Left - size.Width, anchor.Top);
         }
     }
 }
