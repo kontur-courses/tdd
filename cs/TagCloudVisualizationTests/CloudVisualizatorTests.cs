@@ -67,8 +67,8 @@ namespace TagCloudVisualizationTests
             sut.DrawRectangle(new Rectangle(50, 50 ,200 , 200));
             sut.SaveImage("test.png", ImageFormat.Png);
             
-            Directory.GetFiles(Directory.GetCurrentDirectory())
-                .Should().Contain(Directory.GetCurrentDirectory() + "\\test.png");
+            Directory.GetFiles(Environment.CurrentDirectory)
+                .Should().Contain(Environment.CurrentDirectory + "\\test.png");
         }
     }
 }
