@@ -14,9 +14,13 @@ namespace TagsCloudVisualization
             _drawer = drawer ?? throw new ArgumentNullException(nameof(drawer));
         }
 
-        public Bitmap Draw(Size imageSize, SizeF cloudScale)
+        public void Draw(Bitmap bitmap, SizeF cloudScale)
         {
-            return _drawer.Draw(_rectangles, imageSize, cloudScale);
+            if (bitmap == null) throw new ArgumentNullException(nameof(bitmap));
+            if (cloudScale.Width <= 0 || cloudScale.Height <= 0)
+                throw new ArgumentException(
+                    $"{nameof(cloudScale)} expected positive dimensions, but actually negative");
+            _drawer.Draw(bitmap, _rectangles, cloudScale);
         }
     }
 }

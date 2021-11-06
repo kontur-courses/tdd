@@ -9,30 +9,30 @@ namespace TagsCloudVisualization
 {
     public class TagsCloudDrawer
     {
+        private static readonly Color BackgroundColor = Color.Gray;
         private readonly IColorGenerator _colorGenerator;
 
-        public TagsCloudDrawer(
-            IColorGenerator colorGenerator)
+        public TagsCloudDrawer(IColorGenerator colorGenerator)
         {
             _colorGenerator = colorGenerator ?? throw new ArgumentNullException(nameof(colorGenerator));
         }
 
-        public Bitmap Draw(Rectangle[] rectangles, Size imageSize, SizeF cloudScale)
+        public void Draw(Bitmap bitmap, Rectangle[] rectangles, SizeF cloudScale)
         {
-            Validate(imageSize, cloudScale);
-            var bitmap = new Bitmap(imageSize.Width, imageSize.Height);
-            var graphics = Graphics.FromImage(bitmap);
+            if (bitmap == null) throw new ArgumentNullException(nameof(bitmap));
+            if (cloudScale.Width <= 0 || cloudScale.Height <= 0)
+                throw new ArgumentException(
+                    $"{nameof(cloudScale)} expected positive dimensions, but actually negative");
+            using var graphics = Graphics.FromImage(bitmap);
 
-            graphics.Clear(Color.Gray);
+            graphics.Clear(BackgroundColor);
             graphics.TranslateTransform(bitmap.Width / 2f, bitmap.Height / 2f);
 
             if (rectangles.Length > 0)
             {
-                ScaleClouds(graphics, imageSize, cloudScale, rectangles);
+                ScaleClouds(graphics, bitmap.Size, cloudScale, rectangles);
                 FillWithRectangles(graphics, rectangles);
             }
-
-            return bitmap;
         }
 
         private void ScaleClouds(Graphics graphics, Size imageSize, SizeF cloudScale, Rectangle[] rectangles)
@@ -51,16 +51,6 @@ namespace TagsCloudVisualization
                 brush.Color = _colorGenerator.Generate();
                 graphics.FillRectangle(brush, rectangle);
             }
-        }
-
-        private static void Validate(Size imageSize, SizeF cloudScale)
-        {
-            if (imageSize.Width <= 0 || imageSize.Height <= 0)
-                throw new ArgumentException($"{nameof(imageSize)} expected positive dimensions, but actually negative");
-
-            if (cloudScale.Width <= 0 || imageSize.Height <= 0)
-                throw new ArgumentException(
-                    $"{nameof(cloudScale)} expected positive dimensions, but actually negative");
         }
 
         private static Size GetBoundingSize(Rectangle[] rectangles)

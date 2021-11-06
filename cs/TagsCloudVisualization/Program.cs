@@ -14,7 +14,6 @@ namespace TagsCloudVisualization
     {
         private static readonly Size GeneratedImageSize = new(1000, 1000);
         private static readonly SizeF CloudScale = new(0.7f, 0.7f);
-        private static readonly Color BackgroundColor = Color.Gray;
 
         private static void Main(string[] args)
         {
@@ -22,7 +21,8 @@ namespace TagsCloudVisualization
             if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);
             foreach (var settings in GetSettings())
             {
-                var bitmap = settings.Draw(GeneratedImageSize, CloudScale);
+                using var bitmap = new Bitmap(GeneratedImageSize.Width, GeneratedImageSize.Height);
+                settings.Draw(bitmap, CloudScale);
                 var filename = GenerateFileName();
                 var path = Path.Combine(directory, filename + ".bmp");
                 bitmap.Save(path, ImageFormat.Bmp);

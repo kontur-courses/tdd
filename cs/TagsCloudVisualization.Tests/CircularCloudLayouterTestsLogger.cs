@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using TagsCloudVisualization.ColorGenerators;
+#pragma warning disable CA1416
 
 namespace TagsCloudVisualization.Tests
 {
@@ -18,7 +19,8 @@ namespace TagsCloudVisualization.Tests
             if (string.IsNullOrEmpty(_outputDirectory))
                 throw new Exception($"{nameof(_outputDirectory)} was null or empty");
             var path = Path.Combine(_outputDirectory, testName + ".bmp");
-            var image = _drawer.Draw(rectangles, _imageSize, _cloudScale);
+            using var image = new Bitmap(_imageSize.Width, _imageSize.Height);
+            _drawer.Draw(image, rectangles, _cloudScale);
             image.Save(path, ImageFormat.Bmp);
             Console.WriteLine($"Tag cloud visualization saved to file {path}");
         }
@@ -42,4 +44,5 @@ namespace TagsCloudVisualization.Tests
             }
         }
     }
+#pragma warning restore CA1416
 }
