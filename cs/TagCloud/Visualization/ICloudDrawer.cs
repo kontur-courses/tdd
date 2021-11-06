@@ -9,6 +9,6 @@ namespace TagCloud.Visualization
 {
     public interface ICloudDrawer
     {
-        void DrawCloud(Point cloudCenter, List<Rectangle> rectangles);
+        void DrawCloud(Graphics g, Point cloudCenter, List<Rectangle> rectangles);
     }
 }

@@ -8,7 +8,6 @@ namespace TagCloud_TestDataGenerator
     {
         private const int LowerSize = 15;
         private const int HigherSize = 150;
-        private const int RectanglesCount = 15;
 
         private static readonly Random Rnd;
 
@@ -17,9 +16,9 @@ namespace TagCloud_TestDataGenerator
             Rnd = new Random();
         }
 
-        public static IEnumerable<Size> GetNextSize()
+        public static IEnumerable<Size> GetNextNSizes(int n)
         {
-            for (var i = 0; i < RectanglesCount; i++)
+            for (var i = 0; i < n; i++)
             {
                 var width = Rnd.Next(LowerSize, HigherSize);
                 var height = Rnd.Next(LowerSize, HigherSize);

@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TagCloud.Visualization
 {
     public class CloudDrawer : ICloudDrawer
     {
-        public void DrawCloud(Point cloudCenter, List<Rectangle> rectangles)
+        public void DrawCloud(Graphics g, Point cloudCenter, List<Rectangle> rectangles)
         {
-            throw new NotImplementedException();
+            foreach (var rectangle in rectangles)
+            {
+                g.DrawRectangle(Pens.Black, rectangle);
+            }
         }
     }
 }

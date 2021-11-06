@@ -16,11 +16,12 @@ namespace TagCloud
 
             var tagCloud = new TagCloud(layouter, bitmapSaver, visualizer);
 
-            foreach (var size in DataGenerator.GetNextSize())
+            foreach (var size in DataGenerator.GetNextNSizes(15))
                 tagCloud.PutNextTag(size);
 
-            tagCloud.MarkupVisualize();
-            //tagCloud.Visualize();
+            tagCloud.Visualize();
+            tagCloud.VisualizeMarkup();
+            
             tagCloud.Save();
         }
     }

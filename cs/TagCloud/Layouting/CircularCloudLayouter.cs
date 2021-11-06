@@ -7,10 +7,48 @@ namespace TagCloud.Layouting
 {
     public class CircularCloudLayouter : ICloudLayouter
     {
-        private const int DefaultSpaceBetweenRectangles = 5;
+        private class DirectingArrow
+        {
+            private const int DefaultAngleDegree = 90;
+            private const int DefaultAngleDegreeIncrease = 45;
+
+            public Point EndPoint { get; set; }
+            public int AngleDegree { get; set; }
+            public Point Center { get; set; }
+
+            public int CurrentCoilNumber = 1;
+
+            public DirectingArrow(Point center, Point firstDirectPoint)
+            {
+                Center = center;
+                EndPoint = firstDirectPoint;
+                AngleDegree = DefaultAngleDegree;
+            }
+
+            public void RotateArrow()
+            {
+                var angleRotation = DefaultAngleDegreeIncrease / CurrentCoilNumber;
+                AngleDegree += angleRotation;
+
+                if (AngleDegree > 360)
+                {
+                    CurrentCoilNumber++;
+                    AngleDegree %= 360;
+                }
+
+                var newX = (int)(EndPoint.X * Math.Cos(angleRotation) 
+                                 - EndPoint.Y * Math.Sin(angleRotation));
+
+                var newY = (int)(EndPoint.X * Math.Cos(angleRotation)
+                                 + EndPoint.Y * Math.Cos(angleRotation));
+
+                EndPoint = new Point(newX, newY);
+            }
+        }
 
         private readonly Point center;
         private readonly List<Rectangle> rectangles;
+        private DirectingArrow arrow;
 
         public CircularCloudLayouter(Point center)
         {
@@ -21,40 +59,30 @@ namespace TagCloud.Layouting
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             ThrowIfIncorrectSize(rectangleSize);
-            var rectangle = new Rectangle(Point.Empty, rectangleSize);
+            var rect = new Rectangle(Point.Empty, rectangleSize);
 
             if (rectangles.Count == 0)
             {
-                rectangle.Location = GetOffsetFromCenter(rectangleSize);
-            }
-            else
-            {
-                var prevRect = rectangles[rectangles.Count - 1];
-                rectangle.Location =
-                    new Point(prevRect.Location.X + prevRect.Width + DefaultSpaceBetweenRectangles,
-                        prevRect.Location.Y + prevRect.Height + DefaultSpaceBetweenRectangles);
+                rect.Location = new Point(center.X - rect.Width / 2,
+                    center.Y - rect.Height / 2);
+
+                arrow = InitArrow(rect);
             }
 
-            rectangles.Add(rectangle);
-            return rectangle;
+            else
+            {
+                rect.Location = new Point(arrow.EndPoint.X - rect.Width / 2,
+                    arrow.EndPoint.Y - rect.Height / 2);
+                arrow.RotateArrow();
+            }
+
+            rectangles.Add(rect);
+            return rect;
         }
 
         public Point GetCloudCenter()
         {
             return center;
-        }
-
-        public Size GetRectanglesBoundaryBox()
-        {
-            var width
-                = rectangles.Max(rect => rect.X + rect.Width)
-                  - rectangles.Min(rect => rect.X);
-
-            var height
-                = rectangles.Max(rect => rect.Y + rect.Height)
-                  - rectangles.Min(rect => rect.Y);
-
-            return new Size(width, height);
         }
 
         public int GetCloudRadius()
@@ -63,14 +91,20 @@ namespace TagCloud.Layouting
             return Math.Max(boundaryBox.Width, boundaryBox.Height) / 2;
         }
 
+        public Size GetRectanglesBoundaryBox()
+        {
+            var width
+                = rectangles.Max(rect => rect.Right) - rectangles.Min(rect => rect.X);
+
+            var height
+                = rectangles.Max(rect => rect.Bottom) - rectangles.Min(rect => rect.Y);
+
+            return new Size(width, height);
+        }
+
         public List<Rectangle> GetRectangles()
         {
             return new List<Rectangle>(rectangles);
-        }
-
-        private Point GetOffsetFromCenter(Size rectangleSize)
-        {
-            return new Point(center.X - rectangleSize.Width / 2, center.Y - rectangleSize.Height / 2);
         }
 
         private void ThrowIfIncorrectSize(Size rectangleSize)
@@ -78,5 +112,14 @@ namespace TagCloud.Layouting
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException("Width and height of rectangle must be a positive numbers");
         }
+
+        private DirectingArrow InitArrow(Rectangle rectangle)
+        {
+            var startDirectionPoint = new Point(rectangle.X + rectangle.Width / 2,
+                rectangle.Top - rectangle.Height);
+
+            return new DirectingArrow(center, startDirectionPoint);
+        }
+
     }
 }

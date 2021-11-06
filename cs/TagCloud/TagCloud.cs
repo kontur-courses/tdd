@@ -9,9 +9,9 @@ namespace TagCloud
 {
     public class TagCloud
     {
-        private IBitmapToDesktopSaver bitmapSaver;
-        private ICloudLayouter layouter;
-        private IVisualizer visualizer;
+        private readonly IBitmapToDesktopSaver bitmapSaver;
+        private readonly ICloudLayouter layouter;
+        private readonly IVisualizer visualizer;
 
         private Bitmap canvas;
 
@@ -39,15 +39,18 @@ namespace TagCloud
 
         public void Visualize()
         {
-            visualizer.VisualizeCloud();
+            InitCanvasIfNotExist();
+
+            var g = Graphics.FromImage(canvas);
+            var cloudCenter = layouter.GetCloudCenter();
+            var rectangles = RelocateRectangles(layouter.GetRectangles());
+
+            visualizer.VisualizeCloud(g, cloudCenter, rectangles);
         }
 
-        public void MarkupVisualize()
+        public void VisualizeMarkup()
         {
-            var rectangles = layouter.GetRectangles();
-            canvas = CreateCanvas();
-            var circleCloudRadius = layouter.GetCloudRadius();
-            //RelocateRectangles(rectangles);
+            InitCanvasIfNotExist();
 
             var g = Graphics.FromImage(canvas);
             var imgSize = canvas.Size;
@@ -57,14 +60,16 @@ namespace TagCloud
             visualizer.VisualizeDebuggingMarkup(g, imgSize, cloudCenter, cloudCircleRadius);
         }
 
-        private Bitmap CreateCanvas()
+        private void InitCanvasIfNotExist()
         {
-            var canvasSize = layouter.GetRectanglesBoundaryBox();
+            if (canvas != null)
+                return;
 
-            return new Bitmap(canvasSize.Width * 2, canvasSize.Height * 2);
+            var canvasSize = layouter.GetRectanglesBoundaryBox();
+            canvas =  new Bitmap(canvasSize.Width * 2, canvasSize.Height * 2);
         }
 
-        private void RelocateRectangles(List<Rectangle> rectangles)
+        private List<Rectangle> RelocateRectangles(List<Rectangle> rectangles)
         {
             for (var i = 0; i < rectangles.Count; i++)
             {
@@ -74,6 +79,8 @@ namespace TagCloud
                 var newRect = new Rectangle(new Point(newX, newY), rectangles[i].Size);
                 rectangles[i] = newRect;
             }
+
+            return rectangles;
         }
     }
 }

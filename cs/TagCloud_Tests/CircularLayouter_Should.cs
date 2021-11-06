@@ -4,6 +4,7 @@ using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
 using TagCloud.Layouting;
+using TagCloud_TestDataGenerator;
 
 namespace TagCloudVisualization_Tests
 {
@@ -12,14 +13,14 @@ namespace TagCloudVisualization_Tests
         [Test]
         public void NotThrow_WhenCreated()
         {
-            Action act = () => new CircularCloudLayouter(new Point(0, 0));
+            Action act = () => new CircularCloudLayouter(Point.Empty);
             act.Should().NotThrow();
         }
 
         [Test]
         public void Have_CenterPoint_AfterCreate()
         {
-            var centerPoint = new Point(0, 0);
+            var centerPoint = Point.Empty;
 
             var layouter = new CircularCloudLayouter(centerPoint);
 
@@ -29,9 +30,9 @@ namespace TagCloudVisualization_Tests
         [Test]
         public void ReturnRectangle_WhenPutNext()
         {
-            var layouter = new CircularCloudLayouter(new Point(0, 0));
+            var layouter = new CircularCloudLayouter(Point.Empty);
 
-            var expectedRect = new Rectangle(new Point(0, 0), new Size(10, 10));
+            var expectedRect = new Rectangle(Point.Empty, new Size(10, 10));
             var actualRect = layouter.PutNextRectangle(new Size(10, 10));
 
             actualRect.Size.Should().BeEquivalentTo(expectedRect.Size);
@@ -52,7 +53,7 @@ namespace TagCloudVisualization_Tests
             [ValueSource(nameof(IncorrectRectangleSizes))]
             Size rectSize)
         {
-            var layouter = new CircularCloudLayouter(new Point(0, 0));
+            var layouter = new CircularCloudLayouter(Point.Empty);
 
             Action act = () => layouter.PutNextRectangle(rectSize);
 
@@ -60,22 +61,34 @@ namespace TagCloudVisualization_Tests
         }
 
         [Test]
-        public void PutFirstRectangle_InCenter()
+        public void PutFirstRectangle_InCenter_AlignedByMiddlePoint()
         {
-            var layouter = new CircularCloudLayouter(new Point(0, 0));
+            var layouter = new CircularCloudLayouter(Point.Empty);
             var rectSize = new Size(10, 10);
 
             var rect = layouter.PutNextRectangle(rectSize);
-
             rect.Location
                 .Should()
                 .BeEquivalentTo(new Point(-5, -5), "because first rectangle should align by its middle point");
         }
 
         [Test]
+        public void PutSecondRectangle_AboveFirst()
+        {
+            var layouter = new CircularCloudLayouter(Point.Empty);
+            var firstRectSize = new Size(10, 10);
+            var secondRectSize = new Size(15, 10);
+            
+            var firstRect = layouter.PutNextRectangle(firstRectSize);
+            var secondRect = layouter.PutNextRectangle(secondRectSize);
+
+            secondRect.Bottom.Should().BeLessThan(firstRect.Top);
+        }
+
+        [Test]
         public void NotIntersect_TwoRectangles()
         {
-            var layouter = new CircularCloudLayouter(new Point(0, 0));
+            var layouter = new CircularCloudLayouter(Point.Empty);
 
             var firstRect = layouter.PutNextRectangle(new Size(10, 10));
             var secondRect = layouter.PutNextRectangle(new Size(5, 15));
