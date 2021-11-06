@@ -10,27 +10,13 @@ namespace TagsCloudVisualizationTests
 {
     public class ArchimedeanSpiralTests
     {
-        [Test]
-        [Explicit]
-        public void GetPoint_SaveToBitmap()
-        {
-            var size = new Size(500, 500);
-            var spiral = new ArchimedeanSpiral(new Point(size.Width / 2, size.Height / 2), 10);
-            var points = Enumerable.Range(0, 360 * 3).Select(spiral.GetPoint);
-            var visualizer = new PointsVisualizer(size, points);
-
-            var savePath = Path.Combine(Directory.GetCurrentDirectory(), "ArchimedeanSpiral.GetPoint.bmp");
-            visualizer.SaveToBitmap(savePath);
-            TestContext.Out.WriteLine($"Saved to '{savePath}'");
-        }
-
         [TestCase(0, 0)]
         [TestCase(1, 2)]
         [TestCase(-1, -2)]
         public void GetPoint_WithoutAngle_InCenter(int x, int y)
         {
             var center = new Point(x, y);
-            var spiral = new ArchimedeanSpiral(center, 1);
+            var spiral = new ArchimedeanSpiral(center);
 
             var actualPoint = spiral.GetPoint(0);
 
@@ -41,18 +27,16 @@ namespace TagsCloudVisualizationTests
         [TestCase(-1)]
         public void Constructor_Radius_ShouldBePositive(int radius)
         {
-            Action act = () => new ArchimedeanSpiral(new Point(0, 0), radius);
-            act.Should().Throw<ArgumentException>();
+            Assert.Throws<ArgumentException>(() =>
+                new ArchimedeanSpiral(new Point(0, 0), radius));
         }
 
         [Test]
         public void GetPoint_Degree_CantBeNegative()
         {
-            var spiral = new ArchimedeanSpiral(new Point(0, 0), 1);
-
-            Action act = () => spiral.GetPoint(-1);
-
-            act.Should().Throw<ArgumentException>();
+            var spiral = new ArchimedeanSpiral();
+            Assert.Throws<ArgumentException>(() =>
+                spiral.GetPoint(-1));
         }
 
         [Test]
@@ -70,6 +54,23 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void GetPoint_Every180DegreePeriod_XProportionalToRadius() =>
             AssertProportionAlongAngle(180, period => -(1 + period * 2), point => point.X);
+
+        [Test]
+        [Explicit]
+        public void GetPoint_SaveToBitmap()
+        {
+            var size = new Size(500, 500);
+            const int periods = 100;
+            const double radius = 0.1f;
+
+            var spiral = new ArchimedeanSpiral(new Point(size.Width / 2, size.Height / 2), radius);
+            var points = Enumerable.Range(0, 360 * periods).Select(spiral.GetPoint);
+            var visualizer = new PointsVisualizer(size, points);
+
+            var savePath = Path.Combine(Directory.GetCurrentDirectory(), "ArchimedeanSpiral.GetPoint.bmp");
+            visualizer.SaveToBitmap(savePath);
+            TestContext.WriteLine($"Saved to '{savePath}'");
+        }
 
         private static void AssertProportionAlongAngle(int angleInDegrees, Func<int, double> getPeriodProportion,
             Func<Point, int> selectCoordinateToAssert)

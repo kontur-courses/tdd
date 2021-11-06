@@ -8,7 +8,7 @@ namespace TagsCloudVisualization
         private readonly Point center;
         private readonly double radius;
 
-        public ArchimedeanSpiral(Point center, double radius)
+        public ArchimedeanSpiral(Point center = default, double radius = 1)
         {
             if (radius <= 0)
                 throw new ArgumentException("Radius should be positive.", nameof(radius));
