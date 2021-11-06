@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace TagCloud.Layouting
 {
@@ -12,35 +13,34 @@ namespace TagCloud.Layouting
             private const int DefaultAngleDegree = 90;
             private const int DefaultAngleDegreeIncrease = 45;
 
-            public Point EndPoint { get; set; }
-            public int AngleDegree { get; set; }
-            public Point Center { get; set; }
+            private int currentCoilNumber = 1;
 
-            public int CurrentCoilNumber = 1;
+            public Point EndPoint { get; private set; }
+            public int AngleDegree { get; private set; }
 
-            public DirectingArrow(Point center, Point firstDirectPoint)
+            public DirectingArrow(Point firstDirectPoint)
             {
-                Center = center;
                 EndPoint = firstDirectPoint;
                 AngleDegree = DefaultAngleDegree;
             }
 
-            public void RotateArrow()
+            public void Rotate()
             {
-                var angleRotation = DefaultAngleDegreeIncrease / CurrentCoilNumber;
-                AngleDegree += angleRotation;
+                var rotationAngle = DefaultAngleDegreeIncrease / currentCoilNumber;
+                AngleDegree += rotationAngle;
 
                 if (AngleDegree > 360)
                 {
-                    CurrentCoilNumber++;
+                    currentCoilNumber++;
                     AngleDegree %= 360;
+                    EndPoint = new Point(EndPoint.X * 2, EndPoint.Y * 2);
                 }
 
-                var newX = (int)(EndPoint.X * Math.Cos(angleRotation) 
-                                 - EndPoint.Y * Math.Sin(angleRotation));
+                var newX = (int)(EndPoint.X * Math.Cos(rotationAngle) 
+                                 - EndPoint.Y * Math.Sin(rotationAngle));
 
-                var newY = (int)(EndPoint.X * Math.Cos(angleRotation)
-                                 + EndPoint.Y * Math.Cos(angleRotation));
+                var newY = (int)(EndPoint.X * Math.Cos(rotationAngle)
+                                 + EndPoint.Y * Math.Cos(rotationAngle));
 
                 EndPoint = new Point(newX, newY);
             }
@@ -73,7 +73,7 @@ namespace TagCloud.Layouting
             {
                 rect.Location = new Point(arrow.EndPoint.X - rect.Width / 2,
                     arrow.EndPoint.Y - rect.Height / 2);
-                arrow.RotateArrow();
+                arrow.Rotate();
             }
 
             rectangles.Add(rect);
@@ -88,7 +88,8 @@ namespace TagCloud.Layouting
         public int GetCloudRadius()
         {
             var boundaryBox = GetRectanglesBoundaryBox();
-            return Math.Max(boundaryBox.Width, boundaryBox.Height) / 2;
+            var biggestSide = Math.Max(boundaryBox.Width, boundaryBox.Height);
+            return (int)(biggestSide * (Math.Sqrt(2) / 2));
         }
 
         public Size GetRectanglesBoundaryBox()
@@ -118,7 +119,7 @@ namespace TagCloud.Layouting
             var startDirectionPoint = new Point(rectangle.X + rectangle.Width / 2,
                 rectangle.Top - rectangle.Height);
 
-            return new DirectingArrow(center, startDirectionPoint);
+            return new DirectingArrow(startDirectionPoint);
         }
 
     }
