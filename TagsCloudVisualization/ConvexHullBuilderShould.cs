@@ -13,14 +13,34 @@ namespace TagsCloudVisualization
     public class ConvexHullBuilderShould
     {
         [TestCaseSource(nameof(RotationDirectionTestData))]
-        public void GetCorrectRotationDirection(Vector vector, Point point, int expectedResult)
+        public void ReturnCorrectRotationDirection(Vector vector, Point point, int expectedResult)
         {
             ConvexHullBuilder.GetRotationDirection(vector, point)
                 .Should().Be(expectedResult);
         }
 
         [Test]
-        public void BuildCorrectRectanglePointsSet()
+        public void ReturnMinimalConvexHull()
+        {
+            var points = new List<Point>
+            {
+                new Point(2, 1), new Point(4, 1), new Point(6, 2), new Point(8, 4),
+                new Point(5, 5), new Point(3, 4), new Point(2, 3), new Point(4, 3),
+                new Point(6,4), new Point(5, 3), new Point(5, 2), new Point(3, 2)
+            };
+            var expectedConvexHull = new List<Point>
+            {
+                new Point(2, 1), new Point(4, 1), new Point(6, 2), new Point(8, 4),
+                new Point(5, 5), new Point(3, 4), new Point(2, 3),
+            };
+
+            var actualConvexHull = ConvexHullBuilder.GetConvexHull(points);
+
+            actualConvexHull.Should().BeEquivalentTo(expectedConvexHull);
+        }
+
+        [Test]
+        public void ReturnCorrectRectanglePointsSet()
         {
             var rectangles = new List<Rectangle>
             {
@@ -36,7 +56,7 @@ namespace TagsCloudVisualization
                 new Point(50, -5), new Point(10, -5)
             };
 
-            var actualPointsSet = ConvexHullBuilder.BuildRectanglePointsSet(rectangles);
+            var actualPointsSet = ConvexHullBuilder.GetRectanglesPointsSet(rectangles);
 
             actualPointsSet.Should().BeEquivalentTo(expectedPointsSet);
 

@@ -26,7 +26,7 @@ namespace TagsCloudVisualization
             return Math.Sign(vectorProduct);
         }
 
-        public static IEnumerable<Point> BuildRectanglePointsSet(IEnumerable<Rectangle> rectangles)
+        public static IEnumerable<Point> GetRectanglesPointsSet(IEnumerable<Rectangle> rectangles)
         {
             return rectangles
                 .Select(rect => new Point[]
@@ -38,6 +38,60 @@ namespace TagsCloudVisualization
                     })
                 .SelectMany(points => points)
                 .Distinct();
+        }
+
+        public static IEnumerable<Point> GetConvexHull(IEnumerable<Point> points)
+        {
+            var pointsCount = points.Count();
+            if (pointsCount >= 0 && pointsCount <= 3)
+                return points;
+
+            var leftMostPoint = GetLeftMostPoint(points);
+            return GetConvexHullByJarvisAlgorithm(points, leftMostPoint);
+        }
+
+        private static IEnumerable<Point> GetConvexHullByJarvisAlgorithm(
+            IEnumerable<Point> points, Point leftMostPoint)
+        {
+            var convexHull = new List<Point>();
+            var lastAddedPoint = leftMostPoint;
+            var hullCandidate = default(Point);
+            do
+            {
+                hullCandidate = GetAnyCandidateExceptLastAdded(points, lastAddedPoint);
+                var candidateVector = new Vector(lastAddedPoint, hullCandidate);
+                hullCandidate = GetBestCandidate(points, candidateVector, hullCandidate, lastAddedPoint);
+                convexHull.Add(hullCandidate);
+                lastAddedPoint = hullCandidate;
+            } while (hullCandidate != leftMostPoint);
+
+            return convexHull;
+        }
+
+        private static Point GetBestCandidate(IEnumerable<Point> points, 
+            Vector currentBorderVector, Point candidateForHull, Point lastAddedPoint)
+        {
+            foreach (var point in points)
+                if (GetRotationDirection(currentBorderVector, point) < 0)
+                {
+                    candidateForHull = point;
+                    currentBorderVector = new Vector(lastAddedPoint, candidateForHull);
+                }
+
+            return candidateForHull;
+        }
+
+        private static Point GetAnyCandidateExceptLastAdded(IEnumerable<Point> points, Point lastAdded)
+        {
+            return points
+                .Where(p => p != lastAdded)
+                .First();
+        }
+
+        private static Point GetLeftMostPoint(IEnumerable<Point> points)
+        {
+            var minimalX = points.Min(p => p.X);
+            return points.First(p => p.X == minimalX);
         }
     }
 }
