@@ -93,7 +93,7 @@ namespace TagsCloudVisualization_Test
             actualFactor.Should().BeGreaterThan(targetFactor);
         }
 
-        [Test, Timeout(10_000)]
+        [Test, Timeout(5_000)]
         public void Put500Rectangles_TakesLess5seconds()
         {
             var rectSises = TestHelper.GenerateSizes(500);

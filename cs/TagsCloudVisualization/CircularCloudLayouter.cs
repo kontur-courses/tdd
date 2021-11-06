@@ -67,9 +67,11 @@ namespace TagsCloudVisualization
 
         private double GetTreshold()
         {
-            var averageSize = Rectangles.Select(r => r.Width < r.Height ? r.Width : r.Height).Average();
+            var sizes = Rectangles.Select(r => (r.Width + r.Height) / 2d).ToList();
+            sizes.Sort();
+            var meidanSize = sizes[sizes.Count / 2];
             var f = (Math.Sqrt(Rectangles.Count) + 1) / 2 - 1;
-            return Math.Round(averageSize * f, 4);
+            return meidanSize * f;
         }
 
         private bool CheckIntersects(Rectangle rectangle)
