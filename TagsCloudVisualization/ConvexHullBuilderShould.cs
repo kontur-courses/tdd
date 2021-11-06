@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -19,22 +20,11 @@ namespace TagsCloudVisualization
                 .Should().Be(expectedResult);
         }
 
-        [Test]
-        public void ReturnMinimalConvexHull()
+        [TestCaseSource(nameof(MinimalConvexHullTestData))]
+        public void ReturnMinimalConvexHull(IEnumerable<Point> givenPoints, 
+            IEnumerable<Point> expectedConvexHull)
         {
-            var points = new List<Point>
-            {
-                new Point(2, 1), new Point(4, 1), new Point(6, 2), new Point(8, 4),
-                new Point(5, 5), new Point(3, 4), new Point(2, 3), new Point(4, 3),
-                new Point(6,4), new Point(5, 3), new Point(5, 2), new Point(3, 2)
-            };
-            var expectedConvexHull = new List<Point>
-            {
-                new Point(2, 1), new Point(4, 1), new Point(6, 2), new Point(8, 4),
-                new Point(5, 5), new Point(3, 4), new Point(2, 3),
-            };
-
-            var actualConvexHull = ConvexHullBuilder.GetConvexHull(points);
+            var actualConvexHull = ConvexHullBuilder.GetConvexHull(givenPoints);
 
             actualConvexHull.Should().BeEquivalentTo(expectedConvexHull);
         }
@@ -60,6 +50,56 @@ namespace TagsCloudVisualization
 
             actualPointsSet.Should().BeEquivalentTo(expectedPointsSet);
 
+        }
+
+        private static IEnumerable<TestCaseData> MinimalConvexHullTestData
+        {
+            get
+            {
+                yield return new TestCaseData(
+                    new List<Point>
+                    {
+                        new Point(0, 0)
+                    },
+                    new List<Point>
+                    {
+                        new Point(0,0)
+                    })
+                    .SetName("when there is one point only");
+                yield return new TestCaseData(
+                    new List<Point>
+                    {
+                        new Point(0, 0), new Point(1,1)
+                    },
+                    new List<Point>
+                    {
+                        new Point(0,0), new Point(1,1)
+                    })
+                    .SetName("when two poinst are given");
+                yield return new TestCaseData(
+                    new List<Point>
+                    {
+                        new Point(0, 0), new Point(1,1), new Point(2,2)
+                    },
+                    new List<Point>
+                    {
+                        new Point(0,0), new Point(1,1), new Point(2,2)
+                    })
+                    .SetName("when three poinst are given");
+                yield return new TestCaseData(
+                    new List<Point>
+                    {
+                        new Point(2, 1), new Point(4, 1), new Point(6, 2), new Point(8, 4),
+                        new Point(5, 5), new Point(3, 4), new Point(2, 3), new Point(4, 3),
+                        new Point(6, 4), new Point(5, 3), new Point(5, 2), new Point(3, 2)
+                    },
+                    new List<Point>
+                    {
+                        new Point(2, 1), new Point(4, 1), new Point(6, 2), new Point(8, 4),
+                        new Point(5, 5), new Point(3, 4), new Point(2, 3),
+                    })
+                    .SetName("when points count more than three");
+            }
         }
 
         private static IEnumerable<TestCaseData> RotationDirectionTestData
