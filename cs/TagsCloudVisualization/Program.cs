@@ -12,9 +12,9 @@ namespace TagsCloudVisualization
     {
         public static void Main()
         {
-            var amount = 10;
+            var amount = 1;
             for (int i = 0; i < amount; i++)
-                GenerateTagCloud(50);
+                GenerateTagCloud(2000);
 
             var spiral = new ArchimedeanSpiral(Point.Empty);
             for (int i = 0; i < 5; i++)
@@ -36,9 +36,8 @@ namespace TagsCloudVisualization
             }
             rectSises.ToList().ForEach(s => layouter.PutNextRectangle(s));
 
-            var drawer = new BitmapDrawer(layouter);
-            drawer.Draw();
-            drawer.Save();
+            using (var bitmap = BitmapDrawer.Draw(layouter))
+                BitmapDrawer.Save(bitmap);
         }
 
         static void GenerateSpiral(int count, ArchimedeanSpiral spiral)
@@ -48,7 +47,7 @@ namespace TagsCloudVisualization
             var gr = Graphics.FromImage(bitmap);
             gr.FillRectangle(Brushes.White, new Rectangle(Point.Empty, bitmap.Size));
 
-            foreach (var p in spiral.Slide())
+            foreach (var p in spiral.Slide().Take(500))
             {
                 var point = new Point(p.X + size.Width / 2, p.Y + size.Height / 2);
                 gr.DrawEllipse(Pens.Red, new Rectangle(point, new Size(1, 1)));

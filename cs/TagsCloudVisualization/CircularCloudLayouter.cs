@@ -24,54 +24,28 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var rectangle = new Rectangle(Point.Empty, rectangleSize);
-            Point targetPoint;
-            if (Rectangles.Count > 0)
-                targetPoint = FindBestPointMinRadius(rectangleSize);
-            else
-                targetPoint = rectangle.GetLocationFromCenter(Center);
-            rectangle = new Rectangle(targetPoint, rectangleSize);
+            if (rectangleSize.Width < 0 || rectangleSize.Height < 0)
+                throw new ArgumentException($"Отрицательный размер прямоугольника: " +
+                    $"{rectangleSize.Width} x {rectangleSize.Height}");
+            var target = Rectangles.Any() ? FindNextPoint(rectangleSize) : Center.GetRectangleLocationByCenter(rectangleSize);
+
+            var rectangle = new Rectangle(target, rectangleSize);
             Rectangles.Add(rectangle);
             return rectangle;
         }
 
-        private Point FindBestPointMinRadius(Size rectSize)
+        private Point FindNextPoint(Size rectSize)
         {
-            var pointWithMinRadius = new Point(int.MaxValue, int.MaxValue);
-            double minRadius = int.MaxValue;
-
-            var treshold = GetTreshold();
+            Point? point = null;
             foreach (var spiralPoint in _spiral.Slide())
             {
-                var dryRectangle = new Rectangle(spiralPoint, rectSize);
-                if (Center == dryRectangle.GetCenter())
-                    continue;
-                var radius = new Radius(Center, dryRectangle.GetCenter());
-
-                foreach (var point in radius.LinSpaceFromCenter(treshold))
+                if (!CheckIntersects(new Rectangle(spiralPoint, rectSize)))
                 {
-                    dryRectangle = new Rectangle(dryRectangle.GetLocationFromCenter(point), dryRectangle.Size);
-                    if (!CheckIntersects(dryRectangle))
-                    {
-                        if (Radius.Length(Center, point) < minRadius)
-                        {
-                            minRadius = Radius.Length(point, Center);
-                            pointWithMinRadius = dryRectangle.Location;
-                        }
-                        break;
-                    }
+                    point = spiralPoint;
+                    break;
                 }
             }
-            return pointWithMinRadius;
-        }
-
-        private double GetTreshold()
-        {
-            var sizes = Rectangles.Select(r => (r.Width + r.Height) / 2d).ToList();
-            sizes.Sort();
-            var meidanSize = sizes[sizes.Count / 2];
-            var f = (Math.Sqrt(Rectangles.Count) + 1) / 2 - 1;
-            return meidanSize * f;
+            return point.Value;
         }
 
         private bool CheckIntersects(Rectangle rectangle)
