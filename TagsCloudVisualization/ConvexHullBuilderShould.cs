@@ -19,6 +19,29 @@ namespace TagsCloudVisualization
                 .Should().Be(expectedResult);
         }
 
+        [Test]
+        public void ExtractCorrectRectanglePointsSet()
+        {
+            var rectangles = new List<Rectangle>
+            {
+                new Rectangle(new Point(0, 0), new Size(30, 20)),
+                new Rectangle(new Point(-10, -10), new Size(10, 10)),
+                new Rectangle(new Point(10, -10), new Size(40, 5))
+            };
+            var expectedPointsSet = new List<Point>
+            {
+                new Point(0, 0), new Point(0, 20), new Point(30, 0),
+                new Point(30, 20), new Point(-10, -10), new Point(-10, 0),
+                new Point(0, -10), new Point(10, -10), new Point(50, -10),
+                new Point(50, -5), new Point(10, -5)
+            };
+
+            var actualPointsSet = ConvexHullBuilder.BuildRectanglePointsSet(rectangles);
+
+            actualPointsSet.Should().BeEquivalentTo(expectedPointsSet);
+
+        }
+
         private static IEnumerable<TestCaseData> RotationDirectionTestData
         {
             get

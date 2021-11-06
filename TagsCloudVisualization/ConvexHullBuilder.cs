@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -22,6 +24,20 @@ namespace TagsCloudVisualization
             var vectorProduct = (vector.End.X - vector.Begin.X) * (point.Y - vector.Begin.Y) 
                                 - (vector.End.Y - vector.Begin.Y) * (point.X - vector.Begin.X);
             return Math.Sign(vectorProduct);
+        }
+
+        public static IEnumerable<Point> BuildPointsSet(IEnumerable<Rectangle> rectangles)
+        {
+            return rectangles
+                .Select(rect => new Point[]
+                    {
+                        new Point(rect.Left, rect.Bottom),
+                        new Point(rect.Right, rect.Bottom),
+                        new Point(rect.Left, rect.Top),
+                        new Point(rect.Right, rect.Top)
+                    })
+                .SelectMany(points => points)
+                .Distinct();
         }
     }
 }
