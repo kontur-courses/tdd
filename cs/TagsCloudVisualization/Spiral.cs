@@ -8,19 +8,17 @@ namespace TagsCloudVisualization
     {
         private static Dictionary<Size, int> sizeToParameter = new();
 
-        public static IEnumerable<Point> GetCoordinates(Size tagSize, double spiralPitch)
+        public static IEnumerable<PointF> GetCoordinates(Size tagSize, float spiralPitch)
         {
-            var parameter = Math.PI / 2;
+            float parameter = (float)(Math.PI / 2);
             if (sizeToParameter.ContainsKey(tagSize))
                 parameter = sizeToParameter[tagSize];
-            while (true)
+            foreach (var p in GetArchimedeanSpiral(parameter, spiralPitch))
             {
-                //yield return GetArchimedeanSpiral(parameter, spiralPitch);    
-                parameter += Math.PI / (((int)parameter + 1) * 4);
-            }
+                yield return p;
+            }    
         }
 
-        
 
         private static void PolarToCartesian(float r, float theta,
             out float x, out float y)
@@ -29,11 +27,13 @@ namespace TagsCloudVisualization
             y = (float)(r * Math.Sin(theta));
         }
 
-        private static Point GetArchimedeanSpiral(double paramteter, double pitch)
+        private static IEnumerable<PointF> GetArchimedeanSpiral(float paramteter, float pitch)
         {
-            var coefficient = pitch / 2 * Math.PI;
-            return new Point((int)(coefficient * paramteter * Math.Cos(paramteter)),
-                (int)(coefficient * paramteter * Math.Sin(paramteter)));
+            for (float p = 0;; p += 0.1f)
+            {
+                PolarToCartesian(p, pitch, out var x, out var y);
+                yield return new PointF(x, y);
+            }
         }
     }
 }
