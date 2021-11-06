@@ -1,6 +1,8 @@
 # Облако тегов
 
 ## Примеры работы алгоритма построения облака тегов (просто прямоугольники, без текста :|)
-![TagCloud](CloudTagSample0.jpg)
-![TagCloud](CloudTagSample1.jpg)
-![TagCloud](CloudTagSample2.jpg)
+50 прямоугольников случайной высоты
+
+![TagCloud 1](CloudTagSample0.jpg)
+![TagCloud 2](CloudTagSample1.jpg)
+![TagCloud 3](CloudTagSample2.jpg)
