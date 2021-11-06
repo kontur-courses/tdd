@@ -44,10 +44,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CircularCloudLayouter.cs" />
+    <Compile Include="Layouting\CircularCloudLayouter.cs" />
+    <Compile Include="Layouting\ICloudLayouter.cs" />
+    <Compile Include="Saving\BitmapToDesktopSaver.cs" />
+    <Compile Include="Saving\IBitmapToDesktopSaver.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="LayoutVisualizator.cs" />
+    <Compile Include="TagCloud.cs" />
+    <Compile Include="Visualization\CloudDrawer.cs" />
+    <Compile Include="Visualization\ICloudDrawer.cs" />
+    <Compile Include="Visualization\IMarkupDrawer.cs" />
+    <Compile Include="Visualization\IVisualizer.cs" />
+    <Compile Include="Visualization\MarkupDrawer.cs" />
+    <Compile Include="Visualization\Visualizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -58,5 +67,6 @@
       <Name>TagCloud_TestDataGenerator</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

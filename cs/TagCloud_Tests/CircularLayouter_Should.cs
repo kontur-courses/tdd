@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
-using TagCloud;
+using TagCloud.Layouting;
 
 namespace TagCloudVisualization_Tests
 {
@@ -23,7 +23,7 @@ namespace TagCloudVisualization_Tests
 
             var layouter = new CircularCloudLayouter(centerPoint);
 
-            layouter.GetCenterPoint().Should().BeEquivalentTo(centerPoint);
+            layouter.GetCloudCenter().Should().BeEquivalentTo(centerPoint);
         }
 
         [Test]
@@ -44,7 +44,7 @@ namespace TagCloudVisualization_Tests
 
             var layouter = new CircularCloudLayouter(center);
 
-            layouter.GetCenterPoint().Should().BeEquivalentTo(center);
+            layouter.GetCloudCenter().Should().BeEquivalentTo(center);
         }
 
         [Test]
