@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using TagsCloudVisualization;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
+using System.Reflection;
 using FluentAssertions;
+using NUnit.Framework.Interfaces;
 
 namespace TagCloudVisualizationTests
 {
@@ -18,6 +21,27 @@ namespace TagCloudVisualizationTests
         {
             center = new Point(100, 100);
             sut = new CircularCloudLayouter(center);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            var testStatus = TestContext.CurrentContext.Result.Outcome.Status;
+            var visualizator = new CloudVisualizator(1500, 1500, Color.DarkRed, Color.Aquamarine);
+
+            if (testStatus == TestStatus.Failed)
+            {
+                var rectangles = (List<Rectangle>)typeof(CircularCloudLayouter)
+                    .GetField("rectangles", BindingFlags.Instance | BindingFlags.NonPublic)
+                    .GetValue(sut);
+                
+                foreach (var rectangle in rectangles)
+                    visualizator.DrawRectangle(rectangle);
+
+                var fullName = $"{TestContext.CurrentContext.Test.FullName}.png";
+                visualizator.SaveImage(fullName, ImageFormat.Png);
+                TestContext.Out.WriteLine($"Tag cloud visualization saved to file {Environment.CurrentDirectory}\\{fullName}");
+            }
         }
 
         [TestCase(0, 0, TestName = "WithZeroPoint")]
