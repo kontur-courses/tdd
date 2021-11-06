@@ -20,8 +20,10 @@ namespace TagsCloudVisualization
             pointSpiral = PointSpiralBuilder
                 .APointSpiral()
                 .WithCenter(center)
-                .WithDegreesParameter(20)
-                .WithDensityParameter(15)
+                // .WithDegreesParameter(20)
+                // .WithDensityParameter(15)
+                .WithDegreesParameter(1)
+                .WithDensityParameter(1)
                 .Build()
                 .GetEnumerator();
         }
@@ -43,11 +45,6 @@ namespace TagsCloudVisualization
 
             issuedRectangles.Add(rectangle);
             return rectangle;
-        }
-
-        private Rectangle TryCompactRectangle(Rectangle rectangle)
-        {
-            throw new NotImplementedException();
         }
     }
 }
