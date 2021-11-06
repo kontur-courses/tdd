@@ -4,6 +4,7 @@ using NUnit.Framework;
 using TagsCloudVisualization;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using FluentAssertions;
@@ -38,7 +39,11 @@ namespace TagCloudVisualizationTests
                 foreach (var rectangle in rectangles)
                     visualizator.DrawRectangle(rectangle);
 
-                var fullName = $"{TestContext.CurrentContext.Test.FullName}.png";
+                var folderName = "FailedTestsResults";
+                if (!Directory.Exists(folderName))
+                    Directory.CreateDirectory(folderName);
+
+                var fullName = $"{folderName}\\{TestContext.CurrentContext.Test.FullName}.png";
                 visualizator.SaveImage(fullName, ImageFormat.Png);
                 TestContext.Out.WriteLine($"Tag cloud visualization saved to file {Environment.CurrentDirectory}\\{fullName}");
             }
