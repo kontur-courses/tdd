@@ -1,31 +1,10 @@
 ﻿using System;
-using BowlingGame.Infrastructure;
-using FluentAssertions;
-using NUnit.Framework;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BowlingGame
 {
-    public class Game
-    {
-        public void Roll(int pins)
-        {
-        }
-
-        public int GetScore()
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    [TestFixture]
-    public class Game_should : ReportingTest<Game_should>
-    {
-        [Test]
-        public void HaveZeroScore_BeforeAnyRolls()
-        {
-            new Game()
-                .GetScore()
-                .Should().Be(0);
-        }
-    }
+    
 }
