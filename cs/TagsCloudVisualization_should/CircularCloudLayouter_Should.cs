@@ -70,6 +70,7 @@ namespace TagsCloudVisualizationTests
         [TestCase(5)]
         [TestCase(10)]
         [TestCase(100)]
+        [Timeout(5000)]
         public void PutRandomSizeRectanglesNotIntersectedWithOthers(int number)
         {
             var layouter = new CircularCloudLayouter(center);
