@@ -25,23 +25,17 @@ namespace TagsCloudVisualization
             if (rectangles.Count == 0)
                 return GetFirstRectangle(rectangleSize);
 
-            foreach (var rectangle in rectangles.ToArray())
+            var neededRectangle = GetNearestCorrectRectangle(rectangleSize);
+            if (neededRectangle != new Rectangle())
             {
-                var neededRectangle = GetRectangleCornerPoints(rectangleSize, rectangle)
-                    .Select(p => new Rectangle(p, rectangleSize))
-                    .FirstOrDefault(rect => 
-                        rectangles.All(x => !x.IntersectsWith(rect)));
-                if (neededRectangle != new Rectangle())
-                {
-                    rectangles.Add(neededRectangle);
-                    return neededRectangle;
-                }
+                rectangles.Add(neededRectangle);
+                return neededRectangle;
             }
 
-            return new Rectangle();
+            throw new InvalidOperationException("There is no points to place rectangle");
         }
 
-        private IEnumerable<Point> GetRectangleCornerPoints(Size rectangleSize, Rectangle rectangle)
+        private IEnumerable<Point> GetNextRectanglePotentialPoints(Size rectangleSize, Rectangle rectangle)
         {
             var potentialPoints = new[]
             {
@@ -63,6 +57,20 @@ namespace TagsCloudVisualization
             var rectangle = new Rectangle(upperLeftCorner, rectangleSize);
             rectangles.Add(rectangle);
             return rectangle;
+        }
+
+        private Rectangle GetNearestCorrectRectangle(Size rectangleSize)
+        {
+            var potentialPoints = rectangles.SelectMany(rectangle =>
+                    GetNextRectanglePotentialPoints(rectangleSize, rectangle));
+            var potentialRectangles = potentialPoints.Select(p => new Rectangle(p, rectangleSize))
+                    .Where(rect =>
+                        rectangles.All(x => !x.IntersectsWith(rect)));
+            return potentialRectangles.Aggregate((nearest, current) =>
+                    current.GetCenter().DistanceTo(Center) <
+                    nearest.GetCenter().DistanceTo(Center)
+                        ? current
+                        : nearest);
         }
     }
 }

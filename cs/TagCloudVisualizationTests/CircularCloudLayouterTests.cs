@@ -94,11 +94,12 @@ namespace TagCloudVisualizationTests
         public void PutNextRectangle_ShouldBeDense()
         {
             var rectangles = new Rectangle[100];
+            var random = new Random();
 
             for (var i = 0; i < 100; i++)
-                rectangles[i] = sut.PutNextRectangle(new Size(10, 10));
+                rectangles[i] = sut.PutNextRectangle(new Size(random.Next(5, 100), random.Next(5, 100)));
 
-            CalculateDensityRatio(rectangles).Should().BeGreaterOrEqualTo(0.5);
+            CalculateDensityRatio(rectangles).Should().BeGreaterOrEqualTo(0.55);
         }
 
         private double CalculateDensityRatio(Rectangle[] rectangles)
@@ -112,15 +113,7 @@ namespace TagCloudVisualizationTests
         private double GetCircumscribeCircleRadius(Rectangle[] rectangles)
         {
             return rectangles.SelectMany(rect => GetRectangleCorners(rect))
-                .Max(current =>
-                    DistanceBetween(center, current));
-        }
-
-        private double DistanceBetween(Point first, Point second)
-        {
-            var dx = first.X - second.X;
-            var dy = first.Y - second.Y;
-            return Math.Sqrt(dx * dx + dy * dy);
+                .Max(current => center.DistanceTo(current));
         }
 
         private IEnumerable<Point> GetRectangleCorners(Rectangle rectangle)
