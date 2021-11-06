@@ -7,7 +7,7 @@ namespace TagsCloudVisualization
 {
     class Circle
     {
-        public static IEnumerable<Point> GetPointsFrom(int radius, Point center)
+        public static IEnumerable<PointF> GetPointsFrom(int radius, PointF center)
         {
             while (true)
             {
@@ -16,21 +16,18 @@ namespace TagsCloudVisualization
             }
         }
 
-        private static IEnumerable<Point> GetPointsInRadius(int radius, Point center)
+        private static IEnumerable<PointF> GetPointsInRadius(int radius, PointF center)
         {
-            return Enumerable.Select<Point, Point>(GetPointsInRadiusInZeroCenter(radius), point => new Point(point.X + center.X, point.Y + center.Y));
+            return Enumerable.Select(GetPointsInRadiusInZeroCenter(radius), point => new PointF(point.X + center.X, point.Y + center.Y));
         }
 
-        private static IEnumerable<Point> GetPointsInRadiusInZeroCenter(int radius)
+        private static IEnumerable<PointF> GetPointsInRadiusInZeroCenter(int radius)
         {
-            yield return new Point(-radius, 0);
-            for (var x = -radius + 1; x < radius; x++)
+            for (float x = -radius; x < radius; x+=0.5f)
             {
-                yield return new Point(x, (int)Math.Sqrt(radius * radius - x * x));
-                yield return new Point(x, -(int)Math.Sqrt(radius * radius - x * x));
+                yield return new PointF(x, (float)Math.Sqrt(radius * radius - x * x));
+                yield return new PointF(x, (float)-Math.Sqrt(radius * radius - x * x));
             }
-
-            yield return new Point(radius, 0);
         }
     }
 }

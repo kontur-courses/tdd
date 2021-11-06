@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -56,15 +54,24 @@ namespace TagsCloudVisualization.Tests
                 cloudLayouter.PutNextRectangle(new Size(sizeX, sizeY));
 
             var cloud = cloudLayouter.GetCloud();
-            var bounds = GetInnerBounds(cloud.ToArray());
+            var bounds = cloudLayouter.GetBounds();
 
             bounds.Contains(center).Should().BeTrue();
         }
 
-        private Rectangle GetInnerBounds(Rectangle[] tags)
+        [Test]
+        public void PutNextRectangle_ShouldPutWithoutIntersecting()
         {
-            return tags.Aggregate(new Rectangle(), 
-                (current, tag) => Rectangle.Union(current, tag));
+            var cloudLayouter = new CircularCloudLayouter(new Point(0,0));
+            for (var i = 0; i < 20; i++)
+                cloudLayouter.PutNextRectangle(new Size(50, 15));
+
+            var cloud = cloudLayouter.GetCloud();
+
+            cloud
+                .Where(r => cloudLayouter.IsIntersectWithCloud(r))
+                .Should().BeEmpty();
         }
+      
     }
 }

@@ -6,40 +6,46 @@ namespace TagsCloudVisualization
 {
     class CircularCloudLayouter
     {
-        private readonly List<Rectangle> tagCloud = new List<Rectangle>();
-        private readonly Point center;
+        private readonly List<RectangleF> tagCloud = new List<RectangleF>();
+        private readonly PointF center;
         private int minRadius = 0;
 
-        public CircularCloudLayouter(Point center)
+        public CircularCloudLayouter(PointF center)
         {
             this.center = center;
         }
 
-        public Rectangle PutNextRectangle(Size rectangleSize)
+        public RectangleF PutNextRectangle(Size rectangleSize)
         {
-            var tag = new Rectangle(GetNextPosition(rectangleSize), rectangleSize);
+            var tag = new RectangleF(GetNextPosition(rectangleSize), rectangleSize);
             tagCloud.Add(tag);
             return tag;
         }
 
-        public IEnumerable<Rectangle> GetCloud()
+        public IEnumerable<RectangleF> GetCloud()
         {
             return tagCloud;
         }
 
-        private Point GetNextPosition(Size newRectangleSize)
+        public RectangleF GetBounds()
+        {
+            return GetCloud().Aggregate(new RectangleF(),
+                (current, tag) => RectangleF.Union(current, tag));
+        }
+
+        private PointF GetNextPosition(Size newRectangleSize)
         {
             return GetNextNearestPositionForTag(newRectangleSize);
         }
 
-        private Point GetNextNearestPositionForTag(Size size)
+        private PointF GetNextNearestPositionForTag(Size size)
         {
             return Circle.GetPointsFrom(minRadius, center)
-                .Select(p => new Rectangle(new Point(p.X - size.Width / 2, p.Y - size.Height / 2), size))
+                .Select(p => new RectangleF(new PointF(p.X - size.Width / 2, p.Y - size.Height / 2), size))
                 .First(r => !IsIntersectWithCloud(r)).Location;
         }
 
-        private bool IsIntersectWithCloud(Rectangle newTag)
+        public bool IsIntersectWithCloud(RectangleF newTag)
         {
             foreach (var tag in tagCloud)
                 if (tag.IntersectsWith(newTag))
