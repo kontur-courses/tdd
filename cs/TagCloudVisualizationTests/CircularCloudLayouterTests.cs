@@ -99,7 +99,7 @@ namespace TagCloudVisualizationTests
             for (var i = 0; i < 100; i++)
                 rectangles[i] = sut.PutNextRectangle(new Size(random.Next(5, 100), random.Next(5, 100)));
 
-            CalculateDensityRatio(rectangles).Should().BeGreaterOrEqualTo(0.55);
+            CalculateDensityRatio(rectangles).Should().BeGreaterOrEqualTo(0.5);
         }
 
         private double CalculateDensityRatio(Rectangle[] rectangles)
