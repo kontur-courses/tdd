@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
+using FluentAssertions.Extensions;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTests
@@ -14,13 +17,13 @@ namespace TagsCloudVisualizationTests
         [SetUp]
         public void SetUp()
         {
-            defaultLayouter = new CircularCloudLayouter(new Point());
+            defaultLayouter = new CircularCloudLayouter();
         }
 
         [Test]
         public void HaveNoRectangles_AfterCreating()
         {
-            new CircularCloudLayouter(new Point())
+            defaultLayouter
                 .Rectangles.Count
                 .Should().Be(0);
         }
@@ -29,34 +32,16 @@ namespace TagsCloudVisualizationTests
         public Point PutNextRectangle_FirstRectangle_PlacedInCenter(Point center, Size rectangle)
         {
             var layouter = new CircularCloudLayouter(center);
-
             layouter.PutNextRectangle(rectangle);
-
             return layouter.Rectangles[0].Location;
         }
 
         public static IEnumerable<TestCaseData> PutNextRectangleFirstRectanglePlacedInCenterTestCases()
         {
-            var size = new Size(10, 9);
-            yield return new TestCaseData(new Point(0, 0), size) {ExpectedResult = new Point(-5, -4)};
-            yield return new TestCaseData(new Point(10, 10), size) {ExpectedResult = new Point(5, 6)};
-            yield return new TestCaseData(new Point(-10, -10), size) {ExpectedResult = new Point(-15, -14)};
-        }
-
-        [Test]
-        public void PutNextRectangle_RandomRectangles_NotIntersect()
-        {
-            var random = new Random();
-
-            for (var i = 0; i < 100; i++)
-            {
-                var size = new Size(random.Next(1, 100), random.Next(1, 100));
-                TestContext.Out.WriteLine(size);
-
-                defaultLayouter.PutNextRectangle(size);
-
-                AssertHaveNoIntersection(defaultLayouter.Rectangles);
-            }
+            var size = new Size(3, 4);
+            yield return new TestCaseData(new Point(0, 0), size) {ExpectedResult = new Point(-1, -2)};
+            yield return new TestCaseData(new Point(3, 4), size) {ExpectedResult = new Point(2, 2)};
+            yield return new TestCaseData(new Point(-3, -4), size) {ExpectedResult = new Point(-4, -6)};
         }
 
         [Test]
@@ -67,12 +52,82 @@ namespace TagsCloudVisualizationTests
             defaultLayouter.Rectangles[1].IntersectsWith(defaultLayouter.Rectangles[0]).Should().BeFalse();
         }
 
+        [Test]
+        public void PutNextRectangle_RandomRectangles_NotIntersect()
+        {
+            CreateRandomRectangles(100).ForEach(rectangle =>
+            {
+                TestContext.WriteLine(rectangle);
+                defaultLayouter.PutNextRectangle(rectangle);
+                AssertHaveNoIntersection(defaultLayouter.Rectangles);
+            });
+        }
+
+        [TestCase(0, 0)]
+        [TestCase(1, 0)]
+        [TestCase(0, 1)]
+        [TestCase(-1, -1)]
+        [TestCase(-1, 1)]
+        [TestCase(1, -1)]
+        public void PutNextRectangle_ThrowsException_WithNotPositiveSize(int width, int height)
+        {
+            Assert.Throws<ArgumentException>(() =>
+                defaultLayouter.PutNextRectangle(new Size(width, height)));
+        }
+
+        [Test]
+        public void PutNextRectangle_WorksFastEnough()
+        {
+            var rectangles = CreateRandomRectangles(700);
+
+            Action act = () => rectangles.ForEach(defaultLayouter.PutNextRectangle);
+
+            GC.Collect();
+            act.ExecutionTime().Should().BeLessThan(5.Seconds());
+        }
+
+        [Test]
+        public void PutNextRectangle_PlaceRectangles_TightEnough()
+        {
+            CreateRandomRectangles(1000).ForEach(defaultLayouter.PutNextRectangle);
+
+
+            var ranges = defaultLayouter.Rectangles
+                .Select(rectangle => Math.Sqrt(Math.Pow(rectangle.X, 2) + Math.Pow(rectangle.Y, 2)))
+                .ToList();
+
+            ranges.Should().OnlyContain(range => range < 1300);
+        }
+
+        [Test]
+        [Explicit]
+        public void PutNextRectangle_Squares_SaveToBitmap()
+        {
+            var square = new Size(10, 10);
+            var layouter = new CircularCloudLayouter(new Point(1000, 1000));
+
+            Enumerable.Range(0, 1000).ToList().ForEach(_ => layouter.PutNextRectangle(square));
+
+            var visualizer = new RectangleVisualizer(new Size(2000, 2000), layouter.Rectangles);
+            var savePath = Path.Combine(Directory.GetCurrentDirectory(), "CircularCloudLayouter.Rectangles.bmp");
+            visualizer.SaveToBitmap(savePath);
+            TestContext.WriteLine($"Saved to '{savePath}'");
+        }
+
         private static void AssertHaveNoIntersection(IReadOnlyList<Rectangle> rectangles)
         {
             for (var i = 0; i < rectangles.Count; i++)
                 for (var j = i + 1; j < rectangles.Count; j++)
                     Assert.False(rectangles[i].IntersectsWith(rectangles[j]),
                         $"{rectangles[i]} intersects with {rectangles[j]}");
+        }
+
+        private static List<Size> CreateRandomRectangles(int count)
+        {
+            var random = new Random();
+            return Enumerable.Range(0, count)
+                .Select(_ => new Size(random.Next(10, 100), random.Next(10, 100)))
+                .ToList();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -9,20 +10,39 @@ namespace TagsCloudVisualization
         public List<Rectangle> Rectangles { get; } = new();
 
         private readonly Point center;
+        private readonly ArchimedeanSpiralPath spiralPath;
 
-        public CircularCloudLayouter(Point center)
+        public CircularCloudLayouter(Point center = default) : this(center,
+            new ArchimedeanSpiralPath(new ArchimedeanSpiral(radius: 0.1))) { }
+
+        public CircularCloudLayouter(Point center, ArchimedeanSpiralPath spiralPath)
         {
             this.center = center;
+            this.spiralPath = spiralPath;
         }
 
         public void PutNextRectangle(Size rectangleSize)
         {
+            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+                throw new ArgumentException("Size must be positive.", nameof(rectangleSize));
+
             var rectangle = CreateAtCenter(rectangleSize);
-            while (IsIntersect(rectangle))
+            var suitableLocation = FindLocation(rectangle);
+            Rectangles.Add(new Rectangle(suitableLocation, rectangleSize));
+        }
+
+        private Point FindLocation(Rectangle rectangle)
+        {
+            var initialLocation = rectangle.Location;
+            while (true)
             {
-                rectangle.X += 1;
+                var offset = spiralPath.GetNextPoint();
+
+                rectangle.X = initialLocation.X - offset.X;
+                rectangle.Y = initialLocation.Y - offset.Y;
+                if (!IsIntersectAny(rectangle))
+                    return rectangle.Location;
             }
-            Rectangles.Add(rectangle);
         }
 
         private Rectangle CreateAtCenter(Size rectangleSize) =>
@@ -30,7 +50,7 @@ namespace TagsCloudVisualization
                 new Point(-rectangleSize.Width / 2 + center.X, -rectangleSize.Height / 2 + center.Y),
                 rectangleSize);
 
-        private bool IsIntersect(Rectangle rectangle) =>
+        private bool IsIntersectAny(Rectangle rectangle) =>
             Rectangles.Any(other => other.IntersectsWith(rectangle));
     }
 }
