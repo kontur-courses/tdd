@@ -17,5 +17,12 @@ namespace TagsCloudVisualization
             Begin = begin;
             End = end;
         }
+
+        public double GetLength()
+        {
+            var xLen = End.X - Begin.X;
+            var yLen = End.Y - Begin.Y;
+            return Math.Sqrt(xLen * xLen + yLen * yLen);
+        }
     }
 }

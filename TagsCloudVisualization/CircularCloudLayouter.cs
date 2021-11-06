@@ -10,8 +10,8 @@ namespace TagsCloudVisualization
         public readonly Point CloudCenter;
         private const double A = 15;
         private const double B = 0.015;
-        private const double CurveAngleStep = 0.12;
-        private double _currentCurveAngle = 70;
+        private const double CurveAngleStep = 1;
+        private double _currentCurveAngle = 15;
 
         public CircularCloudLayouter(Point center)
         {
@@ -24,13 +24,18 @@ namespace TagsCloudVisualization
             CheckRectangleSizeCorrectness(rectangleSize);
             var result = new Rectangle();
             if (Rectangles.Count == 0)
-                result = new Rectangle(
-                    new Point(-1 * rectangleSize.Width / 2, rectangleSize.Height / 2),
-                    rectangleSize);
+                result = GetRectangleByCoordinates(CloudCenter, rectangleSize);
             else
-                result = new Rectangle(GetNextRectangleCoordinates(), rectangleSize);
+                result = GetRectangleByCoordinates(GetNextRectangleCoordinates(), rectangleSize);
             Rectangles.Add(result);
             return result;
+        }
+
+        private Rectangle GetRectangleByCoordinates(Point coordinates, Size rectangleSize)
+        {
+            var location = new Point(coordinates.X - rectangleSize.Width / 2,
+                coordinates.Y - rectangleSize.Height / 2);
+            return new Rectangle(location, rectangleSize);
         }
 
         private Point GetNextRectangleCoordinates()
