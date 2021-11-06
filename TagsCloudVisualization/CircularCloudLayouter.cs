@@ -24,10 +24,12 @@ namespace TagsCloudVisualization
             CheckRectangleSizeCorrectness(rectangleSize);
             var result = new Rectangle();
             if (Rectangles.Count == 0)
-            {
-                result.Location = new Point(-1 * rectangleSize.Width / 2, rectangleSize.Height / 2);
-                Rectangles.Add(result);
-            }
+                result = new Rectangle(
+                    new Point(-1 * rectangleSize.Width / 2, rectangleSize.Height / 2),
+                    rectangleSize);
+            else
+                result = new Rectangle(GetNextRectangleCoordinates(), rectangleSize);
+            Rectangles.Add(result);
             return result;
         }
 
@@ -37,7 +39,6 @@ namespace TagsCloudVisualization
             var y = Convert.ToInt32(A * Math.Pow(Math.E, B * _currentCurveAngle) * Math.Sin(_currentCurveAngle));
             _currentCurveAngle += CurveAngleStep;
             return new Point(x, y);
-
         }
 
         private void CheckRectangleSizeCorrectness(Size rectangleSize)
