@@ -14,14 +14,14 @@ namespace TagsCloudVisualization
     public class ConvexHullBuilderShould
     {
         [TestCaseSource(nameof(RotationDirectionTestData))]
-        public void ReturnCorrectRotationDirection(Vector vector, Point point, int expectedResult)
+        public void ReturnCorrectVectorToPointRotationDirection(Vector vector, Point point, int expectedResult)
         {
             ConvexHullBuilder.GetRotationDirection(vector, point)
                 .Should().Be(expectedResult);
         }
 
         [TestCaseSource(nameof(MinimalConvexHullTestData))]
-        public void ReturnMinimalConvexHull(IEnumerable<Point> givenPoints, 
+        public void ReturnCorrectMinimalConvexHull(IEnumerable<Point> givenPoints, 
             IEnumerable<Point> expectedConvexHull)
         {
             var actualConvexHull = ConvexHullBuilder.GetConvexHull(givenPoints);
@@ -65,7 +65,7 @@ namespace TagsCloudVisualization
                     {
                         new Point(0,0)
                     })
-                    .SetName("when there is one point only");
+                    .SetName("when one point is given");
                 yield return new TestCaseData(
                     new List<Point>
                     {
