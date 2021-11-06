@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using FluentAssertions;
 
 namespace TagsCloudVisualization
 {
     class CircularCloudLayouter
     {
-        private readonly List<Rectangle> tagCloud = new();
+        private readonly List<Rectangle> tagCloud = new List<Rectangle>();
         private readonly Point center;
         private int minRadius = 0;
 
@@ -36,8 +34,8 @@ namespace TagsCloudVisualization
 
         private Point GetNextNearestPositionForTag(Size size)
         {
-            return GetPointsFrom(minRadius)
-                .Select(p => new Rectangle(p-size/2, size))
+            return Circle.GetPointsFrom(minRadius, center)
+                .Select(p => new Rectangle(new Point(p.X - size.Width / 2, p.Y - size.Height / 2), size))
                 .First(r => !IsIntersectWithCloud(r)).Location;
         }
 
@@ -47,33 +45,6 @@ namespace TagsCloudVisualization
                 if (tag.IntersectsWith(newTag))
                     return true;
             return false;
-
-        }
-
-        private IEnumerable<Point> GetPointsFrom(int radius)
-        {
-            while (true)
-            {
-                foreach (var p in GetPointsInRadius(radius++))
-                    yield return p;
-            }
-        }
-
-        private IEnumerable<Point> GetPointsInRadius(int radius)
-        {
-            return GetPointsInRadiusInZeroCenter(radius)
-                .Select(point => new Point(point.X + center.X, point.Y + center.Y));
-        }
-
-        private IEnumerable<Point> GetPointsInRadiusInZeroCenter(int radius)
-        {
-            yield return new Point(-radius, 0);
-            for (var x = -radius + 1; x < radius; x++)
-            {
-                yield return new Point(x, (int)Math.Sqrt(radius*radius - x*x));
-                yield return new Point(x, -(int)Math.Sqrt(radius*radius - x*x));
-            }
-            yield return new Point(radius, 0);
         }
     }
 }
