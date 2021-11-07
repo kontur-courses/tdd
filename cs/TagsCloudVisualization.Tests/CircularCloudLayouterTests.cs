@@ -7,7 +7,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using TagsCloudVisualization.Extensions;
+using TagsCloudVisualization.Tests.Extensions;
 
 namespace TagsCloudVisualization.Tests
 {
@@ -148,7 +148,8 @@ namespace TagsCloudVisualization.Tests
         private double CalculateDensityForRectangles(Rectangle[] rectangles)
         {
             var circleRadius = GetBoundingCircleRadius(rectangles);
-            var rectanglesSquare = rectangles.Sum(rect => rect.CalculateSquare());
+            var rectanglesSquare =
+                rectangles.Sum(rect => SquareCalculator.CalculateRectangleSquare(rect.Width, rect.Height));
             var circleSquare = SquareCalculator.CalculateCircleSquare(circleRadius);
             return rectanglesSquare / circleSquare;
         }
@@ -163,13 +164,21 @@ namespace TagsCloudVisualization.Tests
         private double GetBoundingCircleRadius(IEnumerable<Rectangle> rectangles)
         {
             var finder = new DistantPointFinder(_center);
-            var rectanglesPoints = rectangles.SelectMany(rect => rect.GetBounds());
+            var rectanglesPoints = rectangles.SelectMany(GetBounds);
             return finder.GetDistantPoint(rectanglesPoints).DistanceTo(_center);
         }
 
         private bool AreAllBoundsInCircle(Rectangle rectangle, double radius)
         {
-            return rectangle.GetBounds().All(bound => bound.DistanceTo(_center) <= radius);
+            return GetBounds(rectangle).All(bound => bound.DistanceTo(_center) <= radius);
+        }
+
+        private static IEnumerable<Point> GetBounds(Rectangle rectangle)
+        {
+            yield return new Point(rectangle.Left, rectangle.Top);
+            yield return new Point(rectangle.Right, rectangle.Top);
+            yield return new Point(rectangle.Right, rectangle.Bottom);
+            yield return new Point(rectangle.Left, rectangle.Bottom);
         }
     }
 }

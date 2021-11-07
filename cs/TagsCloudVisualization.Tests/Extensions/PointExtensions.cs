@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace TagsCloudVisualization.Extensions
+namespace TagsCloudVisualization.Tests.Extensions
 {
     public static class PointExtensions
     {

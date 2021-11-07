@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Tests
 {
     public static class SquareCalculator
     {

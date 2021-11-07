@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using TagsCloudVisualization.Extensions;
+using TagsCloudVisualization.Tests.Extensions;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Tests
 {
     public class DistantPointFinder
     {
