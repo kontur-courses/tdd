@@ -40,6 +40,47 @@ namespace TestProject1
             Invoking(() => builder.Build()).Should().NotThrow($"X = {x}; Y = {y}");
         }
         
+        [Test]
+        public void CircularCloudLayouter_PutNextRectangle_DoNotThrowAnyExceptionOnPositiveSize()
+        {
+            Invoking(() => layouter.PutNextRectangle(new Size(1, 1))).Should().NotThrow();
+        }
+        
+        [TestCase(-1, -1)]
+        [TestCase(-1, 0)]
+        [TestCase(0, -1)]
+        [TestCase(0, 0)]
+        [TestCase(1, 0)]
+        [TestCase(0, 1)]
+        [TestCase(1, -1)]
+        [TestCase(-1, 1)]
+        public void CircularCloudLayouterConstructor_PutNextRectangle_ThrowArgumentExceptionOnNonPositiveWidthOrHeight(int width, int height)
+        {
+            Invoking(() => layouter.PutNextRectangle(new Size(width, height)))
+                .Should()
+                .Throw<ArgumentException>($"width = {width}, height = {height}");
+        }
+        
+        [Test]
+        public void CircularCloudLayouterConstructor_DoNotThrowAnyExceptionOnNonNullParameter()
+        {
+            var builder = CircularCloudLayouterBuilder
+                .ACircularCloudLayouter()
+                .WithCenterAt(Point.Empty)
+                .WithDegreesParameter(1)
+                .WithDensityParameter(1);
+
+            Invoking(() => builder.Build()).Should().NotThrow();
+        }
+        
+        [Test]
+        public void CircularCloudLayouterConstructor_ThrowArgumentExceptionOnNullParameter()
+        {
+            Invoking(() => new CircularCloudLayouter(null))
+                .Should()
+                .Throw<ArgumentException>();
+        }
+        
         [TestCase(-1, -1)]
         [TestCase(-1, 0)]
         [TestCase(-1, 1)]
