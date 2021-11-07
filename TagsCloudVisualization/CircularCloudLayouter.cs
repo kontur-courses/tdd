@@ -9,9 +9,9 @@ namespace TagsCloudVisualization
     { 
         public readonly List<Rectangle> Rectangles;
         public readonly Point CloudCenter;
-        private const double A = 15;
-        private const double B = 0.015;
-        private const double MoveCoefficient = 0.05;
+        private const double CurveRoundsWidthCoeff = 15;
+        private const double DirectionBetweenRoundsCoeff = 0.015;
+        private const double MoveCoeff = 0.05;
         private const double CurveAngleStep = 1;
         private double _currentCurveAngle = 15;
 
@@ -47,7 +47,7 @@ namespace TagsCloudVisualization
             rectSize.Width += 4;
             rectSize.Height += 4;
             var vectLen = new Vector(leftBorder, rightBorder).GetLength();
-            var eps = 2;
+            var eps = 4;
             while (vectLen > eps)
             {
                 var middle = new Point(
@@ -66,10 +66,10 @@ namespace TagsCloudVisualization
         private bool IfRectIntersectAnyOther(Rectangle rect)
             => Rectangles.Any(r => r != rect && rect.IntersectsWith(r));
 
-        private Point MoveRectCoordsFarFromCenter(Point nextRectangleCoordinates)
+        private Point MoveRectCoordsFarFromCenter(Point nextRectCoord)
         {
-            var movedX = (nextRectangleCoordinates.X * (1 + MoveCoefficient) - CloudCenter.X) / MoveCoefficient;
-            var movedY = (nextRectangleCoordinates.Y * (1 + MoveCoefficient) - CloudCenter.Y) / MoveCoefficient;
+            var movedX = (nextRectCoord.X * (1 + MoveCoeff) - CloudCenter.X) / MoveCoeff;
+            var movedY = (nextRectCoord.Y * (1 + MoveCoeff) - CloudCenter.Y) / MoveCoeff;
             return new Point((int) movedX, (int) movedY);
         }
 
@@ -91,8 +91,12 @@ namespace TagsCloudVisualization
 
         private Point GetNextCurveCoordinates()
         {
-            var x = Convert.ToInt32(A * Math.Pow(Math.E, B * _currentCurveAngle) * Math.Cos(_currentCurveAngle));
-            var y = Convert.ToInt32(A * Math.Pow(Math.E, B * _currentCurveAngle) * Math.Sin(_currentCurveAngle));
+            var x = Convert.ToInt32(CurveRoundsWidthCoeff * 
+                Math.Pow(Math.E, DirectionBetweenRoundsCoeff * _currentCurveAngle) 
+                * Math.Cos(_currentCurveAngle));
+            var y = Convert.ToInt32(CurveRoundsWidthCoeff *
+                Math.Pow(Math.E, DirectionBetweenRoundsCoeff * _currentCurveAngle) 
+                * Math.Sin(_currentCurveAngle));
             _currentCurveAngle += CurveAngleStep;
             return new Point(x, y);
         }
