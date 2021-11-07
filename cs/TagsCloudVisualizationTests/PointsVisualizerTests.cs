@@ -67,10 +67,10 @@ namespace TagsCloudVisualizationTests
             var expectedPoints = new List<Point>() {new(), new(1, 2)};
             var bitmapSize = new Size(2, 3);
 
-            yield return new TestCaseData(new List<Point>() {new(), new Point(1, 2)}, expectedPoints, bitmapSize)
+            yield return new TestCaseData(new List<Point>() {new(), new (1, 2)}, expectedPoints, bitmapSize)
                 {TestName = "With positive points"};
 
-            yield return new TestCaseData(new List<Point>() {new(), new Point(-1, -2)}, expectedPoints, bitmapSize)
+            yield return new TestCaseData(new List<Point>() {new(), new (-1, -2)}, expectedPoints, bitmapSize)
                 {TestName = "With negative points"};
         }
     }

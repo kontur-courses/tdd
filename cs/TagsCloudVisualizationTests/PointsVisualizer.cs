@@ -16,7 +16,7 @@ namespace TagsCloudVisualizationTests
 
         public void Draw(Graphics graphics)
         {
-            var offset = GetMinPoint();
+            var offset = PointHelper.GetTopLeftAge(points);
             var brush = new SolidBrush(Color.Red);
             foreach (var point in points)
                 graphics.FillRectangle(brush, point.X - offset.X, point.Y - offset.Y, 1, 1);
@@ -27,18 +27,12 @@ namespace TagsCloudVisualizationTests
             if (points.Count == 0)
                 return new Size(1, 1);
 
-            var min = GetMinPoint();
-            var max = GetMaxPoint();
+            var topLeft = PointHelper.GetTopLeftAge(points);
+            var bottomRight = PointHelper.GetBottomRightAge(points);
 
             return new Size(
-                max.X - min.X + 1,
-                max.Y - min.Y + 1);
+                bottomRight.X - topLeft.X + 1,
+                bottomRight.Y - topLeft.Y + 1);
         }
-
-        private Point GetMinPoint() => points.Aggregate((min, current) =>
-            new Point(Math.Min(current.X, min.X), Math.Min(current.Y, min.Y)));
-
-        private Point GetMaxPoint() => points.Aggregate((max, current) =>
-            new Point(Math.Max(current.X, max.X), Math.Max(current.Y, max.Y)));
     }
 }
