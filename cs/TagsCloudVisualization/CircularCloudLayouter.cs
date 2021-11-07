@@ -13,7 +13,6 @@ namespace TagsCloudVisualization
         private readonly Spiral spiral;
         public List<Rectangle> Rectangles => rectangles;
 
-
         public CircularCloudLayouter(Point center)
         {
             centrPoint = center;
