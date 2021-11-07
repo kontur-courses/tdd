@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization;
@@ -119,6 +121,96 @@ namespace TestProject1
                 var rectangle = layouter.PutNextRectangle(randomSize);
 
                 lastRectangle.IntersectsWith(rectangle).Should().BeFalse($"on try {i}");
+            }
+        }
+        
+        [Test]
+        public void CircularCloudLayouter_PutNextRectangle_RectangleCircularAutoTest()
+        {
+            for (var j = 0; j < 100; j++)
+            {
+                layouter = CircularCloudLayouterBuilder
+                    .ACircularCloudLayouter()
+                    .WithCenterAt(Point.Empty)
+                    .Build();
+                
+                var rectangles = new HashSet<Rectangle>();
+                var rnd = new Random();
+
+                for (var i = 0; i < 1000; i++)
+                {
+                    rectangles.Add(layouter.PutNextRectangle(new Size(rnd.Next(25, 300), rnd.Next(25, 300))));
+                }
+
+                var smallCircleRadius = rectangles
+                    .Select(x => new[]
+                        {
+                            Math.Abs(x.Top),
+                            Math.Abs(x.Bottom),
+                            Math.Abs(x.Left),
+                            Math.Abs(x.Right)
+                        }.Max()
+                    ).Max();
+                
+                var bigCircleRadius = rectangles
+                    .Select(x => new []
+                        {
+                            x.Location.MetricTo(Point.Empty),
+                            new Point(x.X, x.Y + x.Height).MetricTo(Point.Empty),
+                            new Point(x.X + x.Width, x.Y).MetricTo(Point.Empty),
+                            new Point(x.X + x.Width, x.Y + x.Height).MetricTo(Point.Empty)
+                        }.Max()
+                    ).Max();
+
+                var outsideCircleSquare = Math.Sqrt(2 * Math.Pow(bigCircleRadius, 2));
+                
+                
+                (outsideCircleSquare / bigCircleRadius).Should().BeGreaterThan(bigCircleRadius / smallCircleRadius * 1.35);
+            }
+        }
+        
+        [Test]
+        public void CircularCloudLayouter_PutNextRectangle_RectangleCircularAutoTest()
+        {
+            for (var j = 0; j < 100; j++)
+            {
+                layouter = CircularCloudLayouterBuilder
+                    .ACircularCloudLayouter()
+                    .WithCenterAt(Point.Empty)
+                    .Build();
+                
+                var rectangles = new HashSet<Rectangle>();
+                var rnd = new Random();
+
+                for (var i = 0; i < 1000; i++)
+                {
+                    rectangles.Add(layouter.PutNextRectangle(new Size(rnd.Next(25, 300), rnd.Next(25, 300))));
+                }
+
+                var smallCircleRadius = rectangles
+                    .Select(x => new[]
+                        {
+                            Math.Abs(x.Top),
+                            Math.Abs(x.Bottom),
+                            Math.Abs(x.Left),
+                            Math.Abs(x.Right)
+                        }.Max()
+                    ).Max();
+                
+                var bigCircleRadius = rectangles
+                    .Select(x => new []
+                        {
+                            x.Location.MetricTo(Point.Empty),
+                            new Point(x.X, x.Y + x.Height).MetricTo(Point.Empty),
+                            new Point(x.X + x.Width, x.Y).MetricTo(Point.Empty),
+                            new Point(x.X + x.Width, x.Y + x.Height).MetricTo(Point.Empty)
+                        }.Max()
+                    ).Max();
+
+                var outsideCircleSquare = Math.Sqrt(2 * Math.Pow(bigCircleRadius, 2));
+                
+                
+                (outsideCircleSquare / bigCircleRadius).Should().BeGreaterThan(bigCircleRadius / smallCircleRadius * 1.35);
             }
         }
     }
