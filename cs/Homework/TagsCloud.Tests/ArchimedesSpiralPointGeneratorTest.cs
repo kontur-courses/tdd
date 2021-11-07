@@ -9,18 +9,18 @@ namespace TagsCloud.Tests
     public class ArchimedesSpiralPointGeneratorTest
     {
         private readonly Point center = new(10, 10);
-        private ArchimedesSpiralPointGenerator spiralPointGenerator;
+        private ArchimedesSpiralPointGenerator sut;
 
         [SetUp]
         public void InitGenerator()
         {
-            spiralPointGenerator = new ArchimedesSpiralPointGenerator(center);
+            sut = new ArchimedesSpiralPointGenerator(center);
         }
 
         [Test]
         public void GetNext_OnFirstCall_Should_ReturnCenter()
         {
-            var point = spiralPointGenerator.GenerateNextPoint().First();
+            var point = sut.GenerateNextPoint().First();
 
             point.Should().BeEquivalentTo(center);
         }
@@ -28,7 +28,7 @@ namespace TagsCloud.Tests
         [Test]
         public void GetNext_Should_ReturnPoints_WithSameRadii()
         {
-            var points = spiralPointGenerator.GenerateNextPoint().Take(100)
+            var points = sut.GenerateNextPoint().Take(100)
                 .ToList();
 
             var radii = points.Select(x => x.GetDistance(center)).ToList();
@@ -40,7 +40,7 @@ namespace TagsCloud.Tests
         [Test]
         public void GetNext_Should_ReturnPoints_WithIncreasingRadius()
         {
-            var points = spiralPointGenerator.GenerateNextPoint().Take(100).ToList();
+            var points = sut.GenerateNextPoint().Take(100).ToList();
 
             var radii = points.Select(x => x.GetDistance(center)).ToList();
 

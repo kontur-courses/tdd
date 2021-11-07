@@ -15,7 +15,7 @@ namespace TagsCloud.Tests
     public class CircularCloudLayouterTests
     {
         private Point center;
-        private CircularCloudLayouter layouter;
+        private CircularCloudLayouter sut;
         private List<Rectangle> rectangles;
 
         [SetUp]
@@ -23,7 +23,7 @@ namespace TagsCloud.Tests
         {
             rectangles = new List<Rectangle>();
             center = new Point(10, 10);
-            layouter = new CircularCloudLayouter(center, new ArchimedesSpiralPointGenerator(center));
+            sut = new CircularCloudLayouter(center, new ArchimedesSpiralPointGenerator(center));
         }
 
         [TearDown]
@@ -51,7 +51,7 @@ namespace TagsCloud.Tests
         {
             var size = new Size(width, height);
 
-            Assert.Throws<ArgumentException>(() => layouter.PutNextRectangle(size));
+            Assert.Throws<ArgumentException>(() => sut.PutNextRectangle(size));
         }
 
         [TestCase(1)]
@@ -69,7 +69,7 @@ namespace TagsCloud.Tests
         {
             var size = new Size(12, 34);
 
-            var rectangle = layouter.PutNextRectangle(size);
+            var rectangle = sut.PutNextRectangle(size);
 
             rectangle.Size.Should().Be(size);
         }
@@ -80,7 +80,7 @@ namespace TagsCloud.Tests
         [TestCase(1, 200)]
         public void PutNextRectangle_FirstRectangle_Should_BePlacedInCenter(int width, int height)
         {
-            var rectangle = layouter.PutNextRectangle(new Size(width, height));
+            var rectangle = sut.PutNextRectangle(new Size(width, height));
 
             var rectangleCenter = rectangle.GetCenter();
 
@@ -96,7 +96,7 @@ namespace TagsCloud.Tests
         }
 
         [Test]
-        public void Rectangles_ShouldNot_Intersect()
+        public void PutNextRectangle_Should_PlaceRectangles_WithoutIntersection()
         {
             rectangles = PutRandomRectangles(20);
 
@@ -106,7 +106,7 @@ namespace TagsCloud.Tests
 
         [TestCase(200, TestName = "Big count")]
         [TestCase(5, TestName = "Little count")]
-        public void ResultLayout_Should_BeCloseToRoundForm(int count)
+        public void PutNextRectangle_Should_PlaceRectangles_CloseToRoundForm(int count)
         {
             var random = new Random();
             var width = random.Next(300);
@@ -114,7 +114,7 @@ namespace TagsCloud.Tests
             var size = new Size(width, height);
 
             rectangles = Enumerable.Range(0, count)
-                .Select(_ => layouter.PutNextRectangle(size))
+                .Select(_ => sut.PutNextRectangle(size))
                 .ToList();
 
             foreach (var rectangle in rectangles)
@@ -124,7 +124,7 @@ namespace TagsCloud.Tests
 
         [TestCase(1000, TestName = "Big count")]
         [TestCase(5, TestName = "Little count")]
-        public void Rectangles_Should_BeTightlySpaced(int count)
+        public void PutNextRectangle_Should_PlaceRectangles_Tightly(int count)
         {
             rectangles = PutRandomRectangles(count);
 
@@ -142,15 +142,13 @@ namespace TagsCloud.Tests
             }
         }
 
-        private List<Rectangle> PutRandomRectangles(int count)
+        private List<Rectangle> PutRandomRectangles(int count, int maxWidth = 100, int maxHeight = 100)
         {
-            const int maxWidth = 100;
-            const int maxHeight = 100;
             var rnd = new Random();
             var sizes = Enumerable.Range(0, count)
                 .Select(_ => new Size(rnd.Next(1, maxWidth), rnd.Next(1, maxHeight)));
 
-            return sizes.Select(x => layouter.PutNextRectangle(x)).ToList();
+            return sizes.Select(x => sut.PutNextRectangle(x)).ToList();
         }
 
         private IEnumerable<(Rectangle, IEnumerable<Rectangle>)> GetItemAndListWithoutIt(

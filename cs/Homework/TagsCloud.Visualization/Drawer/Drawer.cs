@@ -8,13 +8,16 @@ namespace TagsCloud.Visualization.Drawer
 {
     public abstract class Drawer : IDrawer
     {
+        private const int OffsetX = 100;
+        private const int OffsetY = 100;
+        
         public Image Draw([NotNull] Rectangle[] rectangles)
         {
             if (rectangles.Length == 0)
-                throw new ArgumentException($"rectangles array cannot be empty");
+                throw new ArgumentException("rectangles array cannot be empty");
             
             var (width, height) = GetWidthAndHeight(rectangles);
-            var (widthWithOffset, heightWithOffset) = (width + 100, height + 100);
+            var (widthWithOffset, heightWithOffset) = (width + OffsetX, height + OffsetY);
             var center = rectangles.First().GetCenter();
             var bitmap = new Bitmap(widthWithOffset, heightWithOffset);
             using var graphics = Graphics.FromImage(bitmap);

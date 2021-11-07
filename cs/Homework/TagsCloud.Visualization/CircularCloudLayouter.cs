@@ -41,8 +41,7 @@ namespace TagsCloud.Visualization
                 if (!rectangle.IntersectsWith(rectangles))
                     return rectangle;
             }
-
-            throw new Exception();
+            throw new Exception("point generator must generate points infinitely");
         }
 
         private Rectangle ShiftRectangleToCenter(Rectangle rectangle)
