@@ -11,11 +11,12 @@ namespace TagsCloudVisualization
 {
     public class TagsCloudDrawer
     {
-        private static readonly Color BackgroundColor = Color.Gray;
+        private readonly Color _backgroundColor;
         private readonly IColorGenerator _colorGenerator;
 
-        public TagsCloudDrawer(IColorGenerator colorGenerator)
+        public TagsCloudDrawer(Color backgroundColor, IColorGenerator colorGenerator)
         {
+            _backgroundColor = backgroundColor;
             _colorGenerator = colorGenerator ?? throw new ArgumentNullException(nameof(colorGenerator));
         }
 
@@ -27,7 +28,7 @@ namespace TagsCloudVisualization
                     $"{nameof(cloudScale)} expected positive dimensions, but actually negative");
             using var graphics = Graphics.FromImage(bitmap);
 
-            graphics.Clear(BackgroundColor);
+            graphics.Clear(_backgroundColor);
             graphics.TranslateTransform(bitmap.Width / 2f, bitmap.Height / 2f);
 
             if (rectangles.Length > 0)

@@ -13,7 +13,7 @@ namespace TagsCloudVisualization.Tests
     public class CircularCloudLayouterTestsLogger
     {
         private readonly SizeF _cloudScale = new(0.7f, 0.7f);
-        private readonly TagsCloudDrawer _drawer = new(new RainbowColorGenerator(new Random()));
+        private readonly TagsCloudDrawer _drawer = new(Color.Gray, new RainbowColorGenerator(new Random()));
         private readonly Size _imageSize = new(1000, 1000);
         private string _outputDirectory;
 

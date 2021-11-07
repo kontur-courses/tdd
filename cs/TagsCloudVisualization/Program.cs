@@ -14,7 +14,8 @@ namespace TagsCloudVisualization
     {
         private static readonly Size GeneratedImageSize = new(1000, 1000);
         private static readonly SizeF CloudScale = new(0.7f, 0.7f);
-
+        private static readonly Color BackgroundColor = Color.Black;
+        
         private static void Main(string[] args)
         {
             var directory = Path.Combine(Directory.GetCurrentDirectory(), "GeneratedClouds");
@@ -36,22 +37,22 @@ namespace TagsCloudVisualization
                     50,
                     new CircularCloudLayouter(new Point()),
                     () => new Size(rnd.Next(30, 50), rnd.Next(20, 30))),
-                new TagsCloudDrawer(new RandomColorGenerator(rnd)));
+                new TagsCloudDrawer(BackgroundColor, new RandomColorGenerator(rnd)));
             yield return new DrawerSettings(GenerateRectangles(
                     100,
                     new CircularCloudLayouter(new Point()),
                     () => new Size(rnd.Next(40, 50), rnd.Next(20, 30))),
-                new TagsCloudDrawer(new RainbowColorGenerator(rnd)));
+                new TagsCloudDrawer(BackgroundColor, new RainbowColorGenerator(rnd)));
             yield return new DrawerSettings(GenerateRectangles(
                     1000,
                     new CircularCloudLayouter(new Point()),
                     () => new Size(rnd.Next(40, 50), rnd.Next(20, 30))),
-                new TagsCloudDrawer(new RainbowColorGenerator(rnd)));
+                new TagsCloudDrawer(BackgroundColor, new RainbowColorGenerator(rnd)));
             yield return new DrawerSettings(GenerateRectangles(
                     1000,
                     new CircularCloudLayouter(new Point()),
                     () => new Size(rnd.Next(10, 50), rnd.Next(10, 50))),
-                new TagsCloudDrawer(new GrayscaleColorGenerator(rnd)));
+                new TagsCloudDrawer(BackgroundColor, new GrayscaleColorGenerator(rnd)));
         }
 
         private static Rectangle[] GenerateRectangles(int count, CircularCloudLayouter layouter, Func<Size> sizeFactory)
