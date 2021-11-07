@@ -65,6 +65,30 @@ namespace TagsCloudVisualization
             deviation.Should().BeLessOrEqualTo(0.25);
         }
 
+        [Test]
+        public void PutRectanglesWithousIntersects()
+        {
+            var rectanglesCount = 15;
+            var maxHeight = 35;
+            var maxWidth = 75;
+            var center = new Point(0, 0);
+            var layouter = new CircularCloudLayouter(center);
+            var rnd = new Random();
+
+            PutRectangles(layouter, rnd, maxHeight, maxWidth, rectanglesCount);
+
+            DoRectanglesIntersect(layouter).Should().BeFalse();
+        }
+
+        private static bool DoRectanglesIntersect(CircularCloudLayouter layouter)
+        {
+            foreach (var firstRect in layouter.Rectangles)
+                foreach (var secondRect in layouter.Rectangles)
+                    if (firstRect != secondRect && firstRect.IntersectsWith(secondRect))
+                        return true;
+            return false;
+        }
+
         private static void PutRectangles(
             CircularCloudLayouter layouter, 
             Random rnd, 
