@@ -34,7 +34,7 @@ namespace TagsCloud.Tests
             {
                 var testName = TestContext.CurrentContext.Test.Name;
                 var drawer = new TestDrawer();
-                var image = drawer.Draw(rectangles.ToArray());
+                using var image = drawer.Draw(rectangles.ToArray());
                 var path = Path.Combine(GetDirectoryForSavingFailedTest(), $"{testName}.png");
                 image.Save(path);
 
