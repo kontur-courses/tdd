@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BowlingGame", "BowlingGame\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.csproj", "{B5108E20-2ACF-4ED9-84FE-2A718050FC94}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{4B1D2141-AB83-4024-8E93-3995DCDB2091}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualizationTests", "TagsCloudVisualizationTests\TagsCloudVisualizationTests.csproj", "{6B320978-3E83-4553-80B6-E11E79C1D04D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B1D2141-AB83-4024-8E93-3995DCDB2091}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B1D2141-AB83-4024-8E93-3995DCDB2091}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B1D2141-AB83-4024-8E93-3995DCDB2091}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B1D2141-AB83-4024-8E93-3995DCDB2091}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B320978-3E83-4553-80B6-E11E79C1D04D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B320978-3E83-4553-80B6-E11E79C1D04D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B320978-3E83-4553-80B6-E11E79C1D04D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B320978-3E83-4553-80B6-E11E79C1D04D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
