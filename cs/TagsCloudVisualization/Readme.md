@@ -1,16 +1,13 @@
 # Сгенерированные картинки
 
-yield return new TagsCloudDrawer(1000,
-new CircularCloudLayouter(new Point()),
-() => new Size(rnd.Next(40, 50), rnd.Next(20, 30)),
-new RainbowColorGenerator(rnd));
-yield return new TagsCloudDrawer(1000,
-new CircularCloudLayouter(new Point()),
-() => new Size(rnd.Next(10, 50), rnd.Next(10, 50)),
-new GrayscaleColorGenerator(rnd));
+yield return new TagsCloudDrawer(1000, new CircularCloudLayouter(new Point()),
+() => new Size(rnd.Next(40, 50), rnd.Next(20, 30)), new RainbowColorGenerator(rnd)); yield return new TagsCloudDrawer(
+1000, new CircularCloudLayouter(new Point()),
+() => new Size(rnd.Next(10, 50), rnd.Next(10, 50)), new GrayscaleColorGenerator(rnd));
 _______________________
 
 ## Вариант 1:
+
 - __Кол-во точек__: _50_
 - __Размеры__: _[30, 50] x [20, 30]_
 - __Раскраска__: случайно
@@ -18,8 +15,8 @@ _______________________
 ![Что-то пошло не так!](GeneratedClouds/637717439879814848.bmp "Первая картинка")
 _______________________
 
-
 ## Вариант 2:
+
 - __Кол-во точек__: _100_
 - __Размеры__: _[40, 50] x [20, 30]_
 - __Раскраска__: радуга
@@ -28,6 +25,7 @@ _______________________
 _______________________
 
 ## Вариант 3:
+
 - __Кол-во точек__: _1000_
 - __Размеры__: _[40, 50] x [20, 30]_
 - __Раскраска__: радуга
@@ -36,6 +34,7 @@ _______________________
 _______________________
 
 ## Вариант 4:
+
 - __Кол-во точек__: _1000_
 - __Размеры__: _[10, 50] x [10, 30]_
 - __Раскраска__: оттенки серого
