@@ -4,7 +4,7 @@ using System.Drawing;
 namespace TagsCloudVisualization
 {
     /// <summary>
-    /// Класс реалзует спираль Архимеда
+    /// Класс реализует  спираль Архимеда
     /// </summary>
     public class Spiral
     {
