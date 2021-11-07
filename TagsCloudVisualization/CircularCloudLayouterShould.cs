@@ -48,7 +48,7 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void MakeCloudCircleDeviationLessThanTwentyPercents()
+        public void MakeCloudCircleDeviationLessThanTwentyFivePercents()
         {
             var rectanglesCount = 150;
             var maxHeight = 35;
@@ -57,15 +57,30 @@ namespace TagsCloudVisualization
             var layouter = new CircularCloudLayouter(center);
             var rnd = new Random();
 
-            layouter.PutNextRectangle(new Size(rnd.Next(1, maxWidth), rnd.Next(1, maxHeight)));
-            for (var i = 0; i < rectanglesCount; i++)
-                layouter.PutNextRectangle(new Size(rnd.Next(1, maxWidth), rnd.Next(1, maxHeight)));
+            PutRectangles(layouter, rnd, maxWidth, maxHeight, rectanglesCount);
             var rectanglesPoints = ConvexHullBuilder.GetRectanglesPointsSet(layouter.Rectangles);
             var cloudConvexHull = ConvexHullBuilder.GetConvexHull(rectanglesPoints);
+            var deviation = GetCloudCircleDeviation(center, cloudConvexHull);
+
+            deviation.Should().BeLessOrEqualTo(0.25);
+        }
+
+        private static void PutRectangles(
+            CircularCloudLayouter layouter, 
+            Random rnd, 
+            int maxWidth, 
+            int maxHeight,
+            int rectanglesCount)
+        {
+            for (var i = 0; i < rectanglesCount; i++)
+                layouter.PutNextRectangle(new Size(rnd.Next(1, maxWidth), rnd.Next(1, maxHeight)));
+        }
+
+        private double GetCloudCircleDeviation(Point center, IEnumerable<Point> cloudConvexHull)
+        {
             var minMaxHullVectorsLengths = GetMinMaxHullVectorsLengths(center, cloudConvexHull);
             var deviation = 1 - (minMaxHullVectorsLengths.Item1 / minMaxHullVectorsLengths.Item2);
-
-            deviation.Should().BeLessOrEqualTo(0.2);
+            return deviation;
         }
 
         private (double, double) GetMinMaxHullVectorsLengths(Point center, IEnumerable<Point> hull)
