@@ -46,16 +46,14 @@
   <ItemGroup>
     <Compile Include="Layouting\CircularCloudLayouter.cs" />
     <Compile Include="Layouting\ICloudLayouter.cs" />
-    <Compile Include="Saving\BitmapToDesktopSaver.cs" />
-    <Compile Include="Saving\IBitmapToDesktopSaver.cs" />
+    <Compile Include="Saving\BitmapSaver.cs" />
+    <Compile Include="Saving\IBitmapSaver.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TagCloud.cs" />
-    <Compile Include="Visualization\CloudDrawer.cs" />
-    <Compile Include="Visualization\ICloudDrawer.cs" />
-    <Compile Include="Visualization\IMarkupDrawer.cs" />
+    <Compile Include="Visualization\Drawer.cs" />
+    <Compile Include="Visualization\IDrawer.cs" />
     <Compile Include="Visualization\IVisualizer.cs" />
-    <Compile Include="Visualization\MarkupDrawer.cs" />
     <Compile Include="Visualization\Visualizer.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -63,7 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TagCloud_TestDataGenerator\TagCloud_TestDataGenerator.csproj">
-      <Project>{d0469a17-df29-4344-8247-3959715baabb}</Project>
+      <Project>{259037C3-4FA5-439F-B92E-3CB09A1DEF33}</Project>
       <Name>TagCloud_TestDataGenerator</Name>
     </ProjectReference>
   </ItemGroup>

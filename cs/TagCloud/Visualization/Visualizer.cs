@@ -1,31 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 
 namespace TagCloud.Visualization
 {
     public class Visualizer : IVisualizer
     {
-        private readonly IMarkupDrawer markupDrawer;
-        private readonly ICloudDrawer cloudDrawer;
+        private readonly IDrawer drawer;
 
-        public Visualizer(IMarkupDrawer markupDrawer, ICloudDrawer cloudDrawer)
+        public Visualizer(IDrawer drawer)
         {
-            this.markupDrawer = markupDrawer;
-            this.cloudDrawer = cloudDrawer;
+            this.drawer = drawer;
         }
 
         public void VisualizeCloud(Graphics g, Point cloudCenter, List<Rectangle> rectangles)
         {
-            cloudDrawer.DrawCloud(g, cloudCenter, rectangles);
+            drawer.DrawRectangles(g, cloudCenter, rectangles);
         }
 
         public void VisualizeDebuggingMarkup(Graphics g, Size imgSize,
             Point cloudCenter, int cloudCircleRadius)
         {
-            markupDrawer.DrawCanvasBoundary(g, imgSize);
-            markupDrawer.DrawAxis(g, imgSize, cloudCenter);
-            markupDrawer.DrawCloudBoundary(g, imgSize, cloudCenter, cloudCircleRadius);
+            drawer.DrawCanvasBoundary(g, imgSize);
+            drawer.DrawAxis(g, imgSize, cloudCenter);
+            drawer.DrawCloudBoundary(g, imgSize, cloudCenter, cloudCircleRadius);
         }
     }
 }

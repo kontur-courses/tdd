@@ -2,7 +2,7 @@
 
 namespace TagCloud.Saving
 {
-    public interface IBitmapToDesktopSaver
+    public interface IBitmapSaver
     {
         void Save(Bitmap bitmap, bool openAfterSave);
     }

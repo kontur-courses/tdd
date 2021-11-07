@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCloudVisualization", "Ta
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TagCloudVisualization_Tests", "TagCloud_Tests\TagCloudVisualization_Tests.csproj", "{137617C9-58FD-4615-930B-5C32BA3C8AB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCloud_TestDataGenerator", "TagCloud_TestDataGenerator\TagCloud_TestDataGenerator.csproj", "{D0469A17-DF29-4344-8247-3959715BAABB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCloud_TestDataGenerator", "TagCloud_TestDataGenerator\TagCloud_TestDataGenerator.csproj", "{259037C3-4FA5-439F-B92E-3CB09A1DEF33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,10 @@ Global
 		{137617C9-58FD-4615-930B-5C32BA3C8AB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{137617C9-58FD-4615-930B-5C32BA3C8AB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{137617C9-58FD-4615-930B-5C32BA3C8AB7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D0469A17-DF29-4344-8247-3959715BAABB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D0469A17-DF29-4344-8247-3959715BAABB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D0469A17-DF29-4344-8247-3959715BAABB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D0469A17-DF29-4344-8247-3959715BAABB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{259037C3-4FA5-439F-B92E-3CB09A1DEF33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{259037C3-4FA5-439F-B92E-3CB09A1DEF33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{259037C3-4FA5-439F-B92E-3CB09A1DEF33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{259037C3-4FA5-439F-B92E-3CB09A1DEF33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

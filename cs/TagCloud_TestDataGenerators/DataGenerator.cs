@@ -6,8 +6,8 @@ namespace TagCloud_TestDataGenerator
 {
     public static class DataGenerator
     {
-        private const int MinSize = 15;
-        private const int MaxSize = 150;
+        private const int LowerSize = 15;
+        private const int HigherSize = 150;
 
         private static readonly Random Rnd;
 
@@ -20,8 +20,8 @@ namespace TagCloud_TestDataGenerator
         {
             for (var i = 0; i < n; i++)
             {
-                var width = Rnd.Next(MinSize, MaxSize);
-                var height = Rnd.Next(MinSize, MaxSize);
+                var width = Rnd.Next(LowerSize, HigherSize);
+                var height = Rnd.Next(LowerSize, HigherSize);
                 yield return new Size(width, height);
             }
         }

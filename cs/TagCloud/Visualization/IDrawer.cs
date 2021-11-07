@@ -1,11 +1,16 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace TagCloud.Visualization
 {
-    public interface IMarkupDrawer
+    public interface IDrawer
     {
         void DrawCanvasBoundary(Graphics g, Size imgSize);
+
         void DrawAxis(Graphics g, Size imgSize, Point cloudCenter);
+
         void DrawCloudBoundary(Graphics g, Size imgSize, Point cloudCenter, int cloudCircleRadius);
+
+        void DrawRectangles(Graphics g, Point cloudCenter, List<Rectangle> rectangles);
     }
 }

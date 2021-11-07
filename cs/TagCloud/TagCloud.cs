@@ -9,14 +9,14 @@ namespace TagCloud
 {
     public class TagCloud
     {
-        private readonly IBitmapToDesktopSaver bitmapSaver;
+        private readonly IBitmapSaver bitmapSaver;
         private readonly ICloudLayouter layouter;
         private readonly IVisualizer visualizer;
 
         private Bitmap canvas;
 
         public TagCloud(ICloudLayouter layouter,
-            IBitmapToDesktopSaver bitmapSaver,
+            IBitmapSaver bitmapSaver,
             IVisualizer visualizer)
         {
             this.layouter = layouter;
@@ -37,36 +37,29 @@ namespace TagCloud
             layouter.PutNextRectangle(tagRectangleSize);
         }
 
-        public void Visualize()
+        public void Visualize(bool shouldVisualizeMarkup)
         {
-            InitCanvasIfNotExist();
+            UpdateCanvasSize();
 
-            var g = Graphics.FromImage(canvas);
-            var cloudCenter = layouter.GetCloudCenter();
-            var rectangles = RelocateRectangles(layouter.GetRectangles());
+            using (var g = Graphics.FromImage(canvas))
+            {
+                var cloudCenter = layouter.Center;
+                var rectangles = RelocateRectangles(layouter.GetRectanglesCopy());
+                visualizer.VisualizeCloud(g, cloudCenter, rectangles);
 
-            visualizer.VisualizeCloud(g, cloudCenter, rectangles);
+                if (shouldVisualizeMarkup)
+                {
+                    var imgSize = canvas.Size;
+                    var cloudCircleRadius = layouter.GetCloudBoundaryRadius();
+                    visualizer.VisualizeDebuggingMarkup(g, imgSize, cloudCenter, cloudCircleRadius);
+                }
+            }
         }
 
-        public void VisualizeMarkup()
+        private void UpdateCanvasSize()
         {
-            InitCanvasIfNotExist();
-
-            var g = Graphics.FromImage(canvas);
-            var imgSize = canvas.Size;
-            var cloudCenter = layouter.GetCloudCenter();
-            var cloudCircleRadius = layouter.GetCloudRadius();
-
-            visualizer.VisualizeDebuggingMarkup(g, imgSize, cloudCenter, cloudCircleRadius);
-        }
-
-        private void InitCanvasIfNotExist()
-        {
-            if (canvas != null)
-                return;
-
             var canvasSize = layouter.GetRectanglesBoundaryBox();
-            canvas =  new Bitmap(canvasSize.Width * 2, canvasSize.Height * 2);
+            canvas = new Bitmap(canvasSize.Width * 2, canvasSize.Height * 2);
         }
 
         private List<Rectangle> RelocateRectangles(List<Rectangle> rectangles)

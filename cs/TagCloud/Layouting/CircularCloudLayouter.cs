@@ -2,59 +2,21 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace TagCloud.Layouting
 {
     public class CircularCloudLayouter : ICloudLayouter
     {
-        private class DirectingArrow
-        {
-            private const int DefaultAngleDegree = 90;
-            private const int DefaultAngleDegreeIncrease = 45;
-
-            private int currentCoilNumber = 1;
-
-            public Point EndPoint { get; private set; }
-            public int AngleDegree { get; private set; }
-
-            public DirectingArrow(Point firstDirectPoint)
-            {
-                EndPoint = firstDirectPoint;
-                AngleDegree = DefaultAngleDegree;
-            }
-
-            public void Rotate()
-            {
-                var rotationAngle = DefaultAngleDegreeIncrease / currentCoilNumber;
-                AngleDegree += rotationAngle;
-
-                if (AngleDegree > 360)
-                {
-                    currentCoilNumber++;
-                    AngleDegree %= 360;
-                    EndPoint = new Point(EndPoint.X * 2, EndPoint.Y * 2);
-                }
-
-                var newX = (int)(EndPoint.X * Math.Cos(rotationAngle) 
-                                 - EndPoint.Y * Math.Sin(rotationAngle));
-
-                var newY = (int)(EndPoint.X * Math.Cos(rotationAngle)
-                                 + EndPoint.Y * Math.Cos(rotationAngle));
-
-                EndPoint = new Point(newX, newY);
-            }
-        }
-
-        private readonly Point center;
         private readonly List<Rectangle> rectangles;
         private DirectingArrow arrow;
 
         public CircularCloudLayouter(Point center)
         {
-            this.center = center;
+            Center = center;
             rectangles = new List<Rectangle>();
         }
+
+        public Point Center { get; }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
@@ -63,8 +25,8 @@ namespace TagCloud.Layouting
 
             if (rectangles.Count == 0)
             {
-                rect.Location = new Point(center.X - rect.Width / 2,
-                    center.Y - rect.Height / 2);
+                rect.Location = new Point(Center.X - rect.Width / 2,
+                    Center.Y - rect.Height / 2);
 
                 arrow = InitArrow(rect);
             }
@@ -80,16 +42,11 @@ namespace TagCloud.Layouting
             return rect;
         }
 
-        public Point GetCloudCenter()
-        {
-            return center;
-        }
-
-        public int GetCloudRadius()
+        public int GetCloudBoundaryRadius()
         {
             var boundaryBox = GetRectanglesBoundaryBox();
             var biggestSide = Math.Max(boundaryBox.Width, boundaryBox.Height);
-            return (int)(biggestSide * (Math.Sqrt(2) / 2));
+            return (int)Math.Ceiling(biggestSide * (Math.Sqrt(2) / 2));
         }
 
         public Size GetRectanglesBoundaryBox()
@@ -103,7 +60,7 @@ namespace TagCloud.Layouting
             return new Size(width, height);
         }
 
-        public List<Rectangle> GetRectangles()
+        public List<Rectangle> GetRectanglesCopy()
         {
             return new List<Rectangle>(rectangles);
         }
@@ -117,10 +74,47 @@ namespace TagCloud.Layouting
         private DirectingArrow InitArrow(Rectangle rectangle)
         {
             var startDirectionPoint = new Point(rectangle.X + rectangle.Width / 2,
-                rectangle.Top - rectangle.Height);
+                rectangle.Y - rectangle.Height);
 
             return new DirectingArrow(startDirectionPoint);
         }
 
+        private class DirectingArrow
+        {
+            private const int DefaultAngleDegree = 0;
+            private const int DefaultAngleDegreeIncrease = 45;
+
+            private int currentCoilNumber = 1;
+
+            public DirectingArrow(Point firstDirectPoint)
+            {
+                EndPoint = firstDirectPoint;
+                AngleDegree = DefaultAngleDegree;
+            }
+
+            public Point EndPoint { get; private set; }
+            public int AngleDegree { get; private set; }
+
+            public void Rotate()
+            {
+                var rotationAngle = DefaultAngleDegreeIncrease / currentCoilNumber;
+                AngleDegree += rotationAngle;
+
+                if (AngleDegree > 360)
+                {
+                    currentCoilNumber++;
+                    AngleDegree %= 360;
+                    EndPoint = new Point(EndPoint.X * 4, EndPoint.Y * 4);
+                }
+
+                var newX = (int)(EndPoint.X * Math.Cos(rotationAngle)
+                                 + EndPoint.Y * Math.Sin(rotationAngle));
+
+                var newY = (int)(EndPoint.X * Math.Cos(rotationAngle)
+                                 - EndPoint.Y * Math.Cos(rotationAngle));
+
+                EndPoint = new Point(newX, newY);
+            }
+        }
     }
 }

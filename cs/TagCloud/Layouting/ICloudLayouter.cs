@@ -5,15 +5,13 @@ namespace TagCloud.Layouting
 {
     public interface ICloudLayouter
     {
+        Point Center { get; }
         Rectangle PutNextRectangle(Size rectangleSize);
 
         Size GetRectanglesBoundaryBox();
 
-        List<Rectangle> GetRectangles();
+        List<Rectangle> GetRectanglesCopy();
 
-        Point GetCloudCenter();
-
-        int GetCloudRadius();
-
+        int GetCloudBoundaryRadius();
     }
 }
