@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 
@@ -7,8 +9,9 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        public List<Rectangle> Rectangles { get; } = new();
+        public ReadOnlyCollection<Rectangle> Rectangles => rectangles.AsReadOnly();
 
+        private readonly List<Rectangle> rectangles = new();
         private readonly Point center;
         private readonly ArchimedeanSpiralPath spiralPath;
 
@@ -18,7 +21,8 @@ namespace TagsCloudVisualization
         public CircularCloudLayouter(Point center, ArchimedeanSpiralPath spiralPath)
         {
             this.center = center;
-            this.spiralPath = spiralPath;
+            this.spiralPath =
+                spiralPath ?? throw new ArgumentException("Spiral path refers to null.", nameof(spiralPath));
         }
 
         public void PutNextRectangle(Size rectangleSize)
@@ -28,7 +32,7 @@ namespace TagsCloudVisualization
 
             var rectangle = CreateAtCenter(rectangleSize);
             var suitableLocation = FindLocation(rectangle);
-            Rectangles.Add(new Rectangle(suitableLocation, rectangleSize));
+            rectangles.Add(new Rectangle(suitableLocation, rectangleSize));
         }
 
         private Point FindLocation(Rectangle rectangle)
@@ -51,6 +55,6 @@ namespace TagsCloudVisualization
                 rectangleSize);
 
         private bool IsIntersectAny(Rectangle rectangle) =>
-            Rectangles.Any(other => other.IntersectsWith(rectangle));
+            rectangles.Any(other => other.IntersectsWith(rectangle));
     }
 }
