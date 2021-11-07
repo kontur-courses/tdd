@@ -11,8 +11,6 @@ namespace TagsCloudVisualization
 
         public Spiral LayouterSpiral { get; set; }
 
-        //public bool NoInrtersections { get; set; }
-
         public List<Rectangle> RectangleList { get; set; }
 
 

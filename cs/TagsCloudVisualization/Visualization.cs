@@ -22,7 +22,7 @@ namespace TagsCloudVisualization
 
         private Bitmap DrawRectangles(Bitmap image)
         {
-            Graphics graphics = Graphics.FromImage(image);
+            var graphics = Graphics.FromImage(image);
             foreach (var rectangle in RectangleList)
             {
                 graphics.DrawRectangle(ColorPen, rectangle);
@@ -31,7 +31,7 @@ namespace TagsCloudVisualization
             return image;
         }
 
-        private void SaveImage(Bitmap image, string path)
+        private static void SaveImage(Bitmap image, string path)
         {
             image.Save(path, System.Drawing.Imaging.ImageFormat.Jpeg);
             
