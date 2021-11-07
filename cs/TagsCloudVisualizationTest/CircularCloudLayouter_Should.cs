@@ -68,7 +68,7 @@ namespace TestProject1
         [Test]
         public void CircularCloudLayouter_PutNextRectangle_RectangleIntersectAutoTest()
         {
-            var rectCount = 100;
+            var rectCount = 1000;
             var rnd = new Random();
             var lastRectangle = layouter.PutNextRectangle(new Size(200, 200));
 
@@ -79,11 +79,6 @@ namespace TestProject1
 
                 lastRectangle.IntersectsWith(rectangle).Should().BeFalse($"on try {i}");
             }
-        }
-
-        public void CircularCloudLayouter_TryCompactRectangle()
-        {
-            
         }
     }
 }

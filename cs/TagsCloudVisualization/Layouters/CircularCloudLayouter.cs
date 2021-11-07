@@ -22,8 +22,8 @@ namespace TagsCloudVisualization
                 .WithCenter(center)
                 // .WithDegreesParameter(20)
                 // .WithDensityParameter(15)
-                .WithDegreesParameter(1)
-                .WithDensityParameter(1)
+                .WithDegreesParameter(5)
+                .WithDensityParameter(5)
                 .Build()
                 .GetEnumerator();
         }

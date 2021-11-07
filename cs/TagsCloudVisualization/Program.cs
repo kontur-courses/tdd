@@ -14,26 +14,24 @@ namespace TagsCloudVisualization
         {
             for (var j = 0; j < 3; j++)
             {
-                var bmp = new Bitmap(1000, 1000);
-                var rnd = new Random();
                 var layouter = CircularCloudLayouterBuilder
                     .ACircularCloudLayouter()
                     .WithCenterAt(new Point(500, 500))
                     .Build();
-            
-                using (var graphics = Graphics.FromImage(bmp))
-                {
-                    using (var pen = new Pen(Brushes.Black, 1))
-                    {
-                        for (var i = 0; i < 50; i++)
-                        {
-                            pen.Color = Color.FromArgb(rnd.Next(0, 255), rnd.Next(0, 255), rnd.Next(0, 255));
-                            graphics.DrawRectangle(pen, layouter.PutNextRectangle(new Size(75, rnd.Next(10, 75 - i * 1))));
-                        }
-                    }
-                }
                 
-                bmp.Save($"..\\..\\CloudTagSample{j}.jpg", ImageFormat.Jpeg);
+                RectanglePainter
+                    .GetBitmapWithRectangles(GetRectangles(layouter, 100))
+                    .Save($"..\\..\\CloudTagSample{j}.jpg", ImageFormat.Jpeg);
+            }
+        }
+
+        public static IEnumerable<Rectangle> GetRectangles(CircularCloudLayouter layouter, int count)
+        {
+            var rnd = new Random();
+            
+            for (var i = 0; i < count; i++)
+            {
+                yield return layouter.PutNextRectangle(new Size(count + 25, rnd.Next(10, count + 25 - i * 1)));
             }
         }
     }
