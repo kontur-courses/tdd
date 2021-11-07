@@ -48,6 +48,20 @@ namespace TagsCloudVisualization
             layouter.RectangleList.Count.Should().Be(numberOfRactangles);
         }
 
+        [Test]
+        public void A()
+        {
+            var rectangleSize = new Size(30, 10);
+            var layouterCenter = new Point(20, 10);
+            var layouter = new CircularCloudLayouter(layouterCenter);
+            for (int i = 0; i < 10; i++)
+                layouter.PutNextRectangle(rectangleSize);
+            var sumArea = layouter.GetSumAreaOfRectangles();
+            var circleArea = layouter.GetCircleArea(layouter.GetCircleRadius());
+            var density = sumArea / circleArea;
+            density.Should().BeLessThan(1);
+        }
+
         public List<Point> CheckForDuplicates(List<Point> array)
         {
             var duplicates = array
@@ -70,6 +84,22 @@ namespace TagsCloudVisualization
                 .Where(g => g.Count() > 1)
                 .Select(g => g.Key).ToList();
             duplicates.Count.Should().Be(0);
+        }
+
+        [Test]
+        public void B()
+        {
+            var rectangleSize = new Size(30, 10);
+            var layouterCenter = new Point(20, 10);
+            var layouter = new CircularCloudLayouter(layouterCenter);
+            for (int i = 0; i < 10; i++)
+                layouter.PutNextRectangle(rectangleSize);
+            var sumArea = layouter.GetSumAreaOfRectangles();
+            var circleArea = layouter.GetCircleArea(layouter.GetCircleRadius());
+            var enclosingRectangleArea = layouter.GetEnclosingRectangleArea();
+            var difCircleAndSum = sumArea/circleArea;
+            var difSumAndEnclosingRectangle = sumArea/enclosingRectangleArea;
+            difCircleAndSum.Should().BeLessThan(difSumAndEnclosingRectangle);
         }
 
 
