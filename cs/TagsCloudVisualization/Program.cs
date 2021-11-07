@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using TagsCloudVisualization.ColorGenerators;
 
+// Disable warning https://docs.microsoft.com/ru-ru/dotnet/fundamentals/code-analysis/quality-rules/ca1416
+// as several methods use windows api
 #pragma warning disable CA1416
 
 namespace TagsCloudVisualization
@@ -15,7 +17,7 @@ namespace TagsCloudVisualization
         private static readonly Size GeneratedImageSize = new(1000, 1000);
         private static readonly SizeF CloudScale = new(0.7f, 0.7f);
         private static readonly Color BackgroundColor = Color.Black;
-        
+
         private static void Main(string[] args)
         {
             var directory = Path.Combine(Directory.GetCurrentDirectory(), "GeneratedClouds");
