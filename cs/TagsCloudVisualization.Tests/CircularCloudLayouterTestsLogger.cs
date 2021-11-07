@@ -3,6 +3,9 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using TagsCloudVisualization.ColorGenerators;
+
+// Disable warning https://docs.microsoft.com/ru-ru/dotnet/fundamentals/code-analysis/quality-rules/ca1416
+// as several methods use windows api
 #pragma warning disable CA1416
 
 namespace TagsCloudVisualization.Tests
