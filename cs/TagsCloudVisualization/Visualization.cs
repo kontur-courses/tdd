@@ -6,7 +6,7 @@ namespace TagsCloudVisualization
     public class Visualization
     {
         public List<Rectangle> RectangleList { get; set; }
-        public Pen ColorPen { get; set; }
+        private Pen ColorPen { get; }
         public Visualization(List<Rectangle> rectangleList, Pen colorPen)
         {
             RectangleList = rectangleList;
@@ -16,7 +16,6 @@ namespace TagsCloudVisualization
         {
             var image = new Bitmap(imageSize.Width, imageSize.Height);
             image = DrawRectangles(image);
-
             SaveImage(image, path);
         }
 
@@ -24,9 +23,7 @@ namespace TagsCloudVisualization
         {
             var graphics = Graphics.FromImage(image);
             foreach (var rectangle in RectangleList)
-            {
                 graphics.DrawRectangle(ColorPen, rectangle);
-            }
             graphics.Dispose();
             return image;
         }
@@ -34,7 +31,6 @@ namespace TagsCloudVisualization
         private static void SaveImage(Bitmap image, string path)
         {
             image.Save(path, System.Drawing.Imaging.ImageFormat.Jpeg);
-            
         }
     }
 }

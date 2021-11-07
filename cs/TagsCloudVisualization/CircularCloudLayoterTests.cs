@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -32,7 +31,7 @@ namespace TagsCloudVisualization
             var layouterCenter = new Point(20, 10);
             var layouter = new CircularCloudLayouter(layouterCenter);
             var rectangle = layouter.PutNextRectangle(rectangleSize);
-            rectangle.Location.Should().Be(layouterCenter);
+            rectangle.Location.Should().Be(new Point(5,5));
         }
 
         [TestCase(10)]
@@ -49,7 +48,7 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void A()
+        public void RectanglesShouldBeInCircle()
         {
             var rectangleSize = new Size(30, 10);
             var layouterCenter = new Point(20, 10);
@@ -60,15 +59,6 @@ namespace TagsCloudVisualization
             var circleArea = layouter.GetCircleArea(layouter.GetCircleRadius());
             var density = sumArea / circleArea;
             density.Should().BeLessThan(1);
-        }
-
-        public List<Point> CheckForDuplicates(List<Point> array)
-        {
-            var duplicates = array
-                .GroupBy(p => p)
-                .Where(g => g.Count() > 1)
-                .Select(g => g.Key).ToList();
-            return duplicates;
         }
 
         [Test]
@@ -87,7 +77,7 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void B()
+        public void ShouldBeCloserToCircleThanToSquare()
         {
             var rectangleSize = new Size(30, 10);
             var layouterCenter = new Point(20, 10);
@@ -133,7 +123,7 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void RandomRectanglesShouldNotIntersect()
+        public void ShouldNotIntersectWithRandomRectangles()
         {
             var layouterCenter = new Point(20, 10);
             var layouter = new CircularCloudLayouter(layouterCenter);

@@ -5,26 +5,19 @@ namespace TagsCloudVisualization
 {
     public class Spiral
     {
-        public double CurrentAngle { get; set; }
-        public double Step { get; set; }
-        public double AngleStep { get; set; }
+        private double CurrentAngle { get; set; }
+        private double AngleStep { get;}
+        private Point Central { get;}
 
-        public Point Central { get; set; }
-
-        public Spiral(Point centralPoint)
+        public Spiral(Point centralPoint, double angleStep = Math.PI/360)
         {
             Central = centralPoint;
             CurrentAngle = 0;
-
-            //???
-            //Step = 1;
-            AngleStep = Math.PI / 360;
+            AngleStep = angleStep;
         }
 
         public Point GetNextPoint()
         {
-            //var nextX = Central.X + CurrentAngle * Step * Math.Cos(CurrentAngle);
-            //var nextY = Central.Y + CurrentAngle * Step * Math.Sin(CurrentAngle);
             var nextX = Central.X + CurrentAngle * Math.Cos(CurrentAngle);
             var nextY = Central.Y + CurrentAngle * Math.Sin(CurrentAngle);
             var roundNextX = Convert.ToInt32(Math.Round(nextX));

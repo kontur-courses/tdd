@@ -7,9 +7,9 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter : ICircularCloudLayouter
     {
-        public Point Center { get; set; }
+        public Point Center { get;}
 
-        public Spiral LayouterSpiral { get; set; }
+        private Spiral LayouterSpiral { get;}
 
         public List<Rectangle> RectangleList { get; set; }
 
@@ -26,12 +26,6 @@ namespace TagsCloudVisualization
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException();
             Rectangle nextRectangle;
-            if (RectangleList.Count == 0)
-            {
-                nextRectangle = new Rectangle(Center, rectangleSize);
-                RectangleList.Add(nextRectangle);
-                return nextRectangle;
-            }
             nextRectangle = CreteNewRectangle(rectangleSize);
             while (RectangleList.Any(rectangle => rectangle.IntersectsWith(nextRectangle)))
                 nextRectangle = CreteNewRectangle(rectangleSize);
@@ -65,9 +59,8 @@ namespace TagsCloudVisualization
                 var rightUpToCenter = Math.Sqrt(Math.Pow(rightUp.X - Center.X, 2) + Math.Pow(rightUp.Y - Center.Y, 2));
                 var rightDownToCenter =
                     Math.Sqrt(Math.Pow(rightDown.X - Center.X, 2) + Math.Pow(rightDown.Y - Center.Y, 2));
-                possibleRadii.Add(new List<double>(){rightDownToCenter, rightUpToCenter, leftDownToCenter, leftUpToCenter}.Max());
+                possibleRadii.Add(new List<double>{rightDownToCenter, rightUpToCenter, leftDownToCenter, leftUpToCenter}.Max());
             }
-
             return possibleRadii.Max();
         }
 
@@ -76,7 +69,6 @@ namespace TagsCloudVisualization
             double result = 0;
             foreach (var rectangle in RectangleList)
                 result += rectangle.Height * rectangle.Width;
-
             return result;
         }
 
@@ -99,12 +91,10 @@ namespace TagsCloudVisualization
             var sortListYCords = yCords.ToList().OrderBy(y => y).ToList();
             var yMin = sortListYCords.First();
             var yMax = sortListYCords.Last();
-
             var enclosingRectangle = new Rectangle(xMin, yMin, xMax - xMin, yMax - yMin);
             return enclosingRectangle.Height * enclosingRectangle.Width;
 
         }
-
 
         public double GetCircleArea(double circleRadius)
         {
@@ -118,6 +108,17 @@ namespace TagsCloudVisualization
     {
         public static void Main()
         {
+            var rectangleSize = new Size(300, 100);
+            var layouterCenter = new Point(2500, 2500);
+            var layouter = new CircularCloudLayouter(layouterCenter);
+            var visualization = new Visualization(layouter.RectangleList, new Pen(Color.White, 3));
+            var cnt = 0;
+            for (int i = 0; i < 30; i++)
+            {
+                layouter.PutNextRectangle(new Size(rectangleSize.Width + cnt, rectangleSize.Height + cnt));
+                cnt += 30;
+            }
+            visualization.DrawImage(new Size(5000,5000), "C:/alpha/img_different_size.jpeg");
         }
     }
 }
