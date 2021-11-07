@@ -53,7 +53,7 @@ namespace TagsCloudVisualizationTests
         {
             defaultPath.First();
             var initialDegree = defaultPath.Degree;
-            
+
             defaultPath.First();
 
             defaultPath.Degree.Should().BeGreaterThan(initialDegree);

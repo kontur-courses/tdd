@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using NUnit.Framework;
 using FluentAssertions;
 using FluentAssertions.Extensions;
+using NUnit.Framework;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTests
@@ -18,6 +18,13 @@ namespace TagsCloudVisualizationTests
         public void SetUp()
         {
             defaultLayouter = new CircularCloudLayouter();
+        }
+
+        [Test]
+        public void Constructor_ThrowsException_WithNullSpiraPath()
+        {
+            Assert.Throws<ArgumentException>(() =>
+                new CircularCloudLayouter(new Point(), null));
         }
 
         [Test]
@@ -108,9 +115,25 @@ namespace TagsCloudVisualizationTests
 
             Enumerable.Range(0, 1000).ToList().ForEach(_ => layouter.PutNextRectangle(square));
 
-            var visualizer = new RectangleVisualizer(new Size(2000, 2000), layouter.Rectangles);
+            SaveRectanglesToBitmap(layouter, new Size(2000, 2000));
+        }
+
+        [Test]
+        [Explicit]
+        public void PutNextRectangle_RandomRectangles_SaveToBitmap()
+        {
+            var layouter = new CircularCloudLayouter(new Point(2500, 2500));
+
+            CreateRandomRectangles(1000).ForEach(rectangle => layouter.PutNextRectangle(rectangle));
+
+            SaveRectanglesToBitmap(layouter, new Size(5000, 5000));
+        }
+
+        private static void SaveRectanglesToBitmap(CircularCloudLayouter layouter, Size bitmapSize)
+        {
+            var visualizer = new RectangleVisualizer(bitmapSize, layouter.Rectangles);
             var savePath = Path.Combine(Directory.GetCurrentDirectory(), "CircularCloudLayouter.Rectangles.bmp");
-            visualizer.SaveToBitmap(savePath);
+            new VisualOutput(visualizer).SaveToBitmap(savePath);
             TestContext.WriteLine($"Saved to '{savePath}'");
         }
 
