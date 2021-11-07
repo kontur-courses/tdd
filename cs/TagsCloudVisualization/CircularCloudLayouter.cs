@@ -53,9 +53,10 @@ namespace TagsCloudVisualization
         }
     }
 
-    internal class Program
+    public class Program
     {
         public static void Main()
-        {}
+        {
+        }
     }
 }

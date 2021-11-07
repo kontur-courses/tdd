@@ -45,6 +45,7 @@
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="ICircularCloudLayouter.cs" />
     <Compile Include="Spiral.cs" />
+    <Compile Include="Visualization.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FluentAssertions, Version=6.2.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
