@@ -37,14 +37,14 @@ namespace TagsCloudVisualization
         [TestCase(10)]
         [TestCase(100)]
         [TestCase(1000)]
-        public void ShouldPutTheExactNumberOfRectangles(int numberOfRactangles)
+        public void ShouldPutTheExactNumberOfRectangles(int numberOfRectangles)
         {
             var rectangleSize = new Size(30, 10);
             var layouterCenter = new Point(20, 10);
             var layouter = new CircularCloudLayouter(layouterCenter);
-            for (int i = 0; i < numberOfRactangles; i ++)
+            for (int i = 0; i < numberOfRectangles; i ++)
                 layouter.PutNextRectangle(rectangleSize);
-            layouter.RectangleList.Count.Should().Be(numberOfRactangles);
+            layouter.RectangleList.Count.Should().Be(numberOfRectangles);
         }
 
         [Test]
