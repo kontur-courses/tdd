@@ -24,7 +24,6 @@ namespace TagsCloudVisualization
             if (rectangleSize.Height <= 0) throw new ArgumentException("Height should be positive");
 
             var rectangle = CreateCorrectRectangle(rectangleSize);
-            ShiftRectangleToCenter(rectangle);
             _rectangles.Add(rectangle);
             return rectangle;
         }
@@ -36,13 +35,16 @@ namespace TagsCloudVisualization
             {
                 rectangle.X = _center.X + vector.X - rectangleSize.Width / 2;
                 rectangle.Y = _center.Y + vector.Y - rectangleSize.Height / 2;
-                if (!_rectangles.Any(x => x.IntersectsWith(rectangle))) return rectangle;
+                if (!_rectangles.Any(x => x.IntersectsWith(rectangle)))
+                {
+                    return GetShiftedToCenterRectangle(rectangle);
+                };
             }
 
             throw new Exception();
         }
 
-        private void ShiftRectangleToCenter(Rectangle rectangle)
+        private Rectangle GetShiftedToCenterRectangle(Rectangle rectangle)
         {
             var center = rectangle.GetCenter();
             var dir = new Point(_center.X - center.X, _center.Y - center.Y);
@@ -67,6 +69,8 @@ namespace TagsCloudVisualization
                     break;
                 }
             }
+
+            return rectangle;
         }
     }
 }
