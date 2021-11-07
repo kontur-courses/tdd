@@ -31,17 +31,13 @@ namespace TagsCloudVisualization
         private Rectangle CreateCorrectRectangle(Size rectangleSize)
         {
             var rectangle = new Rectangle(_center, rectangleSize);
-            foreach (var vector in _vectorsGenerator.Generate())
+            while (true)
             {
+                var vector = _vectorsGenerator.GetNextVector();
                 rectangle.X = _center.X + vector.X - rectangleSize.Width / 2;
                 rectangle.Y = _center.Y + vector.Y - rectangleSize.Height / 2;
-                if (!_rectangles.Any(x => x.IntersectsWith(rectangle)))
-                {
-                    return GetShiftedToCenterRectangle(rectangle);
-                };
+                if (!_rectangles.Any(x => x.IntersectsWith(rectangle))) return GetShiftedToCenterRectangle(rectangle);
             }
-
-            throw new Exception();
         }
 
         private Rectangle GetShiftedToCenterRectangle(Rectangle rectangle)

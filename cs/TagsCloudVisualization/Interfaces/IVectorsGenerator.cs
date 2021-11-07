@@ -5,6 +5,6 @@ namespace TagsCloudVisualization.Interfaces
 {
     public interface IVectorsGenerator
     {
-        IEnumerable<Point> Generate();
+        Point GetNextVector();
     }
 }
