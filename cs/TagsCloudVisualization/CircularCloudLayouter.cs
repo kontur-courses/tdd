@@ -21,27 +21,19 @@ namespace TagsCloudVisualization
             spiral = new Spiral(centrPoint);
         }
 
-
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
             {
                 throw new ArgumentException(
-                    $"Не корректные размера прямоугольника. Высота: {rectangleSize.Height} ," +
-                    $" Ширина: {rectangleSize.Width}");
-            }
-
-            if (rectangleSize.Width < 0 || rectangleSize.Width < 0)
-            {
-                throw new ArgumentException(
-                    $"Не корректные размера прямоугольника. Высота: {rectangleSize.Height} ," +
+                    $"Не корректные размеры прямоугольника. Высота: {rectangleSize.Height} ," +
                     $" Ширина: {rectangleSize.Width}");
             }
 
             var currentRectangle = new Rectangle(nextPoint, rectangleSize);
             while (IsIntersects(currentRectangle))
             {
-                nextPoint = spiral.CalcPointSpiral();
+                nextPoint = spiral.CalculatePointSpiral();
                 currentRectangle.Location = nextPoint;
             }
 
