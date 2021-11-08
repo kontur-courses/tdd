@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.PointGenerator
 {
     public interface IPointGenerator
     {
-        IEnumerable<PointF> GetPoints(Size tagSize);
+        IEnumerable<PointF> GetPoints(PointF center);
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using TagsCloudVisualization.PointGenerator;
 
 namespace TagsCloudVisualization
 {
@@ -9,11 +10,17 @@ namespace TagsCloudVisualization
     {
         private readonly List<RectangleF> tagCloud = new List<RectangleF>();
         private readonly PointF center;
-        private int minRadius = 0;
+        private IPointGenerator generator = new Spiral();
 
         public CircularCloudLayouter(PointF center)
         {
             this.center = center;
+        }
+
+        public CircularCloudLayouter WithPointGenerator(IPointGenerator pointGenerator)
+        {
+            this.generator = pointGenerator;
+            return this;
         }
 
         public RectangleF PutNextRectangle(Size rectangleSize)
@@ -32,29 +39,19 @@ namespace TagsCloudVisualization
 
         public RectangleF GetBounds()
         {
-            return GetCloud().Aggregate(new RectangleF(),
-                (current, tag) => RectangleF.Union(current, tag));
+            return GetCloud().Aggregate(new RectangleF(), RectangleF.Union);
         }
 
-        private PointF GetNextPosition(Size newRectangleSize)
+        private PointF GetNextPosition(Size size)
         {
-            return GetNextNearestPositionForTag(newRectangleSize);
-        }
-
-        private PointF GetNextNearestPositionForTag(Size size)
-        {
-            var sp = new Spiral();
-            return sp.GetPointsIn(center,new Size(1,1))
+            return generator.GetPoints(center)
                 .Select(p => new RectangleF(new PointF(p.X - size.Width / 2f, p.Y - size.Height / 2f), size))
                 .First(r => !IsIntersectWithCloud(r)).Location;
         }
 
-        public bool IsIntersectWithCloud(RectangleF newTag)
+        private bool IsIntersectWithCloud(RectangleF newTag)
         {
-            foreach (var tag in tagCloud)
-                if (tag.IntersectsWith(newTag))
-                    return true;
-            return false;
+            return tagCloud.Any(tag => tag.IntersectsWith(newTag));
         }
     }
 }

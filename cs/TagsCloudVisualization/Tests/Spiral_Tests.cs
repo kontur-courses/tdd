@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Drawing;
 using NUnit.Framework;
+using TagsCloudVisualization.PointGenerator;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
     public class Spiral_Tests
@@ -12,7 +13,7 @@ namespace TagsCloudVisualization
         {
             var spiral = new Spiral();
             var i = 0;
-            foreach (var p in spiral.GetPoints(new Size(2, 2)))
+            foreach (var p in spiral.GetPoints(new PointF()))
             {
                 Console.WriteLine(p.X + ", " + p.Y);
                 i++;

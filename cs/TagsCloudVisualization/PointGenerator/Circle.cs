@@ -3,10 +3,15 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.PointGenerator
 {
-    class Circle
+    class Circle : IPointGenerator
     {
+        public IEnumerable<PointF> GetPoints(PointF center)
+        {
+            return GetPointsFrom(0, center);
+        }
+
         public static IEnumerable<PointF> GetPointsFrom(int radius, PointF center)
         {
             while (true)
@@ -18,12 +23,13 @@ namespace TagsCloudVisualization
 
         private static IEnumerable<PointF> GetPointsInRadius(int radius, PointF center)
         {
-            return Enumerable.Select(GetPointsInRadiusInZeroCenter(radius), point => new PointF(point.X + center.X, point.Y + center.Y));
+            return GetPointsInRadiusInZeroCenter(radius)
+                .Select(point => new PointF(point.X + center.X, point.Y + center.Y));
         }
 
         private static IEnumerable<PointF> GetPointsInRadiusInZeroCenter(int radius)
         {
-            for (float x = -radius; x < radius; x+=0.5f)
+            for (float x = -radius; x < radius; x += 0.5f)
             {
                 yield return new PointF(x, (float)Math.Sqrt(radius * radius - x * x));
                 yield return new PointF(x, (float)-Math.Sqrt(radius * radius - x * x));
