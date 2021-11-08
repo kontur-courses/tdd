@@ -118,13 +118,30 @@ namespace TagsCloudVisualization
                 .Should().BeLessThan(radius));
         }
 
+        [TearDown]
+        public void SaveLayout()
+        {
+            if (TestContext.CurrentContext.Result.FailCount == 0)
+                return;
+            var name = TestContext.CurrentContext.Test.Name;
+            var path = $"..\\..\\..\\{name}.jpg";
+            var message = $"Test {name} down! +\n" +
+                $"Tag cloud visualization saved to file {path}";
+            layouter.Visualise(path);
+
+            // не смог найти способ изменить сообщение теста поэтому пришлось 
+            //добавлять его таким образом
+            TestContext.WriteLine(message);
+            //Assert.IsTrue(false, message);
+        }
+
         /// <summary>
         /// Я решил сделать визуализацию через тесты, чтобы не выделять отдельный проект
         /// и можно было удобно настраивать параметры
         /// </summary>
-        //[TestCase("1.jpg", 200, 10, 20)]
-        //[TestCase("2.jpg", 250, 15, 25)]
-        //[TestCase("3.jpg", 500, 10, 16)]
+        //[TestCase("..\\..\\..\\1.jpg", 200, 10, 20)]
+        //[TestCase("..\\..\\..\\2.jpg", 250, 15, 25)]
+        //[TestCase("..\\..\\..\\3.jpg", 500, 10, 16)]
         public void Visualise(string filename, int count, int min, int max)
         {
             PutSeveralRectangles(count, min, max);
