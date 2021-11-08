@@ -5,16 +5,16 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private readonly ILayouter layouter;
+        private readonly IRectangleLayouter rectangleLayouter;
         
         public CircularCloudLayouter(Point center)
         {
-            layouter = new SpiralLayouter(center);
+            rectangleLayouter = new SpiralRectangleLayouter(center);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            throw new NotImplementedException();
+            return rectangleLayouter.PutNextRectangle(rectangleSize);
         }
     }
 }

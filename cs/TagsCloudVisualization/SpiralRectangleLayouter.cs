@@ -1,12 +1,14 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    internal class SpiralLayouter : ILayouter
+    internal class SpiralRectangleLayouter : IRectangleLayouter
     {
         private readonly Point center;
+        private readonly List<Rectangle> rectangles;
         
-        public SpiralLayouter(Point center)
+        public SpiralRectangleLayouter(Point center)
         {
             this.center = center;
         }

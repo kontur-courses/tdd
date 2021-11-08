@@ -2,7 +2,7 @@
 
 namespace TagsCloudVisualization
 {
-    internal interface ILayouter
+    internal interface IRectangleLayouter
     {
         public Rectangle PutNextRectangle(Size rectangleSize);
     }
