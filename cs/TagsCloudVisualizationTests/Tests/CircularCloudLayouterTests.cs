@@ -119,10 +119,10 @@ namespace TagsCloudVisualizationTests.Tests
 
         private static double CalculateDensity(IReadOnlyCollection<Rectangle> rectangles)
         {
-            var topLeft = PointHelper.GetTopLeftAge(
+            var topLeft = PointHelper.GetTopLeftCorner(
                 rectangles.Select(rectangle => new Point(rectangle.X, rectangle.Y)));
 
-            var bottomRight = PointHelper.GetBottomRightAge(
+            var bottomRight = PointHelper.GetBottomRightCorner(
                 rectangles.Select(rectangle => new Point(rectangle.Right, rectangle.Bottom)));
 
             var sideLength = Math.Max(bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y);

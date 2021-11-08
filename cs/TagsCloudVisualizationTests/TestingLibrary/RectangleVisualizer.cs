@@ -19,7 +19,7 @@ namespace TagsCloudVisualizationTests.TestingLibrary
 
         public void Draw(Graphics graphics)
         {
-            var offset = PointHelper.GetTopLeftAge(rectangles.Select(rectangle => rectangle.Location));
+            var offset = PointHelper.GetTopLeftCorner(rectangles.Select(rectangle => rectangle.Location));
             rectangles
                 .Select(rectangle =>
                     new Rectangle(new Point(rectangle.Left - offset.X, rectangle.Top - offset.Y), rectangle.Size))
@@ -29,8 +29,8 @@ namespace TagsCloudVisualizationTests.TestingLibrary
 
         public Size GetBitmapSize()
         {
-            var topLeft = PointHelper.GetTopLeftAge(rectangles.Select(rectangle => rectangle.Location));
-            var bottomRight = PointHelper.GetBottomRightAge(rectangles
+            var topLeft = PointHelper.GetTopLeftCorner(rectangles.Select(rectangle => rectangle.Location));
+            var bottomRight = PointHelper.GetBottomRightCorner(rectangles
                 .Select(rectangle => new Point(rectangle.Right, rectangle.Bottom)));
 
             return new Size(

@@ -7,10 +7,10 @@ namespace TagsCloudVisualizationTests.TestingLibrary
 {
     public static class PointHelper
     {
-        public static Point GetTopLeftAge(IEnumerable<Point> points) => points.Aggregate((min, current) =>
+        public static Point GetTopLeftCorner(IEnumerable<Point> points) => points.Aggregate((min, current) =>
             new Point(Math.Min(current.X, min.X), Math.Min(current.Y, min.Y)));
 
-        public static Point GetBottomRightAge(IEnumerable<Point> points) => points.Aggregate((max, current) =>
+        public static Point GetBottomRightCorner(IEnumerable<Point> points) => points.Aggregate((max, current) =>
             new Point(Math.Max(current.X, max.X), Math.Max(current.Y, max.Y)));
     }
 }

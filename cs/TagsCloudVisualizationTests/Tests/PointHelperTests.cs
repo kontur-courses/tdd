@@ -7,10 +7,10 @@ namespace TagsCloudVisualizationTests.Tests
 {
     public class PointHelperTests
     {
-        [TestCaseSource(nameof(GetTopLeftAgeCases))]
-        public Point GetTopLeftAge_AssertResult(List<Point> points) => PointHelper.GetTopLeftAge(points);
+        [TestCaseSource(nameof(GetTopLeftCornerCases))]
+        public Point GetTopLeftCorner_AssertResult(List<Point> points) => PointHelper.GetTopLeftCorner(points);
 
-        public static IEnumerable<TestCaseData> GetTopLeftAgeCases()
+        public static IEnumerable<TestCaseData> GetTopLeftCornerCases()
         {
             yield return new TestCaseData(new List<Point> {new(1, 1), new(2, 2)})
                 {ExpectedResult = new Point(1, 1), TestName = "With one point to the left and above"};
@@ -28,10 +28,10 @@ namespace TagsCloudVisualizationTests.Tests
                 {ExpectedResult = new Point(-3, -5), TestName = "With 3 points"};
         }
 
-        [TestCaseSource(nameof(GetBottomRightAgeCases))]
-        public Point GetBottomRightAge_AssertResult(List<Point> points) => PointHelper.GetBottomRightAge(points);
+        [TestCaseSource(nameof(GetBottomRightCornerCases))]
+        public Point GetBottomRightCorner_AssertResult(List<Point> points) => PointHelper.GetBottomRightCorner(points);
 
-        public static IEnumerable<TestCaseData> GetBottomRightAgeCases()
+        public static IEnumerable<TestCaseData> GetBottomRightCornerCases()
         {
             yield return new TestCaseData(new List<Point> {new(1, 1), new(2, 2)})
                 {ExpectedResult = new Point(2, 2), TestName = "With one point to the right and below"};
