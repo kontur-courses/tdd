@@ -1,23 +1,26 @@
 ## Реализация раскладки слов для TagCloud
 
 
-Раскладка на 1000 тэгов
+### Раскладка на 1000 тэгов
 
-![tag_cloud_00](https://user-images.githubusercontent.com/82332119/140610227-484a6c85-0354-423a-9e36-2a80ab5e0972.png)
-#### Тест заполняемости показывает средний результат в 80%
+![tag_cloud_00](https://user-images.githubusercontent.com/82332119/140625646-8c4d2b59-4831-4c21-a52b-a8260042cdac.png)
 
-![06_Passed](https://user-images.githubusercontent.com/82332119/140610273-30a02ebb-5297-4413-b305-8d75c5342493.png)
-
-#### 2 проблемы в процессе решения:
-
-Раскладка одинаковых квадратов в количестве n^2 стремится к кругу. Хотя с точки зрения плотности квадрат оптимальнее.
-
-![07_Failed](https://user-images.githubusercontent.com/82332119/140610310-e1cce987-11e2-493d-9a69-69b8a075ce86.png)
-![01_Failed](https://user-images.githubusercontent.com/82332119/140612683-f7033224-01a0-4cdf-ba08-364be1c9c8ea.png)
+### Раскладка на 5000 тэгов
+![tag_cloud_02](https://user-images.githubusercontent.com/82332119/140625838-2cc8d541-5872-46be-bc2f-644cea4ddc6c.png)
 
 
-[Проблема решена] Из-за оптимизации перебора плотность может быть нарушена в случае большого различия в размерах некоторых прямоугольников
-![08_Passed](https://user-images.githubusercontent.com/82332119/140610349-b950cd77-86ed-4e9b-8d5f-e4066f39333a.png)
+### Тест заполняемости показывает средний результат в 75%
+![tag_cloud_01](https://user-images.githubusercontent.com/82332119/140625660-8f727af6-62e8-4224-bf69-a2e1608adaa1.png)
+
+
+
+### Раскладка одинаковых квадратов в количестве n^2 стремится к кругу.
+![09_Failed](https://user-images.githubusercontent.com/82332119/140625695-e922fed3-6de3-4604-8626-a07e7cf313bd.png)
+![900_Failed](https://user-images.githubusercontent.com/82332119/140625697-8e069a56-c6d1-4eef-b32e-b5a8337c36c6.png)
+
+### Слишком большой прямоугольник не препятствует нормальной раскладке
+![01_Passed](https://user-images.githubusercontent.com/82332119/140625701-f37766b2-bb50-4ed6-8594-59cf1b26fb71.png)
+
 
 
 
