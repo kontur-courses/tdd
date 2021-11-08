@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using NUnit.Framework;
+using TagsCloudVisualizationTests.TestingLibrary;
 
-namespace TagsCloudVisualizationTests
+namespace TagsCloudVisualizationTests.Tests
 {
     public class RectangleVisualizerTest
     {

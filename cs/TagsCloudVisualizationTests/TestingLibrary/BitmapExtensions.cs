@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 
-namespace TagsCloudVisualizationTests
+namespace TagsCloudVisualizationTests.TestingLibrary
 {
     public static class BitmapExtensions
     {

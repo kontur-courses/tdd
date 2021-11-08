@@ -5,8 +5,10 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using TagsCloudVisualization;
+using TagsCloudVisualizationTests.Interfaces;
+using TagsCloudVisualizationTests.TestingLibrary.RectangleStyles;
 
-namespace TagsCloudVisualizationTests
+namespace TagsCloudVisualizationTests.TestingLibrary
 {
     public class LayouterBitmapSaver
     {

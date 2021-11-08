@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using FluentAssertions;
+using TagsCloudVisualizationTests.Interfaces;
 
-namespace TagsCloudVisualizationTests
+namespace TagsCloudVisualizationTests.TestingLibrary
 {
     public static class VisualizerTestHelper
     {

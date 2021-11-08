@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using TagsCloudVisualizationTests.Interfaces;
+using TagsCloudVisualizationTests.TestingLibrary.RectangleStyles;
 
-namespace TagsCloudVisualizationTests
+namespace TagsCloudVisualizationTests.TestingLibrary
 {
     public class RectangleVisualizer : IVisualizer
     {

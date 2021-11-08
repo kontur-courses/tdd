@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
+using TagsCloudVisualizationTests.Interfaces;
 
-namespace TagsCloudVisualizationTests
+namespace TagsCloudVisualizationTests.TestingLibrary
 {
     public class VisualOutput
     {

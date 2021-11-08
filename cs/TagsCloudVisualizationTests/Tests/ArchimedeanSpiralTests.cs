@@ -5,8 +5,9 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization;
+using TagsCloudVisualizationTests.TestingLibrary;
 
-namespace TagsCloudVisualizationTests
+namespace TagsCloudVisualizationTests.Tests
 {
     public class ArchimedeanSpiralTests
     {

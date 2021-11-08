@@ -3,8 +3,9 @@ using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using TagsCloudVisualizationTests.TestingLibrary;
 
-namespace TagsCloudVisualizationTests
+namespace TagsCloudVisualizationTests.Tests
 {
     public class BitmapExtensionsTest
     {

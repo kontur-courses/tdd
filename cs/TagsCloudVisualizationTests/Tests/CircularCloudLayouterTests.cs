@@ -6,8 +6,9 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using NUnit.Framework;
 using TagsCloudVisualization;
+using TagsCloudVisualizationTests.TestingLibrary;
 
-namespace TagsCloudVisualizationTests
+namespace TagsCloudVisualizationTests.Tests
 {
     public class CircularCloudLayouterTests
     {

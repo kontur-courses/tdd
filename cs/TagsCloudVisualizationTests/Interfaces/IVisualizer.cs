@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace TagsCloudVisualizationTests
+namespace TagsCloudVisualizationTests.Interfaces
 {
     public interface IVisualizer
     {

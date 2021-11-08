@@ -4,7 +4,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization;
 
-namespace TagsCloudVisualizationTests
+namespace TagsCloudVisualizationTests.Tests
 {
     public class ArchimedeanSpiralPathTests
     {
