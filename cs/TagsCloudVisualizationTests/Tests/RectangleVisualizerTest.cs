@@ -47,7 +47,7 @@ namespace TagsCloudVisualizationTests.Tests
         public void Draw_AssertBitmap(List<Rectangle> rectanglesToDraw, List<Point> expectedPoints, Size bitmapSize)
         {
             var visualizer = new RectangleVisualizer(rectanglesToDraw);
-            VisualizerTestHelper.AssertBitmap(visualizer, bitmapSize, expectedPoints);
+            VisualizerTestHelper.AssertBitmap(visualizer, bitmapSize, expectedPoints, Color.Red);
         }
 
         public static IEnumerable<TestCaseData> DrawAssertBitmapCases()
