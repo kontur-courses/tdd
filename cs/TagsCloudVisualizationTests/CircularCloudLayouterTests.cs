@@ -24,15 +24,15 @@ namespace TagsCloudVisualizationTests
                 .Generate(new Point(X, Y), COUNT);
         }
 
-        //[TearDown]
-        //public void TearDown()
-        //{
-        //    if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
-        //    {
-        //        var path = LayoutImageGenerator.CreateImage(layouter);
-        //        Console.WriteLine($"Tag cloud visualization saved to file {path}");
-        //    }
-        //}
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+            {
+                var path = LayoutImageGenerator.CreateImage(layouter);
+                Console.WriteLine($"Tag cloud visualization saved to file {path}");
+            }
+        }
 
         [Test]
         public void Should_HaveCenter_AfterCreation()
