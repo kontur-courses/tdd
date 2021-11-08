@@ -11,7 +11,7 @@ namespace TagsCloudVisualization
             pictSize = sizeOfPicture;
         }
 
-        public void CreateImageOfRectangles(List<Rectangle> rectangles,string filename = "rectangles")
+        public void CreateImage(List<Rectangle> rectangles, string filename = "rectangles")
         {
             using Bitmap bmp = new Bitmap(pictSize.Width,pictSize.Height);
 
