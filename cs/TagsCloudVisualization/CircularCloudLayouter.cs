@@ -30,6 +30,15 @@ namespace TagsCloudVisualization
             rectangles.Add(positionedRectangle);
         }
 
+        public void Visualise(string filename)
+        {
+            var bitmap = new Bitmap((int)(center.X * 2), (int)(center.Y * 2));
+            var gr = Graphics.FromImage(bitmap);
+            var pen = new Pen(Color.DarkGreen, 1);
+            gr.DrawRectangles(pen, rectangles.ToArray());
+            bitmap.Save(filename);
+        }
+
         private RectangleF GetRectangle(SizeF rectSize, PointF center)
             => RectangleFExtensions.GetRectangleByCenter(rectSize, center);
 

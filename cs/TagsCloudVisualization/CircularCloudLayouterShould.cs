@@ -118,6 +118,19 @@ namespace TagsCloudVisualization
                 .Should().BeLessThan(radius));
         }
 
+        /// <summary>
+        /// Я решил сделать визуализацию через тесты, чтобы не выделять отдельный проект
+        /// и можно было удобно настраивать параметры
+        /// </summary>
+        //[TestCase("1.jpg", 200, 10, 20)]
+        //[TestCase("2.jpg", 250, 15, 25)]
+        //[TestCase("3.jpg", 500, 10, 16)]
+        public void Visualise(string filename, int count, int min, int max)
+        {
+            PutSeveralRectangles(count, min, max);
+            layouter.Visualise(filename);
+        }
+
         private List<Size> GetRandomSizes(int count, int min, int max)
         {
             var rnd = new Random();
