@@ -7,23 +7,16 @@ namespace TagsCloudVisualization
 {
     public class TagsPainter
     {
-        private readonly Random _random = new(Environment.TickCount);
+        private readonly Random random;
         public int HeightOffset { get; }
-
         public int WidthOffset { get; }
 
         public TagsPainter(int widthOffset = 200, int heightOffset = 200)
         {
             ValidateOffsets(widthOffset, heightOffset);
-
             WidthOffset = widthOffset;
             HeightOffset = heightOffset;
-        }
-
-        private static void ValidateOffsets(int widthOffset, int heightOffset)
-        {
-            if (widthOffset < 0 || heightOffset < 0)
-                throw new ArgumentException("Offsets must be great or equal to zero");
+            random = new Random();
         }
 
         public void SaveToFile(string filePath, Rectangle[] rectangles)
@@ -38,7 +31,7 @@ namespace TagsCloudVisualization
             graphics.Clear(Color.Black);
             foreach (var rectangle in rectangles)
             {
-                var brush = new SolidBrush(Color.FromArgb(_random.Next(256), _random.Next(256), _random.Next(256)));
+                var brush = new SolidBrush(Color.FromArgb(random.Next(256), random.Next(256), random.Next(256)));
                 rectangle.Offset(drawingParams.DrawingOffset);
 
                 graphics.FillRectangle(brush, rectangle);
@@ -62,6 +55,12 @@ namespace TagsCloudVisualization
                 BitmapHeight = height + HeightOffset,
                 DrawingOffset = new Point(width / 2 + WidthOffset / 2, height / 2 + HeightOffset / 2)
             };
+        }
+
+        private static void ValidateOffsets(int widthOffset, int heightOffset)
+        {
+            if (widthOffset < 0 || heightOffset < 0)
+                throw new ArgumentException("Offsets must be great or equal to zero");
         }
 
         private struct DrawingParams
