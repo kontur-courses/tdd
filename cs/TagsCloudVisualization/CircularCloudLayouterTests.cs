@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -63,7 +62,7 @@ namespace TagsCloudVisualization
                 .Should().Be(size);
         }
 
-        [TestCase(1)]
+        [TestCase(2)]
         [TestCase(5)]
         [TestCase(50)]
         public void SaveRectangleAfterPutNextRectangle(int count)
