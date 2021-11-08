@@ -11,34 +11,35 @@ namespace TagsCloudVisualizationUnitTest
         [TestCase(-10, -10, TestName = "Negative size")]
         [TestCase(0, 0, TestName = "Size is Empty")]
         [TestCase(10, 0, TestName = "Weight = zero")]
-        public void PutNextRectangleTest_ShouldBeThrowWhen(int h, int w)
+        public void PutNextRectangle_ShouldBeThrowWhen(int height, int width)
         {
             var circularCloudLayouter = new CircularCloudLayouter(new Point(0, 0));
 
-            Action act = () => circularCloudLayouter.PutNextRectangle(new Size(h, w));
+            Action act = () => circularCloudLayouter.PutNextRectangle(new Size(width, height));
 
             act.Should().Throw<Exception>();
         }
 
         [TestCase(10, 10, TestName = "Usual param")]
-        public void PutNextRectangleTest_ShouldNotThrowWhen(int h, int w)
+        public void PutNextRectangle_ShouldNotThrowWhen(int height, int width)
         {
             var circularCloudLayouter = new CircularCloudLayouter(new Point(0, 0));
 
-            Action act = () => circularCloudLayouter.PutNextRectangle(new Size(h, w));
+            Action act = () => circularCloudLayouter.PutNextRectangle(new Size(width, height));
 
             act.Should().NotThrow();
         }
 
         [TestCase(33, 33, 10, 10, ExpectedResult = false, TestName = "ShouldBeFalse")]
         [TestCase(5, 5, 10, 10, ExpectedResult = true, TestName = "ShouldBeTrue")]
-        public bool IsIntersectsRectanglesTest(int x, int y, int h, int w)
+        public bool IsIntersectsRectangles(int x, int y, int height, int width)
         {
             var circularCloudLayouter = new CircularCloudLayouter(new Point(0, 0));
 
             circularCloudLayouter.PutNextRectangle(new Size(10, 10));
 
-            return circularCloudLayouter.IsIntersects(new Rectangle(x, y, w, h));
+            return circularCloudLayouter.IsIntersects(new Rectangle(x, y, width, height));
+        }
 
         [Test]
         public void PutNextRectangle_RectanglesShouldBeHave_UniqueCoordinates()
