@@ -167,7 +167,7 @@ namespace TagsCloudVisualization_Test
             new CircularCloudLayouter(center ?? Point.Empty, new ArchimedeanSpiral(center.Value));
 
         private CircularCloudLayouter GetLayouter(Point? center, List<Size> rectSizes) =>
-            GetLayouter(center, rectSizes, new ArchimedeanSpiral(center.Value));
+            GetLayouter(center ?? Point.Empty, rectSizes, new ArchimedeanSpiral(center ?? Point.Empty));
 
         private CircularCloudLayouter GetLayouter(Point? center, List<Size> rectSizes, Spiral spiral)
         {

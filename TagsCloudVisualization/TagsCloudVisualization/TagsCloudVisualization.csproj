@@ -51,6 +51,7 @@
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="CloudLayouter.cs" />
     <Compile Include="CoordinatesConverter.cs" />
+    <Compile Include="DemoImageGenerator.cs" />
     <Compile Include="Extensions\PointExtensions.cs" />
     <Compile Include="Extensions\RectangleExtensions.cs" />
     <Compile Include="Spiral.cs" />

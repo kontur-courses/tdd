@@ -13,7 +13,7 @@ namespace TagsCloudVisualization
 
         public ArchimedeanSpiral(Point center) : base(center) { }
 
-        public override IEnumerable<Point> GetDiscretePoints()
+        public override IEnumerable<Point> GetDiscretePoints(double deltaAngle = 0.01)
         {
             while (true)
             {
@@ -21,7 +21,7 @@ namespace TagsCloudVisualization
                 var cartesian = CoordinatesConverter.ToCartesian(rho, Phi);
                 var point = new Point(cartesian.X + OffsetX, cartesian.Y + OffsetY);
 
-                Phi += 0.01;
+                Phi += deltaAngle;
                 yield return point;
             }
         }
