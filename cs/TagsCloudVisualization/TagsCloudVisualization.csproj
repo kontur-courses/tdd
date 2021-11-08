@@ -6,11 +6,8 @@
 
     <ItemGroup>
       <PackageReference Include="FluentAssertions" Version="6.2.0" />
+      <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
       <PackageReference Include="NUnit" Version="3.13.2" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Tests\SpiralRectangleLayouter_Should" />
     </ItemGroup>
 
 </Project>
