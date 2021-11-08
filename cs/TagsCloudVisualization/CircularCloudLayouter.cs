@@ -78,7 +78,7 @@ namespace TagsCloudVisualization
         private IEnumerable<PointF> GetSpiralPath()
         {
             var a = 0;
-            var k = 2;
+            var k = 0.01;
             while (true)
             {
                 var x = (float)(center.X + k * a * Math.Cos(a));

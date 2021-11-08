@@ -90,18 +90,18 @@ namespace TagsCloudVisualization
         public void WorkFastEnough()
         {
             var layouter2 = new CircularCloudLayouter(new PointF(100, 100));
-            Action action = () => PutSeveralRectangles(500);
+            Action action = () => PutSeveralRectangles(1000);
             GC.Collect();
             layouter2.PutNextRectangle(new Size(1, 1));
-            action.ExecutionTime().Should().BeLessThan(3.Seconds());
+            action.ExecutionTime().Should().BeLessThan(1.Seconds());
         }
 
         [Test]
         public void PlaceRectanglesCompactEnough()
         {
-            PutSeveralRectangles(500);
+            PutSeveralRectangles(100);
             var boundingRect = RectangleFExtensions.GetRectangleByCenter
-                (new Size(2000, 2000), center);
+                (new Size(1000, 1000), center);
             layouter.Rectangles.Where(r => !boundingRect.Contains(r))
                 .Should()
                 .BeEmpty();
@@ -110,9 +110,9 @@ namespace TagsCloudVisualization
         [Test]
         public void PlaceRectanglesCloseToCircularForm()
         {
-            PutSeveralRectangles(250, 18, 20);
+            PutSeveralRectangles(400, 18, 20);
             var center = this.center.ToVector();
-            var radius = 400;
+            var radius = 250;
             layouter.Rectangles.ForEach(r =>
                 center.GetDistanseTo(r.GetCenter())
                 .Should().BeLessThan(radius));
@@ -142,6 +142,7 @@ namespace TagsCloudVisualization
         //[TestCase("..\\..\\..\\1.jpg", 200, 10, 20)]
         //[TestCase("..\\..\\..\\2.jpg", 250, 15, 25)]
         //[TestCase("..\\..\\..\\3.jpg", 500, 10, 16)]
+        //[TestCase("..\\..\\..\\4.jpg", 250, 5, 50)]
         public void Visualise(string filename, int count, int min, int max)
         {
             PutSeveralRectangles(count, min, max);
