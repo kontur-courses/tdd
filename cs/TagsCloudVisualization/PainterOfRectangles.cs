@@ -13,9 +13,9 @@ namespace TagsCloudVisualization
 
         public void CreateImageOfRectangles(List<Rectangle> rectangles,string filename = "rectangles")
         {
-            Bitmap bmp = new Bitmap(pictSize.Width,pictSize.Height);
+            using Bitmap bmp = new Bitmap(pictSize.Width,pictSize.Height);
 
-            Graphics graphics = Graphics.FromImage(bmp);
+            using Graphics graphics = Graphics.FromImage(bmp);
 
             foreach (var rectangle in rectangles)
             {
@@ -23,9 +23,6 @@ namespace TagsCloudVisualization
             }
 
             bmp.Save(filename);
-
-            bmp.Dispose();
-            graphics.Dispose();
         }
     }
 }
