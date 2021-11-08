@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using FluentAssertions;
 using NUnit.Framework;
 
 namespace TagsCloudVisualizationTests
@@ -52,14 +51,8 @@ namespace TagsCloudVisualizationTests
         [TestCaseSource(nameof(DrawAssertBitmapCases))]
         public void Draw_AssertBitmap(List<Point> pointsToDraw, List<Point> expectedPoints, Size bitmapSize)
         {
-            var expected = new Bitmap(bitmapSize.Width, bitmapSize.Height);
-            expectedPoints.ForEach(point => expected.SetPixel(point.X, point.Y, Color.Red));
             var visualizer = new PointsVisualizer(pointsToDraw);
-            var output = new VisualOutput(visualizer);
-
-            var actual = output.DrawToBitmap();
-
-            actual.ToEnumerable().Should().BeEquivalentTo(expected.ToEnumerable());
+            VisualizerTestHelper.AssertBitmap(visualizer, bitmapSize, expectedPoints);
         }
 
         public static IEnumerable<TestCaseData> DrawAssertBitmapCases()
@@ -67,10 +60,10 @@ namespace TagsCloudVisualizationTests
             var expectedPoints = new List<Point>() {new(), new(1, 2)};
             var bitmapSize = new Size(2, 3);
 
-            yield return new TestCaseData(new List<Point>() {new(), new (1, 2)}, expectedPoints, bitmapSize)
+            yield return new TestCaseData(new List<Point>() {new(), new(1, 2)}, expectedPoints, bitmapSize)
                 {TestName = "With positive points"};
 
-            yield return new TestCaseData(new List<Point>() {new(), new (-1, -2)}, expectedPoints, bitmapSize)
+            yield return new TestCaseData(new List<Point>() {new(), new(-1, -2)}, expectedPoints, bitmapSize)
                 {TestName = "With negative points"};
         }
     }

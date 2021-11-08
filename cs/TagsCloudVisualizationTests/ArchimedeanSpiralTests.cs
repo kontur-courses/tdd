@@ -59,11 +59,10 @@ namespace TagsCloudVisualizationTests
         [Explicit]
         public void GetPoint_SaveToBitmap()
         {
-            var size = new Size(500, 500);
             const int periods = 100;
             const double radius = 0.1f;
 
-            var spiral = new ArchimedeanSpiral(new Point(size.Width / 2, size.Height / 2), radius);
+            var spiral = new ArchimedeanSpiral(radius: radius);
             var points = Enumerable.Range(0, 360 * periods).Select(spiral.GetPoint);
             var visualizer = new PointsVisualizer(points);
 

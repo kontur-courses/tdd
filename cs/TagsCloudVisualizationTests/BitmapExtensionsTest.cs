@@ -20,12 +20,12 @@ namespace TagsCloudVisualizationTests
         public void ToEnumerable_ReturnCorrectBitmapColors()
         {
             var bitmap = new Bitmap(2, 2);
-            bitmap.SetPixel(0, 0, Color.Red);
-            var expected = new List<int> {Color.Red.ToArgb(), 0, 0, 0};
+            bitmap.SetPixel(1, 0, Color.Red);
+            var expected = new List<int> {0, 0, Color.Red.ToArgb(), 0};
 
             var actual = bitmap.ToEnumerable().Select(color => color.ToArgb()).ToList();
 
-            actual.Should().BeEquivalentTo(expected);
+            actual.Should().Equal(expected);
         }
     }
 }
