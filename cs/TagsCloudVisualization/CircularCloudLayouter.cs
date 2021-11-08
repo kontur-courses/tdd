@@ -11,7 +11,6 @@ namespace TagsCloudVisualization
         public readonly List<Rectangle> Rectangles;
 
         private readonly SortedSingleLinkedList<Point> points;
-        private Point nextPosition;
 
         private IEnumerable<Func<Point, Size, Point>> shifts = new List<Func<Point, Size, Point>>
         {
@@ -46,7 +45,7 @@ namespace TagsCloudVisualization
                     if (TryPutRectangleToCorners(point, rectangleSize, out rectangle))
                         break;
             }
-            
+
             Rectangles.Add(rectangle);
             SaveRectangleBorderPoints(rectangle);
             return rectangle;
@@ -59,7 +58,7 @@ namespace TagsCloudVisualization
             points.Add(new Point(rectangle.Right, rectangle.Top));
             points.Add(new Point(rectangle.Left, rectangle.Top));
         }
-        
+
         private bool TryPutRectangleToCorners(Point point, Size rectangleSize, out Rectangle rectangle)
         {
             foreach (var shift in shifts)

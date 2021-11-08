@@ -24,7 +24,7 @@ namespace TagsCloudVisualization
 
             Node<TValue> previousNode = null;
             var currentNode = root;
-            while (currentNode != null && !sep(currentNode.Value, node.Value))
+            while (currentNode != null && sep(currentNode.Value, node.Value))
             {
                 previousNode = currentNode;
                 currentNode = currentNode.Next;
