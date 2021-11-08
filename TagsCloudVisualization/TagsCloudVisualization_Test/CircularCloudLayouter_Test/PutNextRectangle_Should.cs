@@ -30,7 +30,7 @@ namespace TagsCloudVisualization_Test
             var directory = Directory.GetCurrentDirectory();
             var path = Path.Combine(directory, $"{count:00.}_{context.Result.Outcome.Status}");
 
-            using (var bitmap = BitmapDrawer.Draw(layout))
+            using (var bitmap = BitmapDrawer.Draw(layout.GetLaidRectangles(), layout.Center))
                 BitmapDrawer.Save(bitmap, path);
 
             Console.WriteLine($"{ context.Test.Name} {context.Result.Outcome.Status} - Image Saved");
