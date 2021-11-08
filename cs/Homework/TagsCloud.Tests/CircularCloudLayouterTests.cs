@@ -161,10 +161,8 @@ namespace TagsCloud.Tests
 
         private static string GetDirectoryForSavingFailedTest()
         {
-            var workingDirectory = Directory.GetCurrentDirectory();
-            var index = workingDirectory.IndexOf("TagsCloud", StringComparison.Ordinal);
-            var tagCloudPath = workingDirectory.Substring(0, index);
-            var path = Path.Combine(tagCloudPath, "FailedTestsPictures");
+            var solutionPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..\\..\\..\\..\\"));
+            var path = Path.Combine(solutionPath, "FailedTestsPictures");
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             return path;
