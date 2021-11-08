@@ -13,7 +13,7 @@ namespace TagsCloudVisualization.Extensions
         /// <param name="rect">Прямоугольник</param>
         /// <param name="point">Точка внутри прямоугольника</param>
         /// <returns>Возвращает расстояния в порядке left, top, right, bottom (все расстояния положительные)</returns>
-        public static List<int> GetDistancesToPoint(this Rectangle rect, Point point)
+        public static List<int> GetDistancesToInnerPoint(this Rectangle rect, Point point)
         {
             var left = point.X - rect.Left;
             var top = point.Y - rect.Top;
@@ -33,6 +33,14 @@ namespace TagsCloudVisualization.Extensions
         {
             first.Intersect(second);
             return first;
+        }
+
+        public static Rectangle UnionRange(this Rectangle rectangle, IEnumerable<Rectangle> others)
+        {
+            var union = rectangle;
+            foreach (var r in others)
+                union = Rectangle.Union(union, r);
+            return union;
         }
     }
 }

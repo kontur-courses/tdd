@@ -33,7 +33,7 @@ namespace TagsCloudVisualization_Test
                 union = Rectangle.Union(union, r);
                 squareSum += r.Width * r.Height;
             }
-            var radius = union.GetDistancesToPoint(center).Average();
+            var radius = union.GetDistancesToInnerPoint(center).Average();
             var sphereSquare = Math.PI * radius * radius;
             return squareSum / sphereSquare;
         }

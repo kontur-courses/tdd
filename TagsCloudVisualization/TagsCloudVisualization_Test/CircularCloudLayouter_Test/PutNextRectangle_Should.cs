@@ -8,6 +8,7 @@ using System;
 using NUnit.Framework.Interfaces;
 using System.Diagnostics;
 using System.IO;
+using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization_Test
 {
@@ -171,7 +172,7 @@ namespace TagsCloudVisualization_Test
             Enumerable.Range(0, count).ToList().ForEach(_ => rectSises.Add(size));
             var layouter = GetLayouter(null, rectSises);
             var expectedSquare = size.Width * size.Height * count;
-            var union = TestHelper.UnionAll(layouter.GetLaidRectangles().ToList());
+            var union = layouter.GetLaidRectangles().First().UnionRange(layouter.GetLaidRectangles());
             double square = union.Width * union.Height;
             square.Should().BeApproximately(expectedSquare, expectedSquare * 0.1);
         }

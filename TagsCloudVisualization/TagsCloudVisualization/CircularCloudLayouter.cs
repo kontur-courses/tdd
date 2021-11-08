@@ -50,18 +50,10 @@ namespace TagsCloudVisualization
 
         private bool CheckIntersects(Rectangle rectangle) => Rectangles.Any(r => r.IntersectsWith(rectangle));
 
-        private Rectangle UnionAll()
-        {
-            var union = Rectangles.First();
-            foreach (var r in Rectangles)
-                union = Rectangle.Union(union, r);
-            return union;
-        }
-
         private Size GetCanvasSize()
         {
-            var union = UnionAll();
-            var distances = union.GetDistancesToPoint(Center);
+            var union = Rectangles.First().UnionRange(Rectangles);
+            var distances = union.GetDistancesToInnerPoint(Center);
             var horizontalIncrement = Math.Abs(distances[0] - distances[2]);
             var verticalIncrement = Math.Abs(distances[1] - distances[3]);
             union.Inflate(horizontalIncrement, verticalIncrement);
