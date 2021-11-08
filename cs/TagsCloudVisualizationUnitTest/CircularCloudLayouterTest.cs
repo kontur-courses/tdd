@@ -39,6 +39,18 @@ namespace TagsCloudVisualizationUnitTest
             circularCloudLayouter.PutNextRectangle(new Size(10, 10));
 
             return circularCloudLayouter.IsIntersects(new Rectangle(x, y, w, h));
+
+        [Test]
+        public void PutNextRectangle_RectanglesShouldBeHave_UniqueCoordinates()
+        {
+            var circularCloudLayouter = new CircularCloudLayouter(new Point(0, 0));
+
+            for (int i = 0; i < 1000; i++)
+            {
+                circularCloudLayouter.PutNextRectangle(new Size(10, 10));
+            }
+
+            circularCloudLayouter.Rectangles.Should().OnlyHaveUniqueItems();
         }
     }
 }
