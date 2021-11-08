@@ -1,22 +1,27 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace TagsCloudVisualization
 {
     public class Visualization
     {
         public List<Rectangle> RectangleList { get; set; }
+
         private Pen ColorPen { get; }
+
+
         public Visualization(List<Rectangle> rectangleList, Pen colorPen)
         {
             RectangleList = rectangleList;
             ColorPen = colorPen;
         }
-        public void DrawImage(Size imageSize, string path)
+
+        public void DrawAndSaveImage(Size imageSize, string path, ImageFormat format)
         {
             var image = new Bitmap(imageSize.Width, imageSize.Height);
             image = DrawRectangles(image);
-            SaveImage(image, path);
+            image.Save(path, format);
         }
 
         private Bitmap DrawRectangles(Bitmap image)
@@ -26,11 +31,6 @@ namespace TagsCloudVisualization
                 graphics.DrawRectangle(ColorPen, rectangle);
             graphics.Dispose();
             return image;
-        }
-
-        private static void SaveImage(Bitmap image, string path)
-        {
-            image.Save(path, System.Drawing.Imaging.ImageFormat.Jpeg);
         }
     }
 }
