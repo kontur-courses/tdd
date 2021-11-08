@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using FluentAssertions.Extensions;
@@ -12,12 +13,26 @@ namespace TagsCloudVisualizationTests.Tests
 {
     public class CircularCloudLayouterTests
     {
-        private CircularCloudLayouter defaultLayouter;
+        private CircularCloudLayouter layouter;
 
         [SetUp]
         public void SetUp()
         {
-            defaultLayouter = new CircularCloudLayouter();
+            layouter = new CircularCloudLayouter();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.FailCount == 0 || layouter.Rectangles.Count == 0)
+                return;
+
+            var output = new VisualOutput(new RectangleVisualizer(layouter.Rectangles));
+            var savePath = Path.Combine(Directory.GetCurrentDirectory(),
+                $"CircularCloudLayouter.TestFail.bmp");
+
+            output.SaveToBitmap(savePath);
+            TestContext.WriteLine($"Tag cloud visualization saved to file {savePath}");
         }
 
         [Test]
@@ -30,7 +45,7 @@ namespace TagsCloudVisualizationTests.Tests
         [Test]
         public void HaveNoRectangles_AfterCreating()
         {
-            defaultLayouter
+            layouter
                 .Rectangles.Count
                 .Should().Be(0);
         }
@@ -38,7 +53,7 @@ namespace TagsCloudVisualizationTests.Tests
         [TestCaseSource(nameof(PutNextRectangleFirstRectanglePlacedInCenterTestCases))]
         public Point PutNextRectangle_FirstRectangle_PlacedInCenter(Point center, Size rectangle)
         {
-            var layouter = new CircularCloudLayouter(center);
+            layouter = new CircularCloudLayouter(center);
             layouter.PutNextRectangle(rectangle);
             return layouter.Rectangles[0].Location;
         }
@@ -54,9 +69,9 @@ namespace TagsCloudVisualizationTests.Tests
         [Test]
         public void PutNextRectangle_SecondRectangle_NotIntersectFirst()
         {
-            defaultLayouter.PutNextRectangle(new Size(1, 1));
-            defaultLayouter.PutNextRectangle(new Size(10, 10));
-            defaultLayouter.Rectangles[1].IntersectsWith(defaultLayouter.Rectangles[0]).Should().BeFalse();
+            layouter.PutNextRectangle(new Size(1, 1));
+            layouter.PutNextRectangle(new Size(10, 10));
+            layouter.Rectangles[1].IntersectsWith(layouter.Rectangles[0]).Should().BeFalse();
         }
 
         [Test]
@@ -65,8 +80,8 @@ namespace TagsCloudVisualizationTests.Tests
             LayouterBitmapSaver.CreateRandomRectangles(100).ForEach(rectangle =>
             {
                 TestContext.WriteLine(rectangle);
-                defaultLayouter.PutNextRectangle(rectangle);
-                AssertHaveNoIntersection(defaultLayouter.Rectangles);
+                layouter.PutNextRectangle(rectangle);
+                AssertHaveNoIntersection(layouter.Rectangles);
             });
         }
 
@@ -79,7 +94,7 @@ namespace TagsCloudVisualizationTests.Tests
         public void PutNextRectangle_ThrowsException_WithNotPositiveSize(int width, int height)
         {
             Assert.Throws<ArgumentException>(() =>
-                defaultLayouter.PutNextRectangle(new Size(width, height)));
+                layouter.PutNextRectangle(new Size(width, height)));
         }
 
         [Test]
@@ -87,7 +102,7 @@ namespace TagsCloudVisualizationTests.Tests
         {
             var rectangles = LayouterBitmapSaver.CreateRandomRectangles(1000);
 
-            Action act = () => rectangles.ForEach(defaultLayouter.PutNextRectangle);
+            Action act = () => rectangles.ForEach(layouter.PutNextRectangle);
 
             GC.Collect();
             act.ExecutionTime().Should().BeLessThan(5.Seconds());
@@ -96,8 +111,8 @@ namespace TagsCloudVisualizationTests.Tests
         [Test]
         public void PutNextRectangle_RandomRectangles_DensityHighEnough()
         {
-            LayouterBitmapSaver.CreateRandomRectangles(1000).ForEach(defaultLayouter.PutNextRectangle);
-            var density = CalculateDensity(defaultLayouter.Rectangles);
+            LayouterBitmapSaver.CreateRandomRectangles(1000).ForEach(layouter.PutNextRectangle);
+            var density = CalculateDensity(layouter.Rectangles);
             density.Should().BeGreaterThan(0.65);
             TestContext.WriteLine($"Density is: {density}");
         }
