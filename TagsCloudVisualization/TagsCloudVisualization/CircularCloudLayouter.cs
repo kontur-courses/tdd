@@ -8,7 +8,6 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter : CloudLayouter
     {
         public readonly Point Center;
-        public Size CanvasSize { get => GetCanvasSize(); }
         private Spiral _spiral;
 
         public CircularCloudLayouter(Point center, Spiral spiral) : base()
@@ -42,16 +41,6 @@ namespace TagsCloudVisualization
                     break;
             }
             return dryRect;
-        }
-
-        private Size GetCanvasSize()
-        {
-            var union = Rectangles.First().UnionRange(Rectangles);
-            var distances = union.GetDistancesToInnerPoint(Center);
-            var horizontalIncrement = Math.Abs(distances[0] - distances[2]);
-            var verticalIncrement = Math.Abs(distances[1] - distances[3]);
-            union.Inflate(horizontalIncrement, verticalIncrement);
-            return union.Size;
         }
     }
 }

@@ -50,7 +50,7 @@ namespace TagsCloudVisualization
         {
             var layouter = new CircularCloudLayouter(Point.Empty, spiral);
             rectSizes.ToList().ForEach(s => layouter.PutNextRectangle(s));
-            using (var bitmap = BitmapDrawer.Draw(layouter))
+            using (var bitmap = BitmapDrawer.Draw(layouter.GetLaidRectangles(), layouter.Center))
                 BitmapDrawer.Save(bitmap);
         }
 
@@ -58,13 +58,13 @@ namespace TagsCloudVisualization
         {
             var size = new Size(500, 500);
             var bitmap = new Bitmap(size.Width, size.Height);
-            var gr = Graphics.FromImage(bitmap);
-            gr.FillRectangle(Brushes.White, new Rectangle(Point.Empty, bitmap.Size));
+            var g = Graphics.FromImage(bitmap);
+            g.FillRectangle(Brushes.White, new Rectangle(Point.Empty, bitmap.Size));
 
             foreach (var p in spiral.GetDiscretePoints().Take(500))
             {
                 var point = new Point(p.X + size.Width / 2, p.Y + size.Height / 2);
-                gr.DrawEllipse(Pens.Red, new Rectangle(point, new Size(1, 1)));
+                g.DrawEllipse(Pens.Red, new Rectangle(point, new Size(1, 1)));
             }
             bitmap.Save($"spiral0{count}.png", ImageFormat.Png);
         }
