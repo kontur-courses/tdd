@@ -147,22 +147,6 @@ namespace TagsCloudVisualization_Test
             actualFactor.Should().BeGreaterThan(targetFactor);
         }
 
-        [TestCase(50, 30)]
-        [TestCase(25, 3)]
-        [TestCase(100, 3)]
-        public void PutSquares_TakesMinArea(int width, int side)
-        {
-            var rectSizes = new List<Size>();
-            var size = new Size(width, width);
-            count = side * side;
-            Enumerable.Range(0, count).ToList().ForEach(_ => rectSizes.Add(size));
-            var layouter = GetLayouter(null, rectSizes);
-            var expectedSquare = size.Width * size.Height * count;
-            var union = layouter.GetLaidRectangles().First().UnionRange(layouter.GetLaidRectangles());
-            double square = union.Width * union.Height;
-            square.Should().BeApproximately(expectedSquare, expectedSquare * 0.1);
-        }
-
         private CircularCloudLayouter GetLayouter(Point? center) =>
             new CircularCloudLayouter(center ?? Point.Empty, new ArchimedeanSpiral(center.Value));
 
