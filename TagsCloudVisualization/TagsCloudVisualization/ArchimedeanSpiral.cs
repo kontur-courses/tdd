@@ -23,7 +23,7 @@ namespace TagsCloudVisualization
         /// <summary>
         /// Радиус витков
         /// </summary>
-        private double _a;
+        private double radius;
 
         /// <summary>
         /// Текущий угол в радианах
@@ -37,7 +37,7 @@ namespace TagsCloudVisualization
         {
             _offsetX = 0;
             _offsetY = 0;
-            _a = 1;
+            radius = 1;
             _phi = 0;
         }
 
@@ -49,7 +49,7 @@ namespace TagsCloudVisualization
         {
             _offsetX = center.X;
             _offsetY = center.Y;
-            _a = 1;
+            radius = 1;
             _phi = 0;
         }
 
@@ -60,14 +60,28 @@ namespace TagsCloudVisualization
         {
             while (true)
             {
-                var rho = _phi * _a / (2 * Math.PI);
-                var x = rho * Math.Cos(_phi) + _offsetX;
-                var y = rho * Math.Sin(_phi) + _offsetY;
-                var point = new Point((int)x, (int)y);
+                var rho = _phi * radius / (2 * Math.PI);
+                var cartesian = CoordinatesConverter.ToCartesian(rho, _phi);
+                var point = new Point(cartesian.X + _offsetX, cartesian.Y + _offsetY);
 
                 _phi += 0.01;
                 yield return point;
             }
+        }
+    }
+
+    public class CoordinatesConverter
+    {
+        public static Point ToCartesian(double rho, double phi)
+        {
+            return new Point((int)(rho * Math.Cos(phi)), (int)(rho * Math.Sin(phi)));
+        }
+
+        public static (double rho, double phi) ToPolar(Point point)
+        {
+            var rho = Math.Sqrt(point.X * point.X + point.Y * point.Y);
+            var phi = Math.Atan(point.Y / point.X);
+            return (rho, phi);
         }
     }
 }
