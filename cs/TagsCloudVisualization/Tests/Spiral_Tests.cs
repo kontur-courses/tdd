@@ -10,8 +10,9 @@ namespace TagsCloudVisualization
         [Test]
         public void GetCoordinates_ReturnCoordinates_WhenCall()
         {
+            var spiral = new Spiral();
             var i = 0;
-            foreach (var p in Spiral.GetCoordinates(new Size(2, 2), 1))
+            foreach (var p in spiral.GetPoints(new Size(2, 2)))
             {
                 Console.WriteLine(p.X + ", " + p.Y);
                 i++;

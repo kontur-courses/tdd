@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -17,6 +18,8 @@ namespace TagsCloudVisualization
 
         public RectangleF PutNextRectangle(Size rectangleSize)
         {
+            if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
+                throw new ArgumentException("Size parameters should be positive");
             var tag = new RectangleF(GetNextPosition(rectangleSize), rectangleSize);
             tagCloud.Add(tag);
             return tag;
@@ -40,8 +43,9 @@ namespace TagsCloudVisualization
 
         private PointF GetNextNearestPositionForTag(Size size)
         {
-            return Circle.GetPointsFrom(minRadius, center)
-                .Select(p => new RectangleF(new PointF(p.X - size.Width / 2, p.Y - size.Height / 2), size))
+            var sp = new Spiral();
+            return sp.GetPointsIn(center,new Size(1,1))
+                .Select(p => new RectangleF(new PointF(p.X - size.Width / 2f, p.Y - size.Height / 2f), size))
                 .First(r => !IsIntersectWithCloud(r)).Location;
         }
 

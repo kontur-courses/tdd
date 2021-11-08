@@ -10,9 +10,9 @@ namespace TagsCloudVisualization
         public static void Main()
         {
             var tags = new List<(string, Font)>();
-            for (var i = 0; i < 150; i++)
+            for (var i = 5; i < 500; i++)
             {
-                tags.Add(("3", new Font("Arial", 35)));
+                tags.Add(("2", new Font("Arial", 15)));
             }
             Visualizer.Draw(tags, new Size(1200,900), "example.png");
         }
