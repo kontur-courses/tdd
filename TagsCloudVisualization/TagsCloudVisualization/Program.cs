@@ -26,19 +26,36 @@ namespace TagsCloudVisualization
 
     internal class DemoGenerator
     {
+        /// <summary>
+        /// Генерирует облако тэгов с заданным количеством тэгов с рандомными размерами
+        /// </summary>
+        /// <param name="tagsCount"></param>
         public static void GenerateTagCloud(int tagsCount)
         {
             var layouter = new CircularCloudLayouter(Point.Empty);
-            var rectSises = new List<Size>();
+            var rectSizes = new List<Size>();
             var rnd = new Random();
             for (int i = 0; i < tagsCount; i++)
             {
                 var width = rnd.Next(14, 60);
                 var height = rnd.Next(10, width);
-                rectSises.Add(new Size(width, height));
+                rectSizes.Add(new Size(width, height));
             }
-            rectSises.ToList().ForEach(s => layouter.PutNextRectangle(s));
+            rectSizes.ToList().ForEach(s => layouter.PutNextRectangle(s));
 
+            using (var bitmap = BitmapDrawer.Draw(layouter))
+                BitmapDrawer.Save(bitmap);
+        }
+
+        /// <summary>
+        /// Генерирует облако тэгов с прямоугольниками заданных размеров
+        /// </summary>
+        /// <param name="tagsCount"></param>
+        /// <param name="rectSizes"></param>
+        public static void GenerateTagCloud(IEnumerable<Size> rectSizes)
+        {
+            var layouter = new CircularCloudLayouter(Point.Empty);
+            rectSizes.ToList().ForEach(s => layouter.PutNextRectangle(s));
             using (var bitmap = BitmapDrawer.Draw(layouter))
                 BitmapDrawer.Save(bitmap);
         }
