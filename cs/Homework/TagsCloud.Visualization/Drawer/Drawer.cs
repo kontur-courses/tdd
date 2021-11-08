@@ -6,16 +6,23 @@ using TagsCloud.Visualization.Extensions;
 
 namespace TagsCloud.Visualization.Drawer
 {
+    public class DrawerSettings
+    {
+        public Color Color { get; set; }
+    }
+
     public abstract class Drawer : IDrawer
     {
         private const int OffsetX = 100;
         private const int OffsetY = 100;
-        
-        public Image Draw([NotNull] Rectangle[] rectangles)
+        protected DrawerSettings Settings;
+
+        public Image Draw([NotNull] Rectangle[] rectangles, DrawerSettings settings)
         {
             if (rectangles.Length == 0)
                 throw new ArgumentException("rectangles array cannot be empty");
-            
+            Settings = settings ?? throw new NullReferenceException(nameof(settings));
+
             var (width, height) = GetWidthAndHeight(rectangles);
             var (widthWithOffset, heightWithOffset) = (width + OffsetX, height + OffsetY);
             var center = rectangles.First().GetCenter();

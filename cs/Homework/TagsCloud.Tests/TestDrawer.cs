@@ -10,12 +10,14 @@ namespace TagsCloud.Tests
         protected override void Transform(Graphics graphics, Rectangle[] rectangles)
         {
             var center = rectangles.First().GetCenter();
-            var pen = new Pen(Color.Chocolate);
+            var pen = new Pen(Settings.Color);
             graphics.DrawRectangles(pen, rectangles);
             graphics.FillEllipse(Brushes.Red, InitRectangleFromCenter(center, 3, 3));
         }
 
-        private Rectangle InitRectangleFromCenter(Point center, int width, int height) 
-            => new(center.X - width / 2, center.Y - height / 2, width, height);
+        private Rectangle InitRectangleFromCenter(Point center, int width, int height)
+        {
+            return new(center.X - width / 2, center.Y - height / 2, width, height);
+        }
     }
 }

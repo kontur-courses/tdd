@@ -10,8 +10,8 @@ namespace TagsCloud.Visualization.Drawer
             var linGrBrush = new LinearGradientBrush(
                 new Point(0, 10),
                 new Point(200, 10),
-                Color.Blue,
-                Color.Red);
+                Settings.Color,
+                Color.Blue);
 
             var pen = new Pen(linGrBrush);
             graphics.DrawRectangles(pen, rectangles);

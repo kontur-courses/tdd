@@ -4,6 +4,6 @@ namespace TagsCloud.Visualization.Drawer
 {
     public interface IDrawer
     {
-        Image Draw(Rectangle[] rectangles);
+        Image Draw(Rectangle[] rectangles, DrawerSettings settings);
     }
 }

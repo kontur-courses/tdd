@@ -41,6 +41,7 @@ namespace TagsCloud.Visualization
                 if (!rectangle.IntersectsWith(rectangles))
                     return rectangle;
             }
+
             throw new Exception("point generator must generate points infinitely");
         }
 
@@ -66,7 +67,9 @@ namespace TagsCloud.Visualization
             return rectangle;
         }
 
-        private bool IsOnTheSameAxis(Point point, Point otherPoint) 
-            => point.X == otherPoint.X || point.Y == otherPoint.Y;
+        private bool IsOnTheSameAxis(Point point, Point otherPoint)
+        {
+            return point.X == otherPoint.X || point.Y == otherPoint.Y;
+        }
     }
 }

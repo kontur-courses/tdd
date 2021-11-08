@@ -7,6 +7,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using TagsCloud.Visualization;
+using TagsCloud.Visualization.Drawer;
 using TagsCloud.Visualization.Extensions;
 using TagsCloud.Visualization.PointGenerator;
 
@@ -15,8 +16,9 @@ namespace TagsCloud.Tests
     public class CircularCloudLayouterTests
     {
         private Point center;
-        private CircularCloudLayouter sut;
         private List<Rectangle> rectangles;
+        private CircularCloudLayouter sut;
+        private readonly DrawerSettings drawerSettings = new() {Color = Color.Red};
 
         [SetUp]
         public void InitLayouter()
@@ -34,7 +36,7 @@ namespace TagsCloud.Tests
             {
                 var testName = TestContext.CurrentContext.Test.Name;
                 var drawer = new TestDrawer();
-                using var image = drawer.Draw(rectangles.ToArray());
+                using var image = drawer.Draw(rectangles.ToArray(), drawerSettings);
                 var path = Path.Combine(GetDirectoryForSavingFailedTest(), $"{testName}.png");
                 image.Save(path);
 
@@ -91,7 +93,7 @@ namespace TagsCloud.Tests
         public void PutNextRectangle_Rectangles_Should_HaveDifferentCentres()
         {
             rectangles = PutRandomRectangles(10);
-
+            
             rectangles.Should().OnlyHaveUniqueItems(x => x.GetCenter());
         }
 
