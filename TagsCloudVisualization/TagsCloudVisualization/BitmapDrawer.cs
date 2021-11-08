@@ -23,7 +23,7 @@ namespace TagsCloudVisualization
             var rnd = new Random(Seed: 100);
             var g = Graphics.FromImage(bitmap);
             g.FillRectangle(Brushes.White, 0, 0, bitmapSize.Width, bitmapSize.Height);
-            foreach (var rect in layouter.Rectangles)
+            foreach (var rect in layouter.GetLaidRectangles())
             {
                 var color = Color.FromArgb(rnd.Next(0, 256), rnd.Next(0, 256), rnd.Next(0, 256));
                 var pen = new Pen(color, 0) { Alignment = PenAlignment.Inset };

@@ -34,6 +34,9 @@ namespace TagsCloudVisualization
         /// Создает новый объект спирали Архимеда с центров в точке Point center
         /// </summary>
         /// <param name="center">Центр спирали</param>
+        /// 
+        public ArchimedeanSpiral() { }
+
         public ArchimedeanSpiral(Point center)
         {
             _offsetX = center.X;

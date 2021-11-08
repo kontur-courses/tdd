@@ -40,22 +40,13 @@ namespace TagsCloudVisualization_Test
 
         public static List<Rectangle> CheckIntersects(List<Rectangle> rectangles)
         {
-            var intersects = new List<Rectangle>();
-            foreach (var first in rectangles)
-                foreach (var second in rectangles)
-                {
-                    if (first == second)
-                        continue;
-                    if (first.IntersectsWith(second))
-                    {
-                        var squareFirst = first.Width * first.Height;
-                        var itersect = first.GetIntersection(second);
-                        if (first.Width * first.Height != squareFirst)
-                            throw new InvalidOperationException("Был изменен объект вместо создания нового");
-                        intersects.Add(itersect);
-                    }
-                }
-            return intersects;
+            return rectangles
+                .SelectMany(rect => rectangles
+                .Where(other => other != rect)
+                .Where(other => rect.IntersectsWith(other))
+                .Select(other => rect.GetIntersection(other)))
+                .Distinct()
+                .ToList();
         }
 
         public static Rectangle UnionAll(List<Rectangle> rectangles)
@@ -64,6 +55,15 @@ namespace TagsCloudVisualization_Test
             foreach (var r in rectangles)
                 union = Rectangle.Union(union, r);
             return union;
+        }
+
+        public static List<Size> GenerateSizes_WithOneVeryBig(int tagsCount)
+        {
+            var sizes = new List<Size>();
+            sizes.AddRange(GenerateSizes(5));
+            sizes.Add(new Size(2000, 1000));
+            sizes.AddRange(GenerateSizes(tagsCount));
+            return sizes;
         }
     }
 }
