@@ -115,7 +115,7 @@ namespace TagsCloudVisualization_Test
                 watch.Stop();
                 elapsed += watch.ElapsedMilliseconds;
             }
-            elapsed.Should().BeLessThan(5_000 * mesuresCount);
+            elapsed.Should().BeLessThan(2_000 * mesuresCount);
         }
 
         [Test, Timeout(2_000)]
@@ -144,7 +144,7 @@ namespace TagsCloudVisualization_Test
         [Test]
         public void PutVeryBigRectangle_WithOver75PercentAverageDensity()
         {
-            var targetFactor = 0.8;
+            var targetFactor = 0.75;
             var testAmount = 10;
             double sumFactor = 0;
             for (int i = 0; i < testAmount; i++)

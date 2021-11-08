@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31729.503
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{81D32CF0-0F11-4822-B0A2-25ADABBC855A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TagsCloudVisualization_Test", "TagsCloudVisualization_Test\TagsCloudVisualization_Test.csproj", "{F3397A99-B3CB-4D0A-BA79-B29432483FA0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{81D32CF0-0F11-4822-B0A2-25ADABBC855A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81D32CF0-0F11-4822-B0A2-25ADABBC855A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81D32CF0-0F11-4822-B0A2-25ADABBC855A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81D32CF0-0F11-4822-B0A2-25ADABBC855A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3397A99-B3CB-4D0A-BA79-B29432483FA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3397A99-B3CB-4D0A-BA79-B29432483FA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3397A99-B3CB-4D0A-BA79-B29432483FA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3397A99-B3CB-4D0A-BA79-B29432483FA0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1C2BEB0E-B229-4D0C-A830-A1069478A7CB}
+	EndGlobalSection
+EndGlobal

@@ -49,7 +49,7 @@ namespace TagsCloudVisualization_Test
                     if (first.IntersectsWith(second))
                     {
                         var squareFirst = first.Width * first.Height;
-                        var itersect = first.GetIntersect(second);
+                        var itersect = first.GetIntersection(second);
                         if (first.Width * first.Height != squareFirst)
                             throw new InvalidOperationException("Был изменен объект вместо создания нового");
                         intersects.Add(itersect);

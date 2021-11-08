@@ -29,7 +29,7 @@ namespace TagsCloudVisualization.Extensions
         /// <summary>
         /// Возвращает новый прямоугольник полученный путем пересечения двух прямоугольников
         /// </summary>
-        public static Rectangle GetIntersect(this Rectangle first, Rectangle second)
+        public static Rectangle GetIntersection(this Rectangle first, Rectangle second)
         {
             first.Intersect(second);
             return first;

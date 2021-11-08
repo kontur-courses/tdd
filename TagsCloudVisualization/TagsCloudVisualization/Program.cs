@@ -8,22 +8,25 @@ using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
-    class Program
+    public class Program
     {
         public static void Main()
         {
             var amount = 1;
             for (int i = 0; i < amount; i++)
-                GenerateTagCloud(2000);
+                DemoGenerator.GenerateTagCloud(2000);
 
-            var spiral = new ArchimedeanSpiral(Point.Empty);
+            var spiral = new ArchimedeanSpiral();
             for (int i = 0; i < 5; i++)
             {
-                GenerateSpiral(i, spiral);
+                DemoGenerator.GenerateSpiral(i, spiral);
             }
         }
+    }
 
-        static void GenerateTagCloud(int tagsCount)
+    internal class DemoGenerator
+    {
+        public static void GenerateTagCloud(int tagsCount)
         {
             var layouter = new CircularCloudLayouter(Point.Empty);
             var rectSises = new List<Size>();
@@ -40,7 +43,7 @@ namespace TagsCloudVisualization
                 BitmapDrawer.Save(bitmap);
         }
 
-        static void GenerateSpiral(int count, ArchimedeanSpiral spiral)
+        public static void GenerateSpiral(int count, ArchimedeanSpiral spiral)
         {
             var size = new Size(500, 500);
             var bitmap = new Bitmap(size.Width, size.Height);
