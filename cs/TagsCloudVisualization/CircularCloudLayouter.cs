@@ -38,16 +38,7 @@ namespace TagsCloudVisualization
                     $" Ширина: {rectangleSize.Width}");
             }
 
-            Rectangle currentRectangle;
-            if (rectangles.Count == 0)
-            {
-                currentRectangle = new Rectangle(centrPoint, rectangleSize);
-                rectangles.Add(currentRectangle);
-
-                return currentRectangle;
-            }
-
-            currentRectangle = new Rectangle(nextPoint, rectangleSize);
+            var currentRectangle = new Rectangle(nextPoint, rectangleSize);
             while (IsIntersects(currentRectangle))
             {
                 nextPoint = spiral.CalcPointSpiral();
