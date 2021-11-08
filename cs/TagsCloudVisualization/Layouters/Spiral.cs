@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Drawing;
+using TagsCloudVisualization.Helpers;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Layouters
 {
     internal class Spiral
     {
         private double radius = 0;
         private double angle = 0;
 
-        private Point center;
+        private readonly Point center;
 
-        private PointD currentPoint =>
+        public PointD CurrentPoint =>
             new PointD(
                 Math.Cos(angle) * radius + center.X,
                 Math.Sin(angle) * radius + center.Y);

@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
-using FluentAssertions;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
     public class CircularCloudLayouter_Should

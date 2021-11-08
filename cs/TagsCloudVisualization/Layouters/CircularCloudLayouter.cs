@@ -1,7 +1,6 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Layouters
 {
     public class CircularCloudLayouter
     {

@@ -9,4 +9,8 @@
       <PackageReference Include="NUnit" Version="3.13.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Tests\SpiralRectangleLayouter_Should" />
+    </ItemGroup>
+
 </Project>
