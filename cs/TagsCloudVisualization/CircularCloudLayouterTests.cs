@@ -19,7 +19,14 @@ namespace TagsCloudVisualization
             new List<int> { 40, 30, 500, 470 },
             new List<int> { 30, 40, 500, 500 },
             new List<int> { 40, 80, 460, 510 },
-            new List<int> { 20, 30, 440, 510 }
+            new List<int> { 20, 30, 440, 500 },
+            new List<int> { 50, 30, 390, 510 },
+            new List<int> { 30, 30, 410, 480 },
+            new List<int> { 20, 40, 420, 440 },
+            new List<int> { 40, 20, 440, 450 },
+            new List<int> { 150, 30, 480, 440 },
+            new List<int> { 30, 30, 540, 470 },
+            new List<int> {30, 30, 530, 500}
         };
 
         private static List<List<int>> rectanglesSampleForFilledRectCheck = new List<List<int>>
@@ -45,12 +52,15 @@ namespace TagsCloudVisualization
             {
                 var image = new Bitmap(800, 800);
                 var brush = Graphics.FromImage(image);
-                brush.DrawEllipse(new Pen(Color.Red, 3), 500, 500, 3, 3);
-                foreach (var rectangle in cloudLayouter.Rectangles)
+                for (var i = 0; i < cloudLayouter.Rectangles.Count; i++)
                 {
+                    var rectangle = cloudLayouter.Rectangles[i];
                     brush.FillRectangle(new SolidBrush(Color.Green), rectangle);
                     brush.DrawRectangle(new Pen(Color.Black), rectangle);
+                    brush.DrawString(i.ToString(), new Font(FontFamily.GenericMonospace, 12), new SolidBrush(Color.Red), rectangle);
                 }
+
+                brush.DrawEllipse(new Pen(Color.Red, 3), 500, 500, 3, 3);
                 image.Save(
                     $"{TestContext.CurrentContext.TestDirectory}\\{TestContext.CurrentContext.Test.Name}_result.png");
                 TestContext.Write(
