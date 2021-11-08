@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using FluentAssertions;
 using FluentAssertions.Extensions;
@@ -62,7 +61,7 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void PutNextRectangle_RandomRectangles_NotIntersect()
         {
-            CreateRandomRectangles(100).ForEach(rectangle =>
+            LayouterBitmapSaver.CreateRandomRectangles(100).ForEach(rectangle =>
             {
                 TestContext.WriteLine(rectangle);
                 defaultLayouter.PutNextRectangle(rectangle);
@@ -85,7 +84,7 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void PutNextRectangle_WorksFastEnough()
         {
-            var rectangles = CreateRandomRectangles(700);
+            var rectangles = LayouterBitmapSaver.CreateRandomRectangles(1000);
 
             Action act = () => rectangles.ForEach(defaultLayouter.PutNextRectangle);
 
@@ -94,47 +93,32 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
-        public void PutNextRectangle_PlaceRectangles_TightEnough()
+        public void PutNextRectangle_RandomRectangles_DensityHighEnough()
         {
-            CreateRandomRectangles(1000).ForEach(defaultLayouter.PutNextRectangle);
-
-
-            var ranges = defaultLayouter.Rectangles
-                .Select(rectangle => Math.Sqrt(Math.Pow(rectangle.X, 2) + Math.Pow(rectangle.Y, 2)))
-                .ToList();
-
-            ranges.Should().OnlyContain(range => range < 1300);
+            LayouterBitmapSaver.CreateRandomRectangles(1000).ForEach(defaultLayouter.PutNextRectangle);
+            var density = CalculateDensity(defaultLayouter.Rectangles);
+            density.Should().BeGreaterThan(0.65);
+            TestContext.WriteLine($"Density is: {density}");
         }
 
-        [Test]
-        [Explicit]
-        public void PutNextRectangle_Squares_SaveToBitmap()
+        private static double CalculateDensity(IReadOnlyCollection<Rectangle> rectangles)
         {
-            var square = new Size(10, 10);
-            var layouter = new CircularCloudLayouter(new Point(1000, 1000));
+            var topLeft = PointHelper.GetTopLeftAge(
+                rectangles.Select(rectangle => new Point(rectangle.X, rectangle.Y)));
 
-            Enumerable.Range(0, 1000).ToList().ForEach(_ => layouter.PutNextRectangle(square));
+            var bottomRight = PointHelper.GetBottomRightAge(
+                rectangles.Select(rectangle => new Point(rectangle.Right, rectangle.Bottom)));
 
-            SaveRectanglesToBitmap(layouter);
-        }
+            var sideLength = Math.Max(bottomRight.X - topLeft.X, bottomRight.Y - topLeft.Y);
+            var radius = sideLength / 2;
 
-        [Test]
-        [Explicit]
-        public void PutNextRectangle_RandomRectangles_SaveToBitmap()
-        {
-            var layouter = new CircularCloudLayouter(new Point(2500, 2500));
+            var circleArea = Math.PI * radius * radius;
+            var rectanglesArea = rectangles
+                .Select(rectangle => rectangle.Width * rectangle.Height)
+                .Sum();
 
-            CreateRandomRectangles(1000).ForEach(rectangle => layouter.PutNextRectangle(rectangle));
-
-            SaveRectanglesToBitmap(layouter);
-        }
-
-        private static void SaveRectanglesToBitmap(CircularCloudLayouter layouter)
-        {
-            var visualizer = new RectangleVisualizer(layouter.Rectangles);
-            var savePath = Path.Combine(Directory.GetCurrentDirectory(), "CircularCloudLayouter.Rectangles.bmp");
-            new VisualOutput(visualizer).SaveToBitmap(savePath);
-            TestContext.WriteLine($"Saved to '{savePath}'");
+            var density = rectanglesArea / circleArea;
+            return density;
         }
 
         private static void AssertHaveNoIntersection(IReadOnlyList<Rectangle> rectangles)
@@ -143,14 +127,6 @@ namespace TagsCloudVisualizationTests
                 for (var j = i + 1; j < rectangles.Count; j++)
                     Assert.False(rectangles[i].IntersectsWith(rectangles[j]),
                         $"{rectangles[i]} intersects with {rectangles[j]}");
-        }
-
-        private static List<Size> CreateRandomRectangles(int count)
-        {
-            var random = new Random();
-            return Enumerable.Range(0, count)
-                .Select(_ => new Size(random.Next(10, 100), random.Next(10, 100)))
-                .ToList();
         }
     }
 }

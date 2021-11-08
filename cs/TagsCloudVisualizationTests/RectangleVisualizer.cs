@@ -6,6 +6,8 @@ namespace TagsCloudVisualizationTests
 {
     public class RectangleVisualizer : IVisualizer
     {
+        public IRectangleStyle Style { get; set; } = new RedPenStyle();
+
         private readonly List<Rectangle> rectangles;
 
         public RectangleVisualizer(IEnumerable<Rectangle> rectangles)
@@ -16,12 +18,11 @@ namespace TagsCloudVisualizationTests
         public void Draw(Graphics graphics)
         {
             var offset = PointHelper.GetTopLeftAge(rectangles.Select(rectangle => rectangle.Location));
-            var pen = new Pen(Color.Red, 1);
             rectangles
                 .Select(rectangle =>
                     new Rectangle(new Point(rectangle.Left - offset.X, rectangle.Top - offset.Y), rectangle.Size))
                 .ToList()
-                .ForEach(rectangle => graphics.DrawRectangle(pen, rectangle));
+                .ForEach(rectangle => Style.Draw(graphics, rectangle));
         }
 
         public Size GetBitmapSize()
