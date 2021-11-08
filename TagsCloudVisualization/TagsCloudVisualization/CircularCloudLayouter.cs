@@ -27,34 +27,28 @@ namespace TagsCloudVisualization
             if (rectangleSize.Width < 0 || rectangleSize.Height < 0)
                 throw new ArgumentException($"Отрицательный размер прямоугольника: " +
                     $"{rectangleSize.Width} x {rectangleSize.Height}");
-            var target = Rectangles.Any() ? FindNextPoint(rectangleSize) : Center.GetRectangleLocationByCenter(rectangleSize);
 
-            var rectangle = new Rectangle(target, rectangleSize);
+            var rectangle = Rectangles.Any()
+                ? GetNextRectangleWithLocation(rectangleSize)
+                : new Rectangle(Center.GetRectangleLocationByCenter(rectangleSize), rectangleSize);
             Rectangles.Add(rectangle);
             return rectangle;
         }
 
-        private Point FindNextPoint(Size rectSize)
+        private Rectangle GetNextRectangleWithLocation(Size rectSize)
         {
-            Point? point = null;
-            foreach (var spiralPoint in _spiral.GetDiscretePoint())
+            var dryRect = new Rectangle(Point.Empty, rectSize);
+            var pointEnumerator = _spiral.GetDiscretePoints().GetEnumerator();
+            while (pointEnumerator.MoveNext())
             {
-                if (!CheckIntersects(new Rectangle(spiralPoint, rectSize)))
-                {
-                    point = spiralPoint;
-                    break;
-                }
+                dryRect.Location = pointEnumerator.Current;
+                if (!CheckIntersects(dryRect))             
+                    break;                
             }
-            return point.Value;
+            return dryRect;
         }
 
-        private bool CheckIntersects(Rectangle rectangle)
-        {
-            foreach (var r in Rectangles)
-                if (rectangle.IntersectsWith(r))
-                    return true;
-            return false;
-        }
+        private bool CheckIntersects(Rectangle rectangle) => Rectangles.Any(r => r.IntersectsWith(rectangle));
 
         private Rectangle UnionAll()
         {

@@ -43,7 +43,7 @@ namespace TagsCloudVisualization
         /// <summary>
         /// Выдает дискретные значения спирали от последнего взятого значения до бесконечности!
         /// </summary>
-        public IEnumerable<Point> GetDiscretePoint()
+        public IEnumerable<Point> GetDiscretePoints()
         {
             while (true)
             {

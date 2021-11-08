@@ -50,7 +50,7 @@ namespace TagsCloudVisualization
             var gr = Graphics.FromImage(bitmap);
             gr.FillRectangle(Brushes.White, new Rectangle(Point.Empty, bitmap.Size));
 
-            foreach (var p in spiral.GetDiscretePoint().Take(500))
+            foreach (var p in spiral.GetDiscretePoints().Take(500))
             {
                 var point = new Point(p.X + size.Width / 2, p.Y + size.Height / 2);
                 gr.DrawEllipse(Pens.Red, new Rectangle(point, new Size(1, 1)));
