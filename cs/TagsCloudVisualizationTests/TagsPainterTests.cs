@@ -8,13 +8,13 @@ namespace TagsCloudVisualizationTests
 {
     internal class TagsPainterTests
     {
-        private TagsPainter _sut = new();
-        private CircularCloudLayouter _layouter = new();
+        private readonly TagsPainter systemUnderTest = new();
+        private CircularCloudLayouter layouter;
 
         [SetUp]
         public void SetUp()
         {
-            _layouter = new CircularCloudLayouter();
+            layouter = new CircularCloudLayouter();
         }
 
         [Test]
@@ -30,7 +30,7 @@ namespace TagsCloudVisualizationTests
         {
             var filepath = $"{Environment.CurrentDirectory}\\failedLayout.png";
 
-            Action action = () => _sut.SaveToFile(filepath, _layouter.GetLayout());
+            Action action = () => systemUnderTest.SaveToFile(filepath, layouter.GetLayout());
 
             action.Should().Throw<ArgumentException>().WithMessage("Impossible to save an empty layout");
         }
@@ -38,12 +38,12 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void SaveToFile_ShouldCreateFile()
         {
-            _layouter.GenerateRandomLayout(1000);
+            layouter.GenerateRandomLayout(100);
             var filepath = $"{Environment.CurrentDirectory}\\outputTestLayout.png";
             if (File.Exists(filepath))
                 File.Delete(filepath);
 
-            _sut.SaveToFile(filepath, _layouter.GetLayout());
+            systemUnderTest.SaveToFile(filepath, layouter.GetLayout());
 
             File.Exists(filepath).Should().BeTrue();
         }

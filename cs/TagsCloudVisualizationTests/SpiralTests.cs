@@ -1,20 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization;
-using static TagsCloudVisualizationTests.Helper;
 
 namespace TagsCloudVisualizationTests
 {
     public class SpiralTests
     {
-        private Spiral _sut;
+        private Spiral systemUnderTest;
 
         [SetUp]
         public void SetUp()
         {
-            _sut = new Spiral(new Point(0, 0));
+            systemUnderTest = new Spiral(new Point(0, 0));
         }
 
         [Test]
@@ -22,30 +23,46 @@ namespace TagsCloudVisualizationTests
         {
             Action action = () => new Spiral(new Point(), -1);
 
-            action.Should().Throw<ArgumentException>().WithMessage("Spiral param must be great than zero");
+            action.Should().Throw<ArgumentException>().WithMessage("Spiral param must be greater than zero");
         }
 
         [Test]
         public void GetNextPoint_ReturnsCenter_WhenFirstCall()
         {
-            var center = _sut.Center;
+            var center = systemUnderTest.Center;
 
-            var point = _sut.GetNextPoint();
+            var point = systemUnderTest.GetNextPoint();
 
             point.Should().BeEquivalentTo(center);
         }
-        
-        [TestCase(1000)]
-        public void GetNextPoint_ShouldIncreaseDistance_WhenManyCalls(int pointsCount = 100)
+
+        [Test]
+        public void GetNextPoint_ShouldIncreaseDistance_WhenManyCalls()
         {
-            var point = _sut.GetNextPoint();
+            const int pointsCount = 1000;
+            var point = systemUnderTest.GetNextPoint();
 
-            for (var i = 1; i < pointsCount / 2; i++) point = _sut.GetNextPoint();
-            var halfDistance = point.GetDistance(_sut.Center);
-            for (var i = pointsCount / 2; i < pointsCount; i++) point = _sut.GetNextPoint();
-            var fullDistance = point.GetDistance(_sut.Center);
+            for (var i = 1; i < pointsCount / 2; i++) 
+                point = systemUnderTest.GetNextPoint();
+            var halfDistance = point.GetDistance(systemUnderTest.Center);
+            for (var i = pointsCount / 2; i < pointsCount; i++) 
+                point = systemUnderTest.GetNextPoint();
 
+            var fullDistance = point.GetDistance(systemUnderTest.Center);
             fullDistance.Should().BeGreaterThan(halfDistance);
+        }
+
+        [Test]
+        public void GetNextPoint_ShouldGenerateUniquePoints_WhenManyCalls()
+        {
+            const int pointsCount = 1000;
+            var points = new List<Point>();
+
+            for (var i = 0; i < pointsCount; i++)
+                points.Add(systemUnderTest.GetNextPoint());
+
+            var hasDuplicates = points.GroupBy(x => x).Any(x => x.Count() > 1);
+            hasDuplicates.Should().BeFalse();
         }
     }
 }
