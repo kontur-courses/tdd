@@ -12,7 +12,7 @@ namespace TagsCloudVisualization
     {
         public readonly Point Center;
         public Size CanvasSize { get => GetCanvasSize(); }
-        public List<Rectangle> Rectangles { get; private set; }
+        private List<Rectangle> Rectangles;
         private ArchimedeanSpiral _spiral;
 
         public CircularCloudLayouter(Point center)
@@ -37,7 +37,7 @@ namespace TagsCloudVisualization
         private Point FindNextPoint(Size rectSize)
         {
             Point? point = null;
-            foreach (var spiralPoint in _spiral.Slide())
+            foreach (var spiralPoint in _spiral.GetDiscretePoint())
             {
                 if (!CheckIntersects(new Rectangle(spiralPoint, rectSize)))
                 {
@@ -72,6 +72,12 @@ namespace TagsCloudVisualization
             var verticalIncrement = Math.Abs(distances[1] - distances[3]);
             union.Inflate(horizontalIncrement, verticalIncrement);
             return union.Size;
+        }
+
+        public IEnumerable<Rectangle> GetLaidRectangles()
+        {
+            foreach (var r in Rectangles)
+                yield return r;
         }
     }
 }

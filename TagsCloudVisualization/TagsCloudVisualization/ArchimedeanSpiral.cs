@@ -13,33 +13,22 @@ namespace TagsCloudVisualization
         /// <summary>
         /// Смещение по X к заданному центру
         /// </summary>
-        private int _offsetX;
+        private int _offsetX = 0;
 
         /// <summary>
         /// Смещение по Y к заданному центру
         /// </summary>
-        private int _offsetY;
+        private int _offsetY = 0;
 
         /// <summary>
         /// Радиус витков
         /// </summary>
-        private double radius;
+        private double radius = 1;
 
         /// <summary>
         /// Текущий угол в радианах
         /// </summary>
-        private double _phi;
-
-        /// <summary>
-        /// Создает новый объект спирали Архимеда с центров в точке (0,0)
-        /// </summary>
-        public ArchimedeanSpiral()
-        {
-            _offsetX = 0;
-            _offsetY = 0;
-            radius = 1;
-            _phi = 0;
-        }
+        private double _phi = 0;
 
         /// <summary>
         /// Создает новый объект спирали Архимеда с центров в точке Point center
@@ -49,14 +38,12 @@ namespace TagsCloudVisualization
         {
             _offsetX = center.X;
             _offsetY = center.Y;
-            radius = 1;
-            _phi = 0;
         }
 
         /// <summary>
         /// Выдает дискретные значения спирали от последнего взятого значения до бесконечности!
         /// </summary>
-        public IEnumerable<Point> Slide()
+        public IEnumerable<Point> GetDiscretePoint()
         {
             while (true)
             {

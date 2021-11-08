@@ -82,14 +82,14 @@ namespace TagsCloudVisualization_Test
         public void KeepLaidRectangles()
         {
             var rectSises = TestHelper.GenerateSizes(10);
-            GetLayouter(null, rectSises).Rectangles.Select(r => r.Size).Should().BeEquivalentTo(rectSises);
+            GetLayouter(null, rectSises).GetLaidRectangles().Select(r => r.Size).Should().BeEquivalentTo(rectSises);
         }
 
         [Test]
         public void SecondRectangle_NotInterceptWithFirst()
         {
             var rectSises = TestHelper.GenerateSizes(2);
-            var rects = GetLayouter(null, rectSises).Rectangles;
+            var rects = GetLayouter(null, rectSises).GetLaidRectangles();
             rects.First().IntersectsWith(rects.Last()).Should().BeFalse();
         }
 
@@ -98,7 +98,7 @@ namespace TagsCloudVisualization_Test
         {
             var rectSises = TestHelper.GenerateSizes(300);
             var layouter = GetLayouter(null, rectSises);
-            TestHelper.CheckIntersects(layouter.Rectangles).Should().BeEmpty();
+            TestHelper.CheckIntersects(layouter.GetLaidRectangles().ToList()).Should().BeEmpty();
         }
 
         [Test]
@@ -135,7 +135,7 @@ namespace TagsCloudVisualization_Test
             {
                 var rectSises = TestHelper.GenerateSizes(100);
                 var layouter = GetLayouter(null, rectSises);
-                sumFactor += TestHelper.GetDensityFactor(layouter.Rectangles, layouter.Center);
+                sumFactor += TestHelper.GetDensityFactor(layouter.GetLaidRectangles().ToList(), layouter.Center);
             }
             var actualFactor = Math.Round(sumFactor / testAmount, 2);
             actualFactor.Should().BeGreaterThan(targetFactor);
@@ -154,7 +154,7 @@ namespace TagsCloudVisualization_Test
                 rectSises.AddRange(TestHelper.GenerateSizes(100));
 
                 var layouter = GetLayouter(null, rectSises);
-                sumFactor += TestHelper.GetDensityFactor(layouter.Rectangles, layouter.Center);
+                sumFactor += TestHelper.GetDensityFactor(layouter.GetLaidRectangles().ToList(), layouter.Center);
             }
             var actualFactor = Math.Round(sumFactor / testAmount, 2);
             actualFactor.Should().BeGreaterThan(targetFactor);
@@ -171,7 +171,7 @@ namespace TagsCloudVisualization_Test
             Enumerable.Range(0, count).ToList().ForEach(_ => rectSises.Add(size));
             var layouter = GetLayouter(null, rectSises);
             var expectedSquare = size.Width * size.Height * count;
-            var union = TestHelper.UnionAll(layouter.Rectangles);
+            var union = TestHelper.UnionAll(layouter.GetLaidRectangles().ToList());
             double square = union.Width * union.Height;
             square.Should().BeApproximately(expectedSquare, expectedSquare * 0.1);
         }
