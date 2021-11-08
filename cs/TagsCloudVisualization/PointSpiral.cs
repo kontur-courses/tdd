@@ -11,17 +11,17 @@ namespace TagsCloudVisualization
         private readonly float dtheta;
         private readonly float densityParameter;
 
-        public PointSpiral(Point center, float densityParameter = 1, int degreesParameter = 5)
+        public PointSpiral(Point center, float densityParameter = 1, int degreesDelta = 5)
         {
             if (densityParameter <= 0f)
                 throw new ArgumentException("densityParameter should be positive");
-            if (degreesParameter <= 0)
-                throw new ArgumentException("degreesParameter should be positive");
+            if (degreesDelta <= 0)
+                throw new ArgumentException("degreesDelta should be positive");
             
             this.center = center;
             this.densityParameter = densityParameter;
             
-            dtheta = (float)(degreesParameter * Math.PI / 180);
+            dtheta = (float)(degreesDelta * Math.PI / 180);
         }
 
         public IEnumerable<Point> GetPoints()

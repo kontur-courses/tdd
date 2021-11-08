@@ -16,7 +16,7 @@ namespace TagsCloudVisualization
             {
                 var layouter = CircularCloudLayouterBuilder
                     .ACircularCloudLayouter()
-                    .WithCenterAt(new Point(500, 500))
+                    .WithCenterAt(new Point(25, 25))
                     .Build();
                 
                 RectanglePainter

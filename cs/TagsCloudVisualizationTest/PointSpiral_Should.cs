@@ -39,7 +39,7 @@ namespace TestProject1
             var builder = PointSpiralBuilder.APointSpiral()
                 .WithCenter(new Point(x, y))
                 .WithDensityParameter(densityParameter)
-                .WithDegreesParameter(degreesParameter);
+                .WithDegreesDelta(degreesParameter);
 
             Invoking(() => builder.Build()).Should().NotThrow($"X = {x}; " +
                                                               $"Y = {y}, " +
@@ -57,7 +57,7 @@ namespace TestProject1
             var builder = PointSpiralBuilder.APointSpiral()
                 .WithCenter(new Point(x, y))
                 .WithDensityParameter(densityParameter)
-                .WithDegreesParameter(degreesParameter);
+                .WithDegreesDelta(degreesParameter);
 
             Invoking(() => builder.Build()).Should().Throw<ArgumentException>($"X = {x}; " +
                                                                               $"Y = {y}, " +
@@ -88,18 +88,19 @@ namespace TestProject1
         }
         
         [Test]
-        public void PointSpiral_AutoTest()
+        [Repeat(100)]
+        public void AutoTest_PointSpiral()
         {
             pointSpiral = PointSpiralBuilder
                 .APointSpiral()
                 .WithCenter(Point.Empty)
-                .WithDegreesParameter(25)
+                .WithDegreesDelta(25)
                 .WithDensityParameter(10)
                 .Build();
             
             var lastRadius = 0d;
             var lastPointDifferent = 0d;
-            var lastPoint = new Point(0, 0);
+            var lastPoint = Point.Empty;
 
             var pointCount = 1000;
             
@@ -114,8 +115,7 @@ namespace TestProject1
                 lastPoint = point;
                 lastRadius = radius;
                 lastPointDifferent = pointDifferent;
-                pointCount--;
-                if (pointCount < 0) break;
+                if (pointCount-- < 0) break;
             }
         }
     }

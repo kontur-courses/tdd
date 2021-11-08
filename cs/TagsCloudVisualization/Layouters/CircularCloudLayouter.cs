@@ -18,7 +18,7 @@ namespace TagsCloudVisualization
             pointSpiral = PointSpiralBuilder
                 .APointSpiral()
                 .WithCenter(center)
-                .WithDegreesParameter(5)
+                .WithDegreesDelta(5)
                 .WithDensityParameter(5)
                 .Build()
                 .GetEnumerator();

@@ -6,7 +6,7 @@ namespace TagsCloudVisualization
     {
         private Point center;
         private float densityParameter = 1;
-        private int degreesParameter = 1;
+        private int degreesDelta = 1;
 
         public static PointSpiralBuilder APointSpiral()
         {
@@ -25,9 +25,9 @@ namespace TagsCloudVisualization
             return this;
         }
         
-        public PointSpiralBuilder WithDegreesParameter(int degreesParameter)
+        public PointSpiralBuilder WithDegreesDelta(int degreesDelta)
         {
-            this.degreesParameter = degreesParameter;
+            this.degreesDelta = degreesDelta;
             return this;
         }
         
@@ -35,13 +35,13 @@ namespace TagsCloudVisualization
         {
             return APointSpiral()
                 .WithCenter(center)
-                .WithDegreesParameter(degreesParameter)
+                .WithDegreesDelta(degreesDelta)
                 .WithDensityParameter(densityParameter);
         }
         
         public PointSpiral Build()
         {
-            return new PointSpiral(center, densityParameter, degreesParameter);
+            return new PointSpiral(center, densityParameter, degreesDelta);
         }
     }
 }

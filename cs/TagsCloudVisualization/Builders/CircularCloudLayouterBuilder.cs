@@ -6,7 +6,7 @@ namespace TagsCloudVisualization
     {
         private Point center;
         private float? densityParameter;
-        private int? degreesParameter;
+        private int? degreesDelta;
         
         public static CircularCloudLayouterBuilder ACircularCloudLayouter()
         {
@@ -25,9 +25,9 @@ namespace TagsCloudVisualization
             return this;
         }
         
-        public CircularCloudLayouterBuilder WithDegreesParameter(int degreesParameter)
+        public CircularCloudLayouterBuilder WithDegreesDelta(int degreesDelta)
         {
-            this.degreesParameter = degreesParameter;
+            this.degreesDelta = degreesDelta;
             return this;
         }
         
@@ -37,9 +37,9 @@ namespace TagsCloudVisualization
             return this;
         }
         
-        private CircularCloudLayouterBuilder WithDegreesParameter(int? degreesParameter)
+        private CircularCloudLayouterBuilder WithDegreesDelta(int? degreesDelta)
         {
-            this.degreesParameter = degreesParameter;
+            this.degreesDelta = degreesDelta;
             return this;
         }
 
@@ -47,20 +47,20 @@ namespace TagsCloudVisualization
         {
             return new CircularCloudLayouterBuilder()
                 .WithDensityParameter(densityParameter)
-                .WithDegreesParameter(degreesParameter)
+                .WithDegreesDelta(degreesDelta)
                 .WithCenterAt(center);
         }
 
         public CircularCloudLayouter Build()
         {
-            if (degreesParameter is null && densityParameter is null)
+            if (degreesDelta is null && densityParameter is null)
                 return new CircularCloudLayouter(center);
 
             var spiral = PointSpiralBuilder
                 .APointSpiral()
                 .WithCenter(center);
-            if (degreesParameter != null)
-                spiral.WithDegreesParameter((int) degreesParameter);
+            if (degreesDelta != null)
+                spiral.WithDegreesDelta((int) degreesDelta);
             if (densityParameter != null)
                 spiral.WithDensityParameter((float) densityParameter);
 
