@@ -49,7 +49,9 @@
   <ItemGroup>
     <Compile Include="BitmapDrawer.cs" />
     <Compile Include="CircularCloudLayouter.cs" />
+    <Compile Include="CoordinatesConverter.cs" />
     <Compile Include="Extensions\PointExtensions.cs" />
+    <Compile Include="Spiral.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\RectangleExtensions.cs" />

@@ -13,13 +13,14 @@ namespace TagsCloudVisualization
         public readonly Point Center;
         public Size CanvasSize { get => GetCanvasSize(); }
         private List<Rectangle> Rectangles;
-        private ArchimedeanSpiral _spiral;
+        private Spiral _spiral;
 
-        public CircularCloudLayouter(Point center)
+        public CircularCloudLayouter(Point center, Spiral spiral)
         {
             Center = center;
             Rectangles = new List<Rectangle>();
-            _spiral = new ArchimedeanSpiral(center);
+            _spiral = spiral;
+            _spiral.SetCenter(center);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)

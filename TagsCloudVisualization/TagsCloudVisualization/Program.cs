@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
@@ -14,7 +12,7 @@ namespace TagsCloudVisualization
         {
             var amount = 1;
             for (int i = 0; i < amount; i++)
-                DemoGenerator.GenerateTagCloud(2000);
+                DemoGenerator.GenerateTagCloud(2000, new ArchimedeanSpiral());
 
             var spiral = new ArchimedeanSpiral();
             for (int i = 0; i < 5; i++)
@@ -30,9 +28,8 @@ namespace TagsCloudVisualization
         /// Генерирует облако тэгов с заданным количеством тэгов с рандомными размерами
         /// </summary>
         /// <param name="tagsCount"></param>
-        public static void GenerateTagCloud(int tagsCount)
+        public static void GenerateTagCloud(int tagsCount, Spiral spiral)
         {
-            var layouter = new CircularCloudLayouter(Point.Empty);
             var rectSizes = new List<Size>();
             var rnd = new Random();
             for (int i = 0; i < tagsCount; i++)
@@ -41,10 +38,7 @@ namespace TagsCloudVisualization
                 var height = rnd.Next(10, width);
                 rectSizes.Add(new Size(width, height));
             }
-            rectSizes.ToList().ForEach(s => layouter.PutNextRectangle(s));
-
-            using (var bitmap = BitmapDrawer.Draw(layouter))
-                BitmapDrawer.Save(bitmap);
+            GenerateTagCloud(rectSizes, spiral);
         }
 
         /// <summary>
@@ -52,15 +46,15 @@ namespace TagsCloudVisualization
         /// </summary>
         /// <param name="tagsCount"></param>
         /// <param name="rectSizes"></param>
-        public static void GenerateTagCloud(IEnumerable<Size> rectSizes)
+        public static void GenerateTagCloud(IEnumerable<Size> rectSizes, Spiral spiral)
         {
-            var layouter = new CircularCloudLayouter(Point.Empty);
+            var layouter = new CircularCloudLayouter(Point.Empty, spiral);
             rectSizes.ToList().ForEach(s => layouter.PutNextRectangle(s));
             using (var bitmap = BitmapDrawer.Draw(layouter))
                 BitmapDrawer.Save(bitmap);
         }
 
-        public static void GenerateSpiral(int count, ArchimedeanSpiral spiral)
+        public static void GenerateSpiral(int count, Spiral spiral)
         {
             var size = new Size(500, 500);
             var bitmap = new Bitmap(size.Width, size.Height);

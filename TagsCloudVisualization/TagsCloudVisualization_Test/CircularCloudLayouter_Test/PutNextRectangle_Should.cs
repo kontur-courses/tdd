@@ -62,8 +62,6 @@ namespace TagsCloudVisualization_Test
             putRect.Should().Throw<ArgumentException>();
         }
 
-
-
         [TestCase(0, 0)]
         [TestCase(10, 10)]
         [TestCase(-10, 10)]
@@ -166,13 +164,15 @@ namespace TagsCloudVisualization_Test
         }
 
         private CircularCloudLayouter GetLayouter(Point? center) =>
-            new CircularCloudLayouter(center ?? Point.Empty);
+            new CircularCloudLayouter(center ?? Point.Empty, new ArchimedeanSpiral(center.Value));
 
-        private CircularCloudLayouter GetLayouter(Point? center,
-            List<Size> rectSizes)
+        private CircularCloudLayouter GetLayouter(Point? center, List<Size> rectSizes) =>
+            GetLayouter(center, rectSizes, new ArchimedeanSpiral(center.Value));
+
+        private CircularCloudLayouter GetLayouter(Point? center, List<Size> rectSizes, Spiral spiral)
         {
             center = center ?? Point.Empty;
-            var layouter = new CircularCloudLayouter(center.Value);
+            var layouter = new CircularCloudLayouter(center.Value, spiral);
             rectSizes.ForEach(s => layouter.PutNextRectangle(s));
             layout = layouter;
             return layouter;
