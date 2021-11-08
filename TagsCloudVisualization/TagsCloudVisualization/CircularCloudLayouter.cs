@@ -37,7 +37,7 @@ namespace TagsCloudVisualization
             while (pointEnumerator.MoveNext())
             {
                 dryRect.Location = pointEnumerator.Current;
-                if (Rectangles.Any(r => r.IntersectsWith(dryRect)))
+                if (Rectangles.All(r => !r.IntersectsWith(dryRect)))
                     break;
             }
             return dryRect;
