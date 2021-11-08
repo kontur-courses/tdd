@@ -8,22 +8,22 @@ namespace TagsCloudVisualization
         /// <summary>
         /// Смещение по X к заданному центру
         /// </summary>
-        public int OffsetX;
+        protected int OffsetX;
 
         /// <summary>
         /// Смещение по Y к заданному центру
         /// </summary>
-        public int OffsetY;
+        protected int OffsetY;
 
         /// <summary>
         /// Радиус витков
         /// </summary>
-        public double Radius;
+        protected double Radius;
 
         /// <summary>
         /// Текущий угол в радианах
         /// </summary>
-        public double Phi;
+        protected double Phi;
 
         /// <summary>
         /// Создает новый объект спирали с центром в точке (0,0)

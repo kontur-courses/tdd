@@ -1,29 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Drawing;
 using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter
+    public class CircularCloudLayouter : CloudLayouter
     {
         public readonly Point Center;
         public Size CanvasSize { get => GetCanvasSize(); }
-        private List<Rectangle> Rectangles;
         private Spiral _spiral;
 
-        public CircularCloudLayouter(Point center, Spiral spiral)
+        public CircularCloudLayouter(Point center, Spiral spiral) : base()
         {
             Center = center;
-            Rectangles = new List<Rectangle>();
             _spiral = spiral;
             _spiral.SetCenter(center);
         }
 
-        public Rectangle PutNextRectangle(Size rectangleSize)
+        public override Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Width < 0 || rectangleSize.Height < 0)
                 throw new ArgumentException($"Отрицательный размер прямоугольника: " +
@@ -43,13 +38,11 @@ namespace TagsCloudVisualization
             while (pointEnumerator.MoveNext())
             {
                 dryRect.Location = pointEnumerator.Current;
-                if (!CheckIntersects(dryRect))             
-                    break;                
+                if (Rectangles.Any(r => r.IntersectsWith(dryRect)))
+                    break;
             }
             return dryRect;
         }
-
-        private bool CheckIntersects(Rectangle rectangle) => Rectangles.Any(r => r.IntersectsWith(rectangle));
 
         private Size GetCanvasSize()
         {
@@ -59,12 +52,6 @@ namespace TagsCloudVisualization
             var verticalIncrement = Math.Abs(distances[1] - distances[3]);
             union.Inflate(horizontalIncrement, verticalIncrement);
             return union.Size;
-        }
-
-        public IEnumerable<Rectangle> GetLaidRectangles()
-        {
-            foreach (var r in Rectangles)
-                yield return r;
         }
     }
 }
