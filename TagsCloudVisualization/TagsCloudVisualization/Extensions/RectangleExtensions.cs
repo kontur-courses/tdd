@@ -29,8 +29,11 @@ namespace TagsCloudVisualization.Extensions
         /// <summary>
         /// Возвращает новый прямоугольник полученный путем пересечения двух прямоугольников
         /// </summary>
+        /// <exception cref="ArgumentException">Если прямоугольники не пересекаются</exception>
         public static Rectangle GetIntersection(this Rectangle first, Rectangle second)
         {
+            if (!first.IntersectsWith(second))
+                throw new ArgumentException("Прямоугольники не имеют пересечения");
             first.Intersect(second);
             return first;
         }

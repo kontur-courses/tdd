@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TagsCloudVisualization.Extensions
 {
-    static class PointExtensions
+    public static class PointExtensions
     {
         /// <summary>
         /// Находит координату левого верхнего угла прямоугольника
