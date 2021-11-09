@@ -5,10 +5,11 @@ using System.Drawing.Drawing2D;
 using System.Collections.Generic;
 using System.Linq;
 using TagsCloudVisualization.Extensions;
+using System.IO;
 
 namespace TagsCloudVisualization
 {
-    public class BitmapDrawer
+    public class TagCloudDrawer
     {
         private static int _count;
 
@@ -49,8 +50,12 @@ namespace TagsCloudVisualization
 
         public static void Save(Bitmap bitmap, string filename = null)
         {
+            var currentDir = AppDomain.CurrentDomain.BaseDirectory;
+            var imagesDir = Directory.CreateDirectory(Path.Combine(currentDir, "images"));
             var name = filename ?? $"tag_cloud_0{_count}";
-            bitmap.Save($"{name}.png", ImageFormat.Png);
+            var path = Path.Combine(imagesDir.FullName, name);
+
+            bitmap.Save($"{path}.png", ImageFormat.Png);
             _count++;
         }
     }

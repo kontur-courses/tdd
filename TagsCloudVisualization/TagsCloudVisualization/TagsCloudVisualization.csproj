@@ -47,7 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BitmapDrawer.cs" />
+    <Compile Include="TagCloudDrawer.cs" />
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="CloudLayouter.cs" />
     <Compile Include="CoordinatesConverter.cs" />

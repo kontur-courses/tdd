@@ -34,8 +34,8 @@ namespace TagsCloudVisualization
         {
             var layouter = new CircularCloudLayouter(Point.Empty, spiral);
             rectSizes.ToList().ForEach(s => layouter.PutNextRectangle(s));
-            using (var bitmap = BitmapDrawer.Draw(layouter.Rectangles, layouter.Center))
-                BitmapDrawer.Save(bitmap);
+            using (var bitmap = TagCloudDrawer.Draw(layouter.Rectangles, layouter.Center))
+                TagCloudDrawer.Save(bitmap);
         }
 
         public static void GenerateSpiral(int count, Spiral spiral)
