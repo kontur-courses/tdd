@@ -42,20 +42,15 @@ namespace TagsCloudVisualization
         {
             var pendingRectangles = new List<(double distance, Rectangle rectangle)>();
             var minimalDistance = Math.Sqrt((nextSize.Width * nextSize.Height + area) / (Math.PI * 2));
-            foreach (var currRectangle in lastRectangles)
-            {
-                var result = GetPossiblePositions(currRectangle, nextSize)
-                    .Select(x => new Rectangle(x, nextSize))
-                    .Select(x => (distance: x.GetCenter().DistanceTo(Center), rectangle: x))
-                    .Where(x => x.distance >= minimalDistance)
-                    .Where(rectangle => lastRectangles
-                        .All(x => !x.IntersectsWith(rectangle.rectangle)))
-                    .MinBy(x => x.distance);
-                if (result.rectangle != default)
-                    pendingRectangles.Add(result);
-            }
+            var result = lastRectangles.SelectMany(currRectangle => GetPossiblePositions(currRectangle, nextSize))
+                .Select(x => new Rectangle(x, nextSize))
+                .Select(x => (distance: x.GetCenter().DistanceTo(Center), rectangle: x))
+                .Where(x => x.distance >= minimalDistance)
+                .Where(rectangle => lastRectangles
+                    .All(x => !x.IntersectsWith(rectangle.rectangle)))
+                .MinBy(x => x.distance);
 
-            return pendingRectangles.MinBy(x => x.distance).rectangle;
+            return result.rectangle;
         }
 
         private IEnumerable<Point> GetPossiblePositions(Rectangle anchor, Size size)
