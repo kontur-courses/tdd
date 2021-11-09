@@ -19,7 +19,7 @@ namespace TagsCloudVisualizationTests.TestingLibrary
             if (!rectanglesList.Any())
                 throw new ArgumentException("Collection is empty.", nameof(rectangles));
 
-            this.rectangles = rectanglesList.ToList();
+            this.rectangles = rectanglesList;
         }
 
         public void Draw(Graphics graphics)
