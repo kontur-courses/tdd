@@ -198,3 +198,7 @@ FakesAssemblies/
 *Solved.cs
 
 .idea/
+
+# Exclude Example Images
+cs/Homework/FailedTestsPictures
+cs/Homework/Examples
