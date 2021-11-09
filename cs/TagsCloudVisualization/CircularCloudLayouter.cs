@@ -53,12 +53,12 @@ namespace TagsCloudVisualization
             return result.rectangle;
         }
 
-        private IEnumerable<Point> GetPossiblePositions(Rectangle anchor, Size size)
+        private static IEnumerable<Point> GetPossiblePositions(Rectangle anchor, Size size)
         {
-            yield return new Point(anchor.Left, anchor.Top - size.Height);
-            yield return new Point(anchor.Left, anchor.Bottom);
-            yield return new Point(anchor.Right, anchor.Top);
-            yield return new Point(anchor.Left - size.Width, anchor.Top);
+            yield return new Point(anchor.Left + (anchor.Width - size.Width) / 2, anchor.Top - size.Height);
+            yield return new Point(anchor.Left + (anchor.Width - size.Width) / 2, anchor.Bottom);
+            yield return new Point(anchor.Right, anchor.Top + (anchor.Height - size.Height) / 2);
+            yield return new Point(anchor.Left - size.Width, anchor.Top + (anchor.Height - size.Height) / 2);
         }
     }
 }
