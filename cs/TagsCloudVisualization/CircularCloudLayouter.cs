@@ -41,7 +41,8 @@ namespace TagsCloudVisualization
         private Rectangle CreateNextRectangle(Size nextSize)
         {
             var pendingRectangles = new List<(double distance, Rectangle rectangle)>();
-            var minimalDistance = Math.Sqrt((nextSize.Width * nextSize.Height + area) / (Math.PI * 2));
+            var distanceCoefficent = 1 - 1 / (0.25 * lastRectangles.Count * lastRectangles.Count + 1);
+            var minimalDistance = Math.Sqrt((nextSize.Width * nextSize.Height + area) / (Math.PI * 2)) * distanceCoefficent;
             var result = lastRectangles.SelectMany(currRectangle => GetPossiblePositions(currRectangle, nextSize))
                 .Select(x => new Rectangle(x, nextSize))
                 .Select(x => (distance: x.GetCenter().DistanceTo(Center), rectangle: x))
