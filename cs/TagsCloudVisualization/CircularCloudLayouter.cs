@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 
 namespace TagsCloudVisualization
@@ -11,7 +10,7 @@ namespace TagsCloudVisualization
         private readonly List<Rectangle> rectangles = new();
 
 
-        public CircularCloudLayouter(Point center = new())
+        public CircularCloudLayouter(Point center)
         {
             Center = center;
         }
@@ -20,32 +19,25 @@ namespace TagsCloudVisualization
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             var location = GetRectangleLocation(rectangleSize);
-            var result = new Rectangle(location, rectangleSize);
+            var nextRectangle = new Rectangle(location, rectangleSize);
 
-            rectangles.Add(result);
+            rectangles.Add(nextRectangle);
 
-            return result;
+            return nextRectangle;
         }
 
-        public void PutNextRectangles(params Size[] sizes)
-        {
-            foreach (var s in sizes)
-                PutNextRectangle(s);
-        }
 
-        private Point GetRectangleLocation(Size rectangleSize)
+        public Point GetRectangleLocation(Size rectangleSize)
         {
             if (rectangles.Count == 0)
-            {
-                var x = (int)Math.Ceiling(Center.X - rectangleSize.Width / 2.0);
-                var y = (int)Math.Ceiling(Center.Y + rectangleSize.Height / 2.0);
-                return new Point(x, y);
-            }
+                return GeometryHelper
+                    .GetRectangleLocationFromCentre(Center, rectangleSize);
 
             return new Point(0, 0);
         }
 
-        public IEnumerable<Rectangle> GetRectangles()
+
+        public IReadOnlyList<Rectangle> GetRectangles()
             => rectangles;
     }
 }
