@@ -5,7 +5,7 @@ namespace TagsCloudVisualizationTests.TestingLibrary.RectangleStyles
 {
     public class ColoredFillStyle : IRectangleStyle
     {
-        private readonly ColoredStyle coloredStyle = new ColoredStyle();
+        private readonly ColoredStyle coloredStyle = new();
 
         public void Draw(Graphics graphics, Rectangle rectangle)
         {

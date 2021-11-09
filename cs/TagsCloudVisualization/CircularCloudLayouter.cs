@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Drawing;
 using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter
+    public class CircularCloudLayouter : ICloudLayouter
     {
-        public ReadOnlyCollection<Rectangle> Rectangles => rectangles.AsReadOnly();
-
         private readonly List<Rectangle> rectangles = new();
         private readonly Point center;
         private readonly ArchimedeanSpiralPath spiralPath;
@@ -24,14 +21,16 @@ namespace TagsCloudVisualization
                 spiralPath ?? throw new ArgumentException("Spiral path refers to null.", nameof(spiralPath));
         }
 
-        public void PutNextRectangle(Size rectangleSize)
+        public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException("Size must be positive.", nameof(rectangleSize));
 
             var rectangle = CreateAtCenter(rectangleSize);
             var suitableLocation = FindLocation(rectangle);
-            rectangles.Add(new Rectangle(suitableLocation, rectangleSize));
+            var suitableRectangle = new Rectangle(suitableLocation, rectangleSize);
+            rectangles.Add(suitableRectangle);
+            return suitableRectangle;
         }
 
         private Point FindLocation(Rectangle rectangle)

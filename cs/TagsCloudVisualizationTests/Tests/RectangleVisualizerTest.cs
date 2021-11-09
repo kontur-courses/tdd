@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using NUnit.Framework;
 using TagsCloudVisualizationTests.TestingLibrary;
@@ -7,6 +8,13 @@ namespace TagsCloudVisualizationTests.Tests
 {
     public class RectangleVisualizerTest
     {
+        [Test]
+        public void Constructor_ThrowException_WithEmptyCollection()
+        {
+            Assert.Throws<ArgumentException>(() =>
+                new RectangleVisualizer(new List<Rectangle>()));
+        }
+
         [TestCaseSource(nameof(GetBitmapSizeAssertSizeCases))]
         public Size GetBitmapSize_AssertSize(List<Rectangle> rectangles) =>
             new RectangleVisualizer(rectangles).GetBitmapSize();
@@ -61,7 +69,7 @@ namespace TagsCloudVisualizationTests.Tests
                 new(2, 2),
                 new(1, 2),
                 new(0, 2),
-                new(0, 1),
+                new(0, 1)
             };
 
             yield return new TestCaseData(

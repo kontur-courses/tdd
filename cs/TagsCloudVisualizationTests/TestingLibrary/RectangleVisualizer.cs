@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using TagsCloudVisualizationTests.Interfaces;
@@ -14,7 +15,11 @@ namespace TagsCloudVisualizationTests.TestingLibrary
 
         public RectangleVisualizer(IEnumerable<Rectangle> rectangles)
         {
-            this.rectangles = rectangles.ToList();
+            var rectanglesList = rectangles.ToList();
+            if (!rectanglesList.Any())
+                throw new ArgumentException("Collection is empty.", nameof(rectangles));
+
+            this.rectangles = rectanglesList.ToList();
         }
 
         public void Draw(Graphics graphics)

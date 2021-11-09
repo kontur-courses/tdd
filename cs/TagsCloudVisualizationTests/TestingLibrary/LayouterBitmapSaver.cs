@@ -36,8 +36,8 @@ namespace TagsCloudVisualizationTests.TestingLibrary
         public void PutNextRectangle_Squares_SaveToBitmap()
         {
             var square = new Size(10, 10);
-            Enumerable.Range(0, 1000).ToList().ForEach(_ => defaultLayouter.PutNextRectangle(square));
-            SaveRectanglesToBitmap(defaultLayouter, new RedPenStyle(), "squares-red");
+            var rectangles = Enumerable.Range(0, 1000).Select(_ => defaultLayouter.PutNextRectangle(square));
+            SaveRectanglesToBitmap(rectangles, new RedPenStyle(), "squares-red");
         }
 
         [TestCaseSource(nameof(RandomRectanglesStyles))]
@@ -45,10 +45,10 @@ namespace TagsCloudVisualizationTests.TestingLibrary
         public void CircularCloudLayouter_ColoredFillRandomRectangles_SaveToBitmap(IRectangleStyle style,
             string postfix)
         {
-            CreateRandomRectangles(1000)
-                .ForEach(rectangle => defaultLayouter.PutNextRectangle(rectangle));
+            var rectangles = CreateRandomRectangles(1000)
+                .Select(defaultLayouter.PutNextRectangle);
 
-            SaveRectanglesToBitmap(defaultLayouter, style, postfix);
+            SaveRectanglesToBitmap(rectangles, style, postfix);
         }
 
         private static IEnumerable<TestCaseData> RandomRectanglesStyles()
@@ -58,10 +58,10 @@ namespace TagsCloudVisualizationTests.TestingLibrary
             yield return new TestCaseData(new ColoredFillStyle(), "random-colored-fill");
         }
 
-        private static void SaveRectanglesToBitmap(CircularCloudLayouter layouter, IRectangleStyle style,
+        private static void SaveRectanglesToBitmap(IEnumerable<Rectangle> rectangles, IRectangleStyle style,
             string filenamePostfix = "")
         {
-            var visualizer = new RectangleVisualizer(layouter.Rectangles) {Style = style};
+            var visualizer = new RectangleVisualizer(rectangles) {Style = style};
             var savePath = Path.Combine(Directory.GetCurrentDirectory(),
                 $"CircularCloudLayouter.Rectangles-{filenamePostfix}.bmp");
 

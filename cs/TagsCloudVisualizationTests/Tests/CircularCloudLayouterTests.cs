@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using FluentAssertions.Extensions;
+using Moq;
 using NUnit.Framework;
 using TagsCloudVisualization;
 using TagsCloudVisualizationTests.TestingLibrary;
@@ -13,23 +14,24 @@ namespace TagsCloudVisualizationTests.Tests
 {
     public class CircularCloudLayouterTests
     {
-        private CircularCloudLayouter layouter;
+        private ICloudLayouter layouter;
+        private List<Rectangle> resultingRectangles;
 
         [SetUp]
         public void SetUp()
         {
-            layouter = new CircularCloudLayouter();
+            layouter = CreateMockLayouter(new CircularCloudLayouter());
         }
 
         [TearDown]
         public void TearDown()
         {
-            if (TestContext.CurrentContext.Result.FailCount == 0 || layouter.Rectangles.Count == 0)
+            if (TestContext.CurrentContext.Result.FailCount == 0 || resultingRectangles.Count == 0)
                 return;
 
-            var output = new VisualOutput(new RectangleVisualizer(layouter.Rectangles));
+            var output = new VisualOutput(new RectangleVisualizer(resultingRectangles));
             var savePath = Path.Combine(Directory.GetCurrentDirectory(),
-                $"CircularCloudLayouter.TestFail.bmp");
+                "CircularCloudLayouter.TestFail.bmp");
 
             output.SaveToBitmap(savePath);
             TestContext.WriteLine($"Tag cloud visualization saved to file {savePath}");
@@ -42,20 +44,12 @@ namespace TagsCloudVisualizationTests.Tests
                 new CircularCloudLayouter(new Point(), null));
         }
 
-        [Test]
-        public void HaveNoRectangles_AfterCreating()
-        {
-            layouter
-                .Rectangles.Count
-                .Should().Be(0);
-        }
-
         [TestCaseSource(nameof(PutNextRectangleFirstRectanglePlacedInCenterTestCases))]
         public Point PutNextRectangle_FirstRectangle_PlacedInCenter(Point center, Size rectangle)
         {
-            layouter = new CircularCloudLayouter(center);
-            layouter.PutNextRectangle(rectangle);
-            return layouter.Rectangles[0].Location;
+            layouter = CreateMockLayouter(new CircularCloudLayouter(center));
+            var actual = layouter.PutNextRectangle(rectangle);
+            return actual.Location;
         }
 
         public static IEnumerable<TestCaseData> PutNextRectangleFirstRectanglePlacedInCenterTestCases()
@@ -69,19 +63,20 @@ namespace TagsCloudVisualizationTests.Tests
         [Test]
         public void PutNextRectangle_SecondRectangle_NotIntersectFirst()
         {
-            layouter.PutNextRectangle(new Size(1, 1));
-            layouter.PutNextRectangle(new Size(10, 10));
-            layouter.Rectangles[1].IntersectsWith(layouter.Rectangles[0]).Should().BeFalse();
+            var first = layouter.PutNextRectangle(new Size(1, 1));
+            var second = layouter.PutNextRectangle(new Size(10, 10));
+            second.IntersectsWith(first).Should().BeFalse();
         }
 
         [Test]
         public void PutNextRectangle_RandomRectangles_NotIntersect()
         {
+            var rectangles = new List<Rectangle>();
             LayouterBitmapSaver.CreateRandomRectangles(100).ForEach(rectangle =>
             {
                 TestContext.WriteLine(rectangle);
-                layouter.PutNextRectangle(rectangle);
-                AssertHaveNoIntersection(layouter.Rectangles);
+                rectangles.Add(layouter.PutNextRectangle(rectangle));
+                AssertHaveNoIntersection(rectangles);
             });
         }
 
@@ -102,7 +97,7 @@ namespace TagsCloudVisualizationTests.Tests
         {
             var rectangles = LayouterBitmapSaver.CreateRandomRectangles(1000);
 
-            Action act = () => rectangles.ForEach(layouter.PutNextRectangle);
+            Action act = () => rectangles.ForEach(rectangle => layouter.PutNextRectangle(rectangle));
 
             GC.Collect();
             act.ExecutionTime().Should().BeLessThan(5.Seconds());
@@ -111,8 +106,12 @@ namespace TagsCloudVisualizationTests.Tests
         [Test]
         public void PutNextRectangle_RandomRectangles_DensityHighEnough()
         {
-            LayouterBitmapSaver.CreateRandomRectangles(1000).ForEach(layouter.PutNextRectangle);
-            var density = CalculateDensity(layouter.Rectangles);
+            var rectangles = LayouterBitmapSaver
+                .CreateRandomRectangles(1000)
+                .Select(layouter.PutNextRectangle)
+                .ToList();
+
+            var density = CalculateDensity(rectangles);
             density.Should().BeGreaterThan(0.65);
             TestContext.WriteLine($"Density is: {density}");
         }
@@ -143,6 +142,21 @@ namespace TagsCloudVisualizationTests.Tests
                 for (var j = i + 1; j < rectangles.Count; j++)
                     Assert.False(rectangles[i].IntersectsWith(rectangles[j]),
                         $"{rectangles[i]} intersects with {rectangles[j]}");
+        }
+
+        private ICloudLayouter CreateMockLayouter(ICloudLayouter layouterToMock)
+        {
+            resultingRectangles = new List<Rectangle>();
+            var mockLayouter = new Mock<ICloudLayouter>();
+            mockLayouter.Setup(mock => mock.PutNextRectangle(It.IsAny<Size>()))
+                .Returns<Size>(size =>
+                {
+                    var rectangle = layouterToMock.PutNextRectangle(size);
+                    resultingRectangles.Add(rectangle);
+                    return rectangle;
+                });
+
+            return mockLayouter.Object;
         }
     }
 }
