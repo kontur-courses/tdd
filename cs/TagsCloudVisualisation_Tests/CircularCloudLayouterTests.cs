@@ -7,7 +7,6 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using TagsCloudVisualization;
 
 namespace TagsCloudVisualization
 {
@@ -65,19 +64,14 @@ namespace TagsCloudVisualization
             resulRectangle.Size.Should().Be(expectedSize);
         }
 
-        [Test]
-        public void ShouldThrow_WhenTryingToPutNegativeSizedRectangle()
-        {
-            var expectedCenter = Point.Empty;
-            layouter = new CachedCircularLayouter(expectedCenter);
-            Action action = () => layouter.PutNextRectangle(new Size(-1, -1));
-            action.Should().Throw<ArgumentOutOfRangeException>();
-        }
 
-        [TestCase(0, 2)]
-        [TestCase(0, 2)]
-        [TestCase(0, 0)]
-        public void ShouldThrow_WhenTryingToPutDegenerateRectangle(int width, int height)
+        [TestCase(0, 2, TestName = "ShouldThrow_WhenTryingToPutDegenerateRectangle")]
+        [TestCase(0, 0, TestName = "ShouldThrow_WhenTryingToPutDegenerateRectangle")]
+        [TestCase(2, 0, TestName = "ShouldThrow_WhenTryingToPutDegenerateRectangle")]
+        [TestCase(-1, 0, TestName = "ShouldThrow_WhenTryingToPutNegativeSizedRectangle")]
+        [TestCase(0, -1, TestName = "ShouldThrow_WhenTryingToPutNegativeSizedRectangle")]
+        [TestCase(-1, -1, TestName = "ShouldThrow_WhenTryingToPutNegativeSizedRectangle")]
+        public void ShouldThrow_WhenTryingToPutWrongSizedRectangles(int width, int height)
         {
             var expectedCenter = Point.Empty;
             layouter = new CachedCircularLayouter(expectedCenter);
