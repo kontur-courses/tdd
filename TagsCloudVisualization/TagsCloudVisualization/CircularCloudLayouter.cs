@@ -19,8 +19,8 @@ namespace TagsCloudVisualization
 
         public override Rectangle PutNextRectangle(Size rectangleSize)
         {
-            if (rectangleSize.Width < 0 || rectangleSize.Height < 0)
-                throw new ArgumentException($"Отрицательный размер прямоугольника: " +
+            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+                throw new ArgumentException($"Ширина и высота прямоугольника должны быть положительными числами: " +
                     $"{rectangleSize.Width} x {rectangleSize.Height}");
 
             var rectangle = _rectangles.Any()

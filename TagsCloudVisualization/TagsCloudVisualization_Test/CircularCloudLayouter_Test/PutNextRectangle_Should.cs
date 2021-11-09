@@ -26,14 +26,17 @@ namespace TagsCloudVisualization_Test
         [TearDown]
         public void TearDown()
         {
-            var context = TestContext.CurrentContext;
-            var directory = Directory.GetCurrentDirectory();
-            var path = Path.Combine(directory, $"{count:00.}_{context.Result.Outcome.Status}");
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed && layout != null)
+            {
+                var context = TestContext.CurrentContext;
+                var directory = Directory.GetCurrentDirectory();
+                var path = Path.Combine(directory, $"{count:00.}_{context.Result.Outcome.Status}");
 
-            using (var bitmap = BitmapDrawer.Draw(layout.Rectangles, layout.Center))
-                BitmapDrawer.Save(bitmap, path);
-
-            Console.WriteLine($"{ context.Test.Name} {context.Result.Outcome.Status} - Image Saved");
+                using (var bitmap = BitmapDrawer.Draw(layout.Rectangles, layout.Center))
+                    BitmapDrawer.Save(bitmap, path);
+                layout = null;
+                Console.WriteLine($"{ context.Test.Name} {context.Result.Outcome.Status} - Image Saved");
+            }
         }
 
         [TestCase(0, 0)]
@@ -54,10 +57,22 @@ namespace TagsCloudVisualization_Test
             GetLayouter(Point.Empty).PutNextRectangle(rectSize).Size.Should().Be(rectSize);
         }
 
-        [Test]
-        public void Throw_OnNegativeSize()
+        [TestCase(-50, -20)]
+        [TestCase(-50, 20)]
+        [TestCase(50, -20)]
+        public void Throw_OnNegativeSize(int width, int height)
         {
-            var rectSize = new Size(-50, -20);
+            var rectSize = new Size(width, height);
+            Action putRect = () => GetLayouter(Point.Empty).PutNextRectangle(rectSize).Size.Should().Be(rectSize);
+            putRect.Should().Throw<ArgumentException>();
+        }
+
+        [TestCase(0, 0)]
+        [TestCase(0, 20)]
+        [TestCase(50, 0)]
+        public void Throw_OnZeroSize(int width, int height)
+        {
+            var rectSize = new Size(width, height);
             Action putRect = () => GetLayouter(Point.Empty).PutNextRectangle(rectSize).Size.Should().Be(rectSize);
             putRect.Should().Throw<ArgumentException>();
         }
