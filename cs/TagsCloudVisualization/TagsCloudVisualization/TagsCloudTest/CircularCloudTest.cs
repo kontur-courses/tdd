@@ -21,6 +21,16 @@ namespace TagsCloudTest
         }
 
         [Test]
+        public void PutNextRectangle_ArgumentException_WhenPutRectangleWithNegativeSize()
+        {
+            var center = new Point(0, 0);
+            var cloud = new CircularCloudLayouter(center);
+            Action action = () => cloud.PutNextRectangle(new Size(-2, 0));
+
+            action.Should().Throw<ArgumentException>();
+        }
+
+        [Test]
         public void PutNextRectangle_RectanglesDoNotIntersect_WhenPutTwoRectangles()
         {
             var center = new Point(0, 0);
@@ -30,9 +40,8 @@ namespace TagsCloudTest
 
             var firstRectangle = cloud.PutNextRectangle(sizeFirstRectangle);
             var secondRectangle = cloud.PutNextRectangle(sizeSecondRectangle);
-            var intersect = Rectangle.Intersect(firstRectangle, secondRectangle);
 
-            intersect.Should().Be(new Rectangle(new Point(), new Size()));
+            firstRectangle.IntersectsWith(secondRectangle).Should().BeFalse();
         }
 
         [Test]
@@ -41,7 +50,6 @@ namespace TagsCloudTest
             var center = new Point(3, 8);
             var cloud = new CircularCloudLayouter(center);
             var rectangleSize = new Size(3, 2);
-            var emptyRectangle = new Rectangle(new Point(0, 0), new Size(0, 0));
             var rectangles = new List<Rectangle>();
 
             for (var i = 0; i < 20; i++)
@@ -52,22 +60,10 @@ namespace TagsCloudTest
                 {
                     if (r1 == r2)
                         continue;
-                    Rectangle.Intersect(r1, r2).Should().Be(emptyRectangle);
+                    r1.IntersectsWith(r2).Should().BeFalse();
                 }
         }
-
-        Point MoveRectangleToPoint(Rectangle rectangle, Point goal)
-        {
-            var vector = new Point(goal.X - rectangle.X, goal.Y - rectangle.Y);
-            var newX = goal.X;
-            var newY = goal.Y;
-            if (vector.X != 0)
-                newX = rectangle.X + vector.X / Math.Abs(vector.X);
-            if (vector.Y != 0)
-                newY = rectangle.Y + vector.Y / Math.Abs(vector.Y);
-            return new Point(newX, newY);
-        }
-
+       
         [Test]
         public void PutNextRectangle_RectangleIsCloseToCenter_WhenPutTwoRectangles()
         {
@@ -80,7 +76,7 @@ namespace TagsCloudTest
             var newLocation = MoveRectangleToPoint(secondRectangle, center);
             secondRectangle.Location = newLocation;
 
-            Rectangle.Intersect(firstRectangle,secondRectangle).Should().NotBe(new Rectangle(new Point(), new Size()));
+            firstRectangle.IntersectsWith(secondRectangle).Should().BeTrue();
         }
 
         [Test]
@@ -89,7 +85,6 @@ namespace TagsCloudTest
             var center = new Point(1, 3);
             var cloud = new CircularCloudLayouter(center);
             var sizeRectangle = new Size(2, 2);
-            var emptyRectangle = new Rectangle(new Point(), new Size());
             var rectangles = new List<Rectangle>();
 
             for(var i = 0; i < 10; i++)
@@ -97,7 +92,7 @@ namespace TagsCloudTest
 
             foreach (var r1 in rectangles) 
             {
-                if (r1.Location == center)
+                if(r1.Location==center)
                     continue;
                 var newR1 = new Rectangle(MoveRectangleToPoint(r1, center), r1.Size);
                 var hasIntersect = false;
@@ -106,8 +101,7 @@ namespace TagsCloudTest
                     if (r1 == r2)
                         continue;
 
-                    var intersect = Rectangle.Intersect(newR1, r2);
-                    if(!intersect.Equals(emptyRectangle))
+                    if(newR1.IntersectsWith(r2))
                     {
                         hasIntersect = true;
                         break;
@@ -115,6 +109,14 @@ namespace TagsCloudTest
                 }
                 hasIntersect.Should().BeTrue();
             }
+        }
+
+        private Point MoveRectangleToPoint(Rectangle rectangle, Point goal)
+        {
+            var vector = new Point(goal.X - rectangle.X, goal.Y - rectangle.Y);
+            var newX = rectangle.X + Math.Sign(vector.X);
+            var newY = rectangle.Y + Math.Sign(vector.Y);
+            return new Point(newX, newY);
         }
     }
 }
