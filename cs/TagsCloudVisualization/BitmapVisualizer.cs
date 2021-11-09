@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
@@ -13,9 +9,6 @@ namespace TagsCloudVisualization
         private readonly Graphics graphics;
         private readonly CircularCloudLayouter layouter;
 
-        public int Width => bmp.Width;
-        public int Height => bmp.Height;
-
         public BitmapVisualizer(int width, int height)
         {
             bmp = new Bitmap(width, height);
@@ -23,11 +16,14 @@ namespace TagsCloudVisualization
             layouter = new CircularCloudLayouter(new Point(Width / 2, Height / 2));
         }
 
+        public int Width => bmp.Width;
+        public int Height => bmp.Height;
+
 
         public void GenerateRandomRectangles(int count)
         {
             var rnd = new Random();
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 var width = rnd.Next(50, 60);
                 var height = rnd.Next(50, 60);
@@ -37,13 +33,13 @@ namespace TagsCloudVisualization
 
         public void GenerateRectanglesWithSize(int count, Size size)
         {
-            for (int i = 0; i < count; i++)
-            {
-                layouter.PutNextRectangle(size);
-            }
+            for (var i = 0; i < count; i++) layouter.PutNextRectangle(size);
         }
 
-        public void SaveToFile(string fileName) => bmp.Save(fileName);
+        public void SaveToFile(string fileName)
+        {
+            bmp.Save(fileName);
+        }
 
         public void DrawRectangles(Color backgroundColor, Color outlineColor)
         {

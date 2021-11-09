@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using FluentAssertions;
-using NUnit.Framework;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using FluentAssertions;
+using NUnit.Framework;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTests
@@ -19,7 +18,7 @@ namespace TagsCloudVisualizationTests
             creator.Center.Should().Be(new Point(0, 0));
         }
 
-        [TestCase(0,0, TestName = "zero center")]
+        [TestCase(0, 0, TestName = "zero center")]
         [TestCase(-1, 0, TestName = "negative x centre coordinate")]
         [TestCase(0, -1, TestName = "negative y centre coordinate")]
         [TestCase(-1, -1, TestName = "negative both coordinates")]
@@ -36,10 +35,7 @@ namespace TagsCloudVisualizationTests
         {
             var creator = new SpiralPointsCreator(new Point(0, 0));
             var points = new List<Point>();
-            for (int i = 1; i <= number; i++)
-            {
-               points.Add(creator.GetNextPoint()); 
-            }
+            for (var i = 1; i <= number; i++) points.Add(creator.GetNextPoint());
             points.Count.Should().Be(points.Distinct().Count());
         }
 
@@ -51,14 +47,9 @@ namespace TagsCloudVisualizationTests
         {
             var creator = new SpiralPointsCreator(new Point(0, 0));
             var points = new List<Point>();
-            for (int i = 1; i <= number; i++)
-            {
-               points.Add(creator.GetNextPoint());
-            }
+            for (var i = 1; i <= number; i++) points.Add(creator.GetNextPoint());
 
             points.Count.Should().Be(number);
-
-
         }
     }
 }

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
@@ -11,15 +8,15 @@ namespace TagsCloudVisualization
     {
         private readonly SpiralPointsCreator pointsCreator;
 
-        public Point Center { get; }
-        public List<Rectangle> Rectangles { get; }
-
         public CircularCloudLayouter(Point center)
         {
             Center = center;
             pointsCreator = new SpiralPointsCreator(center);
             Rectangles = new List<Rectangle>();
         }
+
+        public Point Center { get; }
+        public List<Rectangle> Rectangles { get; }
 
         public Rectangle PutNextRectangle(Size size)
         {
@@ -30,7 +27,8 @@ namespace TagsCloudVisualization
             do
             {
                 nextRectangle = new Rectangle(pointsCreator.GetNextPoint(), size);
-            } while (Rectangles.IntersectWith(nextRectangle));
+            } while (nextRectangle.IntersectWith(Rectangles));
+
             Rectangles.Add(nextRectangle);
             return nextRectangle;
         }
