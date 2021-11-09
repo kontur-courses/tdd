@@ -114,8 +114,9 @@ namespace TagsCloudVisualisationTests
             PutSeveralRectangles(400, 18, 20);
             var center = this.center.ToVector();
             var radius = 250;
-            layouter.Rectangles.ForEach(r =>
-                center.GetDistanseTo(r.GetCenter())
+            layouter.Rectangles.ToList()
+                .ForEach(r =>
+                center.GetDistanceTo(r.GetCenter())
                 .Should().BeLessThan(radius));
         }
 

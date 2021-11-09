@@ -9,13 +9,13 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         private List<RectangleF> rectangles;
-        public List<RectangleF> Rectangles { get => rectangles; }
-        private PointF center;
-        private Spiral spiral;
+        public IReadOnlyList<RectangleF> Rectangles { get => rectangles; }
+        private readonly PointF layouterCenter;
+        private readonly Spiral spiral;
 
         public CircularCloudLayouter(PointF center)
         {
-            this.center = center;
+            layouterCenter = center;
             rectangles = new List<RectangleF>();
             spiral = new Spiral(center);
         }
@@ -25,34 +25,35 @@ namespace TagsCloudVisualization
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException("Size should be valid: " +
                     "width and height must be positive");
-            var rectangle = GetRectangle(rectangleSize, center);
+
+            var rectangle = RectangleFExtensions
+                .GetRectangleByCenter(rectangleSize, layouterCenter);
             var positionedRectangle = FindPositionToRectangle(rectangle);
             rectangles.Add(positionedRectangle);
         }
 
         public void Visualise(string filename)
         {
-            var bitmap = new Bitmap((int)(center.X * 2), (int)(center.Y * 2));
+            var bitmap = new Bitmap
+                ((int)(layouterCenter.X * 2), (int)(layouterCenter.Y * 2));
             var gr = Graphics.FromImage(bitmap);
             var pen = new Pen(Color.DarkGreen, 1);
+
             gr.DrawRectangles(pen, rectangles.ToArray());
             bitmap.Save(filename);
         }
 
-        private RectangleF GetRectangle(SizeF rectSize, PointF center)
-            => RectangleFExtensions.GetRectangleByCenter(rectSize, center);
-
-        private RectangleF GetShiftedRectangle(SizeF rectSize,
-            PointF center, Vector2 offset)
-            => GetRectangle(rectSize, new PointF
+        private RectangleF GetShiftedRectangle
+            (SizeF rectSize, PointF center, Vector2 offset)
+            => RectangleFExtensions.GetRectangleByCenter(rectSize, new PointF
                 (center.X + offset.X, center.Y + offset.Y));
 
         private RectangleF FindPositionToRectangle(RectangleF rect)
         {
             while (IsRectangleIntersectedByAnother(rect))
             {
-                var p = spiral.GetNextPointOnSpiral();
-                rect = GetRectangle(rect.Size, p);
+                var rectCenter = spiral.GetNextPointOnSpiral();
+                rect = RectangleFExtensions.GetRectangleByCenter(rect.Size, rectCenter);
             }
             return ShiftRectangleToCenter(rect);
         }
@@ -65,6 +66,7 @@ namespace TagsCloudVisualization
             if (float.IsNaN(normal.X) || float.IsNaN(normal.Y))
                 return rect;
             var k = 1;
+
             while (!IsRectangleIntersectedByAnother(rect))
             {
                 shifted = rect;
@@ -74,19 +76,17 @@ namespace TagsCloudVisualization
             return shifted;
         }
 
-        
-
         private Vector2 GetNormalToCenter(PointF point)
         {
-            var direction = new Vector2(center.X - point.X,
-                center.Y - point.Y);
+            var direction = new Vector2(layouterCenter.X - point.X,
+                layouterCenter.Y - point.Y);
             var length = direction.Length();
+
             return new Vector2(direction.X / length,
                 direction.Y / length);
         }
 
         private bool IsRectangleIntersectedByAnother(RectangleF rect)
-            => rectangles.Where(r => r.IntersectsWith(rect))
-                .Any();
+            => rectangles.Any(r => r.IntersectsWith(rect));
     }
 }
