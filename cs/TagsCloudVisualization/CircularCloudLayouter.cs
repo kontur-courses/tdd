@@ -8,8 +8,8 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private List<RectangleF> rectangles;
-        public IReadOnlyList<RectangleF> Rectangles { get => rectangles; }
+        private readonly List<RectangleF> rectangles;
+        public IReadOnlyList<RectangleF> Rectangles => rectangles;
         private readonly PointF layouterCenter;
         private readonly Spiral spiral;
 

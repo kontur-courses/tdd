@@ -6,24 +6,23 @@ using System.Linq;
 using System.Collections.Generic;
 using FluentAssertions.Extensions;
 using TagsCloudVisualization;
-using System.Numerics;
 
 namespace TagsCloudVisualisationTests
 {
     [TestFixture]
-    public class CircularCloudLayouterShould
+    public class CircularCloudLayouterTests
     {
         private CircularCloudLayouter layouter;
-        private PointF center = new PointF(400, 400);
+        private readonly PointF layouterCenter = new PointF(400, 400);
 
         [SetUp]
         public void InitialiseLayouter()
         {
-            layouter = new CircularCloudLayouter(center);
+            layouter = new CircularCloudLayouter(layouterCenter);
         }
 
         [Test]
-        public void BeEmptyAfterCreation()
+        public void LayouterShould_BeEmpty_AfterCreation()
         {
             layouter.Rectangles.Should()
                 .BeEmpty();
@@ -35,7 +34,7 @@ namespace TagsCloudVisualisationTests
         [TestCase(-5, 5)]
         [TestCase(5, -5)]
         [TestCase(-5, -5)]
-        public void ThrowException_WhenPutRectangle_WithNotPositiveSize
+        public void LayouterShould_ThrowException_WhenPutRectangle_WithNotPositiveSize
             (int width, int height)
         {
             var size = new Size(width, height);
@@ -44,7 +43,7 @@ namespace TagsCloudVisualisationTests
         }
 
         [Test]
-        public void PutRectangleToList()
+        public void LayouterShould_AddOneRectangleToList()
         {
             layouter.PutNextRectangle(new Size(5, 5));
             layouter.Rectangles.Should()
@@ -52,18 +51,18 @@ namespace TagsCloudVisualisationTests
         }
 
         [Test]
-        public void AddFirstRectangleAtCenter()
+        public void LayouterShould_AddFirstRectangleAtCenter()
         {
             layouter.PutNextRectangle(new Size(5, 5));
             layouter.Rectangles.First()
                 .GetCenter()
                 .Should()
-                .Be(center);
+                .Be(layouterCenter);
         }
 
         [TestCase(5)]
         [TestCase(20)]
-        public void AddSeveralRectangles(int count)
+        public void LayouterShould_AddSeveralRectanglesToList(int count)
         {
             var sizes = PutSeveralRectangles(count);
             var rectSizes = layouter.Rectangles
@@ -76,7 +75,7 @@ namespace TagsCloudVisualisationTests
 
         [TestCase(5)]
         [TestCase(20)]
-        public void AddSeveralRectangles_WithoutIntersections(int count)
+        public void LayouterShould_AddSeveralRectangles_WithoutIntersections(int count)
         {
             PutSeveralRectangles(count);
             var rectangles = layouter.Rectangles;
@@ -88,31 +87,29 @@ namespace TagsCloudVisualisationTests
         }
 
         [Test]
-        public void WorkFastEnough()
+        public void LayouterShould_PutManyRectangles_FastEnough()
         {
-            var layouter2 = new CircularCloudLayouter(new PointF(100, 100));
             Action action = () => PutSeveralRectangles(1000);
             GC.Collect();
-            layouter2.PutNextRectangle(new Size(1, 1));
             action.ExecutionTime().Should().BeLessThan(1.Seconds());
         }
 
         [Test]
-        public void PlaceRectanglesCompactEnough()
+        public void LayouterShould_PlaceRectangles_CompactEnough()
         {
             PutSeveralRectangles(100);
             var boundingRect = RectangleFExtensions.GetRectangleByCenter
-                (new Size(1000, 1000), center);
+                (new Size(1000, 1000), layouterCenter);
             layouter.Rectangles.Where(r => !boundingRect.Contains(r))
                 .Should()
                 .BeEmpty();
         }
 
         [Test]
-        public void PlaceRectanglesCloseToCircularForm()
+        public void LayouterShould_PlaceRectangles_CloseToCircularForm()
         {
-            PutSeveralRectangles(400, 18, 20);
-            var center = this.center.ToVector();
+            PutSeveralRectangles(400, 18);
+            var center = this.layouterCenter.ToVector();
             var radius = 250;
             layouter.Rectangles.ToList()
                 .ForEach(r =>
@@ -123,18 +120,17 @@ namespace TagsCloudVisualisationTests
         [TearDown]
         public void SaveLayout()
         {
-            if (TestContext.CurrentContext.Result.FailCount == 0)
+            if (TestContext.CurrentContext.Result.FailCount == 0
+            || layouter.Rectangles.Count == 0)
                 return;
+
             var name = TestContext.CurrentContext.Test.Name;
             var path = $"..\\..\\..\\{name}.jpg";
-            var message = $"Test {name} down! +\n" +
+            var message = $"Test {name} down!\n" +
                 $"Tag cloud visualization saved to file {path}";
-            layouter.Visualise(path);
 
-            // не смог найти способ изменить сообщение теста поэтому пришлось 
-            //добавлять его таким образом
+            layouter.Visualise(path);
             TestContext.WriteLine(message);
-            //Assert.IsTrue(false, message);
         }
 
         /// <summary>
@@ -151,9 +147,9 @@ namespace TagsCloudVisualisationTests
             layouter.Visualise(filename);
         }
 
-        private List<Size> GetRandomSizes(int count, int min, int max)
+        private List<Size> GetRandomSizes(int count, int min, int max, int seed = 0)
         {
-            var rnd = new Random();
+            var rnd = new Random(seed);
             var result = new List<Size>();
             for (var i = 0; i < count; i++)
                 result.Add(new Size(rnd.Next(min, max), rnd.Next(min, max)));
