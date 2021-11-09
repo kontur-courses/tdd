@@ -11,13 +11,13 @@ namespace TagsCloudVisualization
         private List<RectangleF> rectangles;
         public List<RectangleF> Rectangles { get => rectangles; }
         private PointF center;
-        private IEnumerator<PointF> spiralPath;
+        private Spiral spiral;
 
         public CircularCloudLayouter(PointF center)
         {
             this.center = center;
             rectangles = new List<RectangleF>();
-            spiralPath = GetSpiralPath().GetEnumerator();
+            spiral = new Spiral(center);
         }
 
         public void PutNextRectangle(Size rectangleSize)
@@ -51,8 +51,7 @@ namespace TagsCloudVisualization
         {
             while (IsRectangleIntersectedByAnother(rect))
             {
-                spiralPath.MoveNext();
-                var p = spiralPath.Current;
+                var p = spiral.GetNextPointOnSpiral();
                 rect = GetRectangle(rect.Size, p);
             }
             return ShiftRectangleToCenter(rect);
@@ -75,18 +74,7 @@ namespace TagsCloudVisualization
             return shifted;
         }
 
-        private IEnumerable<PointF> GetSpiralPath()
-        {
-            var a = 0;
-            var k = 0.01;
-            while (true)
-            {
-                var x = (float)(center.X + k * a * Math.Cos(a));
-                var y = (float)(center.Y + k * a * Math.Sin(a));
-                yield return new PointF(x, y);
-                a += 2;
-            }
-        }
+        
 
         private Vector2 GetNormalToCenter(PointF point)
         {
