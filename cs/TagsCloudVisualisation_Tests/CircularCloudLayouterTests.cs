@@ -112,7 +112,7 @@ namespace TagsCloudVisualization
             layouter = new CachedCircularLayouter(expectedCenter);
             var firstSize = new Size(10, 11);
             var secondSize = new Size(10, 11);
-            var maximumExpectedDistance = (((Point)(firstSize / 2)).Length() + ((Point)(secondSize / 2)).Length()) / Math.Sqrt(2);
+            var maximumExpectedDistance = 11;
 
             layouter.PutNextRectangle(firstSize);
             var secondRectangle = layouter.PutNextRectangle(secondSize);
@@ -126,9 +126,9 @@ namespace TagsCloudVisualization
         {
             var expectedCenter = Point.Empty;
             layouter = new CachedCircularLayouter(expectedCenter);
-            var firstSize = new Size(100, 11);
+            var firstSize = new Size(1000, 11);
             var secondSize = new Size(10, 11);
-            var maximumExpectedDistance = ((Point)(firstSize / 2)).Length() + ((Point)(secondSize / 2)).Length();
+            var maximumExpectedDistance = 11;
 
             layouter.PutNextRectangle(firstSize);
             layouter.PutNextRectangle(secondSize);
