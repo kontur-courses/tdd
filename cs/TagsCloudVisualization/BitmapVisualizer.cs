@@ -1,51 +1,84 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Security.AccessControl;
+using System.Security.Principal;
 
 namespace TagsCloudVisualization
 {
-    public class BitmapVisualizer
+    public class BitmapVisualizer: IDisposable
     {
         private readonly Bitmap bmp;
         private readonly Graphics graphics;
-        private readonly CircularCloudLayouter layouter;
+        private readonly Rectangle[] rectangles;
+        private readonly Pen pen;
 
-        public BitmapVisualizer(int width, int height)
+        private Rectangle rectanglesContainer;
+
+        public BitmapVisualizer(Rectangle[] rectangles)
         {
-            bmp = new Bitmap(width, height);
+            if (rectangles.Length == 0) throw new ArgumentException("rectangles should contain at least 1 rectangle");
+            this.rectangles = rectangles ?? throw new ArgumentNullException();
+            rectanglesContainer = GetRectangleContainer();
+            var optimalSize = GetOptimalBitmapSize();
+            bmp = new Bitmap(optimalSize.Width, optimalSize.Height);
+            OffsetRectanglesToCenter();
             graphics = Graphics.FromImage(bmp);
-            layouter = new CircularCloudLayouter(new Point(Width / 2, Height / 2));
+            pen = new Pen(Color.Black);
+        }
+
+        private Rectangle GetRectangleContainer()
+        {
+            var leftXCoordinate = rectangles.Min(rect => rect.Left);
+            var rightXCoordinate = rectangles.Max(rect => rect.Right);
+            var topYCoordinate = rectangles.Min(rect => rect.Top);
+            var bottomYCoordinate = rectangles.Max(rect => rect.Bottom);
+            return new Rectangle(new Point(leftXCoordinate, topYCoordinate),
+                new Size(rightXCoordinate - leftXCoordinate, bottomYCoordinate - topYCoordinate));
+        }
+
+        private Size GetOptimalBitmapSize() =>
+            new Size(rectanglesContainer.Width + 200, rectanglesContainer.Height + 200);
+
+        private void OffsetRectanglesToCenter()
+        {
+            var containerCenterX = (rectanglesContainer.Left + rectanglesContainer.Right) / 2;
+            var containerCenterY = (rectanglesContainer.Top + rectanglesContainer.Bottom) / 2;
+            var bmpCenter = new Point(Width / 2, Height / 2);
+            var offset = new Point(bmpCenter.X - containerCenterX, bmpCenter.Y - containerCenterY);
+            for (var i = 0; i < rectangles.Length; i++)
+            {
+                rectangles[i].Offset(offset);
+            }
         }
 
         public int Width => bmp.Width;
         public int Height => bmp.Height;
 
-
-        public void GenerateRandomRectangles(int count)
+        public void Save(string fileName, DirectoryInfo dir = null)
         {
-            var rnd = new Random();
-            for (var i = 0; i < count; i++)
-            {
-                var width = rnd.Next(50, 60);
-                var height = rnd.Next(50, 60);
-                layouter.PutNextRectangle(new Size(width, height));
-            }
-        }
-
-        public void GenerateRectanglesWithSize(int count, Size size)
-        {
-            for (var i = 0; i < count; i++) layouter.PutNextRectangle(size);
-        }
-
-        public void SaveToFile(string fileName)
-        {
-            bmp.Save(fileName);
+            dir = dir ?? new DirectoryInfo(Environment.CurrentDirectory);
+            if(dir.CanWrite())
+                bmp.Save(Path.Combine(dir.FullName, fileName));
+            else
+                throw new AccessViolationException("can't write to this directory");
+            
         }
 
         public void DrawRectangles(Color backgroundColor, Color outlineColor)
         {
-            var rectangles = layouter.Rectangles.ToArray();
             graphics.Clear(backgroundColor);
-            graphics.DrawRectangles(new Pen(outlineColor), rectangles);
+            pen.Color = outlineColor;
+            graphics.DrawRectangles(pen, rectangles);
+        }
+
+
+        public void Dispose()
+        {
+            bmp?.Dispose();
+            graphics?.Dispose();
+            pen?.Dispose();
         }
     }
 }
