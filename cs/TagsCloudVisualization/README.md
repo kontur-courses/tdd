@@ -9,3 +9,7 @@
 
 ### 3 Вариант
 ![3.bmp](Images/3.bmp)
+
+### В случае ошибки 
+![error1](Images/PutNextRectangle_ShouldReturnNotIntersectRectangles_WhenRandomSize(500).bmp))
+

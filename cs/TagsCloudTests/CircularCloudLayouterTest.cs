@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
 
 namespace TagsCloudTests
@@ -14,13 +16,32 @@ namespace TagsCloudTests
     {
         private Point center;
         private CircularCloudLayouter sut;
+        private List<Rectangle> rectangles;
 
         [SetUp]
         public void Setup()
         {
             center = new Point(0, 0);
             sut = new CircularCloudLayouter(center);
+            rectangles = new List<Rectangle>();
         }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure) return;
+            var testName = TestContext.CurrentContext.Test.Name + ".bmp";
+            var drawer = new Visualization();
+            var path = Path.Combine(TestContext.CurrentContext.TestDirectory, "FailureTestImages");
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            var pathToImage = Path.Combine(path, testName);
+            var image = drawer.Draw(rectangles.ToArray(), Color.Red);
+            image.Save(pathToImage);
+            
+            Console.WriteLine($"Tag cloud visualization saved to file {pathToImage}");
+        }
+        
 
         [TestCase(0, 1, TestName = "0 width")]
         [TestCase(1, 0, TestName = "0 height")]
@@ -51,8 +72,7 @@ namespace TagsCloudTests
             var rnd = new Random();
             var sizeFactory = new Func<Size>(() =>
                 new Size(rnd.Next(20, 50), rnd.Next(10, 20)));
-            
-            var rectangles = GetRectangles(count, sizeFactory);
+            rectangles = GetRectangles(count, sizeFactory);
             
             rectangles
                 .IsAnyInCollectionIntersects()
@@ -63,7 +83,7 @@ namespace TagsCloudTests
         [TestCase(500)]
         public void PutNextRectangle_ShouldReturnNotIntersectRectangles_WhenSameSize(int count)
         {
-            var rectangles = GetRectangles(count, () => new Size(20, 40));
+            rectangles = GetRectangles(count, () => new Size(20, 40));
             
             rectangles
                 .IsAnyInCollectionIntersects()
@@ -82,7 +102,7 @@ namespace TagsCloudTests
             var expectedRadius = Math.Sqrt(layoutArea / Math.PI);
             var sizeFactory = new Func<Size>(() => new Size(width, height));
 
-            var rectangles = GetRectangles(count, sizeFactory);
+            rectangles = GetRectangles(count, sizeFactory);
             var distanceX = (double)rectangles.Select(rectangle => rectangle.GetCenter().X).Max() - center.X;
             var distanceY = (double)rectangles.Select(rectangle => rectangle.GetCenter().Y).Max() - center.Y;
 
