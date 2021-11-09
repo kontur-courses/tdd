@@ -5,9 +5,10 @@ using FluentAssertions;
 using System.Linq;
 using System.Collections.Generic;
 using FluentAssertions.Extensions;
+using TagsCloudVisualization;
 using System.Numerics;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualisationTests
 {
     [TestFixture]
     public class CircularCloudLayouterShould
