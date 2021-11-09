@@ -109,11 +109,11 @@ namespace TagsCloudVisualisationTests
         public void LayouterShould_PlaceRectangles_CloseToCircularForm()
         {
             PutSeveralRectangles(400, 18);
-            var center = this.layouterCenter.ToVector();
+            var vectorLayouterCenter = layouterCenter.ToVector();
             var radius = 250;
             layouter.Rectangles.ToList()
                 .ForEach(r =>
-                center.GetDistanceTo(r.GetCenter())
+                vectorLayouterCenter.GetDistanceTo(r.GetCenter())
                 .Should().BeLessThan(radius));
         }
 
