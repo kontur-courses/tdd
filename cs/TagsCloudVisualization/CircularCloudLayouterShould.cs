@@ -21,7 +21,7 @@ namespace TagsCloudVisualization
         {
             var layouter = new CircularCloudLayouter(new Point());
             var rect = layouter.PutNextRectangle(new Size(2, 2));
-            var expected = new RectangleF(-1, 1, 2, 2);
+            var expected = new RectangleF(-1, -1, 2, 2);
             rect.Should().Be(expected);
         }
         
@@ -60,6 +60,17 @@ namespace TagsCloudVisualization
             var rect2 = layouter.PutNextRectangle(new Size(2, 2));
             var rect3 = layouter.PutNextRectangle(new Size(2, 2));
             rect2.Should().NotBe(rect3);
+        }
+        
+        [Test]
+        public void SecondAndThirdRectangleOnDifferentSides()
+        {
+            var layouter = new CircularCloudLayouter(new Point());
+            layouter.PutNextRectangle(new Size(4, 2));
+            var rect2 = layouter.PutNextRectangle(new Size(2, 2));
+            var rect3 = layouter.PutNextRectangle(new Size(2, 2));
+            rect2.Y.Should().BeNegative();
+            rect3.Y.Should().BePositive();
         }
 
         [Test]

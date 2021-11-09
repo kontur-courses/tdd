@@ -7,7 +7,7 @@ namespace TagsCloudVisualization
     {
         public static PointF GetCenter(this RectangleF rectangle)
         {
-            return new PointF(rectangle.X + rectangle.Width / 2, rectangle.Y - rectangle.Height / 2);
+            return new PointF(rectangle.X + rectangle.Width / 2, rectangle.Y + rectangle.Height / 2);
         }
 
         public static IEnumerable<PointF> GetPoints(this RectangleF rectangle)
