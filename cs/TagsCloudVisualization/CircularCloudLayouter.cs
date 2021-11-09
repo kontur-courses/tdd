@@ -66,11 +66,10 @@ namespace TagsCloudVisualization
             while (true)
             {
                 var newLocation = isVertical
-                    ? new Point(oldLocation.X,
-                        oldLocation.Y + Math.Sign(spiral.Center.Y - rectangle.Location.Y - rectangle.Size.Height / 2))
+                    ? new Point(
+                        oldLocation.X, oldLocation.Y + Math.Sign(spiral.Center.Y - rectangle.Location.Y - rectangle.Size.Height / 2))
                     : new Point(
-                        oldLocation.X + Math.Sign(spiral.Center.X - rectangle.Location.X - rectangle.Size.Width / 2),
-                        oldLocation.Y);
+                        oldLocation.X + Math.Sign(spiral.Center.X - rectangle.Location.X - rectangle.Size.Width / 2), oldLocation.Y);
 
                 var newDistance = (newLocation + rectangle.Size / 2).GetDistance(spiral.Center);
                 var newRectangle = new Rectangle(newLocation, rectangle.Size);

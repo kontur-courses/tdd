@@ -30,7 +30,8 @@ namespace TagsCloudVisualizationTests
         [TearDown]
         public void TearDown()
         {
-            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) 
+                return;
 
             var filepath = $"{Environment.CurrentDirectory}\\FailedTests\\{TestContext.CurrentContext.Test.Name}.png";
             painter.SaveToFile(filepath, systemUnderTest.GetLayout());
