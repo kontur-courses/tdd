@@ -5,7 +5,7 @@ namespace TagsCloudVisualization
 {
     public static class EnumerationExtensions
     {
-        public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
+        public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector, TSource def = default)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
@@ -14,7 +14,7 @@ namespace TagsCloudVisualization
 
             using var sourceIterator = source.GetEnumerator();
             if (!sourceIterator.MoveNext())
-                return default;
+                return def;
 
             var min = sourceIterator.Current;
             var minKey = selector(min);
