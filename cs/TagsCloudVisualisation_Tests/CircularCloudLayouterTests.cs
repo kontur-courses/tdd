@@ -36,7 +36,7 @@ namespace TagsCloudVisualization
         public void TearDown()
         {
             var context = TestContext.CurrentContext;
-            if (context.Result.Outcome.Status == TestStatus.Failed && layouter is not null)
+            if (context.Result.Outcome.Status == TestStatus.Failed && layouter != null)
             {
                 if (!Directory.Exists("testresults"))
                     Directory.CreateDirectory("testresults");
