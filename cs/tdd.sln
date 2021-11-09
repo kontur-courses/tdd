@@ -11,6 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CircularLayoutVisualisation
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{FFCF9FC6-FFD1-4A7E-8E3E-6A5A4E6614DF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualisation_Tests", "TagsCloudVisualisation_Tests\TagsCloudVisualisation_Tests.csproj", "{AA6B7FC2-1917-4A25-8583-BA71BE8FCD33}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FFCF9FC6-FFD1-4A7E-8E3E-6A5A4E6614DF} = {FFCF9FC6-FFD1-4A7E-8E3E-6A5A4E6614DF}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +38,10 @@ Global
 		{FFCF9FC6-FFD1-4A7E-8E3E-6A5A4E6614DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFCF9FC6-FFD1-4A7E-8E3E-6A5A4E6614DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FFCF9FC6-FFD1-4A7E-8E3E-6A5A4E6614DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA6B7FC2-1917-4A25-8583-BA71BE8FCD33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA6B7FC2-1917-4A25-8583-BA71BE8FCD33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA6B7FC2-1917-4A25-8583-BA71BE8FCD33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA6B7FC2-1917-4A25-8583-BA71BE8FCD33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

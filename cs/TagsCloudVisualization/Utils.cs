@@ -4,24 +4,37 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    internal static class Utils
+    public static class Utils
     {
-        internal static double DistanceTo(this Point from, Point to)
+        public static double DistanceTo(this Point from, Point to)
         {
             return Math.Sqrt((from.X - to.X) * (from.X - to.X) + (from.Y - to.Y) * (from.Y - to.Y));
         }
 
-        internal static double Length(this Point from)
+        public static double Length(this Point from)
         {
             return Math.Sqrt(from.X * from.X + from.Y * from.Y);
         }
 
-        internal static Point GetCenter(this Rectangle rectangle)
+        public static Point GetCenter(this Rectangle rectangle)
         {
             return rectangle.Location + rectangle.Size / 2;
         }
 
-        internal static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
+        public static IEnumerable<Point> GetAllPoints(this Rectangle rectangle)
+        {
+            yield return rectangle.Location;
+            yield return new Point(rectangle.Left, rectangle.Bottom);
+            yield return new Point(rectangle.Right, rectangle.Top);
+            yield return new Point(rectangle.Right, rectangle.Bottom);
+        }
+
+        public static int GetArea(this Size size)
+        {
+            return size.Width * size.Height;
+        }
+
+        public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
