@@ -13,7 +13,7 @@ namespace TagsCloudVisualization
         [SetUp]
         public void InitLayouter()
         {
-            layouter = new CircularCloudLayouter(new Point(100, 100));
+            layouter = new CircularCloudLayouter();
         }
 
         [Test]
@@ -27,7 +27,7 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_ReturnsRectangleFromSpiralPointsGenerator()
         {
-            var pointsGenerator = new SpiralPointsGenerator(new Point(100, 100));
+            var pointsGenerator = new SpiralPointsGenerator();
 
             for (var i = 0; i < 100; i++)
             {

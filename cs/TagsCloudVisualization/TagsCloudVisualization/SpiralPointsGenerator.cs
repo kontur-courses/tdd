@@ -6,6 +6,8 @@ namespace TagsCloudVisualization
 {
     public class SpiralPointsGenerator
     {
+        public readonly Size Size;
+        
         private double currentAngle;
         private double spiralRadius;
 
@@ -17,8 +19,12 @@ namespace TagsCloudVisualization
         {
         }
 
-        public SpiralPointsGenerator(Point center, double startRadius = 10, double startAngle = 0,
-            double angleDelta = Math.PI / 180, double radiusDelta = 0.01)
+        public SpiralPointsGenerator(
+            Point center, 
+            double startRadius = 10, 
+            double startAngle = 0,
+            double angleDelta = Math.PI / 180, 
+            double radiusDelta = 0.01)
         {
             if (startRadius < 0)
             {
@@ -35,6 +41,7 @@ namespace TagsCloudVisualization
                 throw new ArgumentException("Delta can't be zero");
             }
 
+            Size = new Size(2 * center.X, 2 * center.Y);
             currentAngle = startAngle;
             spiralRadius = startRadius;
             this.center = center;

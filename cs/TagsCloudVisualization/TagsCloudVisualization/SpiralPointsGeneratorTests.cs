@@ -52,7 +52,7 @@ namespace TagsCloudVisualization
         [Test]
         public void GetSpiralPoints_ReturnsCenter_WhenItIsCalledFirstTime()
         {
-            var center = new Point(1, 1);
+            var center = Point.Empty;
             var generator = new SpiralPointsGenerator(center);
 
             generator.GetSpiralPoints().FirstOrDefault().Should().Be(center);

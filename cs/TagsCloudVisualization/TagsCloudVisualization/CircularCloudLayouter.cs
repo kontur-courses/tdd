@@ -12,16 +12,15 @@ namespace TagsCloudVisualization
         private readonly List<Rectangle> rectangles;
         private readonly SpiralPointsGenerator pointsGenerator;
 
-        public CircularCloudLayouter() : this(new Point(0, 0))
+        public CircularCloudLayouter() : this(new SpiralPointsGenerator())
         {
         }
 
-        public CircularCloudLayouter(Point center, double startRadius = 10, double startAngle = 0,
-            double angleDelta = Math.PI / 180, double radiusDelta = 0.01)
+        public CircularCloudLayouter(SpiralPointsGenerator pointsGenerator)
         {
-            Size = new Size(center.X * 2, center.Y * 2);
+            Size = pointsGenerator.Size;
             rectangles = new List<Rectangle>();
-            pointsGenerator = new SpiralPointsGenerator(center, startRadius, startAngle, angleDelta, radiusDelta);
+            this.pointsGenerator = pointsGenerator;
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -43,7 +42,8 @@ namespace TagsCloudVisualization
 
         private bool IntersectsWithRectangles(Rectangle rectangle)
         {
-            return rectangles.Any(r => r.IntersectsWith(rectangle));
+            return rectangles
+                .Any(r => r.IntersectsWith(rectangle));
         }
     }
 }
