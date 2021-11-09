@@ -94,7 +94,7 @@ namespace TagsCloudVisualization
 
                 if (guidingCircle)
                 {
-                    var radius = (int)(height * 0.8);
+                    var radius = height - 100;
                     bitmapGraphics.DrawEllipse(Pens.LightGray, (width - radius) / 2, (height - radius) / 2, radius, radius);
                 }
             }
