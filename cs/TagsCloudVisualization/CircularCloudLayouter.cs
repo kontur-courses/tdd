@@ -7,17 +7,28 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private readonly List<Rectangle> rectangles;
-        private readonly Spiral spiral;
         public readonly Point Center;
         public IReadOnlyCollection<Rectangle> Rectangles => rectangles;
+        private readonly List<Rectangle> rectangles;
+        private readonly Spiral spiral;      
 
         public CircularCloudLayouter(Point center)
         {
             Center = center;
             spiral = Spiral.Create(center);
-            rectangles = new();
+            rectangles = new List<Rectangle>();
         }
+
+        public static CircularCloudLayouter Generate(Point center, int rectCount)
+        {
+            var layouter = new CircularCloudLayouter(center);
+            var random = new Random();
+
+            for (var i = 0; i < rectCount; i++)
+                layouter.PutNextRectangle(
+                    new Size(random.Next(65, 100), random.Next(30, 60)));
+            return layouter;
+        }        
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
@@ -41,11 +52,6 @@ namespace TagsCloudVisualization
                 rectangle = new Rectangle(location, rectangleSize);
             }
             return rectangle;
-        }
-
-        private bool IsIncorrectLocation(Rectangle rectangle)
-        {
-            return rectangle.IsEmpty ? true : rectangles.Any(rectangle.IntersectsWith);
         }
 
         private Rectangle Optimize(Rectangle rectangle)
@@ -81,6 +87,11 @@ namespace TagsCloudVisualization
             return rectangle;
         }
 
+        private bool IsIncorrectLocation(Rectangle rectangle)
+        {
+            return rectangle.IsEmpty || rectangles.Any(rectangle.IntersectsWith);
+        }
+
         private int CalculateOptimizedPosition(bool isX, Rectangle rectangle)
         {
             if (isX)
@@ -88,17 +99,6 @@ namespace TagsCloudVisualization
                     + Math.Sign(Center.X - rectangle.Location.X - rectangle.Size.Width / 2);
             return rectangle.Location.Y
                 + Math.Sign(Center.Y - rectangle.Location.Y - rectangle.Size.Height / 2);
-        }
-
-        public static CircularCloudLayouter Generate(Point center, int rectCount)
-        {
-            var layouter = new CircularCloudLayouter(center);
-            var random = new Random();
-
-            for (var i = 0; i < rectCount; i++)
-                layouter.PutNextRectangle(
-                    new Size(random.Next(65, 100), random.Next(30, 60)));
-            return layouter;
         }
     }
 }

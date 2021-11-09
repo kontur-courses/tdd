@@ -6,7 +6,7 @@ using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTests
 {
-    class SpiralTests
+    internal class SpiralTests
     {
         [TestCase(0)]
         [TestCase(-10)]
@@ -15,6 +15,15 @@ namespace TagsCloudVisualizationTests
             FluentActions.Invoking(
                 () => Spiral.Create(Point.Empty, spiralCoef))
                 .Should().Throw<ArgumentException>();
+        }
+
+        [Test]
+        public void Should_StartAtCenter()
+        {
+            var center = new Point(500, 500);
+            var spiral = Spiral.Create(center, 1, Math.PI / 90);
+
+            center.Should().BeEquivalentTo(spiral.GetNext());            
         }
 
         [Test]

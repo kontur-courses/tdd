@@ -5,10 +5,10 @@ namespace TagsCloudVisualization
 {
     public class Spiral
     {
-        readonly double spiralCoef;
-        readonly double angleDelta;
-        readonly Point center;
-        double currentAngle;
+        private readonly double spiralCoef;
+        private readonly double angleDelta;
+        private readonly Point center;
+        private double currentAngle;
 
         private Spiral(Point center, double spiralCoef, double angleDelta)
         {
@@ -21,7 +21,7 @@ namespace TagsCloudVisualization
         {
             if (spiralCoef <= 0)
                 throw new ArgumentException("Spiral coefficient must be a positive number");
-            return new(center, spiralCoef, angleDelta);
+            return new Spiral(center, spiralCoef, angleDelta);
         }
 
         public Point GetNext()

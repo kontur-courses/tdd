@@ -7,7 +7,7 @@ using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTests
 {
-    class LayoutImageGeneratorTests
+    internal class LayoutImageGeneratorTests
     {
         [Test]
         public void Should_Throw_WhenTryingToCreateWithNoRectangles()
@@ -21,7 +21,7 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void Should_SaveToFile()
         {
-            var path = LayoutImageGenerator.GenerateImage();
+            var path = LayoutImageGenerator.GenerateImage(new Point(500, 500), 100);
             File.Exists(path).Should().BeTrue();
         }
     }
