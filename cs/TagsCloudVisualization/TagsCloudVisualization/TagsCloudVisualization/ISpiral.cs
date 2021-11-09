@@ -10,7 +10,7 @@ namespace TagsCloudVisualization
     public interface ISpiral
     {
         public Point GetNextPosition();
-        double Radius { get; set; }
-        double AngleStep { get; set; }
+        double Radius { get; }
+        double AngleStep { get; }
     }
 }

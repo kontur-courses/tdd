@@ -18,8 +18,8 @@ namespace TagsCloudVisualization
         private const int maxAngle = 360;
         private const int radiusStep = 1;
 
-        public double Radius { get; set; }
-        public double AngleStep { get; set; }
+        public double Radius { get; private set; }
+        public double AngleStep { get; }
 
         private double angle;
         public Point GetNextPosition()
