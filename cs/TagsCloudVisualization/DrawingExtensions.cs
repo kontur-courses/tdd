@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public static class Utils
+    public static class DrawingExtensions
     {
         public static double DistanceTo(this Point from, Point to)
         {
@@ -32,33 +32,6 @@ namespace TagsCloudVisualization
         public static int GetArea(this Size size)
         {
             return size.Width * size.Height;
-        }
-
-        public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector)
-        {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
-            if (selector == null)
-                throw new ArgumentNullException(nameof(selector));
-
-            using var sourceIterator = source.GetEnumerator();
-            if (!sourceIterator.MoveNext())
-                return default;
-
-            var min = sourceIterator.Current;
-            var minKey = selector(min);
-            while (sourceIterator.MoveNext())
-            {
-                var candidate = sourceIterator.Current;
-                var candidateProjected = selector(candidate);
-                if (Comparer<TKey>.Default.Compare(candidateProjected, minKey) < 0)
-                {
-                    min = candidate;
-                    minKey = candidateProjected;
-                }
-            }
-
-            return min;
         }
     }
 }
