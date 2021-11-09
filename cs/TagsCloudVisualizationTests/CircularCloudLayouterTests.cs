@@ -16,7 +16,7 @@ namespace TagsCloudVisualizationTests
         private CircularCloudLayouter layouter;
         private const int X = 500;
         private const int Y = 500;
-        private const int Count = 100;
+        private const int Count = 1000;
 
         [SetUp]
         public void SetUp()
@@ -72,8 +72,8 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void Should_ContainSameNumberOfRectanglesAsWerePut()
         {
-            layouter.PutManyRectangles(1000);
-            layouter.Rectangles.Count.Should().Be(1000);
+            layouter.PutManyRectangles(Count);
+            layouter.Rectangles.Count.Should().Be(Count);
         }
 
         [Test]
@@ -95,9 +95,23 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
+        public void Should_NotContain_TwoEqualRectangles()
+        {
+            layouter.PutManyRectangles(Count);
+            var rectangles = layouter.Rectangles.ToArray();
+
+            for (var i = 0; i < rectangles.Length; i++)
+                for (var j = 0; j < rectangles.Length; j++)
+                {
+                    if (i != j)
+                        rectangles[i].Should().NotBe(rectangles[j]);
+                }
+        }
+
+        [Test]
         public void Should_NotContain_IntersectedRectangles()
         {
-            layouter.PutManyRectangles(1000);
+            layouter.PutManyRectangles(Count);
 
             layouter.Rectangles
                 .Should()
@@ -117,7 +131,7 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void Should_CreateTightLayout()
         {
-            layouter.PutManyRectangles(1000);
+            layouter.PutManyRectangles(Count);
             var radius = layouter.CalculateLayoutRadius();
             var circleArea = Math.PI * radius * radius;
             var layoutArea = layouter.Rectangles
