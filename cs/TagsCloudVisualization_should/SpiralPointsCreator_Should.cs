@@ -13,41 +13,40 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void BeCreatedWithSetCenter()
         {
-            var creator = new SpiralPointsCreator(new Point(0, 0));
+            var center = new Point(5, 3);
+            var creator = new SpiralPointsCreator(center);
 
-            creator.Center.Should().Be(new Point(0, 0));
+            creator.Center.Should().Be(center);
         }
 
-        [TestCase(0, 0, TestName = "zero center")]
-        [TestCase(-1, 0, TestName = "negative x centre coordinate")]
-        [TestCase(0, -1, TestName = "negative y centre coordinate")]
-        [TestCase(-1, -1, TestName = "negative both coordinates")]
-        [TestCase(1, 1, TestName = "positive both coordinates")]
+        [TestCase(0, 0, TestName = "zero center is allowed")]
+        [TestCase(-1, 0, TestName = "negative x centre coordinate is allowed")]
+        [TestCase(0, -1, TestName = "negative y centre coordinate is allowed")]
+        [TestCase(-1, -1, TestName = "negative both coordinates is allowed")]
+        [TestCase(1, 1, TestName = "positive both coordinates is allowed")]
         public void CreateFirstPointInCenter(int xCenter, int yCenter)
         {
             var creator = new SpiralPointsCreator(new Point(xCenter, yCenter));
             creator.GetNextPoint().Should().Be(new Point(xCenter, yCenter));
         }
 
-        [TestCase(10)]
-        [TestCase(100)]
-        public void CreateDifferentPoints(int number)
+        [Test]
+        public void CreateDifferentPoints()
         {
+            var pointsCount = 100;
             var creator = new SpiralPointsCreator(new Point(0, 0));
             var points = new List<Point>();
-            for (var i = 1; i <= number; i++) points.Add(creator.GetNextPoint());
+            for (var i = 1; i <= pointsCount; i++) points.Add(creator.GetNextPoint());
             points.Count.Should().Be(points.Distinct().Count());
         }
 
-        [TestCase(1)]
-        [TestCase(10)]
-        [TestCase(50)]
-        [TestCase(100)]
+        [Test]
         public void CreateExpectedNumberOfPoints(int number)
         {
+            var pointsCount = 100;
             var creator = new SpiralPointsCreator(new Point(0, 0));
             var points = new List<Point>();
-            for (var i = 1; i <= number; i++) points.Add(creator.GetNextPoint());
+            for (var i = 1; i <= pointsCount; i++) points.Add(creator.GetNextPoint());
 
             points.Count.Should().Be(number);
         }

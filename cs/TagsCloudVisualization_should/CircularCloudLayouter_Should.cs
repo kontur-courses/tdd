@@ -12,10 +12,10 @@ namespace TagsCloudVisualizationTests
     {
         private readonly Point center = new Point(0, 0);
 
-        [TestCase(0, 3, TestName = "width is zero")]
-        [TestCase(3, 0, TestName = "height is zero")]
-        [TestCase(-1, 3, TestName = "width is negative")]
-        [TestCase(3, -1, TestName = "height is negative")]
+        [TestCase(0, 3, TestName = "width of rectangle is not expected to be zero")]
+        [TestCase(3, 0, TestName = "height of rectangle is not expected to be zero")]
+        [TestCase(-1, 3, TestName = "width of rectangle is not expected to be negative")]
+        [TestCase(3, -1, TestName = "height of rectangle is not expected to be zero")]
         public void Throw_WhenSizeIsIncorrect(int width, int height)
         {
             var layouter = new CircularCloudLayouter(center);
@@ -78,7 +78,7 @@ namespace TagsCloudVisualizationTests
 
         [Test]
         [Timeout(5000)]
-        public void CreateReactanglesNotTooLong()
+        public void CreateRectanglesNotTooLong()
         {
             var rectanglesCount = 10000;
             var layouter = new CircularCloudLayouter(center);
