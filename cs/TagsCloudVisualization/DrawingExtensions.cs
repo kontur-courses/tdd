@@ -33,5 +33,10 @@ namespace TagsCloudVisualization
         {
             return size.Width * size.Height;
         }
+
+        public static Size Abs(this Size size)
+        {
+            return new Size(Math.Abs(size.Width), Math.Abs(size.Height));
+        }
     }
 }

@@ -17,8 +17,10 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+            if (rectangleSize.Width == 0 || rectangleSize.Height == 0)
                 throw new ArgumentOutOfRangeException(nameof(rectangleSize));
+            if (rectangleSize.Width < 0 || rectangleSize.Height < 0)
+                rectangleSize = rectangleSize.Abs();
             Rectangle rectangle;
             if (lastRectangles.Count == 0)
             {

@@ -64,14 +64,10 @@ namespace TagsCloudVisualization
             resulRectangle.Size.Should().Be(expectedSize);
         }
 
-
-        [TestCase(0, 2, TestName = "ShouldThrow_WhenTryingToPutDegenerateRectangle")]
-        [TestCase(0, 0, TestName = "ShouldThrow_WhenTryingToPutDegenerateRectangle")]
-        [TestCase(2, 0, TestName = "ShouldThrow_WhenTryingToPutDegenerateRectangle")]
-        [TestCase(-1, 0, TestName = "ShouldThrow_WhenTryingToPutNegativeSizedRectangle")]
-        [TestCase(0, -1, TestName = "ShouldThrow_WhenTryingToPutNegativeSizedRectangle")]
-        [TestCase(-1, -1, TestName = "ShouldThrow_WhenTryingToPutNegativeSizedRectangle")]
-        public void ShouldThrow_WhenTryingToPutWrongSizedRectangles(int width, int height)
+        [TestCase(0, 2)]
+        [TestCase(0, 0)]
+        [TestCase(2, 0)]
+        public void ShouldThrow_WhenTryingToPutDegenerateRectangle(int width, int height)
         {
             var expectedCenter = Point.Empty;
             layouter = new CachedCircularLayouter(expectedCenter);
@@ -130,7 +126,7 @@ namespace TagsCloudVisualization
         {
             var expectedCenter = Point.Empty;
             layouter = new CachedCircularLayouter(expectedCenter);
-            var firstSize = new Size(10, 11);
+            var firstSize = new Size(100, 11);
             var secondSize = new Size(10, 11);
             var maximumExpectedDistance = ((Point)(firstSize / 2)).Length() + ((Point)(secondSize / 2)).Length();
 
