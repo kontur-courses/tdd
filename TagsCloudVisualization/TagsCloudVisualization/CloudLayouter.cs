@@ -1,23 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
     public abstract class CloudLayouter
     {
-        protected List<Rectangle> Rectangles;
+        protected private List<Rectangle> _rectangles;
+        public List<Rectangle> Rectangles { get => _rectangles.ToList(); }
 
         public CloudLayouter()
         {
-            Rectangles = new List<Rectangle>();
+            _rectangles = new List<Rectangle>();
         }
 
         public abstract Rectangle PutNextRectangle(Size rectangleSize);
-
-        public IEnumerable<Rectangle> GetLaidRectangles()
-        {
-            foreach (var r in Rectangles)
-                yield return r;
-        }
     }
 }

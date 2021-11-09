@@ -16,6 +16,7 @@ namespace TagsCloudVisualization
         {
             var bitmapSize = GetCanvasSize(rectangles, center);
             var bitmap = new Bitmap(bitmapSize.Width, bitmapSize.Height);
+            var bitmapCenter = new Point(bitmap.Width / 2, bitmap.Height / 2);
 
             var rnd = new Random(Seed: 100);
             using (var g = Graphics.FromImage(bitmap))
@@ -28,7 +29,7 @@ namespace TagsCloudVisualization
                         : colors[rnd.Next(colors.Count - 1)];
                     var pen = new Pen(color, 0) { Alignment = PenAlignment.Inset };
                     var brush = new SolidBrush(Color.FromArgb(25, color));
-                    rect.Offset(new Point(center.X - center.X, center.Y - center.Y));
+                    rect.Offset(new Point(bitmapCenter.X - center.X, bitmapCenter.Y - center.Y));
                     g.DrawRectangle(pen, rect);
                     g.FillRectangle(brush, rect);
                 }

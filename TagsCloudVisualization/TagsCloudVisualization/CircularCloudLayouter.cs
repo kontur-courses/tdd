@@ -23,10 +23,10 @@ namespace TagsCloudVisualization
                 throw new ArgumentException($"Отрицательный размер прямоугольника: " +
                     $"{rectangleSize.Width} x {rectangleSize.Height}");
 
-            var rectangle = Rectangles.Any()
+            var rectangle = _rectangles.Any()
                 ? GetNextRectangleWithLocation(rectangleSize)
                 : new Rectangle(Center.GetRectangleLocationByCenter(rectangleSize), rectangleSize);
-            Rectangles.Add(rectangle);
+            _rectangles.Add(rectangle);
             return rectangle;
         }
 
@@ -37,7 +37,7 @@ namespace TagsCloudVisualization
             while (pointEnumerator.MoveNext())
             {
                 dryRect.Location = pointEnumerator.Current;
-                if (Rectangles.All(r => !r.IntersectsWith(dryRect)))
+                if (_rectangles.All(r => !r.IntersectsWith(dryRect)))
                     break;
             }
             return dryRect;

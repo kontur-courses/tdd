@@ -34,7 +34,7 @@ namespace TagsCloudVisualization
         {
             var layouter = new CircularCloudLayouter(Point.Empty, spiral);
             rectSizes.ToList().ForEach(s => layouter.PutNextRectangle(s));
-            using (var bitmap = BitmapDrawer.Draw(layouter.GetLaidRectangles(), layouter.Center))
+            using (var bitmap = BitmapDrawer.Draw(layouter.Rectangles, layouter.Center))
                 BitmapDrawer.Save(bitmap);
         }
 
