@@ -7,9 +7,27 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
+        private class SlottedAnchor
+        {
+            public readonly Rectangle Rectangle;
+            public Direction FilledSlots;
+
+            public SlottedAnchor(Rectangle rectangle, Direction filledSlots)
+            {
+                Rectangle = rectangle;
+                FilledSlots = filledSlots;
+            }
+
+            public int Left => Rectangle.Left;
+            public int Right => Rectangle.Right;
+            public int Top => Rectangle.Top;
+            public int Bottom => Rectangle.Bottom;
+            public int Width => Rectangle.Width;
+            public int Height => Rectangle.Height;
+        }
+
         public readonly Point Center;
-        private readonly List<Rectangle> lastRectangles = new();
-        private int area = 0;
+        private readonly List<SlottedAnchor> anchors = new();
         public CircularCloudLayouter(Point center)
         {
             Center = center;
@@ -21,45 +39,54 @@ namespace TagsCloudVisualization
                 throw new ArgumentOutOfRangeException(nameof(rectangleSize));
             if (rectangleSize.Width < 0 || rectangleSize.Height < 0)
                 rectangleSize = rectangleSize.Abs();
-            Rectangle rectangle;
-            if (lastRectangles.Count == 0)
+            SlottedAnchor anchor;
+            if (anchors.Count == 0)
             {
                 var location = rectangleSize / 2 * -1;
-                rectangle = new Rectangle(new Point(location + new Size(Center)), rectangleSize);
+                anchor = new(new Rectangle(new Point(location + new Size(Center)), rectangleSize), Direction.None);
             }
             else
             {
-                rectangle = CreateNextRectangle(rectangleSize);
+                anchor = CreateNextRectangle(rectangleSize);
             }
 
-            lastRectangles.Add(rectangle);
-            area += rectangleSize.Width * rectangleSize.Height;
+            anchors.Add(anchor);
 
-            return rectangle;
+            return anchor.Rectangle;
         }
 
-        private Rectangle CreateNextRectangle(Size nextSize)
+        private SlottedAnchor CreateNextRectangle(Size nextSize)
         {
-            var pendingRectangles = new List<(double distance, Rectangle rectangle)>();
-            var distanceCoefficent = 1 - 1 / (0.25 * lastRectangles.Count * lastRectangles.Count + 1);
-            var minimalDistance = Math.Sqrt((nextSize.Width * nextSize.Height + area) / (Math.PI * 2)) * distanceCoefficent;
-            var result = lastRectangles.SelectMany(currRectangle => GetPossiblePositions(currRectangle, nextSize))
-                .Select(x => new Rectangle(x, nextSize))
-                .Select(x => (distance: x.GetCenter().DistanceTo(Center), rectangle: x))
-                .Where(x => x.distance >= minimalDistance)
-                .Where(rectangle => lastRectangles
-                    .All(x => !x.IntersectsWith(rectangle.rectangle)))
+            var (_, data) = anchors
+                .Where(x => x.FilledSlots != Direction.All)
+                .SelectMany(currAnchor => GetPossiblePositions(currAnchor, nextSize)
+                    .Where(pendingPoint => (pendingPoint.direction & currAnchor.FilledSlots) == Direction.None))
+                .Select(x => (parent: x.anchor, rectangle: new Rectangle(x.point, nextSize), x.direction))
+                .Select(x => (x.parent, current: new SlottedAnchor(x.rectangle, x.direction.GetReversed())))
+                .Select(x => (distance: x.current.Rectangle.GetCenter().DistanceTo(Center), data: x))
+                .Where(rectangle => anchors
+                    .Select(x => x.Rectangle)
+                    .All(x => !x.IntersectsWith(rectangle.data.current.Rectangle)))
                 .MinBy(x => x.distance);
-
-            return result.rectangle;
+            var (parent, current) = data;
+            parent.FilledSlots |= current.FilledSlots.GetReversed();
+            return current;
         }
 
-        private static IEnumerable<Point> GetPossiblePositions(Rectangle anchor, Size size)
+        private static IEnumerable<(SlottedAnchor anchor, Point point, Direction direction)> GetPossiblePositions(SlottedAnchor anchor, Size size)
         {
-            yield return new Point(anchor.Left + (anchor.Width - size.Width) / 2, anchor.Top - size.Height);
-            yield return new Point(anchor.Left + (anchor.Width - size.Width) / 2, anchor.Bottom);
-            yield return new Point(anchor.Right, anchor.Top + (anchor.Height - size.Height) / 2);
-            yield return new Point(anchor.Left - size.Width, anchor.Top + (anchor.Height - size.Height) / 2);
+            yield return (anchor,
+                new Point(anchor.Left + (anchor.Width - size.Width) / 2, anchor.Top - size.Height),
+                Direction.Top);
+            yield return (anchor,
+                new Point(anchor.Left + (anchor.Width - size.Width) / 2, anchor.Bottom),
+                Direction.Bottom);
+            yield return (anchor,
+                new Point(anchor.Right, anchor.Top + (anchor.Height - size.Height) / 2),
+                Direction.Right);
+            yield return (anchor,
+                new Point(anchor.Left - size.Width, anchor.Top + (anchor.Height - size.Height) / 2),
+                Direction.Left);
         }
     }
 }
