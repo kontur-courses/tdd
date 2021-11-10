@@ -14,7 +14,7 @@ namespace TagsCloudVisualization
         public Visualizer(Size size)
         {
             cloudLayouter =
-                new CircularCloudLayouter(new PointF(size.Width / 2f, size.Height / 2f), new Spiral(0.5f, 2f));
+                new CircularCloudLayouter(new PointF(size.Width / 2f, size.Height / 2f), new Spiral(0.6f, 0.3f));
             bitmap = new Bitmap(size.Width, size.Height);
             graphics = Graphics.FromImage(bitmap);
         }

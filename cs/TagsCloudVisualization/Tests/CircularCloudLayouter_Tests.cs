@@ -16,7 +16,7 @@ namespace TagsCloudVisualization.Tests
         [SetUp]
         public void SetUp()
         {
-            cloudLayouter = new CircularCloudLayouter(new PointF(), new Spiral(0.5f, 0.01f));
+            cloudLayouter = new CircularCloudLayouter(new PointF(), new Spiral(0.05f, 0.01f));
         }
 
         [TestCase(0, 1, TestName = "Width is zero")]
@@ -75,16 +75,17 @@ namespace TagsCloudVisualization.Tests
             yCenter.Should().Be(yCloudPosition);
         }
 
-
-        [TestCase(2, 2, 50)]
-        public void PutNextRectangle_ShouldPutEnoughTight(int width, int height, int count)
+        [TestCase(1,1, 100, 0.9, TestName = "Very tightly if small 100 squares")]
+        [TestCase(2, 5, 50, 0.8)]
+        [TestCase(9, 9, 60, 0.8)]
+        public void PutNextRectangle_ShouldPutEnoughTight(int width, int height, int count, double densityCoefficient)
         {
             var rectangles = new List<RectangleF>();
             for (var i = 0; i < count; i++)
                 rectangles.Add(cloudLayouter.PutNextRectangle(new Size(width, height)));
 
             var density = GetDensity(rectangles);
-            Console.WriteLine(density);
+            density.Should().BeGreaterThan((Math.PI / 4) * densityCoefficient).And.BeLessThan(Math.PI / 4);
         }
 
         private double GetDensity(IEnumerable<RectangleF> rectangles)
@@ -95,6 +96,5 @@ namespace TagsCloudVisualization.Tests
             var sumOfAreas = rectangleFs.Sum(rectangle => rectangle.Height * rectangle.Width);
             return sumOfAreas / unionRectsArea;
         }
-        
     }
 }

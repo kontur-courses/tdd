@@ -18,13 +18,11 @@ namespace TagsCloudVisualization.PointGenerator
         }
         public IEnumerable<PointF> GetPoints(PointF center)
         {
-            var startAngle = (float)(random.NextDouble()*Math.PI/2);
-            return GetArchimedeanSpiral(startAngle).Select(point => new PointF(point.X + center.X, point.Y + center.Y));
+            return GetArchimedeanSpiral(0).Select(point => new PointF(point.X + center.X, point.Y + center.Y));
         }
 
-        private IEnumerable<PointF> GetArchimedeanSpiral(float startAngle)
+        private IEnumerable<PointF> GetArchimedeanSpiral(float currentAngle)
         {
-            var currentAngle = startAngle;
             while (true)
             {
                 var r = (float)(spiralPitch * currentAngle / (2 * Math.PI));
