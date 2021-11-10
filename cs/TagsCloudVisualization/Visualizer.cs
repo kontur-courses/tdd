@@ -4,24 +4,33 @@ using TagsCloudVisualization.PointGenerator;
 
 namespace TagsCloudVisualization
 {
-    public static class Visualizer
+    public class Visualizer
     {
-        private static Brush brush = Brushes.Black;
+        private static readonly Brush Brush = Brushes.Black;
+        private readonly CircularCloudLayouter cloudLayouter;
+        private readonly Bitmap bitmap;
+        private readonly Graphics graphics;
 
-        public static void Draw(IEnumerable<(string, Font)> words, Size size, string filename)
+        public Visualizer(Size size)
         {
-            var bitmap = new Bitmap(size.Width, size.Height);
-            var g = Graphics.FromImage(bitmap);
-            var cloudLayouter = new CircularCloudLayouter(new Point(size.Width / 2, size.Height / 2))
-                .WithPointGenerator(new Spiral());
-            foreach (var (word, font) in words)
-            {
-                var wordSize = g.MeasureString(word, font).ToSize() + new Size(1, 1);
-                var wordRectangle = cloudLayouter.PutNextRectangle(wordSize);
-                g.DrawString(word, font, brush, wordRectangle, StringFormat.GenericDefault);
-            }
+            cloudLayouter =
+                new CircularCloudLayouter(new PointF(size.Width / 2f, size.Height / 2f), new Spiral(1f, 0.2f));
+            bitmap = new Bitmap(size.Width, size.Height);
+            graphics = Graphics.FromImage(bitmap);
+        }
 
+        public void Draw(IEnumerable<(string, Font)> words, string filename)
+        {
+            foreach (var (word, font) in words)
+                DrawString(word, font);
             bitmap.Save(filename);
+        }
+
+        private void DrawString(string word, Font font)
+        {
+            var wordSize = graphics.MeasureString(word, font).ToSize() + new Size(1, 1);
+            var wordRectangle = cloudLayouter.PutNextRectangle(wordSize);
+            graphics.DrawString(word, font, Brush, wordRectangle, StringFormat.GenericDefault);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using TagsCloudVisualization.PointGenerator;
@@ -8,20 +9,17 @@ namespace TagsCloudVisualization
 {
     class CircularCloudLayouter
     {
-        private readonly List<RectangleF> tagCloud = new List<RectangleF>();
-        private readonly PointF center;
-        private IPointGenerator generator = new Spiral();
+        private  List<RectangleF> tagCloud;
+        private  PointF center;
+        private  IPointGenerator generator;
 
-        public CircularCloudLayouter(PointF center)
+        public CircularCloudLayouter(PointF center, IPointGenerator pointGenerator)
         {
+            tagCloud = new List<RectangleF>();
             this.center = center;
+            generator = pointGenerator;
         }
 
-        public CircularCloudLayouter WithPointGenerator(IPointGenerator pointGenerator)
-        {
-            this.generator = pointGenerator;
-            return this;
-        }
 
         public RectangleF PutNextRectangle(Size rectangleSize)
         {

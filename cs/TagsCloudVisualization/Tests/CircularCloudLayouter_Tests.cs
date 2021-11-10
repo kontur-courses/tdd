@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using TagsCloudVisualization.PointGenerator;
 
 namespace TagsCloudVisualization.Tests
 {
@@ -15,7 +16,7 @@ namespace TagsCloudVisualization.Tests
         [SetUp]
         public void SetUp()
         {
-            cloudLayouter = new CircularCloudLayouter(new PointF());
+            cloudLayouter = new CircularCloudLayouter(new PointF(), new Spiral(1f, 0.2f));
         }
 
         [TestCase(0, 1, TestName = "Width is zero")]
@@ -73,7 +74,7 @@ namespace TagsCloudVisualization.Tests
         public void GetCloud_ReturnFirstTagInCenter_IfAddOneTag(int xCloudPosition, int yCloudPosition, int width,
             int height)
         {
-            cloudLayouter = new CircularCloudLayouter(new Point(xCloudPosition, yCloudPosition));
+            cloudLayouter = new CircularCloudLayouter(new Point(xCloudPosition, yCloudPosition), new Spiral(1f, 0.2f));
             cloudLayouter.PutNextRectangle(new Size(width, height));
 
             var tag = cloudLayouter.GetCloud().First();
@@ -90,7 +91,7 @@ namespace TagsCloudVisualization.Tests
             int yCloudPosition, int sizeX, int sizeY, int count)
         {
             var center = new Point(xCloudPosition, yCloudPosition);
-            cloudLayouter = new CircularCloudLayouter(center);
+            cloudLayouter = new CircularCloudLayouter(center, new Spiral(1f, 0.2f));
             for (var i = 0; i < count; i++)
                 cloudLayouter.PutNextRectangle(new Size(sizeX, sizeY));
 

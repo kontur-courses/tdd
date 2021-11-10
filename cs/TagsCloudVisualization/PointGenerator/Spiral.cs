@@ -7,27 +7,34 @@ namespace TagsCloudVisualization.PointGenerator
 {
     public class Spiral : IPointGenerator
     {
+        private readonly float spiralPitch;
+        private readonly float anglePitch;
+        public Spiral(float spiralPitch, float anglePitch)
+        {
+            this.spiralPitch = spiralPitch;
+            this.anglePitch = anglePitch;
+        }
         public IEnumerable<PointF> GetPoints(PointF center)
         {
-            return GetArchimedeanSpiral(0, 3f).Select(point => new PointF(point.X + center.X, point.Y + center.Y));
+            return GetArchimedeanSpiral(0).Select(point => new PointF(point.X + center.X, point.Y + center.Y));
         }
 
-        private static IEnumerable<PointF> GetArchimedeanSpiral(float angle, float pitch)
+        private IEnumerable<PointF> GetArchimedeanSpiral(float startAngle)
         {
             while (true)
             {
-                var p = (float)(pitch * angle / (2 * Math.PI));
-                PolarToCartesian(p, angle, out var x, out var y);
+                var r = (float)(spiralPitch * startAngle / (2 * Math.PI));
+                var (x,y) = PolarToCartesian(r, startAngle);
                 yield return new PointF(x, y);
-                angle += 0.5f;
+                startAngle += anglePitch;
             }
         }
 
-        private static void PolarToCartesian(float r, float angle,
-            out float x, out float y)
+        private static (float x, float y) PolarToCartesian(float r, float angle)
         {
-            x = (float)(r * Math.Cos(angle));
-            y = (float)(r * Math.Sin(angle));
+            var x = (float)(r * Math.Cos(angle));
+            var y = (float)(r * Math.Sin(angle));
+            return (x, y);
         }
     }
 }

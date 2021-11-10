@@ -13,7 +13,8 @@ namespace TagsCloudVisualization
                 tags.Add(("2", new Font("Arial", 15)));
             }
 
-            Visualizer.Draw(tags, new Size(1200, 900), "example.png");
+            var visualizer = new Visualizer(new Size(1200, 900));
+            visualizer.Draw(tags, "example.png");
         }
     }
 }
