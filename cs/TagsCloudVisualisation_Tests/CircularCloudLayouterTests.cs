@@ -40,7 +40,7 @@ namespace TagsCloudVisualization
                 if (!Directory.Exists("testresults"))
                     Directory.CreateDirectory("testresults");
                 var rectangles = layouter.Rectangles;
-                Visualizer.GetBitmapFromRectangles(rectangles.ToArray(), true).Save($"testresults/{context.Test.Name}.png", ImageFormat.Png);
+                Visualizer.GetBitmapFromRectangles(rectangles.ToArray(), true, 100).Save($"testresults/{context.Test.Name}.png", ImageFormat.Png);
                 TestContext.Out.WriteLine($"Tag cloud visualization saved to file <testresults/{context.Test.Name}.png>");
             }
         }
@@ -112,7 +112,10 @@ namespace TagsCloudVisualization
             layouter = new CachedCircularLayouter(expectedCenter);
             var firstSize = new Size(10, 11);
             var secondSize = new Size(10, 11);
-            var maximumExpectedDistance = 11;
+
+            GetMinimalSide(firstSize, out var minimalSide, out var isHoriontal);
+
+            var maximumExpectedDistance = Math.Ceiling(minimalSide / 2d + (isHoriontal ? secondSize.Width : secondSize.Height) / 2d);
 
             layouter.PutNextRectangle(firstSize);
             var secondRectangle = layouter.PutNextRectangle(secondSize);
@@ -126,16 +129,34 @@ namespace TagsCloudVisualization
         {
             var expectedCenter = Point.Empty;
             layouter = new CachedCircularLayouter(expectedCenter);
-            var firstSize = new Size(1000, 11);
+            var firstSize = new Size(100, 11);
             var secondSize = new Size(10, 11);
-            var maximumExpectedDistance = 11;
+            var thirdSize = new Size(20, 13);
+
+            GetMinimalSide(firstSize, out var minimalSide, out var isHoriontal);
+
+            var maximumExpectedDistance = Math.Ceiling(minimalSide / 2d + (isHoriontal ? thirdSize.Width : thirdSize.Height) / 2d);
 
             layouter.PutNextRectangle(firstSize);
             layouter.PutNextRectangle(secondSize);
-            var thirdRectangle = layouter.PutNextRectangle(secondSize);
+            var thirdRectangle = layouter.PutNextRectangle(thirdSize);
             var actualDistance = expectedCenter.DistanceTo(thirdRectangle.GetCenter());
 
-            actualDistance.Should().BeLessOrEqualTo(maximumExpectedDistance + 2);
+            actualDistance.Should().BeLessOrEqualTo(maximumExpectedDistance);
+        }
+
+        private static void GetMinimalSide(Size firstSize, out int minimalFirstSide, out bool isHoriontal)
+        {
+            if (firstSize.Height > firstSize.Width)
+            {
+                isHoriontal = true;
+                minimalFirstSide = firstSize.Width;
+            }
+            else
+            {
+                isHoriontal = false;
+                minimalFirstSide = firstSize.Height;
+            }
         }
 
         [TestCase(3)]
@@ -161,8 +182,8 @@ namespace TagsCloudVisualization
                 "every rectangle should not intersect with others");
         }
 
-        [TestCase(20000)]
-        public void PuttingRectanglesShouldBeFast(int milliseconds)
+        [TestCase(20)]
+        public void PuttingRectanglesShouldBeFast(int seconds)
         {
             layouter = new CachedCircularLayouter(Point.Empty);
             var size = new Size(10, 11);
@@ -175,7 +196,7 @@ namespace TagsCloudVisualization
                   }
               };
 
-            action.ExecutionTime().Should().BeLessOrEqualTo(new TimeSpan(0, 0, 0, 0, milliseconds));
+            action.ExecutionTime().Should().BeLessOrEqualTo(new TimeSpan(0, 0, 0, seconds));
         }
     }
 }
