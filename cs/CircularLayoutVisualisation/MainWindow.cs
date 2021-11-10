@@ -16,14 +16,14 @@ namespace CircularLayoutVisualisation
 
         private void Enter_Click(object sender, EventArgs e)
         {
-            if (int.TryParse(Count.Text, out var count) 
+            if (int.TryParse(Count.Text, out var count)
                 && double.TryParse(SizeScale.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out var scale))
             {
                 var bitmap = Visualizer.GetRandomBitmap(count, scale);
 
                 var imageForm = new Form
                 {
-                    Size = bitmap.Size
+                    ClientSize = bitmap.Size
                 };
                 imageForm.Paint += (_, e) => e.Graphics.DrawImage(bitmap, Point.Empty);
                 imageForm.Show();
