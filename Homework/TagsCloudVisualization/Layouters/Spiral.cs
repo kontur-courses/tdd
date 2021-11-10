@@ -2,9 +2,9 @@
 using System.Drawing;
 using TagsCloudVisualization.Helpers;
 
-namespace TagsCloudVisualization.Layouters.RectangleLayouters
+namespace TagsCloudVisualization.Layouters
 {
-    internal class Spiral
+    public class Spiral
     {
         private double radius = 0;
         private double angle = 0;

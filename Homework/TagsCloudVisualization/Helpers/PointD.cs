@@ -1,6 +1,6 @@
 ﻿namespace TagsCloudVisualization.Helpers
 {
-    internal class PointD
+    public readonly struct PointD
     {
         public readonly double X;
         public readonly double Y;

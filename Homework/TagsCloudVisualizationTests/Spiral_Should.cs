@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using NUnit.Framework;
 using FluentAssertions;
-using TagsCloudVisualization.Layouters.RectangleLayouters;
+using TagsCloudVisualization.Layouters;
 
-namespace TagsCloudVisualization.Tests
+namespace TagsCloudVisualizationTests
 {
     [TestFixture]
     public class Spiral_Should

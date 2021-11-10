@@ -1,20 +1,23 @@
-﻿using System.Drawing;
-using TagsCloudVisualization.Layouters.RectangleLayouters;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using TagsCloudVisualization.Layouters;
 
 namespace TagsCloudVisualization.Layouters
 {
     public class CircularCloudLayouter
     {
-        private readonly IRectangleLayouter rectangleLayouter;
+        private readonly Point center;
+        private readonly List<Rectangle> rectangles;
         
         public CircularCloudLayouter(Point center)
         {
-            rectangleLayouter = new SpiralRectangleLayouter(center);
+            this.center = center;
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            return rectangleLayouter.PutNextRectangle(rectangleSize);
+            throw new NotImplementedException();
         }
     }
 }
