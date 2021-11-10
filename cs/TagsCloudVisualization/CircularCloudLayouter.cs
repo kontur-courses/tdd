@@ -2,30 +2,12 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using TagsCloudVisualization.Internals;
 
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private class SlottedAnchor
-        {
-            public readonly Rectangle Rectangle;
-            public Direction FilledSlots;
-
-            public SlottedAnchor(Rectangle rectangle, Direction filledSlots)
-            {
-                Rectangle = rectangle;
-                FilledSlots = filledSlots;
-            }
-
-            public int Left => Rectangle.Left;
-            public int Right => Rectangle.Right;
-            public int Top => Rectangle.Top;
-            public int Bottom => Rectangle.Bottom;
-            public int Width => Rectangle.Width;
-            public int Height => Rectangle.Height;
-        }
-
         public readonly Point Center;
         private readonly List<SlottedAnchor> anchors = new();
         public CircularCloudLayouter(Point center)
@@ -57,36 +39,23 @@ namespace TagsCloudVisualization
 
         private SlottedAnchor CreateNextRectangle(Size nextSize)
         {
-            var (_, data) = anchors
-                .Where(x => x.FilledSlots != Direction.All)
-                .SelectMany(currAnchor => GetPossiblePositions(currAnchor, nextSize)
-                    .Where(pendingPoint => (pendingPoint.direction & currAnchor.FilledSlots) == Direction.None))
-                .Select(x => (parent: x.anchor, rectangle: new Rectangle(x.point, nextSize), x.direction))
-                .Select(x => (x.parent, current: new SlottedAnchor(x.rectangle, x.direction.GetReversed())))
-                .Select(x => (distance: x.current.Rectangle.GetCenter().DistanceTo(Center), data: x))
-                .Where(rectangle => anchors
-                    .Select(x => x.Rectangle)
-                    .All(x => !x.IntersectsWith(rectangle.data.current.Rectangle)))
-                .MinBy(x => x.distance);
+            var data = anchors.FilterForFilledSlots(Direction.All)
+                .SelectMany(anchor => GetAllValidSlots(anchor, nextSize).Select(current => (parent: anchor, current)))
+                .MinBy(x => x.current.GetCenter().DistanceTo(Center));
             var (parent, current) = data;
-            parent.FilledSlots |= current.FilledSlots.GetReversed();
+            parent.FillDirection(current.FilledSlots.GetReversed());
             return current;
         }
 
-        private static IEnumerable<(SlottedAnchor anchor, Point point, Direction direction)> GetPossiblePositions(SlottedAnchor anchor, Size size)
+        private IEnumerable<SlottedAnchor> GetAllValidSlots(SlottedAnchor anchor, Size size)
         {
-            yield return (anchor,
-                new Point(anchor.Left + (anchor.Width - size.Width) / 2, anchor.Top - size.Height),
-                Direction.Top);
-            yield return (anchor,
-                new Point(anchor.Left + (anchor.Width - size.Width) / 2, anchor.Bottom),
-                Direction.Bottom);
-            yield return (anchor,
-                new Point(anchor.Right, anchor.Top + (anchor.Height - size.Height) / 2),
-                Direction.Right);
-            yield return (anchor,
-                new Point(anchor.Left - size.Width, anchor.Top + (anchor.Height - size.Height) / 2),
-                Direction.Left);
+            foreach (var (direction, rectangle) in anchor.GetEmptySlots().Select(direction => (direction, anchor.GetRectangleAt(direction, size))))
+            {
+                var hasIntersection = anchors.Any(x => x.IntersectsWith(rectangle));
+                if (hasIntersection)
+                    continue;
+                yield return new SlottedAnchor(rectangle, direction.GetReversed());
+            }
         }
     }
 }
