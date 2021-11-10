@@ -2,12 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using NUnit.Framework.Internal;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTests
@@ -35,7 +32,8 @@ namespace TagsCloudVisualizationTests
                 visualizer.Save($"{TestContext.CurrentContext.Test.Name}.Failed.png", directoryToSave);
                 var fullPath = Path.Combine(directoryToSave.FullName,
                     $"{TestContext.CurrentContext.Test.Name}.Failed.{layouter.Rectangles.Count}rectangles.png");
-                Console.WriteLine($"Tag cloud visualization saved to file: {fullPath}");;
+                Console.WriteLine($"Tag cloud visualization saved to file: {fullPath}");
+                ;
             }
         }
 
@@ -133,6 +131,5 @@ namespace TagsCloudVisualizationTests
             var radius = Math.Max(container.Width, container.Height) / 2;
             return Math.PI * radius * radius;
         }
-
     }
 }

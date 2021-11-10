@@ -5,7 +5,7 @@ namespace TagsCloudVisualization
 {
     public class SpiralPointsCreator
     {
-        private const double AngleDelta = Math.PI / 12;
+        private const double AngleDelta = Math.PI / 360;
 
         private double currentAngle;
         private Point? lastPoint;

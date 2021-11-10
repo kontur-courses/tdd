@@ -13,7 +13,6 @@ namespace TagsCloudVisualization
             var rules = dirACS.GetAccessRules(true, true, typeof(NTAccount));
             var NtAccountName = $"{Environment.UserDomainName}\\{Environment.UserName}";
             foreach (AuthorizationRule rule in rules)
-            {
                 if (rule.IdentityReference.Value.Equals(NtAccountName, StringComparison.CurrentCultureIgnoreCase))
                 {
                     var filesystemAccessRule = (FileSystemAccessRule) rule;
@@ -23,7 +22,6 @@ namespace TagsCloudVisualization
                         return true;
                     return false;
                 }
-            }
 
             return false;
         }

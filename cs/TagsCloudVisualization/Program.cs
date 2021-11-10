@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.IO;
 
 namespace TagsCloudVisualization
@@ -8,16 +7,23 @@ namespace TagsCloudVisualization
     {
         private static void Main()
         {
-            var layouter = new CircularCloudLayouter(new Point(1500, 1500));
-            var rnd = new Random();
-            for (var i = 0; i < 1000; i++)
-            {
-                layouter.PutNextRectangle(new Size(rnd.Next(50, 200), rnd.Next(50, 200)));
-            }
+            Visualize(100, 300, 100);
+            Visualize(100, 300, 100, false);
+            Visualize(100, 200, 500, false);
+        }
 
-            var bmpVisualizer = new BitmapVisualizer(layouter.Rectangles.ToArray());
-            bmpVisualizer.DrawRectangles(Color.Black, Color.Red);
-            bmpVisualizer.Save("example.png");
+        private static void Visualize(int minRectSize, int maxRectSize, int count, bool isSameSized = true)
+        {
+            var rectangles = isSameSized
+                ? RectanglesGenerator.GenerateSameRectanglesWithSize(count, minRectSize, maxRectSize)
+                : RectanglesGenerator.GenerateDifferentRectangles(count, minRectSize, maxRectSize);
+            var bmpVisualizer = new BitmapVisualizer(rectangles);
+            bmpVisualizer.DrawRectangles(Color.Black, Color.White);
+            var isSameSizedString = isSameSized ? "SameSized" : "Different";
+            var fileName = $@"{count}{isSameSizedString}RectanglesWithSizesFrom{minRectSize}To{maxRectSize}.png";
+            var dirPath = @"../../../ExamplePictures";
+            bmpVisualizer.Save(fileName, new DirectoryInfo(dirPath));
+            bmpVisualizer.Dispose();
         }
     }
 }

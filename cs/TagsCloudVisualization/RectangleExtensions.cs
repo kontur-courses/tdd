@@ -21,7 +21,9 @@ namespace TagsCloudVisualization
                 new Size(rightXCoordinate - leftXCoordinate, bottomYCoordinate - topYCoordinate));
         }
 
-        public static int GetSummaryArea(this IEnumerable<Rectangle> rectangles) =>
-            rectangles.Select(rect => rect.Width * rect.Height).Sum();
+        public static int GetSummaryArea(this IEnumerable<Rectangle> rectangles)
+        {
+            return rectangles.Select(rect => rect.Width * rect.Height).Sum();
+        }
     }
 }
