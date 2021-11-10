@@ -98,11 +98,15 @@ namespace TagsCloudVisualization
             var secondRectangle = layouter.PutNextRectangle(new Size(11, 10));
 
             secondRectangle.Should()
-                .Match<Rectangle>(second =>
-                firstRectangle.Bottom == second.Top
-                || firstRectangle.Top == second.Bottom
-                || firstRectangle.Left == second.Right
-                || firstRectangle.Right == second.Left);
+                .Match<Rectangle>(second => IsNextToEachOther(firstRectangle, second));
+        }
+
+        private static bool IsNextToEachOther(Rectangle first, Rectangle second)
+        {
+            return first.Bottom == second.Top
+                   || first.Top == second.Bottom
+                   || first.Left == second.Right
+                   || first.Right == second.Left;
         }
 
         [Test]
@@ -167,13 +171,12 @@ namespace TagsCloudVisualization
             layouter = new CachedCircularLayouter(expectedCenter);
             var size = new Size(10, 11);
 
-            var rectangles = new List<Rectangle>(count);
             for (var i = 0; i < count; i++)
             {
-                rectangles.Add(layouter.PutNextRectangle(size));
+                layouter.PutNextRectangle(size);
             }
 
-            var resultRectangles = rectangles.Select((rectangle, i) => (rectangle, i));
+            var resultRectangles = layouter.Rectangles.Select((rectangle, i) => (rectangle, i));
 
             resultRectangles.Should()
                 .OnlyContain(rectangle => resultRectangles
@@ -192,13 +195,11 @@ namespace TagsCloudVisualization
 
             var radius = 0d;
             var area = 0;
-            var rectangles = new List<Rectangle>(count);
             for (var i = 0; i < count; i++)
             {
                 var size = new Size(rnd.Next(maxSize) + 1, rnd.Next(maxSize) + 1);
                 area += size.GetArea();
                 var rectangle = layouter.PutNextRectangle(size);
-                rectangles.Add(rectangle);
                 var maxDistance = rectangle.GetCenter().DistanceTo(expectedCenter);
                 if (maxDistance > radius)
                     radius = maxDistance;

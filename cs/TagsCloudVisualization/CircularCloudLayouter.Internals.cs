@@ -14,8 +14,8 @@ namespace TagsCloudVisualization.Internals
 
         public static Rectangle GetRectangleAt(this SlottedAnchor anchor, Direction direction, Size size)
         {
-            var rectangle = new Rectangle(anchor.GetLocationForSlotAt(direction, size), size);
-            return rectangle;
+            var location = anchor.GetLocationForSlotAt(direction, size);
+            return new(location, size);
         }
 
         private static Point GetLocationForSlotAt(this SlottedAnchor anchor, Direction direction, Size size)

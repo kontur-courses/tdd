@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 
 namespace TagsCloudVisualization
@@ -8,7 +7,9 @@ namespace TagsCloudVisualization
     {
         public static double DistanceTo(this Point from, Point to)
         {
-            return Math.Sqrt((from.X - to.X) * (from.X - to.X) + (from.Y - to.Y) * (from.Y - to.Y));
+            var dX = from.X - to.X;
+            var dY = from.Y - to.Y;
+            return Math.Sqrt(dX * dX + dY * dY);
         }
 
         public static double Length(this Point from)
@@ -19,14 +20,6 @@ namespace TagsCloudVisualization
         public static Point GetCenter(this Rectangle rectangle)
         {
             return rectangle.Location + rectangle.Size / 2;
-        }
-
-        public static IEnumerable<Point> GetAllPoints(this Rectangle rectangle)
-        {
-            yield return rectangle.Location;
-            yield return new Point(rectangle.Left, rectangle.Bottom);
-            yield return new Point(rectangle.Right, rectangle.Top);
-            yield return new Point(rectangle.Right, rectangle.Bottom);
         }
 
         public static int GetArea(this Size size)
