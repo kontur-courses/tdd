@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
     public class CircularCloudLayouter_Tests
@@ -50,13 +49,18 @@ namespace TagsCloudVisualization
             var cloudLayouter = new CircularCloudLayouter(centre);
             var size = new Size(3, 2);
             var expLocation1 = new Point(-2, -3);
-            var expLocation2 = new Point(-2, 3);
+            var expLocation2 = new Point(-2, 1);
 
-            PutManiRectangles(cloudLayouter, size, 3);
+            PutManiRectangles(cloudLayouter, size, 6);
 
 
             cloudLayouter.GetRectangles()[1].Location.Should().Be(expLocation1);
             cloudLayouter.GetRectangles()[2].Location.Should().Be(expLocation2);
+            
+            Assert.IsFalse(cloudLayouter.GetRectangles()
+                .SelectMany(x => cloudLayouter.GetRectangles()
+                    .Select(y => (x, y))).Where(x => x.x != x.y)
+                .Any(pair=>pair.x.IntersectsWith(pair.y)));
         }
 
         private void PutManiRectangles(CircularCloudLayouter cloudLayouter, Size size, int count)

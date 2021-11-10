@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -60,6 +61,7 @@ namespace TagsCloudVisualization.Tests
             actualLocation.Should().Be(expectedLocation);
         }
 
+        
         [TestCase(0, 0, 2, 2, 1, 1)]
         [TestCase(1, 1, 3, 2, 2.5f, 2)]
         [TestCase(0, 0, 0, 0, 0, 0)]
@@ -68,12 +70,26 @@ namespace TagsCloudVisualization.Tests
             (int x, int y, int width, int height, float xExpect, float yExpect)
         {
             var rectangle = new Rectangle(x, y, width, height);
-            var expectedCentre = new PointF(xExpect, yExpect);
 
             var actualCentre = GeometryHelper.GetRectangleCentre(rectangle);
 
-            actualCentre.X.Should().BeApproximately(expectedCentre.X, Delta);
-            actualCentre.Y.Should().BeApproximately(expectedCentre.Y, Delta);
+            actualCentre.X.Should().BeApproximately(xExpect, Delta);
+            actualCentre.Y.Should().BeApproximately(yExpect, Delta);
+        }
+
+        
+        [TestCase(0, 0, 1, MathF.PI / 2, 0, -1)]
+        [TestCase(0, 0, 1, 0, 1, 0)]
+        [TestCase(1, 1, 1, MathF.PI / 2, 1, 0)]
+        [TestCase(1, 1, 1, 0, 2, 1)]
+        public void GetPointOnCircle_ShouldBe_ExpectedValue
+            (int cX, int cY, float radius, float angle, float expX, float expY)
+        {
+            var centre = new Point(cX, cY);
+            var actualPoint = GeometryHelper.GetPointOnCircle(centre, radius, angle);
+
+            actualPoint.X.Should().BeApproximately(expX, Delta);
+            actualPoint.Y.Should().BeApproximately(expY, Delta);
         }
     }
 }

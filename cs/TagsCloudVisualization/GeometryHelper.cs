@@ -28,5 +28,13 @@ namespace TagsCloudVisualization
 
             return new Point(x, y);
         }
+
+        public static PointF GetPointOnCircle(Point centre, float radius, float angle)
+        {
+            var x = centre.X + MathF.Cos(angle) * radius;
+            var y = centre.Y - MathF.Sin(angle) * radius;
+
+            return new PointF(x, y);
+        }
     }
 }
