@@ -11,9 +11,10 @@ namespace TagsCloudVisualization
         {
             var rectangles = GenerateRandomRectangles(count, scale);
             var (width, height) = FitRectangles(rectangles);
-            ReplaceRectangles(rectangles, width + 100, height + 100);
+            const int padding = 100;
+            ReplaceRectangles(rectangles, width + padding, height + padding);
 
-            var bitmap = CreateBitmap(rectangles, width, height, $"random-count{count}-scale{scale}", guidingCircle, true, 100);
+            var bitmap = CreateBitmap(rectangles, width, height, $"random-count{count}-scale{scale}", guidingCircle, true, padding);
 
             return bitmap;
         }
@@ -82,26 +83,42 @@ namespace TagsCloudVisualization
         private static Bitmap CreateBitmap(IEnumerable<Rectangle> rectangles, int width, int height, string name,
             bool guidingCircle = false, bool autoSave = false, int padding = 0)
         {
-            var bitmap = new Bitmap(width + padding, height + padding);
+            var bitmapWidth = width + padding;
+            var bitmapHeight = height + padding;
+            var bitmap = new Bitmap(bitmapWidth, bitmapHeight);
             using (var bitmapGraphics = Graphics.FromImage(bitmap))
             {
                 bitmapGraphics.Clear(Color.Black);
                 foreach (var rectangle in rectangles)
                 {
-                    bitmapGraphics.FillRectangle(Brushes.Red, rectangle);
-                    bitmapGraphics.DrawRectangle(Pens.Gray, rectangle);
+                    DrawRectangle(bitmapGraphics, rectangle);
                 }
 
                 if (guidingCircle)
                 {
                     var radius = Math.Max(height, width);
-                    bitmapGraphics.DrawEllipse(Pens.LightGray, (width - radius + padding) / 2, (height - radius + padding) / 2, radius, radius);
+                    DrawGuidingCircle(bitmapWidth, bitmapHeight, bitmapGraphics, radius);
                 }
             }
 
             if (autoSave)
                 bitmap.Save($"{name}.png", ImageFormat.Png);
             return bitmap;
+        }
+
+        private static void DrawRectangle(Graphics bitmapGraphics, Rectangle rectangle)
+        {
+            bitmapGraphics.FillRectangle(Brushes.Red, rectangle);
+            bitmapGraphics.DrawRectangle(Pens.Gray, rectangle);
+        }
+
+        private static void DrawGuidingCircle(int bitmapWidth, int bitmapHeight, Graphics bitmapGraphics, int radius)
+        {
+            bitmapGraphics.DrawEllipse(Pens.LightGray, (bitmapWidth - radius) / 2, (bitmapHeight - radius) / 2, radius, radius);
+            const int centerPointRadius = 2;
+            bitmapGraphics.FillEllipse(Brushes.White, bitmapWidth / 2 - centerPointRadius,
+                                                      bitmapHeight / 2 - centerPointRadius,
+                                                      2 * centerPointRadius, 2 * centerPointRadius);
         }
     }
 }
