@@ -14,14 +14,14 @@ namespace TagCloudVisualizationTests
 {
     public class CircularCloudLayouterTests
     {
-        private CircularCloudLayouter sut;
+        private CircularCloudLayouter layouter;
         private Point center;
 
         [SetUp]
         public void SetUp()
         {
             center = new Point(100, 100);
-            sut = new CircularCloudLayouter(center);
+            layouter = new CircularCloudLayouter(center);
         }
 
         [TearDown]
@@ -34,7 +34,7 @@ namespace TagCloudVisualizationTests
             {
                 var rectangles = (List<Rectangle>)typeof(CircularCloudLayouter)
                     .GetField("rectangles", BindingFlags.Instance | BindingFlags.NonPublic)
-                    .GetValue(sut);
+                    .GetValue(layouter);
                 
                 foreach (var rectangle in rectangles)
                     visualizator.DrawRectangle(rectangle);
@@ -49,21 +49,25 @@ namespace TagCloudVisualizationTests
             }
         }
 
-        [TestCase(0, 0, TestName = "WithZeroPoint")]
-        [TestCase(100, 100, TestName = "WithNonZeroPoint")]
-        public void CtorShouldHaveCenter(int x, int y)
+        [TestCase(0, 0, TestName = "With Zero Point")]
+        [TestCase(100, 100, TestName = "With Non Zero Point")]
+        public void CtorShouldSetCenter(int x, int y)
         {
             var layouter = new CircularCloudLayouter(new Point(x, y));
+            var expected = new Point(x, y);
 
-            layouter.Center.Should().Be(new Point(x, y));
+            layouter.Center.Should().Be(expected);
         }
 
         [TestCaseSource(nameof(CasesForPutNextRectangles))]
         public void PutNextRectangles(int rectanglesNumber, Point expectedLocation)
         {
+            var size = new Size(50, 50);
+
             for (var i = 0; i < rectanglesNumber; i++)
-                sut.PutNextRectangle(new Size(50, 50));
-            var rectangle = sut.PutNextRectangle(new Size(50, 50));
+                layouter.PutNextRectangle(size);
+            var rectangle = layouter.PutNextRectangle(size);
+
             rectangle.Location.Should().Be(expectedLocation);
         }
 
@@ -72,18 +76,18 @@ namespace TagCloudVisualizationTests
             get
             {
                 yield return new TestCaseData(0, new Point(75, 75))
-                    .SetName("FirstRectangleShouldBeCenter");
+                    .SetName("First Rectangle Should Be Center");
                 yield return new TestCaseData(1, new Point(75, 25))
-                    .SetName("SecondRectangleShouldBeOverFirst");
+                    .SetName("Second Rectangle Should Be Over First");
                 yield return new TestCaseData(4, new Point(25, 75))
-                    .SetName("RectangleShouldGoClockwise");
+                    .SetName("Rectangle Should Go Clockwise");
             }
         }
 
         [TestCaseSource(nameof(CasesForPutNextRectangleThrows))]
         public void PutNextRectangle_ShouldThrows(Size rectangleSize)
         {
-            Assert.Throws<ArgumentException>(() => sut.PutNextRectangle(rectangleSize));
+            Assert.Throws<ArgumentException>(() => layouter.PutNextRectangle(rectangleSize));
         }
 
         private static IEnumerable<TestCaseData> CasesForPutNextRectangleThrows
@@ -91,17 +95,17 @@ namespace TagCloudVisualizationTests
             get
             {
                 yield return new TestCaseData(new Size(0, 1))
-                    .SetName("WhenSizeWidthZero");
+                    .SetName("When Size Width Zero");
                 yield return new TestCaseData(new Size(1, 0))
-                    .SetName("WhenSizeHeightZero");
+                    .SetName("When Size Height Zero");
                 yield return new TestCaseData(new Size(0, 0))
-                    .SetName("WhenSizeWidthAndHeightZero");
+                    .SetName("When Size Width And Height Zero");
                 yield return new TestCaseData(new Size(-1, 1))
-                    .SetName("WhenNegativeSizeWidth");
+                    .SetName("When Negative Size Width");
                 yield return new TestCaseData(new Size(1, -1))
-                    .SetName("WhenNegativeSizeHeight");
+                    .SetName("When Negative Size Height");
                 yield return new TestCaseData(new Size(-1, -1))
-                    .SetName("WhenNegativeSizeWidthAndHeight");
+                    .SetName("When Negative Size Width And Height");
             }
         }
 
@@ -109,9 +113,10 @@ namespace TagCloudVisualizationTests
         public void PutNextRectangle_ShouldNotIntersectWithOther()
         {
             var rectangles = new List<Rectangle>();
+            var size = new Size(10, 10);
 
             for (var i = 0; i < 50; i++)
-                rectangles.Add(sut.PutNextRectangle(new Size(10, 10)));
+                rectangles.Add(layouter.PutNextRectangle(size));
             var rectanglesCopy = rectangles.ToArray();
 
             rectangles.Count(rect => rectanglesCopy
@@ -126,7 +131,7 @@ namespace TagCloudVisualizationTests
             var random = new Random();
 
             for (var i = 0; i < 100; i++)
-                rectangles[i] = sut.PutNextRectangle(new Size(random.Next(5, 100), random.Next(5, 100)));
+                rectangles[i] = layouter.PutNextRectangle(new Size(random.Next(5, 100), random.Next(5, 100)));
 
             CalculateDensityRatio(rectangles).Should().BeGreaterOrEqualTo(0.5);
         }
