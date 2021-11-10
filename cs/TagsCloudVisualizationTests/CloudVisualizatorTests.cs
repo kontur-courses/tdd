@@ -40,12 +40,12 @@ namespace TagCloudVisualizationTests
         [TestCaseSource(nameof(CasesForDrawRectangle))]
         public void DrawRectangle_Should(int pixelX, int pixelY, int expectedARGBColor)
         {
-            var bitmap = (Bitmap) typeof(CloudVisualizator)
+            var bitmap = (Bitmap)typeof(CloudVisualizator)
                 .GetField(nameof(Bitmap).ToLower(), BindingFlags.Instance | BindingFlags.NonPublic)
                 .GetValue(visualizator);
 
             visualizator.DrawRectangle(new Rectangle(50, 50, 50, 50));
-                
+
             bitmap.GetPixel(pixelX, pixelY).ToArgb()
                 .Should().Be(expectedARGBColor);
         }
@@ -70,7 +70,7 @@ namespace TagCloudVisualizationTests
 
             visualizator.DrawRectangle(rectangle);
             visualizator.SaveImage("test.png", ImageFormat.Png);
-            
+
             Directory.GetFiles(Environment.CurrentDirectory)
                 .Should().Contain(Environment.CurrentDirectory + "\\test.png");
         }

@@ -35,7 +35,7 @@ namespace TagCloudVisualizationTests
                 var rectangles = (List<Rectangle>)typeof(CircularCloudLayouter)
                     .GetField("rectangles", BindingFlags.Instance | BindingFlags.NonPublic)
                     .GetValue(layouter);
-                
+
                 foreach (var rectangle in rectangles)
                     visualizator.DrawRectangle(rectangle);
 
