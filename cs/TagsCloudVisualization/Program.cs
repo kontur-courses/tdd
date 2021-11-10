@@ -12,7 +12,7 @@ namespace TagsCloudVisualization
         static void Main(string[] args)
         {
             //https://github.com/kontur-courses/tdd/blob/master/HomeExercise.md
-            var layouter = new SimpleCircularCloudLayouter(new Point(1000, 1000));
+            var layouter = new CircularCloudLayouter(new Point(1000, 1000));
             var visualizer = new Visualizer(layouter, new Random(12345), 2000, 2000);
             CreateImageFromJPGS(visualizer);
             Console.WriteLine("Hello World!");
@@ -20,9 +20,19 @@ namespace TagsCloudVisualization
         
         static void CreateImageFromRectangles(Visualizer visualizer)
         {
-            var rectanglesCount = 500;
-            var size = new Size(100, 100);
-            var rectangles = Enumerable.Range(1, rectanglesCount).Select(x => size).ToArray();
+            var rectanglesCount = 300;
+            var rnd = new Random(123);
+            var rectangles = Enumerable.Range(1, rectanglesCount)
+                .Select(x => new Size(100, rnd.Next(50, 200)))
+                .ToArray();
+            var res = visualizer.CreateImageFromRectangles(rectangles);
+            File.WriteAllBytes("result.jpg", res);
+        }
+        
+        static void CreateImageFromSquares(Visualizer visualizer, int rectanglesCount, int squareSize)
+        {
+            var size = new Size(squareSize, squareSize);
+            var rectangles = Enumerable.Repeat(size, rectanglesCount).ToArray();
             var res = visualizer.CreateImageFromRectangles(rectangles);
             File.WriteAllBytes("result.jpg", res);
         }

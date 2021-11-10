@@ -46,7 +46,7 @@ namespace TagsCloudVisualization
         {
             var pictures = Directory.GetFiles(pathToFolder);
             pictures = pictures.OrderBy(x => random.Next()).ToArray();
-            using (var bmp = new Bitmap(2000, 2000))
+            using (var bmp = new Bitmap(bitmapWidth, bitmapHeight))
             {
                 using (Graphics g = Graphics.FromImage(bmp))
                 {
@@ -76,7 +76,7 @@ namespace TagsCloudVisualization
             const int maxColor = 225;
 
             return Color.FromArgb(
-                random.Next(minColor, maxColor),
+                random.Next(minColor, maxColor), 
                 random.Next(minColor, maxColor),
                 random.Next(minColor, maxColor));
         }

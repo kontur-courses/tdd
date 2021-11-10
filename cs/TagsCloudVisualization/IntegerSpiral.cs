@@ -17,33 +17,58 @@ namespace TagsCloudVisualization
         {
             yield return center;
 
-            var spiralSize = 1;
+            var chebyshevDistance = 1;
             while (true)
             {
-                for (var dx = -spiralSize; dx <= spiralSize; dx++)
-                {
-                    yield return new Point(center.X + dx, center.Y - spiralSize);
-                }
+                foreach (var point in GetUpperPoints(chebyshevDistance))
+                    yield return point;
 
-                for (int dy = -spiralSize + 1; dy <= spiralSize; dy++)
-                {
-                    yield return new Point(center.X + spiralSize, center.Y + dy);
-                }
+                foreach (var point in GetRightPoints(chebyshevDistance))
+                    yield return point;
 
-                for (int dx = -spiralSize + 1; dx <= spiralSize; dx++)
-                {
-                    yield return new Point(center.X - dx, center.Y + spiralSize);
-                }
+                foreach (var point in GetLowerPoints(chebyshevDistance))
+                    yield return point;
 
-                for (int dy = -spiralSize + 1; dy < spiralSize; dy++)
-                {
-                    yield return new Point(center.X - spiralSize, center.Y - dy);
-                }
-
-                spiralSize++;
+                foreach (var point in GetLeftPoints(chebyshevDistance))
+                    yield return point;
+               
+                chebyshevDistance++;
             }
         }
 
+        private IEnumerable<Point> GetUpperPoints(int chebyshevDistance)
+        {
+            for (var dx = -chebyshevDistance; dx <= chebyshevDistance; dx++)
+            {
+                yield return new Point(center.X + dx, center.Y - chebyshevDistance);
+            }
+        }
+        
+        private IEnumerable<Point> GetRightPoints(int chebyshevDistance)
+        {
+            for (var dy = -chebyshevDistance + 1; dy <= chebyshevDistance; dy++)
+            {
+                yield return new Point(center.X + chebyshevDistance, center.Y + dy);
+            }
+        }
+
+        private IEnumerable<Point> GetLowerPoints(int chebyshevDistance)
+        {
+            for (var dx = -chebyshevDistance + 1; dx <= chebyshevDistance; dx++)
+            {
+                yield return new Point(center.X - dx, center.Y + chebyshevDistance);
+            }
+        }
+        
+        private IEnumerable<Point> GetLeftPoints(int chebyshevDistance)
+        {
+            for (var dy = -chebyshevDistance + 1; dy < chebyshevDistance; dy++)
+            {
+                yield return new Point(center.X - chebyshevDistance, center.Y - dy);
+            }
+        }
+        
+        
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

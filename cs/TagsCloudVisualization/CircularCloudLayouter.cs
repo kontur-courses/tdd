@@ -5,14 +5,14 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class SimpleCircularCloudLayouter : ILayouter
+    public class CircularCloudLayouter : ILayouter
     {
         private Point center;
         private List<Rectangle> rectangles = new List<Rectangle>();
         private IntegerSpiral spiral;
         private IEnumerator<Point> spiralEnumerator;
 
-        public SimpleCircularCloudLayouter(Point center)
+        public CircularCloudLayouter(Point center)
         {
             this.center = center;
             this.spiral = new IntegerSpiral(center);

@@ -71,6 +71,28 @@ namespace TagsCloudVisualizationTests
 
             firstSpiralPoints.Intersect(secondSpiralPoints).Should().BeEmpty();
         }
+
+        
+        //А такой тест не нарушает паттерн AAA?
+        [Test]
+        public void ReturnValuesWithIncreasingChebyshevDistance()
+        {
+            var startPoint = new Point(5, 6);
+            var spiral = new IntegerSpiral(startPoint);
+
+            var maxDistance = 0;
+            var pointsCount = 500;
+            
+            foreach (var point in spiral.Take(pointsCount))
+            {
+                var distance = Math.Max(
+                    Math.Abs(point.X - startPoint.X),
+                    Math.Abs(point.Y - startPoint.Y));
+                distance.Should().BeGreaterOrEqualTo(maxDistance);
+
+                maxDistance = distance;
+            }
+        }
         
         [Test]
         [Timeout(1000)]
