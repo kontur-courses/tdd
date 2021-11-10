@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
+using System.IO;
 
 namespace TagsCloudVisualization
 {
@@ -6,26 +8,16 @@ namespace TagsCloudVisualization
     {
         private static void Main()
         {
-            CreatePictureWithRandomRectangles(100, 1920, 1080);
-            CreatePictureWithRandomRectangles(200, 1920, 1080);
-            CreatePictureWithSameRectangles(50, 1920, 1080, new Size(50, 50));
-        }
+            var layouter = new CircularCloudLayouter(new Point(1500, 1500));
+            var rnd = new Random();
+            for (var i = 0; i < 1000; i++)
+            {
+                layouter.PutNextRectangle(new Size(rnd.Next(50, 200), rnd.Next(50, 200)));
+            }
 
-        private static void CreatePictureWithRandomRectangles(int count, int width, int height)
-        {
-            var bmpVisualizer = new BitmapVisualizer(width, height);
-            bmpVisualizer.GenerateRandomRectangles(count);
+            var bmpVisualizer = new BitmapVisualizer(layouter.Rectangles.ToArray());
             bmpVisualizer.DrawRectangles(Color.Black, Color.Red);
-            bmpVisualizer.SaveToFile($"{count}-randomRectangles.png");
-        }
-
-        private static void CreatePictureWithSameRectangles(int count, int width, int height, Size rectangleSize)
-        {
-            var bmpVisualizer = new BitmapVisualizer(width, height);
-            bmpVisualizer.GenerateRectanglesWithSize(count, rectangleSize);
-            bmpVisualizer.DrawRectangles(Color.Black, Color.Red);
-            bmpVisualizer.SaveToFile(
-                $"{count}RectanglesWithSize-width{rectangleSize.Width}-height{rectangleSize.Height}.png");
+            bmpVisualizer.Save("example.png");
         }
     }
 }

@@ -20,22 +20,12 @@ namespace TagsCloudVisualization
         {
             if (rectangles.Length == 0) throw new ArgumentException("rectangles should contain at least 1 rectangle");
             this.rectangles = rectangles ?? throw new ArgumentNullException();
-            rectanglesContainer = GetRectangleContainer();
+            rectanglesContainer = rectangles.GetRectanglesContainer();
             var optimalSize = GetOptimalBitmapSize();
             bmp = new Bitmap(optimalSize.Width, optimalSize.Height);
             OffsetRectanglesToCenter();
             graphics = Graphics.FromImage(bmp);
             pen = new Pen(Color.Black);
-        }
-
-        private Rectangle GetRectangleContainer()
-        {
-            var leftXCoordinate = rectangles.Min(rect => rect.Left);
-            var rightXCoordinate = rectangles.Max(rect => rect.Right);
-            var topYCoordinate = rectangles.Min(rect => rect.Top);
-            var bottomYCoordinate = rectangles.Max(rect => rect.Bottom);
-            return new Rectangle(new Point(leftXCoordinate, topYCoordinate),
-                new Size(rightXCoordinate - leftXCoordinate, bottomYCoordinate - topYCoordinate));
         }
 
         private Size GetOptimalBitmapSize() =>
@@ -59,6 +49,7 @@ namespace TagsCloudVisualization
         public void Save(string fileName, DirectoryInfo dir = null)
         {
             dir = dir ?? new DirectoryInfo(Environment.CurrentDirectory);
+            if(!dir.Exists) dir.Create();
             if(dir.CanWrite())
                 bmp.Save(Path.Combine(dir.FullName, fileName));
             else

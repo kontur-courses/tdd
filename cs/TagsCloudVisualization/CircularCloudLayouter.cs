@@ -27,7 +27,7 @@ namespace TagsCloudVisualization
             do
             {
                 nextRectangle = new Rectangle(pointsCreator.GetNextPoint(), size);
-            } while (nextRectangle.IntersectWith(Rectangles));
+            } while (nextRectangle.IntersectsWith(Rectangles));
 
             Rectangles.Add(nextRectangle);
             return nextRectangle;

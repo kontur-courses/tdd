@@ -9,8 +9,8 @@ namespace TagsCloudVisualization
     {
         internal static bool CanWrite(this DirectoryInfo directory)
         {
-            var attrs = directory.GetAccessControl(AccessControlSections.Access);
-            var rules = attrs.GetAccessRules(true, true, typeof(NTAccount));
+            var dirACS = directory.GetAccessControl(AccessControlSections.Access);
+            var rules = dirACS.GetAccessRules(true, true, typeof(NTAccount));
             var NtAccountName = $"{Environment.UserDomainName}\\{Environment.UserName}";
             foreach (AuthorizationRule rule in rules)
             {
