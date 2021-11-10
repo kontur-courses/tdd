@@ -14,7 +14,7 @@ namespace TagsCloudVisualization
         public Visualizer(Size size)
         {
             cloudLayouter =
-                new CircularCloudLayouter(new PointF(size.Width / 2f, size.Height / 2f), new Spiral(1f, 0.2f));
+                new CircularCloudLayouter(new PointF(size.Width / 2f, size.Height / 2f), new Spiral(0.5f, 2f));
             bitmap = new Bitmap(size.Width, size.Height);
             graphics = Graphics.FromImage(bitmap);
         }
@@ -28,7 +28,7 @@ namespace TagsCloudVisualization
 
         private void DrawString(string word, Font font)
         {
-            var wordSize = graphics.MeasureString(word, font).ToSize() + new Size(1, 1);
+            var wordSize = graphics.MeasureString(word, font).ToSize();
             var wordRectangle = cloudLayouter.PutNextRectangle(wordSize);
             graphics.DrawString(word, font, Brush, wordRectangle, StringFormat.GenericDefault);
         }

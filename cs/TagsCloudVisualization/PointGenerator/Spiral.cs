@@ -9,24 +9,28 @@ namespace TagsCloudVisualization.PointGenerator
     {
         private readonly float spiralPitch;
         private readonly float anglePitch;
+        private static Random random;
         public Spiral(float spiralPitch, float anglePitch)
         {
             this.spiralPitch = spiralPitch;
             this.anglePitch = anglePitch;
+            random = new Random();
         }
         public IEnumerable<PointF> GetPoints(PointF center)
         {
-            return GetArchimedeanSpiral(0).Select(point => new PointF(point.X + center.X, point.Y + center.Y));
+            var startAngle = (float)(random.NextDouble()*Math.PI/2);
+            return GetArchimedeanSpiral(startAngle).Select(point => new PointF(point.X + center.X, point.Y + center.Y));
         }
 
         private IEnumerable<PointF> GetArchimedeanSpiral(float startAngle)
         {
+            var currentAngle = startAngle;
             while (true)
             {
-                var r = (float)(spiralPitch * startAngle / (2 * Math.PI));
-                var (x,y) = PolarToCartesian(r, startAngle);
+                var r = (float)(spiralPitch * currentAngle / (2 * Math.PI));
+                var (x,y) = PolarToCartesian(r, currentAngle);
                 yield return new PointF(x, y);
-                startAngle += anglePitch;
+                currentAngle += anglePitch;
             }
         }
 

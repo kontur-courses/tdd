@@ -10,7 +10,7 @@ namespace TagsCloudVisualization
             var tags = new List<(string, Font)>();
             for (var i = 5; i < 500; i++)
             {
-                tags.Add(("2", new Font("Arial", 15)));
+                tags.Add(("o", new Font("Arial", 15)));
             }
 
             var visualizer = new Visualizer(new Size(1200, 900));

@@ -29,16 +29,7 @@ namespace TagsCloudVisualization
             tagCloud.Add(tag);
             return tag;
         }
-
-        public IEnumerable<RectangleF> GetCloud()
-        {
-            return tagCloud;
-        }
-
-        public RectangleF GetBounds()
-        {
-            return GetCloud().Aggregate(new RectangleF(), RectangleF.Union);
-        }
+        
 
         private PointF GetNextPosition(Size size)
         {
