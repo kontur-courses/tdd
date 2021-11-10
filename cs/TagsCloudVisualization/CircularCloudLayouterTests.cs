@@ -106,7 +106,7 @@ namespace TagsCloudVisualization
 
         [TestCaseSource(typeof(TestsData), nameof(TestsData.RectanglesFormCircleData), Category = SnapshotTestTag)]
         [TestCaseSource(typeof(TestsData), nameof(TestsData.MultipleRandomRectSizesData),
-            new object[] {200, 1, 1, 1, 1, 1}, Category = SnapshotTestTag)]
+            new object[] {200, 1, 10, 10, 10, 10}, Category = SnapshotTestTag)]
         public void CircularCloudLayouter_RectsShouldFormCircle(Point layoutCenter, IEnumerable<Size> rectSizes)
         {
             layout = new CircularCloudLayouter(layoutCenter);
