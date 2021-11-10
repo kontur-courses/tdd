@@ -15,9 +15,10 @@ namespace TagsCloudVisualization
             for (var i = 0; i < 80; i++)
             {
                 var size = new Size(random.Next(5, 100), random.Next(5, 100));
-                visualizer.DrawRectangle(layouter.PutNextRectangle(size));
+                layouter.PutNextRectangle(size);
             }
 
+            visualizer.DrawRectangles(layouter.Rectangles);
             visualizer.SaveImage("80rectangles_with_random_size.png", ImageFormat.Png);
         }
     }

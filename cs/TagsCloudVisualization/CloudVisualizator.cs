@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Imaging;
 
 namespace TagsCloudVisualization
@@ -22,6 +23,12 @@ namespace TagsCloudVisualization
         {
             graph.FillRectangle(brush, rectangle);
             graph.DrawRectangle(pen, rectangle);
+        }
+
+        public void DrawRectangles(IEnumerable<Rectangle> rectangles)
+        {
+            foreach (var rect in rectangles)
+                DrawRectangle(rect);
         }
 
         public void SaveImage(string filename, ImageFormat format)
