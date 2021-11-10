@@ -182,6 +182,34 @@ namespace TagsCloudVisualization
                 "every rectangle should not intersect with others");
         }
 
+        [TestCase(100, 50)]
+        [TestCase(1000, 50)]
+        public void CloudForm_ShouldBeCloseToCircle(int count, int maxSize)
+        {
+            var expectedCenter = Point.Empty;
+            layouter = new CachedCircularLayouter(expectedCenter);
+            var rnd = new Random();
+
+            var radius = 0d;
+            var area = 0;
+            var rectangles = new List<Rectangle>(count);
+            for (var i = 0; i < count; i++)
+            {
+                var size = new Size(rnd.Next(maxSize) + 1, rnd.Next(maxSize) + 1);
+                area += size.GetArea();
+                var rectangle = layouter.PutNextRectangle(size);
+                rectangles.Add(rectangle);
+                var maxDistance = rectangle.GetCenter().DistanceTo(expectedCenter);
+                if (maxDistance > radius)
+                    radius = maxDistance;
+            }
+
+            var mainCircleArea = Math.PI * radius * radius;
+            var resultingDensity = area / mainCircleArea;
+
+            resultingDensity.Should().BeGreaterThan(0.7);
+        }
+
         [TestCase(20)]
         public void PuttingRectanglesShouldBeFast(int seconds)
         {
