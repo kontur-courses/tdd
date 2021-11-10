@@ -50,14 +50,28 @@ namespace TagsCloudVisualization
             for (var i = 0; i < rectangles.Length; i++) rectangles[i].Offset(offset);
         }
 
-        public void Save(string fileName, DirectoryInfo dir = null)
+        public void Save(string fileName, double scaleCoeff = 1, DirectoryInfo dir = null)
         {
             dir = dir ?? new DirectoryInfo(Environment.CurrentDirectory);
             if (!dir.Exists) dir.Create();
+            var resizedBmp = Resize(scaleCoeff);
             if (dir.CanWrite())
-                bmp.Save(Path.Combine(dir.FullName, fileName));
+                resizedBmp.Save(Path.Combine(dir.FullName, fileName));
             else
                 throw new AccessViolationException("can't write to this directory");
+            resizedBmp.Dispose();
+        }
+
+        private Bitmap Resize(double scale)
+        {
+            if (scale <= 0) throw new ArgumentException("scale should be positive");
+            var newWidth = (int) (Width * scale);
+            var newHeight = (int) (Height * scale);
+            var result = new Bitmap(newWidth, newHeight);
+            var graphics = Graphics.FromImage(result);
+            graphics.DrawImage(bmp, 0, 0, newWidth, newHeight);
+            graphics.Dispose();
+            return result;
         }
 
         public void DrawRectangles(Color backgroundColor, Color outlineColor)

@@ -22,7 +22,10 @@ namespace TagsCloudVisualization
             var isSameSizedString = isSameSized ? "SameSized" : "Different";
             var fileName = $@"{count}{isSameSizedString}RectanglesWithSizesFrom{minRectSize}To{maxRectSize}.png";
             var dirPath = @"../../../ExamplePictures";
-            bmpVisualizer.Save(fileName, new DirectoryInfo(dirPath));
+            var scaleCoeff = bmpVisualizer.Width > 1920 || bmpVisualizer.Height > 1080
+                ? (1920d / bmpVisualizer.Width + 1080d / bmpVisualizer.Height) / 2
+                : 1;
+            bmpVisualizer.Save(fileName, scaleCoeff, new DirectoryInfo(dirPath));
             bmpVisualizer.Dispose();
         }
     }
