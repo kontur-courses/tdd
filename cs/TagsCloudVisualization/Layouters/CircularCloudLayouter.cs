@@ -8,6 +8,9 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter : ILayouter<Rectangle>
     {
+        private const int MinimumDegreesValueForVisibleNonIntersection = 5;
+        private const int MinimumDensityValueForVisibleNonIntersection = 5;
+        
         private readonly IEnumerator<Point> pointSpiral;
         private readonly HashSet<Rectangle> issuedRectangles;
 
@@ -15,22 +18,22 @@ namespace TagsCloudVisualization
         {
             issuedRectangles = new HashSet<Rectangle>();
             
-            pointSpiral = PointSpiralBuilder
-                .APointSpiral()
-                .WithCenter(center)
-                .WithDegreesDelta(5)
-                .WithDensityParameter(5)
-                .Build()
-                .GetEnumerator();
+            pointSpiral = new PointSpiral(
+                    center,
+                    MinimumDensityValueForVisibleNonIntersection,
+                    MinimumDegreesValueForVisibleNonIntersection
+                ).GetEnumerator();
         }
         
-        public CircularCloudLayouter(IEnumerable<Point> spotPoints)
+        public CircularCloudLayouter(IInfinityPointsEnumerable spotPoints)
         {
             if (spotPoints is null)
                 throw new ArgumentException("spotPoints should be not null");
             
             issuedRectangles = new HashSet<Rectangle>();
-            pointSpiral = spotPoints.GetEnumerator();
+            pointSpiral = spotPoints
+                .GetPoints()
+                .GetEnumerator();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)

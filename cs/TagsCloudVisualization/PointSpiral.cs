@@ -5,13 +5,13 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public class PointSpiral : IEnumerable<Point>
+    public class PointSpiral : IInfinityPointsEnumerable, IEnumerable<Point>
     {
         private readonly Point center;
         private readonly float dtheta;
         private readonly float densityParameter;
 
-        public PointSpiral(Point center, float densityParameter = 1, int degreesDelta = 5)
+        public PointSpiral(Point center, float densityParameter = 1, int degreesDelta = 1)
         {
             if (densityParameter <= 0f)
                 throw new ArgumentException("densityParameter should be positive");

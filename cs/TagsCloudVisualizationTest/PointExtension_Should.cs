@@ -3,7 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization;
 
-namespace TestProject1
+namespace TagsCloudVisualizationTest
 {
     [TestFixture]
     public class PointExtension_Should

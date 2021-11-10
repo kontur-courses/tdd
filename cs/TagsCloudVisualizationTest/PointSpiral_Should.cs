@@ -7,7 +7,7 @@ using TagsCloudVisualization;
 using static FluentAssertions.FluentActions;
 
 
-namespace TestProject1
+namespace TagsCloudVisualizationTest
 {
     [TestFixture]
     public class PointSpiral_Should
@@ -81,7 +81,7 @@ namespace TestProject1
                 .APointSpiral()
                 .WithCenter(new Point(x, y))
                 .Build()
-                .GetPoints()
+                // .GetPoints()
                 .First();
             
             actual.Should().Be(expected, $"X = {x}; Y = {y}");

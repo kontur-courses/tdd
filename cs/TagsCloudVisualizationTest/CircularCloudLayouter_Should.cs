@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
+using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
@@ -11,53 +10,34 @@ using TagsCloudVisualization;
 using static FluentAssertions.FluentActions;
 
 
-namespace TestProject1
+namespace TagsCloudVisualizationTest
 {
     [TestFixture]
     public class CircularCloudLayouter_Should
     {
-        private CircularCloudLayouter layouter;
-        private readonly HashSet<Rectangle> rectangles = new HashSet<Rectangle>();
-        private readonly HashSet<string> testsToSaveLayout = new HashSet<string>
-        {
-            "AutoTest_CircularCloudLayouter_PutNextRectangle_RectanglesShouldBeCompact",
-            "AutoTest_CircularCloudLayouter_PutNextRectangle_RectanglesShouldBeCircular",
-            "AutoTest_CircularCloudLayouter_PutNextRectangle_RectanglesShouldNotIntersect",
-            "PutNextRectangle_RectangleOnTheMiddle_AfterAdditionSingleRectangle"
-        };
-
-        [SetUp]
-        public void SetUp()
-        {
-            rectangles.Clear();
-            layouter = CircularCloudLayouterBuilder
-                .ACircularCloudLayouter()
-                .WithCenterAt(Point.Empty)
-                .Build();
-        }
+        private readonly ThreadLocal<List<Rectangle>> rectangles = new ThreadLocal<List<Rectangle>>(() => new List<Rectangle>());
 
         [TearDown]
         public void TearDown()
         {
             var context = TestContext.CurrentContext;
-            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed 
-                && testsToSaveLayout.Contains(context.Test.MethodName))
+            var methodAttr = typeof(CircularCloudLayouter_Should)
+                .GetMethod(context.Test.MethodName)
+                ?.GetCustomAttributes(true)
+                .OfType<SaveBitmapWhenFailure>()
+                .FirstOrDefault();
+            
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed && !(methodAttr is null))
             {
-                var filePath = Path.GetFullPath($"..\\..\\Failure__{context.Test.MethodName}.jpg");
-                
-                try
-                {
-                    RectanglePainter
-                        .GetBitmapWithRectangles(rectangles)  // Throw ArgumentException while creating too big bmp.
-                        .Save(filePath, ImageFormat.Jpeg);
-                
-                    TestContext.Out.WriteLine($"Tag cloud visualization saved to file <{filePath}>");
-                }
-                catch (ArgumentException e)
-                {
-                    TestContext.Out.WriteLine($"Tag cloud too big to save to file");
-                }
+                var outputText = methodAttr.TrySave(rectangles.Value, context.Test.MethodName)
+                    ? $"Tag cloud visualization saved to file <{methodAttr.SavePath}>"
+                    : "Tag cloud too big to save to file";
+
+                TestContext.Out.WriteLine(outputText);
             }
+            
+            if (rectangles.IsValueCreated)
+                rectangles.Value.Clear();
         }
         
         [TestCase(-1, -1)]
@@ -69,7 +49,7 @@ namespace TestProject1
         [TestCase(1, -1)]
         [TestCase(1, 0)]
         [TestCase(1, 1)]
-        public void CircularCloudLayouterConstructor_DoNotThrowAnyExceptionOnAnyCenterPoint(int x, int y)
+        public void NotThrowAnyException_OnAnyCenterPoint_InConstructor(int x, int y)
         {
             var builder = CircularCloudLayouterBuilder
                 .ACircularCloudLayouter()
@@ -79,8 +59,13 @@ namespace TestProject1
         }
         
         [Test]
-        public void CircularCloudLayouter_PutNextRectangle_DoNotThrowAnyExceptionOnPositiveSize()
+        public void NotThrowAnyException_OnPositiveSize_InPutNextRectangle()
         {
+            var layouter = CircularCloudLayouterBuilder
+                .ACircularCloudLayouter()
+                .WithCenterAt(Point.Empty)
+                .Build();
+            
             Invoking(() => layouter.PutNextRectangle(new Size(1, 1))).Should().NotThrow();
         }
         
@@ -92,15 +77,20 @@ namespace TestProject1
         [TestCase(0, 1)]
         [TestCase(1, -1)]
         [TestCase(-1, 1)]
-        public void CircularCloudLayouterConstructor_PutNextRectangle_ThrowArgumentExceptionOnNonPositiveWidthOrHeight(int width, int height)
+        public void ThrowArgumentException_OnNonPositiveWidthOrHeight_InPutNextRectangle(int width, int height)
         {
+            var layouter = CircularCloudLayouterBuilder
+                .ACircularCloudLayouter()
+                .WithCenterAt(Point.Empty)
+                .Build();
+            
             Invoking(() => layouter.PutNextRectangle(new Size(width, height)))
                 .Should()
                 .Throw<ArgumentException>($"width = {width}, height = {height}");
         }
         
         [Test]
-        public void CircularCloudLayouterConstructor_DoNotThrowAnyExceptionOnNonNullParameter()
+        public void NotThrowAnyException_OnNonNullParameter_InConstructor()
         {
             var builder = CircularCloudLayouterBuilder
                 .ACircularCloudLayouter()
@@ -112,7 +102,7 @@ namespace TestProject1
         }
         
         [Test]
-        public void CircularCloudLayouterConstructor_ThrowArgumentExceptionOnNullParameter()
+        public void ThrowArgumentException_OnNullParameter_InConstructor()
         {
             Invoking(() => new CircularCloudLayouter(null))
                 .Should()
@@ -128,16 +118,17 @@ namespace TestProject1
         [TestCase(1, -1)]
         [TestCase(1, 0)]
         [TestCase(1, 1)]
-        public void PutNextRectangle_RectangleOnTheMiddle_AfterAdditionSingleRectangle(int x, int y)
+        [SaveBitmapWhenFailure]
+        public void PlaceFirstRectangleOnTheMiddle_InPutNextRectangle(int x, int y)
         {
-            var layouter2 = CircularCloudLayouterBuilder
+            var layouter = CircularCloudLayouterBuilder
                 .ACircularCloudLayouter()
                 .WithCenterAt(new Point(x, y))
                 .Build();
             var rectangleSize = new Size(100, 100);
 
-            var actual = layouter2.PutNextRectangle(rectangleSize);
-            rectangles.Add(actual);
+            var actual = layouter.PutNextRectangle(rectangleSize);
+            rectangles.Value.Add(actual);
 
             actual.Should().Be(
                 new Rectangle(x - 50, y - 50, 100, 100), 
@@ -147,16 +138,22 @@ namespace TestProject1
 
         [Test]
         [Repeat(20)]
-        public void AutoTest_CircularCloudLayouter_PutNextRectangle_RectanglesShouldNotIntersect()
+        [SaveBitmapWhenFailure]
+        public void PlaceRectanglesWithoutIntersects_InPutNextRectangle_AutoTest()
         {
             var rnd = new Random();
+            var layouter = CircularCloudLayouterBuilder
+                .ACircularCloudLayouter()
+                .WithCenterAt(Point.Empty)
+                .Build();
+            
             var lastRectangle = layouter.PutNextRectangle(new Size(200, 200));
 
             for (var i = 0; i < 1000; i++)
             {
                 var randomSize = new Size(rnd.Next(1, 1000), rnd.Next(1, 1000));
                 var rectangle = layouter.PutNextRectangle(randomSize);
-                rectangles.Add(rectangle);
+                rectangles.Value.Add(rectangle);
 
                 lastRectangle.IntersectsWith(rectangle).Should().BeFalse($"on try {i}");
             }
@@ -164,16 +161,21 @@ namespace TestProject1
         
         [Test]
         [Repeat(100)]
-        public void AutoTest_CircularCloudLayouter_PutNextRectangle_RectanglesShouldBeCircular()
+        [SaveBitmapWhenFailure]
+        public void PlaceRectanglesCircular_InPutNextRectangle_AutoTest()
         {
             var rnd = new Random();
+            var layouter = CircularCloudLayouterBuilder
+                .ACircularCloudLayouter()
+                .WithCenterAt(Point.Empty)
+                .Build();
 
             for (var i = 0; i < 1000; i++)
             {
-                rectangles.Add(layouter.PutNextRectangle(new Size(rnd.Next(25, 300), rnd.Next(25, 300))));
+                rectangles.Value.Add(layouter.PutNextRectangle(new Size(rnd.Next(25, 300), rnd.Next(25, 300))));
             }
 
-            var smallCircleRadius = rectangles
+            var smallCircleRadius = rectangles.Value
                 .Select(x => new[]
                     {
                         Math.Abs(x.Top),
@@ -183,7 +185,7 @@ namespace TestProject1
                     }.Max()
                 ).Max();
                 
-            var bigCircleRadius = rectangles
+            var bigCircleRadius = rectangles.Value
                 .Select(x => new []
                     {
                         x.Location.MetricTo(Point.Empty),
@@ -202,18 +204,23 @@ namespace TestProject1
         
         [Test]
         [Repeat(100)]
-        public void AutoTest_CircularCloudLayouter_PutNextRectangle_RectanglesShouldBeCompact()
+        [SaveBitmapWhenFailure]
+        public void PlaceRectanglesCompact_InPutNextRectangle_AutoTest()
         {
             var rnd = new Random();
+            var layouter = CircularCloudLayouterBuilder
+                .ACircularCloudLayouter()
+                .WithCenterAt(Point.Empty)
+                .Build();
 
             for (var i = 0; i < 100; i++)
             {
-                rectangles.Add(layouter.PutNextRectangle(new Size(rnd.Next(3, 105-i), rnd.Next(3, 105-i))));
+                rectangles.Value.Add(layouter.PutNextRectangle(new Size(rnd.Next(3, 105-i), rnd.Next(3, 105-i))));
             }
 
-            var rectanglesSquareSum = (ulong)rectangles.Select(x => x.Height * x.Width).Sum();
-            var outsideRectangleSquare = (ulong)Math.Abs(rectangles.Max(x => x.Right) - rectangles.Min(x => x.Left)) 
-                                         * (ulong)Math.Abs(rectangles.Max(x => x.Bottom) - rectangles.Min(x => x.Top));
+            var rectanglesSquareSum = (ulong)rectangles.Value.Select(x => x.Height * x.Width).Sum();
+            var outsideRectangleSquare = (ulong)Math.Abs(rectangles.Value.Max(x => x.Right) - rectangles.Value.Min(x => x.Left)) 
+                                         * (ulong)Math.Abs(rectangles.Value.Max(x => x.Bottom) - rectangles.Value.Min(x => x.Top));
 
             var actualRatio = (double)rectanglesSquareSum / outsideRectangleSquare;
             var expectedMaxRatio = 0.16;

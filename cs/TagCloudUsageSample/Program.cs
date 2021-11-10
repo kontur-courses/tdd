@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TagsCloudVisualization;
 
-namespace TagsCloudVisualization
+namespace TagCloudUsageSample
 {
-    class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        internal static void Main(string[] args)
         {
             for (var j = 0; j < 3; j++)
             {
@@ -24,7 +22,7 @@ namespace TagsCloudVisualization
                     .Save($"..\\..\\CloudTagSample{j}.jpg", ImageFormat.Jpeg);
             }
         }
-
+    
         public static IEnumerable<Rectangle> GetRectangles(CircularCloudLayouter layouter, int count)
         {
             var rnd = new Random();
