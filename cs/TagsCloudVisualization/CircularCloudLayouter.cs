@@ -23,7 +23,11 @@ namespace TagsCloudVisualization
                                             $"Width: {rectangleSize.Width}");
 
             if (rectangles.Count == 0)
-                return GetFirstRectangle(rectangleSize);
+            {
+                var rect = GetFirstRectangle(rectangleSize);
+                rectangles.Add(rect);
+                return rect;
+            }
 
             var neededRectangle = GetNearestCorrectRectangle(rectangleSize);
             if (neededRectangle != new Rectangle())
@@ -37,16 +41,13 @@ namespace TagsCloudVisualization
 
         private IEnumerable<Point> GetNextRectanglePotentialPoints(Size rectangleSize, Rectangle rectangle)
         {
-            var potentialPoints = new[]
+            return new[]
             {
                 new Point(rectangle.Left, rectangle.Top - rectangleSize.Height),
                 new Point(rectangle.Right, rectangle.Top),
                 new Point(rectangle.Left, rectangle.Bottom),
                 new Point(rectangle.Left - rectangleSize.Width, rectangle.Top)
             };
-
-            foreach (var point in potentialPoints)
-                yield return point;
         }
 
         private Rectangle GetFirstRectangle(Size rectangleSize)
@@ -55,7 +56,6 @@ namespace TagsCloudVisualization
             var rectangleY = Center.Y - rectangleSize.Height / 2;
             var upperLeftCorner = new Point(rectangleX, rectangleY);
             var rectangle = new Rectangle(upperLeftCorner, rectangleSize);
-            rectangles.Add(rectangle);
             return rectangle;
         }
 
