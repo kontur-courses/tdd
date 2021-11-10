@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 
 namespace TagsCloudVisualization
 {
@@ -8,13 +10,15 @@ namespace TagsCloudVisualization
     {
         static void Main(string[] args)
         {
-            var visualiser = new TagsCloudVisualiser(new Point(10, 10));
-            visualiser.PutRectangle(new Size(4, 2));
-            visualiser.PutRectangle(new Size(2, 2));
-            visualiser.PutRectangle(new Size(2, 2));
-            //visualiser.PutRectangle(new Size(4, 4));
-            var image = visualiser.DrawCloud(new Point(), new Size(20, 20), new Size(800, 800));
+            var visualiser = new TagsCloudVisualiser(new Point());
+            var random = new Random();
+            for(var i = 0; i < 500; i++)
+            {
+                visualiser.PutRectangle(new Size(4,1));
+            }
+            var image = visualiser.DrawCloud(new Point(50, 50), new Size(100, 100), new Size(800, 800));
             image.Save("testimage.png", ImageFormat.Png);
+            Process.Start(new ProcessStartInfo(Directory.GetCurrentDirectory() + "\\testimage.png") { UseShellExecute = true });
         }
     }
 }

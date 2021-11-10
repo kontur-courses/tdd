@@ -11,20 +11,21 @@ namespace TagsCloudVisualization
             layouter = new CircularCloudLayouter(center);
         }
 
-        public void PutRectangle(Size size)
+        public RectangleF PutRectangle(Size size)
         {
-            layouter.PutNextRectangle(size);
+            return layouter.PutNextRectangle(size);
         }
 
         public Bitmap DrawCloud(Point frameLocation, Size frameSize, Size bitmapSize)
         {
             var image = new Bitmap(bitmapSize.Width, bitmapSize.Height);
             var graphics = Graphics.FromImage(image);
-            graphics.TranslateTransform(frameLocation.X, frameLocation.Y);
             graphics.ScaleTransform((float)bitmapSize.Width / frameSize.Width, 
                                     (float)bitmapSize.Height / frameSize.Height);
+            graphics.TranslateTransform(frameLocation.X, frameLocation.Y);
             graphics.FillRectangles(Brushes.Red, layouter.Rectangles.ToArray());
             graphics.DrawRectangles(new Pen(Color.Black, (float)frameSize.Width / bitmapSize.Width * 4), layouter.Rectangles.ToArray());
+            graphics.DrawPolygon(new Pen(Color.Blue, (float)frameSize.Width / bitmapSize.Width * 4), layouter.figure.Vertexes.ToArray());
             return image;
         }
     }

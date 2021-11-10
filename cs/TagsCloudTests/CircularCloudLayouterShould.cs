@@ -1,9 +1,9 @@
 ﻿using System.Drawing;
-using System.Linq;
-using NUnit.Framework;
 using FluentAssertions;
+using NUnit.Framework;
+using TagsCloudVisualization;
 
-namespace TagsCloudVisualization
+namespace TagsCloudTests
 {
     [TestFixture]
     public class CircularCloudLayouterShould
@@ -81,10 +81,9 @@ namespace TagsCloudVisualization
             {
                 layouter.PutNextRectangle(new Size(2, 2));
             }
-
-            var middle = layouter.Rectangles[0];
-            var corner = layouter.Rectangles[5];
-            (middle.X != corner.X && middle.Y != corner.Y).Should().BeTrue();
+            var middleRectangle = layouter.Rectangles[0];
+            var cornerRectangle = layouter.Rectangles[5];
+            middleRectangle.Should().NotBe(cornerRectangle);
         }
     }
 }
