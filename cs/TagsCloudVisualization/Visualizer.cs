@@ -11,9 +11,9 @@ namespace TagsCloudVisualization
         {
             var rectangles = GenerateRandomRectangles(count, scale);
             var (width, height) = FitRectangles(rectangles);
-            ReplaceRectangles(rectangles, width, height);
+            ReplaceRectangles(rectangles, width + 100, height + 100);
 
-            var bitmap = CreateBitmap(rectangles, width, height, $"random-count{count}-scale{scale}", guidingCircle, true);
+            var bitmap = CreateBitmap(rectangles, width, height, $"random-count{count}-scale{scale}", guidingCircle, true, 100);
 
             return bitmap;
         }
@@ -25,12 +25,12 @@ namespace TagsCloudVisualization
             OffsetRectangles(rectangles, offsetX, offsetY);
         }
 
-        public static Bitmap GetBitmapFromRectangles(Rectangle[] rectangles, bool guidingCircle = false)
+        public static Bitmap GetBitmapFromRectangles(Rectangle[] rectangles, bool guidingCircle = false, int padding = 0)
         {
             var (width, height) = FitRectangles(rectangles);
-            ReplaceRectangles(rectangles, width, height);
+            ReplaceRectangles(rectangles, width + padding, height + padding);
 
-            var bitmap = CreateBitmap(rectangles, width, height, null, guidingCircle, false);
+            var bitmap = CreateBitmap(rectangles, width, height, null, guidingCircle, false, padding);
 
             return bitmap;
         }
@@ -53,8 +53,8 @@ namespace TagsCloudVisualization
                     minWidth = rectangle.Left;
             }
 
-            var width = Math.Abs(minWidth) + Math.Abs(maxWidth) + 100;
-            var height = Math.Abs(minHeight) + Math.Abs(maxHeight) + 100;
+            var width = Math.Abs(minWidth) + Math.Abs(maxWidth);
+            var height = Math.Abs(minHeight) + Math.Abs(maxHeight);
 
             return (width, height);
         }
@@ -80,9 +80,9 @@ namespace TagsCloudVisualization
         }
 
         private static Bitmap CreateBitmap(IEnumerable<Rectangle> rectangles, int width, int height, string name,
-            bool guidingCircle = false, bool autoSave = false)
+            bool guidingCircle = false, bool autoSave = false, int padding = 0)
         {
-            var bitmap = new Bitmap(width, height);
+            var bitmap = new Bitmap(width + padding, height + padding);
             using (var bitmapGraphics = Graphics.FromImage(bitmap))
             {
                 bitmapGraphics.Clear(Color.Black);
@@ -94,8 +94,8 @@ namespace TagsCloudVisualization
 
                 if (guidingCircle)
                 {
-                    var radius = height - 100;
-                    bitmapGraphics.DrawEllipse(Pens.LightGray, (width - radius) / 2, (height - radius) / 2, radius, radius);
+                    var radius = Math.Max(height, width);
+                    bitmapGraphics.DrawEllipse(Pens.LightGray, (width - radius + padding) / 2, (height - radius + padding) / 2, radius, radius);
                 }
             }
 
