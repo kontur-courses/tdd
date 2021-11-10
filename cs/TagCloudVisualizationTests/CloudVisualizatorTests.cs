@@ -12,12 +12,12 @@ namespace TagCloudVisualizationTests
 {
     public class CloudVisualizatorTests
     {
-        private CloudVisualizator sut;
+        private CloudVisualizator visualizator;
 
         [SetUp]
         public void SetUp()
         {
-            sut = new CloudVisualizator(1200, 1200, Color.Blue, Color.CornflowerBlue);
+            visualizator = new CloudVisualizator(1200, 1200, Color.Blue, Color.CornflowerBlue);
         }
 
         [Test]
@@ -26,12 +26,12 @@ namespace TagCloudVisualizationTests
             Assert.DoesNotThrow(() => new CloudVisualizator(10, 10, Color.Black, Color.Black));
         }
 
-        [TestCase(0, 1, TestName = "WhenZeroWidth")]
-        [TestCase(1, 0, TestName = "WhenZeroHeight")]
-        [TestCase(0, 0, TestName = "WhenZeroWidthAndHeight")]
-        [TestCase(-1, 1, TestName = "WhenNegativeWidth")]
-        [TestCase(1, -1, TestName = "WhenNegativeHeight")]
-        [TestCase(-1, -1, TestName = "WhenNegativeWidthAndHeight")]
+        [TestCase(0, 1, TestName = "When Zero Width")]
+        [TestCase(1, 0, TestName = "When Zero Height")]
+        [TestCase(0, 0, TestName = "When Zero Width And Height")]
+        [TestCase(-1, 1, TestName = "When Negative Width")]
+        [TestCase(1, -1, TestName = "When Negative Height")]
+        [TestCase(-1, -1, TestName = "When Negative Width And Height")]
         public void Ctor_ShouldThrows(int width, int height)
         {
             Assert.Throws<ArgumentException>(() => new CloudVisualizator(width, height, Color.Blue, Color.Aquamarine));
@@ -40,11 +40,13 @@ namespace TagCloudVisualizationTests
         [TestCaseSource(nameof(CasesForDrawRectangle))]
         public void DrawRectangle_Should(int pixelX, int pixelY, int expectedARGBColor)
         {
-            sut.DrawRectangle(new Rectangle(50, 50, 50, 50));
-            var field = (Bitmap) typeof(CloudVisualizator)
+            var bitmap = (Bitmap) typeof(CloudVisualizator)
                 .GetField(nameof(Bitmap).ToLower(), BindingFlags.Instance | BindingFlags.NonPublic)
-                .GetValue(sut);
-            field.GetPixel(pixelX, pixelY).ToArgb()
+                .GetValue(visualizator);
+
+            visualizator.DrawRectangle(new Rectangle(50, 50, 50, 50));
+                
+            bitmap.GetPixel(pixelX, pixelY).ToArgb()
                 .Should().Be(expectedARGBColor);
         }
 
@@ -53,19 +55,21 @@ namespace TagCloudVisualizationTests
             get
             {
                 yield return new TestCaseData(51, 51, Color.CornflowerBlue.ToArgb())
-                    .SetName("FillArea");
+                    .SetName("Fill Area");
                 yield return new TestCaseData(50, 50, Color.Blue.ToArgb())
-                    .SetName("DrawBorder");
+                    .SetName("Draw Border");
                 yield return new TestCaseData(49, 49, Color.Empty.ToArgb())
-                    .SetName("NotDrawOutside");
+                    .SetName("Not Draw Outside");
             }
         }
 
         [Test]
         public void SaveImage_ShouldSaveWithFilename()
         {
-            sut.DrawRectangle(new Rectangle(50, 50 ,200 , 200));
-            sut.SaveImage("test.png", ImageFormat.Png);
+            var rectangle = new Rectangle(50, 50, 200, 200);
+
+            visualizator.DrawRectangle(rectangle);
+            visualizator.SaveImage("test.png", ImageFormat.Png);
             
             Directory.GetFiles(Environment.CurrentDirectory)
                 .Should().Contain(Environment.CurrentDirectory + "\\test.png");
