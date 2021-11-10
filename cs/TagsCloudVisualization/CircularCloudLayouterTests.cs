@@ -21,6 +21,7 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouterTests
     {
         private readonly string currentTestFolder = TestContext.CurrentContext.TestDirectory;
+        private const string SnapshotTestTag = "Snapshot";
         private readonly TestSnapshotsMode testSnapshotsMode = TestSnapshotsMode.All;
         private DirectoryInfo testSnapshotsFolder;
 
@@ -49,16 +50,16 @@ namespace TagsCloudVisualization
         }
 
         [TestCaseSource(typeof(TestsData), nameof(TestsData.SomeCorrectCenterPointsAndRectSizesData),
-            Category = "Snapshot")]
+            Category = SnapshotTestTag)]
         public void PutNextRectangle_FirstRectangle_ShouldBeInCenter(Point layoutCenter, Size rectSize)
         {
             layout = new CircularCloudLayouter(layoutCenter);
-            var newRect =  layout.PutNextRectangle(rectSize); 
+            var newRect = layout.PutNextRectangle(rectSize);
             newRect.GetRectangleCenter().Should().Be(layout.LayoutCenter);
         }
 
         [TestCaseSource(typeof(TestsData), nameof(TestsData.MultipleRandomRectSizesData),
-            new object?[] {100, 1, 1, 100, 100})]
+            new object[] {100, 1, 1, 1, 100, 100})]
         public void CircularCloudLayouter_AllRectsShouldHavePassedSizes(Point layoutCenter, IEnumerable<Size> rectSizes)
         {
             layout = new CircularCloudLayouter(layoutCenter);
@@ -66,7 +67,7 @@ namespace TagsCloudVisualization
             var rectCount = 0;
             foreach (var rectSize in rectSizes)
             {
-                var newRect = layout.PutNextRectangle(rectSize); 
+                var newRect = layout.PutNextRectangle(rectSize);
                 newRect.Size.Should().Be(new Size(rectSize.Width, rectSize.Height)); //exclude reference equals
                 rectCount++;
             }
@@ -75,7 +76,7 @@ namespace TagsCloudVisualization
         }
 
         [TestCaseSource(typeof(TestsData), nameof(TestsData.MultipleRandomRectSizesData),
-            new object?[] {100, 1, 1, 100, 100}, Category = "Snapshot")]
+            new object[] {100, 1, 1, 1, 100, 100}, Category = SnapshotTestTag)]
         public void CircularCloudLayouter_RectsShouldNotIntersect(Point layoutCenter, IEnumerable<Size> rectSizes)
         {
             layout = new CircularCloudLayouter(layoutCenter);
@@ -89,7 +90,7 @@ namespace TagsCloudVisualization
                 .Should().BeFalse();
         }
 
-        [TestCaseSource(typeof(TestsData), nameof(TestsData.TightlyPackedRectanglesData), Category = "Snapshot")]
+        [TestCaseSource(typeof(TestsData), nameof(TestsData.TightlyPackedRectanglesData), Category = SnapshotTestTag)]
         public void CircularCloudLayouter_RectsShouldTightlyPacked(Point layoutCenter, IEnumerable<Size> rectSizes)
         {
             layout = new CircularCloudLayouter(layoutCenter);
@@ -103,9 +104,9 @@ namespace TagsCloudVisualization
             rectsSquare.Should().Be(unionRectSquare);
         }
 
-        [TestCaseSource(typeof(TestsData), nameof(TestsData.RectanglesFormCircleData), Category = "Snapshot")]
+        [TestCaseSource(typeof(TestsData), nameof(TestsData.RectanglesFormCircleData), Category = SnapshotTestTag)]
         [TestCaseSource(typeof(TestsData), nameof(TestsData.MultipleRandomRectSizesData),
-            new object?[] {200, 1, 1, 1, 1}, Category = "Snapshot")]
+            new object[] {200, 1, 1, 1, 1, 1}, Category = SnapshotTestTag)]
         public void CircularCloudLayouter_RectsShouldFormCircle(Point layoutCenter, IEnumerable<Size> rectSizes)
         {
             layout = new CircularCloudLayouter(layoutCenter);
@@ -131,24 +132,24 @@ namespace TagsCloudVisualization
             createBitmap.Should().Throw<InvalidOperationException>();
         }
 
-        
+
         [TearDown]
         public void TearDown()
         {
-            var isNotSnapshotTest = !TestContext.CurrentContext.Test.Properties["Category"].Contains("Snapshot");
+            var isNotSnapshotTest = !TestContext.CurrentContext.Test.Properties["Category"].Contains(SnapshotTestTag);
             var testResult = TestContext.CurrentContext.Result.Outcome;
 
             if (isNotSnapshotTest ||
-                testSnapshotsMode.Equals(TestSnapshotsMode.None) ||
-                testSnapshotsMode.Equals(TestSnapshotsMode.TestSuccess) && !testResult.Equals(ResultState.Success) ||
-                testSnapshotsMode.Equals(TestSnapshotsMode.TestFail) && !(testResult.Equals(ResultState.Failure) ||
-                                                                          testResult.Equals(ResultState.Error)))
+                testSnapshotsMode == TestSnapshotsMode.None ||
+                testSnapshotsMode == TestSnapshotsMode.TestSuccess && testResult != ResultState.Success ||
+                testSnapshotsMode == TestSnapshotsMode.TestFail && !(testResult == ResultState.Failure ||
+                                                                     testResult == ResultState.Error))
                 return;
 
             var path = Path.Combine(testSnapshotsFolder.FullName,
                 $"{TestContext.CurrentContext.Test.ID}-{TestContext.CurrentContext.Test.MethodName}-{testResult}.bmp");
             layout.ToBitmap(path);
-            Console.WriteLine($"Tag cloud visualization saved to file \"{path}\"");
+            Console.WriteLine(@$"Tag cloud visualization saved to file ""{path}""");
         }
     }
 
@@ -188,14 +189,14 @@ namespace TagsCloudVisualization
             }
         }
 
-        public static IEnumerable<TestCaseData> MultipleRandomRectSizesData(int count, int minSizeX, int minSizeY,
-            int maxSizeX, int maxSizeY)
+        public static IEnumerable<TestCaseData> MultipleRandomRectSizesData(int count, int rndSeed, int minSizeX,
+            int minSizeY, int maxSizeX, int maxSizeY)
         {
             var center = new Point(0, 0);
             var minSize = new Size(minSizeX, minSizeY);
             var maxSize = new Size(maxSizeX, maxSizeY);
 
-            var rnd = new Random();
+            var rnd = new Random(rndSeed);
             var rectSizes = new List<Size>();
             for (int i = 0; i < count; i++)
                 rectSizes.Add(new Size(

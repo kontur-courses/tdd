@@ -9,12 +9,9 @@ namespace TagsCloudVisualization
     {
         private readonly List<Rectangle> rects;
 
-        #region Props
-
         public Point LayoutCenter { get; }
         public IEnumerable<Rectangle> Rects => rects.AsReadOnly();
 
-        #endregion
 
         public CircularCloudLayouter(Point center)
         {
@@ -31,7 +28,7 @@ namespace TagsCloudVisualization
             if (optimalPoint == null)
                 throw new InvalidOperationException("Невозможно определить расположение нового прямоугольника");
 
-            var newRect = new Rectangle((Point) optimalPoint, rectangleSize);
+            var newRect = new Rectangle(optimalPoint.Value, rectangleSize);
             rects.Add(newRect);
             return newRect;
         }
@@ -46,7 +43,8 @@ namespace TagsCloudVisualization
 
             var rectsUnion = Rects.Aggregate(Rectangle.Union);
             var canvas = new Rectangle(0, 0, rectsUnion.Width + margin, rectsUnion.Height + margin);
-            var delta = canvas.GetRectangleCenter() - (Size) LayoutCenter;
+            var center = canvas.GetRectangleCenter();
+            var delta = center - (Size) LayoutCenter;
 
             var bitmap = new Bitmap(canvas.Width, canvas.Height);
             using (var graphics = Graphics.FromImage(bitmap))
@@ -54,9 +52,20 @@ namespace TagsCloudVisualization
                 graphics.FillRectangle(new SolidBrush(Color.DimGray), canvas);
                 foreach (var rect in Rects)
                 {
-                    var pen = new Pen(Color.Chocolate, 1);
-                    graphics.DrawRectangle(pen, new Rectangle(rect.Location + (Size) delta, rect.Size));
+                    graphics.FillRectangle(
+                        new SolidBrush(Color.Coral),
+                        new Rectangle(rect.Location + (Size) delta, rect.Size));
+                    graphics.DrawRectangle(
+                        new Pen(Color.Chocolate, 1),
+                        new Rectangle(rect.Location + (Size) delta, rect.Size));
                 }
+
+                graphics.FillRectangle(
+                    new SolidBrush(Color.Black),
+                    center.X - 1, center.Y, 3, 1);
+                graphics.FillRectangle(
+                    new SolidBrush(Color.Black),
+                    center.X, center.Y - 1, 1, 3);
             }
 
             bitmap.Save(path);
@@ -105,7 +114,7 @@ namespace TagsCloudVisualization
                         new Point(rect.Left - rectSize.Width, rect.Bottom))
                 };
 
-                nextRectOptimalPoints.Add(optimalPoints.MinBy(p => p.Distance));
+                nextRectOptimalPoints.AddRange(optimalPoints);
             }
 
             return nextRectOptimalPoints.MinBy(p => p.Distance).Point;

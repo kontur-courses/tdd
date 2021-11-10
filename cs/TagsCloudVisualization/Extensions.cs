@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public static class CalcExtensions
+    public static class Extensions
     {
         public static Point GetRectangleCenter(this Rectangle rect)
         {
