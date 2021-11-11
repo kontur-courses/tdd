@@ -17,9 +17,9 @@ namespace TagsCloudVisualization
         {
             this.rectangles = rectangles ?? throw new ArgumentNullException();
             if (rectangles.Length == 0) throw new ArgumentException("rectangles should contain at least 1 rectangle");
+            rectanglesContainer = rectangles.GetRectanglesContainer();
             var optimalBmpSize = GetOptimalBitmapSize();
             this.bmp = new Bitmap(optimalBmpSize.Width, optimalBmpSize.Height);
-            rectanglesContainer = rectangles.GetRectanglesContainer();
             OffsetRectanglesToCenter();
         }
 
