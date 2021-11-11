@@ -31,7 +31,7 @@ namespace TagsCloudVisualization
 
                 foreach (var point in GetLeftPoints(chebyshevDistance))
                     yield return point;
-               
+
                 chebyshevDistance++;
             }
         }
@@ -43,7 +43,7 @@ namespace TagsCloudVisualization
                 yield return new Point(center.X + dx, center.Y - chebyshevDistance);
             }
         }
-        
+
         private IEnumerable<Point> GetRightPoints(int chebyshevDistance)
         {
             for (var dy = -chebyshevDistance + 1; dy <= chebyshevDistance; dy++)
@@ -59,7 +59,7 @@ namespace TagsCloudVisualization
                 yield return new Point(center.X - dx, center.Y + chebyshevDistance);
             }
         }
-        
+
         private IEnumerable<Point> GetLeftPoints(int chebyshevDistance)
         {
             for (var dy = -chebyshevDistance + 1; dy < chebyshevDistance; dy++)
@@ -67,8 +67,7 @@ namespace TagsCloudVisualization
                 yield return new Point(center.X - chebyshevDistance, center.Y - dy);
             }
         }
-        
-        
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

@@ -16,8 +16,7 @@ namespace TagsCloudVisualizationTests
     [TestFixture]
     public class CircularCloudLayouter_Should
     {
-        private Point layouterCenterPoint;
-        private Size[] rectanglesSizes;
+        private Rectangle[] returnedRectangles;
         private const string ExceptionsFolder = "Exceptions";
 
         [TearDown]
@@ -27,11 +26,10 @@ namespace TagsCloudVisualizationTests
             if (context.Result.Outcome.Status == TestStatus.Failed &&
                 IsTestMarkedAsLayoutTest(context.Test.Name))
             {
-                var layouter = new CircularCloudLayouter(layouterCenterPoint);
-                var bitmapWidth = this.rectanglesSizes.Sum(x => x.Width) + Math.Abs(layouterCenterPoint.X);
-                var bitmapHeight = this.rectanglesSizes.Sum(x => x.Height) + Math.Abs(layouterCenterPoint.Y);
-                var visualizer = new Visualizer(layouter, new Random(123), bitmapWidth, bitmapHeight);
-                var image = visualizer.CreateImageFromRectangles(rectanglesSizes);
+                var bitmapWidth = this.returnedRectangles.Sum(x => x.Width);
+                var bitmapHeight = this.returnedRectangles.Sum(x => x.Height);
+                var visualizer = new Visualizer(new Random(123), bitmapWidth, bitmapHeight);
+                var image = visualizer.CreateImageFromRectangles(returnedRectangles);
                 var path = Path.Join(Environment.CurrentDirectory, ExceptionsFolder, context.Test.Name + ".jpg");
                 Directory.CreateDirectory(ExceptionsFolder);
                 File.WriteAllBytes(path, image);
@@ -40,18 +38,23 @@ namespace TagsCloudVisualizationTests
             }
         }
 
-        [Test]
-        public void NotThrow_InConstructor()
+        [TestCase(0, 0, TestName = "When center in (0,0)")]
+        [TestCase(10, 20, TestName = "When center in first circle quarter")]
+        [TestCase(-10, 20, TestName = "When center in second circle quarter")]
+        [TestCase(-10, -20, TestName = "When center in third circle quarter")]
+        [TestCase(10, -20, TestName = "When center in fourth circle quarter")]
+        public void NotThrow_InConstructor_When(int x, int y)
         {
-            var startPoint = new Point();
-            Action lambda = () => new CircularCloudLayouter(startPoint);
+            var center = new Point(x, y);
+            Action lambda = () => new CircularCloudLayouter(center);
             lambda.Should().NotThrow();
         }
 
-        [Test]
-        public void ReturnRectangleWithCenterInStartPosition_OnFirstIteration()
+        [TestCase(0, 0, TestName = "Start position is (0,0)")]
+        [TestCase(10, 20, TestName = "Start position is not (0,0)")]
+        public void ReturnRectangleWithCenterInStartPosition_OnFirstIteration_When(int x, int y)
         {
-            var startPoint = new Point(100, 200);
+            var startPoint = new Point(x, y);
             var size = new Size(500, 300);
             var expectedRectangle = new Rectangle(startPoint - size / 2, size);
             var actualRectangle = new CircularCloudLayouter(startPoint).PutNextRectangle(size);
@@ -61,7 +64,7 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void ReturnRectanglesAroundCenter_WhenSquaresWithSameSizeGiven()
         {
-            var center = new Point();
+            var center = new Point(5, 6);
             var layouter = new CircularCloudLayouter(center);
             var size = new Size(2, 2);
             var startPoint = center - size / 2;
@@ -70,14 +73,14 @@ namespace TagsCloudVisualizationTests
             var expected = new List<Rectangle>()
             {
                 new Rectangle(startPoint, size),
-                new Rectangle(startPoint + horizontalOffset, size),
-                new Rectangle(startPoint + horizontalOffset - verticalOffset, size),
-                new Rectangle(startPoint + horizontalOffset + verticalOffset, size),
-                new Rectangle(startPoint - horizontalOffset, size),
-                new Rectangle(startPoint - horizontalOffset + verticalOffset, size),
-                new Rectangle(startPoint - horizontalOffset - verticalOffset, size),
+                new Rectangle(startPoint - verticalOffset - horizontalOffset, size),
                 new Rectangle(startPoint - verticalOffset, size),
-                new Rectangle(startPoint + verticalOffset, size)
+                new Rectangle(startPoint - verticalOffset + horizontalOffset, size),
+                new Rectangle(startPoint + horizontalOffset, size),
+                new Rectangle(startPoint + horizontalOffset + verticalOffset, size),
+                new Rectangle(startPoint + verticalOffset, size),
+                new Rectangle(startPoint + verticalOffset - horizontalOffset, size),
+                new Rectangle(startPoint - horizontalOffset, size),
             };
 
             var actual = Enumerable
@@ -86,7 +89,7 @@ namespace TagsCloudVisualizationTests
                 .ToList();
             actual.Should().BeEquivalentTo(expected,
                 config =>
-                    config.WithoutStrictOrdering());
+                    config.WithStrictOrdering());
         }
 
         [Test]
@@ -102,11 +105,10 @@ namespace TagsCloudVisualizationTests
                 sizes[i] = new Size(random.Next(1, 100), random.Next(1, 100));
             }
 
-            InitializeLayoutMarkedTest(startPoint, sizes);
-
             var layouter = new CircularCloudLayouter(startPoint);
-
             var rectangles = sizes.Select(size => layouter.PutNextRectangle(size)).ToArray();
+            InitializeLayoutMarkedTest(rectangles);
+
             for (int i = 0; i < rectanglesCount; i++)
             {
                 for (int j = i + 1; j < rectanglesCount; j++)
@@ -132,13 +134,13 @@ namespace TagsCloudVisualizationTests
                 new Size(300, 300),
                 new Size(400, 400)
             };
-            InitializeLayoutMarkedTest(startPoint, sizes);
 
             var layouter = new CircularCloudLayouter(startPoint);
-            var allowedMaxDistance = 1000;
-
-            var rectangles = sizes.Select(x => layouter.PutNextRectangle(x)).ToList();
+            var rectangles = sizes.Select(x => layouter.PutNextRectangle(x)).ToArray();
+            InitializeLayoutMarkedTest(rectangles);
+            
             var maxDistance = 0d;
+            var allowedMaxDistance = 1000;
             foreach (var rect1 in rectangles)
             {
                 foreach (var rect2 in rectangles)
@@ -157,14 +159,15 @@ namespace TagsCloudVisualizationTests
         [LayoutTestMarker]
         public void FailingTest1()
         {
-            var sizes = new Size[]
+            var rectangles = new Rectangle[]
             {
-                new(10, 10),
-                new(20, 30)
+                new Rectangle(new Point(100, 100), new Size(100, 100)),
+                new Rectangle(new Point(200, 200), new Size(100, 100)),
+                new Rectangle(new Point(300, 300), new Size(100, 100)),
+                new Rectangle(new Point(500, 500), new Size(100, 100))
             };
-            var startPoint = new Point(100, 200);
 
-            InitializeLayoutMarkedTest(startPoint, sizes);
+            InitializeLayoutMarkedTest(rectangles);
             Assert.Fail();
         }
 
@@ -172,26 +175,16 @@ namespace TagsCloudVisualizationTests
         [LayoutTestMarker]
         public void FailingTest2()
         {
-            var rectanglesCount = 50;
-            var startPoint = new Point(100, 200);
-            var sizes = new Size[rectanglesCount];
-            var random = new Random(12345);
-            for (var i = 0; i < rectanglesCount; i++)
+            var rectangles = new Rectangle[]
             {
-                sizes[i] = new Size(random.Next(1, 100), random.Next(1, 100));
-            }
-            InitializeLayoutMarkedTest(startPoint, sizes);
-            var layouter = new CircularCloudLayouter(startPoint);
-
-            var rectangles = sizes.Select(size => layouter.PutNextRectangle(size)).ToArray();
+                new Rectangle(new Point(100, 100), new Size(100, 100)),
+                new Rectangle(new Point(-100, -100), new Size(100, 100)),
+                new Rectangle(new Point(100, -100), new Size(100, 100)),
+                new Rectangle(new Point(-100, 100), new Size(100, 100))
+            };
             
-            for (int i = 0; i < rectanglesCount; i++)
-            {
-                for (int j = i + 1; j < rectanglesCount; j++)
-                {
-                    rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse();
-                }
-            }
+            InitializeLayoutMarkedTest(rectangles);
+            
             Assert.Fail();
         }
 
@@ -199,42 +192,21 @@ namespace TagsCloudVisualizationTests
         [LayoutTestMarker]
         public void FailingTest3()
         {
-            var startPoint = new Point(100, 200);
-            var sizes = new Size[]
+            var rectangles = new Rectangle[]
             {
-                new Size(100, 100),
-                new Size(50, 100),
-                new Size(100, 50),
-                new Size(100, 200),
-                new Size(200, 100),
-                new Size(150, 150),
-                new Size(300, 300),
-                new Size(400, 400)
+                new Rectangle(new Point(0, 0), new Size(100, 100)),
+                new Rectangle(new Point(50, 50), new Size(100, 100)),
+                new Rectangle(new Point(100, 100), new Size(100, 100)),
+                new Rectangle(new Point(150, 150), new Size(100, 100))
             };
-            InitializeLayoutMarkedTest(startPoint, sizes);
-
-            var layouter = new CircularCloudLayouter(startPoint);
-            var allowedMaxDistance = 1000;
-
-            var rectangles = sizes.Select(x => layouter.PutNextRectangle(x)).ToList();
-            var maxDistance = 0d;
-            foreach (var rect1 in rectangles)
-            {
-                foreach (var rect2 in rectangles)
-                {
-                    var deltaLocation = rect1.Location - (Size) rect2.Location;
-                    maxDistance = Math.Max(maxDistance,
-                        Math.Sqrt(deltaLocation.X * deltaLocation.X) + Math.Sqrt(deltaLocation.Y * deltaLocation.Y));
-                }
-            }
-
+            InitializeLayoutMarkedTest(rectangles);
+            
             Assert.Fail();
         }
 
-        private void InitializeLayoutMarkedTest(Point center, Size[] sizes)
+        private void InitializeLayoutMarkedTest(Rectangle[] rectangles)
         {
-            this.layouterCenterPoint = center;
-            this.rectanglesSizes = sizes;
+            this.returnedRectangles = rectangles;
         }
 
         private bool IsTestMarkedAsLayoutTest(string testName)

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -9,29 +8,26 @@ namespace TagsCloudVisualization
 {
     public class Visualizer
     {
-        private ILayouter layouter;
         private int bitmapWidth;
         private int bitmapHeight;
         private Random random;
 
-        public Visualizer(ILayouter layouter, Random rnd, int bitmapWidth, int bitmapHeight)
+        public Visualizer(Random rnd, int bitmapWidth, int bitmapHeight)
         {
-            this.layouter = layouter;
             this.bitmapWidth = bitmapWidth;
             this.bitmapHeight = bitmapHeight;
             this.random = rnd;
         }
 
-        public byte[] CreateImageFromRectangles(Size[] rectanglesSizes)
+        public byte[] CreateImageFromRectangles(Rectangle[] rectangles)
         {
             using (var bmp = new Bitmap(bitmapWidth, bitmapHeight))
             {
                 using (Graphics g = Graphics.FromImage(bmp))
                 {
-                    foreach (var size in rectanglesSizes)
+                    foreach (var rectangle in rectangles)
                     {
                         var brush = new SolidBrush(CreateRandomColor());
-                        var rectangle = layouter.PutNextRectangle(size);
                         g.FillRectangle(brush, rectangle);
                     }
                 }
@@ -42,17 +38,25 @@ namespace TagsCloudVisualization
             }
         }
 
-        public byte[] CreateImageFromJPGS(string pathToFolder)
+        public byte[] CreateImageFromSizes(Size[] rectanglesSizes, ILayouter layouter)
         {
-            var pictures = Directory.GetFiles(pathToFolder);
-            pictures = pictures.OrderBy(x => random.Next()).ToArray();
+            var rectangles = rectanglesSizes.Select(layouter.PutNextRectangle).ToArray();
+            return CreateImageFromRectangles(rectangles);
+        }
+
+        public byte[] CreateImageFromJPGS(string pathToFolder, ILayouter layouter)
+        {
+            var images = Directory.GetFiles(pathToFolder);
+            images = images.OrderBy(x => random.Next()).ToArray();
             using (var bmp = new Bitmap(bitmapWidth, bitmapHeight))
             {
                 using (Graphics g = Graphics.FromImage(bmp))
                 {
-                    foreach (var picture in pictures)
+                    foreach (var pathToImage in images)
                     {
-                        AddImageToGraphics(picture, g);
+                        var pictureBitmap = new Bitmap(pathToImage);
+                        var rectangle = layouter.PutNextRectangle(pictureBitmap.Size);
+                        g.DrawImage(pictureBitmap, rectangle);
                     }
                 }
 
@@ -64,10 +68,6 @@ namespace TagsCloudVisualization
 
         private void AddImageToGraphics(string pathToPicture, Graphics g)
         {
-            var bitmap = new Bitmap(pathToPicture);
-            var size = bitmap.Size;
-            var rectangle = layouter.PutNextRectangle(size);
-            g.DrawImage(bitmap, rectangle);
         }
 
         private Color CreateRandomColor()
