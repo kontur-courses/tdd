@@ -7,10 +7,9 @@ using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTests
 {
-    [TestFixture]
-    public class Spiral_Tests
+    public class ArchimedeanSpiral_Tests
     {
-        private Spiral spiral;
+        private ArchimedeanSpiral spiral;
         private List<Point> points;
         private Point center;
 
@@ -18,15 +17,10 @@ namespace TagsCloudVisualizationTests
         public void Setup()
         {
             center = Point.Empty;
-            spiral = new Spiral(center);
+            spiral = new ArchimedeanSpiral(center);
             points = new List<Point>();
         }
 
-        [Test]
-        public void Ctor_ThrowsException_WhenDensityIsNegative()
-        {
-            Assert.Throws<ArgumentException>(() => spiral = new Spiral(Point.Empty, -1));
-        }
         
         [Test]
         public void GetNextPoint_ReturnsSpiralCenter_OnFirstCall()
