@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public class SlottedAnchor
+    internal class SlottedAnchor
     {
         public readonly Rectangle Rectangle;
         public Direction FilledSlots { get; private set; }

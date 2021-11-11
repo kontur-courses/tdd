@@ -56,7 +56,7 @@ namespace TagsCloudVisualization
             return new(current.rect, current.direction.GetReversed());
         }
 
-        public static Rectangle CreateRectangleAt(Point slot, Direction direction, Size size)
+        private static Rectangle CreateRectangleAt(Point slot, Direction direction, Size size)
         {
             var location = CircularCloudLayouterInternals.GetLocationForSlotAt(slot, direction, size);
             return new(location, size);

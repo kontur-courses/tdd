@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TagsCloudVisualization
 {
-    public static class EnumerationExtensions
+    internal static class EnumerationExtensions
     {
         public static TSource MinBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> selector, TSource def = default)
         {

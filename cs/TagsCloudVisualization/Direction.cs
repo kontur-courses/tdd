@@ -3,7 +3,7 @@
 namespace TagsCloudVisualization
 {
     [Flags]
-    public enum Direction
+    internal enum Direction
     {
         None = 0b0000,
         Left = 0b0001,

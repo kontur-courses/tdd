@@ -2,7 +2,7 @@
 
 namespace TagsCloudVisualization
 {
-    public static class DirectionExtensions
+    internal static class DirectionExtensions
     {
         public static Direction GetReversed(this Direction direction)
         {
