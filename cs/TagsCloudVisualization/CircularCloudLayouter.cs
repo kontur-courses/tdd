@@ -41,7 +41,7 @@ namespace TagsCloudVisualization
 
         private SlottedAnchor CreateNextAnchor(Size nextSize)
         {
-            var filteredAnchors = anchors.FilterForFilledSlots(Direction.All);
+            var filteredAnchors = anchors.FilterFilledSlots();
             var allSlots = filteredAnchors.SelectMany(anchor => anchor.GetAllValidSlots().Select(slot => (parent: anchor, slot)));
             var orderedSlots = allSlots.OrderBy(x => x.slot.point.DistanceTo(Center));
             var allRectangles = orderedSlots.Select(x =>

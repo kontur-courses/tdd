@@ -7,9 +7,9 @@ namespace TagsCloudVisualization.Internals
 {
     internal static class CircularCloudLayouterInternals
     {
-        public static IEnumerable<SlottedAnchor> FilterForFilledSlots(this IEnumerable<SlottedAnchor> anchors, Direction directionToFilter)
+        public static IEnumerable<SlottedAnchor> FilterFilledSlots(this IEnumerable<SlottedAnchor> anchors)
         {
-            return anchors.Where(x => x.FilledSlots != directionToFilter);
+            return anchors.Where(x => (x.FilledSlots & DirectionExtensions.All) != DirectionExtensions.All);
         }
 
         public static IEnumerable<(Point point, Direction direction)> GetAllValidSlots(this SlottedAnchor anchor)
@@ -30,8 +30,8 @@ namespace TagsCloudVisualization.Internals
 
         private static Point GetSlotAt(this SlottedAnchor anchor, Direction direction)
         {
-            var horizontalOffset = anchor.Width/ 2;
-            var verticalOffset = anchor.Height/ 2;
+            var horizontalOffset = anchor.Width / 2;
+            var verticalOffset = anchor.Height / 2;
             return direction switch
             {
                 Direction.Top => new Point(anchor.Left + horizontalOffset, anchor.Top),
