@@ -18,13 +18,23 @@ namespace TagsCloudVisualization.Layouters
 
         public RectangleF PutNextRectangle(Size rectangleSize)
         {
-            throw new NotImplementedException();
+            var rect = FindRectanglePosition(rectangleSize);
+            
+            rectangles.Add(rect);
+            
+            return rect;
         }
 
-        private PointF FindRectanglePosition(Size rectangleSize)
+        private RectangleF FindRectanglePosition(Size rectangleSize)
         {
             var rect = new RectangleF(spiral.CurrentPoint, rectangleSize);
-            throw new NotImplementedException();
+            
+            while (IsRectangleIntersectsAny(rect))
+            {
+                spiral.IncreaseSize();
+            }
+
+            return rect;
         }
 
         private bool IsRectangleIntersectsAny(RectangleF rect) => 
