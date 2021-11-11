@@ -10,9 +10,9 @@ namespace TagsCloudVisualizationTests
     [TestFixture]
     public class Spiral_Should
     {
-        private const double Epsilon = 1e-9;
-        private const double DefaultRadiusIncreaseValue = 0.1;
-        private const double DefaultAngleIncreaseValue = 0.1;
+        private const float Epsilon = 1e-5f;
+        private const float DefaultRadiusIncreaseValue = 0.1f;
+        private const float DefaultAngleIncreaseValue = 0.1f;
 
         [Test]
         [TestCaseSource(nameof(CenterGenerator))]
@@ -100,14 +100,14 @@ namespace TagsCloudVisualizationTests
             spiral.CurrentPoint.Y.Should().BeApproximately(expectedY, Epsilon);
         }
 
-        private double CountX(double radius, double angle, double currentX)
+        private float CountX(float radius, float angle, float currentX)
         {
-            return Math.Cos(angle) * radius + currentX;
+            return (float) Math.Cos(angle) * radius + currentX;
         }
 
-        private double CountY(double radius, double angle, double currentY)
+        private float CountY(float radius, float angle, float currentY)
         {
-            return Math.Sin(angle) * radius + currentY;
+            return (float) Math.Sin(angle) * radius + currentY;
         }
 
         private static IEnumerable<Point> CenterGenerator()

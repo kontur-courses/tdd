@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Drawing;
-using TagsCloudVisualization.Helpers;
 
 namespace TagsCloudVisualization.Layouters
 {
     public class Spiral
     {
-        private double radius = 0;
-        private double angle = 0;
+        private float radius = 0;
+        private float angle = 0;
 
         private readonly Point center;
 
-        public PointD CurrentPoint =>
-            new PointD(
-                Math.Cos(angle) * radius + center.X,
-                Math.Sin(angle) * radius + center.Y);
+        public PointF CurrentPoint =>
+            new ((float) Math.Cos(angle) * radius + center.X,
+                (float) Math.Sin(angle) * radius + center.Y);
 
 
         public Spiral(Point center)
@@ -22,7 +20,7 @@ namespace TagsCloudVisualization.Layouters
             this.center = center;
         }
 
-        public void IncreaseSize(double radiusIncreaseValue = 0.1, double angleIncreaseValue = 0.1)
+        public void IncreaseSize(float radiusIncreaseValue = 0.1f, float angleIncreaseValue = 0.1f)
         {
             radius += radiusIncreaseValue;
             angle += angleIncreaseValue;
