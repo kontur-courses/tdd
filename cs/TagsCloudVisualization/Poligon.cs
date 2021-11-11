@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -60,9 +59,9 @@ namespace TagsCloudVisualization
 
         private bool IsOnSameLine(PointF first, PointF middle, PointF end)
         {
-            if (first.Y == middle.Y && middle.Y == end.Y)
+            if (Math.Abs(first.Y - middle.Y) < 0.01 && Math.Abs(middle.Y - end.Y) < 0.01)
                 return true;
-            return first.X == middle.X && middle.X == end.X;
+            return Math.Abs(first.X - middle.X) < 0.01 && Math.Abs(middle.X - end.X) < 0.01;
         }
     }
 }
