@@ -27,15 +27,5 @@ namespace BowlingGame
                 .GetScore()
                 .Should().Be(0);
         }
-
-        [Test]
-        public void DoubleTwoNextKnockedPinsCount_AfterStrike()
-        {
-            var game = new Game();
-            game.Roll(10);
-            game.Roll(2);
-            game.Roll(3);
-            game.GetScore().Should().Be(20);
-        }
     }
 }
