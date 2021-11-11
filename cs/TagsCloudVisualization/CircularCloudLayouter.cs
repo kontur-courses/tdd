@@ -9,15 +9,12 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private readonly List<RectangleF> rectangles;
-        public IReadOnlyList<RectangleF> Rectangles => rectangles;
-        private readonly PointF layouterCenter;
+        public readonly Cloud Cloud;
         private readonly Spiral spiral;
 
         public CircularCloudLayouter(PointF center)
         {
-            layouterCenter = center;
-            rectangles = new List<RectangleF>();
+            Cloud = new Cloud(center);
             spiral = new Spiral(center);
         }
 
@@ -28,20 +25,9 @@ namespace TagsCloudVisualization
                     "width and height must be positive");
 
             var rectangle = RectangleFExtensions
-                .GetRectangleByCenter(rectangleSize, layouterCenter);
+                .GetRectangleByCenter(rectangleSize, Cloud.Center);
             var positionedRectangle = FindPositionToRectangle(rectangle);
-            rectangles.Add(positionedRectangle);
-        }
-
-        public void Visualize(string filename)
-        {
-            var bitmap = new Bitmap
-                ((int)(layouterCenter.X * 2), (int)(layouterCenter.Y * 2));
-            var gr = Graphics.FromImage(bitmap);
-            var pen = new Pen(Color.DarkGreen, 1);
-
-            gr.DrawRectangles(pen, rectangles.ToArray());
-            bitmap.Save(filename);
+           Cloud.AddRectangle(positionedRectangle);
         }
 
         private RectangleF GetShiftedRectangle
@@ -62,7 +48,7 @@ namespace TagsCloudVisualization
         private RectangleF ShiftRectangleToCenter(RectangleF rect)
         {
             var rectCenter = rect.GetCenter();
-            var normal = rectCenter.GetNormalToCenter(layouterCenter);
+            var normal = rectCenter.GetNormalToCenter(Cloud.Center);
             if (float.IsNaN(normal.X) || float.IsNaN(normal.Y))
                 return rect;
             var shifted = new RectangleF();
@@ -78,6 +64,6 @@ namespace TagsCloudVisualization
         }
 
         private bool IsRectangleIntersectedByAnother(RectangleF rect)
-            => rectangles.Any(r => r.IntersectsWith(rect));
+            => Cloud.Rectangles.Any(r => r.IntersectsWith(rect));
     }
 }

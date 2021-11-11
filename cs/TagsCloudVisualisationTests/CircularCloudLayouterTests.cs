@@ -15,18 +15,20 @@ namespace TagsCloudVisualizationTests
     public class CircularCloudLayouterTests
     {
         private CircularCloudLayouter layouter;
+        private Cloud cloud;
         private readonly PointF layouterCenter = new PointF(400, 400);
 
         [SetUp]
         public void InitialiseLayouter()
         {
             layouter = new CircularCloudLayouter(layouterCenter);
+            cloud = layouter.Cloud;
         }
 
         [Test]
         public void LayouterShould_BeEmpty_AfterCreation()
         {
-            layouter.Rectangles.Should()
+            cloud.Rectangles.Should()
                 .BeEmpty();
         }
 
@@ -48,7 +50,7 @@ namespace TagsCloudVisualizationTests
         public void LayouterShould_AddOneRectangleToList()
         {
             layouter.PutNextRectangle(new Size(5, 5));
-            layouter.Rectangles.Should()
+            cloud.Rectangles.Should()
                 .HaveCount(1);
         }
 
@@ -56,7 +58,7 @@ namespace TagsCloudVisualizationTests
         public void LayouterShould_AddFirstRectangleAtCenter()
         {
             layouter.PutNextRectangle(new Size(5, 5));
-            layouter.Rectangles.First()
+            cloud.Rectangles.First()
                 .GetCenter()
                 .Should()
                 .Be(layouterCenter);
@@ -67,7 +69,7 @@ namespace TagsCloudVisualizationTests
         public void LayouterShould_AddSeveralRectanglesToList(int count)
         {
             var sizes = PutSeveralRectangles(count);
-            var rectSizes = layouter.Rectangles
+            var rectSizes = cloud.Rectangles
                 .Select(r => r.Size)
                 .ToList();
             rectSizes.Should().HaveCount(sizes.Count);
@@ -80,7 +82,7 @@ namespace TagsCloudVisualizationTests
         public void LayouterShould_AddSeveralRectangles_WithoutIntersections(int count)
         {
             PutSeveralRectangles(count);
-            var rectangles = layouter.Rectangles;
+            var rectangles = cloud.Rectangles;
             for (var i = 0; i < rectangles.Count; i++)
                 for (var j = i + 1; j < rectangles.Count; j++)
                     rectangles[i].IntersectsWith(rectangles[j])
@@ -102,7 +104,7 @@ namespace TagsCloudVisualizationTests
             PutSeveralRectangles(100);
             var boundingRect = RectangleFExtensions.GetRectangleByCenter
                 (new Size(1000, 1000), layouterCenter);
-            layouter.Rectangles.Where(r => !boundingRect.Contains(r))
+            cloud.Rectangles.Where(r => !boundingRect.Contains(r))
                 .Should()
                 .BeEmpty();
         }
@@ -116,7 +118,7 @@ namespace TagsCloudVisualizationTests
             PutSeveralRectangles(count, min, max);
             var vectorLayouterCenter = layouterCenter.ToVector();
             var radius = count * (max + min) / 2 * 0.05;
-            layouter.Rectangles.ToList()
+            cloud.Rectangles.ToList()
                 .ForEach(r =>
                 vectorLayouterCenter.GetDistanceTo(r.GetCenter())
                 .Should().BeLessThan(radius));
@@ -126,7 +128,7 @@ namespace TagsCloudVisualizationTests
         public void SaveLayout()
         {
             if (TestContext.CurrentContext.Result.FailCount == 0
-            || layouter.Rectangles.Count == 0)
+            || cloud.Rectangles.Count == 0)
                 return;
 
             var name = TestContext.CurrentContext.Test.Name;
@@ -134,7 +136,7 @@ namespace TagsCloudVisualizationTests
             var message = $"Test {name} down!\n" +
                 $"Tag cloud visualization saved to file {path}";
 
-            layouter.Visualize(path);
+            cloud.DefaultVisualize(path);
             TestContext.WriteLine(message);
         }
 
@@ -149,7 +151,7 @@ namespace TagsCloudVisualizationTests
         public void Visualize(string filename, int count, int min, int max)
         {
             PutSeveralRectangles(count, min, max);
-            layouter.Visualize(filename);
+            cloud.DefaultVisualize(filename);
         }
 
         private List<Size> GetRandomSizes(int count, int min, int max, int seed = 0)
