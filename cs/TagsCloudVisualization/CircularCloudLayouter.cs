@@ -7,12 +7,12 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter : ICircularCloudLayouter
     {
-        private readonly Spiral spiral;
+        private readonly ISpiral spiral;
         private readonly List<Rectangle> rectangles;
 
         public CircularCloudLayouter(Point center)
         {
-            spiral = new Spiral(center);
+            spiral = new ArchimedeanSpiral(center);
             rectangles = new List<Rectangle>();
         }
 
@@ -29,7 +29,7 @@ namespace TagsCloudVisualization
             while (rectangles.Any(newRectangle.IntersectsWith))
             {
                 nextPoint = spiral.GetNextPoint();
-                newRectangle.Location = nextPoint;
+                newRectangle = new Rectangle(nextPoint, rectangleSize);
             }
             
             rectangles.Add(newRectangle);
