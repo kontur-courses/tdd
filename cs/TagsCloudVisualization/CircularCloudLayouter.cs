@@ -9,17 +9,18 @@ namespace TagsCloudVisualization
     {
         private Point centrPoint;
         private Point nextPoint;
-        private List<Rectangle> rectangles;
         private readonly Spiral spiral;
-        public List<Rectangle> Rectangles => rectangles;
-
+        private double squareRectangles;
+        public readonly List<Rectangle> Rectangles;
+        public double SquareRectangles => squareRectangles;
         public CircularCloudLayouter(Point center)
         {
             centrPoint = center;
             nextPoint = centrPoint;
-            rectangles = new List<Rectangle>();
+            Rectangles = new List<Rectangle>();
             spiral = new Spiral(centrPoint);
         }
+
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
@@ -37,14 +38,89 @@ namespace TagsCloudVisualization
                 currentRectangle.Location = nextPoint;
             }
 
-            rectangles.Add(currentRectangle);
+           // CorrectLocationRectangle(currentRectangle); Метод еще не реализован 
+            Rectangles.Add(currentRectangle);
+
+            squareRectangles = SquareRectangles + currentRectangle.Square();
 
             return currentRectangle;
         }
 
-        public bool IsIntersects(Rectangle rectangle)
+        private bool IsIntersects(Rectangle rectangle)
         {
-            return rectangles.Any(rect => rect.IntersectsWith(rectangle));
+            return Rectangles.Any(rect => rect.IntersectsWith(rectangle));
         }
+
+        public double Radius()
+        {
+            if (Rectangles == null)
+                throw new Exception();
+
+            var lastPoint = Rectangles.Last().Location; // последнняя точка самая дальняя от центра
+
+            return Math.Sqrt(Math.Pow(lastPoint.X - centrPoint.X, 2) + Math.Pow(lastPoint.Y - centrPoint.Y, 2));
+        }
+
+        //TODO доделать метод 
+        public void CorrectLocationRectangle(Rectangle rectangle)
+        {
+            Point oldPoint;
+            Point newPoint;
+
+            oldPoint = rectangle.Location;
+            newPoint = rectangle.Location;
+            if (oldPoint.X > centrPoint.X)
+            {
+                while (!IsIntersects(rectangle) && newPoint.X != centrPoint.X)
+                {
+                    newPoint.X--;
+
+                    rectangle.Location = newPoint;
+                }
+
+                // newPoint.X++;
+                rectangle.Location = newPoint;
+            }
+            else if(oldPoint.X < centrPoint.X || newPoint.X != centrPoint.X)
+            {
+                while (!IsIntersects(rectangle) && newPoint.X != centrPoint.X)
+                {
+                    newPoint.X++;
+
+                    rectangle.Location = newPoint;
+                }
+                newPoint.X--;
+                rectangle.Location = newPoint;
+            }
+
+            if (oldPoint.Y > centrPoint.Y )
+            {
+                while (!IsIntersects(rectangle) && newPoint.Y != centrPoint.Y)
+                {
+                    newPoint.Y--;
+
+                    rectangle.Location = newPoint;
+                }
+
+                newPoint.Y++;
+                rectangle.Location = newPoint;
+                Rectangles.Add(rectangle);
+            }
+            else if (oldPoint.Y < centrPoint.Y)
+            {
+                while (!IsIntersects(rectangle) && newPoint.Y != centrPoint.Y )
+                {
+                    newPoint.Y++;
+
+                    rectangle.Location = newPoint;
+                }
+                newPoint.Y--;
+                rectangle.Location = newPoint;
+                Rectangles.Add(rectangle);
+            }
+
+
+        }
+
     }
 }
