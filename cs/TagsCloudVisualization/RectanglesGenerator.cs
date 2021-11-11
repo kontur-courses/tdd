@@ -7,28 +7,36 @@ namespace TagsCloudVisualization
     {
         internal static Rectangle[] GenerateSameRectanglesWithSize(int count, int minSize, int maxSize)
         {
-            if (count <= 0 || minSize <= 0 || maxSize <= 0)
-                throw new ArgumentException("all parameters should be positive");
-            var layouter = new CircularCloudLayouter(new Point());
+            if (!AreCorrectSizeInterval(minSize, maxSize)) throw new ArgumentException("sizes should be positive");
             var rnd = new Random();
-            var size = new Size(rnd.Next(minSize, maxSize), rnd.Next(minSize, maxSize));
-            for (var i = 0; i < count; i++) layouter.PutNextRectangle(size);
-            return layouter.Rectangles.ToArray();
+            var size = new Size(rnd.Next(minSize, maxSize), rnd.Next(maxSize));
+            return GenerateRectangles(() => size, count);
         }
 
         internal static Rectangle[] GenerateDifferentRectangles(int count, int minSize, int maxSize)
         {
-            if (count <= 0 || minSize <= 0 || maxSize <= 0)
-                throw new ArgumentException("all parameters should be positive");
-            var layouter = new CircularCloudLayouter(new Point());
+            if (!AreCorrectSizeInterval(minSize, maxSize)) throw new ArgumentException("sizes should be positive");
             var rnd = new Random();
+            return GenerateRectangles(() => new Size(rnd.Next(minSize, maxSize), rnd.Next(minSize, maxSize)), count);
+        }
+
+        private static Rectangle[] GenerateRectangles(Func<Size> sizesGeneratorFunc, int count)
+        {
+            if (count <= 0)
+                throw new ArgumentException("count should be positive");
+            var layouter = new CircularCloudLayouter(new Point());
             for (var i = 0; i < count; i++)
             {
-                var size = new Size(rnd.Next(minSize, maxSize), rnd.Next(minSize, maxSize));
+                var size = sizesGeneratorFunc();
                 layouter.PutNextRectangle(size);
             }
 
             return layouter.Rectangles.ToArray();
+        }
+
+        private static bool AreCorrectSizeInterval(int minSize, int maxSize)
+        {
+            return minSize > 0 && maxSize > 0;
         }
     }
 }
