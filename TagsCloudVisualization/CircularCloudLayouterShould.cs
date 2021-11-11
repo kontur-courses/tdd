@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
+using System.Security.Permissions;
 using NUnit.Framework;
 using FluentAssertions;
 
@@ -50,9 +52,9 @@ namespace TagsCloudVisualization
         [Test]
         public void MakeCloudCircleDeviationLessThanTwentyFivePercents()
         {
-            var rectanglesCount = 150;
-            var maxHeight = 35;
-            var maxWidth = 35;
+            var rectanglesCount = 325;
+            var maxHeight = 100;
+            var maxWidth = 100;
             var center = new Point(0, 0);
             var layouter = new CircularCloudLayouter(center);
             var rnd = new Random();
@@ -68,14 +70,14 @@ namespace TagsCloudVisualization
         [Test]
         public void PutRectanglesWithousIntersects()
         {
-            var rectanglesCount = 15;
-            var maxHeight = 35;
-            var maxWidth = 75;
+            var rectanglesCount = 50;
+            var maxHeight = 100;
+            var maxWidth = 100;
             var center = new Point(0, 0);
             var layouter = new CircularCloudLayouter(center);
             var rnd = new Random();
 
-            PutRectangles(layouter, rnd, maxHeight, maxWidth, rectanglesCount);
+            PutRectangles(layouter, rnd, maxWidth, maxHeight, rectanglesCount);
 
             DoRectanglesIntersect(layouter).Should().BeFalse();
         }
@@ -96,14 +98,17 @@ namespace TagsCloudVisualization
             int maxHeight,
             int rectanglesCount)
         {
+
             for (var i = 0; i < rectanglesCount; i++)
-                layouter.PutNextRectangle(new Size(rnd.Next(1, maxWidth), rnd.Next(1, maxHeight)));
+            {
+                var rect = layouter.PutNextRectangle(new Size(rnd.Next(20, maxWidth), rnd.Next(20, maxHeight)));
+            }
         }
 
         private double GetCloudCircleDeviation(Point center, IEnumerable<Point> cloudConvexHull)
         {
-            var minMaxHullVectorsLengths = GetMinMaxHullVectorsLengths(center, cloudConvexHull);
-            var deviation = 1 - (minMaxHullVectorsLengths.Item1 / minMaxHullVectorsLengths.Item2);
+            var minMaxLengths = GetMinMaxHullVectorsLengths(center, cloudConvexHull);
+            var deviation = 1 - Math.Abs(minMaxLengths.Item1 / minMaxLengths.Item2);
             return deviation;
         }
 
