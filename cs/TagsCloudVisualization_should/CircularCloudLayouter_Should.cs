@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -122,7 +122,7 @@ namespace TagsCloudVisualizationTests
             var circleArea = GetDensityCheckingCircleArea(layouter.Rectangles.ToArray());
             var densityCoeff = rectanglesArea / circleArea;
             densityCoeff.Should().BeGreaterOrEqualTo(0.7);
-            TestContext.WriteLine($"Коэффициент плотности: {densityCoeff}");
+            TestContext.WriteLine($"density coefficient: {densityCoeff}");
         }
 
         private double GetDensityCheckingCircleArea(Rectangle[] rectangles)

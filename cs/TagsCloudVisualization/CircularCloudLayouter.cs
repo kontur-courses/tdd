@@ -10,12 +10,10 @@ namespace TagsCloudVisualization
 
         public CircularCloudLayouter(Point center)
         {
-            Center = center;
             pointsCreator = new SpiralPointsCreator(center);
             Rectangles = new List<Rectangle>();
         }
 
-        public Point Center { get; }
         public List<Rectangle> Rectangles { get; }
 
         public Rectangle PutNextRectangle(Size size)
