@@ -28,13 +28,13 @@ namespace TagsCloudVisualization.Internals
             return new(location, size);
         }
 
-        private static Point GetLocationForSlotAt(this SlottedAnchor anchor, Direction direction, Size size)
+        private static Point GetSlotAt(this SlottedAnchor anchor, Direction direction)
         {
-            var horizontalOffset = (anchor.Width - size.Width) / 2;
-            var verticalOffset = (anchor.Height - size.Height) / 2;
+            var horizontalOffset = anchor.Width/ 2;
+            var verticalOffset = anchor.Height/ 2;
             return direction switch
             {
-                Direction.Top => new Point(anchor.Left + horizontalOffset, anchor.Top - size.Height),
+                Direction.Top => new Point(anchor.Left + horizontalOffset, anchor.Top),
                 Direction.Bottom => new Point(anchor.Left + horizontalOffset, anchor.Bottom),
                 Direction.Right => new Point(anchor.Right, anchor.Top + verticalOffset),
                 Direction.Left => new Point(anchor.Left, anchor.Top + verticalOffset),
