@@ -4,25 +4,16 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public class Spiral
+    public class ArchimedeanSpiral : ISpiral
     {
         private readonly Point center;
-        private readonly double densityParam;
         private readonly double angleStep;
         private readonly HashSet<Point> points;
         private double angle;
 
-        private double Radius => angle * densityParam;
-
-        public Spiral(Point center, double densityParam = 0.5, double angleStep = Math.PI / 180)
+        public ArchimedeanSpiral(Point center, double angleStep = Math.PI / 90)
         {
-            if (densityParam <= 0)
-            {
-                throw new ArgumentException("Density parameter must be a positive number");
-            }
-
             this.center = center;
-            this.densityParam = densityParam;
             this.angleStep = angleStep;
             points = new HashSet<Point>();
         }
@@ -41,8 +32,8 @@ namespace TagsCloudVisualization
 
         private Point CalculateNextPoint()
         {
-            var x = (int)Math.Round(Radius * Math.Cos(angle));
-            var y = (int)Math.Round(Radius * Math.Sin(angle));
+            var x = (int)Math.Round(angle * Math.Cos(angle));
+            var y = (int)Math.Round(angle * Math.Sin(angle));
 
             angle += angleStep;
             return new Point(center.X + x, center.Y + y);
