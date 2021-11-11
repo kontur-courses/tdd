@@ -13,7 +13,7 @@ namespace TagCloudVisualization_Tests
         [Test]
         public void Constructor_ShouldNotThrow_WhenCreated()
         {
-            Action act = () => new CircularCloudLayouter(Point.Empty);
+            Action act = () => new CircularLayouter(Point.Empty);
             act.Should().NotThrow();
         }
 
@@ -22,7 +22,7 @@ namespace TagCloudVisualization_Tests
         {
             var center = new Point(-1, -1);
 
-            var layouter = new CircularCloudLayouter(center);
+            var layouter = new CircularLayouter(center);
 
             layouter.Center.Should().BeEquivalentTo(center);
         }
@@ -32,7 +32,7 @@ namespace TagCloudVisualization_Tests
         {
             var centerPoint = new Point(10, 10);
 
-            var layouter = new CircularCloudLayouter(centerPoint);
+            var layouter = new CircularLayouter(centerPoint);
 
             layouter.Center.Should().BeEquivalentTo(centerPoint);
         }
@@ -40,7 +40,7 @@ namespace TagCloudVisualization_Tests
         [Test]
         public void PutNextRectangle_ShouldReturnRectangle_AfterFirstPut()
         {
-            var layouter = new CircularCloudLayouter(Point.Empty);
+            var layouter = new CircularLayouter(Point.Empty);
 
             var expectedRect = new Rectangle(Point.Empty, new Size(10, 10));
             var actualRect = layouter.PutNextRectangle(new Size(10, 10));
@@ -53,7 +53,7 @@ namespace TagCloudVisualization_Tests
             [ValueSource(nameof(IncorrectRectangleSizes))]
             Size rectSize)
         {
-            var layouter = new CircularCloudLayouter(Point.Empty);
+            var layouter = new CircularLayouter(Point.Empty);
 
             Action act = () => layouter.PutNextRectangle(rectSize);
 
@@ -63,7 +63,7 @@ namespace TagCloudVisualization_Tests
         [Test]
         public void PutNextRectangle_ShouldAlignRectangleMiddlePointToCenter()
         {
-            var layouter = new CircularCloudLayouter(Point.Empty);
+            var layouter = new CircularLayouter(Point.Empty);
             var rectSize = new Size(10, 10);
 
             var rect = layouter.PutNextRectangle(rectSize);
@@ -73,22 +73,9 @@ namespace TagCloudVisualization_Tests
         }
 
         [Test]
-        public void PutNextRectangle_ShouldPutSecondRectangleAboveFirst()
-        {
-            var layouter = new CircularCloudLayouter(Point.Empty);
-            var firstRectSize = new Size(10, 10);
-            var secondRectSize = new Size(15, 10);
-
-            var firstRect = layouter.PutNextRectangle(firstRectSize);
-            var secondRect = layouter.PutNextRectangle(secondRectSize);
-
-            secondRect.Bottom.Should().BeLessThan(firstRect.Top);
-        }
-
-        [Test]
         public void PutNextRectangle_ShouldNotIntersect_TwoRectangles()
         {
-            var layouter = new CircularCloudLayouter(Point.Empty);
+            var layouter = new CircularLayouter(Point.Empty);
 
             var firstRect = layouter.PutNextRectangle(new Size(10, 10));
             var secondRect = layouter.PutNextRectangle(new Size(5, 15));
@@ -104,10 +91,10 @@ namespace TagCloudVisualization_Tests
         [TestCase(64)]
         public void PutNextRectangle_ShouldNotIntersect_ForEachRectangle(int n)
         {
-            var layouter = new CircularCloudLayouter(Point.Empty);
+            var layouter = new CircularLayouter(Point.Empty);
 
             var rectangles = new List<Rectangle>(n);
-            foreach (var rectSize in DataGenerator.GetNextNSizes(n))
+            foreach (var rectSize in RectangleSizeGenerator.GetNextNFixedSize(n))
                 rectangles.Add(layouter.PutNextRectangle(rectSize));
 
             IsIntersectExist(rectangles).Should().BeFalse();
@@ -118,7 +105,7 @@ namespace TagCloudVisualization_Tests
             for (var i = 0; i < rectangles.Count; i++)
             {
                 var rect = rectangles[i];
-                for (var j = 1; j < rectangles.Count; j++)
+                for (var j = i + 1; j < rectangles.Count; j++)
                     if (rect.IntersectsWith(rectangles[j]))
                         return true;
             }

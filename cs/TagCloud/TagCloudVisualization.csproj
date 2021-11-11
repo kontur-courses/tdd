@@ -44,8 +44,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Layouting\CircularCloudLayouter.cs" />
+    <Compile Include="ITagCloud.cs" />
+    <Compile Include="Layouting\CircularLayouter.cs" />
+    <Compile Include="Geometry\DirectingArrow.cs" />
     <Compile Include="Layouting\ICloudLayouter.cs" />
+    <Compile Include="Layouting\ILayouter.cs" />
+    <Compile Include="Geometry\RectangleExtension.cs" />
     <Compile Include="Saving\BitmapSaver.cs" />
     <Compile Include="Saving\IBitmapSaver.cs" />
     <Compile Include="Program.cs" />

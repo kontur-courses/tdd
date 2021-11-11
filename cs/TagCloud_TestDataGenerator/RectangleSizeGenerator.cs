@@ -4,19 +4,27 @@ using System.Drawing;
 
 namespace TagCloud_TestDataGenerator
 {
-    public static class DataGenerator
+    public static class RectangleSizeGenerator
     {
         private const int MinSize = 15;
         private const int MaxSize = 150;
+        private const int DefaultWidth = 100;
+        private const int DefaultHeight = 50;
 
         private static readonly Random Rnd;
 
-        static DataGenerator()
+        static RectangleSizeGenerator()
         {
             Rnd = new Random();
         }
 
-        public static IEnumerable<Size> GetNextNSizes(int n)
+        public static IEnumerable<Size> GetNextNFixedSize(int n)
+        {
+            for (var i = 0; i < n; i++)
+                yield return new Size(DefaultWidth, DefaultHeight);
+        }
+
+        public static IEnumerable<Size> GetNextNRandomSize(int n)
         {
             for (var i = 0; i < n; i++)
             {

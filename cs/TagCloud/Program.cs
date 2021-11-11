@@ -11,16 +11,15 @@ namespace TagCloud
         private static void Main(string[] args)
         {
             var bitmapSaver = new BitmapSaver();
-            var layouter = new CircularCloudLayouter(new Point(0, 0));
+            var layouter = new CircularLayouter(new Point(0, 0));
             var visualizer = new Visualizer(new Drawer());
 
             var tagCloud = new TagCloud(layouter, bitmapSaver, visualizer);
 
-            foreach (var size in DataGenerator.GetNextNSizes(6))
+            foreach (var size in RectangleSizeGenerator.GetNextNFixedSize(1500))
                 tagCloud.PutNextTag(size);
 
-            tagCloud.Visualize(true);
-            tagCloud.Save();
+            tagCloud.SaveToBitmap(true, true);
         }
     }
 }
