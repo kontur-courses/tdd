@@ -36,6 +36,11 @@ namespace TagsCloudVisualization
             return Rectangle.IntersectsWith(rect);
         }
 
+        public bool IntersectsWith(SlottedAnchor anchor)
+        {
+            return Rectangle.IntersectsWith(anchor.Rectangle);
+        }
+
         public Point GetCenter()
         {
             return Rectangle.GetCenter();

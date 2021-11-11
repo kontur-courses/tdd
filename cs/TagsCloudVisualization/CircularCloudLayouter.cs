@@ -41,24 +41,25 @@ namespace TagsCloudVisualization
 
         private SlottedAnchor CreateNextAnchor(Size nextSize)
         {
-            var (parent, current) = anchors.FilterForFilledSlots(Direction.All)
-                .SelectMany(anchor => GetAllValidSlots(anchor, nextSize)
-                                        .Select(current => (parent: anchor, current)))
-                .MinBy(x => x.current.GetCenter().DistanceTo(Center));
+            var filteredAnchors = anchors.FilterForFilledSlots(Direction.All);
+            var allSlots = filteredAnchors.SelectMany(anchor => anchor.GetAllValidSlots().Select(slot => (parent: anchor, slot)));
+            var orderedSlots = allSlots.OrderBy(x => x.slot.point.DistanceTo(Center));
+            var allRectangles = orderedSlots.Select(x =>
+            {
+                var slot = (rect: CreateRectangleAt(x.slot.point, x.slot.direction, nextSize), x.slot.direction);
+                return (x.parent, slot);
+            });
 
-            parent.FillDirection(current.FilledSlots.GetReversed());
-            return current;
+            var (parent, current) = allRectangles.First(x => !x.slot.rect.IntersectsWithAny(anchors));
+
+            parent.FillDirection(current.direction);
+            return new(current.rect, current.direction.GetReversed());
         }
 
-        private IEnumerable<SlottedAnchor> GetAllValidSlots(SlottedAnchor anchor, Size size)
+        public static Rectangle CreateRectangleAt(Point slot, Direction direction, Size size)
         {
-            foreach (var (direction, rectangle) in anchor.GetEmptySlots().Select(direction => (direction, anchor.GetRectangleAt(direction, size))))
-            {
-                var hasIntersection = anchors.Any(x => x.IntersectsWith(rectangle));
-                if (hasIntersection)
-                    continue;
-                yield return new SlottedAnchor(rectangle, direction.GetReversed());
-            }
+            var location = CircularCloudLayouterInternals.GetLocationForSlotAt(slot, direction, size);
+            return new(location, size);
         }
     }
 }

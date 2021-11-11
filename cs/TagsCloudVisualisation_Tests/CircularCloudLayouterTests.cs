@@ -125,7 +125,7 @@ namespace TagsCloudVisualization
             var secondRectangle = layouter.PutNextRectangle(secondSize);
             var actualDistance = expectedCenter.DistanceTo(secondRectangle.GetCenter());
 
-            actualDistance.Should().BeLessOrEqualTo(maximumExpectedDistance);
+            actualDistance.Should().BeLessOrEqualTo(maximumExpectedDistance + 1);
         }
 
         [Test]
@@ -146,7 +146,7 @@ namespace TagsCloudVisualization
             var thirdRectangle = layouter.PutNextRectangle(thirdSize);
             var actualDistance = expectedCenter.DistanceTo(thirdRectangle.GetCenter());
 
-            actualDistance.Should().BeLessOrEqualTo(maximumExpectedDistance);
+            actualDistance.Should().BeLessOrEqualTo(maximumExpectedDistance + 1);
         }
 
         private static void GetMinimalSide(Size firstSize, out int minimalFirstSide, out bool isHoriontal)
