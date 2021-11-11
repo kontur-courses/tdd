@@ -32,7 +32,7 @@ namespace TagsCloudVisualization
             rectangles.Add(positionedRectangle);
         }
 
-        public void Visualise(string filename)
+        public void Visualize(string filename)
         {
             var bitmap = new Bitmap
                 ((int)(layouterCenter.X * 2), (int)(layouterCenter.Y * 2));

@@ -4,10 +4,11 @@ using NUnit.Framework;
 using FluentAssertions;
 using System.Linq;
 using System.Collections.Generic;
+using System.IO;
 using FluentAssertions.Extensions;
 using TagsCloudVisualization;
 
-namespace TagsCloudVisualisationTests
+namespace TagsCloudVisualizationTests
 {
     [TestFixture]
     public class CircularCloudLayouterTests
@@ -105,12 +106,15 @@ namespace TagsCloudVisualisationTests
                 .BeEmpty();
         }
 
-        [Test]
-        public void LayouterShould_PlaceRectangles_CloseToCircularForm()
+        [TestCase(5, 20)]
+        [TestCase(20, 50)]
+        [TestCase(10, 200)]
+        public void LayouterShould_PlaceRectangles_CloseToCircularForm(int min, int max)
         {
-            PutSeveralRectangles(400, 18);
+            var count = 400;
+            PutSeveralRectangles(count, min, max);
             var vectorLayouterCenter = layouterCenter.ToVector();
-            var radius = 250;
+            var radius = count * (max + min) / 2 * 0.05;
             layouter.Rectangles.ToList()
                 .ForEach(r =>
                 vectorLayouterCenter.GetDistanceTo(r.GetCenter())
@@ -125,11 +129,11 @@ namespace TagsCloudVisualisationTests
                 return;
 
             var name = TestContext.CurrentContext.Test.Name;
-            var path = $"..\\..\\..\\{name}.jpg";
+            var path = Path.GetFullPath($"..\\..\\..\\images\\{name}.jpg");
             var message = $"Test {name} down!\n" +
                 $"Tag cloud visualization saved to file {path}";
 
-            layouter.Visualise(path);
+            layouter.Visualize(path);
             TestContext.WriteLine(message);
         }
 
@@ -137,14 +141,14 @@ namespace TagsCloudVisualisationTests
         /// Я решил сделать визуализацию через тесты, чтобы не выделять отдельный проект
         /// и можно было удобно настраивать параметры
         /// </summary>
-        //[TestCase("..\\..\\..\\1.jpg", 200, 10, 20)]
-        //[TestCase("..\\..\\..\\2.jpg", 250, 15, 25)]
-        //[TestCase("..\\..\\..\\3.jpg", 500, 10, 16)]
-        //[TestCase("..\\..\\..\\4.jpg", 250, 5, 50)]
-        public void Visualise(string filename, int count, int min, int max)
+        //[TestCase("..\\..\\..\\images\\1.jpg", 200, 10, 20)]
+        //[TestCase("..\\..\\..\\images\\2.jpg", 250, 15, 25)]
+        //[TestCase("..\\..\\..\\images\\3.jpg", 500, 10, 16)]
+        //[TestCase("..\\..\\..\\images\\4.jpg", 250, 5, 50)]
+        public void Visualize(string filename, int count, int min, int max)
         {
             PutSeveralRectangles(count, min, max);
-            layouter.Visualise(filename);
+            layouter.Visualize(filename);
         }
 
         private List<Size> GetRandomSizes(int count, int min, int max, int seed = 0)
