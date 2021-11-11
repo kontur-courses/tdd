@@ -9,7 +9,7 @@ namespace TagsCloudVisualization
     {
         public Point Center { get; }
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
-        public IReadOnlyList<Rectangle> Rectangles { get => rectangles; }
+        public IReadOnlyList<Rectangle> Rectangles => rectangles;
 
 
         public CircularCloudLayouter(Point center)
