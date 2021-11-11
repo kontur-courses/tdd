@@ -16,7 +16,7 @@ namespace TagsCloudVisualizationTests
         private CircularCloudLayouter layouter;
         private const int X = 500;
         private const int Y = 500;
-        private const int Count = 1000;
+        private const int Count = 500;
 
         [SetUp]
         public void SetUp()
@@ -27,10 +27,10 @@ namespace TagsCloudVisualizationTests
         [TearDown]
         public void TearDown()
         {
-            if (layouter.Rectangles.Count > 0 
+            if (layouter.Rectangles.Count > 0
                 && TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                var path = LayoutImageGenerator.CreateImage(layouter);
+                var path = CloudImageGenerator.CreateImage(layouter, new Size(1000, 1000));
                 Console.WriteLine($"Tag cloud visualization saved to file {path}");
             }
         }
@@ -69,10 +69,13 @@ namespace TagsCloudVisualizationTests
                 .Should().Be(sizeToAdd);
         }
 
-        [Test]
-        public void Should_ContainSameNumberOfRectanglesAsWerePut()
+        [TestCase(1111, 30, 50)]
+        [TestCase(323, 5, 60)]
+        [TestCase(232, 50, 120)]
+        public void Should_ContainSameNumberOfRectanglesAsWerePut(int seed,
+            int minSize, int maxSize)
         {
-            layouter.PutManyRectangles(Count);
+            layouter.PutManyRectangles(Count, new Random(seed), minSize, maxSize);
             layouter.Rectangles.Count.Should().Be(Count);
         }
 
@@ -94,44 +97,35 @@ namespace TagsCloudVisualizationTests
                 .BeEquivalentTo(sizes);
         }
 
-        [Test]
-        public void Should_NotContain_TwoEqualRectangles()
+        [TestCase(666, 240, 400)]
+        [TestCase(223, 5, 35)]
+        public void Should_NotContain_IntersectedRectangles(int seed,
+            int minSize, int maxSize)
         {
-            layouter.PutManyRectangles(Count);
-            var rectangles = layouter.Rectangles.ToArray();
-
-            for (var i = 0; i < rectangles.Length; i++)
-                for (var j = 0; j < rectangles.Length; j++)
-                {
-                    if (i != j)
-                        rectangles[i].Should().NotBe(rectangles[j]);
-                }
-        }
-
-        [Test]
-        public void Should_NotContain_IntersectedRectangles()
-        {
-            layouter.PutManyRectangles(Count);
+            layouter.PutManyRectangles(Count, new Random(seed), minSize, maxSize);
 
             layouter.Rectangles
+                .All(x => layouter.Rectangles.Count(y => y.IntersectsWith(x)) == 1)
                 .Should()
-                .OnlyContain(rect =>
-                    layouter.Rectangles
-                    .All(other => !other.IntersectsWith(rect)
-                    || other == rect));
+                .BeTrue();
         }
 
-        [Test]
-        public void Should_PutManyRectangles_Fast()
+        [TestCase(321, 55, 60)]
+        [TestCase(123, 80, 150)]
+        public void Should_PutManyRectangles_Fast(int seed,
+            int minSize, int maxSize)
         {
-            Action action = () => layouter.PutManyRectangles(1000);
-            action.ExecutionTime().Should().BeLessThan(500.Milliseconds());
+            Action action = ()
+                => layouter.PutManyRectangles(Count, new Random(seed), minSize, maxSize);
+            action.ExecutionTime().Should().BeLessThan(1.Seconds());
         }
 
-        [Test]
-        public void Should_CreateTightLayout()
+        [TestCase(321, 35, 75)]
+        [TestCase(123, 350, 800)]
+        public void Should_CreateTightLayout(int seed,
+            int minSize, int maxSize)
         {
-            layouter.PutManyRectangles(Count);
+            layouter.PutManyRectangles(Count, new Random(seed), minSize, maxSize);
             var radius = layouter.CalculateLayoutRadius();
             var circleArea = Math.PI * radius * radius;
             var layoutArea = layouter.Rectangles

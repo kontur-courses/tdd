@@ -23,7 +23,7 @@ namespace TagsCloudVisualizationTests
             var center = new Point(500, 500);
             var spiral = Spiral.Create(center, 1, Math.PI / 90);
 
-            center.Should().BeEquivalentTo(spiral.GetNext());            
+            center.Should().BeEquivalentTo(spiral.GetNext());
         }
 
         [Test]

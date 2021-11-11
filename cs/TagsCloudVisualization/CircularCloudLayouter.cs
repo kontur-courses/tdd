@@ -1,36 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter
+    public class CircularCloudLayouter : Cloud
     {
-        public readonly Point Center;
-        public IReadOnlyCollection<Rectangle> Rectangles => rectangles;
-        private readonly List<Rectangle> rectangles;
-        private readonly Spiral spiral;      
+        private readonly Spiral spiral;
 
-        public CircularCloudLayouter(Point center)
+        public CircularCloudLayouter(Point center) : base(center)
         {
-            Center = center;
             spiral = Spiral.Create(center);
-            rectangles = new List<Rectangle>();
         }
 
-        public static CircularCloudLayouter Generate(Point center, int rectCount)
-        {
-            var layouter = new CircularCloudLayouter(center);
-            var random = new Random();
-
-            for (var i = 0; i < rectCount; i++)
-                layouter.PutNextRectangle(
-                    new Size(random.Next(65, 100), random.Next(30, 60)));
-            return layouter;
-        }        
-
-        public Rectangle PutNextRectangle(Size rectangleSize)
+        public override Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Width <= 0
                 || rectangleSize.Height <= 0)
