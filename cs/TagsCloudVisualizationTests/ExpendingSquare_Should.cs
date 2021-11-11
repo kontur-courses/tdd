@@ -9,7 +9,7 @@ using TagsCloudVisualization;
 namespace TagsCloudVisualizationTests
 {
     [TestFixture]
-    public class IntegerSpiral_Should
+    public class ExpendingSquare_Should
     {
         [TestCase(10, 10, TestName = "Center in first circle quarter")]
         [TestCase(-10, 10, TestName = "Center in second circle quarter")]
@@ -19,7 +19,7 @@ namespace TagsCloudVisualizationTests
         public void NotThrowExceptionsInConstructor_When(int x, int y)
         {
             var center = new Point(x, y);
-            Action action = () => new IntegerSpiral(center);
+            Action action = () => new ExpandingSquare(center);
             action.Should().NotThrow();
         }
 
@@ -28,16 +28,16 @@ namespace TagsCloudVisualizationTests
         public void ReturnCenterPointOnFirstIteration_When(int x, int y)
         {
             var center = new Point(x, y);
-            var spiral = new IntegerSpiral(center);
+            var square = new ExpandingSquare(center);
 
-            spiral.First().Should().BeEquivalentTo(center);
+            square.First().Should().BeEquivalentTo(center);
         }
 
         [Test]
         public void ReturnPointsInTopRightBottomLeftOrder()
         {
             var startPoint = new Point(5, 6);
-            var spiral = new IntegerSpiral(startPoint);
+            var square = new ExpandingSquare(startPoint);
             var expectedPoints = new List<Point>
             {
                 startPoint,
@@ -51,39 +51,39 @@ namespace TagsCloudVisualizationTests
                 startPoint + new Size(-1, 0),
             };
 
-            var actualPoints = spiral.Take(expectedPoints.Count).ToList();
+            var actualPoints = square.Take(expectedPoints.Count).ToList();
             actualPoints.Should().BeEquivalentTo(expectedPoints);
         }
 
         [Test]
-        public void NotAffectOnOtherIntegerSpiral()
+        public void NotAffectOnOtherIntegerSquare()
         {
-            var firstSpiralCenter = new Point(10, 20);
-            var firstSpiral = new IntegerSpiral(firstSpiralCenter);
+            var firstSquareCenter = new Point(10, 20);
+            var firstSquare = new ExpandingSquare(firstSquareCenter);
 
-            var secondSpiralCenter = new Point(-10, -20);
-            var secondSpiral = new IntegerSpiral(secondSpiralCenter);
+            var secondSquareCenter = new Point(-10, -20);
+            var secondSquare = new ExpandingSquare(secondSquareCenter);
 
             var takenPointsCount = 20;
 
-            var firstSpiralPoints = firstSpiral.Take(takenPointsCount);
-            var secondSpiralPoints = secondSpiral.Take(takenPointsCount);
+            var firstSquarePoints = firstSquare.Take(takenPointsCount);
+            var secondSquarePoints = secondSquare.Take(takenPointsCount);
 
-            firstSpiralPoints.Intersect(secondSpiralPoints).Should().BeEmpty();
+            firstSquarePoints.Intersect(secondSquarePoints).Should().BeEmpty();
         }
 
-        
+
         //А такой тест не нарушает паттерн AAA?
         [Test]
         public void ReturnValuesWithIncreasingChebyshevDistance()
         {
             var startPoint = new Point(5, 6);
-            var spiral = new IntegerSpiral(startPoint);
+            var square = new ExpandingSquare(startPoint);
 
             var maxDistance = 0;
             var pointsCount = 500;
-            
-            foreach (var point in spiral.Take(pointsCount))
+
+            foreach (var point in square.Take(pointsCount))
             {
                 var distance = Math.Max(
                     Math.Abs(point.X - startPoint.X),
@@ -93,15 +93,15 @@ namespace TagsCloudVisualizationTests
                 maxDistance = distance;
             }
         }
-        
+
         [Test]
         [Timeout(1000)]
         public void ReturnPointsWithGoodTimePerformance()
         {
-            var spiral = new IntegerSpiral(new Point(10, 20));
+            var square = new ExpandingSquare(new Point(10, 20));
             var takenPointsCount = 10000;
 
-            var difficultListToCreate = spiral.Take(takenPointsCount).ToList();
+            var difficultListToCreate = square.Take(takenPointsCount).ToList();
         }
     }
 }

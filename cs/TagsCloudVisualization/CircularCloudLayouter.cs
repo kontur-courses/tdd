@@ -8,14 +8,14 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter : ILayouter
     {
         private List<Rectangle> puttedRectangles = new List<Rectangle>();
-        private readonly IntegerSpiral spiral;
-        private readonly IEnumerator<Point> spiralEnumerator;
+        private readonly ExpandingSquare square;
+        private readonly IEnumerator<Point> squareEnumerator;
 
         public CircularCloudLayouter(Point center)
         {
-            this.spiral = new IntegerSpiral(center);
-            this.spiralEnumerator = spiral.GetEnumerator();
-            spiralEnumerator.MoveNext();
+            this.square = new ExpandingSquare(center);
+            this.squareEnumerator = square.GetEnumerator();
+            squareEnumerator.MoveNext();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -23,14 +23,14 @@ namespace TagsCloudVisualization
             Point potencialCenter;
             do
             {
-                potencialCenter = spiralEnumerator.Current;
+                potencialCenter = squareEnumerator.Current;
                 var newRectangle = new Rectangle(potencialCenter - rectangleSize / 2, rectangleSize);
                 if (puttedRectangles.All(x => !x.IntersectsWith(newRectangle)))
                 {
                     puttedRectangles.Add(newRectangle);
                     return newRectangle;
                 }
-            } while (spiralEnumerator.MoveNext());
+            } while (squareEnumerator.MoveNext());
 
             //Какую ошибку принято выкидывать, если был достигнут недостигаемый код?
             throw new Exception("Circular Cloud Layouter worked incorrect");

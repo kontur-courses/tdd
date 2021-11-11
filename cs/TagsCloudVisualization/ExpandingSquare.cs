@@ -4,11 +4,11 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public class IntegerSpiral : IEnumerable<Point>
+    public class ExpandingSquare : IEnumerable<Point>
     {
         private readonly Point center;
 
-        public IntegerSpiral(Point center)
+        public ExpandingSquare(Point center)
         {
             this.center = center;
         }
