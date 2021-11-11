@@ -6,23 +6,21 @@ namespace TagsCloudVisualization
 {
     public class BitmapVisualizer : IDisposable
     {
+        private const int IndentFromRectangles = 200;
+
         private readonly Bitmap bmp;
-        private readonly Graphics graphics;
-        private readonly Pen pen;
         private readonly Rectangle[] rectangles;
 
         private Rectangle rectanglesContainer;
 
         public BitmapVisualizer(Rectangle[] rectangles)
         {
-            if (rectangles.Length == 0) throw new ArgumentException("rectangles should contain at least 1 rectangle");
             this.rectangles = rectangles ?? throw new ArgumentNullException();
+            if (rectangles.Length == 0) throw new ArgumentException("rectangles should contain at least 1 rectangle");
+            var optimalBmpSize = GetOptimalBitmapSize();
+            this.bmp = new Bitmap(optimalBmpSize.Width, optimalBmpSize.Height);
             rectanglesContainer = rectangles.GetRectanglesContainer();
-            var optimalSize = GetOptimalBitmapSize();
-            bmp = new Bitmap(optimalSize.Width, optimalSize.Height);
             OffsetRectanglesToCenter();
-            graphics = Graphics.FromImage(bmp);
-            pen = new Pen(Color.Black);
         }
 
         public int Width => bmp.Width;
@@ -31,14 +29,12 @@ namespace TagsCloudVisualization
 
         public void Dispose()
         {
-            bmp?.Dispose();
-            graphics?.Dispose();
-            pen?.Dispose();
+            bmp.Dispose();
         }
 
         private Size GetOptimalBitmapSize()
         {
-            return new Size(rectanglesContainer.Width + 200, rectanglesContainer.Height + 200);
+            return new Size(rectanglesContainer.Width + IndentFromRectangles, rectanglesContainer.Height + IndentFromRectangles);
         }
 
         private void OffsetRectanglesToCenter()
@@ -54,31 +50,43 @@ namespace TagsCloudVisualization
         {
             dir = dir ?? new DirectoryInfo(Environment.CurrentDirectory);
             if (!dir.Exists) dir.Create();
-            var resizedBmp = Resize(scaleCoeff);
-            if (dir.CanWrite())
-                resizedBmp.Save(Path.Combine(dir.FullName, fileName));
-            else
-                throw new AccessViolationException("can't write to this directory");
-            resizedBmp.Dispose();
+            using (var resizedBmp = Resize(scaleCoeff))
+            {
+                var path = Path.Combine(dir.FullName, fileName);
+                try
+                {
+                    resizedBmp.Save(path);
+                }
+                catch
+                {
+                    throw new Exception($"Can't save file to: {path}");
+                }
+            }
         }
 
         private Bitmap Resize(double scale)
         {
             if (scale <= 0) throw new ArgumentException("scale should be positive");
-            var newWidth = (int) (Width * scale);
-            var newHeight = (int) (Height * scale);
+            var newWidth = (int)(Width * scale);
+            var newHeight = (int)(Height * scale);
             var result = new Bitmap(newWidth, newHeight);
-            var graphics = Graphics.FromImage(result);
-            graphics.DrawImage(bmp, 0, 0, newWidth, newHeight);
-            graphics.Dispose();
+            using (var graphics = Graphics.FromImage(result))
+                graphics.DrawImage(bmp, 0, 0, newWidth, newHeight);
             return result;
+
         }
 
         public void DrawRectangles(Color backgroundColor, Color outlineColor)
         {
-            graphics.Clear(backgroundColor);
-            pen.Color = outlineColor;
-            graphics.DrawRectangles(pen, rectangles);
+            using (var graphics = Graphics.FromImage(bmp))
+            {
+                graphics.Clear(backgroundColor);
+                using (var pen = new Pen(outlineColor))
+                {
+                    graphics.DrawRectangles(pen, rectangles);
+                }
+            }
+
         }
     }
 }
