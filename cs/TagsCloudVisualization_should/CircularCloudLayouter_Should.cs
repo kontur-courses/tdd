@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Xml;
 using FluentAssertions;
+using FluentAssertions.Extensions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
@@ -11,14 +13,14 @@ namespace TagsCloudVisualizationTests
 {
     public class CircularCloudLayouter_Should
     {
-        private Point center;
+        private Size testingSize = new Size(5,5);
+        private Point testingCenter = new Point();
         private CircularCloudLayouter layouter;
 
         [SetUp]
         public void SetUp()
         {
-            center = new Point(10, 15);
-            layouter = new CircularCloudLayouter(center);
+            layouter = new CircularCloudLayouter(testingCenter);
         }
 
         [TearDown]
@@ -33,7 +35,6 @@ namespace TagsCloudVisualizationTests
                 var fullPath = Path.Combine(directoryToSave.FullName,
                     $"{TestContext.CurrentContext.Test.Name}.Failed.{layouter.Rectangles.Count}rectangles.png");
                 Console.WriteLine($"Tag cloud visualization saved to file: {fullPath}");
-                ;
             }
         }
 
@@ -52,17 +53,15 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void PutFirstRectangleInCenter()
         {
-            var size = new Size(5, 5);
-            layouter.PutNextRectangle(new Size(5, 5)).Should().Be(new Rectangle(center, size));
+            layouter.PutNextRectangle(testingSize).Should().Be(new Rectangle(testingCenter, testingSize));
         }
 
         [TestCase(1)]
         [TestCase(100)]
         public void CreateExpectedNumberOfRectangles(int rectanglesCount)
         {
-            var size = new Size(5, 5);
             for (var i = 1; i <= rectanglesCount; i++)
-                layouter.PutNextRectangle(size);
+                layouter.PutNextRectangle(testingSize);
 
 
             layouter.Rectangles.Count.Should().Be(rectanglesCount);
@@ -72,11 +71,10 @@ namespace TagsCloudVisualizationTests
         public void PutNewRectangleNotIntersectedWithOthers()
         {
             var rectangles = new List<Rectangle>();
-            var size = new Size(5, 5);
             var rectanglesCount = 100;
             for (var i = 1; i <= rectanglesCount; i++)
             {
-                var rect = layouter.PutNextRectangle(size);
+                var rect = layouter.PutNextRectangle(testingSize);
                 rect.IntersectsWith(rectangles).Should().BeFalse();
                 rectangles.Add(rect);
             }
@@ -103,7 +101,12 @@ namespace TagsCloudVisualizationTests
         {
             var rectanglesCount = 10000;
             var size = new Size(5, 5);
-            for (var i = 1; i <= rectanglesCount; i++) layouter.PutNextRectangle(size);
+            Action act = () =>
+            {
+                for (var i = 1; i <= rectanglesCount; i++) layouter.PutNextRectangle(size);
+            };
+            GC.Collect();
+            act.ExecutionTime().Should().BeLessOrEqualTo(5.Seconds());
         }
 
         [Test]
