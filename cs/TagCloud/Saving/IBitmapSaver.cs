@@ -4,6 +4,6 @@ namespace TagCloud.Saving
 {
     public interface IBitmapSaver
     {
-        void Save(Bitmap bitmap, bool openAfterSave);
+        string Save(Bitmap bitmap, bool openAfterSave);
     }
 }

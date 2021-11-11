@@ -23,10 +23,12 @@ namespace TagCloud
             this.visualizer = visualizer;
         }
 
-        public void SaveToBitmap(bool shouldShowLayout, bool shouldShowMarkup)
+        public string SaveBitmapTo(bool shouldShowLayout, bool shouldShowMarkup, bool openAfterSave)
         {
             var canvas = Visualize(shouldShowLayout, shouldShowMarkup);
-            bitmapSaver.Save(canvas, true);
+            var path = bitmapSaver.Save(canvas, openAfterSave);
+
+            return path;
         }
 
         public void PutNextTag(Size tagRectangleSize)

@@ -16,7 +16,7 @@ namespace TagCloud.Saving
         private static readonly string ProjectDirectory
             = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
 
-        public void Save(Bitmap bitmap, bool openAfterSave)
+        public string Save(Bitmap bitmap, bool openAfterSave)
         {
             var savePath = Path.Combine(ProjectDirectory, BitmapsDirectory);
             var fullFileName = GetFileName();
@@ -29,6 +29,8 @@ namespace TagCloud.Saving
 
             if (openAfterSave)
                 OpenImage(absoluteFileName);
+
+            return absoluteFileName;
         }
 
         private static string GetFileName()

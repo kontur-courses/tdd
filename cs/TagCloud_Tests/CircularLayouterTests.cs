@@ -3,18 +3,23 @@ using System.Collections.Generic;
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using TagCloud.Layouting;
 using TagCloud_TestDataGenerator;
+using TagCloud;
+using TagCloud.Saving;
+using TagCloud.Visualization;
 
 namespace TagCloudVisualization_Tests
 {
     public class CircularLayouterTests
     {
-        [Test]
-        public void Constructor_ShouldNotThrow_WhenCreated()
+        private CircularLayouter layouter;
+
+        [SetUp]
+        public void InitLayouter()
         {
-            Action act = () => new CircularLayouter(Point.Empty);
-            act.Should().NotThrow();
+            layouter = new CircularLayouter(Point.Empty);
         }
 
         [Test]
@@ -22,7 +27,7 @@ namespace TagCloudVisualization_Tests
         {
             var center = new Point(-1, -1);
 
-            var layouter = new CircularLayouter(center);
+            layouter = new CircularLayouter(center);
 
             layouter.Center.Should().BeEquivalentTo(center);
         }
@@ -32,7 +37,7 @@ namespace TagCloudVisualization_Tests
         {
             var centerPoint = new Point(10, 10);
 
-            var layouter = new CircularLayouter(centerPoint);
+            layouter = new CircularLayouter(centerPoint);
 
             layouter.Center.Should().BeEquivalentTo(centerPoint);
         }
@@ -40,8 +45,6 @@ namespace TagCloudVisualization_Tests
         [Test]
         public void PutNextRectangle_ShouldReturnRectangle_AfterFirstPut()
         {
-            var layouter = new CircularLayouter(Point.Empty);
-
             var expectedRect = new Rectangle(Point.Empty, new Size(10, 10));
             var actualRect = layouter.PutNextRectangle(new Size(10, 10));
 
@@ -53,8 +56,6 @@ namespace TagCloudVisualization_Tests
             [ValueSource(nameof(IncorrectRectangleSizes))]
             Size rectSize)
         {
-            var layouter = new CircularLayouter(Point.Empty);
-
             Action act = () => layouter.PutNextRectangle(rectSize);
 
             act.Should().Throw<ArgumentException>("Incorrect size:", rectSize);
@@ -63,7 +64,6 @@ namespace TagCloudVisualization_Tests
         [Test]
         public void PutNextRectangle_ShouldAlignRectangleMiddlePointToCenter()
         {
-            var layouter = new CircularLayouter(Point.Empty);
             var rectSize = new Size(10, 10);
 
             var rect = layouter.PutNextRectangle(rectSize);
@@ -72,32 +72,90 @@ namespace TagCloudVisualization_Tests
                 .BeEquivalentTo(new Point(-5, -5));
         }
 
-        [Test]
-        public void PutNextRectangle_ShouldNotIntersect_TwoRectangles()
-        {
-            var layouter = new CircularLayouter(Point.Empty);
-
-            var firstRect = layouter.PutNextRectangle(new Size(10, 10));
-            var secondRect = layouter.PutNextRectangle(new Size(5, 15));
-
-            firstRect.IntersectsWith(secondRect).Should().BeFalse();
-        }
-
         [TestCase(2)]
         [TestCase(4)]
         [TestCase(8)]
         [TestCase(16)]
         [TestCase(32)]
         [TestCase(64)]
+        [TestCase(128)]
+        [TestCase(256)]
+        [Timeout(10000)]
         public void PutNextRectangle_ShouldNotIntersect_ForEachRectangle(int n)
         {
-            var layouter = new CircularLayouter(Point.Empty);
-
-            var rectangles = new List<Rectangle>(n);
-            foreach (var rectSize in RectangleSizeGenerator.GetNextNFixedSize(n))
-                rectangles.Add(layouter.PutNextRectangle(rectSize));
+            var rectangles = PutNextNRectangles(n);
 
             IsIntersectExist(rectangles).Should().BeFalse();
+        }
+
+        [Test]
+        public void CircularLayouter_ShouldPutRectanglesLikeCircle()
+        {
+            PutNextNRectangles(256);
+
+            var expectedRatio = 0.8d;
+            var actualRatio = GetDiametersRatio();
+
+            actualRatio.Should().BeGreaterOrEqualTo(expectedRatio);
+        }
+
+        [TearDown]
+        public void SaveBitmap_WhenLayoutIsIncorrect()
+        {
+            var context = TestContext.CurrentContext;
+
+            if (!IsPassedLayoutTest(context))
+               return;
+
+            var tagCloud = new TagCloud.TagCloud(layouter,
+                new BitmapSaver(), new Visualizer(new Drawer()));
+
+            var path = tagCloud.SaveBitmapTo(true, true, false);
+            var msg = string.Join("", "Tag cloud visualization saved to file\n", path);
+
+            Console.WriteLine(msg);
+        }
+
+        private bool IsPassedLayoutTest(TestContext context)
+        {
+            var layoutTestNames = GetLayoutTestNames();
+
+            if (!layoutTestNames.Contains(context.Test.MethodName))
+                return false;
+
+            if (context.Result.Outcome.Status == TestStatus.Passed)
+                return false;
+
+            return true;
+        }
+
+        private List<string> GetLayoutTestNames()
+        {
+            var names = new List<string>();
+
+            names.Add(nameof(CircularLayouter_ShouldPutRectanglesLikeCircle));
+            names.Add(nameof(PutNextRectangle_ShouldAlignRectangleMiddlePointToCenter));
+            names.Add(nameof(PutNextRectangle_ShouldNotIntersect_ForEachRectangle));
+
+            return names;
+        }
+
+        private double GetDiametersRatio()
+        {
+            var boundaryBox = layouter.GetRectanglesBoundaryBox();
+            var biggestSide = (double)Math.Max(boundaryBox.Width, boundaryBox.Height);
+            var smallestSide = (double)Math.Min(boundaryBox.Width, boundaryBox.Height);
+
+            return smallestSide / biggestSide;
+        }
+
+        private List<Rectangle> PutNextNRectangles(int n)
+        {
+            var rectangles = new List<Rectangle>();
+            foreach (var rectSize in RectangleSizeGenerator.GetNextNRandomSize(n))
+                rectangles.Add(layouter.PutNextRectangle(rectSize));
+
+            return rectangles;
         }
 
         private static bool IsIntersectExist(List<Rectangle> rectangles)

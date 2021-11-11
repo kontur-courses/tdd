@@ -18,7 +18,7 @@ namespace TagCloud.Layouting
             arrow = new DirectingArrow(center);
         }
 
-        public Point Center { get; }
+        public Point Center { get;}
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
