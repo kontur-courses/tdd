@@ -25,8 +25,8 @@ namespace TagsCloudVisualization
             SlottedAnchor anchor;
             if (anchors.Count == 0)
             {
-                var location = rectangleSize / 2 * -1 + new Size(Center);
-                var rectangle = new Rectangle(new Point(location), rectangleSize);
+                var location = Center + rectangleSize / 2 * -1;
+                var rectangle = new Rectangle(location, rectangleSize);
                 anchor = new(rectangle, Direction.None);
             }
             else
