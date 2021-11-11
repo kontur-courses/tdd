@@ -43,8 +43,7 @@ namespace TagsCloudVisualization
         private Rectangle GetShiftedToCenterRectangle(Rectangle rectangle)
         {
             var center = rectangle.GetCenter();
-            var dir = new Point(_center.X - center.X, _center.Y - center.Y);
-            var shift = new Point(Math.Sign(dir.X), Math.Sign(dir.Y));
+            var shift =  new Point(Math.Sign(_center.X - center.X), Math.Sign(_center.Y - center.Y));
 
             while (Math.Abs(_center.X - rectangle.GetCenter().X) > 0)
             {
