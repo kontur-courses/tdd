@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -89,16 +90,16 @@ namespace TagsCloudVisualization
             using (var bitmapGraphics = Graphics.FromImage(bitmap))
             {
                 bitmapGraphics.Clear(Color.Black);
+                var radius = 0d;
                 foreach (var rectangle in rectangles)
                 {
                     DrawRectangle(bitmapGraphics, rectangle);
+                    if (guidingCircle)
+                        radius = Math.Max(radius, rectangle.GetAllPoints().Max(x => x.DistanceTo(new Point(bitmapWidth / 2, bitmapHeight / 2))));
                 }
 
                 if (guidingCircle)
-                {
-                    var radius = Math.Max(height, width);
-                    DrawGuidingCircle(bitmapWidth, bitmapHeight, bitmapGraphics, radius);
-                }
+                    DrawGuidingCircle(bitmapWidth, bitmapHeight, bitmapGraphics, (int)Math.Ceiling(radius));
             }
 
             if (autoSave)
@@ -114,7 +115,7 @@ namespace TagsCloudVisualization
 
         private static void DrawGuidingCircle(int bitmapWidth, int bitmapHeight, Graphics bitmapGraphics, int radius)
         {
-            bitmapGraphics.DrawEllipse(Pens.LightGray, (bitmapWidth - radius) / 2, (bitmapHeight - radius) / 2, radius, radius);
+            bitmapGraphics.DrawEllipse(Pens.LightGray, bitmapWidth / 2 - radius, bitmapHeight / 2 - radius, 2 * radius, 2 * radius);
             const int centerPointRadius = 2;
             bitmapGraphics.FillEllipse(Brushes.White, bitmapWidth / 2 - centerPointRadius,
                                                       bitmapHeight / 2 - centerPointRadius,
