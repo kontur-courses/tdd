@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    class Spiral
+    internal class Spiral
     {
         private readonly PointF center;
         private readonly double step;

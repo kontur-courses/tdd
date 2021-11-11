@@ -61,11 +61,11 @@ namespace TagsCloudVisualization
 
         private RectangleF ShiftRectangleToCenter(RectangleF rect)
         {
-            var shifted = new RectangleF();
             var rectCenter = rect.GetCenter();
             var normal = rectCenter.GetNormalToCenter(layouterCenter);
             if (float.IsNaN(normal.X) || float.IsNaN(normal.Y))
                 return rect;
+            var shifted = new RectangleF();
             var k = 1;
 
             while (!IsRectangleIntersectedByAnother(rect))
