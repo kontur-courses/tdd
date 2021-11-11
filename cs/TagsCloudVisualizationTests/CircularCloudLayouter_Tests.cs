@@ -4,11 +4,11 @@ using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTests
 {
-    [TestFixture]
     public class CircularCloudLayouter_Tests
     {
         private List<Rectangle> rectangles;
@@ -24,6 +24,18 @@ namespace TagsCloudVisualizationTests
             rectangles = new List<Rectangle>();
             layouter = new CircularCloudLayouter(center);
         }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
+                return;
+
+            var path = $"../../{TestContext.CurrentContext.Test.FullName}.png";
+            Drawer.DrawRectangles(rectangles, path);
+            Console.WriteLine($"Tag cloud visualization saved to file {path}");
+        }
+
 
         [TestCase(10, 0, TestName = "HeightIsZero")]
         [TestCase(0, 10, TestName = "WidthIsZero")]
@@ -43,18 +55,6 @@ namespace TagsCloudVisualizationTests
             rectangles.Should().ContainSingle(rect => rect.Location == center);
         }
 
-        [TestCase(10, TestName = "WhenPut10Rectangles")]
-        [TestCase(100, TestName = "WhenPut100Rectangles")]
-        public void PutNextRectangle_HaveExactNumberOfRectangles(int count)
-        {
-            foreach (var size in generator.GenerateSizes(count))
-            {
-                rectangles.Add(layouter.PutNextRectangle(size));
-            }
-
-            rectangles.Should().HaveCount(count);
-        }
-
         [TestCase(50, TestName = "WhenPut50Rectangles")]
         [TestCase(100, TestName = "WhenPut100Rectangles")]
         public void PutNextRectangle_RectanglesDoNotIntersect(int count)
@@ -63,8 +63,33 @@ namespace TagsCloudVisualizationTests
             {
                 rectangles.Add(layouter.PutNextRectangle(size));
             }
-            
+
             rectangles.Any(rect => rectangles.Where(r => r != rect).Any(rect.IntersectsWith)).Should().BeFalse();
+        }
+
+        [TestCase(50, TestName = "WhenPut50Rectangles")]
+        [TestCase(100, TestName = "WhenPut100Rectangles")]
+        [TestCase(250, TestName = "WhenPut250Rectangles")]
+        public void PutNextRectangle_LayoutShouldBeCloseToCircleShape(int count)
+        {
+            rectangles = generator.GenerateSizes(count).Select(size => layouter.PutNextRectangle(size)).ToList();
+
+            var top = rectangles.Max(rect => rect.Top);
+            var right = rectangles.Max(rect => rect.Right);
+            var bottom = Math.Abs(rectangles.Min(rect => rect.Bottom));
+            var left = Math.Abs(rectangles.Min(rect => rect.Left));
+
+            var radius = Math.Max(Math.Max(top, bottom), Math.Max(left, right));
+
+            foreach (var rectangle in rectangles)
+            {
+                CalculateDistanceBetweenPoints(center, rectangle.Location).Should().BeLessThan(radius);
+            }
+        }
+
+        private static double CalculateDistanceBetweenPoints(Point firstPoint, Point secondPoint)
+        {
+            return Math.Sqrt(Math.Pow(secondPoint.X - firstPoint.X, 2) + Math.Pow(secondPoint.Y - firstPoint.Y, 2));
         }
     }
 }
