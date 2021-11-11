@@ -5,12 +5,22 @@ namespace TagCloud.Visualization
 {
     public class Drawer : IDrawer
     {
+        private readonly List<Color> colors;
+        private const int LineWidth = 2;
+
+        public Drawer()
+        {
+            colors = new List<Color>();
+            FillColorList();
+        }
+
         public void DrawCanvasBoundary(Graphics g, Size imgSize)
         {
             var boundary = new Rectangle(Point.Empty,
                 new Size(imgSize.Width - 1, imgSize.Height - 1));
 
-            g.DrawRectangle(Pens.Red, boundary);
+            using (var pen = new Pen(Brushes.Red, LineWidth))
+                g.DrawRectangle(pen, boundary);
         }
 
         public void DrawAxis(Graphics g, Size imgSize, Point cloudCenter)
@@ -18,11 +28,14 @@ namespace TagCloud.Visualization
             var cloudCenterOnImg = new Point(cloudCenter.X + imgSize.Width / 2,
                 cloudCenter.Y + imgSize.Height / 2);
 
-            g.DrawLine(Pens.Green, cloudCenterOnImg, new Point(cloudCenterOnImg.X, 0));
-            g.DrawLine(Pens.Green, cloudCenterOnImg, new Point(cloudCenterOnImg.X, imgSize.Height));
+            using (var pen = new Pen(Brushes.Black, LineWidth))
+            {
+                g.DrawLine(pen, cloudCenterOnImg, new Point(cloudCenterOnImg.X, 0));
+                g.DrawLine(pen, cloudCenterOnImg, new Point(cloudCenterOnImg.X, imgSize.Height));
 
-            g.DrawLine(Pens.Green, cloudCenterOnImg, new Point(0, cloudCenterOnImg.Y));
-            g.DrawLine(Pens.Green, cloudCenterOnImg, new Point(imgSize.Width, cloudCenterOnImg.Y));
+                g.DrawLine(pen, cloudCenterOnImg, new Point(0, cloudCenterOnImg.Y));
+                g.DrawLine(pen, cloudCenterOnImg, new Point(imgSize.Width, cloudCenterOnImg.Y));
+            }
         }
 
         public void DrawCloudBoundary(Graphics g, Size imgSize, Point cloudCenter, int cloudCircleRadius)
@@ -35,13 +48,33 @@ namespace TagCloud.Visualization
 
             var size = new Size(cloudCircleRadius * 2, cloudCircleRadius * 2);
 
-            g.DrawEllipse(Pens.DodgerBlue, new Rectangle(location, size));
+            using (var pen = new Pen(Brushes.DodgerBlue, LineWidth))
+                g.DrawEllipse(pen, new Rectangle(location, size));
         }
 
         public void DrawRectangles(Graphics g, Point cloudCenter, List<Rectangle> rectangles)
         {
+            var i = 0;
             foreach (var rectangle in rectangles)
+            {
                 g.DrawRectangle(Pens.Black, rectangle);
+
+                var nextColor = colors[i % colors.Count];
+                g.FillRectangle(new SolidBrush(nextColor), rectangle);
+
+                i++;
+            }
+        }
+
+        private void FillColorList()
+        {
+            colors.Add(Color.Green);
+            colors.Add(Color.Red);
+            colors.Add(Color.CadetBlue);
+            colors.Add(Color.Orange);
+            colors.Add(Color.DeepPink);
+            colors.Add(Color.Black);
+            colors.Add(Color.Chartreuse);
         }
     }
 }

@@ -7,13 +7,12 @@ using TagCloud.Visualization;
 
 namespace TagCloud
 {
-    public class TagCloud
+    public class TagCloud : ITagCloud
+
     {
         private readonly IBitmapSaver bitmapSaver;
         private readonly ICloudLayouter layouter;
         private readonly IVisualizer visualizer;
-
-        private Bitmap canvas;
 
         public TagCloud(ICloudLayouter layouter,
             IBitmapSaver bitmapSaver,
@@ -24,11 +23,9 @@ namespace TagCloud
             this.visualizer = visualizer;
         }
 
-        public void Save()
+        public void SaveToBitmap(bool shouldShowLayout, bool shouldShowMarkup)
         {
-            if (canvas == null)
-                throw new NullReferenceException();
-
+            var canvas = Visualize(shouldShowLayout, shouldShowMarkup);
             bitmapSaver.Save(canvas, true);
         }
 
@@ -37,37 +34,44 @@ namespace TagCloud
             layouter.PutNextRectangle(tagRectangleSize);
         }
 
-        public void Visualize(bool shouldVisualizeMarkup)
+        private Bitmap Visualize(bool shouldShowLayout, bool shouldShowMarkup)
         {
-            UpdateCanvasSize();
+            var canvas = CreateCanvas();
+            var rectangles = RelocateRectangles(layouter.GetRectanglesCopy(), canvas.Size);
 
             using (var g = Graphics.FromImage(canvas))
             {
-                var cloudCenter = layouter.Center;
-                var rectangles = RelocateRectangles(layouter.GetRectanglesCopy());
-                visualizer.VisualizeCloud(g, cloudCenter, rectangles);
+                if (shouldShowLayout)
+                    visualizer.VisualizeCloud(g, layouter.Center, rectangles);
 
-                if (shouldVisualizeMarkup)
+                if (shouldShowMarkup)
                 {
-                    var imgSize = canvas.Size;
-                    var cloudCircleRadius = layouter.GetCloudBoundaryRadius();
-                    visualizer.VisualizeDebuggingMarkup(g, imgSize, cloudCenter, cloudCircleRadius);
+                    var cloudRadius = layouter.GetCloudBoundaryRadius();
+                    visualizer.VisualizeDebuggingMarkup(g, canvas.Size, layouter.Center, cloudRadius);
                 }
             }
+
+            return canvas;
         }
 
-        private void UpdateCanvasSize()
+        private Bitmap CreateCanvas()
         {
             var canvasSize = layouter.GetRectanglesBoundaryBox();
-            canvas = new Bitmap(canvasSize.Width * 2, canvasSize.Height * 2);
+
+            if (canvasSize.Width < 1 || canvasSize.Height < 1)
+                throw new ArgumentException("image width and height can't be lower than 1");
+
+            var sizeMultiplier = 1.5;
+            return new Bitmap((int)(canvasSize.Width * sizeMultiplier), 
+                (int)(canvasSize.Height * sizeMultiplier));
         }
 
-        private List<Rectangle> RelocateRectangles(List<Rectangle> rectangles)
+        private static List<Rectangle> RelocateRectangles(List<Rectangle> rectangles, Size imgSize)
         {
             for (var i = 0; i < rectangles.Count; i++)
             {
-                var newX = rectangles[i].X + canvas.Width / 2;
-                var newY = rectangles[i].Y + canvas.Height / 2;
+                var newX = rectangles[i].X + imgSize.Width / 2;
+                var newY = rectangles[i].Y + imgSize.Height / 2;
 
                 var newRect = new Rectangle(new Point(newX, newY), rectangles[i].Size);
                 rectangles[i] = newRect;
