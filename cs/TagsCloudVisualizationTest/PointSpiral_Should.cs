@@ -4,6 +4,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization;
+using TagsCloudVisualizationTest.Builders;
 using static FluentAssertions.FluentActions;
 
 
@@ -12,17 +13,6 @@ namespace TagsCloudVisualizationTest
     [TestFixture]
     public class PointSpiral_Should
     {
-        private PointSpiral pointSpiral;
-        
-        [SetUp]
-        public void Setup()
-        {
-            pointSpiral = PointSpiralBuilder
-                .APointSpiral()
-                .WithCenter(new Point(250, 250))
-                .Build();
-        }
-        
         [TestCase(-1, -1)]
         [TestCase(-1, 0)]
         [TestCase(-1, 1)]
@@ -34,7 +24,7 @@ namespace TagsCloudVisualizationTest
         [TestCase(1, 1)]
         [TestCase(0, 0, 2, 1)]
         [TestCase(0, 0, 1, 2)]
-        public void PointSpiral_DoNotThrowAnyException_OnAnyCenterPointAndPositiveDensityParameterAndDegreesParameter(int x, int y, int degreesParameter=1, float densityParameter=1f)
+        public void NotThrowAnyException_OnAnyCenterPointAndPositiveDensityParameterAndDegreesParameter(int x, int y, int degreesParameter=1, float densityParameter=1f)
         {
             var builder = PointSpiralBuilder.APointSpiral()
                 .WithCenter(new Point(x, y))
@@ -52,7 +42,7 @@ namespace TagsCloudVisualizationTest
         [TestCase(0, 0, -1, 1)]
         [TestCase(0, 0, 1, -1)]
         [TestCase(0, 0, -1, -1)]
-        public void PointSpiral_DoNotThrowAnyException_OnNonPositiveDensityParameterOrDegreesParameter(int x, int y, int degreesParameter=1, float densityParameter=1f)
+        public void NotThrowAnyException_OnNonPositiveDensityParameterOrDegreesParameter(int x, int y, int degreesParameter=1, float densityParameter=1f)
         {
             var builder = PointSpiralBuilder.APointSpiral()
                 .WithCenter(new Point(x, y))
@@ -74,14 +64,14 @@ namespace TagsCloudVisualizationTest
         [TestCase(1, -1)]
         [TestCase(1, 0)]
         [TestCase(1, 1)]
-        public void PointSpiral_FirstPointShouldBeOnMiddle(int x, int y)
+        public void PlaceFirstPointOnMiddle(int x, int y)
         {
             var expected = new Point(x, y);
             var actual = PointSpiralBuilder
                 .APointSpiral()
                 .WithCenter(new Point(x, y))
                 .Build()
-                // .GetPoints()
+                .GetPoints()
                 .First();
             
             actual.Should().Be(expected, $"X = {x}; Y = {y}");
@@ -89,28 +79,28 @@ namespace TagsCloudVisualizationTest
         
         [Test]
         [Repeat(100)]
-        public void AutoTest_PointSpiral()
+        public void AutoTest_IInfinityPointsEnumerable()
         {
-            pointSpiral = PointSpiralBuilder
+            var pointSpiral = PointSpiralBuilder
                 .APointSpiral()
                 .WithCenter(Point.Empty)
                 .WithDegreesDelta(25)
                 .WithDensityParameter(10)
-                .Build();
+                .Build() as IInfinityPointsEnumerable;
             
-            var lastRadius = 0d;
+            var lastRadius = -1d;
             var lastPointDifferent = 0d;
             var lastPoint = Point.Empty;
 
-            var pointCount = 1000;
+            var pointCount = 10000;
             
-            foreach (var point in pointSpiral)
+            foreach (var point in pointSpiral.GetPoints())
             {
                 var radius = point.MetricTo(new Point(0, 0));
                 var pointDifferent = point.MetricTo(lastPoint);
 
-                radius.Should().BeGreaterOrEqualTo(lastRadius, $"on {1000 - pointCount} try");
-                pointDifferent.Should().BeGreaterOrEqualTo(lastPointDifferent - 1d, $"on {1000 - pointCount} try");
+                radius.Should().BeGreaterThan(lastRadius, $"on {100000 - pointCount} try");
+                pointDifferent.Should().BeGreaterOrEqualTo(lastPointDifferent - 1d, $"on {100000 - pointCount} try");
 
                 lastPoint = point;
                 lastRadius = radius;

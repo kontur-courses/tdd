@@ -59,6 +59,8 @@
         <Reference Include="System.Xml.Linq" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Builders\CircularCloudLayouterBuilder.cs" />
+        <Compile Include="Builders\PointSpiralBuilder.cs" />
         <Compile Include="CircularCloudLayouter_Should.cs" />
         <Compile Include="PointExtension.cs" />
         <Compile Include="PointExtension_Should.cs" />

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using TagsCloudVisualization;
+using TagsCloudVisualization.Layouters;
 
 namespace TagCloudUsageSample
 {
@@ -12,10 +13,7 @@ namespace TagCloudUsageSample
         {
             for (var j = 0; j < 3; j++)
             {
-                var layouter = CircularCloudLayouterBuilder
-                    .ACircularCloudLayouter()
-                    .WithCenterAt(new Point(25, 25))
-                    .Build();
+                var layouter = new CircularCloudLayouter(new Point(25, 25));
                 
                 RectanglePainter
                     .GetBitmapWithRectangles(GetRectangles(layouter, 100))
@@ -23,7 +21,7 @@ namespace TagCloudUsageSample
             }
         }
     
-        public static IEnumerable<Rectangle> GetRectangles(CircularCloudLayouter layouter, int count)
+        private static IEnumerable<Rectangle> GetRectangles(CircularCloudLayouter layouter, int count)
         {
             var rnd = new Random();
             

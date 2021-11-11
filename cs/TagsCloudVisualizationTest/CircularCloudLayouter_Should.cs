@@ -7,6 +7,8 @@ using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
+using TagsCloudVisualization.Layouters;
+using TagsCloudVisualizationTest.Builders;
 using static FluentAssertions.FluentActions;
 
 
@@ -64,7 +66,7 @@ namespace TagsCloudVisualizationTest
             var layouter = CircularCloudLayouterBuilder
                 .ACircularCloudLayouter()
                 .WithCenterAt(Point.Empty)
-                .Build();
+                .Build() as ILayouter<Rectangle>;
             
             Invoking(() => layouter.PutNextRectangle(new Size(1, 1))).Should().NotThrow();
         }
@@ -82,7 +84,7 @@ namespace TagsCloudVisualizationTest
             var layouter = CircularCloudLayouterBuilder
                 .ACircularCloudLayouter()
                 .WithCenterAt(Point.Empty)
-                .Build();
+                .Build() as ILayouter<Rectangle>;
             
             Invoking(() => layouter.PutNextRectangle(new Size(width, height)))
                 .Should()
@@ -124,7 +126,7 @@ namespace TagsCloudVisualizationTest
             var layouter = CircularCloudLayouterBuilder
                 .ACircularCloudLayouter()
                 .WithCenterAt(new Point(x, y))
-                .Build();
+                .Build() as ILayouter<Rectangle>;
             var rectangleSize = new Size(100, 100);
 
             var actual = layouter.PutNextRectangle(rectangleSize);
@@ -145,7 +147,7 @@ namespace TagsCloudVisualizationTest
             var layouter = CircularCloudLayouterBuilder
                 .ACircularCloudLayouter()
                 .WithCenterAt(Point.Empty)
-                .Build();
+                .Build() as ILayouter<Rectangle>;
             
             var lastRectangle = layouter.PutNextRectangle(new Size(200, 200));
 
@@ -168,7 +170,7 @@ namespace TagsCloudVisualizationTest
             var layouter = CircularCloudLayouterBuilder
                 .ACircularCloudLayouter()
                 .WithCenterAt(Point.Empty)
-                .Build();
+                .Build() as ILayouter<Rectangle>;
 
             for (var i = 0; i < 1000; i++)
             {
@@ -211,7 +213,7 @@ namespace TagsCloudVisualizationTest
             var layouter = CircularCloudLayouterBuilder
                 .ACircularCloudLayouter()
                 .WithCenterAt(Point.Empty)
-                .Build();
+                .Build() as ILayouter<Rectangle>;
 
             for (var i = 0; i < 100; i++)
             {

@@ -8,10 +8,10 @@ namespace TagsCloudVisualization
     public class PointSpiral : IInfinityPointsEnumerable, IEnumerable<Point>
     {
         private readonly Point center;
-        private readonly float dtheta;
-        private readonly float densityParameter;
+        private readonly double dtheta;
+        private readonly double densityParameter;
 
-        public PointSpiral(Point center, float densityParameter = 1, int degreesDelta = 1)
+        public PointSpiral(Point center, double densityParameter = 1, int degreesDelta = 1)
         {
             if (densityParameter <= 0f)
                 throw new ArgumentException("densityParameter should be positive");
@@ -21,12 +21,12 @@ namespace TagsCloudVisualization
             this.center = center;
             this.densityParameter = densityParameter;
             
-            dtheta = (float)(degreesDelta * Math.PI / 180);
+            dtheta = degreesDelta * Math.PI / 180;
         }
 
         public IEnumerable<Point> GetPoints()
         {
-            var theta = 0f;
+            var theta = 0d;
             
             while (true)
             {
@@ -37,6 +37,8 @@ namespace TagsCloudVisualization
                 );
                 theta += dtheta;
             }
+            
+            // ReSharper disable once IteratorNeverReturns
         }
 
         public IEnumerator<Point> GetEnumerator() => GetPoints().GetEnumerator();
