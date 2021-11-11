@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Numerics;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Extensions
 {
     public static class Vector2Extensions
     {

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using FluentAssertions.Extensions;
 using TagsCloudVisualization;
+using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualizationTests
 {

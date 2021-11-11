@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization
 {
@@ -62,7 +63,7 @@ namespace TagsCloudVisualization
         {
             var shifted = new RectangleF();
             var rectCenter = rect.GetCenter();
-            var normal = GetNormalToCenter(rectCenter);
+            var normal = rectCenter.GetNormalToCenter(layouterCenter);
             if (float.IsNaN(normal.X) || float.IsNaN(normal.Y))
                 return rect;
             var k = 1;
@@ -74,16 +75,6 @@ namespace TagsCloudVisualization
                 k += 1;
             }
             return shifted;
-        }
-
-        private Vector2 GetNormalToCenter(PointF point)
-        {
-            var direction = new Vector2(layouterCenter.X - point.X,
-                layouterCenter.Y - point.Y);
-            var length = direction.Length();
-
-            return new Vector2(direction.X / length,
-                direction.Y / length);
         }
 
         private bool IsRectangleIntersectedByAnother(RectangleF rect)
