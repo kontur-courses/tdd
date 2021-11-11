@@ -5,10 +5,9 @@ using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using TagCloud.Layouting;
-using TagCloud_TestDataGenerator;
-using TagCloud;
 using TagCloud.Saving;
 using TagCloud.Visualization;
+using TagCloud_TestDataGenerator;
 
 namespace TagCloudVisualization_Tests
 {
@@ -105,7 +104,7 @@ namespace TagCloudVisualization_Tests
             var context = TestContext.CurrentContext;
 
             if (!IsPassedLayoutTest(context))
-               return;
+                return;
 
             var tagCloud = new TagCloud.TagCloud(layouter,
                 new BitmapSaver(), new Visualizer(new Drawer()));

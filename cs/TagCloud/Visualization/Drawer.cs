@@ -5,8 +5,8 @@ namespace TagCloud.Visualization
 {
     public class Drawer : IDrawer
     {
-        private readonly List<Color> colors;
         private const int LineWidth = 2;
+        private readonly List<Color> colors;
 
         public Drawer()
         {
@@ -20,7 +20,9 @@ namespace TagCloud.Visualization
                 new Size(imgSize.Width - 1, imgSize.Height - 1));
 
             using (var pen = new Pen(Brushes.Red, LineWidth))
+            {
                 g.DrawRectangle(pen, boundary);
+            }
         }
 
         public void DrawAxis(Graphics g, Size imgSize, Point cloudCenter)
@@ -49,7 +51,9 @@ namespace TagCloud.Visualization
             var size = new Size(cloudCircleRadius * 2, cloudCircleRadius * 2);
 
             using (var pen = new Pen(Brushes.DodgerBlue, LineWidth))
+            {
                 g.DrawEllipse(pen, new Rectangle(location, size));
+            }
         }
 
         public void DrawRectangles(Graphics g, Point cloudCenter, List<Rectangle> rectangles)

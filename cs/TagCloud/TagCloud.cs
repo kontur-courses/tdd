@@ -64,7 +64,7 @@ namespace TagCloud
                 throw new ArgumentException("image width and height can't be lower than 1");
 
             var sizeMultiplier = 1.5;
-            return new Bitmap((int)(canvasSize.Width * sizeMultiplier), 
+            return new Bitmap((int)(canvasSize.Width * sizeMultiplier),
                 (int)(canvasSize.Height * sizeMultiplier));
         }
 
