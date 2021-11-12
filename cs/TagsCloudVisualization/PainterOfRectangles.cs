@@ -21,9 +21,15 @@ namespace TagsCloudVisualization
             foreach (var rectangle in rectangles)
             {
                 graphics.DrawRectangle(new Pen(Color.Blue, .5f), rectangle);
+        private bool IsCorrectSizeImage(List<Rectangle> rectangles)
+        {
+            if (rectangles.Max(rectangle => rectangle.X) > pictSize.Height ||
+                rectangles.Max(rectangle => rectangle.X) > pictSize.Width)
+            {
+                return false;
             }
 
-            bmp.Save(filename);
+            return true;
         }
     }
 }
