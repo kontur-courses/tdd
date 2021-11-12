@@ -167,7 +167,7 @@ namespace TagsCloudTest
         public void DerivedTearDown() 
         {
             var resultStatus = TestContext.CurrentContext.Result.Outcome.Status;
-            if(resultStatus == NUnit.Framework.Interfaces.TestStatus.Passed && cloud!=null)
+            if(resultStatus == NUnit.Framework.Interfaces.TestStatus.Failed && cloud!=null)
             {
                 var path = @$"..\..\..\CloudImages\{TestContext.CurrentContext.Test.Name}.png";
 
