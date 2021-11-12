@@ -7,3 +7,7 @@
 ![410 прямоугольников](pictures\1000x1000.png)
 
 ---
+
+#Как будет выглядить потенциальная ошибка
+
+![потенциальная ошибка](..\CircularCloudLayouter_Tests\errors\PutNextRectangle_100Rectangles_ShouldBeCompact.png);

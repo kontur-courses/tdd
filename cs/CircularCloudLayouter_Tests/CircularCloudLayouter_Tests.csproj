@@ -15,7 +15,12 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\CloudLayouterVisualizer\CloudLayouterVisualizer.csproj" />
       <ProjectReference Include="..\CloudLayouter\CloudLayouter.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="errors" />
     </ItemGroup>
 
 </Project>

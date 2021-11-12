@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using CloudLayouter;
+using CloudLayouterVisualizer;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using NUnit.Framework;
-
+using NUnit.Framework.Interfaces;
 using static FluentAssertions.FluentActions;
 
 namespace CircularCloudLayouter_Tests
 {
     public class CircularCloudLayouterTests
     {
-        private static readonly Point Center = new(int.MaxValue / 2, int.MaxValue / 2);
+        private static readonly Point Center = new(500, 500);
         private static readonly Size MinRectangle = new(20, 10);
         private static readonly Size MaxRectangle = new(100, 50);
 
@@ -21,6 +24,38 @@ namespace CircularCloudLayouter_Tests
 
         private static readonly Func<int, int, CircularCloudLayouter> CreateLayouter = 
             (x, y) => new CircularCloudLayouter(new Point(x, y));
+
+        private CircularCloudLayouter layouter;
+        private List<Rectangle> rectangles;
+
+        [TearDown]
+        public void DrawError()
+        {
+            var context = TestContext.CurrentContext;
+
+            if (!context.Test.Properties["Category"].Contains("CanBeDrawn") ||
+                context.Result.Outcome != ResultState.Failure) return;
+            
+            var picureLocation = "../../../errors/" + context.Test.Name + ".png";
+            using (var visualizer = new Visualizer(
+                new Size(Center) * 2, new Pen(Color.Red)))
+            {
+                visualizer.DrawRectangles(rectangles);
+                visualizer.SaveImage(picureLocation);
+            }
+
+            var fullpath = new FileInfo(picureLocation).FullName;
+            Console.WriteLine($"Tag cloud visualization saved to file {fullpath}");
+        }
+
+        [SetUp]
+        [Category("CanBeDrawn")]
+        public void CreateMaximumLayouter()
+        {
+            layouter = new CircularCloudLayouter(Center);
+            rectangles = new List<Rectangle>();
+        }
+        
 
         [TestCase(-5, -5, TestName = "Center in third quadrant")]
         [TestCase(-5, 5, TestName = "Center in second quadrant")]
@@ -47,8 +82,9 @@ namespace CircularCloudLayouter_Tests
         [Test]
         public void PutNextRectangle_CanNotPlaceAnyMoreRectangles_ThrowsException()
         {
-            var layouter = CreateLayouter(5, 5);
+            var layouter = new CircularCloudLayouter(new Point(5, 5));
             layouter.PutNextRectangle(new Size(9, 9));
+            
             Invoking(() => layouter
                     .PutNextRectangle(new Size(2, 2)))
                 .Should().Throw<Exception>()
@@ -72,46 +108,47 @@ namespace CircularCloudLayouter_Tests
         public void PutNextRectangle_FirstCall_returnsRectangleInCenter()
         {
             var rectangleSize = new Size(400, 500);
-            var layouter = new CircularCloudLayouter(Center);
             var position = Center - rectangleSize / 2;
 
             layouter.PutNextRectangle(rectangleSize).Should().Be(new Rectangle(position, rectangleSize));
         }
         
-        [Test]
+        [Test, Category("CanBeDrawn")]
         public void PutNextRectangle_100Rectangles_ShouldNotIntersect()
         {
-            var layouter = new CircularCloudLayouter(Center);
-            var rectangles = new List<Rectangle>();
+            using (new AssertionScope())
+            {
+                for (var i = 0; i < 100; i++)
+                { 
+                    var rectangle = layouter
+                        .PutNextRectangle(GetRandomRectangle());
 
-            for (var i = 0; i < 100; i++)
-            { 
-                var rectangle = layouter
-                    .PutNextRectangle(GetRandomRectangle());
-                rectangle.IntersectsWith(rectangles).Should()
-                    .BeFalse("Error on iteration: {0}, rectangles should not intersect", i);
                 
-                rectangles.Add(rectangle);
+                    rectangle.IntersectsWith(rectangles).Should()
+                        .BeFalse("Error on iteration: {0}, rectangles should not intersect", i);
+                
+                    rectangles.Add(rectangle);
+                }
             }
         }
 
-        [Test]
+        [Test, Category("CanBeDrawn")]
         public void PutNextRectangle_100Rectangles_ShouldBeCompact()
         {
-            var layouter = new CircularCloudLayouter(Center);
-            var rectangles = new List<Rectangle>();
-
-            for (var i = 0; i < 100; i++)
+            using (new AssertionScope())
             {
-                var rectangle = layouter.PutNextRectangle(GetRandomRectangle());
+                for (var i = 0; i < 100; i++)
+                {
+                    var rectangle = layouter.PutNextRectangle(GetRandomRectangle());
                 
-                if(i != 0)
-                    rectangles
-                        .Min(r => GetDistanceBetweenRectangles(r, rectangle))
-                        .Should().BeInRange(0, 10, 
-                        "Error found at iteration {0}, distance between rectangles is expected to be less than 10", i);
+                    if(i != 0)
+                        rectangles
+                            .Min(r => GetDistanceBetweenRectangles(r, rectangle))
+                            .Should().BeInRange(0, 10, 
+                            "Error found at iteration {0}, distance between rectangles is expected to be less than 10", i);
                 
-                rectangles.Add(rectangle);
+                    rectangles.Add(rectangle);
+                } 
             }
         }
 
@@ -138,11 +175,12 @@ namespace CircularCloudLayouter_Tests
         [Test, Timeout(1500)]
         public void PutNextRectangle_10000Calls_ElapsedTimeIsLessThan1Second()
         {
-            var layouter = new CircularCloudLayouter(Center);
+            var cloudLayouter = new CircularCloudLayouter(
+                new Point(int.MaxValue/2, int.MaxValue/2));
 
             for (int i = 0; i < 10000; i++)
             {
-                layouter.PutNextRectangle(new Size(10, 10));
+                cloudLayouter.PutNextRectangle(new Size(10, 10));
             }
         }
 
