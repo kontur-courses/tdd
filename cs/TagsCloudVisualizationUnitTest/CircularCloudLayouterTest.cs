@@ -12,13 +12,15 @@ namespace TagsCloudVisualizationUnitTest
     public class TagsCloudVisualizationTest
     {
         private CircularCloudLayouter circularCloudLayouter;
-        private const string pathFolderFailedTest = "FailedTest";
+        private PainterOfRectangles painterOfRectangles;
+        private const string PathFolderFailedTest = "FailedTest";
+
         [OneTimeSetUp]
         public void CreateFolderForFailedTests()
         {
-            if (!Directory.Exists(pathFolderFailedTest))
+            if (!Directory.Exists(PathFolderFailedTest))
             {
-                Directory.CreateDirectory(pathFolderFailedTest);
+                Directory.CreateDirectory(PathFolderFailedTest);
             }
         }
 
@@ -26,6 +28,7 @@ namespace TagsCloudVisualizationUnitTest
         public void InitCircularCloudLayouter()
         {
             circularCloudLayouter = new CircularCloudLayouter(new Point(500, 500));
+            painterOfRectangles = new PainterOfRectangles(new Size(1000, 1000));
         }
 
         [TearDown]
@@ -33,10 +36,9 @@ namespace TagsCloudVisualizationUnitTest
         {
             if (TestContext.CurrentContext.Result.Outcome.Status is TestStatus.Failed)
             {
-                var painterOfRectangles = new PainterOfRectangles(new Size(1000, 1000));
-
                 painterOfRectangles.CreateImage(circularCloudLayouter.Rectangles,
-                    pathFolderFailedTest + "//" + TestContext.CurrentContext.Test.Name + "CircularCloudLayouter.png");
+                    PathFolderFailedTest + "//" + TestContext.CurrentContext.Test.FullName +
+                    "Failed.png");
             }
         }
 
@@ -53,7 +55,7 @@ namespace TagsCloudVisualizationUnitTest
         [Test]
         public void PutNextRectangle_RectanglesShouldBeHaveUniqueCoordinates()
         {
-            for (int i = 0; i < 1000; i++)
+            for (var i = 0; i < 1000; i++)
             {
                 circularCloudLayouter.PutNextRectangle(new Size(10, 10));
             }
@@ -63,7 +65,7 @@ namespace TagsCloudVisualizationUnitTest
 
         [TestCase(10, TestName = "10 Rectangles")]
         [TestCase(1000, TestName = "1000 Rectangles")]
-        [TestCase(2000, TestName = "3000 Rectangles")]
+        [TestCase(2000, TestName = "2000 Rectangles")]
         public void PutNextRectangle_ShouldBeOptimized(int countRectangle)
         {
             Action act = () =>
@@ -77,19 +79,34 @@ namespace TagsCloudVisualizationUnitTest
             act.ExecutionTime().Should().BeLessThanOrEqualTo(1.Seconds());
         }
 
+        [Test]
+        public void SquareRectangles_ShouldBeCorrect()
+        {
+            for (var i = 0; i < 2000; i++)
+            {
+                circularCloudLayouter.PutNextRectangle(new Size(10, 10));
+            }
+
+            circularCloudLayouter.SquareRectangles.Should().Be(200000);
+        }
+
         [TestCase(10, TestName = "10 Rectangles")]
         [TestCase(1000, TestName = "1000 Rectangles")]
         [TestCase(2000, TestName = "2000 Rectangles")]
         public void DensityCloud_ShouldBeBig(int countRectangle)
         {
+            var generator = new GeneratorOfRectangles();
+
             for (var i = 0; i < countRectangle; i++)
             {
-                circularCloudLayouter.PutNextRectangle(new Size(10, 20));
+                circularCloudLayouter.PutNextRectangle(generator.GetRectangleSize(10, 10));
             }
 
-            double square = Math.Pow(circularCloudLayouter.Radius(), 2) * Math.PI;
+            var square = Math.Pow(circularCloudLayouter.Radius(), 2) * Math.PI;
 
-            (circularCloudLayouter.SquareRectangles / square * 100).Should().BeGreaterThan(70);
+            var densityCloud = circularCloudLayouter.SquareRectangles / square * 100;
+
+            densityCloud.Should().BeGreaterThan(70);
         }
 
         [TestCase(10, TestName = "10 Rectangles")]
@@ -97,17 +114,18 @@ namespace TagsCloudVisualizationUnitTest
         [TestCase(2000, TestName = "2000 Rectangles")]
         public void DensityCloud_Random_Size_ShouldBeBig(int countRectangle)
         {
-            Random rnd = new Random();
+            var generator = new GeneratorOfRectangles();
 
             for (var i = 0; i < countRectangle; i++)
             {
-                circularCloudLayouter.PutNextRectangle(new Size(rnd.Next(10, 20), rnd.Next(10, 20)));
+                circularCloudLayouter.PutNextRectangle(generator.GetRectangleSize(10, 20));
             }
 
-            double square = Math.Pow(circularCloudLayouter.Radius(), 2) * Math.PI;
+            var square = Math.Pow(circularCloudLayouter.Radius(), 2) * Math.PI;
 
+            var densityCloud = circularCloudLayouter.SquareRectangles / square * 100;
 
-            (circularCloudLayouter.SquareRectangles / square * 100).Should().BeGreaterThan(65);
+            densityCloud.Should().BeGreaterThan(70);
         }
     }
 }
