@@ -74,7 +74,11 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Camouflage.bmp" />
+    <Content Include="ColdNeedles.bmp" />
+    <Content Include="FavoriteSun.bmp" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
