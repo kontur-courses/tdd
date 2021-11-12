@@ -2,22 +2,29 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization.Layouters
 {
     public class CircularCloudLayouter
     {
         private readonly Point center;
-        private readonly List<RectangleF> rectangles;
+        private readonly HashSet<RectangleF> rectangles;
         private readonly Spiral spiral;
         
         public CircularCloudLayouter(Point center)
         {
             spiral = new Spiral(center);
+            rectangles = new HashSet<RectangleF>();
         }
 
-        public RectangleF PutNextRectangle(Size rectangleSize)
+        public RectangleF PutNextRectangle(SizeF rectangleSize)
         {
+            if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
+            {
+                throw new ArgumentException("Rectangle size should be positive floating point numbers");
+            }
+            
             var rect = FindRectanglePosition(rectangleSize);
             
             rectangles.Add(rect);
@@ -25,19 +32,17 @@ namespace TagsCloudVisualization.Layouters
             return rect;
         }
 
-        private RectangleF FindRectanglePosition(Size rectangleSize)
+        private RectangleF FindRectanglePosition(SizeF rectangleSize)
         {
             var rect = new RectangleF(spiral.CurrentPoint, rectangleSize);
             
-            while (IsRectangleIntersectsAny(rect))
+            while (rect.IntersectsWithAny(rectangles))
             {
                 spiral.IncreaseSize();
+                rect = new RectangleF(spiral.CurrentPoint, rectangleSize);
             }
 
             return rect;
         }
-
-        private bool IsRectangleIntersectsAny(RectangleF rect) => 
-            rectangles.Any(r => r.IntersectsWith(rect));
     }
 }
