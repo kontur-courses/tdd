@@ -11,6 +11,6 @@ namespace TagCloud.Visualization
 
         void DrawCloudBoundary(Graphics g, Size imgSize, Point cloudCenter, int cloudCircleRadius);
 
-        void DrawRectangles(Graphics g, Point cloudCenter, List<Rectangle> rectangles);
+        void DrawRectangles(Graphics g, List<Rectangle> rectangles);
     }
 }

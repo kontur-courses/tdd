@@ -6,6 +6,6 @@ namespace TagCloud
     {
         void PutNextTag(Size tagSize);
 
-        string SaveBitmapTo(bool shouldShowLayout, bool shouldShowMarkup, bool openAfterSave);
+        string SaveBitmap(bool shouldShowLayout, bool shouldShowMarkup, bool openAfterSave);
     }
 }

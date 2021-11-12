@@ -24,7 +24,7 @@ namespace TagCloud_TestDataGenerator
                 yield return new Size(DefaultWidth, DefaultHeight);
         }
 
-        public static IEnumerable<Size> GetNextNRandomSize(int n)
+        public static IEnumerable<Size> GetNextNRandomSizes(int n)
         {
             for (var i = 0; i < n; i++)
             {

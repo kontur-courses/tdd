@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
-using NUnit.Framework.Interfaces;
 using TagCloud.Layouting;
 using TagCloud.Saving;
 using TagCloud.Visualization;
@@ -16,35 +16,25 @@ namespace TagCloudVisualization_Tests
         private CircularLayouter layouter;
 
         [SetUp]
-        public void InitLayouter()
+        public void SetUp()
         {
-            layouter = new CircularLayouter(Point.Empty);
+            layouter = new CircularLayouter();
         }
 
         [Test]
-        public void Constructor_ShouldAllowNegativeXY_ForCloudCenter()
+        public void Constructor_ShouldCreate_WithSpecifiedCenter(
+            [ValueSource(nameof(CloudCenters))] Point center)
         {
-            var center = new Point(-1, -1);
-
             layouter = new CircularLayouter(center);
 
             layouter.Center.Should().BeEquivalentTo(center);
         }
 
         [Test]
-        public void Constructor_ShouldSetCenter_WhenCreate()
-        {
-            var centerPoint = new Point(10, 10);
-
-            layouter = new CircularLayouter(centerPoint);
-
-            layouter.Center.Should().BeEquivalentTo(centerPoint);
-        }
-
-        [Test]
         public void PutNextRectangle_ShouldReturnRectangle_AfterFirstPut()
         {
             var expectedRect = new Rectangle(Point.Empty, new Size(10, 10));
+
             var actualRect = layouter.PutNextRectangle(new Size(10, 10));
 
             actualRect.Size.Should().BeEquivalentTo(expectedRect.Size);
@@ -66,6 +56,7 @@ namespace TagCloudVisualization_Tests
             var rectSize = new Size(10, 10);
 
             var rect = layouter.PutNextRectangle(rectSize);
+
             rect.Location
                 .Should()
                 .BeEquivalentTo(new Point(-5, -5));
@@ -91,41 +82,34 @@ namespace TagCloudVisualization_Tests
         public void CircularLayouter_ShouldPutRectanglesLikeCircle()
         {
             PutNextNRectangles(256);
-
             var expectedRatio = 0.8d;
+
             var actualRatio = GetDiametersRatio();
 
             actualRatio.Should().BeGreaterOrEqualTo(expectedRatio);
         }
 
         [TearDown]
-        public void SaveBitmap_WhenLayoutIsIncorrect()
+        public void TearDown()
         {
             var context = TestContext.CurrentContext;
 
-            if (!IsPassedLayoutTest(context))
+            if (!IsLayoutTest(context))
                 return;
 
             var tagCloud = new TagCloud.TagCloud(layouter,
                 new BitmapSaver(), new Visualizer(new Drawer()));
 
-            var path = tagCloud.SaveBitmapTo(true, true, false);
-            var msg = string.Join("", "Tag cloud visualization saved to file\n", path);
+            var path = tagCloud.SaveBitmap(true, true, false);
 
-            Console.WriteLine(msg);
+            Console.WriteLine($"Tag cloud visualization saved to file\n{path}");
         }
 
-        private bool IsPassedLayoutTest(TestContext context)
+        private bool IsLayoutTest(TestContext context)
         {
             var layoutTestNames = GetLayoutTestNames();
 
-            if (!layoutTestNames.Contains(context.Test.MethodName))
-                return false;
-
-            if (context.Result.Outcome.Status == TestStatus.Passed)
-                return false;
-
-            return true;
+            return layoutTestNames.Contains(context.Test.MethodName);
         }
 
         private List<string> GetLayoutTestNames()
@@ -150,11 +134,8 @@ namespace TagCloudVisualization_Tests
 
         private List<Rectangle> PutNextNRectangles(int n)
         {
-            var rectangles = new List<Rectangle>();
-            foreach (var rectSize in RectangleSizeGenerator.GetNextNRandomSize(n))
-                rectangles.Add(layouter.PutNextRectangle(rectSize));
-
-            return rectangles;
+            return RectangleSizeGenerator.GetNextNRandomSizes(n)
+                .Select(size => layouter.PutNextRectangle(size)).ToList();
         }
 
         private static bool IsIntersectExist(List<Rectangle> rectangles)
@@ -168,6 +149,13 @@ namespace TagCloudVisualization_Tests
             }
 
             return false;
+        }
+
+        private static IEnumerable<Point> CloudCenters()
+        {
+            yield return Point.Empty;
+            yield return new Point(10, 10);
+            yield return new Point(-1, -1);
         }
 
         private static IEnumerable<Size> IncorrectRectangleSizes()

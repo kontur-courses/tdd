@@ -1,17 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagCloud.Geometry
 {
     public static class RectangleExtension
     {
-        public static bool IsIntersectsWithAny(this Rectangle rect, List<Rectangle> rectangles)
+        public static bool IntersectsWithAny(this Rectangle rect, List<Rectangle> rectangles)
         {
-            foreach (var rectangle in rectangles)
-                if (rect.IntersectsWith(rectangle))
-                    return true;
-
-            return false;
+            return rectangles.Any(rectangle => rect.IntersectsWith(rectangle));
         }
 
         public static void MoveMiddlePointToCurrentLocation(this Rectangle rect)

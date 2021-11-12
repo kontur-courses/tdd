@@ -14,7 +14,7 @@ namespace TagCloud.Visualization
 
         public void VisualizeCloud(Graphics g, Point cloudCenter, List<Rectangle> rectangles)
         {
-            drawer.DrawRectangles(g, cloudCenter, rectangles);
+            drawer.DrawRectangles(g, rectangles);
         }
 
         public void VisualizeDebuggingMarkup(Graphics g, Size imgSize,

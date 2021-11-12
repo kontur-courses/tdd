@@ -23,7 +23,8 @@ namespace TagCloud
             this.visualizer = visualizer;
         }
 
-        public string SaveBitmapTo(bool shouldShowLayout, bool shouldShowMarkup, bool openAfterSave)
+        public string SaveBitmap(bool shouldShowLayout = true,
+            bool shouldShowMarkup = true, bool openAfterSave = true)
         {
             var canvas = Visualize(shouldShowLayout, shouldShowMarkup);
             var path = bitmapSaver.Save(canvas, openAfterSave);

@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using TagCloud.Layouting;
+﻿using TagCloud.Layouting;
 using TagCloud.Saving;
 using TagCloud.Visualization;
 using TagCloud_TestDataGenerator;
@@ -11,15 +10,15 @@ namespace TagCloud
         private static void Main(string[] args)
         {
             var bitmapSaver = new BitmapSaver();
-            var layouter = new CircularLayouter(new Point(0, 0));
+            var layouter = new CircularLayouter();
             var visualizer = new Visualizer(new Drawer());
 
             var tagCloud = new TagCloud(layouter, bitmapSaver, visualizer);
 
-            foreach (var size in RectangleSizeGenerator.GetNextNFixedSize(16))
+            foreach (var size in RectangleSizeGenerator.GetNextNFixedSize(5))
                 tagCloud.PutNextTag(size);
 
-            tagCloud.SaveBitmapTo(true, true, true);
+            tagCloud.SaveBitmap();
         }
     }
 }

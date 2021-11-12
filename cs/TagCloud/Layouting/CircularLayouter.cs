@@ -11,6 +11,13 @@ namespace TagCloud.Layouting
         private readonly DirectingArrow arrow;
         private readonly List<Rectangle> rectangles;
 
+        public CircularLayouter()
+        {
+            Center = Point.Empty;
+            rectangles = new List<Rectangle>();
+            arrow = new DirectingArrow(Center);
+        }
+
         public CircularLayouter(Point center)
         {
             Center = center;
@@ -20,6 +27,11 @@ namespace TagCloud.Layouting
 
         public Point Center { get; }
 
+        public List<Rectangle> GetRectanglesCopy()
+        {
+            return new List<Rectangle>(rectangles);
+        }
+
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             ThrowIfIncorrectSize(rectangleSize);
@@ -27,20 +39,16 @@ namespace TagCloud.Layouting
             var rect = new Rectangle(new Point(Center.X - rectangleSize.Width / 2,
                 Center.Y - rectangleSize.Height / 2), rectangleSize);
 
-            while (rect.IsIntersectsWithAny(rectangles))
+            while (rect.IntersectsWithAny(rectangles))
             {
                 arrow.Rotate();
-                rect.Location = arrow.GetEndPoint();
+                var arrowEndPoint = arrow.GetEndPoint();
+                rect.Location = arrowEndPoint;
                 rect.MoveMiddlePointToCurrentLocation();
             }
 
             rectangles.Add(rect);
             return rect;
-        }
-
-        public List<Rectangle> GetRectanglesCopy()
-        {
-            return new List<Rectangle>(rectangles);
         }
 
         public int GetCloudBoundaryRadius()

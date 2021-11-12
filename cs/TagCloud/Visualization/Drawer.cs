@@ -6,13 +6,17 @@ namespace TagCloud.Visualization
     public class Drawer : IDrawer
     {
         private const int LineWidth = 2;
-        private readonly List<Color> colors;
 
-        public Drawer()
+        private readonly List<Color> colors = new List<Color>
         {
-            colors = new List<Color>();
-            FillColorList();
-        }
+            Color.Green,
+            Color.Red,
+            Color.CadetBlue,
+            Color.Orange,
+            Color.DeepPink,
+            Color.Black,
+            Color.Chartreuse
+        };
 
         public void DrawCanvasBoundary(Graphics g, Size imgSize)
         {
@@ -27,8 +31,7 @@ namespace TagCloud.Visualization
 
         public void DrawAxis(Graphics g, Size imgSize, Point cloudCenter)
         {
-            var cloudCenterOnImg = new Point(cloudCenter.X + imgSize.Width / 2,
-                cloudCenter.Y + imgSize.Height / 2);
+            var cloudCenterOnImg = GetCloudCenterOnImg(imgSize, cloudCenter);
 
             using (var pen = new Pen(Brushes.Black, LineWidth))
             {
@@ -42,8 +45,7 @@ namespace TagCloud.Visualization
 
         public void DrawCloudBoundary(Graphics g, Size imgSize, Point cloudCenter, int cloudCircleRadius)
         {
-            var cloudCenterOnImg = new Point(cloudCenter.X + imgSize.Width / 2,
-                cloudCenter.Y + imgSize.Height / 2);
+            var cloudCenterOnImg = GetCloudCenterOnImg(imgSize, cloudCenter);
 
             var location = new Point(cloudCenterOnImg.X - cloudCircleRadius,
                 cloudCenterOnImg.Y - cloudCircleRadius);
@@ -56,7 +58,7 @@ namespace TagCloud.Visualization
             }
         }
 
-        public void DrawRectangles(Graphics g, Point cloudCenter, List<Rectangle> rectangles)
+        public void DrawRectangles(Graphics g, List<Rectangle> rectangles)
         {
             var i = 0;
             foreach (var rectangle in rectangles)
@@ -70,15 +72,10 @@ namespace TagCloud.Visualization
             }
         }
 
-        private void FillColorList()
+        private Point GetCloudCenterOnImg(Size imgSize, Point cloudCenter)
         {
-            colors.Add(Color.Green);
-            colors.Add(Color.Red);
-            colors.Add(Color.CadetBlue);
-            colors.Add(Color.Orange);
-            colors.Add(Color.DeepPink);
-            colors.Add(Color.Black);
-            colors.Add(Color.Chartreuse);
+            return new Point(cloudCenter.X + imgSize.Width / 2,
+                cloudCenter.Y + imgSize.Height / 2);
         }
     }
 }
