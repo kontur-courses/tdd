@@ -136,13 +136,8 @@ namespace TagsCloudVisualization
 
         private (double, double) GetMinMaxHullVectorsLengths(Point center, IEnumerable<Point> hull)
         {
-            var minLength = hull
-                .Select(p => new Vector(center, p).GetLength())
-                .Min();
-            var maxLength = hull
-                .Select(p => new Vector(center, p).GetLength())
-                .Max();
-            return (minLength, maxLength);
+            var hullVectorsLengths = hull.Select(point => new Vector(center, point).GetLength());
+            return (hullVectorsLengths.Min(), hullVectorsLengths.Max());
         }
     }
 }
