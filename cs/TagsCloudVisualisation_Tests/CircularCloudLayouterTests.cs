@@ -117,9 +117,7 @@ namespace TagsCloudVisualization
             var firstSize = new Size(10, 11);
             var secondSize = new Size(10, 11);
 
-            GetMinimalSide(firstSize, out var minimalSide, out var isHoriontal);
-
-            var maximumExpectedDistance = Math.Ceiling(minimalSide / 2d + (isHoriontal ? secondSize.Width : secondSize.Height) / 2d);
+            var maximumExpectedDistance = GetClosestDistance(firstSize, secondSize);
 
             layouter.PutNextRectangle(firstSize);
             var secondRectangle = layouter.PutNextRectangle(secondSize);
@@ -137,9 +135,8 @@ namespace TagsCloudVisualization
             var secondSize = new Size(10, 11);
             var thirdSize = new Size(20, 13);
 
-            GetMinimalSide(firstSize, out var minimalSide, out var isHoriontal);
+            var maximumExpectedDistance = GetClosestDistance(firstSize, thirdSize);
 
-            var maximumExpectedDistance = Math.Ceiling(minimalSide / 2d + (isHoriontal ? thirdSize.Width : thirdSize.Height) / 2d);
 
             layouter.PutNextRectangle(firstSize);
             layouter.PutNextRectangle(secondSize);
@@ -149,18 +146,21 @@ namespace TagsCloudVisualization
             actualDistance.Should().BeLessOrEqualTo(maximumExpectedDistance + 1);
         }
 
-        private static void GetMinimalSide(Size firstSize, out int minimalFirstSide, out bool isHoriontal)
+        private static double GetClosestDistance(Size origin, Size toBePlaced)
         {
-            if (firstSize.Height > firstSize.Width)
+            bool isHorizontal;
+            int minimalSide;
+            if (origin.Height > origin.Width)
             {
-                isHoriontal = true;
-                minimalFirstSide = firstSize.Width;
+                isHorizontal = true;
+                minimalSide = origin.Width;
             }
             else
             {
-                isHoriontal = false;
-                minimalFirstSide = firstSize.Height;
+                isHorizontal = false;
+                minimalSide = origin.Height;
             }
+            return Math.Ceiling(minimalSide / 2d + (isHorizontal ? toBePlaced.Width : toBePlaced.Height) / 2d);
         }
 
         [TestCase(3)]
