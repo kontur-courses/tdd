@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization.PointGenerator;
 
 namespace TagsCloudVisualization.Tests
@@ -13,11 +17,32 @@ namespace TagsCloudVisualization.Tests
     class CircularCloudLayouter_Tests
     {
         private CircularCloudLayouter cloudLayouter;
+        private string failedTestsData = "TestsImg";
+
+        public CircularCloudLayouter_Tests()
+        {
+            var dir = failedTestsData;
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+        }
 
         [SetUp]
         public void SetUp()
         {
             cloudLayouter = new CircularCloudLayouter(new PointF(), new Spiral(0.01f, 1));
+        }
+
+        [TearDown]
+        public void CreateBitmapImageOnFail()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
+            var visualizer = new Visualizer(cloudLayouter);
+            var fileToSave = failedTestsData + "/" + TestContext.CurrentContext.Test.FullName + ".png";
+            visualizer.DrawRectangles(fileToSave);
+            var path = Path.GetFullPath(fileToSave);
+            Console.WriteLine($"Tag cloud visualization saved to file {path}");
         }
 
         [TestCase(0, 1, TestName = "Width is zero")]
@@ -35,14 +60,14 @@ namespace TagsCloudVisualization.Tests
         [Test]
         public void PutNextRectangle_ShouldPutWithoutIntersecting()
         {
-            var puttedTags = new List<RectangleF>();
             for (var i = 0; i < 20; i++)
             {
-                puttedTags.Add(cloudLayouter.PutNextRectangle(new Size(50, 15)));
+                cloudLayouter.PutNextRectangle(new Size(50, 15));
             }
 
-            puttedTags
-                .Where(r => CloudIntersectWith(r, puttedTags))
+            var cloud = cloudLayouter.GetCloud();
+            cloud
+                .Where(r => CloudIntersectWith(r, cloud))
                 .Should()
                 .BeEmpty();
         }
@@ -81,12 +106,10 @@ namespace TagsCloudVisualization.Tests
         [TestCase(9, 9, 60, 0.8, TestName = "Big squares")]
         public void PutNextRectangle_ShouldPutEnoughTight(int width, int height, int count, double densityCoefficient)
         {
-            var rectangles = new List<RectangleF>();
-            
             for (var i = 0; i < count; i++)
-                rectangles.Add(cloudLayouter.PutNextRectangle(new Size(width, height)));
+                cloudLayouter.PutNextRectangle(new Size(width, height));
 
-            var density = GetDensity(rectangles);
+            var density = GetDensity(cloudLayouter);
             density.Should().BeGreaterThan((Math.PI / 4) * densityCoefficient).And.BeLessThan(Math.PI / 4);
         }
 
@@ -97,22 +120,21 @@ namespace TagsCloudVisualization.Tests
         {
             cloudLayouter = new CircularCloudLayouter(new PointF(), new Spiral(0.1f, 0.65));
             var size = new Size(width, height);
-            
+
             Action act = () =>
             {
                 for (var i = 0; i < count; i++)
                     cloudLayouter.PutNextRectangle(size);
             };
-            
+
             act.ExecutionTime().Should().BeLessThan(1000.Milliseconds());
         }
 
-        private double GetDensity(IEnumerable<RectangleF> rectangles)
+        private double GetDensity(CircularCloudLayouter cloudLayouter)
         {
-            var rectangleFs = rectangles as RectangleF[] ?? rectangles.ToArray();
-            var union = rectangleFs.Aggregate(RectangleF.Union);
+            var union = cloudLayouter.Unioned;
             var unionRectsArea = union.Height * union.Width;
-            var sumOfAreas = rectangleFs.Sum(rectangle => rectangle.Height * rectangle.Width);
+            var sumOfAreas = cloudLayouter.GetCloud().Sum(rectangle => rectangle.Height * rectangle.Width);
             return sumOfAreas / unionRectsArea;
         }
     }

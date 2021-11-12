@@ -6,11 +6,14 @@ using TagsCloudVisualization.PointGenerator;
 
 namespace TagsCloudVisualization
 {
-    class CircularCloudLayouter
+    public class CircularCloudLayouter
     {
         private readonly List<RectangleF> tagCloud;
         private readonly PointF center;
         private readonly Spiral spiral;
+        private RectangleF cloudRectangle;
+        public RectangleF Unioned => cloudRectangle;
+        public SizeF SizeF => new SizeF(cloudRectangle.Width, cloudRectangle.Height);
 
         public CircularCloudLayouter(PointF center, Spiral spiral)
         {
@@ -26,7 +29,19 @@ namespace TagsCloudVisualization
                 throw new ArgumentException("Size parameters should be positive");
             var tag = GetNextRectangle(rectangleSize);
             tagCloud.Add(tag);
+            UpdateCloudBorders(tag);
             return tag;
+        }
+
+        public RectangleF[] GetCloud()
+        {
+            return tagCloud.ToArray();
+        }
+
+
+        private void UpdateCloudBorders(RectangleF newTag)
+        {
+            cloudRectangle = RectangleF.Union(cloudRectangle, newTag);
         }
 
 
