@@ -36,8 +36,8 @@ namespace TagCloud.Layouting
         {
             ThrowIfIncorrectSize(rectangleSize);
 
-            var rect = new Rectangle(new Point(Center.X - rectangleSize.Width / 2,
-                Center.Y - rectangleSize.Height / 2), rectangleSize);
+            var rect = new Rectangle(Center.MovePoint(-rectangleSize.Width / 2,
+                -rectangleSize.Height / 2), rectangleSize);
 
             while (rect.IntersectsWithAny(rectangles))
             {

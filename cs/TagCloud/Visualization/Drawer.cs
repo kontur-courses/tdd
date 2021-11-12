@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using TagCloud.Geometry;
 
 namespace TagCloud.Visualization
 {
@@ -74,8 +75,7 @@ namespace TagCloud.Visualization
 
         private Point GetCloudCenterOnImg(Size imgSize, Point cloudCenter)
         {
-            return new Point(cloudCenter.X + imgSize.Width / 2,
-                cloudCenter.Y + imgSize.Height / 2);
+            return cloudCenter.MovePoint(imgSize.Width / 2, imgSize.Height / 2);
         }
     }
 }

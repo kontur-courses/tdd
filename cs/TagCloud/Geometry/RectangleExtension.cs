@@ -13,7 +13,8 @@ namespace TagCloud.Geometry
 
         public static void MoveMiddlePointToCurrentLocation(this Rectangle rect)
         {
-            rect.Location = new Point(rect.X - rect.Width / 2, rect.Y - rect.Height / 2);
+            rect.Location = rect.Location.MovePoint(rect.X - rect.Width / 2,
+                rect.Y - rect.Height / 2);
         }
 
         public static IEnumerable<Point> GetCorners(this Rectangle rect)
