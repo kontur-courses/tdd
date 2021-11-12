@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("TagsCloudVisualizationTests")]
 namespace TagsCloudVisualization.Layouters
 {
-    public class Spiral
+    internal class Spiral
     {
         private float radius = 0;
         private float angle = 0;
