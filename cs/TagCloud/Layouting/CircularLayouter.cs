@@ -53,10 +53,10 @@ namespace TagCloud.Layouting
 
         public int GetCloudBoundaryRadius()
         {
-            var boundaryBox = GetRectanglesBoundaryBox();
-            var biggestSide = Math.Max(boundaryBox.Width, boundaryBox.Height);
-
-            return (int)Math.Ceiling(biggestSide * (Math.Sqrt(2) / 2));
+            return rectangles.Count == 0
+                ? 0
+                : (int)Math.Ceiling(rectangles
+                    .Max(rectangle => rectangle.GetLongestDistanceFromPoint(Center)));
         }
 
         public Size GetRectanglesBoundaryBox()

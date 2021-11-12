@@ -15,5 +15,18 @@ namespace TagCloud.Geometry
         {
             rect.Location = new Point(rect.X - rect.Width / 2, rect.Y - rect.Height / 2);
         }
+
+        public static IEnumerable<Point> GetCorners(this Rectangle rect)
+        {
+            yield return new Point(rect.X, rect.Y);
+            yield return new Point(rect.X + rect.Width, rect.Y);
+            yield return new Point(rect.X, rect.Y + rect.Height);
+            yield return new Point(rect.X + rect.Width, rect.Y + rect.Height);
+        }
+
+        public static double GetLongestDistanceFromPoint(this Rectangle rect, Point point)
+        {
+            return rect.GetCorners().Max(corner => corner.GetDistanceTo(point));
+        }
     }
 }

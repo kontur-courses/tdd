@@ -15,7 +15,7 @@ namespace TagCloud
 
             var tagCloud = new TagCloud(layouter, bitmapSaver, visualizer);
 
-            foreach (var size in RectangleSizeGenerator.GetNextNFixedSize(5))
+            foreach (var size in RectangleSizeGenerator.GetNextNFixedSizes(1500))
                 tagCloud.PutNextTag(size);
 
             tagCloud.SaveBitmap();

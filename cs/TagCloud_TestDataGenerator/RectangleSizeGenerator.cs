@@ -18,7 +18,7 @@ namespace TagCloud_TestDataGenerator
             Rnd = new Random();
         }
 
-        public static IEnumerable<Size> GetNextNFixedSize(int n)
+        public static IEnumerable<Size> GetNextNFixedSizes(int n)
         {
             for (var i = 0; i < n; i++)
                 yield return new Size(DefaultWidth, DefaultHeight);

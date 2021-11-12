@@ -59,14 +59,13 @@ namespace TagCloud
 
         private Bitmap CreateCanvas()
         {
-            var canvasSize = layouter.GetRectanglesBoundaryBox();
+            var radius = layouter.GetCloudBoundaryRadius();
+            var canvasSize = new Size(radius * 2, radius * 2);
 
             if (canvasSize.Width < 1 || canvasSize.Height < 1)
                 throw new ArgumentException("image width and height can't be lower than 1");
 
-            var sizeMultiplier = 1.5;
-            return new Bitmap((int)(canvasSize.Width * sizeMultiplier),
-                (int)(canvasSize.Height * sizeMultiplier));
+            return new Bitmap(canvasSize.Width, canvasSize.Height);
         }
 
         private static List<Rectangle> RelocateRectangles(List<Rectangle> rectangles, Size imgSize)
