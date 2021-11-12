@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudLayouter", "CloudLayou
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircularCloudLayouter_Tests", "CircularCloudLayouter_Tests\CircularCloudLayouter_Tests.csproj", "{9AD11D40-C4F5-4E3A-8014-197F9758D86A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudLayouterVisualizer", "CloudLayouterVisualizer\CloudLayouterVisualizer.csproj", "{DC32EC2D-3ED9-4AA6-B976-47106B5ABD93}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{9AD11D40-C4F5-4E3A-8014-197F9758D86A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9AD11D40-C4F5-4E3A-8014-197F9758D86A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9AD11D40-C4F5-4E3A-8014-197F9758D86A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC32EC2D-3ED9-4AA6-B976-47106B5ABD93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC32EC2D-3ED9-4AA6-B976-47106B5ABD93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC32EC2D-3ED9-4AA6-B976-47106B5ABD93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC32EC2D-3ED9-4AA6-B976-47106B5ABD93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

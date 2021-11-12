@@ -15,10 +15,10 @@ namespace CircularCloudLayouter_Tests
         private static readonly Point Center = new(int.MaxValue / 2, int.MaxValue / 2);
         private static readonly Size MinRectangle = new(20, 10);
         private static readonly Size MaxRectangle = new(100, 50);
-        
-        private const int Seed = 20;
-        private readonly Random randomNumbers = new(Seed);
-        
+
+        private static readonly RandomRectangleGenerator RectangleGenerator =
+            new(MinRectangle, MaxRectangle);
+
         private static readonly Func<int, int, CircularCloudLayouter> CreateLayouter = 
             (x, y) => new CircularCloudLayouter(new Point(x, y));
 
@@ -95,14 +95,6 @@ namespace CircularCloudLayouter_Tests
             }
         }
 
-        private Size GetRandomRectangle()
-        {
-            var width = randomNumbers.Next(MinRectangle.Width, MaxRectangle.Width);
-            var height = randomNumbers.Next(MinRectangle.Height, MaxRectangle.Height);
-
-            return new Size(width, height);
-        }
-        
         [Test]
         public void PutNextRectangle_100Rectangles_ShouldBeCompact()
         {
@@ -152,6 +144,11 @@ namespace CircularCloudLayouter_Tests
             {
                 layouter.PutNextRectangle(new Size(10, 10));
             }
+        }
+
+        private Size GetRandomRectangle()
+        {
+            return RectangleGenerator.GetRandomRectangle();
         }
     }
 }

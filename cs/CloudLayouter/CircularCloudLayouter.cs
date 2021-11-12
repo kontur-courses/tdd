@@ -16,7 +16,7 @@ namespace CloudLayouter
                 throw new ArgumentException("Center point given is in wrong quadrant.");
             
             canvas = GetRectangleAtPosition(center, 2 * new Size(center));
-            spiral = new Spiral(center, Math.PI/360, 3).GetEnumerator();
+            spiral = new Spiral(center, Math.PI/360, 2).GetEnumerator();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
