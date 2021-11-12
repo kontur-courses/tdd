@@ -31,9 +31,9 @@ namespace TagsCloudVisualization
             var rectangleSize = new Size(-1, 20);
             var center = new Point(10, 10);
             var layouter = new CircularCloudLayouter(center);
-            Action act = () => layouter.PutNextRectangle(rectangleSize);
+            void Act() => layouter.PutNextRectangle(rectangleSize);
 
-            act.Should().Throw<ArgumentException>();
+            FluentActions.Invoking(Act).Should().Throw<ArgumentException>();
         }
 
         [Test]
