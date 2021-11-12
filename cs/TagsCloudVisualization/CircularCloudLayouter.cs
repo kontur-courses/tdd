@@ -13,6 +13,7 @@ namespace TagsCloudVisualization
         private double squareRectangles;
         public readonly List<Rectangle> Rectangles;
         public double SquareRectangles => squareRectangles;
+
         public CircularCloudLayouter(Point center)
         {
             centrPoint = center;
@@ -20,7 +21,6 @@ namespace TagsCloudVisualization
             Rectangles = new List<Rectangle>();
             spiral = new Spiral(centrPoint);
         }
-
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
@@ -38,10 +38,9 @@ namespace TagsCloudVisualization
                 currentRectangle.Location = nextPoint;
             }
 
-           // CorrectLocationRectangle(currentRectangle); Метод еще не реализован 
-            Rectangles.Add(currentRectangle);
+            Rectangles.Add(CorrectLocationRectangle(currentRectangle));
 
-            squareRectangles = SquareRectangles + currentRectangle.Square();
+            squareRectangles += currentRectangle.Square();
 
             return currentRectangle;
         }
@@ -61,14 +60,18 @@ namespace TagsCloudVisualization
             return Math.Sqrt(Math.Pow(lastPoint.X - centrPoint.X, 2) + Math.Pow(lastPoint.Y - centrPoint.Y, 2));
         }
 
-        //TODO доделать метод 
-        public void CorrectLocationRectangle(Rectangle rectangle)
+        private Rectangle CorrectLocationRectangle(Rectangle rectangle)
         {
-            Point oldPoint;
-            Point newPoint;
+            rectangle = CorrectCoordXRectangle(rectangle);
+            rectangle = CorrectCoordYRectangle(rectangle);
+            return rectangle;
+        }
 
-            oldPoint = rectangle.Location;
-            newPoint = rectangle.Location;
+        private Rectangle CorrectCoordXRectangle(Rectangle rectangle)
+        {
+            var oldPoint = rectangle.Location;
+            var newPoint = rectangle.Location;
+
             if (oldPoint.X > centrPoint.X)
             {
                 while (!IsIntersects(rectangle) && newPoint.X != centrPoint.X)
@@ -78,10 +81,10 @@ namespace TagsCloudVisualization
                     rectangle.Location = newPoint;
                 }
 
-                // newPoint.X++;
+                newPoint.X++;
                 rectangle.Location = newPoint;
             }
-            else if(oldPoint.X < centrPoint.X || newPoint.X != centrPoint.X)
+            else if (oldPoint.X < centrPoint.X || newPoint.X != centrPoint.X)
             {
                 while (!IsIntersects(rectangle) && newPoint.X != centrPoint.X)
                 {
@@ -89,11 +92,20 @@ namespace TagsCloudVisualization
 
                     rectangle.Location = newPoint;
                 }
+
                 newPoint.X--;
                 rectangle.Location = newPoint;
             }
 
-            if (oldPoint.Y > centrPoint.Y )
+            return rectangle;
+        }
+
+        private Rectangle CorrectCoordYRectangle(Rectangle rectangle)
+        {
+            var oldPoint = rectangle.Location;
+            var newPoint = rectangle.Location;
+
+            if (oldPoint.Y > centrPoint.Y)
             {
                 while (!IsIntersects(rectangle) && newPoint.Y != centrPoint.Y)
                 {
@@ -104,23 +116,21 @@ namespace TagsCloudVisualization
 
                 newPoint.Y++;
                 rectangle.Location = newPoint;
-                Rectangles.Add(rectangle);
             }
             else if (oldPoint.Y < centrPoint.Y)
             {
-                while (!IsIntersects(rectangle) && newPoint.Y != centrPoint.Y )
+                while (!IsIntersects(rectangle) && newPoint.Y != centrPoint.Y)
                 {
                     newPoint.Y++;
 
                     rectangle.Location = newPoint;
                 }
+
                 newPoint.Y--;
                 rectangle.Location = newPoint;
-                Rectangles.Add(rectangle);
             }
 
-
+            return rectangle;
         }
-
     }
 }
