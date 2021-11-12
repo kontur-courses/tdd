@@ -23,8 +23,8 @@ namespace TagsCloudVisualization
             using (var bmpVisualizer = new BitmapVisualizer(rectangles))
             {
                 bmpVisualizer.DrawRectangles(Color.Black, Color.White);
-                var scaleCoeff = bmpVisualizer.Width > 1920 || bmpVisualizer.Height > 1080
-                    ? (1920d / bmpVisualizer.Width + 1080d / bmpVisualizer.Height) / 2
+                var scaleCoeff = bmpVisualizer.BitmapWidth > 1920 || bmpVisualizer.BitmapHeight > 1080
+                    ? (1920d / bmpVisualizer.BitmapWidth + 1080d / bmpVisualizer.BitmapHeight) / 2
                     : 1;
                 bmpVisualizer.Save(fileName, scaleCoeff, new DirectoryInfo(dirPath));
             }
