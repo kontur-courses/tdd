@@ -90,5 +90,27 @@ namespace TagsCloudVisualizationUnitTest
 
             densityCloud.Should().BeGreaterThan(70);
         }
+
+        private int Radius()
+        {
+            if (rectangles == null)
+                throw new Exception("rectangles is null");
+
+            var xMax = rectangles.Max(rectangle => Math.Abs(rectangle.X));
+            var yMax = rectangles.Max(rectangle => Math.Abs(rectangle.Y));
+
+            var distanceToXMax = Math.Abs(xMax) - Math.Abs(centrPoint.X);
+            var distanceToYMax = Math.Abs(yMax) - Math.Abs(centrPoint.Y);
+
+            return distanceToXMax > distanceToYMax ? distanceToXMax : distanceToYMax;
+        }
+
+        private double SquareRectangles()
+        {
+            if (rectangles == null)
+                throw new Exception("rectangles is null");
+
+            return rectangles.Sum(rectangle => rectangle.Square());
+        }
     }
 }
