@@ -1,9 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
-using FluentAssertions.Extensions;
 using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
 
@@ -13,13 +14,18 @@ namespace TagsCloudVisualizationUnitTest
     {
         private CircularCloudLayouter circularCloudLayouter;
         private PainterOfRectangles painterOfRectangles;
+        private ArchimedesSpiral archimedesSpiral;
+        private List<Rectangle> rectangles;
+        private Point centrPoint;
         private const string PathFolderFailedTest = "FailedTest";
 
         [SetUp]
         public void InitCircularCloudLayouter()
         {
-            circularCloudLayouter = new CircularCloudLayouter(new Point(500, 500));
-            painterOfRectangles = new PainterOfRectangles(new Size(1000, 1000));
+            centrPoint = new Point(500, 500);
+            archimedesSpiral = new ArchimedesSpiral(centrPoint);
+            circularCloudLayouter = new CircularCloudLayouter(centrPoint, archimedesSpiral);
+            rectangles = new List<Rectangle>();
         }
 
         [TearDown]
@@ -27,9 +33,11 @@ namespace TagsCloudVisualizationUnitTest
         {
             if (TestContext.CurrentContext.Result.Outcome.Status is TestStatus.Failed)
             {
-                painterOfRectangles.CreateImage(circularCloudLayouter.Rectangles,
-                    PathFolderFailedTest + "//" + TestContext.CurrentContext.Test.FullName +
-                    "Failed.png");
+                Directory.CreateDirectory(PathFolderFailedTest);
+                var nameFile = PathFolderFailedTest + "//" + TestContext.CurrentContext.Test.FullName + "Failed.png";
+                var saver = new SaverImage(nameFile);
+                painterOfRectangles = new PainterOfRectangles(new Size(1000, 1000));
+                painterOfRectangles.CreateImage(rectangles, saver);
             }
         }
 
@@ -48,9 +56,10 @@ namespace TagsCloudVisualizationUnitTest
         {
             for (var i = 0; i < 1000; i++)
             {
-                circularCloudLayouter.PutNextRectangle(new Size(10, 10));
+                rectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(10, 10)));
             }
 
+            rectangles.Should().OnlyHaveUniqueItems();
         }
 
         [TestCase(10, TestName = "10 Rectangles")]
@@ -62,12 +71,12 @@ namespace TagsCloudVisualizationUnitTest
 
             for (var i = 0; i < countRectangle; i++)
             {
-                circularCloudLayouter.PutNextRectangle(generator.GetRectangleSize(10, 10));
+                rectangles.Add(circularCloudLayouter.PutNextRectangle(generator.GetSize(10, 10)));
             }
 
-            var square = Math.Pow(circularCloudLayouter.Radius(), 2) * Math.PI;
+            var square = Math.Pow(Radius(), 2) * Math.PI;
 
-            var densityCloud = circularCloudLayouter.SquareRectangles / square * 100;
+            var densityCloud = SquareRectangles() / square * 100;
 
             densityCloud.Should().BeGreaterThan(70);
         }
@@ -81,12 +90,12 @@ namespace TagsCloudVisualizationUnitTest
 
             for (var i = 0; i < countRectangle; i++)
             {
-                circularCloudLayouter.PutNextRectangle(generator.GetRectangleSize(10, 20));
+                rectangles.Add(circularCloudLayouter.PutNextRectangle(generator.GetSize(10, 20)));
             }
 
-            var square = Math.Pow(circularCloudLayouter.Radius(), 2) * Math.PI;
+            var square = Math.Pow(Radius(), 2) * Math.PI;
 
-            var densityCloud = circularCloudLayouter.SquareRectangles / square * 100;
+            var densityCloud = SquareRectangles() / square * 100;
 
             densityCloud.Should().BeGreaterThan(70);
         }
