@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace TagsCloudVisualisation
+namespace TagsCloudVisualizer
 {
     class ArchimedeanSpiral
     {
@@ -13,6 +13,10 @@ namespace TagsCloudVisualisation
         public Point CurrentPoint { get; private set; }
         public ArchimedeanSpiral(Point center, double angleSpeed = 0.108, double linearSpeed = 0.032)
         {
+            if (angleSpeed == 0 && linearSpeed == 0)
+            {
+                throw new ArgumentException();
+            }
             this.linearSpeed = linearSpeed;
             this.angleSpeed = angleSpeed;
             this.center = center;

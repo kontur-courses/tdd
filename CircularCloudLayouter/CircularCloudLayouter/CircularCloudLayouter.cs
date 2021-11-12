@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
 
-namespace TagsCloudVisualisation
+namespace TagsCloudVisualizer
 {
     class CircularCloudLayouter
     {
@@ -30,6 +30,10 @@ namespace TagsCloudVisualisation
 
         public Rectangle PutNewRectangle(Size rectangleSize)
         {
+            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+            {
+                throw new ArgumentException();
+            }
             var rectangle = CreateRectangleFromSpiral(rectangleSize);
             while (rectangle.IntersectsWith(rectangles))
             {
