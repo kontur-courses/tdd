@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Drawing;
+using TagsCloudVisualization.Interfaces;
 
 namespace TagsCloudVisualization
 {
-    /// <summary>
-    /// Класс реализует  спираль Архимеда
-    /// </summary>
-    public class Spiral
+    public class ArchimedesSpiral : ISpiral
     {
         private const double TwoPi = 2 * Math.PI;
 
@@ -16,13 +14,13 @@ namespace TagsCloudVisualization
 
         private Point center;
 
-        public Spiral(Point center)
+        public ArchimedesSpiral(Point center)
         {
             this.center = center;
             nextAngle = 0;
         }
 
-        public Point CalculatePointSpiral()
+        public Point CalculatePoint()
         {
             var radius = Step * nextAngle / TwoPi;
             var x = (int)(radius * Math.Cos(nextAngle) + center.X);
