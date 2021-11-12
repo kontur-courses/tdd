@@ -9,15 +9,16 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter : ICloudLayouter
     {
-        private Point cloudCenter;
+        public Point Center { get; }
+        public List<Rectangle> Rectangles { get; }
+
         private ISpiral spiral;
-        private List<Rectangle> rectangles;
 
         public CircularCloudLayouter(Point center)
         {
-            cloudCenter = center;
-            rectangles = new List<Rectangle>();
-            spiral = new Spiral();
+            Center = center;
+            Rectangles = new List<Rectangle>();
+            spiral = new ArchimedeanSpiral(Center, 1, 15);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -25,54 +26,41 @@ namespace TagsCloudVisualization
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException("height and width of the rectangle must be greater than 0");
 
-            Point rectangleLocation;
+            var rectangle = new Rectangle(Center, rectangleSize);
 
-            if (!rectangles.Any())
-            {
-                rectangleLocation = new Point();
-            }
-            else
+            if (Rectangles.Any())
             {
                 while (true)
                 {
-                    rectangleLocation = spiral.GetNextPosition();
-                    var newRectangle = new Rectangle(rectangleLocation, rectangleSize);
-                    if (!CheckIntersections(newRectangle))
+                    rectangle.Location = spiral.GetNextPosition();
+                    if (!CheckIntersections(rectangle))
                         break;
                 }
-                OptimizeRectangleLocation(rectangleLocation, rectangleSize);
+                rectangle = OptimizeRectangleLocation(rectangle);
             }
 
-            var rectangle = new Rectangle(rectangleLocation, rectangleSize);
-            rectangles.Add(rectangle);
-            rectangle.Location = new Point(cloudCenter.X + rectangle.Location.X, cloudCenter.Y + rectangle.Location.Y);
+            Rectangles.Add(rectangle);
             return rectangle;
         }
 
         private bool CheckIntersections(Rectangle rectangle)
         {
-            foreach (var r in rectangles)
-            {
-                if (r.IntersectsWith(rectangle))
-                    return true;
-            }
-
-            return false;
+            return Rectangles.Any(rect => rect.IntersectsWith(rectangle));
         }
 
         private Point MovePointToCenter(Point point)
         {
-            var newX = point.X + Math.Sign(-point.X);
-            var newY = point.Y + Math.Sign(-point.Y);
+            var newX = point.X + Math.Sign(Center.X-point.X);
+            var newY = point.Y + Math.Sign(Center.Y-point.Y);
             return new Point(newX, newY);
         }
 
-        private Point OptimizeRectangleLocation(Point point, Size rectangleSize)
+        private Rectangle OptimizeRectangleLocation(Rectangle rectangle)
         {
-            var rectangle = new Rectangle(point,rectangleSize);
+            var point = rectangle.Location;
             while (true)
             {
-                var newLocation = MovePointToCenter(point);
+                var newLocation = MovePointToCenter(rectangle.Location);
                 rectangle.Location = newLocation;
                 if (!CheckIntersections(rectangle))
                 {
@@ -82,7 +70,8 @@ namespace TagsCloudVisualization
                     break;
             }
 
-            return point;
+            rectangle.Location = point;
+            return rectangle;
         }
     }
 }

@@ -9,6 +9,8 @@ namespace TagsCloudVisualization
 {
     public interface ICloudLayouter
     {
-        public Rectangle PutNextRectangle(Size rectangleSize);
+        Rectangle PutNextRectangle(Size rectangleSize);
+        List<Rectangle> Rectangles{get;}
+        Point Center { get; }
     }
 }
