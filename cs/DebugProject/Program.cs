@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using TagsCloudVisualization;
 
@@ -8,23 +9,28 @@ namespace DebugProject
     {
         static void Main()
         {
-            var circularCloudLayouter = new CircularCloudLayouter(new Point(500, 500));
-            var painterOfRectangles = new PainterOfRectangles(new Size(1000, 1000));
-            var generator = new GeneratorOfRectangles();
+            var painter = new PainterOfRectangles(new Size(1000, 1000));
+            var centrePoint = new Point(500, 500);
+            var spiral = new ArchimedesSpiral(centrePoint);
+            var circularCloudLayouter = new CircularCloudLayouter(centrePoint, spiral);
+            var rectangles = new List<Rectangle>();
+            var saver = new SaverImage("CircularCloudLayouter1.png");
+
+            var generatorRectangle = new GeneratorOfRectangles();
 
             for (int i = 0; i < 2000; i++)
             {
-                circularCloudLayouter.PutNextRectangle(generator.GetRectangleSize(10, 10));
+                rectangles.Add(circularCloudLayouter.PutNextRectangle(generatorRectangle.GetSize(10, 10)));
             }
 
-            painterOfRectangles.CreateImage(circularCloudLayouter.Rectangles, "CircularCloudLayouter1.png");
+            painter.CreateImage(rectangles, saver);
 
-            var p = new Process();
-            p.StartInfo = new ProcessStartInfo("CircularCloudLayouter1.png")
+            var openImageProcess = new Process();
+            openImageProcess.StartInfo = new ProcessStartInfo("CircularCloudLayouter1.png")
             {
                 UseShellExecute = true
             };
-            p.Start();
+            openImageProcess.Start();
         }
     }
 }
