@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -30,7 +29,7 @@ namespace TagsCloudVisualization
         {
             get
             {
-                if(bmp == null)
+                if (bmp == null)
                     throw new Exception($"Bitmap instance was not created. Call method {nameof(DrawRectangles)} at least one time");
                 return bmp.Height;
             }
@@ -70,29 +69,36 @@ namespace TagsCloudVisualization
                 throw new InvalidOperationException($"{nameof(DrawRectangles)} should be called at least one time before saving");
             dir = dir ?? new DirectoryInfo(Environment.CurrentDirectory);
             if (!dir.Exists) dir.Create();
-            using (var resizedBmp = Resize(scaleCoeff))
+            var path = Path.Combine(dir.FullName, fileName);
+            if (scaleCoeff == 1)
             {
-                var path = Path.Combine(dir.FullName, fileName);
-                try
-                {
-                    resizedBmp.Save(path);
-                }
-                catch(Exception ex)
-                {
-                    throw new Exception($"Can't save file to: {path}", ex);
-                }
+                SaveToPath(bmp, path);
+                return;
+            }
+            using (var resizedBmp = GetResizedBitmap(scaleCoeff))
+            {
+                SaveToPath(resizedBmp, path);
             }
         }
 
-        private Bitmap Resize(double scale)
+        private static void SaveToPath(Bitmap bmp, string path)
+        {
+            try
+            {
+                bmp.Save(path);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Can't save file to: {path}", ex);
+            }
+        }
+
+        private Bitmap GetResizedBitmap(double scale)
         {
             if (scale <= 0) throw new ArgumentException("scale should be positive");
             var newWidth = (int)(bmp.Width * scale);
             var newHeight = (int)(bmp.Height * scale);
-            var result = new Bitmap(newWidth, newHeight);
-            using (var graphics = Graphics.FromImage(result))
-                graphics.DrawImage(bmp, 0, 0, newWidth, newHeight);
-            return result;
+            return new Bitmap(bmp, new Size(newWidth, newHeight));
 
         }
 
@@ -115,7 +121,7 @@ namespace TagsCloudVisualization
             {
                 graphics.DrawRectangles(pen, rectangles);
             }
-            
+
         }
     }
 }
