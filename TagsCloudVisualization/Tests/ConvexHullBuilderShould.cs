@@ -15,8 +15,8 @@ namespace TagsCloudVisualization.Tests
         }
 
         [TestCaseSource(nameof(MinimalConvexHullTestData))]
-        public void ReturnCorrectMinimalConvexHull(IEnumerable<Point> givenPoints,
-            IEnumerable<Point> expectedConvexHull)
+        public void ReturnCorrectMinimalConvexHull(IReadOnlyCollection<Point> givenPoints,
+            IReadOnlyCollection<Point> expectedConvexHull)
         {
             var actualConvexHull = ConvexHullBuilder.GetConvexHull(givenPoints);
 

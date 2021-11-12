@@ -26,7 +26,8 @@ namespace TagsCloudVisualization
             return Math.Sign(vectorProduct);
         }
 
-        public static IEnumerable<Point> GetRectanglesPointsSet(IEnumerable<Rectangle> rectangles)
+        public static IReadOnlyCollection<Point> GetRectanglesPointsSet(
+            IReadOnlyCollection<Rectangle> rectangles)
         {
             return rectangles
                 .SelectMany(rect => new Point[]
@@ -36,20 +37,21 @@ namespace TagsCloudVisualization
                     new Point(rect.Left, rect.Top),
                     new Point(rect.Right, rect.Top)
                 })
-                .Distinct();
+                .Distinct()
+                .ToList();
         }
 
-        public static IEnumerable<Point> GetConvexHull(IEnumerable<Point> points)
+        public static IReadOnlyCollection<Point> GetConvexHull(IReadOnlyCollection<Point> points)
         {
-            var pointsCount = points.Count();
+            var pointsCount = points.Count;
             if (pointsCount <= 3)
                 return points;
 
             return GetConvexHullByJarvisAlgorithm(points);
         }
 
-        private static IEnumerable<Point> GetConvexHullByJarvisAlgorithm(
-            IEnumerable<Point> points)
+        private static IReadOnlyCollection<Point> GetConvexHullByJarvisAlgorithm(
+            IReadOnlyCollection<Point> points)
         {
             var convexHull = new List<Point>();
             var leftMostPoint = GetLeftMostPoint(points);
@@ -65,7 +67,7 @@ namespace TagsCloudVisualization
             return convexHull;
         }
 
-        private static Point GetBestCandidate(IEnumerable<Point> points, Point lastAddedPoint)
+        private static Point GetBestCandidate(IReadOnlyCollection<Point> points, Point lastAddedPoint)
         {
             var hullCandidate = GetAnyCandidateExceptLastAdded(points, lastAddedPoint);
             var candidateVector = new Vector(lastAddedPoint, hullCandidate);
@@ -79,12 +81,12 @@ namespace TagsCloudVisualization
             return hullCandidate;
         }
 
-        private static Point GetAnyCandidateExceptLastAdded(IEnumerable<Point> points, Point lastAdded)
+        private static Point GetAnyCandidateExceptLastAdded(IReadOnlyCollection<Point> points, Point lastAdded)
         {
             return points.First(p => p != lastAdded);
         }
 
-        private static Point GetLeftMostPoint(IEnumerable<Point> points)
+        private static Point GetLeftMostPoint(IReadOnlyCollection<Point> points)
         {
             return points.OrderBy(p => p.X).First();
         }

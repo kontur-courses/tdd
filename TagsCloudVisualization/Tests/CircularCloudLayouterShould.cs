@@ -78,7 +78,7 @@ namespace TagsCloudVisualization.Tests
             deviation.Should().BeLessOrEqualTo(0.3);
         }
 
-        private static IEnumerable<Point> GetCloudConvexHull(CircularCloudLayouter layouter)
+        private static IReadOnlyCollection<Point> GetCloudConvexHull(CircularCloudLayouter layouter)
         {
             var rectanglesPoints = ConvexHullBuilder.GetRectanglesPointsSet(layouter.Rectangles);
             var cloudConvexHull = ConvexHullBuilder.GetConvexHull(rectanglesPoints);
@@ -125,7 +125,7 @@ namespace TagsCloudVisualization.Tests
         }
 
         private (double minLength, double maxLength) GetMinMaxHullVectorsLengths(
-            Point center, IEnumerable<Point> hull)
+            Point center, IReadOnlyCollection<Point> hull)
         {
             var hullVectorsLengths = hull.Select(point => new Vector(center, point).GetLength());
             return (hullVectorsLengths.Min(), hullVectorsLengths.Max());
