@@ -9,7 +9,7 @@ namespace TagsCloudVisualization
     public class CircularCloudLayoterTests
     {
         [Test]
-        public void ShouldCreateCircularCloud()
+        public void CloudLayouterConstructorShouldWorkCorrectly()
         {
             var center = new Point(15, 20);
             Action creating = () => new CircularCloudLayouter(center);
@@ -25,7 +25,7 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void ShouldPutOneRectangleInRightLocation()
+        public void SingleRectangleInCenterPutCorrectly()
         {
             var rectangleSize = new Size(30, 10);
             var layouterCenter = new Point(20, 10);

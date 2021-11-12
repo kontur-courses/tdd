@@ -6,8 +6,11 @@ namespace TagsCloudVisualization
     public class Spiral
     {
         private double CurrentAngle { get; set; }
+
         private double AngleStep { get;}
+
         private Point Central { get;}
+
 
         public Spiral(Point centralPoint, double angleStep = Math.PI/360)
         {
