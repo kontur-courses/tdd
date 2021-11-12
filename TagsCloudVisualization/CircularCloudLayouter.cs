@@ -34,11 +34,11 @@ namespace TagsCloudVisualization
         {
             var nextRectCenter = GetNextRectCenter(rectSize);
             nextRectCenter = ShiftRectangleToPoint(nextRectCenter,
-                rectSize, CloudCenter, 1);
+                rectSize, CloudCenter);
             nextRectCenter = ShiftRectangleToPoint(nextRectCenter,
-                rectSize, new Point(nextRectCenter.X, CloudCenter.Y), 0);
+                rectSize, new Point(nextRectCenter.X, CloudCenter.Y));
             nextRectCenter = ShiftRectangleToPoint(nextRectCenter,
-                  rectSize, new Point(CloudCenter.X, nextRectCenter.Y), 0);
+                  rectSize, new Point(CloudCenter.X, nextRectCenter.Y));
             return nextRectCenter;
         }
 
@@ -91,12 +91,10 @@ namespace TagsCloudVisualization
             => Rectangles.Any(r => r != rect && rect.IntersectsWith(r));
 
         private Point ShiftRectangleToPoint(Point rectCenter, Size rectSize,
-            Point shiftDirection, int mod)
+            Point shiftDirection)
         {
             var leftBorder = shiftDirection;
             var rightBorder = rectCenter;
-            rectSize.Width += mod;
-            rectSize.Height += mod;
             var vectLen = new Vector(leftBorder, rightBorder).GetLength();
             var eps = 2;
             while (vectLen > eps)

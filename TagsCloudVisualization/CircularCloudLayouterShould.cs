@@ -52,10 +52,10 @@ namespace TagsCloudVisualization
         [Test]
         public void MakeCloudCircleDeviationLessThanTwentyFivePercents()
         {
-            var rectanglesCount = 325;
-            var maxHeight = 100;
-            var maxWidth = 100;
-            var center = new Point(0, 0);
+            var rectanglesCount = 2500;
+            var maxHeight = 35;
+            var maxWidth = 70;
+            var center = new Point(750, 750);
             var layouter = new CircularCloudLayouter(center);
             var rnd = new Random();
 
@@ -70,9 +70,9 @@ namespace TagsCloudVisualization
         [Test]
         public void PutRectanglesWithousIntersects()
         {
-            var rectanglesCount = 50;
-            var maxHeight = 100;
-            var maxWidth = 100;
+            var rectanglesCount = 100;
+            var maxHeight = 35;
+            var maxWidth = 70;
             var center = new Point(0, 0);
             var layouter = new CircularCloudLayouter(center);
             var rnd = new Random();
@@ -98,10 +98,9 @@ namespace TagsCloudVisualization
             int maxHeight,
             int rectanglesCount)
         {
-
             for (var i = 0; i < rectanglesCount; i++)
             {
-                var rect = layouter.PutNextRectangle(new Size(rnd.Next(20, maxWidth), rnd.Next(20, maxHeight)));
+                var rect = layouter.PutNextRectangle(new Size(rnd.Next(20, maxWidth), rnd.Next(10, maxHeight)));
             }
         }
 
