@@ -22,7 +22,7 @@ namespace TagsCloudVisualization.Layouters
             this.center = center;
         }
 
-        public void IncreaseSize(float radiusIncreaseValue = 0.1f, float angleIncreaseValue = 0.1f)
+        public void IncreaseSize(float radiusIncreaseValue = 0.01f, float angleIncreaseValue = 0.01f)
         {
             radius += radiusIncreaseValue;
             angle += angleIncreaseValue;

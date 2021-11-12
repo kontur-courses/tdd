@@ -11,11 +11,11 @@ namespace TagsCloudVisualizationTests
     public class Spiral_Should
     {
         private const float Epsilon = 1e-5f;
-        private const float DefaultRadiusIncreaseValue = 0.1f;
-        private const float DefaultAngleIncreaseValue = 0.1f;
+        private const float DefaultRadiusIncreaseValue = 0.01f;
+        private const float DefaultAngleIncreaseValue = 0.01f;
 
         [Test]
-        [TestCaseSource(nameof(CenterGenerator))]
+        [TestCaseSource(typeof(Generators), nameof(Generators.CenterGenerator))]
         public void StartPoint_EqualsCenter_WithCustomCenter(Point center)
         {
             var spiral = new Spiral(center);
@@ -25,7 +25,7 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
-        [TestCaseSource(nameof(CenterGenerator))]
+        [TestCaseSource(typeof(Generators), nameof(Generators.CenterGenerator))]
         public void IncreaseSize_ChangingPoint_WithDefaultValues(Point center)
         {
             var spiral = new Spiral(center);
@@ -43,7 +43,7 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
-        [TestCaseSource(nameof(CenterGenerator))]
+        [TestCaseSource(typeof(Generators), nameof(Generators.CenterGenerator))]
         public void IncreaseSize_ChangingPoint_WithCustomValues(Point center)
         {
             var spiral = new Spiral(center);
@@ -61,7 +61,7 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
-        [TestCaseSource(nameof(CenterGenerator))]
+        [TestCaseSource(typeof(Generators), nameof(Generators.CenterGenerator))]
         public void IncreaseSize_ChangingPointRepeatedly_WithDefaultValues(Point center)
         {
             var spiral = new Spiral(center);
@@ -81,7 +81,7 @@ namespace TagsCloudVisualizationTests
         }
         
         [Test]
-        [TestCaseSource(nameof(CenterGenerator))]
+        [TestCaseSource(typeof(Generators), nameof(Generators.CenterGenerator))]
         public void IncreaseSize_ChangingPointRepeatedly_WithCustomValues(Point center)
         {
             var spiral = new Spiral(center);
@@ -108,19 +108,6 @@ namespace TagsCloudVisualizationTests
         private float CountY(float radius, float angle, float currentY)
         {
             return (float) Math.Sin(angle) * radius + currentY;
-        }
-
-        private static IEnumerable<Point> CenterGenerator()
-        {
-            yield return new Point(0, 0);
-            yield return new Point(-10, -10);
-            yield return new Point(10, 10);
-            yield return new Point(-10, 10);
-            yield return new Point(10, -10);
-            yield return new Point(0, 10);
-            yield return new Point(0, -10);
-            yield return new Point(10, 0);
-            yield return new Point(-10, 0);
         }
     }
 }
