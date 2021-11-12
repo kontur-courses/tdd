@@ -12,10 +12,14 @@ namespace TagsCloudVisualizationUnitTest
     public class TagsCloudVisualizationTest
     {
         private CircularCloudLayouter circularCloudLayouter;
-
+        private const string pathFolderFailedTest = "FailedTest";
         [OneTimeSetUp]
         public void CreateFolderForFailedTests()
         {
+            if (!Directory.Exists(pathFolderFailedTest))
+            {
+                Directory.CreateDirectory(pathFolderFailedTest);
+            }
         }
 
         [SetUp]
@@ -32,7 +36,7 @@ namespace TagsCloudVisualizationUnitTest
                 var painterOfRectangles = new PainterOfRectangles(new Size(1000, 1000));
 
                 painterOfRectangles.CreateImage(circularCloudLayouter.Rectangles,
-                    TestContext.CurrentContext.Test.Name + "CircularCloudLayouter.png");
+                    pathFolderFailedTest + "//" + TestContext.CurrentContext.Test.Name + "CircularCloudLayouter.png");
             }
         }
 
@@ -59,7 +63,7 @@ namespace TagsCloudVisualizationUnitTest
 
         [TestCase(10, TestName = "10 Rectangles")]
         [TestCase(1000, TestName = "1000 Rectangles")]
-        [TestCase(2000, TestName = "2000 Rectangles")]
+        [TestCase(2000, TestName = "3000 Rectangles")]
         public void PutNextRectangle_ShouldBeOptimized(int countRectangle)
         {
             Action act = () =>
