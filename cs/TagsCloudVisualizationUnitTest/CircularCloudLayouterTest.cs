@@ -51,34 +51,6 @@ namespace TagsCloudVisualizationUnitTest
                 circularCloudLayouter.PutNextRectangle(new Size(10, 10));
             }
 
-            circularCloudLayouter.Rectangles.Should().OnlyHaveUniqueItems();
-        }
-
-        [TestCase(10, TestName = "10 Rectangles")]
-        [TestCase(1000, TestName = "1000 Rectangles")]
-        [TestCase(2000, TestName = "2000 Rectangles")]
-        public void PutNextRectangle_ShouldBeOptimized(int countRectangle)
-        {
-            Action act = () =>
-            {
-                for (int i = 0; i < countRectangle; i++)
-                {
-                    circularCloudLayouter.PutNextRectangle(new Size(10, 10));
-                }
-            };
-
-            act.ExecutionTime().Should().BeLessThanOrEqualTo(1.Seconds());
-        }
-
-        [Test]
-        public void SquareRectangles_ShouldBeCorrect()
-        {
-            for (var i = 0; i < 2000; i++)
-            {
-                circularCloudLayouter.PutNextRectangle(new Size(10, 10));
-            }
-
-            circularCloudLayouter.SquareRectangles.Should().Be(200000);
         }
 
         [TestCase(10, TestName = "10 Rectangles")]
