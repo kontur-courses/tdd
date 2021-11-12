@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -16,6 +16,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TagsCloudVisualization\TagsCloudVisualization.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="CloudImages\" />
   </ItemGroup>
 
 </Project>

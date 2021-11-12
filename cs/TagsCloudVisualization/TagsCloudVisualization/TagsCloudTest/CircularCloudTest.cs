@@ -4,16 +4,22 @@ using FluentAssertions;
 using TagsCloudVisualization;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 
 namespace TagsCloudTest
 {
     public class CircularCloudTest
     {
+        private ICloudLayouter cloud;
+
         [Test]
         public void PutNextRectangle_RectangleWithCenterInCloudCenter_WhenPutFirstRectangle()
         {
             var center = new Point(5, 5);
             var cloud = new CircularCloudLayouter(center);
+            this.cloud = cloud;
 
             var rectangle = cloud.PutNextRectangle(new Size(3,1));
 
@@ -40,11 +46,12 @@ namespace TagsCloudTest
             var cloud = new CircularCloudLayouter(center);
             var rectanglesSize = new Size(3, 2);
             var rectangles = new List<Rectangle>();
+            this.cloud = cloud;
 
             for (var i = 0; i < rectanglesCount; i++)
-                cloud.PutNextRectangle(rectanglesSize);
+                rectangles.Add(cloud.PutNextRectangle(rectanglesSize));
 
-            foreach(var r1 in rectangles)
+            foreach (var r1 in rectangles)
                 foreach(var r2 in rectangles)
                 {
                     if (r1 == r2)
@@ -63,12 +70,13 @@ namespace TagsCloudTest
             var center = new Point(3, 8);
             var cloud = new CircularCloudLayouter(center);
             var rectangles = new List<Rectangle>();
+            this.cloud = cloud;
 
             for (var i = 0; i < rectanglesCount; i++)
             {
                 var width = rnd.Next(1, 1000);
                 var height = rnd.Next(1, 1000);
-                cloud.PutNextRectangle(new Size(width,height));
+                rectangles.Add(cloud.PutNextRectangle(new Size(width,height)));
             }
 
             foreach (var r1 in rectangles)
@@ -89,15 +97,17 @@ namespace TagsCloudTest
             var cloud = new CircularCloudLayouter(center);
             var sizeRectangle = new Size(2, 2);
             var rectangles = new List<Rectangle>();
+            this.cloud = cloud;
 
-            for(var i = 0; i < rectanglesCount; i++)
+            for (var i = 0; i < rectanglesCount; i++)
                 rectangles.Add(cloud.PutNextRectangle(sizeRectangle));
+
 
             foreach (var r1 in rectangles) 
             {
                 if (r1.Location == center)
                     continue;
-                var newR1 = new Rectangle(ShiftRectangleToGoalByDelta(r1, center), r1.Size);
+                var newR1 = ShiftRectangleToGoalByDelta(r1, center);
                 var hasIntersect = false;
                 foreach (var r2 in rectangles)
                 {
@@ -114,15 +124,16 @@ namespace TagsCloudTest
             }
         }
 
+        [TestCase(100)]
         [TestCase(2)]
         [TestCase(10)]
-        [TestCase(100)]
         public void PutNextRectangle_RectanglesAreCloseToCenter_WhenPutRectanglesOfRandomSize(int rectanglesCount)
         {
             var rnd = new Random();
             var center = new Point(1, 3);
             var cloud = new CircularCloudLayouter(center);
             var rectangles = new List<Rectangle>();
+            this.cloud = cloud;
 
             for (var i = 0; i < rectanglesCount; i++)
             {
@@ -135,7 +146,7 @@ namespace TagsCloudTest
             {
                 if (r1.Location == center)
                     continue;
-                var newR1 = new Rectangle(ShiftRectangleToGoalByDelta(r1, center), r1.Size);
+                var newR1 = ShiftRectangleToGoalByDelta(r1, center);
                 var hasIntersect = false;
                 foreach (var r2 in rectangles)
                 {
@@ -152,12 +163,35 @@ namespace TagsCloudTest
             }
         }
 
-        private Point ShiftRectangleToGoalByDelta(Rectangle rectangle, Point goal)
+        [TearDown]
+        public void DerivedTearDown() 
         {
-            var vector = new Point(goal.X - rectangle.Location.X, goal.Y - rectangle.Location.Y);
-            var newX = rectangle.Location.X + Math.Sign(vector.X);
-            var newY = rectangle.Location.Y + Math.Sign(vector.Y);
-            return new Point(newX, newY);
+            var resultStatus = TestContext.CurrentContext.Result.Outcome.Status;
+            if(resultStatus == NUnit.Framework.Interfaces.TestStatus.Passed && cloud!=null)
+            {
+                var path = @$"..\..\..\CloudImages\{TestContext.CurrentContext.Test.Name}.png";
+
+                var xLocations = cloud.Rectangles.Select(rect => rect.X).OrderBy(x => x).ToList();
+                var width = xLocations.Last() - xLocations.First();
+                width = width < 100 ? 100 : 1000;
+
+                var imageSize = new Size(width, width);
+
+                var visualizator = new CloudVisualizator(imageSize, cloud.Center);
+                visualizator.DrawRectangles(new Pen(new SolidBrush(Color.Red)), cloud.Rectangles);
+                visualizator.SaveImage(path);
+
+                TestContext.WriteLine($"Tag cloud visualization saved to file {Path.GetFullPath(path)}");
+            }
+        }
+
+        private Rectangle ShiftRectangleToGoalByDelta(Rectangle rectangle, Point goal)
+        {
+            var vector = new Point(goal.X - rectangle.X, goal.Y - rectangle.Y);
+            var newX = rectangle.X + Math.Sign(vector.X);
+            var newY = rectangle.Y + Math.Sign(vector.Y);
+            rectangle.Location = new Point(newX, newY);
+            return rectangle;
         }
     }
 }
