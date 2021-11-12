@@ -9,7 +9,7 @@ namespace TagsCloudVisualization.Internals
     {
         public static IEnumerable<SlottedAnchor> FilterFilledSlots(this IEnumerable<SlottedAnchor> anchors)
         {
-            return anchors.Where(x => (x.FilledSlots & DirectionExtensions.All) != DirectionExtensions.All);
+            return anchors.Where(x => (x.FilledSlots & Direction.All) != Direction.All);
         }
 
         public static IEnumerable<(Point point, Direction direction)> GetAllValidSlots(this SlottedAnchor anchor)

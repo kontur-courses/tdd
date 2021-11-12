@@ -10,5 +10,6 @@ namespace TagsCloudVisualization
         Top = 0b0010,
         Right = 0b0100,
         Bottom = 0b1000,
+        All = Left | Top | Right | Bottom,
     }
 }

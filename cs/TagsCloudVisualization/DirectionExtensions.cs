@@ -15,21 +15,5 @@ namespace TagsCloudVisualization
                 _ => throw new ArgumentException($"Can't get reversed of {direction}", nameof(direction)),
             };
         }
-
-        public static readonly Direction All = GetAllFlag();
-
-        private static Direction GetAllFlag()
-        {
-            var enumType = typeof(Direction);
-            long newValue = 0;
-            var enumValues = Enum.GetValues(enumType);
-            foreach (var value in enumValues)
-            {
-                var v = (long)Convert.ChangeType(value, TypeCode.Int64);
-                newValue |= v;
-            }
-
-            return (Direction)Enum.ToObject(enumType, newValue);
-        }
     }
 }
