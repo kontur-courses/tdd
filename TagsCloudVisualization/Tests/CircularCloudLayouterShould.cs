@@ -53,7 +53,7 @@ namespace TagsCloudVisualization.Tests
             var center = new Point(750, 750);
             var layouter = new CircularCloudLayouter(center);
 
-            PutRandomRectangles(layouter, 750);
+            PutRandomRectangles(layouter, 7500);
             var cloudConvexHull = GetCloudConvexHull(layouter);
             var (minLength, maxLength) = GetMinMaxHullVectorsLengths(center, cloudConvexHull);
             var deviation = GetCloudDeviation(minLength, maxLength);
