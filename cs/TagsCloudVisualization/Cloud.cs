@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization
@@ -24,13 +23,9 @@ namespace TagsCloudVisualization
 
         public void DefaultVisualize(string filename)
         {
-            var bitmap = new Bitmap
-                ((int)(Center.X * 2), (int)(Center.Y * 2));
-            var gr = Graphics.FromImage(bitmap);
-            var pen = new Pen(Color.DarkGreen, 1);
-
-            gr.DrawRectangles(pen, rectangles.ToArray());
-            bitmap.Save(filename);
+            var size = new Size(800, 800);
+            var colors = new List<Color> {Color.DarkGreen};
+            CustomVisualize(filename, size, colors, Color.White);
         }
 
         public void CustomVisualize(string filename,
@@ -41,40 +36,49 @@ namespace TagsCloudVisualization
             Func<int, List<RectangleF>> getRectanglesByColorIndex = null)
         {
             var bitmap = new Bitmap(bitmapSize.Width, bitmapSize.Height);
-            var gr = Graphics.FromImage(bitmap);
+            var referenceCenter = GetCloudCenterOnImage(bitmap);
             var pens = colors.Select(c => new Pen(c, 1))
                 .ToList();
             if(getRectanglesByColorIndex == null) 
                 getRectanglesByColorIndex = GetRectanglesByColorIndexDefaultFunc(colors);
+            var gr = Graphics.FromImage(bitmap);
 
             gr.FillRectangle(new SolidBrush(backgroundColor), 
                 new Rectangle(new Point(), bitmapSize));
-            VisualiseCenter(gr);
-            VisualiseRectangles(fillRectangles, getRectanglesByColorIndex, pens, gr);
+            VisualizeCenter(gr, referenceCenter);
+            VisualizeRectangles(fillRectangles, getRectanglesByColorIndex, referenceCenter, pens, gr);
 
             bitmap.Save(filename);
         }
 
-        private void VisualiseCenter(Graphics gr)
+        private PointF GetCloudCenterOnImage(Bitmap image)
+        {
+            var imageCenter = new PointF(image.Width / 2, image.Height / 2);
+            return new PointF(imageCenter.X + Center.X, imageCenter.Y + Center.Y);
+        }
+
+        private void VisualizeCenter(Graphics gr, PointF refCenter)
         {
             var brush = new SolidBrush(Color.Black);
             var centerRect = RectangleFExtensions
-                .GetRectangleByCenter(new Size(1, 1), Center);
+                .GetRectangleByCenter(new Size(1, 1), refCenter);
             gr.FillEllipse(brush, centerRect);
         }
 
-        private void VisualiseRectangles(bool fillRectangles,
+        private void VisualizeRectangles(bool fillRectangles,
             Func<int, List<RectangleF>> getRectanglesByColorIndex,
+            PointF refCenter,
             List<Pen> pens,
             Graphics gr)
         {
             if (fillRectangles)
                 for (var i = 0; i < pens.Count; i++)
                     gr.FillRectangles(new SolidBrush(pens[i].Color),
-                        getRectanglesByColorIndex(i).ToArray());
+                        GetRectanglesToDraw(getRectanglesByColorIndex, refCenter, i));
             else
                 for (var i = 0; i < pens.Count; i++)
-                    gr.DrawRectangles(pens[i], getRectanglesByColorIndex(i).ToArray());
+                    gr.DrawRectangles(pens[i], 
+                        GetRectanglesToDraw(getRectanglesByColorIndex, refCenter, i));
         }
 
         private Func<int, List<RectangleF>> GetRectanglesByColorIndexDefaultFunc
@@ -84,5 +88,13 @@ namespace TagsCloudVisualization
                 rectangles.Where((t, i) => i % colors.Count == colorIndex)
                     .ToList();
         }
+
+        private RectangleF[] GetRectanglesToDraw(Func<int, List<RectangleF>> getRectanglesByColorIndex,
+            PointF refCenter,
+            int i)
+            => getRectanglesByColorIndex(i)
+                .Select(r => new RectangleF(
+                    (r.Location.ToVector() + refCenter.ToVector()).ToPointF(), r.Size))
+                .ToArray();
     }
 }

@@ -17,5 +17,8 @@ namespace TagsCloudVisualization.Extensions
             return new Vector2(direction.X / length,
                 direction.Y / length);
         }
+
+        public static Vector2 GetOffset(this PointF first, PointF second)
+            => new Vector2(first.X + second.X, first.Y + second.Y);
     }
 }

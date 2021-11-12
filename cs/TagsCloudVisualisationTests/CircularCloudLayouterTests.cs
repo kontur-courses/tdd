@@ -16,12 +16,17 @@ namespace TagsCloudVisualizationTests
     {
         private CircularCloudLayouter layouter;
         private Cloud cloud;
-        private readonly PointF layouterCenter = new PointF(400, 400);
+        private readonly PointF layouterCenter = new PointF(0, 0);
 
         [SetUp]
         public void InitialiseLayouter()
         {
-            layouter = new CircularCloudLayouter(layouterCenter);
+            InitialiseCustomLayouter(layouterCenter);
+        }
+
+        private void InitialiseCustomLayouter(PointF center)
+        {
+            layouter = new CircularCloudLayouter(center);
             cloud = layouter.Cloud;
         }
 
@@ -144,14 +149,32 @@ namespace TagsCloudVisualizationTests
         /// Я решил сделать визуализацию через тесты, чтобы не выделять отдельный проект
         /// и можно было удобно настраивать параметры
         /// </summary>
-        //[TestCase("..\\..\\..\\images\\1.jpg", 200, 10, 20)]
-        //[TestCase("..\\..\\..\\images\\2.jpg", 250, 15, 25)]
-        //[TestCase("..\\..\\..\\images\\3.jpg", 500, 10, 16)]
-        //[TestCase("..\\..\\..\\images\\4.jpg", 250, 5, 50)]
+        //[TestCase("..\\..\\..\\..\\TagsCloudVisualization\\images\\1.jpg", 200, 10, 20)]
+        //[TestCase("..\\..\\..\\..\\TagsCloudVisualization\\images\\2.jpg", 250, 15, 25)]
+        //[TestCase("..\\..\\..\\..\\TagsCloudVisualization\\images\\3.jpg", 500, 10, 16)]
+        //[TestCase("..\\..\\..\\..\\TagsCloudVisualization\\images\\4.jpg", 250, 5, 50)]
         public void Visualize(string filename, int count, int min, int max)
         {
             PutSeveralRectangles(count, min, max);
             cloud.DefaultVisualize(filename);
+        }
+
+        [TestCase("..\\..\\..\\..\\TagsCloudVisualization\\images\\C1.jpg", 400, 10, 30, true)]
+        [TestCase("..\\..\\..\\..\\TagsCloudVisualization\\images\\C2.jpg", 500, 10, 50, true)]
+        [TestCase("..\\..\\..\\..\\TagsCloudVisualization\\images\\CF1.jpg", 400, 10, 20, false)]
+        [TestCase("..\\..\\..\\..\\TagsCloudVisualization\\images\\CF2.jpg", 500, 10, 30, false)]
+        public void CustomVisualize(string filename, int count, int min, int max, bool fillRect)
+        {
+            InitialiseCustomLayouter(new PointF(50, 10));
+            var colors = new List<Color>
+            {
+                Color.DarkRed, Color.OrangeRed, Color.DarkGreen, Color.GreenYellow, 
+                Color.DarkBlue, Color.LightBlue, Color.Yellow, Color.BurlyWood
+            };
+            var background = Color.Black;
+            var size = new Size(1000, 1000);
+            PutSeveralRectangles(count, min, max);
+            cloud.CustomVisualize(filename, size, colors, background, fillRect);
         }
 
         private List<Size> GetRandomSizes(int count, int min, int max, int seed = 0)
