@@ -38,6 +38,23 @@ namespace TagsCloudVisualization.Extensions
             return first;
         }
 
+        /// <summary>
+        /// Находит пересечение двух прямоугольников, если они пересекаются
+        /// </summary>
+        /// <param name="intersection">Новый прямоугольник полученный путем пересечения двух прямоугольников</param>
+        /// <returns>true, если прямоугольники пересекаются, в противном случае — false.</returns>
+        public static bool TryGetIntersection(this Rectangle first, Rectangle second, out Rectangle? intersection)
+        {
+            if (!first.IntersectsWith(second))
+            {
+                intersection = Rectangle.Empty;
+                return false;
+            }
+            first.Intersect(second);
+            intersection = first;
+            return true;
+        }
+
         public static Rectangle UnionRange(this Rectangle rectangle, IEnumerable<Rectangle> others)
         {
             var union = rectangle;

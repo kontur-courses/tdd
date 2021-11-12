@@ -12,7 +12,7 @@ namespace TagsCloudVisualization
         /// Генерирует облако тэгов с заданным количеством тэгов с рандомными размерами
         /// </summary>
         /// <param name="tagsCount"></param>
-        public static void GenerateTagCloud(int tagsCount, Spiral spiral)
+        public static void GenerateCircularTagCloud(int tagsCount, Spiral spiral)
         {
             var rectSizes = new List<Size>();
             var rnd = new Random();
@@ -22,7 +22,7 @@ namespace TagsCloudVisualization
                 var height = rnd.Next(10, width);
                 rectSizes.Add(new Size(width, height));
             }
-            GenerateTagCloud(rectSizes, spiral);
+            GenerateCircularTagCloud(rectSizes, spiral);
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace TagsCloudVisualization
         /// </summary>
         /// <param name="tagsCount"></param>
         /// <param name="rectSizes"></param>
-        public static void GenerateTagCloud(IEnumerable<Size> rectSizes, Spiral spiral)
+        public static void GenerateCircularTagCloud(IEnumerable<Size> rectSizes, Spiral spiral)
         {
             var layouter = new CircularCloudLayouter(Point.Empty, spiral);
             rectSizes.ToList().ForEach(s => layouter.PutNextRectangle(s));

@@ -47,7 +47,8 @@ namespace TagsCloudVisualization_Test
             var second = new Rectangle(new Point(50, 50), new Size(100, 100));
             var expected = new Rectangle(new Point(50, 50), new Size(50, 50));
 
-            first.GetIntersection(second).Should().Be(expected);
+            if (first.TryGetIntersection(second, out Rectangle? intersection))
+                intersection.Should().Be(expected);
         }
 
         [Test]

@@ -8,7 +8,7 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter : CloudLayouter
     {
         public readonly Point Center;
-        private Spiral _spiral;
+        private readonly Spiral _spiral;
 
         public CircularCloudLayouter(Point center, Spiral spiral) : base()
         {

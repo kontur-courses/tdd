@@ -6,7 +6,7 @@
         {
             var amount = 1;
             for (int i = 0; i < amount; i++)
-                DemoImageGenerator.GenerateTagCloud(100, new ArchimedeanSpiral());
+                DemoImageGenerator.GenerateCircularTagCloud(100, new ArchimedeanSpiral());
 
             var spiral = new ArchimedeanSpiral();
             for (int i = 0; i < 5; i++)            
