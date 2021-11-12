@@ -52,17 +52,13 @@ namespace TagsCloudVisualization
         [Test]
         public void MakeCloudCircleDeviationLessThanTwentyFivePercents()
         {
-            var rectanglesCount = 1000;
-            var maxHeight = 35;
-            var maxWidth = 70;
             var center = new Point(750, 750);
             var layouter = new CircularCloudLayouter(center);
-            var rnd = new Random();
 
-            PutRectangles(layouter, rnd, maxWidth, maxHeight, rectanglesCount);
+            PutRandomRectangles(layouter, 1000);
             var cloudConvexHull = GetCloudConvexHull(layouter);
-            var minMaxLengths = GetMinMaxHullVectorsLengths(center, cloudConvexHull);
-            var deviation = 1 - Math.Abs(minMaxLengths.Item1 / minMaxLengths.Item2);
+            var (minLength, maxLength) = GetMinMaxHullVectorsLengths(center, cloudConvexHull);
+            var deviation = GetCloudDeviation(minLength, maxLength);
 
             deviation.Should().BeLessOrEqualTo(0.25);
         }
@@ -70,20 +66,16 @@ namespace TagsCloudVisualization
         [Test]
         public void MakeCloudDense()
         {
-            var rectanglesCount = 1000;
-            var maxHeight = 35;
-            var maxWidth = 70;
             var center = new Point(750, 750);
             var layouter = new CircularCloudLayouter(center);
-            var rnd = new Random();
 
-            PutRectangles(layouter, rnd, maxWidth, maxHeight, rectanglesCount);
+            PutRandomRectangles(layouter, 400);
             var cloudConvexHull = GetCloudConvexHull(layouter);
 
             var cloudArea = layouter.Rectangles.Sum(rect => rect.Width * rect.Height);
-            var enclosingCircleRadius = GetMinMaxHullVectorsLengths(center, cloudConvexHull).Item2;
+            var enclosingCircleRadius = GetMinMaxHullVectorsLengths(center, cloudConvexHull).maxLength;
             var enclosingCircleArea = Math.PI * enclosingCircleRadius * enclosingCircleRadius;
-            var deviation = 1 - Math.Abs(cloudArea / enclosingCircleArea);
+            var deviation = GetCloudDeviation(cloudArea, enclosingCircleArea);
 
             deviation.Should().BeLessOrEqualTo(0.25);
         }
@@ -98,20 +90,16 @@ namespace TagsCloudVisualization
         [Test]
         public void PutRectanglesWithousIntersects()
         {
-            var rectanglesCount = 100;
-            var maxHeight = 35;
-            var maxWidth = 70;
             var center = new Point(0, 0);
             var layouter = new CircularCloudLayouter(center);
-            var rnd = new Random();
 
-            PutRectangles(layouter, rnd, maxWidth, maxHeight, rectanglesCount);
+            PutRandomRectangles(layouter, 100);
 
-            DoRectanglesIntersect(layouter).Should().BeFalse();
+            AreRectanglesIntersected(layouter).Should().BeFalse();
         }
 
 
-        private static bool DoRectanglesIntersect(CircularCloudLayouter layouter)
+        private static bool AreRectanglesIntersected(CircularCloudLayouter layouter)
         {
             foreach (var firstRect in layouter.Rectangles)
                 foreach (var secondRect in layouter.Rectangles)
@@ -120,17 +108,18 @@ namespace TagsCloudVisualization
             return false;
         }
 
-        private static void PutRectangles(
-            CircularCloudLayouter layouter, 
-            Random rnd, 
-            int maxWidth, 
-            int maxHeight,
-            int rectanglesCount)
+        private static void PutRandomRectangles(CircularCloudLayouter layouter, int rectanglesCount)
         {
-            for (var i = 0; i < rectanglesCount; i++)
-            {
-                var rect = layouter.PutNextRectangle(new Size(rnd.Next(20, maxWidth), rnd.Next(10, maxHeight)));
-            }
+            var rnd = new Random(Guid.NewGuid().GetHashCode());
+            var minWidth = 10;
+            var maxWidth = 70;
+            var minHeight = 10;
+            var maxHeight = 35;
+
+            for (var i = 0; i < rectanglesCount; i++) 
+                layouter.PutNextRectangle(new Size(
+                    rnd.Next(minWidth, maxWidth),
+                    rnd.Next(minHeight, maxHeight)));
         }
 
         private double GetCloudDeviation(double cloudValue, double deviateFrom)
@@ -138,7 +127,8 @@ namespace TagsCloudVisualization
             return 1 - Math.Abs(cloudValue / deviateFrom);
         }
 
-        private (double, double) GetMinMaxHullVectorsLengths(Point center, IEnumerable<Point> hull)
+        private (double minLength, double maxLength) GetMinMaxHullVectorsLengths(
+            Point center, IEnumerable<Point> hull)
         {
             var hullVectorsLengths = hull.Select(point => new Vector(center, point).GetLength());
             return (hullVectorsLengths.Min(), hullVectorsLengths.Max());
