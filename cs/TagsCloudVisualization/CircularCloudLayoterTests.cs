@@ -34,6 +34,7 @@ namespace TagsCloudVisualization
             rectangle.Location.Should().Be(new Point(5,5));
         }
 
+        /*
         [TestCase(10)]
         [TestCase(100)]
         [TestCase(1000)]
@@ -46,6 +47,7 @@ namespace TagsCloudVisualization
                 layouter.PutNextRectangle(rectangleSize);
             layouter.RectangleList.Count.Should().Be(numberOfRectangles);
         }
+        */
 
         [Test]
         public void RectanglesShouldBeInCircle()
