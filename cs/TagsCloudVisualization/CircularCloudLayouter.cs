@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using TagsCloudVisualization.PointGenerator;
 
@@ -9,15 +10,16 @@ namespace TagsCloudVisualization
 {
     class CircularCloudLayouter
     {
-        private  List<RectangleF> tagCloud;
-        private  PointF center;
-        private  IPointGenerator generator;
+        private readonly List<RectangleF> tagCloud;
+        private readonly PointF center;
+        private readonly Spiral spiral;
+        private Cache cache = new Cache();
 
-        public CircularCloudLayouter(PointF center, IPointGenerator pointGenerator)
+        public CircularCloudLayouter(PointF center, Spiral spiral)
         {
             tagCloud = new List<RectangleF>();
             this.center = center;
-            generator = pointGenerator;
+            this.spiral = spiral;
         }
 
 
@@ -25,17 +27,34 @@ namespace TagsCloudVisualization
         {
             if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
                 throw new ArgumentException("Size parameters should be positive");
-            var tag = new RectangleF(GetNextPosition(rectangleSize), rectangleSize);
+            var tag = GetNextRectangle(rectangleSize);
             tagCloud.Add(tag);
             return tag;
         }
-        
 
-        private PointF GetNextPosition(Size size)
+
+        private RectangleF GetNextRectangle(Size size)
         {
-            return generator.GetPoints(center)
-                .Select(p => new RectangleF(new PointF(p.X - size.Width / 2f, p.Y - size.Height / 2f), size))
-                .First(r => !IsIntersectWithCloud(r)).Location;
+            var points = spiral.GetPoints(center, size);
+            var rectangles = points.Select(p => GetRectangleByCenterPoint(p, size));
+            var suitableRectangle = rectangles.First(r => !IsIntersectWithCloud(r));
+            cache.UpdateParameter(size, GetDistanceFromTheCenter(suitableRectangle));
+            return suitableRectangle;
+        }
+
+        private RectangleF GetRectangleByCenterPoint(PointF rectangleCenter, Size size)
+        {
+            return new RectangleF(
+                new PointF(rectangleCenter.X - size.Width / 2f, rectangleCenter.Y - size.Height / 2f),
+                size);
+        }
+
+        private float GetDistanceFromTheCenter(RectangleF rectangle)
+        {
+            var rectangleCenterY = (rectangle.Bottom + rectangle.Top) / 2;
+            var rectangleCenterX = (rectangle.Left + rectangle.Right) / 2;
+            var rectangleCenter = new PointF(rectangleCenterX, rectangleCenterY);
+            return center.DistanceTo(rectangleCenter);
         }
 
         private bool IsIntersectWithCloud(RectangleF newTag)

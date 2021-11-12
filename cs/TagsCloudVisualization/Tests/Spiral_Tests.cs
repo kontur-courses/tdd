@@ -14,7 +14,7 @@ namespace TagsCloudVisualization.Tests
         public void GetCoordinates_ReturnCoordinatesThatRadiusShouldIncrease()
         {
             var spiral = new Spiral(1f, 0.2f);
-            var points = spiral.GetPoints(new PointF()).Take(100).ToArray();
+            var points = spiral.GetPoints(new PointF(), new Size()).Take(100).ToArray();
             for (var i = 1; i < points.Length; i++)
             {
                 var previusRadius = GetDistance(new PointF(), points[i - 1]);

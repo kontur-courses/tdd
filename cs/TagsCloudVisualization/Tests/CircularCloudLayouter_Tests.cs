@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using FluentAssertions;
+using FluentAssertions.Extensions;
 using NUnit.Framework;
 using TagsCloudVisualization.PointGenerator;
 
@@ -75,9 +77,9 @@ namespace TagsCloudVisualization.Tests
             yCenter.Should().Be(yCloudPosition);
         }
 
-        [TestCase(1,1, 100, 0.9, TestName = "Very tightly if small 100 squares")]
-        [TestCase(2, 5, 50, 0.8)]
-        [TestCase(9, 9, 60, 0.8)]
+        [TestCase(1, 1, 100, 0.9, TestName = "Very tightly if small 100 squares")]
+        [TestCase(2, 5, 50, 0.8, TestName = "Rectangles with different dimensions")]
+        [TestCase(9, 9, 60, 0.8, TestName = "Big squares")]
         public void PutNextRectangle_ShouldPutEnoughTight(int width, int height, int count, double densityCoefficient)
         {
             var rectangles = new List<RectangleF>();
@@ -86,6 +88,22 @@ namespace TagsCloudVisualization.Tests
 
             var density = GetDensity(rectangles);
             density.Should().BeGreaterThan((Math.PI / 4) * densityCoefficient).And.BeLessThan(Math.PI / 4);
+        }
+
+        [TestCase(1, 1, 5000, TestName = "1x1 5000 rectangles in 1 second")]
+        [TestCase(2, 6, 5000, TestName = "The execution time should not depend on the size dimensions")]
+        [TestCase(15, 15, 5000, TestName = "Same execution time for large sizes")]
+        public void PutNextRectangle_ShouldWorkFast(int width, int height, int count)
+        {
+            var size = new Size(width, height);
+            
+            Action act = () =>
+            {
+                for (var i = 0; i < count; i++)
+                    cloudLayouter.PutNextRectangle(size);
+            };
+            
+            act.ExecutionTime().Should().BeLessThan(1000.Milliseconds());
         }
 
         private double GetDensity(IEnumerable<RectangleF> rectangles)

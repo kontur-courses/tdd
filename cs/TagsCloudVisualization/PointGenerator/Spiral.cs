@@ -5,29 +5,35 @@ using System.Linq;
 
 namespace TagsCloudVisualization.PointGenerator
 {
-    public class Spiral : IPointGenerator
+    public class Spiral
     {
-        private readonly float spiralPitch;
+        private float spiralPitch;
         private readonly float anglePitch;
-        private static Random random;
+        private Cache cache = new Cache();
+
         public Spiral(float spiralPitch, float anglePitch)
         {
             this.spiralPitch = spiralPitch;
             this.anglePitch = anglePitch;
-            random = new Random();
-        }
-        public IEnumerable<PointF> GetPoints(PointF center)
-        {
-            return GetArchimedeanSpiral(0).Select(point => new PointF(point.X + center.X, point.Y + center.Y));
         }
 
-        private IEnumerable<PointF> GetArchimedeanSpiral(float currentAngle)
+        public IEnumerable<PointF> GetPoints(PointF center, Size size)
+        {
+            spiralPitch = Math.Min(size.Height, size.Width);
+            foreach (var polarCoordinate in GetArchimedeanSpiral(cache.GetParameter(size)))
+            {
+                cache.UpdateParameter(size, polarCoordinate.angle);
+                var cartesianPoint = PolarToCartesian(polarCoordinate.radius, polarCoordinate.angle);
+                yield return new PointF(cartesianPoint.x + center.X, cartesianPoint.y + center.Y);
+            }
+        }
+
+        private IEnumerable<(float radius, float angle)> GetArchimedeanSpiral(float currentAngle)
         {
             while (true)
             {
-                var r = (float)(spiralPitch * currentAngle / (2 * Math.PI));
-                var (x,y) = PolarToCartesian(r, currentAngle);
-                yield return new PointF(x, y);
+                var radius = (float)(spiralPitch * currentAngle / (2 * Math.PI));
+                yield return (radius, currentAngle);
                 currentAngle += anglePitch;
             }
         }
