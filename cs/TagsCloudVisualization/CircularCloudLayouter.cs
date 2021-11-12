@@ -30,11 +30,6 @@ namespace TagsCloudVisualization
            Cloud.AddRectangle(positionedRectangle);
         }
 
-        private RectangleF GetShiftedRectangle
-            (SizeF rectSize, PointF center, Vector2 offset)
-            => RectangleFExtensions.GetRectangleByCenter(rectSize, new PointF
-                (center.X + offset.X, center.Y + offset.Y));
-
         private RectangleF FindPositionToRectangle(RectangleF rect)
         {
             while (IsRectangleIntersectedByAnother(rect))
@@ -62,6 +57,11 @@ namespace TagsCloudVisualization
             }
             return shifted;
         }
+
+        private RectangleF GetShiftedRectangle
+            (SizeF rectSize, PointF center, Vector2 offset)
+            => RectangleFExtensions.GetRectangleByCenter(rectSize, new PointF
+                (center.X + offset.X, center.Y + offset.Y));
 
         private bool IsRectangleIntersectedByAnother(RectangleF rect)
             => Cloud.Rectangles.Any(r => r.IntersectsWith(rect));
