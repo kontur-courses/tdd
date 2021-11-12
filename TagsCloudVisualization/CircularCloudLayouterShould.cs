@@ -60,9 +60,9 @@ namespace TagsCloudVisualization
             var rnd = new Random();
 
             PutRectangles(layouter, rnd, maxWidth, maxHeight, rectanglesCount);
-            var rectanglesPoints = ConvexHullBuilder.GetRectanglesPointsSet(layouter.Rectangles);
-            var cloudConvexHull = ConvexHullBuilder.GetConvexHull(rectanglesPoints);
-            var deviation = GetCloudCircleDeviation(center, cloudConvexHull);
+            var cloudConvexHull = GetCloudConvexHull(layouter);
+            var minMaxLengths = GetMinMaxHullVectorsLengths(center, cloudConvexHull);
+            var deviation = 1 - Math.Abs(minMaxLengths.Item1 / minMaxLengths.Item2);
 
             deviation.Should().BeLessOrEqualTo(0.25);
         }
@@ -78,8 +78,7 @@ namespace TagsCloudVisualization
             var rnd = new Random();
 
             PutRectangles(layouter, rnd, maxWidth, maxHeight, rectanglesCount);
-            var rectanglesPoints = ConvexHullBuilder.GetRectanglesPointsSet(layouter.Rectangles);
-            var cloudConvexHull = ConvexHullBuilder.GetConvexHull(rectanglesPoints);
+            var cloudConvexHull = GetCloudConvexHull(layouter);
 
             var cloudArea = layouter.Rectangles.Sum(rect => rect.Width * rect.Height);
             var enclosingCircleRadius = GetMinMaxHullVectorsLengths(center, cloudConvexHull).Item2;
@@ -87,6 +86,13 @@ namespace TagsCloudVisualization
             var deviation = 1 - Math.Abs(cloudArea / enclosingCircleArea);
 
             deviation.Should().BeLessOrEqualTo(0.25);
+        }
+
+        private static IEnumerable<Point> GetCloudConvexHull(CircularCloudLayouter layouter)
+        {
+            var rectanglesPoints = ConvexHullBuilder.GetRectanglesPointsSet(layouter.Rectangles);
+            var cloudConvexHull = ConvexHullBuilder.GetConvexHull(rectanglesPoints);
+            return cloudConvexHull;
         }
 
         [Test]
@@ -127,11 +133,9 @@ namespace TagsCloudVisualization
             }
         }
 
-        private double GetCloudCircleDeviation(Point center, IEnumerable<Point> cloudConvexHull)
+        private double GetCloudDeviation(double cloudValue, double deviateFrom)
         {
-            var minMaxLengths = GetMinMaxHullVectorsLengths(center, cloudConvexHull);
-            var deviation = 1 - Math.Abs(minMaxLengths.Item1 / minMaxLengths.Item2);
-            return deviation;
+            return 1 - Math.Abs(cloudValue / deviateFrom);
         }
 
         private (double, double) GetMinMaxHullVectorsLengths(Point center, IEnumerable<Point> hull)
