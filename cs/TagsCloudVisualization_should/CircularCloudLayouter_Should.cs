@@ -13,8 +13,10 @@ namespace TagsCloudVisualizationTests
 {
     public class CircularCloudLayouter_Should
     {
-        private Size testingSize = new Size(5,5);
-        private Point testingCenter = new Point();
+        private static readonly Size testingSize = new Size(5,5);
+        private static readonly Point testingCenter = new Point();
+        private static readonly Random rnd = new Random();
+        
         private CircularCloudLayouter layouter;
 
         [SetUp]
@@ -84,7 +86,6 @@ namespace TagsCloudVisualizationTests
         public void PutRandomSizeRectanglesNotIntersectedWithOthers()
         {
             var rectangles = new List<Rectangle>();
-            var rnd = new Random();
             var rectanglesCount = 100;
             for (var i = 1; i <= rectanglesCount; i++)
             {
@@ -113,7 +114,6 @@ namespace TagsCloudVisualizationTests
         [Repeat(5)]
         public void CreateRectanglesWithEnoughDensity()
         {
-            var rnd = new Random();
             var rectanglesCount = rnd.Next(100, 200);
             for (var i = 0; i < rectanglesCount; i++)
             {
