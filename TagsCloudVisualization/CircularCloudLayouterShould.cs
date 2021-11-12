@@ -110,10 +110,10 @@ namespace TagsCloudVisualization
         private static void PutRandomRectangles(CircularCloudLayouter layouter, int rectanglesCount)
         {
             var rnd = new Random(Guid.NewGuid().GetHashCode());
-            var minWidth = 10;
-            var maxWidth = 70;
-            var minHeight = 10;
-            var maxHeight = 35;
+            const int minWidth = 10;
+            const int maxWidth = 70;
+            const int minHeight = 10;
+            const int maxHeight = 35;
 
             for (var i = 0; i < rectanglesCount; i++) 
                 layouter.PutNextRectangle(
