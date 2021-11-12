@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Linq;
 using CloudLayouter;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using NUnit.Framework;
 
 namespace CircularCloudLayouter_Tests
@@ -40,9 +41,12 @@ namespace CircularCloudLayouter_Tests
             var angle = angles[index];
             var opposite = angles[180 + index];
             var same = angles[360 + index];
-            
-            Math.Abs(opposite - angle).Should().BeInRange(Math.PI - 0.2, Math.PI + 0.2);
-            angle.Should().BeInRange(same - 0.2, same + 0.2);
+
+            using (new AssertionScope())
+            {
+                Math.Abs(opposite - angle).Should().BeInRange(Math.PI - 0.2, Math.PI + 0.2);
+                angle.Should().BeInRange(same - 0.2, same + 0.2);
+            }
         }
         
         private double GetAngleFromXAxis(Point point)
@@ -78,8 +82,11 @@ namespace CircularCloudLayouter_Tests
             var radius2 = Center.GetDistanceTo(point[1000]);
             var radius3 = Center.GetDistanceTo(point[9959]);
 
-            radius1.Should().BeLessThan(radius2);
-            radius2.Should().BeLessThan(radius3);
+            using (new AssertionScope())
+            {
+                radius1.Should().BeLessThan(radius2);
+                radius2.Should().BeLessThan(radius3);
+            }
         }
 
         private Point[] GenerateNumberOfPoints(int number)

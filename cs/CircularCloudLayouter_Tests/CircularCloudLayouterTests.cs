@@ -22,16 +22,6 @@ namespace CircularCloudLayouter_Tests
         private static readonly Func<int, int, CircularCloudLayouter> CreateLayouter = 
             (x, y) => new CircularCloudLayouter(new Point(x, y));
 
-        [TestCase(5, 5, TestName = "x and y are positive numbers")]
-        [TestCase(0, 0, TestName = "x and y are zeros")]
-        [TestCase(5, 0, TestName = "y is zero")]
-        [TestCase(0, 5, TestName = "x is zero")]
-        public void Constructor_CenterInFirstQuadrant_DoesNotThrow(int x, int y)
-        {
-            Invoking(() => CreateLayouter(x, y))
-                .Should().NotThrow();
-        }
-
         [TestCase(-5, -5, TestName = "Center in third quadrant")]
         [TestCase(-5, 5, TestName = "Center in second quadrant")]
         [TestCase(5, -5, TestName = "Center in fourth quadrant")]
@@ -77,19 +67,7 @@ namespace CircularCloudLayouter_Tests
                 .Should().Throw<ArgumentException>()
                 .WithMessage("Given rectangle size is negative");
         }
-        
-        [TestCase(5, 3, TestName = "Odd numbers")]
-        [TestCase(4, 4, TestName = "Even numbers")]
-        [TestCase(0, 0, TestName = "Zeros")]
-        [TestCase(3, 0, TestName = "x is positive and y is zero")]
-        [TestCase(0, 2, TestName = "x is zero and y is positive")]
-        public void Constructor_AnyPoint_CreatesCorrectSizeForCanvas(int x, int y)
-        {
-            Invoking(() => new CircularCloudLayouter(new Point(x, y))
-                    .PutNextRectangle(new Size(2 * x, 2 * y)))
-                .Should().NotThrow();
-        }
-        
+
         [Test]
         public void PutNextRectangle_FirstCall_returnsRectangleInCenter()
         {
@@ -163,6 +141,17 @@ namespace CircularCloudLayouter_Tests
 
             return (int)new Point(upper.Right, upper.Bottom)
                 .GetDistanceTo(new Point(lower.Left, lower.Top));
+        }
+        
+        [Test, Timeout(1500)]
+        public void PutNextRectangle_10000Calls_ElapsedTimeIsLessThan1Second()
+        {
+            var layouter = new CircularCloudLayouter(Center);
+
+            for (int i = 0; i < 10000; i++)
+            {
+                layouter.PutNextRectangle(new Size(10, 10));
+            }
         }
     }
 }
