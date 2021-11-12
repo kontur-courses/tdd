@@ -42,7 +42,6 @@ namespace TagsCloudVisualization
         public static IEnumerable<Point> GetConvexHull(IEnumerable<Point> points)
         {
             var pointsCount = points.Count();
-            //if (pointsCount >= 0 && pointsCount <= 3)
             if (pointsCount <= 3)
                 return points;
 
@@ -58,9 +57,7 @@ namespace TagsCloudVisualization
             var hullCandidate = default(Point);
             do
             {
-                hullCandidate = GetAnyCandidateExceptLastAdded(points, lastAddedPoint);
-                var candidateVector = new Vector(lastAddedPoint, hullCandidate);
-                hullCandidate = GetBestCandidate(points, candidateVector, hullCandidate, lastAddedPoint);
+                hullCandidate = GetBestCandidate(points, lastAddedPoint);
                 convexHull.Add(hullCandidate);
                 lastAddedPoint = hullCandidate;
             } while (hullCandidate != leftMostPoint);
@@ -68,46 +65,18 @@ namespace TagsCloudVisualization
             return convexHull;
         }
 
-        //public static IEnumerable<Point> GetConvexHull(IEnumerable<Point> points)
-        //{
-        //    var pointsCount = points.Count();
-        //    //if (pointsCount >= 0 && pointsCount <= 3)
-        //    if (pointsCount <= 3)
-        //        return points;
-
-        //    var leftMostPoint = GetLeftMostPoint(points);
-        //    return GetConvexHullByJarvisAlgorithm(points, leftMostPoint);
-        //}
-
-        //private static IEnumerable<Point> GetConvexHullByJarvisAlgorithm(
-        //    IEnumerable<Point> points, Point leftMostPoint)
-        //{
-        //    var convexHull = new List<Point>();
-        //    var lastAddedPoint = leftMostPoint;
-        //    var hullCandidate = default(Point);
-        //    do
-        //    {
-        //        hullCandidate = GetAnyCandidateExceptLastAdded(points, lastAddedPoint);
-        //        var candidateVector = new Vector(lastAddedPoint, hullCandidate);
-        //        hullCandidate = GetBestCandidate(points, candidateVector, hullCandidate, lastAddedPoint);
-        //        convexHull.Add(hullCandidate);
-        //        lastAddedPoint = hullCandidate;
-        //    } while (hullCandidate != leftMostPoint);
-
-        //    return convexHull;
-        //}
-
-        private static Point GetBestCandidate(IEnumerable<Point> points, 
-            Vector currentBorderVector, Point candidateForHull, Point lastAddedPoint)
+        private static Point GetBestCandidate(IEnumerable<Point> points, Point lastAddedPoint)
         {
+            var hullCandidate = GetAnyCandidateExceptLastAdded(points, lastAddedPoint);
+            var candidateVector = new Vector(lastAddedPoint, hullCandidate);
             foreach (var point in points)
-                if (GetRotationDirection(currentBorderVector, point) < 0)
+                if (GetRotationDirection(candidateVector, point) < 0)
                 {
-                    candidateForHull = point;
-                    currentBorderVector = new Vector(lastAddedPoint, candidateForHull);
+                    hullCandidate = point;
+                    candidateVector = new Vector(lastAddedPoint, hullCandidate);
                 }
 
-            return candidateForHull;
+            return hullCandidate;
         }
 
         private static Point GetAnyCandidateExceptLastAdded(IEnumerable<Point> points, Point lastAdded)
