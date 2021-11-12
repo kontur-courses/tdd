@@ -29,14 +29,13 @@ namespace TagsCloudVisualization
         public static IEnumerable<Point> GetRectanglesPointsSet(IEnumerable<Rectangle> rectangles)
         {
             return rectangles
-                .Select(rect => new Point[]
-                    {
-                        new Point(rect.Left, rect.Bottom),
-                        new Point(rect.Right, rect.Bottom),
-                        new Point(rect.Left, rect.Top),
-                        new Point(rect.Right, rect.Top)
-                    })
-                .SelectMany(points => points)
+                .SelectMany(rect => new Point[]
+                {
+                    new Point(rect.Left, rect.Bottom),
+                    new Point(rect.Right, rect.Bottom),
+                    new Point(rect.Left, rect.Top),
+                    new Point(rect.Right, rect.Top)
+                })
                 .Distinct();
         }
 
