@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using TagsCloudVisualization.Interfaces;
 
 namespace TagsCloudVisualization
 {
-    public class PainterOfRectangles
+    public class PainterOfRectangles : IPainter
     {
         private Size pictSize;
 
