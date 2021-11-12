@@ -87,8 +87,7 @@ namespace TagsCloudVisualization
 
         private static Point GetLeftMostPoint(IEnumerable<Point> points)
         {
-            var minimalX = points.Min(p => p.X);
-            return points.First(p => p.X == minimalX);
+            return points.OrderBy(p => p.X).First();
         }
     }
 }
