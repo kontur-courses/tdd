@@ -15,15 +15,6 @@ namespace TagsCloudVisualizationUnitTest
         private PainterOfRectangles painterOfRectangles;
         private const string PathFolderFailedTest = "FailedTest";
 
-        [OneTimeSetUp]
-        public void CreateFolderForFailedTests()
-        {
-            if (!Directory.Exists(PathFolderFailedTest))
-            {
-                Directory.CreateDirectory(PathFolderFailedTest);
-            }
-        }
-
         [SetUp]
         public void InitCircularCloudLayouter()
         {
