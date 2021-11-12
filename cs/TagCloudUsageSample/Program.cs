@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using TagsCloudVisualization;
 using TagsCloudVisualization.Layouters;
+using CommandLine;
 
 namespace TagCloudUsageSample
 {
@@ -11,23 +13,51 @@ namespace TagCloudUsageSample
     {
         internal static void Main(string[] args)
         {
-            for (var j = 0; j < 3; j++)
-            {
-                var layouter = new CircularCloudLayouter(new Point(25, 25));
+            Parser.Default
+                .ParseArguments<CommandLineCloudOptions>(args)
+                .WithParsed(options =>
+                {
+                    for (var j = 0; j < options.CloudCount; j++)
+                    {
+                        var fullFileName = options.SavePath.TrimEnd(Path.DirectorySeparatorChar) +
+                                           Path.DirectorySeparatorChar +
+                                           options.FileName +
+                                           (options.CloudCount == 1 ? "" : $"({j})") +
+                                           ".jpg";
+
+                        var rects = GetRectangles(
+                            new CircularCloudLayouter(Point.Empty),
+                            options.RectangleCount,
+                            options.SizeCoefficient,
+                            options.MinimumRectHeight);
+                        
+                        if (File.Exists(fullFileName))
+                            File.Delete(fullFileName);
                 
-                RectanglePainter
-                    .GetBitmapWithRectangles(GetRectangles(layouter, 100))
-                    .Save($"..\\..\\CloudTagSample{j}.jpg", ImageFormat.Jpeg);
-            }
+                        RectanglePainter
+                            .GetBitmapWithRectangles(rects)
+                            .Save(fullFileName, ImageFormat.Jpeg);
+                    }
+                });
         }
     
-        private static IEnumerable<Rectangle> GetRectangles(CircularCloudLayouter layouter, int count)
+        private static IEnumerable<Rectangle> GetRectangles(
+            CircularCloudLayouter layouter, int count, 
+            int sizeCoefficient, int minimumRectHeight)
         {
             var rnd = new Random();
             
             for (var i = 0; i < count; i++)
             {
-                yield return layouter.PutNextRectangle(new Size(count + 25, rnd.Next(10, count + 25 - i * 1)));
+                var h = rnd.Next(
+                    minimumRectHeight,
+                    sizeCoefficient - i < minimumRectHeight ? minimumRectHeight : sizeCoefficient - i);
+                
+                var w = rnd.Next(
+                    h,
+                    sizeCoefficient - i < h ? h : sizeCoefficient - i);
+                
+                yield return layouter.PutNextRectangle(new Size(w, h));
             }
         }
     }

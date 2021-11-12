@@ -13,7 +13,7 @@ namespace TagsCloudVisualizationTest
         
         public bool TrySave(IEnumerable<Rectangle> rectangles, string methodName)
         {
-            SavePath = Path.GetFullPath($"..\\..\\Failure__{methodName}.jpg");
+            SavePath = Path.GetFullPath($"..\\..\\TestBitmaps{Path.DirectorySeparatorChar}Failure__{methodName}.jpg");
             
             try
             {
