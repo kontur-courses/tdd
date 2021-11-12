@@ -69,8 +69,7 @@ namespace TagsCloudVisualization
         [TestCase(2, 0)]
         public void ShouldThrow_WhenTryingToPutDegenerateRectangle(int width, int height)
         {
-            var expectedCenter = Point.Empty;
-            layouter = new CachedCircularLayouter(expectedCenter);
+            layouter = new CachedCircularLayouter(Point.Empty);
             Action action = () => layouter.PutNextRectangle(new Size(width, height));
             action.Should().Throw<ArgumentOutOfRangeException>();
         }
@@ -91,8 +90,7 @@ namespace TagsCloudVisualization
         [Test]
         public void SecondRectangle_ShouldBePlacedNextToFirst()
         {
-            var expectedCenter = Point.Empty;
-            layouter = new CachedCircularLayouter(expectedCenter);
+            layouter = new CachedCircularLayouter(Point.Empty);
 
             var firstRectangle = layouter.PutNextRectangle(new Size(10, 11));
             var secondRectangle = layouter.PutNextRectangle(new Size(11, 10));
@@ -112,8 +110,8 @@ namespace TagsCloudVisualization
         [Test]
         public void SecondRectangle_ShouldBePlacedAsCloseToCenterAsPossible()
         {
-            var expectedCenter = Point.Empty;
-            layouter = new CachedCircularLayouter(expectedCenter);
+            var center = Point.Empty;
+            layouter = new CachedCircularLayouter(center);
             var firstSize = new Size(10, 11);
             var secondSize = new Size(10, 11);
 
@@ -121,7 +119,7 @@ namespace TagsCloudVisualization
 
             layouter.PutNextRectangle(firstSize);
             var secondRectangle = layouter.PutNextRectangle(secondSize);
-            var actualDistance = expectedCenter.DistanceTo(secondRectangle.GetCenter());
+            var actualDistance = center.DistanceTo(secondRectangle.GetCenter());
 
             actualDistance.Should().BeLessOrEqualTo(maximumExpectedDistance + 1);
         }
@@ -129,8 +127,8 @@ namespace TagsCloudVisualization
         [Test]
         public void ThirdRectangle_ShouldBePlacedAsCloseToCenterAsPossible()
         {
-            var expectedCenter = Point.Empty;
-            layouter = new CachedCircularLayouter(expectedCenter);
+            var center = Point.Empty;
+            layouter = new CachedCircularLayouter(center);
             var firstSize = new Size(100, 11);
             var secondSize = new Size(10, 11);
             var thirdSize = new Size(20, 13);
@@ -141,7 +139,7 @@ namespace TagsCloudVisualization
             layouter.PutNextRectangle(firstSize);
             layouter.PutNextRectangle(secondSize);
             var thirdRectangle = layouter.PutNextRectangle(thirdSize);
-            var actualDistance = expectedCenter.DistanceTo(thirdRectangle.GetCenter());
+            var actualDistance = center.DistanceTo(thirdRectangle.GetCenter());
 
             actualDistance.Should().BeLessOrEqualTo(maximumExpectedDistance + 1);
         }
@@ -167,8 +165,7 @@ namespace TagsCloudVisualization
         [TestCase(300)]
         public void EveryRectangle_ShouldNotIntersectWithEachOther(int count)
         {
-            var expectedCenter = Point.Empty;
-            layouter = new CachedCircularLayouter(expectedCenter);
+            layouter = new CachedCircularLayouter(Point.Empty);
             var size = new Size(10, 11);
 
             for (var i = 0; i < count; i++)
@@ -189,8 +186,8 @@ namespace TagsCloudVisualization
         [TestCase(1000, 50)]
         public void CloudForm_ShouldBeCloseToCircle(int count, int maxSize)
         {
-            var expectedCenter = Point.Empty;
-            layouter = new CachedCircularLayouter(expectedCenter);
+            var center = Point.Empty;
+            layouter = new CachedCircularLayouter(center);
             var rnd = new Random();
 
             var radius = 0d;
@@ -200,7 +197,7 @@ namespace TagsCloudVisualization
                 var size = new Size(rnd.Next(maxSize) + 1, rnd.Next(maxSize) + 1);
                 area += size.GetArea();
                 var rectangle = layouter.PutNextRectangle(size);
-                var maxDistance = rectangle.GetCenter().DistanceTo(expectedCenter);
+                var maxDistance = rectangle.GetCenter().DistanceTo(center);
                 if (maxDistance > radius)
                     radius = maxDistance;
             }
