@@ -52,7 +52,7 @@ namespace TagsCloudVisualization
         [Test]
         public void MakeCloudCircleDeviationLessThanTwentyFivePercents()
         {
-            var rectanglesCount = 2500;
+            var rectanglesCount = 1000;
             var maxHeight = 35;
             var maxWidth = 70;
             var center = new Point(750, 750);
@@ -63,6 +63,28 @@ namespace TagsCloudVisualization
             var rectanglesPoints = ConvexHullBuilder.GetRectanglesPointsSet(layouter.Rectangles);
             var cloudConvexHull = ConvexHullBuilder.GetConvexHull(rectanglesPoints);
             var deviation = GetCloudCircleDeviation(center, cloudConvexHull);
+
+            deviation.Should().BeLessOrEqualTo(0.25);
+        }
+
+        [Test]
+        public void MakeCloudDense()
+        {
+            var rectanglesCount = 1000;
+            var maxHeight = 35;
+            var maxWidth = 70;
+            var center = new Point(750, 750);
+            var layouter = new CircularCloudLayouter(center);
+            var rnd = new Random();
+
+            PutRectangles(layouter, rnd, maxWidth, maxHeight, rectanglesCount);
+            var rectanglesPoints = ConvexHullBuilder.GetRectanglesPointsSet(layouter.Rectangles);
+            var cloudConvexHull = ConvexHullBuilder.GetConvexHull(rectanglesPoints);
+
+            var cloudArea = layouter.Rectangles.Sum(rect => rect.Width * rect.Height);
+            var enclosingCircleRadius = GetMinMaxHullVectorsLengths(center, cloudConvexHull).Item2;
+            var enclosingCircleArea = Math.PI * enclosingCircleRadius * enclosingCircleRadius;
+            var deviation = 1 - Math.Abs(cloudArea / enclosingCircleArea);
 
             deviation.Should().BeLessOrEqualTo(0.25);
         }
@@ -81,6 +103,7 @@ namespace TagsCloudVisualization
 
             DoRectanglesIntersect(layouter).Should().BeFalse();
         }
+
 
         private static bool DoRectanglesIntersect(CircularCloudLayouter layouter)
         {
