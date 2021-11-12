@@ -31,7 +31,7 @@ namespace TagsCloudVisualization
                 layouter.PutNextRectangle(size);
             }
 
-            return layouter.Rectangles.ToArray();
+            return layouter.GetRectangles();
         }
 
         private static bool AreCorrectSizeInterval(int minSize, int maxSize)

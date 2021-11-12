@@ -7,14 +7,14 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         private readonly SpiralPointsCreator pointsCreator;
+        private readonly List<Rectangle> rectangles;
 
         public CircularCloudLayouter(Point center)
         {
             pointsCreator = new SpiralPointsCreator(center);
-            Rectangles = new List<Rectangle>();
+            rectangles = new List<Rectangle>();
         }
 
-        public List<Rectangle> Rectangles { get; }
 
         public Rectangle PutNextRectangle(Size size)
         {
@@ -25,10 +25,13 @@ namespace TagsCloudVisualization
             do
             {
                 nextRectangle = new Rectangle(pointsCreator.GetNextPoint(), size);
-            } while (nextRectangle.IntersectsWith(Rectangles));
+            } while (nextRectangle.IntersectsWith(rectangles));
 
-            Rectangles.Add(nextRectangle);
+            rectangles.Add(nextRectangle);
             return nextRectangle;
         }
+
+        public Rectangle[] GetRectangles() => rectangles.ToArray();
+
     }
 }

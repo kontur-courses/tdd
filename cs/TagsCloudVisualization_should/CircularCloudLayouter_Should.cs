@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Xml;
-using FluentAssertions;
+﻿using FluentAssertions;
 using FluentAssertions.Extensions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTests
 {
     public class CircularCloudLayouter_Should
     {
-        private static readonly Size testingSize = new Size(5,5);
+        private static readonly Size testingSize = new Size(5, 5);
         private static readonly Point testingCenter = new Point();
         private static readonly Random rnd = new Random();
-        
+
         private CircularCloudLayouter layouter;
 
         [SetUp]
@@ -30,12 +29,13 @@ namespace TagsCloudVisualizationTests
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                var visualizer = new BitmapVisualizer(layouter.Rectangles.ToArray());
+                var rectangles = layouter.GetRectangles();
+                var visualizer = new BitmapVisualizer(rectangles);
                 visualizer.DrawRectangles(Color.Black, Color.Red);
                 var directoryToSave = new DirectoryInfo(@"../../../TestFails");
                 visualizer.Save($"{TestContext.CurrentContext.Test.Name}.Failed.png", 1, directoryToSave);
                 var fullPath = Path.Combine(directoryToSave.FullName,
-                    $"{TestContext.CurrentContext.Test.Name}.Failed.{layouter.Rectangles.Count}rectangles.png");
+                    $"{TestContext.CurrentContext.Test.Name}.Failed.{rectangles.Length}rectangles.png");
                 Console.WriteLine($"Tag cloud visualization saved to file: {fullPath}");
             }
         }
@@ -66,7 +66,7 @@ namespace TagsCloudVisualizationTests
                 layouter.PutNextRectangle(testingSize);
 
 
-            layouter.Rectangles.Count.Should().Be(rectanglesCount);
+            layouter.GetRectangles().Length.Should().Be(rectanglesCount);
         }
 
         [Test]
@@ -121,8 +121,9 @@ namespace TagsCloudVisualizationTests
                 layouter.PutNextRectangle(size);
             }
 
-            var rectanglesArea = layouter.Rectangles.GetSummaryArea();
-            var circleArea = GetDensityCheckingCircleArea(layouter.Rectangles.ToArray());
+            var rectangles = layouter.GetRectangles();
+            var rectanglesArea = rectangles.GetSummaryArea();
+            var circleArea = GetDensityCheckingCircleArea(rectangles);
             var densityCoeff = rectanglesArea / circleArea;
             densityCoeff.Should().BeGreaterOrEqualTo(0.7);
             TestContext.WriteLine($"density coefficient: {densityCoeff}");
