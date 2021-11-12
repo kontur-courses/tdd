@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 using TagsCloud.Visualization;
+using TagsCloud.Visualization.WordsFilter;
+using TagsCloud.Visualization.WordsParser;
 
 namespace TagsCloud.Tests
 {
@@ -14,7 +16,7 @@ namespace TagsCloud.Tests
         [SetUp]
         public void InitParser()
         {
-            sut = new WordsParser();
+            sut = new WordsParser(new WordsFilter());
         }
 
         [TestCaseSource(typeof(TestDataGenerator))]
