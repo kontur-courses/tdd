@@ -65,7 +65,6 @@
     <Compile Include="Tests\CircularCloudLayouterShould.cs" />
     <Compile Include="ConvexHullBuilder.cs" />
     <Compile Include="Tests\ConvexHullBuilderShould.cs" />
-    <Compile Include="Tests\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Vector.cs" />
     <Compile Include="Tests\VectorShould.cs" />
