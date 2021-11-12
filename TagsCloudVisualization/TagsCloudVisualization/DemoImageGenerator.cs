@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization
 {
@@ -34,8 +35,9 @@ namespace TagsCloudVisualization
         {
             var layouter = new CircularCloudLayouter(Point.Empty, spiral);
             rectSizes.ToList().ForEach(s => layouter.PutNextRectangle(s));
-            using (var bitmap = TagCloudDrawer.Draw(layouter.Rectangles, layouter.Center))
-                TagCloudDrawer.Save(bitmap);
+            var drawer = new TagCloudDrawer(layouter.Center);
+            using (var bitmap = drawer.Draw(layouter.Rectangles))
+                bitmap.SaveDefault();
         }
 
         public static void GenerateSpiral(int count, Spiral spiral)

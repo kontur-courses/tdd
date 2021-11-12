@@ -32,8 +32,9 @@ namespace TagsCloudVisualization_Test
                 var directory = Directory.GetCurrentDirectory();
                 var path = Path.Combine(directory, $"{count:00.}_{context.Result.Outcome.Status}");
 
-                using (var bitmap = TagCloudDrawer.Draw(layout.Rectangles, layout.Center))
-                    TagCloudDrawer.Save(bitmap, path);
+                var drawer = new TagCloudDrawer(layout.Center);
+                using (var bitmap = drawer.Draw(layout.Rectangles))
+                    bitmap.SaveDefault(path);
                 layout = null;
                 Console.WriteLine($"{ context.Test.Name} {context.Result.Outcome.Status} - Image Saved");
             }

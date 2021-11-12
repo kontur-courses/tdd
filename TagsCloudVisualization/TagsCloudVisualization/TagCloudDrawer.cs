@@ -1,21 +1,26 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
 using System.Collections.Generic;
 using System.Linq;
 using TagsCloudVisualization.Extensions;
-using System.IO;
 
 namespace TagsCloudVisualization
 {
     public class TagCloudDrawer
     {
-        private static int _count;
+        private readonly Point _center;
+        private readonly List<Color> _colors;
 
-        public static Bitmap Draw(IEnumerable<Rectangle> rectangles, Point center, List<Color> colors = null)
+        public TagCloudDrawer(Point center, List<Color> colors = null)
         {
-            var bitmapSize = GetCanvasSize(rectangles, center);
+            _center = center;
+            _colors = colors;
+        }
+
+        public Bitmap Draw(IEnumerable<Rectangle> rectangles)
+        {
+            var bitmapSize = GetCanvasSize(rectangles, _center);
             var bitmap = new Bitmap(bitmapSize.Width, bitmapSize.Height);
             var bitmapCenter = new Point(bitmap.Width / 2, bitmap.Height / 2);
 
@@ -25,12 +30,12 @@ namespace TagsCloudVisualization
                 g.FillRectangle(Brushes.White, 0, 0, bitmapSize.Width, bitmapSize.Height);
                 foreach (var rect in rectangles)
                 {
-                    var color = colors == null
+                    var color = _colors == null
                         ? Color.FromArgb(rnd.Next(0, 256), rnd.Next(0, 256), rnd.Next(0, 256))
-                        : colors[rnd.Next(colors.Count - 1)];
+                        : _colors[rnd.Next(_colors.Count - 1)];
                     var pen = new Pen(color, 0) { Alignment = PenAlignment.Inset };
                     var brush = new SolidBrush(Color.FromArgb(25, color));
-                    rect.Offset(new Point(bitmapCenter.X - center.X, bitmapCenter.Y - center.Y));
+                    rect.Offset(new Point(bitmapCenter.X - _center.X, bitmapCenter.Y - _center.Y));
                     g.DrawRectangle(pen, rect);
                     g.FillRectangle(brush, rect);
                 }
@@ -38,25 +43,14 @@ namespace TagsCloudVisualization
             return bitmap;
         }
 
-        private static Size GetCanvasSize(IEnumerable<Rectangle> rectangles, Point center)
+        private Size GetCanvasSize(IEnumerable<Rectangle> rectangles, Point center)
         {
             var union = rectangles.First().UnionRange(rectangles);
             var distances = union.GetDistancesToInnerPoint(center);
             var horizontalIncrement = Math.Abs(distances[0] - distances[2]);
             var verticalIncrement = Math.Abs(distances[1] - distances[3]);
             union.Inflate(horizontalIncrement, verticalIncrement);
-            return new Size((int)(union.Width * 1.1), (int)(union.Height*1.1));
-        }
-
-        public static void Save(Bitmap bitmap, string filename = null)
-        {
-            var currentDir = AppDomain.CurrentDomain.BaseDirectory;
-            var imagesDir = Directory.CreateDirectory(Path.Combine(currentDir, "images"));
-            var name = filename ?? $"tag_cloud_0{_count}";
-            var path = Path.Combine(imagesDir.FullName, name);
-
-            bitmap.Save($"{path}.png", ImageFormat.Png);
-            _count++;
+            return new Size((int)(union.Width * 1.1), (int)(union.Height * 1.1));
         }
     }
 }
