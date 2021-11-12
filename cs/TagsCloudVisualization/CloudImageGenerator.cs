@@ -11,17 +11,17 @@ namespace TagsCloudVisualization
     {
         private const int AddedImageSize = 300;
 
-        public static string CreateImage(Cloud layouter, Size desiredSize)
+        public static string CreateImage(Cloud cloud, Size desiredSize)
         {
-            if (!layouter.Rectangles.Any())
+            if (!cloud.Rectangles.Any())
                 throw new ArgumentException("No rectangles received");
-            var imageSize = CalculateCoverageSize(layouter.Rectangles)
+            var imageSize = CalculateCoverageSize(cloud.Rectangles)
                 + new Size(AddedImageSize, AddedImageSize);
-            var imageOffset = imageSize / 2 - new Size(layouter.Center);
+            var imageOffset = imageSize / 2 - new Size(cloud.Center);
             var scaleX = desiredSize.Width / (float)imageSize.Width;
             var scaleY = desiredSize.Height / (float)imageSize.Height;
 
-            return DrawImage(layouter.Rectangles, desiredSize,
+            return DrawImage(cloud.Rectangles, desiredSize,
                 imageOffset, Path.Combine(Path.GetFullPath(@"..\..\..\"), "layouts"), scaleX, scaleY);
         }
 

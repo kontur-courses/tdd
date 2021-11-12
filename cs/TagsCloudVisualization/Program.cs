@@ -16,7 +16,7 @@ namespace TagsCloudVisualization
                 minSize, maxSize);
 
             var imageSize = new Size(1000, 1000);
-            CloudImageGenerator.CreateImage(layouter, imageSize);
+            CloudImageGenerator.CreateImage(layouter.Cloud, imageSize);
         }
     }
 }

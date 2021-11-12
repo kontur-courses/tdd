@@ -27,10 +27,10 @@ namespace TagsCloudVisualizationTests
         [TearDown]
         public void TearDown()
         {
-            if (layouter.Rectangles.Count > 0
+            if (layouter.Cloud.Rectangles.Count > 0
                 && TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                var path = CloudImageGenerator.CreateImage(layouter, new Size(1000, 1000));
+                var path = CloudImageGenerator.CreateImage(layouter.Cloud, new Size(1000, 1000));
                 Console.WriteLine($"Tag cloud visualization saved to file {path}");
             }
         }
@@ -38,14 +38,14 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void Should_HaveCenter_AfterCreation()
         {
-            layouter.Center
+            layouter.Cloud.Center
                 .Should().Be(new Point(X, Y));
         }
 
         [Test]
         public void Should_HaveNoRectangles_AfterCreation()
         {
-            layouter.Rectangles.Should().BeEmpty();
+            layouter.Cloud.Rectangles.Should().BeEmpty();
         }
 
         [TestCase(-1, 0)]
@@ -76,7 +76,7 @@ namespace TagsCloudVisualizationTests
             int minSize, int maxSize)
         {
             layouter.PutManyRectangles(Count, new Random(seed), minSize, maxSize);
-            layouter.Rectangles.Count.Should().Be(Count);
+            layouter.Cloud.Rectangles.Count.Should().Be(Count);
         }
 
         [Test]
@@ -91,7 +91,7 @@ namespace TagsCloudVisualizationTests
                 layouter.PutNextRectangle(size);
             }
 
-            layouter.Rectangles
+            layouter.Cloud.Rectangles
                 .Select(rect => rect.Size)
                 .Should()
                 .BeEquivalentTo(sizes);
@@ -104,8 +104,8 @@ namespace TagsCloudVisualizationTests
         {
             layouter.PutManyRectangles(Count, new Random(seed), minSize, maxSize);
 
-            layouter.Rectangles
-                .All(x => layouter.Rectangles.Count(y => y.IntersectsWith(x)) == 1)
+            layouter.Cloud.Rectangles
+                .All(x => layouter.Cloud.Rectangles.Count(y => y.IntersectsWith(x)) == 1)
                 .Should()
                 .BeTrue();
         }
@@ -126,9 +126,9 @@ namespace TagsCloudVisualizationTests
             int minSize, int maxSize)
         {
             layouter.PutManyRectangles(Count, new Random(seed), minSize, maxSize);
-            var radius = layouter.CalculateLayoutRadius();
+            var radius = layouter.Cloud.CalculateCloudRadius();
             var circleArea = Math.PI * radius * radius;
-            var layoutArea = layouter.Rectangles
+            var layoutArea = layouter.Cloud.Rectangles
                 .Select(rectangle => rectangle.Height * rectangle.Width)
                 .Sum();
 

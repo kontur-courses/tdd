@@ -4,16 +4,18 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter : Cloud
+    public class CircularCloudLayouter
     {
+        public Cloud Cloud { get; }
         private readonly Spiral spiral;
 
-        public CircularCloudLayouter(Point center) : base(center)
+        public CircularCloudLayouter(Point center)
         {
+            Cloud = new Cloud(center);
             spiral = Spiral.Create(center);
         }
 
-        public override Rectangle PutNextRectangle(Size rectangleSize)
+        public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Width <= 0
                 || rectangleSize.Height <= 0)
@@ -21,9 +23,18 @@ namespace TagsCloudVisualization
 
             var rectangle = GetNextRectangle(rectangleSize);
             rectangle = Optimize(rectangle);
-            rectangles.Add(rectangle);
+            Cloud.Rectangles.Add(rectangle);
 
             return rectangle;
+        }
+
+        public void PutManyRectangles(int count, Random random,
+            int minSize, int maxSize)
+        {
+            for (var i = 0; i < count; i++)
+                PutNextRectangle(new Size(
+                        random.Next(minSize, maxSize),
+                        random.Next(minSize, maxSize)));
         }
 
         private Rectangle GetNextRectangle(Size rectangleSize)
@@ -39,7 +50,7 @@ namespace TagsCloudVisualization
 
         private Rectangle Optimize(Rectangle rectangle)
         {
-            if (rectangles.Count == 0)
+            if (Cloud.Rectangles.Count == 0)
                 return rectangle;
 
             rectangle = GetOptimizedRectangle(rectangle);
@@ -49,14 +60,16 @@ namespace TagsCloudVisualization
 
         private Rectangle GetOptimizedRectangle(Rectangle rectangle)
         {
-            var distance = Center.GetDistance(rectangle.Location + rectangle.Size / 2);
+            var distance = Cloud.Center
+                .GetDistance(rectangle.Location + rectangle.Size / 2);
 
             while (true)
             {
                 var newLocation = new Point(CalculateOptimizedPosition(true, rectangle),
                     CalculateOptimizedPosition(false, rectangle));
 
-                var newDistance = Center.GetDistance(newLocation + rectangle.Size / 2);
+                var newDistance = Cloud.Center
+                    .GetDistance(newLocation + rectangle.Size / 2);
                 var newRectangle = new Rectangle(newLocation, rectangle.Size);
 
                 if (newDistance >= distance
@@ -72,16 +85,18 @@ namespace TagsCloudVisualization
 
         private bool IsIncorrectLocation(Rectangle rectangle)
         {
-            return rectangle.IsEmpty || rectangles.Any(rectangle.IntersectsWith);
+            return rectangle.IsEmpty || Cloud.Rectangles.Any(rectangle.IntersectsWith);
         }
 
         private int CalculateOptimizedPosition(bool isX, Rectangle rectangle)
         {
             if (isX)
                 return rectangle.Location.X
-                    + Math.Sign(Center.X - rectangle.Location.X - rectangle.Size.Width / 2);
+                    + Math.Sign(Cloud.Center.X
+                    - rectangle.Location.X - rectangle.Size.Width / 2);
             return rectangle.Location.Y
-                + Math.Sign(Center.Y - rectangle.Location.Y - rectangle.Size.Height / 2);
+                + Math.Sign(Cloud.Center.Y
+                - rectangle.Location.Y - rectangle.Size.Height / 2);
         }
     }
 }

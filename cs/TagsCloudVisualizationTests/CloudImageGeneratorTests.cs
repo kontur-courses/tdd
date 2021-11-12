@@ -16,7 +16,7 @@ namespace TagsCloudVisualizationTests
         {
             var layouter = new CircularCloudLayouter(testPoint);
             FluentActions.Invoking(
-                () => CloudImageGenerator.CreateImage(layouter, new Size(testPoint)))
+                () => CloudImageGenerator.CreateImage(layouter.Cloud, new Size(testPoint)))
                 .Should().Throw<ArgumentException>();
         }
 
@@ -25,7 +25,7 @@ namespace TagsCloudVisualizationTests
         {
             var layouter = new CircularCloudLayouter(testPoint);
             layouter.PutNextRectangle(new Size(testPoint));
-            var path = CloudImageGenerator.CreateImage(layouter, new Size(testPoint));
+            var path = CloudImageGenerator.CreateImage(layouter.Cloud, new Size(testPoint));
             File.Exists(path).Should().BeTrue();
             File.Delete(path);
         }

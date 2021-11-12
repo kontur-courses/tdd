@@ -5,11 +5,11 @@ namespace TagsCloudVisualizationTests
 {
     public static class TagCloudVisualizationTestsHelper
     {
-        public static double CalculateLayoutRadius(this CircularCloudLayouter layouter)
+        public static double CalculateCloudRadius(this Cloud cloud)
         {
-            return layouter.Rectangles
+            return cloud.Rectangles
                 .Select(rectangle => rectangle.Location + rectangle.Size / 2)
-                .Select(rectangleCenter => rectangleCenter.GetDistance(layouter.Center))
+                .Select(rectangleCenter => rectangleCenter.GetDistance(cloud.Center))
                 .Max();
         }
     }
