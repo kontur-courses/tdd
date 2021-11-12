@@ -9,10 +9,8 @@ namespace TagsCloudVisualization
 {
     public interface ISpiral
     {
-        Point Center { get; }
-        Point GetNextPosition();
+        public Point GetNextPosition();
+        double Radius { get; }
         double AngleStep { get; }
-        double Angle { get; }
-        double DistanceBetweenTurns { get;}
     }
 }
