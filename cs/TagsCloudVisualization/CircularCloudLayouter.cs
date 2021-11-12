@@ -2,24 +2,23 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using TagsCloudVisualization.Interfaces;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter
+    public class CircularCloudLayouter : ICloudLayouter
     {
         private Point centrPoint;
         private Point nextPoint;
-        private readonly Spiral spiral;
-        private double squareRectangles;
-        public readonly List<Rectangle> Rectangles;
-        public double SquareRectangles => squareRectangles;
+        private readonly ISpiral spiral;
+        private readonly List<Rectangle> rectangles;
 
-        public CircularCloudLayouter(Point center)
+        public CircularCloudLayouter(Point center, ISpiral spiral)
         {
             centrPoint = center;
             nextPoint = centrPoint;
-            Rectangles = new List<Rectangle>();
-            spiral = new Spiral(centrPoint);
+            rectangles = new List<Rectangle>();
+            this.spiral = spiral;
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -27,37 +26,26 @@ namespace TagsCloudVisualization
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
             {
                 throw new ArgumentException(
-                    $"Не корректные размеры прямоугольника. Высота: {rectangleSize.Height} ," +
-                    $" Ширина: {rectangleSize.Width}");
+                    $"Не корректные размеры прямоугольника. Высота: {rectangleSize.Height}, Ширина: {rectangleSize.Width}");
             }
 
             var currentRectangle = new Rectangle(nextPoint, rectangleSize);
             while (IsIntersects(currentRectangle))
             {
-                nextPoint = spiral.CalculatePointSpiral();
+                nextPoint = spiral.CalculatePoint();
                 currentRectangle.Location = nextPoint;
             }
 
-            Rectangles.Add(CorrectLocationRectangle(currentRectangle));
+            currentRectangle = CorrectLocationRectangle(currentRectangle);
 
-            squareRectangles += currentRectangle.Square();
+            rectangles.Add(currentRectangle);
 
             return currentRectangle;
         }
 
         private bool IsIntersects(Rectangle rectangle)
         {
-            return Rectangles.Any(rect => rect.IntersectsWith(rectangle));
-        }
-
-        public double Radius()
-        {
-            if (Rectangles == null)
-                throw new Exception();
-
-            var lastPoint = Rectangles.Last().Location; // последнняя точка самая дальняя от центра
-
-            return Math.Sqrt(Math.Pow(lastPoint.X - centrPoint.X, 2) + Math.Pow(lastPoint.Y - centrPoint.Y, 2));
+            return rectangles.Any(rect => rect.IntersectsWith(rectangle));
         }
 
         private Rectangle CorrectLocationRectangle(Rectangle rectangle)
