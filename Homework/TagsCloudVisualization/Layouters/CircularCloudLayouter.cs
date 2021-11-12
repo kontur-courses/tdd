@@ -34,12 +34,20 @@ namespace TagsCloudVisualization.Layouters
 
         private RectangleF FindRectanglePosition(SizeF rectangleSize)
         {
-            var rect = new RectangleF(spiral.CurrentPoint, rectangleSize);
+            var rect = new RectangleF(
+                spiral.CurrentPoint.X - rectangleSize.Width / 2,
+                spiral.CurrentPoint.Y - rectangleSize.Height / 2,
+                rectangleSize.Height,
+                rectangleSize.Width);
             
             while (rect.IntersectsWithAny(rectangles))
             {
                 spiral.IncreaseSize();
-                rect = new RectangleF(spiral.CurrentPoint, rectangleSize);
+                rect = new RectangleF(
+                    spiral.CurrentPoint.X - rectangleSize.Width / 2,
+                    spiral.CurrentPoint.Y - rectangleSize.Height / 2,
+                    rectangleSize.Height,
+                    rectangleSize.Width);
             }
 
             return rect;

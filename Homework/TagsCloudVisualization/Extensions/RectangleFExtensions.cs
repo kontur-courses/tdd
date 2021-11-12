@@ -8,6 +8,5 @@ namespace TagsCloudVisualization.Extensions
     {
         public static bool IntersectsWithAny(this RectangleF rect, IEnumerable<RectangleF> rectangles)
             => rectangles.Any(r => r.IntersectsWith(rect));
-
     }
 }
