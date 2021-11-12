@@ -82,9 +82,7 @@ namespace TagsCloudVisualization
 
         private static Point GetAnyCandidateExceptLastAdded(IEnumerable<Point> points, Point lastAdded)
         {
-            return points
-                .Where(p => p != lastAdded)
-                .First();
+            return points.First(p => p != lastAdded);
         }
 
         private static Point GetLeftMostPoint(IEnumerable<Point> points)
