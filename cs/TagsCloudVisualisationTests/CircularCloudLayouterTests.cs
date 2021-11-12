@@ -73,7 +73,8 @@ namespace TagsCloudVisualizationTests
         [TestCase(20)]
         public void LayouterShould_AddSeveralRectanglesToList(int count)
         {
-            var sizes = PutSeveralRectangles(count);
+            var sizes = GetRandomSizes(count, 1, 10);
+            PutSeveralRectangles(sizes);
             var rectSizes = cloud.Rectangles
                 .Select(r => r.Size)
                 .ToList();
@@ -86,7 +87,8 @@ namespace TagsCloudVisualizationTests
         [TestCase(20)]
         public void LayouterShould_AddSeveralRectangles_WithoutIntersections(int count)
         {
-            PutSeveralRectangles(count);
+            var sizes = GetRandomSizes(count, 2, 20);
+            PutSeveralRectangles(sizes);
             var rectangles = cloud.Rectangles;
             for (var i = 0; i < rectangles.Count; i++)
                 for (var j = i + 1; j < rectangles.Count; j++)
@@ -98,7 +100,8 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void LayouterShould_PutManyRectangles_FastEnough()
         {
-            Action action = () => PutSeveralRectangles(1000);
+            var sizes = GetRandomSizes(100, 10, 20);
+            Action action = () => PutSeveralRectangles(sizes);
             GC.Collect();
             action.ExecutionTime().Should().BeLessThan(1.Seconds());
         }
@@ -106,7 +109,8 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void LayouterShould_PlaceRectangles_CompactEnough()
         {
-            PutSeveralRectangles(100);
+            var sizes = GetRandomSizes(100, 10, 20);
+            PutSeveralRectangles(sizes);
             var boundingRect = RectangleFExtensions.GetRectangleByCenter
                 (new Size(1000, 1000), layouterCenter);
             cloud.Rectangles.Where(r => !boundingRect.Contains(r))
@@ -120,7 +124,8 @@ namespace TagsCloudVisualizationTests
         public void LayouterShould_PlaceRectangles_CloseToCircularForm(int min, int max)
         {
             var count = 400;
-            PutSeveralRectangles(count, min, max);
+            var sizes = GetRandomSizes(count, min, max);
+            PutSeveralRectangles(sizes);
             var vectorLayouterCenter = layouterCenter.ToVector();
             var radius = count * (max + min) / 2 * 0.05;
             cloud.Rectangles.ToList()
@@ -155,14 +160,15 @@ namespace TagsCloudVisualizationTests
         //[TestCase("..\\..\\..\\..\\TagsCloudVisualization\\images\\4.jpg", 250, 5, 50)]
         public void Visualize(string filename, int count, int min, int max)
         {
-            PutSeveralRectangles(count, min, max);
+            var sizes = GetRandomSizes(count, min, max);
+            PutSeveralRectangles(sizes);
             cloud.DefaultVisualize(filename);
         }
 
-        [TestCase("..\\..\\..\\..\\TagsCloudVisualization\\images\\C1.jpg", 400, 10, 30, true)]
-        [TestCase("..\\..\\..\\..\\TagsCloudVisualization\\images\\C2.jpg", 500, 10, 50, true)]
-        [TestCase("..\\..\\..\\..\\TagsCloudVisualization\\images\\CF1.jpg", 400, 10, 20, false)]
-        [TestCase("..\\..\\..\\..\\TagsCloudVisualization\\images\\CF2.jpg", 500, 10, 30, false)]
+        //[TestCase("..\\..\\..\\..\\TagsCloudVisualization\\images\\C1.jpg", 400, 10, 30, true)]
+        //[TestCase("..\\..\\..\\..\\TagsCloudVisualization\\images\\C2.jpg", 500, 10, 50, true)]
+        //[TestCase("..\\..\\..\\..\\TagsCloudVisualization\\images\\CF1.jpg", 400, 10, 20, false)]
+        //[TestCase("..\\..\\..\\..\\TagsCloudVisualization\\images\\CF2.jpg", 500, 10, 30, false)]
         public void CustomVisualize(string filename, int count, int min, int max, bool fillRect)
         {
             InitialiseCustomLayouter(new PointF(50, 10));
@@ -173,7 +179,8 @@ namespace TagsCloudVisualizationTests
             };
             var background = Color.Black;
             var size = new Size(1000, 1000);
-            PutSeveralRectangles(count, min, max);
+            var sizes = GetRandomSizes(count, min, max);
+            PutSeveralRectangles(sizes);
             cloud.CustomVisualize(filename, size, colors, background, fillRect);
         }
 
@@ -186,13 +193,10 @@ namespace TagsCloudVisualizationTests
             return result;
         }
 
-        private List<Size> PutSeveralRectangles
-            (int count, int min = 1, int max = 20)
+        private void PutSeveralRectangles(List<Size> sizes)
         {
-            var sizes = GetRandomSizes(count, min, max);
             foreach (var sz in sizes)
                 layouter.PutNextRectangle(sz);
-            return sizes;
         }
     }
 }
