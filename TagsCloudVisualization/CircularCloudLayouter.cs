@@ -70,8 +70,11 @@ namespace TagsCloudVisualization
             _currentCurveAngle += _curveAngleStep;
             if (_curveAngleStep > MinimumCurveAngleStep)
                 _curveAngleStep -= CurveAngleStepSlowDown;
-            return new Point(Convert.ToInt32((CurveStartingRadius + _directionBetweenRoundsCoeff * _currentCurveAngle) * Math.Cos(_currentCurveAngle)) + CloudCenter.X,
-                Convert.ToInt32((CurveStartingRadius + _directionBetweenRoundsCoeff * _currentCurveAngle) * Math.Sin(_currentCurveAngle)) + CloudCenter.Y);
+            return new Point(
+                Convert.ToInt32((CurveStartingRadius + _directionBetweenRoundsCoeff * _currentCurveAngle) 
+                                * Math.Cos(_currentCurveAngle)) + CloudCenter.X,
+                Convert.ToInt32((CurveStartingRadius + _directionBetweenRoundsCoeff * _currentCurveAngle) 
+                                * Math.Sin(_currentCurveAngle)) + CloudCenter.Y);
         }
 
         private Rectangle GetRectangleByCenter(Point centerCoords, Size rectangleSize)
