@@ -2,9 +2,8 @@
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
     public class ConvexHullBuilderShould

@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Reflection;
-using System.Security.Permissions;
-using NUnit.Framework;
 using FluentAssertions;
+using NUnit.Framework;
 
-
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
     public class CircularCloudLayouterShould
@@ -50,12 +47,13 @@ namespace TagsCloudVisualization
         }
 
         [Test]
+        [Repeat(10)]
         public void MakeCloudCircleDeviationLessThanTwentyFivePercents()
         {
             var center = new Point(750, 750);
             var layouter = new CircularCloudLayouter(center);
 
-            PutRandomRectangles(layouter, 1000);
+            PutRandomRectangles(layouter, 750);
             var cloudConvexHull = GetCloudConvexHull(layouter);
             var (minLength, maxLength) = GetMinMaxHullVectorsLengths(center, cloudConvexHull);
             var deviation = GetCloudDeviation(minLength, maxLength);
@@ -64,19 +62,20 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void MakeCloudDense()
+        [Repeat(10)]
+        public void MakeCloudDenseDeviationLessThanThirtyPercents()
         {
             var center = new Point(750, 750);
             var layouter = new CircularCloudLayouter(center);
 
-            PutRandomRectangles(layouter, 500);
+            PutRandomRectangles(layouter, 750);
             var cloudConvexHull = GetCloudConvexHull(layouter);
             var enclosingCircleRadius = GetMinMaxHullVectorsLengths(center, cloudConvexHull).maxLength;
             var enclosingCircleArea = Math.PI * enclosingCircleRadius * enclosingCircleRadius;
             var cloudArea = layouter.Rectangles.Sum(rect => rect.Width * rect.Height);
             var deviation = GetCloudDeviation(cloudArea, enclosingCircleArea);
 
-            deviation.Should().BeLessOrEqualTo(0.25);
+            deviation.Should().BeLessOrEqualTo(0.3);
         }
 
         private static IEnumerable<Point> GetCloudConvexHull(CircularCloudLayouter layouter)

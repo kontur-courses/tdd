@@ -3,7 +3,7 @@ using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
     class VectorShould
