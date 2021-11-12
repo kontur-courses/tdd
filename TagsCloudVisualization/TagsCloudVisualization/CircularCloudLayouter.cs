@@ -14,7 +14,6 @@ namespace TagsCloudVisualization
         {
             Center = center;
             _spiral = spiral;
-            _spiral.SetCenter(center);
         }
 
         public override Rectangle PutNextRectangle(Size rectangleSize)
@@ -34,11 +33,10 @@ namespace TagsCloudVisualization
         {
             var dryRect = new Rectangle(Point.Empty, rectSize);
             var pointEnumerator = _spiral.GetDiscretePoints().GetEnumerator();
-            while (pointEnumerator.MoveNext())
+            while (_rectangles.Any(r => r.IntersectsWith(dryRect)))
             {
+                pointEnumerator.MoveNext();
                 dryRect.Location = pointEnumerator.Current;
-                if (_rectangles.All(r => !r.IntersectsWith(dryRect)))
-                    break;
             }
             return dryRect;
         }

@@ -36,7 +36,6 @@ namespace TagsCloudVisualization_Test
         {
             var rectangle = new Rectangle(Point.Empty, new Size(100, 100));
             var point = new Point(50, 50);
-            var expected = new List<int> { 50, 50, 50, 50 };
             rectangle.GetDistancesToInnerPoint(point).All(d => d >= 0).Should().BeTrue();
         }
 

@@ -20,11 +20,11 @@ namespace TagsCloudVisualization_Test
         [TestCase(50, 30, 58.3, 0.54)]
         public void ToPolar_ShouldBeCorrect(int x, int y, double expectedRho, double expectedPhi)
         {
-            var polar = CoordinatesConverter.ToPolar(new Point(x, y));
+            var (rho, phi) = CoordinatesConverter.ToPolar(new Point(x, y));
             using (new AssertionScope())
             {
-                polar.rho.Should().BeApproximately(expectedRho, 0.01d);
-                polar.phi.Should().BeApproximately(expectedPhi, 0.01d);
+                rho.Should().BeApproximately(expectedRho, 0.01d);
+                phi.Should().BeApproximately(expectedPhi, 0.01d);
             }
         }
 

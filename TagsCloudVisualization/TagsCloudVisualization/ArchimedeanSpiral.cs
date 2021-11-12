@@ -9,9 +9,27 @@ namespace TagsCloudVisualization
     /// </summary>
     public class ArchimedeanSpiral : Spiral
     {
-        public ArchimedeanSpiral() : base() { }
+        /// <summary>
+        /// Радиус витков
+        /// </summary>
+        protected double Radius;
 
-        public ArchimedeanSpiral(Point center) : base(center) { }
+        /// <summary>
+        /// Текущий угол в радианах
+        /// </summary>
+        protected double Phi;
+
+        public ArchimedeanSpiral() : base() 
+        {
+            Radius = 1;
+            Phi = 0;
+        }
+
+        public ArchimedeanSpiral(Point center) : base(center)
+        {
+            Radius = 1;
+            Phi = 0;
+        }
 
         public override IEnumerable<Point> GetDiscretePoints(double deltaAngle = 0.01)
         {

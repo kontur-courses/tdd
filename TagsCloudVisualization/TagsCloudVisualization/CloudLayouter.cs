@@ -6,8 +6,8 @@ namespace TagsCloudVisualization
 {
     public abstract class CloudLayouter
     {
-        protected private List<Rectangle> _rectangles;
-        public List<Rectangle> Rectangles { get => _rectangles.ToList(); }
+        protected List<Rectangle> _rectangles;
+        public List<Rectangle> Rectangles => _rectangles.ToList();
 
         public CloudLayouter()
         {

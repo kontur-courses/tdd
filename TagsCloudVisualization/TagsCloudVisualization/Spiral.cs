@@ -16,16 +16,6 @@ namespace TagsCloudVisualization
         protected int OffsetY;
 
         /// <summary>
-        /// Радиус витков
-        /// </summary>
-        protected double Radius;
-
-        /// <summary>
-        /// Текущий угол в радианах
-        /// </summary>
-        protected double Phi;
-
-        /// <summary>
         /// Создает новый объект спирали с центром в точке (0,0)
         /// </summary>
         public Spiral() : this(Point.Empty)
@@ -41,19 +31,11 @@ namespace TagsCloudVisualization
         {
             OffsetX = center.X;
             OffsetY = center.Y;
-            Radius = 1;
-            Phi = 0;
         }
 
         /// <summary>
         /// Выдает дискретные значения спирали от последнего взятого значения до бесконечности!
         /// </summary>
         public abstract IEnumerable<Point> GetDiscretePoints(double deltaAngle = 0.01);
-
-        public void SetCenter(Point center)
-        {
-            OffsetX = center.X;
-            OffsetY = center.Y;
-        }
     }
 }
