@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Globalization;
 using System.Linq;
 using TagsCloudVisualization.PointGenerator;
 
@@ -13,7 +11,6 @@ namespace TagsCloudVisualization
         private readonly List<RectangleF> tagCloud;
         private readonly PointF center;
         private readonly Spiral spiral;
-        private Cache cache = new Cache();
 
         public CircularCloudLayouter(PointF center, Spiral spiral)
         {
@@ -38,7 +35,6 @@ namespace TagsCloudVisualization
             var points = spiral.GetPoints(center, size);
             var rectangles = points.Select(p => GetRectangleByCenterPoint(p, size));
             var suitableRectangle = rectangles.First(r => !IsIntersectWithCloud(r));
-            cache.UpdateParameter(size, GetDistanceFromTheCenter(suitableRectangle));
             return suitableRectangle;
         }
 
@@ -47,14 +43,6 @@ namespace TagsCloudVisualization
             return new RectangleF(
                 new PointF(rectangleCenter.X - size.Width / 2f, rectangleCenter.Y - size.Height / 2f),
                 size);
-        }
-
-        private float GetDistanceFromTheCenter(RectangleF rectangle)
-        {
-            var rectangleCenterY = (rectangle.Bottom + rectangle.Top) / 2;
-            var rectangleCenterX = (rectangle.Left + rectangle.Right) / 2;
-            var rectangleCenter = new PointF(rectangleCenterX, rectangleCenterY);
-            return center.DistanceTo(rectangleCenter);
         }
 
         private bool IsIntersectWithCloud(RectangleF newTag)

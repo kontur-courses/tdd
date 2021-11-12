@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Threading;
 using FluentAssertions;
 using FluentAssertions.Extensions;
 using NUnit.Framework;
@@ -18,7 +17,7 @@ namespace TagsCloudVisualization.Tests
         [SetUp]
         public void SetUp()
         {
-            cloudLayouter = new CircularCloudLayouter(new PointF(), new Spiral(0.05f, 0.01f));
+            cloudLayouter = new CircularCloudLayouter(new PointF(), new Spiral(0.01f, 1));
         }
 
         [TestCase(0, 1, TestName = "Width is zero")]
@@ -67,7 +66,7 @@ namespace TagsCloudVisualization.Tests
             int width,
             int height)
         {
-            cloudLayouter = new CircularCloudLayouter(new Point(xCloudPosition, yCloudPosition), new Spiral(1f, 0.2f));
+            cloudLayouter = new CircularCloudLayouter(new Point(xCloudPosition, yCloudPosition), new Spiral(0.2f, 1));
 
             var tag = cloudLayouter.PutNextRectangle(new Size(width, height));
 
@@ -77,12 +76,13 @@ namespace TagsCloudVisualization.Tests
             yCenter.Should().Be(yCloudPosition);
         }
 
-        [TestCase(1, 1, 100, 0.9, TestName = "Very tightly if small 100 squares")]
+        [TestCase(1, 1, 100, 0.9, TestName = "Very tightly if small 100 1x1 squares")]
         [TestCase(2, 5, 50, 0.8, TestName = "Rectangles with different dimensions")]
         [TestCase(9, 9, 60, 0.8, TestName = "Big squares")]
         public void PutNextRectangle_ShouldPutEnoughTight(int width, int height, int count, double densityCoefficient)
         {
             var rectangles = new List<RectangleF>();
+            
             for (var i = 0; i < count; i++)
                 rectangles.Add(cloudLayouter.PutNextRectangle(new Size(width, height)));
 
@@ -91,10 +91,11 @@ namespace TagsCloudVisualization.Tests
         }
 
         [TestCase(1, 1, 5000, TestName = "1x1 5000 rectangles in 1 second")]
-        [TestCase(2, 6, 5000, TestName = "The execution time should not depend on the size dimensions")]
+        [TestCase(2, 5, 5000, TestName = "The execution time should not depend on the size dimensions")]
         [TestCase(15, 15, 5000, TestName = "Same execution time for large sizes")]
         public void PutNextRectangle_ShouldWorkFast(int width, int height, int count)
         {
+            cloudLayouter = new CircularCloudLayouter(new PointF(), new Spiral(0.1f, 0.65));
             var size = new Size(width, height);
             
             Action act = () =>

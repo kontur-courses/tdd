@@ -13,7 +13,6 @@ namespace TagsCloudVisualization.PointGenerator
                 sizeToCircleParameter[size] = 0;
 
             return sizeToCircleParameter[size];
-            //return 0;
         }
 
         public void UpdateParameter(Size size, float radius)

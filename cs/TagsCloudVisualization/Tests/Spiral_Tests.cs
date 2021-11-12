@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -13,20 +12,16 @@ namespace TagsCloudVisualization.Tests
         [Test]
         public void GetCoordinates_ReturnCoordinatesThatRadiusShouldIncrease()
         {
-            var spiral = new Spiral(1f, 0.2f);
+            var center = new PointF();
+            var spiral = new Spiral(0.2f, 1);
             var points = spiral.GetPoints(new PointF(), new Size()).Take(100).ToArray();
             for (var i = 1; i < points.Length; i++)
             {
-                var previusRadius = GetDistance(new PointF(), points[i - 1]);
-                var currentRadius = GetDistance(new PointF(), points[i]);
+                var previousRadius = center.DistanceTo(points[i - 1]);
+                var currentRadius = center.DistanceTo(points[i]);
 
-                (previusRadius < currentRadius).Should().BeTrue();
+                (previousRadius <= currentRadius).Should().BeTrue();
             }
-        }
-
-        private double GetDistance(PointF a, PointF b)
-        {
-            return Math.Sqrt((a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y));
         }
     }
 }

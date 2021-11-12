@@ -1,25 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 
 namespace TagsCloudVisualization.PointGenerator
 {
     public class Spiral
     {
-        private float spiralPitch;
+        private double spiralPitch;
         private readonly float anglePitch;
+        private readonly double pitchCoefficient;
         private Cache cache = new Cache();
 
-        public Spiral(float spiralPitch, float anglePitch)
+        public Spiral(float anglePitch, double densityCoefficient)
         {
-            this.spiralPitch = spiralPitch;
             this.anglePitch = anglePitch;
+            pitchCoefficient = 20 * densityCoefficient * densityCoefficient;
         }
 
         public IEnumerable<PointF> GetPoints(PointF center, Size size)
         {
-            spiralPitch = Math.Min(size.Height, size.Width);
+            spiralPitch = Math.Min(size.Height, size.Width)/pitchCoefficient;
             foreach (var polarCoordinate in GetArchimedeanSpiral(cache.GetParameter(size)))
             {
                 cache.UpdateParameter(size, polarCoordinate.angle);
@@ -36,6 +36,7 @@ namespace TagsCloudVisualization.PointGenerator
                 yield return (radius, currentAngle);
                 currentAngle += anglePitch;
             }
+            // ReSharper disable once IteratorNeverReturns
         }
 
         private static (float x, float y) PolarToCartesian(float r, float angle)
