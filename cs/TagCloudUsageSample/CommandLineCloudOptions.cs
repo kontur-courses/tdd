@@ -25,6 +25,9 @@ namespace TagCloudUsageSample
                 cloudCount = value;
             }
         }
+        
+        [Option('o', "openFirst", Default = false, HelpText = "Open first created file")]
+        public bool OpenFirst { get; set; }
 
         [Option("rectangleCount", Default = 100, HelpText = "Set required rectangles count.")]
         public int RectangleCount

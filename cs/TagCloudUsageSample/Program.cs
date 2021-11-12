@@ -17,6 +17,8 @@ namespace TagCloudUsageSample
                 .ParseArguments<CommandLineCloudOptions>(args)
                 .WithParsed(options =>
                 {
+                    string firstFileName = null;
+                    
                     for (var j = 0; j < options.CloudCount; j++)
                     {
                         var fullFileName = options.SavePath.TrimEnd(Path.DirectorySeparatorChar) +
@@ -24,6 +26,8 @@ namespace TagCloudUsageSample
                                            options.FileName +
                                            (options.CloudCount == 1 ? "" : $"({j})") +
                                            ".jpg";
+                        
+                        firstFileName ??= fullFileName;
 
                         var rects = GetRectangles(
                             new CircularCloudLayouter(Point.Empty),
@@ -38,6 +42,9 @@ namespace TagCloudUsageSample
                             .GetBitmapWithRectangles(rects)
                             .Save(fullFileName, ImageFormat.Jpeg);
                     }
+                    
+                    if (firstFileName is not null && options.OpenFirst)
+                        System.Diagnostics.Process.Start(firstFileName);
                 });
         }
     
