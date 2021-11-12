@@ -14,8 +14,10 @@ namespace TagsCloudVisualization
 
         public static Rectangle GetRectanglesContainer(this IEnumerable<Rectangle> rectangles)
         {
+            if (rectangles == null)
+                throw new ArgumentNullException(nameof(rectangles));
             if (!rectangles.Any())
-                throw new ArgumentException($"{nameof(rectangles)} is empty");
+                throw new ArgumentException($"{nameof(rectangles)} is empty", nameof(rectangles));
             var leftXCoordinate = rectangles.Min(rect => rect.Left);
             var rightXCoordinate = rectangles.Max(rect => rect.Right);
             var topYCoordinate = rectangles.Min(rect => rect.Top);
