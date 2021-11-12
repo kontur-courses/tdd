@@ -2,20 +2,56 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
     public class CircularCloudLayouterShould
     {
+        private CircularCloudLayouter _testLayout;
+        private static readonly List<Brush> BrushList = new List<Brush>
+        {
+            Brushes.Blue, Brushes.Aquamarine, Brushes.BlueViolet,
+            Brushes.CornflowerBlue, Brushes.DarkBlue, Brushes.DarkCyan,
+            Brushes.Indigo, Brushes.SteelBlue, Brushes.SlateBlue,
+            Brushes.Purple, Brushes.SkyBlue, Brushes.Navy, Brushes.DarkCyan,
+            Brushes.DarkSlateGray, Brushes.DarkOrchid, Brushes.MediumAquamarine,
+            Brushes.MidnightBlue
+        };
+
+        [TearDown]
+        public void SaveLayout()
+        {
+            var testResult = TestContext.CurrentContext.Result.Outcome.Status;
+            if (testResult == TestStatus.Failed && _testLayout != null)
+            {
+                var testName = TestContext.CurrentContext.Test.Name;
+                var testDirectory = TestContext.CurrentContext.TestDirectory + "\\";
+                var image = new Bitmap(1500, 1500);
+                var graphics = Graphics.FromImage(image);
+                graphics.Clear(Color.Black);
+                foreach (var rect in _testLayout.Rectangles)
+                    graphics.FillRectangle(GetRandomBrush(), rect);
+
+                var pathToImage = testDirectory + testName + ".bmp";
+                image.Save(pathToImage);
+
+                var message = $"Tag cloud visualization saved to file {pathToImage}";
+                TestContext.Out.WriteLine(message);
+            }
+        }
+
         [Test]
         public void InitializeFieldsAfterInstanceCreation()
         {
             var center = new Point(10, 10);
 
             var layouter = new CircularCloudLayouter(center);
+            _testLayout = layouter;
 
             layouter.Rectangles.Should().NotBeNull();
             layouter.CloudCenter.Should().Be(center);
@@ -28,6 +64,7 @@ namespace TagsCloudVisualization.Tests
             var rectangleSize = new Size(-1, 20);
             var center = new Point(10, 10);
             var layouter = new CircularCloudLayouter(center);
+            _testLayout = layouter;
             void Act() => layouter.PutNextRectangle(rectangleSize);
 
             FluentActions.Invoking(Act).Should().Throw<ArgumentException>();
@@ -39,6 +76,7 @@ namespace TagsCloudVisualization.Tests
             var rectangleSize = new Size(100, 100);
             var center = new Point(0, 0);
             var layouter = new CircularCloudLayouter(center);
+            _testLayout = layouter;
             var expectedLocation = new Point(-50, -50);
 
             var firstRectangle = layouter.PutNextRectangle(rectangleSize);
@@ -53,7 +91,8 @@ namespace TagsCloudVisualization.Tests
             var center = new Point(750, 750);
             var layouter = new CircularCloudLayouter(center);
 
-            PutRandomRectangles(layouter, 7500);
+            PutRandomRectangles(layouter, 1000);
+            _testLayout = layouter;
             var cloudConvexHull = GetCloudConvexHull(layouter);
             var (minLength, maxLength) = GetMinMaxHullVectorsLengths(center, cloudConvexHull);
             var deviation = GetCloudDeviation(minLength, maxLength);
@@ -69,6 +108,7 @@ namespace TagsCloudVisualization.Tests
             var layouter = new CircularCloudLayouter(center);
 
             PutRandomRectangles(layouter, 750);
+            _testLayout = layouter;
             var cloudConvexHull = GetCloudConvexHull(layouter);
             var enclosingCircleRadius = GetMinMaxHullVectorsLengths(center, cloudConvexHull).maxLength;
             var enclosingCircleArea = Math.PI * enclosingCircleRadius * enclosingCircleRadius;
@@ -92,6 +132,7 @@ namespace TagsCloudVisualization.Tests
             var layouter = new CircularCloudLayouter(center);
 
             PutRandomRectangles(layouter, 100);
+            _testLayout = layouter;
 
             AreRectanglesIntersected(layouter).Should().BeFalse();
         }
@@ -128,6 +169,12 @@ namespace TagsCloudVisualization.Tests
         {
             var hullVectorsLengths = hull.Select(point => new Vector(center, point).GetLength());
             return (hullVectorsLengths.Min(), hullVectorsLengths.Max());
+        }
+
+        private static Brush GetRandomBrush()
+        {
+            var randomBrushNumber = new Random(Guid.NewGuid().GetHashCode()).Next(17);
+            return BrushList[randomBrushNumber];
         }
     }
 }
