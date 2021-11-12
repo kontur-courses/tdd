@@ -2,6 +2,7 @@
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 
 namespace TagsCloudVisualization
 {
@@ -9,14 +10,13 @@ namespace TagsCloudVisualization
     public class ConvexHullBuilderShould
     {
         [TestCaseSource(nameof(RotationDirectionTestData))]
-        public void ReturnCorrectVectorToPointRotationDirection(Vector vector, Point point, int expectedResult)
+        public int ReturnCorrectVectorToPointRotationDirection(Vector vector, Point point)
         {
-            ConvexHullBuilder.GetRotationDirection(vector, point)
-                .Should().Be(expectedResult);
+            return ConvexHullBuilder.GetRotationDirection(vector, point);
         }
 
         [TestCaseSource(nameof(MinimalConvexHullTestData))]
-        public void ReturnCorrectMinimalConvexHull(IEnumerable<Point> givenPoints, 
+        public void ReturnCorrectMinimalConvexHull(IEnumerable<Point> givenPoints,
             IEnumerable<Point> expectedConvexHull)
         {
             var actualConvexHull = ConvexHullBuilder.GetConvexHull(givenPoints);
@@ -97,19 +97,19 @@ namespace TagsCloudVisualization
         private static IEnumerable<TestCaseData> RotationDirectionTestData()
         {
             yield return new TestCaseData(
-                new Vector(new Point(1,1), new Point(4,3)),
-                new Point(3, 5),
-                1)
+                    new Vector(new Point(1, 1), new Point(4, 3)),
+                    new Point(3, 5))
+                .Returns(1)
                 .SetName("when point is located to the left of the vector");
             yield return new TestCaseData(
-                new Vector(new Point(0, 0), new Point(3, 6)),
-                new Point(4, -2),
-                -1)
+                    new Vector(new Point(0, 0), new Point(3, 6)),
+                    new Point(4, -2))
+                .Returns(-1)
                 .SetName("when point is located to the right of the vector");
             yield return new TestCaseData(
-                new Vector(new Point(0, 0), new Point(5, 5)),
-                new Point(3, 3),
-                0)
+                    new Vector(new Point(0, 0), new Point(5, 5)),
+                    new Point(3, 3))
+                .Returns(0)
                 .SetName("when point is located on the vector");
         }
     }
