@@ -6,20 +6,30 @@ namespace TagsCloudVisualization
 {
     class Program
     {
-        static void Main(string[] args)
+        private static void CreateCloudImage(string name, Point cloudCenter, int rectangleCount)
         {
-            var cloud = new CircularCloudLayouter(new Point());
+            var directoryPath = @"D:\kontur\tdd\tdd\cs\TagsCloudVisualization\TagsCloudVisualization";
+
+            var cloud = new CircularCloudLayouter(cloudCenter);
             var rnd = new Random();
 
-            var rectangle1 = new Rectangle(new Point(), new Size(3,7));
-            var rectangle2 = new Rectangle(new Point(3,0), new Size(4,3));
+            var visualizator = new CloudVisualizator(new Size(1000, 1000), cloudCenter);
+            var pen = new Pen(new SolidBrush(Color.Red));
 
-            Console.WriteLine(rectangle1.IntersectsWith(rectangle2));
-            Console.WriteLine(rectangle2.IntersectsWith(rectangle1));
-            for (var e = 0; e < 10; e++)
-                Console.WriteLine(cloud.PutNextRectangle(new Size(rnd.Next(1, 10), rnd.Next(1, 10))));
+            for (var i = 0; i < rectangleCount; i++)
+            {
+                var rectangle = cloud.PutNextRectangle(new Size(rnd.Next(50,100), rnd.Next(50,100)));
+                visualizator.DrawRectangle(pen, rectangle);
+            }
 
-
+            visualizator.SaveImage(@$"{directoryPath}\{name}.png");
         }
+
+        static void Main(string[] args)
+        {
+            CreateCloudImage("first", new Point(), 25);
+            CreateCloudImage("second", new Point(25,50), 50);
+        }
+
     }
 }
