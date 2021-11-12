@@ -96,7 +96,6 @@ namespace TagsCloudVisualization.Tests
             AreRectanglesIntersected(layouter).Should().BeFalse();
         }
 
-
         private static bool AreRectanglesIntersected(CircularCloudLayouter layouter)
         {
             foreach (var firstRect in layouter.Rectangles)
@@ -114,7 +113,7 @@ namespace TagsCloudVisualization.Tests
             const int minHeight = 10;
             const int maxHeight = 35;
 
-            for (var i = 0; i < rectanglesCount; i++) 
+            for (var i = 0; i < rectanglesCount; i++)
                 layouter.PutNextRectangle(
                     new Size(rnd.Next(minWidth, maxWidth), rnd.Next(minHeight, maxHeight)));
         }

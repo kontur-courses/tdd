@@ -10,9 +10,11 @@ namespace TagsCloudVisualization
         public readonly List<Rectangle> Rectangles;
         public readonly Point CloudCenter;
         private const double CurveStartingRadius = 0;
+        private const double MinimumCurveAngleStep = 0.2;
+        private const double CurveAngleStepSlowDown = 0.002;
         private double _directionBetweenRoundsCoeff = 1 / (2 * Math.PI);
         private double _curveAngleStep = Math.PI / 10;
-        private double _currentCurveAngle = 0.0;
+        private double _currentCurveAngle;
 
         public CircularCloudLayouter(Point center)
         {
@@ -33,28 +35,26 @@ namespace TagsCloudVisualization
         private Point GetNextRectangleCoordinates(Size rectSize)
         {
             var nextRectCenter = GetNextRectCenter(rectSize);
-            nextRectCenter = ShiftRectangleToPoint(nextRectCenter,
-                rectSize, CloudCenter);
-            nextRectCenter = ShiftRectangleToPoint(nextRectCenter,
-                rectSize, new Point(nextRectCenter.X, CloudCenter.Y));
-            nextRectCenter = ShiftRectangleToPoint(nextRectCenter,
-                  rectSize, new Point(CloudCenter.X, nextRectCenter.Y));
+            nextRectCenter = ShiftRectangleToCloudCenter(nextRectCenter, rectSize);
             return nextRectCenter;
+        }
+
+        private Point ShiftRectangleToCloudCenter(Point rectCenter, Size rectSize)
+        {
+            rectCenter = ShiftRectangleToPoint(rectCenter,
+                rectSize, CloudCenter);
+            rectCenter = ShiftRectangleToPoint(rectCenter,
+                rectSize, new Point(rectCenter.X, CloudCenter.Y));
+            rectCenter = ShiftRectangleToPoint(rectCenter,
+                rectSize, new Point(CloudCenter.X, rectCenter.Y));
+            return rectCenter;
         }
 
         private Point GetNextRectCenter(Size rectSize)
         {
             if (Rectangles.Count == 0)
                 return GetNextCurvePoint();
-            var previousRect = Rectangles.Last();
             var nextRectCenter = GetNextCurvePoint();
-            if (Rectangles.Count == 1)
-            {
-                while (GetRectangleByCenter(nextRectCenter, rectSize).IntersectsWith(previousRect))
-                    nextRectCenter = GetNextCurvePoint();
-                return nextRectCenter;
-            }
-
             var nextRect = GetRectangleByCenter(nextRectCenter, rectSize);
             while (IfRectIntersectAnyOther(nextRect))
             {
@@ -68,8 +68,8 @@ namespace TagsCloudVisualization
         private Point GetNextCurvePoint()
         {
             _currentCurveAngle += _curveAngleStep;
-            if (_curveAngleStep > 0.2)
-                _curveAngleStep -= 0.002;
+            if (_curveAngleStep > MinimumCurveAngleStep)
+                _curveAngleStep -= CurveAngleStepSlowDown;
             return new Point(Convert.ToInt32((CurveStartingRadius + _directionBetweenRoundsCoeff * _currentCurveAngle) * Math.Cos(_currentCurveAngle)) + CloudCenter.X,
                 Convert.ToInt32((CurveStartingRadius + _directionBetweenRoundsCoeff * _currentCurveAngle) * Math.Sin(_currentCurveAngle)) + CloudCenter.Y);
         }
@@ -96,7 +96,7 @@ namespace TagsCloudVisualization
             var leftBorder = shiftDirection;
             var rightBorder = rectCenter;
             var vectLen = new Vector(leftBorder, rightBorder).GetLength();
-            var eps = 2;
+            const int eps = 2;
             while (vectLen > eps)
             {
                 var middle = new Point(
