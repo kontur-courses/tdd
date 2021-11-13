@@ -173,7 +173,7 @@ namespace CircularCloudLayouter_Tests
         }
         
         [Test, Timeout(1500)]
-        public void PutNextRectangle_10000Calls_ElapsedTimeIsLessThan1Second()
+        public void PutNextRectangle_10000Calls_ElapsedTimeIsLessThanOneAndAHalfSecond()
         {
             var cloudLayouter = new CircularCloudLayouter(
                 new Point(int.MaxValue/2, int.MaxValue/2));
