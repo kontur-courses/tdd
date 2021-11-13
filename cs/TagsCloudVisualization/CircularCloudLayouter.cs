@@ -8,8 +8,9 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         public readonly PointF Center;
-        public readonly List<RectangleF> Rectangles = new List<RectangleF>();
-        public Polygon Figure;
+        private  List<RectangleF> rectangles = new List<RectangleF>();
+        public IReadOnlyList<RectangleF> Rectangles => rectangles;
+        public Polygon CurrentPerimeter { get; private set; }
 
         public CircularCloudLayouter(Point center)
         {
@@ -18,11 +19,11 @@ namespace TagsCloudVisualization
 
         public RectangleF PutNextRectangle(Size rectangleSize)
         {
-            if (Rectangles.Count == 0)
+            if (rectangles.Count == 0)
             {
                 var rectangle = GetRectangle(Center, rectangleSize);
-                Rectangles.Add(rectangle);
-                Figure = new Polygon(rectangle);
+                rectangles.Add(rectangle);
+                CurrentPerimeter = new Polygon(rectangle);
                 return rectangle;
             }
             var sortedLocations = GetPlacementLocationsOnMiddleSides()
@@ -32,22 +33,30 @@ namespace TagsCloudVisualization
             {
                 if (!TryPlaceRectangle(placement, rectangleSize, out var rectangle)) 
                     continue;
-                AddRectangleToFigure(rectangle, placement);
-                Rectangles.Add(rectangle);
+                AddRectangleToPerimeter(rectangle, placement);
+                rectangles.Add(rectangle);
                 return rectangle;
             }
             throw new Exception();
         }
 
-        private void AddRectangleToFigure(RectangleF rectangle, PlacementLocation location)
+        private void AddRectangleToPerimeter(RectangleF rectangle, PlacementLocation location)
         {
-            var index = Figure.Vertexes.IndexOf(location.LeftVertex);
+            var index = CurrentPerimeter.Vertexes.IndexOf(location.LeftVertex);
             var rectVertexes = rectangle.GetPoints().ToList();
             var startIndex = 0;
+            for (var i = 0; i < 4; i++)
+            {
+                if (CurrentPerimeter.Vertexes.Intersect(rectVertexes.Skip(i)
+                    .Concat(rectVertexes.Take(i))).Count() != 4) continue;
+                CurrentPerimeter.Vertexes.RemoveAll(p => rectVertexes.Contains(p));
+                CurrentPerimeter.Normalize();
+                return;
+            }
             if (location.Placement == Placement.Corner)
             {
                 startIndex = rectVertexes.FindIndex(p => p == location.Location);
-                Figure.Vertexes.Remove(location.Location);
+                CurrentPerimeter.Vertexes.Remove(location.Location);
                 rectVertexes.RemoveAt(startIndex);
             }
             else
@@ -60,13 +69,13 @@ namespace TagsCloudVisualization
                         startIndex = i;
                 }
             }
-            if (index + 1 > Figure.Vertexes.Count)
-                Figure.Vertexes.AddRange(rectVertexes.Skip(startIndex)
+            if (index + 1 > CurrentPerimeter.Vertexes.Count)
+                CurrentPerimeter.Vertexes.AddRange(rectVertexes.Skip(startIndex)
                     .Concat(rectVertexes.Take(startIndex)));
             else
-                Figure.Vertexes.InsertRange((index + 1) % Figure.Vertexes.Count, rectVertexes.Skip(startIndex)
+                CurrentPerimeter.Vertexes.InsertRange((index + 1) % CurrentPerimeter.Vertexes.Count, rectVertexes.Skip(startIndex)
                                                                 .Concat(rectVertexes.Take(startIndex)));
-            Figure.Normalize();
+            CurrentPerimeter.Normalize();
         }
 
         
@@ -77,7 +86,6 @@ namespace TagsCloudVisualization
             var offsetY = 0f;
             switch (location.Placement)
             {
-                
                 case Placement.Corner:
                     offsetX = Math.Sign(location.Location.X - Center.X) * size.Width / 2.0f;
                     offsetY = Math.Sign(location.Location.Y - Center.Y) * size.Height / 2.0f;
@@ -91,11 +99,7 @@ namespace TagsCloudVisualization
             }
             var tempRectangle = GetRectangle(new PointF( location.Location.X + offsetX, location.Location.Y  + offsetY), size);
             rectangle = tempRectangle;
-            return Rectangles.All(r =>
-            {
-                r.Intersect(tempRectangle);
-                return r.IsEmpty(0.01);
-            });
+            return rectangles.All(r => !r.IntersectsWith(tempRectangle));
         }
 
         private RectangleF GetRectangle(PointF center, Size size)
@@ -105,7 +109,7 @@ namespace TagsCloudVisualization
 
         private IEnumerable<PlacementLocation> GetPlacementLocationsOnMiddleSides()
         {
-            foreach (var (left, right) in Figure.GetSegments())
+            foreach (var (left, right) in CurrentPerimeter.GetSegments())
             {
                 var location = new PointF();
                 var placement = Placement.Corner;
@@ -133,15 +137,15 @@ namespace TagsCloudVisualization
 
         private IEnumerable<PlacementLocation> GetPlacementLocationsOnCorners()
         {
-            yield return new PlacementLocation(Figure.Vertexes[^1],
-                Figure.Vertexes[0], Figure.Vertexes[1], Placement.Corner);
-            for (var i = 1; i < Figure.Vertexes.Count - 1; i++)
+            yield return new PlacementLocation(CurrentPerimeter.Vertexes[^1],
+                CurrentPerimeter.Vertexes[0], CurrentPerimeter.Vertexes[1], Placement.Corner);
+            for (var i = 1; i < CurrentPerimeter.Vertexes.Count - 1; i++)
             {
-                yield return new PlacementLocation(Figure.Vertexes[i - 1], Figure.Vertexes[i],
-                    Figure.Vertexes[i + 1], Placement.Corner);
+                yield return new PlacementLocation(CurrentPerimeter.Vertexes[i - 1], CurrentPerimeter.Vertexes[i],
+                    CurrentPerimeter.Vertexes[i + 1], Placement.Corner);
             }
-            yield return new PlacementLocation(Figure.Vertexes[^2], Figure.Vertexes[^1],
-                Figure.Vertexes[0], Placement.Corner);
+            yield return new PlacementLocation(CurrentPerimeter.Vertexes[^2], CurrentPerimeter.Vertexes[^1],
+                CurrentPerimeter.Vertexes[0], Placement.Corner);
         }
     }
 }

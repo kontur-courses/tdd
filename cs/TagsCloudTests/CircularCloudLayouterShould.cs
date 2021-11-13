@@ -114,5 +114,20 @@ namespace TagsCloudTests
                 }
             }
         }
+
+        [Test]
+        public void RectanglePlacedInside()
+        {
+            layouter.PutNextRectangle(new Size(2, 2));
+            layouter.PutNextRectangle(new Size(2, 2));
+            layouter.PutNextRectangle(new Size(2, 2));
+            layouter.PutNextRectangle(new Size(2, 2));
+            layouter.PutNextRectangle(new Size(2, 2));
+            layouter.PutNextRectangle(new Size(10, 2));
+            layouter.PutNextRectangle(new Size(2, 6));
+            layouter.PutNextRectangle(new Size(2, 2));
+            var expected = new RectangleF(1, -3, 2, 2);
+            layouter.Rectangles[^1].Should().Be(expected);
+        }
     }
 }
