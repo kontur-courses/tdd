@@ -39,7 +39,14 @@ namespace TagsCloudVisualization.Tests
             if (ctx.Result.Outcome.Status == TestStatus.Failed)
             {
                 var testName = ctx.Test.Name;
-                _logger.Log(_rectangles, testName);
+                try
+                {
+                    _logger.Log(_rectangles, testName);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Cannot log test fail image due to exception: {e.Message}");
+                }
             }
         }
 

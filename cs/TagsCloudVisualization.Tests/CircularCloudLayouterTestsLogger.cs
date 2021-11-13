@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -12,18 +13,17 @@ namespace TagsCloudVisualization.Tests
 {
     public class CircularCloudLayouterTestsLogger
     {
-        private readonly SizeF _cloudScale = new(0.7f, 0.7f);
         private readonly TagsCloudDrawer _drawer = new(Color.Gray, new RainbowColorGenerator(new Random()));
         private readonly Size _imageSize = new(1000, 1000);
         private string _outputDirectory;
 
-        public void Log(Rectangle[] rectangles, string testName)
+        public void Log(IEnumerable<Rectangle> rectangles, string testName)
         {
             if (string.IsNullOrEmpty(_outputDirectory))
                 throw new Exception($"{nameof(_outputDirectory)} was null or empty");
             var path = Path.Combine(_outputDirectory, testName + ".bmp");
             using var image = new Bitmap(_imageSize.Width, _imageSize.Height);
-            _drawer.Draw(image, rectangles, _cloudScale);
+            _drawer.Draw(image, rectangles);
             image.Save(path, ImageFormat.Bmp);
             Console.WriteLine($"Tag cloud visualization saved to file {path}");
         }

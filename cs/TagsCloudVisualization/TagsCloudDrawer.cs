@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using TagsCloudVisualization.Interfaces;
@@ -20,49 +21,32 @@ namespace TagsCloudVisualization
             _colorGenerator = colorGenerator ?? throw new ArgumentNullException(nameof(colorGenerator));
         }
 
-        public void Draw(Bitmap bitmap, Rectangle[] rectangles, SizeF cloudScale)
+        public void Draw(Bitmap bitmap, IEnumerable<Rectangle> rectangles)
         {
             if (bitmap == null) throw new ArgumentNullException(nameof(bitmap));
-            if (cloudScale.Width <= 0 || cloudScale.Height <= 0)
-                throw new ArgumentException(
-                    $"{nameof(cloudScale)} expected positive dimensions, but actually negative");
             using var graphics = Graphics.FromImage(bitmap);
 
             graphics.Clear(_backgroundColor);
-            graphics.TranslateTransform(bitmap.Width / 2f, bitmap.Height / 2f);
-
-            if (rectangles.Length > 0)
-            {
-                ScaleClouds(graphics, bitmap.Size, cloudScale, rectangles);
-                FillWithRectangles(graphics, rectangles);
-            }
+            var shifted = GetShiftedRectangles(rectangles, Size.Truncate(bitmap.Size / 2f));
+            FillWithRectangles(graphics, shifted, new RectangleF(Point.Empty, bitmap.Size));
         }
 
-        private void ScaleClouds(Graphics graphics, Size imageSize, SizeF cloudScale, Rectangle[] rectangles)
+        private void FillWithRectangles(Graphics graphics, IEnumerable<Rectangle> rectangles, RectangleF bounds)
         {
-            var bounds = GetBoundingSize(rectangles);
-            var scaleX = bounds.Width / (imageSize.Width * cloudScale.Width);
-            var scaleY = bounds.Height / (imageSize.Height * cloudScale.Height);
-            graphics.ScaleTransform(1 / scaleX, 1 / scaleY);
-        }
-
-        private void FillWithRectangles(Graphics graphics, Rectangle[] rectangles)
-        {
-            var brush = new SolidBrush(new Color());
+            using var brush = new SolidBrush(new Color());
             foreach (var rectangle in rectangles)
             {
+                if (!bounds.Contains(rectangle))
+                    throw new Exception("Image cannot contain all rectangles");
                 brush.Color = _colorGenerator.Generate();
                 graphics.FillRectangle(brush, rectangle);
             }
         }
 
-        private static Size GetBoundingSize(Rectangle[] rectangles)
+        private static IEnumerable<Rectangle> GetShiftedRectangles(IEnumerable<Rectangle> rectangles, Size vector)
         {
-            var top = rectangles.Min(x => x.Top);
-            var bottom = rectangles.Max(x => x.Bottom);
-            var left = rectangles.Min(x => x.Left);
-            var right = rectangles.Max(x => x.Right);
-            return new Size(right - left, bottom - top);
+            return rectangles
+                .Select(rectangle => new Rectangle(Point.Add(rectangle.Location, vector), rectangle.Size));
         }
     }
 }

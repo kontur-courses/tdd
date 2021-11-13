@@ -34,34 +34,27 @@ namespace TagsCloudVisualization
             var rnd = new Random();
             yield return new TagsCloudGenerator(
                 50,
-                new SizeF(0.7f, 0.7f),
                 new CircularCloudLayouter(new Point()),
                 () => new Size(rnd.Next(30, 50), rnd.Next(20, 30)),
                 new TagsCloudDrawer(Color.Gray, new RandomColorGenerator(rnd)));
             yield return new TagsCloudGenerator(
                 100,
-                new SizeF(0.7f, 0.7f),
                 new CircularCloudLayouter(new Point()),
                 () => new Size(rnd.Next(40, 50), rnd.Next(20, 30)),
                 new TagsCloudDrawer(Color.Gray, new RainbowColorGenerator(rnd)));
             yield return new TagsCloudGenerator(
-                1000,
-                new SizeF(0.7f, 0.7f),
+                500,
                 new CircularCloudLayouter(new Point()),
                 () => new Size(rnd.Next(40, 50), rnd.Next(20, 30)),
                 new TagsCloudDrawer(Color.Gray, new RainbowColorGenerator(rnd)));
             yield return new TagsCloudGenerator(
-                1000,
-                new SizeF(0.7f, 0.7f),
+                500,
                 new CircularCloudLayouter(new Point()),
                 () => new Size(rnd.Next(10, 50), rnd.Next(10, 50)),
                 new TagsCloudDrawer(Color.Gray, new GrayscaleColorGenerator(rnd)));
         }
 
-        private static string GenerateFileName()
-        {
-            return DateTime.Now.Ticks.ToString();
-        }
+        private static string GenerateFileName() => DateTime.Now.Ticks.ToString();
     }
 }
 #pragma warning restore CA1416
