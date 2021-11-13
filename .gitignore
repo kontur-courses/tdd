@@ -201,4 +201,4 @@ FakesAssemblies/
 
 # Exclude Example Images
 cs/Homework/FailedTestsPictures
-cs/Homework/Examples
+#cs/Homework/Examples
