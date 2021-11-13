@@ -19,7 +19,7 @@ namespace TagsCloudVisualization
         public CircularCloudLayouter(Point center)
         {
             Center = center;
-            LayouterSpiral = new Spiral(Center);
+            LayouterSpiral = new Spiral();
             RectangleList = new List<Rectangle>();
         }
 
@@ -40,7 +40,7 @@ namespace TagsCloudVisualization
 
         private Rectangle CreateNewRectangle(Size rectangleSize)
         {
-            var rectangleCenterLocation = LayouterSpiral.GetNextPoint();
+            var rectangleCenterLocation = LayouterSpiral.GetNextPoint(Center);
             var rectangleX = rectangleCenterLocation.X - rectangleSize.Width / 2;
             var rectangleY = rectangleCenterLocation.Y - rectangleSize.Height / 2;
             var rectangle = new Rectangle(rectangleX, rectangleY, rectangleSize.Width, rectangleSize.Height);
