@@ -14,14 +14,14 @@ namespace TagsCloudVisualizationTests
     [TestFixture]
     public class TestsCircularCloudLayouterShouldCorrectPutNext
     {
-        private List<Rectangle> RectanglesList = new List<Rectangle>(); 
+        private List<Rectangle> _rectanglesList = new List<Rectangle>(); 
         
         [TearDown]
         public void VisualizeError()
         {
-            if (TestContext.CurrentContext.Result.Outcome == ResultState.Failure && RectanglesList.Count != 0)
+            if (TestContext.CurrentContext.Result.Outcome == ResultState.Failure && _rectanglesList.Count != 0)
             {
-                using (var visualization = new Visualization(RectanglesList, new Pen(Color.White, 3)))
+                using (var visualization = new Visualization(_rectanglesList, new Pen(Color.White, 3)))
                 {
                     var testName = TestContext.CurrentContext.Test.Name;
                     var path = AppDomain.CurrentDomain.BaseDirectory + testName + "." + ImageFormat.Jpeg;
@@ -29,7 +29,7 @@ namespace TagsCloudVisualizationTests
                     visualization.DrawAndSaveImage(new Size(5000, 5000), path, ImageFormat.Jpeg);
                 }
             }
-            RectanglesList = new List<Rectangle>();
+            _rectanglesList = new List<Rectangle>();
         }
 
 
@@ -66,19 +66,20 @@ namespace TagsCloudVisualizationTests
         {
             var layouterCenter = new Point(width, height);
             var layouter = new CircularCloudLayouter(layouterCenter);
+            var seedRandom = new Random(549067798);
             for (int i = 0; i < 300; i++)
             {
-                var rectangleSize = new Size(new Random().Next(-100,100), new Random().Next(-100,100));
+                var rectangleSize = new Size(seedRandom.Next(-100,100), seedRandom.Next(-100,100));
                 if (rectangleSize.Height == 0 || rectangleSize.Width == 0)
                 {
                     i--;
                     continue;
                 }
-                RectanglesList.Add(layouter.PutNextRectangle(rectangleSize));
+                _rectanglesList.Add(layouter.PutNextRectangle(rectangleSize));
             }
-            foreach (var rectangle in RectanglesList)
+            foreach (var rectangle in _rectanglesList)
             {
-                var act = RectanglesList
+                var act = _rectanglesList
                     .Where(r => r != rectangle)
                     .Any(r => r.IntersectsWith(rectangle));
                 act.Should().BeFalse();
@@ -111,12 +112,12 @@ namespace TagsCloudVisualizationTests
             {
                 while (rectangleSize.Height == 0 || rectangleSize.Width == 0)
                     rectangleSize = new Size(seedRandom.Next(-60, 60), seedRandom.Next(-60, 60));
-                RectanglesList.Add(layouter.PutNextRectangle(rectangleSize));
+                _rectanglesList.Add(layouter.PutNextRectangle(rectangleSize));
             }
-            var sumArea = GetSumAreaOfRectangles(RectanglesList);
-            var circleArea = GetCircleArea(GetCircleRadius(layouterCenter, RectanglesList));
+            var sumArea = GetSumAreaOfRectangles(_rectanglesList);
+            var circleArea = GetCircleArea(GetCircleRadius(layouterCenter, _rectanglesList));
             
-            var enclosingRectangleArea = GetEnclosingRectangleArea(RectanglesList);
+            var enclosingRectangleArea = GetEnclosingRectangleArea(_rectanglesList);
             var difCircleAndSum = sumArea/circleArea;
             var difSumAndEnclosingRectangle = sumArea/enclosingRectangleArea;
 
@@ -132,12 +133,12 @@ namespace TagsCloudVisualizationTests
             var layouter = new CircularCloudLayouter(layouterCenter);
             for (int i = 0; i < 300; i++)
             {
-                RectanglesList.Add(layouter.PutNextRectangle(rectangleSize));
+                _rectanglesList.Add(layouter.PutNextRectangle(rectangleSize));
             }
 
-            foreach (var rectangle in RectanglesList)
+            foreach (var rectangle in _rectanglesList)
             {
-                var act = RectanglesList
+                var act = _rectanglesList
                     .Where(r => r != rectangle)
                     .Any(r => r.IntersectsWith(rectangle));
                 act.Should().BeFalse();
