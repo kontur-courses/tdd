@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
@@ -17,6 +18,16 @@ namespace TagsCloudVisualizationTests
 
             Action action = () => drawer.DrawRectangles(new[] { bigRectangle }, imageSize);
             
+            action.Should().Throw<ArgumentException>();
+        }
+
+        [Test]
+        public void DrawRectangles_ThrowsArgumentException_WhenSequenceIsEmpty()
+        {
+            var drawer = new Drawer();
+
+            Action action = () => drawer.DrawRectangles(new List<Rectangle>(), new Size(10, 10));
+
             action.Should().Throw<ArgumentException>();
         }
     }

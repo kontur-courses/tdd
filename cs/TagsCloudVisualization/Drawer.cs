@@ -10,6 +10,9 @@ namespace TagsCloudVisualization
         public Bitmap DrawRectangles(IEnumerable<Rectangle> rectangles, Size imageSize)
         {
             var rectanglesList = rectangles.ToList();
+            if (rectanglesList.Count == 0)
+                throw new ArgumentException("Sequence does not contain any elements");
+            
             var center = rectanglesList.First().Location;
 
             CheckIfRectanglesFitInImage(rectanglesList.ToList(), center, imageSize);
