@@ -1,5 +1,13 @@
 # Cloud generator
 
+## First 10 chapters from War and Peace
+
+![PeaceAndWar](./Examples/words.png)
+
+## Martin Fowler "Refactoring"
+
+![refactoring](./Examples/words4.png)
+
 ![first](./Examples/picture.png)
 
 ![second](./Examples/picture2.png)
