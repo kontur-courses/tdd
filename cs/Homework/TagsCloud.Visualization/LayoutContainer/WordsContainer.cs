@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using JetBrains.ReSharper.TestRunner.Abstractions.Extensions;
 using TagsCloud.Visualization.ContainerVisitor;
 using TagsCloud.Visualization.Extensions;
 using TagsCloud.Visualization.Models;
 
 namespace TagsCloud.Visualization.LayoutContainer
 {
-    public class WordsContainer : ILayoutContainer<WordWithBorder>
+    public class WordsContainer : ILayoutContainer<WordWithBorder>, IDisposable
     {
         public IEnumerable<WordWithBorder> Items { get; init; }
 
@@ -31,6 +32,11 @@ namespace TagsCloud.Visualization.LayoutContainer
         public void Accept(Graphics graphics, IContainerVisitor visitor)
         {
             visitor.Visit(graphics, this);
+        }
+
+        public void Dispose()
+        {
+            Items?.ForEach(x => x.Dispose());
         }
     }
 }

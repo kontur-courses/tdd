@@ -39,7 +39,7 @@ namespace TagsCloud.Words
 
             words.ForEach(x => wordsBuilder.Add(x));
 
-            var container = wordsBuilder.Build();
+            using var container = wordsBuilder.Build();
             using var image = drawer.Draw(container);
             var path = GetDirectoryForSavingExamples() + "\\words4.png";
             image.Save(path);
