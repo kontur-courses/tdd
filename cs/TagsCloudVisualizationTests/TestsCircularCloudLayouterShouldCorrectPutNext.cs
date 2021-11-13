@@ -164,21 +164,14 @@ namespace TagsCloudVisualizationTests
             var vertexes = new List<Point>();
             foreach (var rectangle in rectangles)
             {
-                vertexes.Add(new Point(rectangle.X, rectangle.Y + rectangle.Height));
-                vertexes.Add(new Point(rectangle.X, rectangle.Y));
-                vertexes.Add(new Point(rectangle.X + rectangle.Width, rectangle.Y));
-                vertexes.Add(new Point(rectangle.X + rectangle.Width, rectangle.Y + rectangle.Height));
+                foreach (var node in rectangle.GetRectangleNodes())
+                {
+                    vertexes.Add(node);
+                }
             }
-
-            var xCords = from vertex in vertexes select vertex.X;
-            var sortListXCords = xCords.ToList().OrderBy(x => x).ToList();
-            var xMin = sortListXCords.First();
-            var xMax = sortListXCords.Last();
-            var yCords = from vertex in vertexes select vertex.Y;
-            var sortListYCords = yCords.ToList().OrderBy(y => y).ToList();
-            var yMin = sortListYCords.First();
-            var yMax = sortListYCords.Last();
-            return (yMax - yMin) * (xMax - xMin);
+            var sortListXCords = vertexes.Select(vertex => vertex.X).ToList().OrderBy(x => x).ToList();
+            var sortListYCords = vertexes.Select(vertex => vertex.Y).ToList().OrderBy(y => y).ToList();
+            return (sortListYCords.Last() - sortListYCords.First()) * ( sortListXCords.Last() -sortListXCords.First());
         }
 
         public double GetCircleArea(double circleRadius)
