@@ -56,7 +56,7 @@ namespace TagsCloudVisualizationTests
             var rectangleSize = new Size(30, 10);
             var layouterCenter = new Point(20, 10);
             var layouter = new CircularCloudLayouter(layouterCenter);
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 100; i++)
                 layouter.PutNextRectangle(rectangleSize);
             var sumArea = GetSumAreaOfRectangles(layouter);
             var circleArea = GetCircleArea(GetCircleRadius(layouter));
@@ -85,7 +85,7 @@ namespace TagsCloudVisualizationTests
             var rectangleSize = new Size(2, 2);
             var layouterCenter = new Point(20, 10);
             var layouter = new CircularCloudLayouter(layouterCenter);
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 300; i++)
                 layouter.PutNextRectangle(rectangleSize);
             foreach (var rectangle in layouter.GetRectangleList)
             {
