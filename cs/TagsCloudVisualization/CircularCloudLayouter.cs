@@ -10,9 +10,9 @@ namespace TagsCloudVisualization
         private readonly ISpiral spiral;
         private readonly List<Rectangle> rectangles;
 
-        public CircularCloudLayouter(Point center)
+        public CircularCloudLayouter(ISpiral spiral)
         {
-            spiral = new ArchimedeanSpiral(center);
+            this.spiral = spiral;
             rectangles = new List<Rectangle>();
         }
 
@@ -22,7 +22,7 @@ namespace TagsCloudVisualization
             {
                 throw new ArgumentException("Size's width and height must be positive numbers");
             }
-            
+
             var nextPoint = spiral.GetNextPoint();
             var newRectangle = new Rectangle(nextPoint, rectangleSize);
 
@@ -31,7 +31,7 @@ namespace TagsCloudVisualization
                 nextPoint = spiral.GetNextPoint();
                 newRectangle = new Rectangle(nextPoint, rectangleSize);
             }
-            
+
             rectangles.Add(newRectangle);
             return newRectangle;
         }

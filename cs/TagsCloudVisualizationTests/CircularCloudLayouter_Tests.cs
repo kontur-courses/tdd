@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -22,7 +23,7 @@ namespace TagsCloudVisualizationTests
             generator = new SizeGenerator(10, 25, 10, 25);
             center = Point.Empty;
             rectangles = new List<Rectangle>();
-            layouter = new CircularCloudLayouter(center);
+            layouter = new CircularCloudLayouter(new ArchimedeanSpiral(center));
         }
 
         [TearDown]
@@ -31,9 +32,14 @@ namespace TagsCloudVisualizationTests
             if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
                 return;
 
-            var path = $"../../{TestContext.CurrentContext.Test.FullName}.png";
-            Drawer.DrawRectangles(rectangles, path);
-            Console.WriteLine($"Tag cloud visualization saved to file {path}");
+            var drawer = new Drawer();
+            using var image = drawer.DrawRectangles(rectangles, new Size(800, 800));
+
+            var saver = new ImageSaver();
+            var fileName = TestContext.CurrentContext.Test.FullName;
+            saver.SaveImage(image, fileName, ImageFormat.Png);
+
+            Console.WriteLine($"Tag cloud visualization saved to file {fileName}");
         }
 
 
