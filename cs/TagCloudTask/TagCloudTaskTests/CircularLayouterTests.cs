@@ -22,10 +22,12 @@ namespace TagCloudTaskTests
             layouter = new CircularLayouter();
         }
 
-        [Test]
-        public void Constructor_ShouldCreate_WithSpecifiedCenter(
-            [ValueSource(nameof(CloudCenters))] Point center)
+        [TestCase(0, 0)]
+        [TestCase(10, 10)]
+        [TestCase(-1, -1)]
+        public void Constructor_ShouldCreate_WithSpecifiedCenter(int x, int y)
         {
+            var center = new Point(x, y);
             layouter = new CircularLayouter(center);
 
             layouter.Center.Should().BeEquivalentTo(center);
@@ -41,11 +43,13 @@ namespace TagCloudTaskTests
             actualRect.Size.Should().BeEquivalentTo(expectedRect.Size);
         }
 
-        [Test]
-        public void PutNextRectangle_ShouldThrow_WhenIncorrectSize(
-            [ValueSource(nameof(IncorrectRectangleSizes))]
-            Size rectSize)
+        [TestCase(-1, -1)]
+        [TestCase(-1, -0)]
+        [TestCase(0, -1)]
+        [TestCase(0, 0)]
+        public void PutNextRectangle_ShouldThrow_WhenIncorrectSize(int width, int height)
         {
+            var rectSize = new Size(width, height);
             Action act = () => layouter.PutNextRectangle(rectSize);
 
             act.Should().Throw<ArgumentException>("Incorrect size:", rectSize);
@@ -104,9 +108,7 @@ namespace TagCloudTaskTests
         [TearDown]
         public void TearDown()
         {
-            var context = TestContext.CurrentContext;
-
-            if (!IsLayoutTest(context))
+            if (layouter.GetRectanglesCopy().Count == 0)
                 return;
 
             var tagCloud = new TagCloud(layouter,
@@ -126,24 +128,6 @@ namespace TagCloudTaskTests
             var rectanglesSquare = boundaryBox.Width * boundaryBox.Height;
 
             return rectanglesSquare / circleSquare;
-        }
-
-        private bool IsLayoutTest(TestContext context)
-        {
-            var layoutTestNames = GetLayoutTestNames();
-
-            return layoutTestNames.Contains(context.Test.MethodName);
-        }
-
-        private List<string> GetLayoutTestNames()
-        {
-            var names = new List<string>();
-
-            names.Add(nameof(CircularLayouter_ShouldPutRectanglesLikeCircle));
-            names.Add(nameof(PutNextRectangle_ShouldAlignRectangleMiddlePointToCenter));
-            names.Add(nameof(PutNextRectangle_ShouldNotIntersect_ForEachRectangle));
-
-            return names;
         }
 
         private double GetDiametersRatio()
@@ -172,21 +156,6 @@ namespace TagCloudTaskTests
             }
 
             return false;
-        }
-
-        private static IEnumerable<Point> CloudCenters()
-        {
-            yield return Point.Empty;
-            yield return new Point(10, 10);
-            yield return new Point(-1, -1);
-        }
-
-        private static IEnumerable<Size> IncorrectRectangleSizes()
-        {
-            yield return new Size(-1, -1);
-            yield return new Size(-1, 0);
-            yield return new Size(0, -1);
-            yield return new Size(0, 0);
         }
     }
 }

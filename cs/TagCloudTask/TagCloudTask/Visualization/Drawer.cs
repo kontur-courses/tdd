@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using TagCloudTask.Geometry;
 
 namespace TagCloudTask.Visualization
 {
@@ -32,24 +31,20 @@ namespace TagCloudTask.Visualization
 
         public void DrawAxis(Graphics g, Size imgSize, Point cloudCenter)
         {
-            var cloudCenterOnImg = GetCloudCenterOnImg(imgSize, cloudCenter);
-
             using (var pen = new Pen(Brushes.Black, LineWidth))
             {
-                g.DrawLine(pen, cloudCenterOnImg, new Point(cloudCenterOnImg.X, 0));
-                g.DrawLine(pen, cloudCenterOnImg, new Point(cloudCenterOnImg.X, imgSize.Height));
+                g.DrawLine(pen, cloudCenter, new Point(cloudCenter.X, 0));
+                g.DrawLine(pen, cloudCenter, new Point(cloudCenter.X, imgSize.Height));
 
-                g.DrawLine(pen, cloudCenterOnImg, new Point(0, cloudCenterOnImg.Y));
-                g.DrawLine(pen, cloudCenterOnImg, new Point(imgSize.Width, cloudCenterOnImg.Y));
+                g.DrawLine(pen, cloudCenter, new Point(0, cloudCenter.Y));
+                g.DrawLine(pen, cloudCenter, new Point(imgSize.Width, cloudCenter.Y));
             }
         }
 
         public void DrawCloudBoundary(Graphics g, Size imgSize, Point cloudCenter, int cloudCircleRadius)
         {
-            var cloudCenterOnImg = GetCloudCenterOnImg(imgSize, cloudCenter);
-
-            var location = new Point(cloudCenterOnImg.X - cloudCircleRadius,
-                cloudCenterOnImg.Y - cloudCircleRadius);
+            var location = new Point(cloudCenter.X - cloudCircleRadius,
+                cloudCenter.Y - cloudCircleRadius);
 
             var size = new Size(cloudCircleRadius * 2, cloudCircleRadius * 2);
 
@@ -71,11 +66,6 @@ namespace TagCloudTask.Visualization
 
                 i++;
             }
-        }
-
-        private Point GetCloudCenterOnImg(Size imgSize, Point cloudCenter)
-        {
-            return cloudCenter.MovePoint(imgSize.Width / 2, imgSize.Height / 2);
         }
     }
 }
