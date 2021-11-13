@@ -1,16 +1,39 @@
-﻿namespace TagsCloudVisualization
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+
+namespace TagsCloudVisualization
 {
     public class Program
     {
         public static void Main()
         {
-            var amount = 1;
-            for (int i = 0; i < amount; i++)
-                DemoImageGenerator.GenerateCircularTagCloud(300, new ArchimedeanSpiral());
+            DemoImageGenerator.GenerateCircularTagCloud(GetRandomSizesWithArea(3000, 600),
+                new ArchimedeanSpiral());
+            DemoImageGenerator.GenerateCircularTagCloud(GetRandomSizesWithArea(300, 600),
+                new ArchimedeanSpiral());
+            DemoImageGenerator.GenerateCircularTagCloud(GetRandomSizesWithArea(30, 600),
+                new ArchimedeanSpiral());
+            DemoImageGenerator.GenerateCircularTagCloud(GetRandomSizesWithArea(
+                new List<int> { 30, 300, 3000 }, 1200), new ArchimedeanSpiral());
+        }
 
-            var spiral = new ArchimedeanSpiral();
-            for (int i = 0; i < 5; i++)            
-                DemoImageGenerator.GenerateSpiral(i, spiral);            
+        public static List<Size> GetRandomSizesWithArea(int area, int amount) =>
+            GetRandomSizesWithArea(new List<int> { area }, amount);        
+
+        public static List<Size> GetRandomSizesWithArea(List<int> areas, int amount)
+        {
+            var sizes = new List<Size>();
+            var rnd = new Random();
+
+            for (int i = 0; i < amount; i++)
+            {
+                var area = areas[rnd.Next(areas.Count)];
+                var height = rnd.Next((int)Math.Ceiling(Math.Pow(area, 0.3)), (int)Math.Pow(area, 0.5));
+                var width = area / height;
+                sizes.Add(new Size(width, height));
+            }
+            return sizes;
         }
     }
 }

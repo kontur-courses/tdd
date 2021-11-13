@@ -18,7 +18,7 @@ namespace TagsCloudVisualization
             _colors = colors;
         }
 
-        public Bitmap Draw(IEnumerable<Rectangle> rectangles)
+        public Bitmap Draw(List<Rectangle> rectangles)
         {
             var bitmapSize = GetCanvasSize(rectangles, _center);
             var bitmap = new Bitmap(bitmapSize.Width, bitmapSize.Height);
@@ -43,7 +43,7 @@ namespace TagsCloudVisualization
             return bitmap;
         }
 
-        private Size GetCanvasSize(IEnumerable<Rectangle> rectangles, Point center)
+        private Size GetCanvasSize(List<Rectangle> rectangles, Point center)
         {
             var union = rectangles.First().UnionRange(rectangles);
             var distances = union.GetDistancesToInnerPoint(center);
