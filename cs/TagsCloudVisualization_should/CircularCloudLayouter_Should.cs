@@ -31,9 +31,8 @@ namespace TagsCloudVisualizationTests
             {
                 var rectangles = layouter.GetRectangles();
                 var visualizer = new BitmapVisualizer(rectangles);
-                visualizer.DrawRectangles(Color.Black, Color.Red);
                 var directoryToSave = new DirectoryInfo(@"../../../TestFails");
-                visualizer.Save($"{TestContext.CurrentContext.Test.Name}.Failed.png", 1, directoryToSave);
+                visualizer.Save($"{TestContext.CurrentContext.Test.Name}.Failed.png", 0.5, Color.Black, Color.Red, directoryToSave);
                 var fullPath = Path.Combine(directoryToSave.FullName,
                     $"{TestContext.CurrentContext.Test.Name}.Failed.{rectangles.Length}rectangles.png");
                 Console.WriteLine($"Tag cloud visualization saved to file: {fullPath}");
@@ -125,7 +124,7 @@ namespace TagsCloudVisualizationTests
             var rectanglesArea = rectangles.GetSummaryArea();
             var circleArea = GetDensityCheckingCircleArea(rectangles);
             var densityCoeff = rectanglesArea / circleArea;
-            densityCoeff.Should().BeGreaterOrEqualTo(0.7);
+            densityCoeff.Should().BeGreaterOrEqualTo(0.65);
             TestContext.WriteLine($"density coefficient: {densityCoeff}");
         }
 

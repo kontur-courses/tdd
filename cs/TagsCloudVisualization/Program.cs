@@ -20,14 +20,8 @@ namespace TagsCloudVisualization
             var isSameSizedString = isSameSized ? "SameSized" : "Different";
             var fileName = $@"{count}{isSameSizedString}RectanglesWithSizesFrom{minRectSize}To{maxRectSize}.png";
             var dirPath = @"../../../ExamplePictures";
-            using (var bmpVisualizer = new BitmapVisualizer(rectangles))
-            {
-                bmpVisualizer.DrawRectangles(Color.Black, Color.White);
-                var scaleCoeff = bmpVisualizer.BitmapWidth > 1920 || bmpVisualizer.BitmapHeight > 1080
-                    ? (1920d / bmpVisualizer.BitmapWidth + 1080d / bmpVisualizer.BitmapHeight) / 2
-                    : 1;
-                bmpVisualizer.Save(fileName, scaleCoeff, new DirectoryInfo(dirPath));
-            }
+            var bmpVisualizer = new BitmapVisualizer(rectangles);
+            bmpVisualizer.Save(fileName, 0.3, Color.Black, Color.White, new DirectoryInfo(dirPath));
         }
     }
 }
