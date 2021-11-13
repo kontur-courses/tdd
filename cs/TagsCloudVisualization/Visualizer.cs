@@ -50,5 +50,15 @@ namespace TagsCloudVisualization
             graphics.DrawRectangles(Pens.Aqua, cloudWithOffsetLocation);
             bitmap.Save(file);
         }
+
+        public void Draw(Template template, string filename)
+        {
+            foreach (var wordParameter in template.GetWords())
+            {
+                graphics.DrawString(wordParameter.Word, wordParameter.Font, Brush, wordParameter.WordRectangleF);
+            }
+
+            bitmap.Save(filename);
+        }
     }
 }

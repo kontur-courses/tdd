@@ -7,10 +7,11 @@ namespace TagsCloudVisualization
 {
     public class Template
     {
-        private List<WordParameter> words;
+        private readonly List<WordParameter> words;
 
         public Template()
         {
+            
         }
 
         public Template(IEnumerable<WordParameter> words)
@@ -23,9 +24,9 @@ namespace TagsCloudVisualization
             words.Add(wordParameter);
         }
 
-        public WordParameter[] GetWords()
+        public IEnumerable<WordParameter> GetWords()
         {
-            return words.ToArray();
+            return words;
         }
     }
 }
