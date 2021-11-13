@@ -43,8 +43,9 @@ namespace TagCloudTask.Layouting
             return rectangles.Count == 0
                 ? 0
                 : (int)Math.Ceiling(rectangles
-                    .Max(rectangle => rectangle.GetCorners()
-                        .Max(corner => corner.GetDistanceTo(Center))));
+                    .SelectMany(rect => rect
+                        .GetCorners())
+                    .Max(corner => corner.GetDistanceTo(Center)));
         }
 
         public Size GetRectanglesBoundaryBox()

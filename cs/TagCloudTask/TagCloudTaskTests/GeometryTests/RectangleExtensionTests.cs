@@ -46,17 +46,6 @@ namespace TagCloudTaskTests.GeometryTests
         }
 
         [Test]
-        public void MoveMiddlePointToCurrentLocation_ShouldMoveRectLocation()
-        {
-            var oldRect = rect;
-
-            rect = rect.MoveMiddlePointToCurrentLocation();
-
-            rect.Location.Should().Be(new Point(oldRect.X - oldRect.Width / 2,
-                oldRect.Y - oldRect.Height / 2));
-        }
-
-        [Test]
         public void GetCorners_ShouldReturnRectangleCorners(
             [ValueSource(nameof(Rectangles))] Rectangle rect)
 
