@@ -158,7 +158,7 @@ namespace TagsCloudVisualizationTests
             }
         }
 
-        public double GetCircleRadius(Point layouterCenter, List<Rectangle> rectangles)
+        private double GetCircleRadius(Point layouterCenter, List<Rectangle> rectangles)
         {
             double maxRadius = 0;
             foreach (var rectangle in rectangles)
@@ -171,7 +171,7 @@ namespace TagsCloudVisualizationTests
             return maxRadius;
         }
 
-        public double GetSumAreaOfRectangles(List<Rectangle> rectangles)
+        private double GetSumAreaOfRectangles(List<Rectangle> rectangles)
         {
             double result = 0;
             foreach (var rectangle in rectangles)
@@ -179,7 +179,7 @@ namespace TagsCloudVisualizationTests
             return result;
         }
 
-        public double GetEnclosingRectangleArea(List<Rectangle> rectangles)
+        private double GetEnclosingRectangleArea(List<Rectangle> rectangles)
         {
             var xMax = int.MinValue;
             var xMin = int.MaxValue;
@@ -202,7 +202,7 @@ namespace TagsCloudVisualizationTests
             return (xMax - xMin) * (yMax - yMin);
         }
 
-        public double GetCircleArea(double circleRadius)
+        private double GetCircleArea(double circleRadius)
         {
             if (circleRadius <= 0)
                 throw new ArgumentException();
