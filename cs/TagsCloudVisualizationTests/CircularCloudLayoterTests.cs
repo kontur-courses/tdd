@@ -58,20 +58,21 @@ namespace TagsCloudVisualizationTests
             difCircleAndSum.Should().BeLessThan(difSumAndEnclosingRectangle);
         }
 
-        /*
+        
         [TestCase(-5,10)]
         [TestCase(5,-5)]
         [TestCase(0,0)]
+        [TestCase(10, 10)]
         public void ShouldNotPutInvalidRectangle(int width, int height)
         {
             var rectangleSize = new Size(width, height);
             var layouterCenter = new Point(20, 10);
             var layouter = new CircularCloudLayouter(layouterCenter);
             Action put = () => layouter.PutNextRectangle(rectangleSize);
-            put.Should().Throw<ArgumentException>();
+            put.Should().NotThrow();
         }
-        */
         
+
         [Test]
         public void SameRectanglesShouldNotIntersect()
         {
@@ -89,15 +90,18 @@ namespace TagsCloudVisualizationTests
             }
         }
 
-        [Test]
-        public void ShouldNotIntersectWithRectangles()
+        [TestCase (20, 10)]
+        [TestCase(20, -10)]
+        [TestCase(-15, -5)]
+        [TestCase(-15, 5)]
+        public void ShouldNotIntersectWithRectangles(int width, int height)
         {
-            var layouterCenter = new Point(20, 10);
+            var layouterCenter = new Point(width, height);
             var layouter = new CircularCloudLayouter(layouterCenter);
             var random = new Random();
             for (int i = 0; i < 300; i++)
             {
-                var rectangleSize = new Size(random.Next(-20, 20), random.Next(-20, 20));
+                var rectangleSize = new Size(random.Next(-50, 50), random.Next(-50, 50));
                 layouter.PutNextRectangle(rectangleSize);
             }
             foreach (var rectangle in layouter.GetRectangleList)
