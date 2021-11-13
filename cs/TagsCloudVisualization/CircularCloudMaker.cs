@@ -11,6 +11,7 @@ namespace TagsCloudVisualization
         private readonly List<RectangleF> rectangles = new List<RectangleF>();
         private readonly HashSet<PointF> vertexes = new HashSet<PointF>();
         private readonly HashSet<PointF> pointsOnSides = new HashSet<PointF>();
+
         public IReadOnlyList<RectangleF> Rectangles => rectangles;
         public double Radius => vertexes.Select(p => p.DistanceTo(Center)).Max();
 
@@ -41,7 +42,7 @@ namespace TagsCloudVisualization
                 .OrderBy(p => Center.DistanceTo(p.Item1)))
             {
                 var rectangle = GetRectangle(rectanglePlacement.Item1, rectangleSize);
-                if (!RectangleCanBePlaced(rectangle)) continue;
+                if (!RectangleCanBePlaced(rectangle, rectanglePlacement.Item2)) continue;
                 rectangles.Add(rectangle);
                 AddRectangle(rectangle, rectanglePlacement.Item2);
                 return rectangle;
@@ -64,12 +65,7 @@ namespace TagsCloudVisualization
             }
 
             var tempSize = new Size(1, 1);
-            points.ForEach(p =>
-            {
-                var possibleRect = GetRectangle(GetRectangleCenter(p, tempSize), tempSize);
-                if (RectangleCanBePlaced(possibleRect))
-                    vertexes.Add(p);
-            });
+            points.ForEach(p => vertexes.Add(p));
         }
 
         private PointF OffsetPointFromCenter(PointF point, float dx, float dy)
@@ -88,10 +84,17 @@ namespace TagsCloudVisualization
             return OffsetPointFromCenter(placementLocation, size.Width / 2.0f, size.Height / 2.0f);
         }
 
-        private bool RectangleCanBePlaced(RectangleF rectangle)
+        private bool RectangleCanBePlaced(RectangleF rectangle, PointF location)
         {
-            return rectangles
+            var result = rectangles
                 .All(r => !r.IntersectsWith(rectangle));
+            if (result) 
+                return true;
+            var tempSize = new Size(1, 1);
+            var possibleRect = GetRectangle(GetRectangleCenter(location, tempSize), tempSize);
+            if (rectangles.Any(r => r.IntersectsWith(possibleRect)))
+                vertexes.Remove(location);
+            return false;
         }
 
         private RectangleF GetRectangle(PointF center, Size size)

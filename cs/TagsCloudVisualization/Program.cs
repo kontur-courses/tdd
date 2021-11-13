@@ -15,14 +15,14 @@ namespace TagsCloudVisualization
             var visualiser = new TagsCloudVisualiser(new Point());
             var random = new Random();
             var sizes = new List<Size>();
-            for(var i = 0; i < 1000; i++)
+            for(var i = 0; i < 10000; i++)
             {
                 var height = random.Next(1, 3);
                 sizes.Add(new Size(random.Next(height, height * 5), height));
                 //visualiser.PutRectangle(new Size(1,1));
             }
             var n = 0;
-            foreach (var size in sizes.OrderByDescending(s => s.Width + s.Height))
+            foreach (var size in sizes)
             {
                 visualiser.PutRectangle(size);
                 Console.WriteLine(n++);
