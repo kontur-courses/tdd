@@ -11,8 +11,8 @@ namespace TagsCloudVisualization
             using var graphics = Graphics.FromImage(bitmap);
             
             graphics.TranslateTransform(layoutSize.Width / 2, layoutSize.Height / 2);
-            
             graphics.DrawRectangles(new Pen(color), rectangles);
+            
             return bitmap;
         }
     }

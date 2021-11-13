@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -29,7 +28,8 @@ namespace TagsCloudTests
         [TearDown]
         public void TearDown()
         {
-            if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure) return;
+            if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure) 
+                return;
             var testName = TestContext.CurrentContext.Test.Name + ".bmp";
             var drawer = new Visualization();
             var path = Path.Combine(TestContext.CurrentContext.TestDirectory, "FailureTestImages");

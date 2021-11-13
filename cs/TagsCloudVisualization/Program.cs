@@ -45,7 +45,6 @@ namespace TagsCloudVisualization
     public class Parameters
     {
         public Func<Size> Factory { get; }
-
         public int Count { get; }
         public Color Color { get; }
 
