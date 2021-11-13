@@ -97,7 +97,7 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
-        public void ShouldNotIntersectWithRandomRectangles()
+        public void ShouldNotIntersectWithRectangles()
         {
             var layouterCenter = new Point(20, 10);
             var layouter = new CircularCloudLayouter(layouterCenter);
