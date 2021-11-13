@@ -1,15 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 
 namespace TagsCloudVisualization
 {
-    public class Visualization
+    public class Visualization : IDisposable
     {
         public List<Rectangle> RectangleList { get; set; }
 
         private Pen ColorPen { get; }
 
+        private Graphics Graphics;
 
         public Visualization(List<Rectangle> rectangleList, Pen colorPen)
         {
@@ -26,12 +28,22 @@ namespace TagsCloudVisualization
 
         private Bitmap DrawRectangles(Bitmap image)
         {
-            var graphics = Graphics.FromImage(image);
+            Graphics = Graphics.FromImage(image);
+            
             foreach (var rectangle in RectangleList)
-                graphics.DrawRectangle(ColorPen, rectangle);
-            graphics.Dispose();
-            ColorPen.Dispose();
+                Graphics.DrawRectangle(ColorPen, rectangle);
+
+            Dispose();
+            //Graphics.Dispose();
+            //ColorPen.Dispose();
+            
             return image;
+        }
+
+        public void Dispose()
+        {
+            Graphics.Dispose();
+            ColorPen.Dispose();
         }
     }
 }
