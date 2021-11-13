@@ -13,8 +13,6 @@ namespace TagsCloudVisualization
 
         private List<Rectangle> RectangleList { get; }
 
-        public List<Rectangle> GetRectangleList => RectangleList;
-        public Point GetCenter => Center;
 
         public CircularCloudLayouter(Point center)
         {
