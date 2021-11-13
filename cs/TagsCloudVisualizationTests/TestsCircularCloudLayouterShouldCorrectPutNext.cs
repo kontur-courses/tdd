@@ -12,7 +12,7 @@ using TagsCloudVisualization;
 namespace TagsCloudVisualizationTests
 {
     [TestFixture]
-    public class TestsCircularCloudLayouterWithVisualization
+    public class TestsCircularCloudLayouterShouldCorrectPutNext
     {
         private CircularCloudLayouter _layouter;
         private readonly Random _random = new Random();

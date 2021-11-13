@@ -64,8 +64,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CircularCloudLayoterTestsWithVisualization.cs" />
-    <Compile Include="CircularCloudLayouterTestsWithoutVisualization.cs" />
+    <Compile Include="TestsCircularCloudLayouterShouldCorrectPutNext.cs" />
+    <Compile Include="CircularCloudLayouterConstructorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
