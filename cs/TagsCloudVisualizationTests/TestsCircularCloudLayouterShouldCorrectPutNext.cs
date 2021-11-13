@@ -61,7 +61,7 @@ namespace TagsCloudVisualizationTests
             var random = new Random();
             for (int i = 0; i < 300; i++)
             {
-                var rectangleSize = new Size(random.Next(-50, 50), random.Next(-50, 50));
+                var rectangleSize = new Size(random.Next(-100, 100), random.Next(-100, 100));
                 RectanglesList.Add(Layouter.PutNextRectangle(rectangleSize));
             }
             foreach (var rectangle in RectanglesList)
@@ -77,7 +77,7 @@ namespace TagsCloudVisualizationTests
         public void SingleRectangleInCenterPutCorrectly()
         {
             var rectangleSize = new Size(_random.Next(-100, 100), _random.Next(-100, 100));
-            var layouterCenter = new Point(20, 10);
+            var layouterCenter = new Point(_random.Next(0,100), _random.Next(0,100));
             Layouter = new CircularCloudLayouter(layouterCenter);
             var rectangle = Layouter.PutNextRectangle(rectangleSize);
             rectangle.Location.Should().Be(layouterCenter);
@@ -88,8 +88,10 @@ namespace TagsCloudVisualizationTests
         [TestCase(1000)]
         public void FormShouldBeCloserToCircleThanToSquareWhenManyRectangles(int number)
         {
-            var rectangleSize = new Size(30, 10);
-            var layouterCenter = new Point(20, 10);
+           // var rectangleSize = new Size(_random.Next(0,100), _random.Next(0,100));
+            //var layouterCenter = new Point(_random.Next(0,100), _random.Next(0,100));
+            var rectangleSize = new Size(50, 50);
+            var layouterCenter = new Point(_random.Next(0, 100), _random.Next(0, 100));
             RectanglesList = new List<Rectangle>();
             Layouter = new CircularCloudLayouter(layouterCenter);
             for (int i = 0; i < number; i++)
@@ -105,8 +107,8 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void SameRectanglesShouldNotIntersect()
         {
-            var rectangleSize = new Size(2, 2);
-            var layouterCenter = new Point(20, 10);
+            var rectangleSize = new Size(_random.Next(-50, 50), _random.Next(-50,50));
+            var layouterCenter = new Point(_random.Next(0, 100), _random.Next(0,100));
             RectanglesList = new List<Rectangle>();
             Layouter = new CircularCloudLayouter(layouterCenter);
             for (int i = 0; i < 300; i++)
