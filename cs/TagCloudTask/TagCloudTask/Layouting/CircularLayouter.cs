@@ -8,28 +8,28 @@ namespace TagCloudTask.Layouting
 {
     public class CircularLayouter : ICloudLayouter
     {
-        private readonly DirectingArrow arrow;
-        private readonly List<Rectangle> rectangles;
+        private readonly DirectingArrow _arrow;
+        private readonly List<Rectangle> _rectangles;
 
         public CircularLayouter()
         {
             Center = Point.Empty;
-            rectangles = new List<Rectangle>();
-            arrow = new DirectingArrow(Center);
+            _rectangles = new List<Rectangle>();
+            _arrow = new DirectingArrow(Center);
         }
 
         public CircularLayouter(Point center)
         {
             Center = center;
-            rectangles = new List<Rectangle>();
-            arrow = new DirectingArrow(center);
+            _rectangles = new List<Rectangle>();
+            _arrow = new DirectingArrow(center);
         }
 
         public Point Center { get; }
 
         public List<Rectangle> GetRectanglesCopy()
         {
-            return new List<Rectangle>(rectangles);
+            return new List<Rectangle>(_rectangles);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -39,35 +39,35 @@ namespace TagCloudTask.Layouting
             var rect = new Rectangle(Center.MovePoint(-rectangleSize.Width / 2,
                 -rectangleSize.Height / 2), rectangleSize);
 
-            while (rect.IntersectsWithAny(rectangles))
+            while (rect.IntersectsWithAny(_rectangles))
             {
-                arrow.Rotate();
-                var arrowEndPoint = arrow.GetEndPoint();
+                _arrow.Rotate();
+                var arrowEndPoint = _arrow.GetEndPoint();
                 rect.Location = arrowEndPoint;
                 rect = rect.MoveMiddlePointToCurrentLocation();
             }
 
-            rectangles.Add(rect);
+            _rectangles.Add(rect);
             return rect;
         }
 
         public int GetCloudBoundaryRadius()
         {
-            return rectangles.Count == 0
+            return _rectangles.Count == 0
                 ? 0
-                : (int)Math.Ceiling(rectangles
+                : (int)Math.Ceiling(_rectangles
                     .Max(rectangle => rectangle.GetLongestDistanceFromPoint(Center)));
         }
 
         public Size GetRectanglesBoundaryBox()
         {
-            if (rectangles.Count == 0)
+            if (_rectangles.Count == 0)
                 return Size.Empty;
 
             var width
-                = rectangles.Max(rect => rect.Right) - rectangles.Min(rect => rect.X);
+                = _rectangles.Max(rect => rect.Right) - _rectangles.Min(rect => rect.X);
             var height
-                = rectangles.Max(rect => rect.Bottom) - rectangles.Min(rect => rect.Y);
+                = _rectangles.Max(rect => rect.Bottom) - _rectangles.Min(rect => rect.Y);
 
             return new Size(width, height);
         }

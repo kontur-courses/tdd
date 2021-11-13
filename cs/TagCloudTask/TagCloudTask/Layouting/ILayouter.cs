@@ -5,9 +5,9 @@ namespace TagCloudTask.Layouting
 {
     public interface ILayouter
     {
-        Size GetRectanglesBoundaryBox();
-
         List<Rectangle> GetRectanglesCopy();
+
+        Size GetRectanglesBoundaryBox();
 
         Rectangle PutNextRectangle(Size rectangleSize);
     }
