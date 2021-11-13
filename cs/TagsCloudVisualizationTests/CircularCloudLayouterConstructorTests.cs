@@ -12,8 +12,7 @@ namespace TagsCloudVisualizationTests
         [Test] 
         public void CloudLayouterConstructorShouldWorkCorrectly() 
         {
-            var ceedRandom = new Random(987476358);
-            var center = new Point(ceedRandom.Next(-100,100),  ceedRandom.Next(-100, 100)); 
+            var center = new Point(2500, 2500); 
             Action creating = () => new CircularCloudLayouter(center);
             creating.Should().NotThrow();
         }
