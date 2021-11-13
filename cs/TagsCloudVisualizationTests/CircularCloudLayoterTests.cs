@@ -58,7 +58,7 @@ namespace TagsCloudVisualizationTests
             difCircleAndSum.Should().BeLessThan(difSumAndEnclosingRectangle);
         }
 
-
+        /*
         [TestCase(-5,10)]
         [TestCase(5,-5)]
         [TestCase(0,0)]
@@ -70,6 +70,7 @@ namespace TagsCloudVisualizationTests
             Action put = () => layouter.PutNextRectangle(rectangleSize);
             put.Should().Throw<ArgumentException>();
         }
+        */
         
         [Test]
         public void SameRectanglesShouldNotIntersect()
@@ -96,7 +97,7 @@ namespace TagsCloudVisualizationTests
             var random = new Random();
             for (int i = 0; i < 300; i++)
             {
-                var rectangleSize = new Size(random.Next(1, 20), random.Next(1, 20));
+                var rectangleSize = new Size(random.Next(-20, 20), random.Next(-20, 20));
                 layouter.PutNextRectangle(rectangleSize);
             }
             foreach (var rectangle in layouter.GetRectangleList)

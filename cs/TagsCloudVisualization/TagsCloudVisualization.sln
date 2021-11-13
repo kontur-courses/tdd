@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization.csproj", "{5E116E51-FA2A-4906-9FB1-67BAA4AEB3E1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualisationTests", "..\TagsCloudVisualisationTests\TagsCloudVisualisationTests.csproj", "{99029145-532C-47E5-AC8C-DC80D99DCE77}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualizationTests", "..\TagsCloudVisualizationTests\TagsCloudVisualizationTests.csproj", "{4A8A8AD1-27B2-4035-83FD-0E4D03776259}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{5E116E51-FA2A-4906-9FB1-67BAA4AEB3E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E116E51-FA2A-4906-9FB1-67BAA4AEB3E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E116E51-FA2A-4906-9FB1-67BAA4AEB3E1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{99029145-532C-47E5-AC8C-DC80D99DCE77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{99029145-532C-47E5-AC8C-DC80D99DCE77}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{99029145-532C-47E5-AC8C-DC80D99DCE77}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{99029145-532C-47E5-AC8C-DC80D99DCE77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A8A8AD1-27B2-4035-83FD-0E4D03776259}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A8A8AD1-27B2-4035-83FD-0E4D03776259}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A8A8AD1-27B2-4035-83FD-0E4D03776259}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A8A8AD1-27B2-4035-83FD-0E4D03776259}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

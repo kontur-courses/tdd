@@ -26,8 +26,9 @@ namespace TagsCloudVisualization
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             
-            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
-                throw new ArgumentException();
+            //if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+            //if (rectangleSize.Height*rectangleSize.Width <= 0)
+                //throw new ArgumentException();
             var nextRectangle = CreateNewRectangle(rectangleSize);
             while (RectangleList.Any(rectangle => rectangle.IntersectsWith(nextRectangle)))
                 nextRectangle = CreateNewRectangle(rectangleSize);
