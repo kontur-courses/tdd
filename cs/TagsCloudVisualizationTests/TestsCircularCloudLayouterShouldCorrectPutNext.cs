@@ -41,7 +41,7 @@ namespace TagsCloudVisualizationTests
         [TestCase(1,0)]
         public void ShouldThrowExceptionWhenPutRectangleWithZeroEdge(int width, int height)
         {
-            var ceedRandom = new Random(new Random().Next(0));
+            var ceedRandom = new Random(0);
             var rectangleSize = new Size(width, height);
             var layouterCenter = new Point(ceedRandom.Next(-100,100), ceedRandom.Next(-100,100));
             Layouter = new CircularCloudLayouter(layouterCenter);
@@ -54,7 +54,7 @@ namespace TagsCloudVisualizationTests
         [TestCase(10, 10)]
         public void ShouldNotThrowIfPutRectangleWithCorrectSize(int width, int height)
         {
-            var ceedRandom = new Random(new Random().Next(0));
+            var ceedRandom = new Random(0);
             var rectangleSize = new Size(width, height);
             var layouterCenter = new Point(ceedRandom.Next(-100, 100), ceedRandom.Next(-100, 100));
             Layouter = new CircularCloudLayouter(layouterCenter);
@@ -68,12 +68,10 @@ namespace TagsCloudVisualizationTests
         [TestCase(-15, 5)]
         public void ShouldNotIntersectWithRectangles(int width, int height)
         {
-            var ceedRandom = new Random(new Random().Next(0));
+            var ceedRandom = new Random(0);
             var layouterCenter = new Point(width, height);
             Layouter = new CircularCloudLayouter(layouterCenter);
             RectanglesList = new List<Rectangle>();
-
-            var random = new Random();
             for (int i = 0; i < 300; i++)
             {
                 var rectangleSize = new Size(ceedRandom.Next(-100,100), ceedRandom.Next(-100,100));
@@ -97,7 +95,7 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void SingleRectangleInCenterPutCorrectly()
         {
-            var ceedRandom = new Random(new Random().Next(0));
+            var ceedRandom = new Random(0);
             var rectangleSize = new Size(ceedRandom.Next(-100,100), ceedRandom.Next(-100,100));
             var layouterCenter = new Point(Size.Empty);
             while (layouterCenter.X == 0 || layouterCenter.Y == 0)
@@ -112,8 +110,11 @@ namespace TagsCloudVisualizationTests
         [TestCase(1000)]
         public void FormShouldBeCloserToCircleThanToSquareWhenManyRectangles(int number)
         {
-            var ceedRandom = new Random(new Random().Next(0));
+            var ceedRandom = new Random(0);
+
             var rectangleSize = new Size(new Random().Next(30, 100), new Random().Next(30, 100));
+            //var rectangleSize = new Size(-50, -50);
+
             var layouterCenter = new Point(ceedRandom.Next(-100,100), ceedRandom.Next(-100,100));
             RectanglesList = new List<Rectangle>();
             Layouter = new CircularCloudLayouter(layouterCenter);
@@ -139,7 +140,7 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void SameRectanglesShouldNotIntersect()
         {
-            var ceedRandom = new Random(new Random().Next(0));
+            var ceedRandom = new Random(0);
             var rectangleSize = new Size(ceedRandom.Next(-100,100), ceedRandom.Next(-100,100));
             var layouterCenter = new Point(ceedRandom.Next(-100,100), ceedRandom.Next(-100,100));
             RectanglesList = new List<Rectangle>();
@@ -184,7 +185,6 @@ namespace TagsCloudVisualizationTests
             return result;
         }
 
-        //private int GetNewRandom() => _seedRandom.Next();
 
         private double GetEnclosingRectangleArea(List<Rectangle> rectangles)
         {

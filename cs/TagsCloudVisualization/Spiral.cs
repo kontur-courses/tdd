@@ -17,8 +17,8 @@ namespace TagsCloudVisualization
 
         public Point GetNextPoint(Point center)
         {
-            var nextX = center.X + CurrentAngle * Math.Cos(CurrentAngle);
-            var nextY = center.Y + CurrentAngle * Math.Sin(CurrentAngle);
+            var nextX = center.X + CurrentAngle * 10 * Math.Cos(CurrentAngle);
+            var nextY = center.Y + CurrentAngle * 10 * Math.Sin(CurrentAngle);
             var roundNextX = Convert.ToInt32(Math.Round(nextX));
             var roundNextY = Convert.ToInt32(Math.Round(nextY));
             var nextPoint = new Point(roundNextX, roundNextY);
