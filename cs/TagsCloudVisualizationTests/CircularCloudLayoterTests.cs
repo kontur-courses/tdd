@@ -110,19 +110,20 @@ namespace TagsCloudVisualizationTests
         public double GetCircleRadius(CircularCloudLayouter layouter)
         {
             var possibleRadii = new List<double>();
+            var layouterCenter = layouter.GetCenter;
             foreach (var rectangle in layouter.GetRectangleList)
             {
 
                 var rightUpNode = new Point(rectangle.X + rectangle.Width, rectangle.Y);
                 var rightDownNode = new Point(rectangle.X + rectangle.Width, rectangle.Y + rectangle.Height);
                 var leftDowNode = new Point(rectangle.X, rectangle.Y + rectangle.Height);
-                var leftUpToCenter = Math.Sqrt(Math.Pow(rectangle.X - layouter.Center.X, 2) +
-                                               Math.Pow(rectangle.Y - layouter.Center.Y, 2));
+                var leftUpToCenter = Math.Sqrt(Math.Pow(rectangle.X - layouterCenter.X, 2) +
+                                               Math.Pow(rectangle.Y - layouterCenter.Y, 2));
                 var leftDownToCenter =
-                    Math.Sqrt(Math.Pow(leftDowNode.X - layouter.Center.X, 2) + Math.Pow(leftDowNode.Y - layouter.Center.Y, 2));
-                var rightUpToCenter = Math.Sqrt(Math.Pow(rightUpNode.X - layouter.Center.X, 2) + Math.Pow(rightUpNode.Y - layouter.Center.Y, 2));
+                    Math.Sqrt(Math.Pow(leftDowNode.X - layouterCenter.X, 2) + Math.Pow(leftDowNode.Y - layouterCenter.Y, 2));
+                var rightUpToCenter = Math.Sqrt(Math.Pow(rightUpNode.X - layouterCenter.X, 2) + Math.Pow(rightUpNode.Y - layouterCenter.Y, 2));
                 var rightDownToCenter =
-                    Math.Sqrt(Math.Pow(rightDownNode.X - layouter.Center.X, 2) + Math.Pow(rightDownNode.Y - layouter.Center.Y, 2));
+                    Math.Sqrt(Math.Pow(rightDownNode.X - layouterCenter.X, 2) + Math.Pow(rightDownNode.Y - layouterCenter.Y, 2));
                 possibleRadii.Add(new List<double> { rightDownToCenter, rightUpToCenter, leftDownToCenter, leftUpToCenter }.Max());
             }
             return possibleRadii.Max();
