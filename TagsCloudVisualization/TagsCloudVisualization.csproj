@@ -7,7 +7,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{28E27620-7C89-4AFF-8113-C16F6347A71B}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>TagsCloudVisualization</RootNamespace>
     <AssemblyName>TagsCloudVisualization</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
@@ -36,6 +36,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="FluentAssertions, Version=6.2.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
       <HintPath>packages\FluentAssertions.6.2.0\lib\net47\FluentAssertions.dll</HintPath>
@@ -62,7 +66,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Tests\CircularCloudLayouterShould.cs" />
     <Compile Include="ConvexHullBuilder.cs" />
     <Compile Include="Tests\ConvexHullBuilderShould.cs" />
