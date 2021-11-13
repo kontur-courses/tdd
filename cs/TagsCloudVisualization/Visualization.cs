@@ -23,6 +23,7 @@ namespace TagsCloudVisualization
             var image = new Bitmap(imageSize.Width, imageSize.Height);
             image = DrawRectangles(image);
             image.Save(path, format);
+            image.Dispose();
             Dispose();
         }
 
