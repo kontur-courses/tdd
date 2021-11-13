@@ -5,34 +5,34 @@ namespace TagCloudTask.Geometry
 {
     public class DirectingArrow
     {
-        private readonly Point startPoint;
-        private double angleRadian;
+        private readonly Point _startPoint;
+        private double _angleRadian;
 
-        private int radiusVectorLength;
+        private int _radiusVectorLength;
 
         public DirectingArrow(Point startPoint)
         {
-            this.startPoint = startPoint;
-            angleRadian = 0;
-            radiusVectorLength = 0;
+            _startPoint = startPoint;
+            _angleRadian = 0;
+            _radiusVectorLength = 0;
         }
 
         public void Rotate()
         {
-            var rotationAngle = Math.PI / (6 + radiusVectorLength);
-            angleRadian += rotationAngle;
+            var rotationAngle = Math.PI / (6 + _radiusVectorLength);
+            _angleRadian += rotationAngle;
 
-            if (angleRadian >= 2 * Math.PI)
+            if (_angleRadian >= 2 * Math.PI)
             {
-                angleRadian -= 2 * Math.PI;
-                radiusVectorLength += 1;
+                _angleRadian -= 2 * Math.PI;
+                _radiusVectorLength += 1;
             }
         }
 
         public Point GetEndPoint()
         {
-            var x = (int)(startPoint.X + radiusVectorLength * Math.Cos(angleRadian));
-            var y = (int)(startPoint.Y + radiusVectorLength * Math.Sin(angleRadian));
+            var x = (int)(_startPoint.X + _radiusVectorLength * Math.Cos(_angleRadian));
+            var y = (int)(_startPoint.Y + _radiusVectorLength * Math.Sin(_angleRadian));
 
             return new Point(x, y);
         }

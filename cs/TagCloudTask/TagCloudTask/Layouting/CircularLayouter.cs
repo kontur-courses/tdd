@@ -44,7 +44,7 @@ namespace TagCloudTask.Layouting
                 arrow.Rotate();
                 var arrowEndPoint = arrow.GetEndPoint();
                 rect.Location = arrowEndPoint;
-                rect.MoveMiddlePointToCurrentLocation();
+                rect = rect.MoveMiddlePointToCurrentLocation();
             }
 
             rectangles.Add(rect);

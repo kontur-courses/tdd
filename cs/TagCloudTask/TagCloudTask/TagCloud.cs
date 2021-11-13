@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using TagCloudTask.Geometry;
 using TagCloudTask.Layouting;
 using TagCloudTask.Saving;
 using TagCloudTask.Visualization;
@@ -72,10 +73,10 @@ namespace TagCloudTask
         {
             for (var i = 0; i < rectangles.Count; i++)
             {
-                var newX = rectangles[i].X + imgSize.Width / 2;
-                var newY = rectangles[i].Y + imgSize.Height / 2;
+                var newLocation = rectangles[i].Location
+                    .MovePoint(imgSize.Width / 2, imgSize.Height / 2);
 
-                var newRect = new Rectangle(new Point(newX, newY), rectangles[i].Size);
+                var newRect = new Rectangle(newLocation, rectangles[i].Size);
                 rectangles[i] = newRect;
             }
 

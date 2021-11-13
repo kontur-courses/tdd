@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -8,13 +9,19 @@ namespace TagCloudTask.Geometry
     {
         public static bool IntersectsWithAny(this Rectangle rect, List<Rectangle> rectangles)
         {
+            if (rectangles == null)
+                throw new ArgumentException("rectangles list can't be null");
             return rectangles.Any(rectangle => rect.IntersectsWith(rectangle));
         }
 
-        public static void MoveMiddlePointToCurrentLocation(this Rectangle rect)
+        public static Rectangle MoveMiddlePointToCurrentLocation(this Rectangle rect)
         {
-            rect.Location = rect.Location.MovePoint(rect.X - rect.Width / 2,
-                rect.Y - rect.Height / 2);
+            var diffX = rect.X - rect.Width / 2;
+            var diffY = rect.Y - rect.Height / 2;
+
+            var newLocation = rect.Location.MovePoint(diffX, diffY);
+
+            return new Rectangle(newLocation, rect.Size);
         }
 
         public static IEnumerable<Point> GetCorners(this Rectangle rect)
