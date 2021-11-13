@@ -28,7 +28,7 @@ namespace TagsCloudVisualizationTests
                 using (var visualization = new Visualization(RectanglesList, new Pen(Color.White, 3)))
                 {
                     var testName = TestContext.CurrentContext.Test.Name;
-                    var path = AppDomain.CurrentDomain.BaseDirectory + "\\" + testName + "." + ImageFormat.Jpeg;
+                    var path = AppDomain.CurrentDomain.BaseDirectory + "" + testName + "." + ImageFormat.Jpeg;
                     Console.WriteLine($"Tag cloud visualization saved to file {path}");
                     visualization.DrawAndSaveImage(new Size(5000, 5000), path, ImageFormat.Jpeg);
                 }
@@ -88,19 +88,19 @@ namespace TagsCloudVisualizationTests
         [TestCase(1000)]
         public void FormShouldBeCloserToCircleThanToSquareWhenManyRectangles(int number)
         {
-           // var rectangleSize = new Size(_random.Next(0,100), _random.Next(0,100));
-            //var layouterCenter = new Point(_random.Next(0,100), _random.Next(0,100));
-            var rectangleSize = new Size(50, 50);
-            var layouterCenter = new Point(_random.Next(0, 100), _random.Next(0, 100));
+            var rectangleSize = new Size(_random.Next(30, 100), _random.Next(30,100));
+            var layouterCenter = new Point(_random.Next(0, 1000), _random.Next(0, 1000));
             RectanglesList = new List<Rectangle>();
             Layouter = new CircularCloudLayouter(layouterCenter);
             for (int i = 0; i < number; i++)
                 RectanglesList.Add(Layouter.PutNextRectangle(rectangleSize));
             var sumArea = GetSumAreaOfRectangles(RectanglesList);
             var circleArea = GetCircleArea(GetCircleRadius(layouterCenter, RectanglesList));
+            
             var enclosingRectangleArea = GetEnclosingRectangleArea(RectanglesList);
             var difCircleAndSum = sumArea/circleArea;
             var difSumAndEnclosingRectangle = sumArea/enclosingRectangleArea;
+
             difCircleAndSum.Should().BeGreaterThan(difSumAndEnclosingRectangle);
         }
 
@@ -139,7 +139,7 @@ namespace TagsCloudVisualizationTests
         {
             double result = 0;
             foreach (var rectangle in rectangles)
-                result += rectangle.Height * rectangle.Width;
+                result += Math.Abs(rectangle.Height) * Math.Abs(rectangle.Width);
             return result;
         }
 
