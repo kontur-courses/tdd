@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TagsCloudVisualizationTests
+﻿namespace TagsCloudVisualizationTests
 {
-    class Program
+    public class Program
     {
-        static void Main()
-        {
-        }
+        public static void Main()
+        { }
     }
 }

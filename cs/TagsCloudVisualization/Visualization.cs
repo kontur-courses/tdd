@@ -11,7 +11,7 @@ namespace TagsCloudVisualization
 
         private Pen ColorPen { get; }
 
-        private Graphics Graphics;
+        private Graphics Graphics { get; set; }
 
         public Visualization(List<Rectangle> rectangleList, Pen colorPen)
         {
@@ -29,14 +29,10 @@ namespace TagsCloudVisualization
         private Bitmap DrawRectangles(Bitmap image)
         {
             Graphics = Graphics.FromImage(image);
-            
             foreach (var rectangle in RectangleList)
                 Graphics.DrawRectangle(ColorPen, rectangle);
-
             Dispose();
-            //Graphics.Dispose();
-            //ColorPen.Dispose();
-            
+
             return image;
         }
 
