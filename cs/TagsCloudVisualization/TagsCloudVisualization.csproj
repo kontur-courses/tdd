@@ -60,9 +60,11 @@
     <ItemGroup>
         <Compile Include="CircularCloudLayouter.cs" />
         <Compile Include="CircularCloudLayouterTests.cs" />
+        <Compile Include="Movement.cs" />
+        <Compile Include="MovementType.cs" />
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="SideToFill.cs" />
+        <Compile Include="Quarter.cs" />
     </ItemGroup>
     <ItemGroup>
       <None Include="packages.config" />

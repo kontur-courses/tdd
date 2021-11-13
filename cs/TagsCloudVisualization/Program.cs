@@ -22,20 +22,48 @@ namespace TagsCloudVisualization
             };
             
             var random = new Random();
-            var image = new Bitmap(6000, 3000);
-            var circ = new CircularCloudLayouter(new Point(image.Width / 2, image.Height / 2));
+            var image = new Bitmap(2000, 2000);
+            var center = new Point(image.Width / 2, image.Height / 2);
+            var layouter = new CircularCloudLayouter(center);
             var brush = Graphics.FromImage(image);
-            var pen = new Pen(Color.Black);
+
+            Console.WriteLine("1 - облако слов из листа");
+            Console.WriteLine("2 - случайный размер от 5 до 70 по каждой оси");
+            Console.WriteLine("3 - фиксированный размер 40");
+            var answer = int.Parse(Console.ReadLine() ?? throw new InvalidOperationException());
             
-            brush.DrawEllipse(new Pen(Color.Red, 3), image.Width / 2, image.Height / 2, 3, 3);
-            foreach (var word in words)
+            if (answer == 1)
             {
-                var fontSize = random.Next(16, 48);
-                var rectangle = circ.PullNextRectangle(new Size(word.Length * fontSize, (int)(fontSize * 1.3)));
-                brush.DrawRectangle(pen, rectangle);
-                brush.DrawString(word, new Font(FontFamily.GenericMonospace, fontSize), new SolidBrush(Color.Goldenrod), rectangle);
+                foreach (var word in words)
+                {
+                    var fontSize = random.Next(16, 48);
+                    var rectangle = layouter.PutNextRectangle(new Size(word.Length * fontSize, (int)(fontSize * 1.3)));
+                    brush.DrawRectangle(new Pen(Color.Black), rectangle);
+                    brush.DrawString(word, new Font(FontFamily.GenericMonospace, fontSize),
+                        new SolidBrush(Color.Goldenrod), rectangle);
+                }
             }
+            else
+            {
+                for (var i = 0; i < 100; i++)
+                {
+                    Rectangle rectangle;
+                    
+                    if (answer == 2)
+                        rectangle = layouter.PutNextRectangle(new Size(random.Next(5, 70), random.Next(5, 70)));
+                    else
+                        rectangle = layouter.PutNextRectangle(new Size(40, 40));
+                    
+                    brush.FillRectangle(new SolidBrush(Color.Green), rectangle);
+                    brush.DrawString(i.ToString(), new Font(FontFamily.GenericMonospace, 6), 
+                        new SolidBrush(Color.Red), rectangle);
+                    brush.DrawRectangle(new Pen(Color.Black), rectangle);
+                }
+            }
+
+            brush.DrawEllipse(new Pen(Color.Red, 3), center.X, center.Y, 3, 3);
             image.Save("Sample.png");
+            
         }
     }
 }

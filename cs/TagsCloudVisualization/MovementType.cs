@@ -1,10 +1,10 @@
 ﻿namespace TagsCloudVisualization
 {
-    public enum SideToFill
+    public enum MovementType
     {
         Up,
+        Left,
         Right,
-        Down,
-        Left
+        Down
     }
 }

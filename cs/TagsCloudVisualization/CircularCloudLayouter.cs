@@ -1,195 +1,173 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
     internal class CircularCloudLayouter
     {
-        public Rectangle filledArea;
-        public List<Rectangle> Rectangles = new List<Rectangle>();
-        private Rectangle? previousRectangle = null;
-        private SideToFill sideToFill = SideToFill.Left;
-
-        private int maxBottom;
-        private int minTop;
-        private int minLeft;
-        private int maxRight;
+        private readonly List<Rectangle> rectangles = new List<Rectangle>();
+        private Point center;
+        private int angle;
+        private readonly int step;
 
         public CircularCloudLayouter(Point center)
         {
-            filledArea = new Rectangle(center, Size.Empty);
-            maxBottom = center.Y;
-            minTop = center.Y;
-            maxRight = center.X;
-            minLeft = center.X;
+            this.center = center;
+            step = 10;
+            angle = 0;
         }
 
-        public Rectangle PullNextRectangle(Size rectangleSize)
+        public Rectangle[] GetPutRectangles()
+        {
+            return rectangles.ToArray();
+        }
+
+        public Point GetCenter()
+        {
+            return center;
+        }
+
+        public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
             {
                 throw new ArgumentException(
                     $"Size is empty! Width: {rectangleSize.Width}, height: {rectangleSize.Height}");
             }
-            var nextPoint = GetNextPoint(rectangleSize);
-            var nextRect = new Rectangle(nextPoint, rectangleSize);
-            nextRect = Move(nextRect);
             
-            if (previousRectangle != null)
-                CheckAndSwitchSideToFill(rectangleSize, nextRect, nextPoint);
-            
-            UpdateSizeFilledRect(nextRect);
+            Rectangle nextRectangle;
 
-            previousRectangle = nextRect;
-            Rectangles.Add(nextRect);
-            return nextRect;
-        }
-
-        private void UpdateSizeFilledRect(Rectangle nextRect)
-        {
-            if (nextRect.Bottom > maxBottom)
-                maxBottom = nextRect.Bottom;
-            
-            if (nextRect.Right > maxRight)
-                maxRight = nextRect.Right;
-            
-            if (nextRect.Left < minLeft)
-                minLeft = nextRect.Left;
-            
-            if (nextRect.Top < minTop)
-                minTop = nextRect.Top;
-        }
-
-        private void CheckAndSwitchSideToFill(Size rectangleSize, Rectangle nextRect, Point nextPoint)
-        {
-            if (sideToFill == SideToFill.Up && (nextRect.Right - filledArea.Right) / (double)nextRect.Width >= 0.5)
+            do
             {
-                sideToFill = SideToFill.Right;
-                UpdateFilledRect();
-            }
-            else if (sideToFill == SideToFill.Right &&
-                     (nextPoint.Y + rectangleSize.Height - filledArea.Bottom) / (double)rectangleSize.Height >= 0.5)
-            {
-                sideToFill = SideToFill.Down;
-                UpdateFilledRect();
-            }
-            else if (sideToFill == SideToFill.Down &&
-                     (filledArea.Left - nextPoint.X) / (double)rectangleSize.Width >= 0.5)
-            {
-                sideToFill = SideToFill.Left;
-                UpdateFilledRect();
-            }
-            else if (sideToFill == SideToFill.Left &&
-                     (filledArea.Top - nextRect.Top) / (double)rectangleSize.Height >= 0.5)
-            {
-                sideToFill = SideToFill.Up;
-                UpdateFilledRect();
-            }
-        }
+                var nextPoint = GetNextPoint();
+                nextRectangle = new Rectangle(nextPoint, rectangleSize);
 
-        private void UpdateFilledRect()
-        {
-            if (previousRectangle is null)
-                return;
+            } while (DoesIntersectPreviousRectangles(nextRectangle));
 
-            filledArea = new Rectangle(minLeft, minTop, maxRight - minLeft, maxBottom - minTop);
-        }
+            Movement possibleMovementToCenter;
 
-        private Point GetNextPoint(Size rectangleSize)
-        {
-            if (previousRectangle is null)
-                return new Point(filledArea.X - rectangleSize.Width, filledArea.Y);
-
-            var newPoint = new Point();
-            
-            if (sideToFill is SideToFill.Up)
+            do
             {
-                newPoint.X = previousRectangle.Value.Right;
-                newPoint.Y = filledArea.Top - rectangleSize.Height;
-            }
-            else if (sideToFill is SideToFill.Right)
-            {
-                newPoint.X = filledArea.Right;
-                newPoint.Y = previousRectangle.Value.Bottom;
-            }
-            else if (sideToFill is SideToFill.Down)
-            {
-                newPoint.X = previousRectangle.Value.X - rectangleSize.Width;
-                newPoint.Y = filledArea.Bottom;
-            }
-            else if (sideToFill is SideToFill.Left)
-            {
-                newPoint.X = filledArea.X - rectangleSize.Width;
-                newPoint.Y = previousRectangle.Value.Y - rectangleSize.Height;
-            }
+                possibleMovementToCenter = GetPossibleMovement(nextRectangle);
+                var previousQuarter = GetQuarter(nextRectangle);
+                nextRectangle = possibleMovementToCenter.MoveRectangle(nextRectangle);
+                
+                if (QuarterChanged(previousQuarter, nextRectangle))
+                    break;
+            } while (possibleMovementToCenter.CanDoMovement());
 
-            return newPoint;
-        }
-
-        private Rectangle Move(Rectangle nextRectangle)
-        {
-            var maxPossibleDistanceRight = int.MaxValue;
-            var maxPossibleDistanceLeft = int.MaxValue;
-            var maxPossibleDistanceUp = int.MaxValue;
-            var maxPossibleDistanceDown = int.MaxValue;
-            
-            foreach (var rectangle in Rectangles)
-            {
-                if (HaveIntersectionOnX(rectangle, nextRectangle))
-                {
-                    if (rectangle.Right <= nextRectangle.Left)
-                    {
-                        maxPossibleDistanceLeft =
-                            Math.Min(nextRectangle.Left - rectangle.Right, maxPossibleDistanceLeft);
-                    }
-                    else if (rectangle.Left >= nextRectangle.Right)
-                    {
-                        maxPossibleDistanceRight =
-                            Math.Min(rectangle.Left - nextRectangle.Right, maxPossibleDistanceRight);
-                    }
-                }
-            
-                if (HaveIntersectionOnY(rectangle, nextRectangle))
-                {
-                    if (rectangle.Bottom <= nextRectangle.Top)
-                    {
-                        maxPossibleDistanceUp = Math.Min(nextRectangle.Top - rectangle.Bottom, maxPossibleDistanceUp);
-                    }
-                    else if (rectangle.Top >= nextRectangle.Bottom)
-                    {
-                        maxPossibleDistanceDown =
-                            Math.Min(rectangle.Top - nextRectangle.Bottom, maxPossibleDistanceDown);
-                    }
-                }
-            }
-            
-            if (maxPossibleDistanceDown > 0 && maxPossibleDistanceDown != int.MaxValue && sideToFill is SideToFill.Up)
-                nextRectangle.Y += maxPossibleDistanceDown;
-            if (maxPossibleDistanceLeft > 0 && maxPossibleDistanceLeft != int.MaxValue && sideToFill is SideToFill.Right)
-                nextRectangle.X -= maxPossibleDistanceLeft;
-            if (maxPossibleDistanceRight > 0 && maxPossibleDistanceRight != int.MaxValue && sideToFill is SideToFill.Left)
-                nextRectangle.X += maxPossibleDistanceRight;
-            if (maxPossibleDistanceUp > 0 && maxPossibleDistanceUp != int.MaxValue && sideToFill is SideToFill.Down)
-                nextRectangle.Y -= maxPossibleDistanceUp;
-
+            rectangles.Add(nextRectangle);
             return nextRectangle;
         }
 
-        private bool HaveIntersectionOnX(Rectangle rect1, Rectangle rect2)
+        private bool QuarterChanged(Quarter quarter, Rectangle nextRectangle)
         {
-            return rect1.Top > rect2.Top && rect1.Top < rect2.Bottom
-                   || rect1.Bottom > rect2.Top && rect1.Bottom < rect2.Bottom
-                   || rect1.Top >= rect2.Top && rect1.Bottom <= rect2.Bottom
-                   || rect1.Top <= rect2.Top && rect1.Bottom >= rect2.Bottom;
+            return quarter != GetQuarter(nextRectangle);
         }
 
-        private bool HaveIntersectionOnY(Rectangle rect1, Rectangle rect2)
+        private Point GetNextPoint()
         {
-            return rect1.Right > rect2.Left && rect1.Right < rect2.Right
-                   || rect1.Left > rect2.Left && rect1.Left < rect2.Right
-                   || rect1.Left <= rect2.Left && rect1.Right >= rect2.Right
-                   || rect1.Left >= rect2.Left && rect1.Right <= rect2.Right;
+            var length = step / (2 * Math.PI) * angle * Math.PI / 180;
+            var x = (int)(length * Math.Cos(angle)) + center.X;
+            var y = (int)(length * Math.Sin(angle)) + center.Y;
+            angle++;
+            
+            return new Point(x, y);
+        }
+
+        private bool DoesIntersectPreviousRectangles(Rectangle rectangle)
+        {
+            return rectangles.Any(x => x.IntersectsWith(rectangle));
+        }
+
+        private static bool CanMadeMoveOnDistance(int distance)
+        {
+            return distance > 0 && distance != int.MaxValue;
+        }
+        
+        private Movement GetPossibleMovement(Rectangle rectangle)
+        {
+            var quarter = GetQuarter(rectangle);
+            
+            var maxPossibleDistanceUp = int.MaxValue;
+            var maxPossibleDistanceDown = int.MaxValue;
+            var maxPossibleDistanceRight = int.MaxValue;
+            var maxPossibleDistanceLeft = int.MaxValue;
+            
+            foreach (var rect in rectangles)
+            {
+                if (DoesSegmentsIntersect(rect.Left, rect.Right, 
+                    rectangle.Left, rectangle.Right))
+                {
+                    if (rect.Bottom <= rectangle.Top && (quarter is Quarter.I || quarter is Quarter.II))
+                    {
+                        maxPossibleDistanceUp = Math.Min(rectangle.Top - rect.Bottom, maxPossibleDistanceUp);
+                    }
+                    else if (rect.Top >= rectangle.Bottom && (quarter is Quarter.IV || quarter is Quarter.III))
+                    {
+                        maxPossibleDistanceDown = Math.Min(rect.Top - rectangle.Bottom, maxPossibleDistanceDown);
+                    }
+                }
+                
+                if (DoesSegmentsIntersect(rect.Top, rect.Bottom, 
+                    rectangle.Top, rectangle.Bottom))
+                {
+                    if (rect.Right <= rectangle.Left && (quarter is Quarter.I || quarter is Quarter.IV))
+                    {
+                        maxPossibleDistanceLeft = Math.Min(rectangle.Left - rect.Right, maxPossibleDistanceLeft);
+                    }
+                    else if (rect.Left >= rectangle.Right && (quarter is Quarter.II || quarter is Quarter.III))
+                    {
+                        maxPossibleDistanceRight = Math.Min(rect.Left - rectangle.Right, maxPossibleDistanceRight);
+                    }
+                }
+            }
+
+            var result = new Movement(MovementType.Up, 0);
+            
+            if (CanMadeMoveOnDistance(maxPossibleDistanceDown))
+            {
+                result = new Movement(MovementType.Down, maxPossibleDistanceDown);
+            }
+
+            else if (CanMadeMoveOnDistance(maxPossibleDistanceUp))
+            {
+                result = new Movement(MovementType.Up, maxPossibleDistanceUp);
+            }
+            
+            else if (CanMadeMoveOnDistance(maxPossibleDistanceLeft))
+            {
+                result = new Movement(MovementType.Left, maxPossibleDistanceLeft);
+            }
+
+            else if (CanMadeMoveOnDistance(maxPossibleDistanceRight))
+            {
+                result = new Movement(MovementType.Right, maxPossibleDistanceRight);
+            }
+
+            return result;
+        }
+
+        private Quarter GetQuarter(Rectangle rectangle)
+        {
+            if (rectangle.X < center.X)
+            {
+                return rectangle.Y < center.Y
+                    ? Quarter.III 
+                    : Quarter.II;
+            }
+
+            return rectangle.Y < center.Y 
+                ? Quarter.IV 
+                : Quarter.I;
+        }
+
+        private static bool DoesSegmentsIntersect(int firstSegmentStart, int firstSegmentEnd, int secondSegmentStart,
+            int secondSegmentEnd)
+        {
+            return Math.Max(firstSegmentStart, secondSegmentStart) < Math.Min(firstSegmentEnd, secondSegmentEnd);
         }
     }
 }

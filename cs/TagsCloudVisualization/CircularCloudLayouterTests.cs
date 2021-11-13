@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
 using NUnit.Framework.Interfaces;
@@ -12,33 +13,6 @@ namespace TagsCloudVisualization
     {
         private CircularCloudLayouter cloudLayouter;
 
-        private static List<List<int>> rectanglesSampleForPlaceCheck = new List<List<int>>
-        {
-            new List<int> { 30, 10, 470, 500 },
-            new List<int> { 60, 30, 440, 470 },
-            new List<int> { 40, 30, 500, 470 },
-            new List<int> { 30, 40, 500, 500 },
-            new List<int> { 40, 80, 460, 510 },
-            new List<int> { 20, 30, 440, 500 },
-            new List<int> { 50, 30, 390, 510 },
-            new List<int> { 30, 30, 410, 480 },
-            new List<int> { 20, 40, 420, 440 },
-            new List<int> { 40, 20, 440, 450 },
-            new List<int> { 150, 30, 480, 440 },
-            new List<int> { 30, 30, 540, 470 },
-            new List<int> {30, 30, 530, 500}
-        };
-
-        private static List<List<int>> rectanglesSampleForFilledRectCheck = new List<List<int>>
-        {
-            new List<int> { 30, 10, 500, 500, 0, 0 },
-            new List<int> { 60, 30, 470, 500, 30, 10 },
-            new List<int> { 40, 30, 440, 470, 60, 40 },
-            new List<int> { 30, 40, 440, 470, 100, 40 },
-            new List<int> { 40, 80, 440, 470, 100, 40 },
-            new List<int> { 20, 30, 440, 470, 100, 40 }
-        };
-
         [SetUp]
         public void SetUp()
         {
@@ -46,19 +20,15 @@ namespace TagsCloudVisualization
         }
         
         [TearDown]
-        public void E()
+        public void TearDown()
         {
             if (TestContext.CurrentContext.Result.Outcome.Status is TestStatus.Failed)
             {
                 var image = new Bitmap(800, 800);
                 var brush = Graphics.FromImage(image);
-                for (var i = 0; i < cloudLayouter.Rectangles.Count; i++)
-                {
-                    var rectangle = cloudLayouter.Rectangles[i];
-                    brush.FillRectangle(new SolidBrush(Color.Green), rectangle);
-                    brush.DrawRectangle(new Pen(Color.Black), rectangle);
-                    brush.DrawString(i.ToString(), new Font(FontFamily.GenericMonospace, 12), new SolidBrush(Color.Red), rectangle);
-                }
+                var rectangles = cloudLayouter.GetPutRectangles();
+                
+                DrawRectangles(rectangles, brush);
 
                 brush.DrawEllipse(new Pen(Color.Red, 3), 500, 500, 3, 3);
                 image.Save(
@@ -68,61 +38,35 @@ namespace TagsCloudVisualization
             }
         }
 
-        [Test]
-        public void PullNextRectangle_ShouldPlace()
+        private static void DrawRectangles(IReadOnlyList<Rectangle> rectangles, Graphics brush)
         {
-            foreach (var source in rectanglesSampleForPlaceCheck)
+            for (var i = 0; i < rectangles.Count; i++)
             {
-                cloudLayouter.PullNextRectangle(new Size(source[0], source[1]))
-                    .Location.Should().BeEquivalentTo(new Point(source[2], source[3]));
-            }
-        }
-
-        [Test]
-        public void PullNextRectangle_ShouldPlaceFirstRectangleLeftFromCenter()
-        {
-            var center = new Point(0, 0);
-            var size = new Size(30, 40);
-            var cloudLayouter = new CircularCloudLayouter(center);
-            var rect = new Rectangle(new Point(-size.Width, 0), size);
-            cloudLayouter.PullNextRectangle(size).Should().BeEquivalentTo(rect);
-        }
-        
-        [Test]
-        public void UpdateFilledRect_ShouldBe()
-        {
-            foreach (var source in rectanglesSampleForFilledRectCheck)
-            {
-                cloudLayouter.PullNextRectangle(new Size(source[0], source[1]));
-                cloudLayouter.filledArea.Should()
-                    .BeEquivalentTo(new Rectangle(source[2], source[3], source[4], source[5]));
+                var rectangle = rectangles[i];
+                brush.FillRectangle(new SolidBrush(Color.Green), rectangle);
+                brush.DrawRectangle(new Pen(Color.Black), rectangle);
+                brush.DrawString(i.ToString(), new Font(FontFamily.GenericMonospace, 12), 
+                    new SolidBrush(Color.Red), rectangle);
             }
         }
 
         [Test]
         public void PullNextRectangle_ShouldReturn_NotIntersectedRects()
         {
-            for (var i = 5; i < 15; i++)
-            {
-                cloudLayouter.PullNextRectangle(new Size(i * 5, 100 - i * 5));
-            }
+            var random = new Random();
+            
+            for (var i = 0; i < 100; i++)
+                cloudLayouter.PutNextRectangle(new Size(random.Next(5, 70), random.Next(5, 70)));
 
-            for (var i = 0; i < cloudLayouter.Rectangles.Count - 1; i++)
+            var rectangles = cloudLayouter.GetPutRectangles();
+
+            for (var i = 0; i < rectangles.Length - 1; i++)
             {
-                for (var j = i + 1; j < cloudLayouter.Rectangles.Count; j++)
+                for (var j = i + 1; j < rectangles.Length; j++)
                 {
-                    Assert.False(cloudLayouter.Rectangles[i].IntersectsWith(cloudLayouter.Rectangles[j]));
+                    rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse();
                 }
             }
-        }
-
-        [Test]
-        public void PullNextRectangle_ShouldPlace_SecondRectangleAboveFirst()
-        {
-            var firstRect = cloudLayouter.PullNextRectangle(new Size(30, 10));
-            var secondRect = cloudLayouter.PullNextRectangle(new Size(50, 30));
-            firstRect.Location.Should().BeEquivalentTo(new Point(470, 500));
-            secondRect.Location.Should().BeEquivalentTo(new Point(450, 470));
         }
 
         [TestCase(-10, 10, TestName = "Negative width")]
@@ -131,17 +75,48 @@ namespace TagsCloudVisualization
         [TestCase(10, 0, TestName = "Zero height")]
         public void PullNextRectangle_ShouldThrowArgumentException_WhenSizeIncorrect(int width, int height)
         {
-            Action act = () => cloudLayouter.PullNextRectangle(new Size(-10, 10));
+            Action act = () => cloudLayouter.PutNextRectangle(new Size(width, height));
+            
             act.Should().Throw<ArgumentException>();
         }
 
         [Test]
-        public void Test_ShouldFail_ForPictureSave()
+        public void CloudLayouter_ShouldMustLeaveLessThan20PercentsEmptySpace_WhenSizesRandom()
         {
-            cloudLayouter.PullNextRectangle(new Size(20, 40));
-            cloudLayouter.PullNextRectangle(new Size(30, 40));
-            cloudLayouter.PullNextRectangle(new Size(20, 30));
-            cloudLayouter.Rectangles.Should().BeEmpty();
+            var random = new Random();
+            var center = cloudLayouter.GetCenter();
+            
+            for (var i = 0; i < 100; i++)
+                cloudLayouter.PutNextRectangle(new Size(random.Next(5, 70), random.Next(5, 70)));
+            
+            var rectangles = cloudLayouter.GetPutRectangles();
+            var averageDistanceFromCenterToBorder = GetAverageDistanceFromCenterToBorder(center, rectangles);
+            var areaOfCircle = Math.PI * Math.Pow(averageDistanceFromCenterToBorder, 2);
+            var filedArea = rectangles.Select(x => x.Width * x.Height).Sum();
+            var emptySpace = (areaOfCircle - filedArea) / areaOfCircle * 100;
+            
+            emptySpace.Should().BeLessThan(20);
+        }
+
+        private static double GetDistance(int x1, int y1, int x2, int y2)
+        {
+            return Math.Sqrt(Math.Pow(x1 - x2, 2) + Math.Pow(y1 - y2, 2));
+        }
+
+        private static int GetAverageDistanceFromCenterToBorder(Point center, IReadOnlyCollection<Rectangle> rectangles)
+        {
+
+            var sum = 0;
+            
+            foreach (var rectangle in rectangles)
+            {
+                sum += (int) GetDistance(center.X, center.Y, rectangle.X, rectangle.Y);
+                sum += (int) GetDistance(center.X, center.Y, rectangle.Right, rectangle.Y);
+                sum += (int) GetDistance(center.X, center.Y, rectangle.Right, rectangle.Bottom);
+                sum += (int) GetDistance(center.X, center.Y, rectangle.X, rectangle.Bottom);
+            }
+
+            return sum / (rectangles.Count * 4);
         }
     }
 }
