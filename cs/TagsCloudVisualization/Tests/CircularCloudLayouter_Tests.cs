@@ -113,7 +113,7 @@ namespace TagsCloudVisualization.Tests
             density.Should().BeGreaterThan((Math.PI / 4) * densityCoefficient).And.BeLessThan(Math.PI / 4);
         }
 
-        [TestCase(1, 1, 5000, TestName = "1x1 5000 rectangles in 1 second")]
+        [TestCase(1, 1, 5000, TestName = "1x1 5000 rectangles in 5 second")]
         [TestCase(2, 5, 5000, TestName = "The execution time should not depend on the size dimensions")]
         [TestCase(15, 15, 5000, TestName = "Same execution time for large sizes")]
         public void PutNextRectangle_ShouldWorkFast(int width, int height, int count)
@@ -127,7 +127,7 @@ namespace TagsCloudVisualization.Tests
                     cloudLayouter.PutNextRectangle(size);
             };
 
-            act.ExecutionTime().Should().BeLessThan(1000.Milliseconds());
+            act.ExecutionTime().Should().BeLessThan(500.Milliseconds());
         }
 
         private double GetDensity(CircularCloudLayouter cloudLayouter)
