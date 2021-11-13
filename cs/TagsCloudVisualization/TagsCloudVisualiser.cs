@@ -5,21 +5,21 @@ namespace TagsCloudVisualization
 {
     public class TagsCloudVisualiser
     {
-        private CircularCloudLayouter layouter;
+        private CircularCloudMaker maker;
 
         public TagsCloudVisualiser(Point center)
         {
-            layouter = new CircularCloudLayouter(center);
+            maker = new CircularCloudMaker(center);
         }
 
-        public TagsCloudVisualiser(CircularCloudLayouter layouter)
+        public TagsCloudVisualiser(CircularCloudMaker maker)
         {
-            this.layouter = layouter;
+            this.maker = maker;
         }
 
         public RectangleF PutRectangle(Size size)
         {
-            return layouter.PutNextRectangle(size);
+            return maker.PutNextRectangle(size);
         }
 
         public Bitmap DrawCloud(Rectangle frame, Size bitmapSize)
@@ -29,15 +29,14 @@ namespace TagsCloudVisualization
             graphics.ScaleTransform((float)bitmapSize.Width / frame.Width, 
                                     (float)bitmapSize.Height / frame.Height);
             graphics.TranslateTransform(-frame.Location.X, -frame.Location.Y);
-            graphics.FillRectangles(Brushes.Red, layouter.Rectangles.ToArray());
-            graphics.DrawRectangles(new Pen(Color.Black, (float)frame.Width / bitmapSize.Width * 4), layouter.Rectangles.ToArray());
-            graphics.DrawPolygon(new Pen(Color.Blue, (float)frame.Width / bitmapSize.Width * 4), layouter.Figure.Vertexes.ToArray());
+            graphics.FillRectangles(Brushes.Red, maker.Rectangles.ToArray());
+            graphics.DrawRectangles(new Pen(Color.Black, (float)frame.Width / bitmapSize.Width * 4), maker.Rectangles.ToArray());
             return image;
         }
 
         public Bitmap DrawCloud(Size bitmapSize)
         {
-            var radius = (int)(layouter.Figure.Vertexes.Select(p => p.DistanceTo(layouter.Center)).Max() * 1.1);
+            var radius = (int)(maker.Radius * 1.1);
             return DrawCloud(new Rectangle(-radius, -radius, radius * 2, radius * 2), bitmapSize);
         }
     }

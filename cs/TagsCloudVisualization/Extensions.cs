@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -12,6 +13,16 @@ namespace TagsCloudVisualization
             yield return new PointF(rectangle.Right, rectangle.Top);
             yield return new PointF(rectangle.Right, rectangle.Bottom);
             yield return new PointF(rectangle.Left, rectangle.Bottom);
+        }
+        
+        public static IEnumerable<(PointF, PointF)> GetSegments(this RectangleF rectangle)
+        {
+            var vertexes = rectangle.GetPoints().ToArray();
+            for (var i = 0; i < vertexes.Length - 1; i++)
+            {
+                yield return (vertexes[i], vertexes[i + 1]);
+            }
+            yield return (vertexes[^1], vertexes[0]);
         }
         
         public static bool IsEmpty(this RectangleF rectangle, double precision)
