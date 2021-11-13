@@ -11,7 +11,7 @@ namespace TagsCloudVisualization
 
         public SortedDistinctSingleLinkedList(Func<TValue, TValue, bool> comparator)
         {
-            this.comparator = comparator;
+            this.comparator = comparator ?? throw new ArgumentException("Comparator mustn't be null");
             values = new HashSet<TValue>();
         }
 

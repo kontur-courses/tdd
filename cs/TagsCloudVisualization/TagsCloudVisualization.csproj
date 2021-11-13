@@ -68,6 +68,7 @@
         <Compile Include="RectangleExtensions.cs" />
         <Compile Include="SortedDistinctSingleLinkedList.cs" />
         <Compile Include="RectanglePainter.cs" />
+        <Compile Include="SortedDistinctSingleLinkedListTests.cs" />
         <Compile Include="TagsCloudExample.cs" />
     </ItemGroup>
     <ItemGroup>
