@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using System.Reflection;
 
 namespace TagsCloudVisualization
 {
@@ -7,14 +9,17 @@ namespace TagsCloudVisualization
     {
         public static void Main()
         {
-            var tags = new List<(string, Font)>();
-            for (var i = 5; i < 500; i++)
-            {
-                tags.Add(("o", new Font("Arial", 15)));
-            }
-
-            var visualizer = new Visualizer(new Size(1200, 900));
-            visualizer.Draw(tags, "example.png");
+            DrawExample(Examples.GenerateFirstExample("Arial"), new Size(1000, 800),"../../../ExamplesIMG/1.png");
+            DrawExample(Examples.GenerateSecondExample("Arial"), new Size(1000, 800), "../../../ExamplesIMG/2.png");
+            DrawExample(Examples.GenerateThirdExample("Arial"), new Size(1000, 800), "../../../ExamplesIMG/3.png");
         }
+
+        private static void DrawExample(List<(string, Font)> words, Size size, string filename)
+        {
+            var visualizer = new Visualizer(size, Color.Bisque);
+            visualizer.Draw(words, filename);
+        }
+
+        
     }
 }
