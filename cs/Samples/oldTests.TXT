@@ -1,4 +1,4 @@
- /*
+ 
         [Test]
         public void ShouldNotPutOneRectangleTwice()
         {
@@ -13,8 +13,8 @@
                 .Select(g => g.Key).ToList();
             duplicates.Count.Should().Be(0);
         }
-        */
-/*
+        
+
         [TestCase(10)]
         [TestCase(100)]
         [TestCase(1000)]
@@ -27,5 +27,5 @@
                 layouter.PutNextRectangle(rectangleSize);
             layouter.RectangleList.Count.Should().Be(numberOfRectangles);
         }
-        */
+        
 
