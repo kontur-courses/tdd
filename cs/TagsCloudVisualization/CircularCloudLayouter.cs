@@ -37,9 +37,9 @@ namespace TagsCloudVisualization
         private Rectangle CreateNewRectangle(Size rectangleSize)
         {
             var rectangleCenterLocation = LayouterSpiral.GetNextPoint(Center);
-            var rectangleX = rectangleCenterLocation.X - Math.Sign(rectangleSize.Width)*rectangleSize.Width / 2;
-            var rectangleY = rectangleCenterLocation.Y - Math.Sign(rectangleSize.Height)*rectangleSize.Height / 2;
-            var rectangle = new Rectangle(rectangleX, rectangleY, rectangleSize.Width, rectangleSize.Height);
+            var rectangleX = rectangleCenterLocation.X - Math.Abs(rectangleSize.Width / 2);
+            var rectangleY = rectangleCenterLocation.Y - Math.Abs(rectangleSize.Height / 2);
+            var rectangle = new Rectangle(rectangleX, rectangleY, Math.Abs(rectangleSize.Width), Math.Abs(rectangleSize.Height));
             return rectangle;
         }
 

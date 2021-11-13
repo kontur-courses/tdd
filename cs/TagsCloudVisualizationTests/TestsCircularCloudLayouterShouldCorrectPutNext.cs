@@ -14,10 +14,6 @@ namespace TagsCloudVisualizationTests
     [TestFixture]
     public class TestsCircularCloudLayouterShouldCorrectPutNext
     {
-        private CircularCloudLayouter Layouter
-        { get; set; }
-
-        //private readonly Random _seedRandom = new Random(new Random().Next(10,10));
         private List<Rectangle> RectanglesList
         { get; set; }
 
@@ -34,18 +30,21 @@ namespace TagsCloudVisualizationTests
                     visualization.DrawAndSaveImage(new Size(5000, 5000), path, ImageFormat.Jpeg);
                 }
             }
+
+            RectanglesList = new List<Rectangle>();
         }
 
 
         [TestCase(0, 1)]
         [TestCase(1,0)]
+        [TestCase(0, 0)]
         public void ShouldThrowExceptionWhenPutRectangleWithZeroEdge(int width, int height)
         {
-            var ceedRandom = new Random(0);
+            var ceedRandom = new Random(587604987);
             var rectangleSize = new Size(width, height);
             var layouterCenter = new Point(ceedRandom.Next(-100,100), ceedRandom.Next(-100,100));
-            Layouter = new CircularCloudLayouter(layouterCenter);
-            Action put = () => Layouter.PutNextRectangle(rectangleSize);
+            var layouter = new CircularCloudLayouter(layouterCenter);
+            Action put = () => layouter.PutNextRectangle(rectangleSize);
             put.Should().Throw<ArgumentException>();
         }
 
@@ -54,11 +53,11 @@ namespace TagsCloudVisualizationTests
         [TestCase(10, 10)]
         public void ShouldNotThrowIfPutRectangleWithCorrectSize(int width, int height)
         {
-            var ceedRandom = new Random(0);
+            var ceedRandom = new Random(878980764);
             var rectangleSize = new Size(width, height);
             var layouterCenter = new Point(ceedRandom.Next(-100, 100), ceedRandom.Next(-100, 100));
-            Layouter = new CircularCloudLayouter(layouterCenter);
-            Action put = () => Layouter.PutNextRectangle(rectangleSize);
+            var layouter = new CircularCloudLayouter(layouterCenter);
+            Action put = () =>layouter.PutNextRectangle(rectangleSize);
             put.Should().NotThrow();
         }
 
@@ -68,9 +67,9 @@ namespace TagsCloudVisualizationTests
         [TestCase(-15, 5)]
         public void ShouldNotIntersectWithRectangles(int width, int height)
         {
-            var ceedRandom = new Random(0);
+            var ceedRandom = new Random(678056756);
             var layouterCenter = new Point(width, height);
-            Layouter = new CircularCloudLayouter(layouterCenter);
+            var layouter = new CircularCloudLayouter(layouterCenter);
             RectanglesList = new List<Rectangle>();
             for (int i = 0; i < 300; i++)
             {
@@ -81,7 +80,7 @@ namespace TagsCloudVisualizationTests
                     continue;
                 }
 
-                RectanglesList.Add(Layouter.PutNextRectangle(rectangleSize));
+                RectanglesList.Add(layouter.PutNextRectangle(rectangleSize));
             }
             foreach (var rectangle in RectanglesList)
             {
@@ -95,13 +94,13 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void SingleRectangleInCenterPutCorrectly()
         {
-            var ceedRandom = new Random(0);
+            var ceedRandom = new Random(6847866);
             var rectangleSize = new Size(ceedRandom.Next(-100,100), ceedRandom.Next(-100,100));
             var layouterCenter = new Point(Size.Empty);
             while (layouterCenter.X == 0 || layouterCenter.Y == 0)
                 layouterCenter = new Point(ceedRandom.Next(-100, 100), ceedRandom.Next(-100,100));
-            Layouter = new CircularCloudLayouter(layouterCenter);
-            var rectangle = Layouter.PutNextRectangle(rectangleSize);
+            var layouter = new CircularCloudLayouter(layouterCenter);
+            var rectangle = layouter.PutNextRectangle(rectangleSize);
             rectangle.Location.Should().Be(layouterCenter);
         }
 
@@ -110,22 +109,16 @@ namespace TagsCloudVisualizationTests
         [TestCase(1000)]
         public void FormShouldBeCloserToCircleThanToSquareWhenManyRectangles(int number)
         {
-            var ceedRandom = new Random(0);
+            var ceedRandom = new Random(978043567);
 
-            var rectangleSize = new Size(new Random().Next(30, 100), new Random().Next(30, 100));
-            //var rectangleSize = new Size(-50, -50);
+            var rectangleSize = new Size(50, 50);
 
             var layouterCenter = new Point(ceedRandom.Next(-100,100), ceedRandom.Next(-100,100));
             RectanglesList = new List<Rectangle>();
-            Layouter = new CircularCloudLayouter(layouterCenter);
+            var layouter = new CircularCloudLayouter(layouterCenter);
             for (int i = 0; i < number; i++)
             {
-                if (rectangleSize.Height == 0 || rectangleSize.Width == 0)
-                {
-                    i--;
-                    continue;
-                }
-                RectanglesList.Add(Layouter.PutNextRectangle(rectangleSize));
+                RectanglesList.Add(layouter.PutNextRectangle(rectangleSize));
             }
             var sumArea = GetSumAreaOfRectangles(RectanglesList);
             var circleArea = GetCircleArea(GetCircleRadius(layouterCenter, RectanglesList));
@@ -140,11 +133,11 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void SameRectanglesShouldNotIntersect()
         {
-            var ceedRandom = new Random(0);
+            var ceedRandom = new Random(546748576);
             var rectangleSize = new Size(ceedRandom.Next(-100,100), ceedRandom.Next(-100,100));
             var layouterCenter = new Point(ceedRandom.Next(-100,100), ceedRandom.Next(-100,100));
             RectanglesList = new List<Rectangle>();
-            Layouter = new CircularCloudLayouter(layouterCenter);
+            var layouter = new CircularCloudLayouter(layouterCenter);
             for (int i = 0; i < 300; i++)
             {
                 if (rectangleSize.Height == 0 || rectangleSize.Width == 0)
@@ -152,7 +145,7 @@ namespace TagsCloudVisualizationTests
                     i--;
                     continue;
                 }
-                RectanglesList.Add(Layouter.PutNextRectangle(rectangleSize));
+                RectanglesList.Add(layouter.PutNextRectangle(rectangleSize));
             }
 
             foreach (var rectangle in RectanglesList)

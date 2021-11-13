@@ -9,11 +9,11 @@ namespace TagsCloudVisualizationTests
     [TestFixture] 
     public class CircularCloudLayouterConstructorTests
     {
-        private readonly Random _random = new Random();
         [Test] 
         public void CloudLayouterConstructorShouldWorkCorrectly() 
-        { 
-            var center = new Point(_random.Next(-100,100),  _random.Next(-100, 100)); 
+        {
+            var ceedRandom = new Random(987476358);
+            var center = new Point(ceedRandom.Next(-100,100),  ceedRandom.Next(-100, 100)); 
             Action creating = () => new CircularCloudLayouter(center);
             creating.Should().NotThrow();
         }
