@@ -10,9 +10,15 @@ namespace TagsCloudVisualization
     {
         public static void SaveToFile(string filePath, IReadOnlyCollection<Rectangle> rectangles)
         {
-            var random = new Random();
             var bitmapParams = CalculateBitmapParams(rectangles);
             using var bitmap = new Bitmap(bitmapParams.Width, bitmapParams.Height);
+            DrawRectangles(bitmap, rectangles, bitmapParams.DrawingOffset);
+            bitmap.Save(filePath, ImageFormat.Png);
+        }
+
+        private static void DrawRectangles(Image bitmap, IEnumerable<Rectangle> rectangles, Point offset)
+        {
+            var random = new Random();
             using var graphics = Graphics.FromImage(bitmap);
 
             graphics.Clear(Color.Black);
@@ -20,16 +26,14 @@ namespace TagsCloudVisualization
             {
                 var brush = new SolidBrush(
                     Color.FromArgb(
-                        random.Next(255),
-                        random.Next(255),
-                        random.Next(255)
+                        random.Next(50, 255),
+                        random.Next(0, 255),
+                        random.Next(0, 255)
                     )
                 );
-                rectangle.Offset(bitmapParams.DrawingOffset);
+                rectangle.Offset(offset);
                 graphics.FillRectangle(brush, rectangle);
             }
-
-            bitmap.Save(filePath, ImageFormat.Png);
         }
 
         private static BitmapParams CalculateBitmapParams(IReadOnlyCollection<Rectangle> rectangles)

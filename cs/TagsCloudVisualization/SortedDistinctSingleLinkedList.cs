@@ -3,18 +3,23 @@ using System.Collections.Generic;
 
 namespace TagsCloudVisualization
 {
-    public class SortedSingleLinkedList<TValue>
+    public class SortedDistinctSingleLinkedList<TValue>
     {
+        private readonly Func<TValue, TValue, bool> comparator;
+        private readonly HashSet<TValue> values;
         private Node<TValue> root;
-        private readonly Func<TValue, TValue, bool> sep;
 
-        public SortedSingleLinkedList(Func<TValue, TValue, bool> separator)
+        public SortedDistinctSingleLinkedList(Func<TValue, TValue, bool> comparator)
         {
-            sep = separator;
+            this.comparator = comparator;
+            values = new HashSet<TValue>();
         }
 
         public void Add(TValue value)
         {
+            if (!IsNewValue(value))
+                return;
+
             var node = new Node<TValue>(value);
             if (root is null)
             {
@@ -24,7 +29,7 @@ namespace TagsCloudVisualization
 
             Node<TValue> previousNode = null;
             var currentNode = root;
-            while (currentNode != null && sep(currentNode.Value, node.Value))
+            while (currentNode != null && comparator(currentNode.Value, node.Value))
             {
                 previousNode = currentNode;
                 currentNode = currentNode.Next;
@@ -41,26 +46,12 @@ namespace TagsCloudVisualization
             node.Next = currentNode;
         }
 
-        public void Remove(TValue value)
+        private bool IsNewValue(TValue value)
         {
-            Node<TValue> previousNode = null;
-            var currentNode = root;
-            while (currentNode != null && !currentNode.Value.Equals(value))
-            {
-                previousNode = currentNode;
-                currentNode = currentNode.Next;
-            }
-
-            if (currentNode is null)
-                throw new ArgumentException("No such argument");
-
-            if (previousNode is null)
-            {
-                root = currentNode.Next;
-                return;
-            }
-
-            previousNode.Next = currentNode.Next;
+            if (values.Contains(value))
+                return false;
+            values.Add(value);
+            return true;
         }
 
         public IEnumerable<TValue> ToEnumerable()
@@ -76,7 +67,7 @@ namespace TagsCloudVisualization
 
     public class Node<TValue>
     {
-        public TValue Value;
+        public readonly TValue Value;
         public Node<TValue> Next;
 
         public Node(TValue value, Node<TValue> next = null)

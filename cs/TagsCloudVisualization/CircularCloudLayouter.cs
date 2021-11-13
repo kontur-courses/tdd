@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -10,9 +9,8 @@ namespace TagsCloudVisualization
         public readonly Point Center;
         public readonly List<Rectangle> Rectangles;
 
-        private readonly SortedSingleLinkedList<Point> points;
-
-        private IEnumerable<Func<Point, Size, Point>> shifts = new List<Func<Point, Size, Point>>
+        private readonly SortedDistinctSingleLinkedList<Point> points;
+        private readonly IEnumerable<Func<Point, Size, Point>> shifts = new List<Func<Point, Size, Point>>
         {
             (p, s) => p,
             (p, s) => new Point(p.X, p.Y - s.Height),
@@ -24,9 +22,10 @@ namespace TagsCloudVisualization
         {
             Center = center;
             Rectangles = new List<Rectangle>();
-            points = new SortedSingleLinkedList<Point>(
-                (x, y) => center.DistanceTo(x) < center.DistanceTo(y)
+            points = new SortedDistinctSingleLinkedList<Point>(
+                (p1, p2) => center.DistanceTo(p1) < center.DistanceTo(p2)
             );
+            points.Add(Center);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -35,16 +34,9 @@ namespace TagsCloudVisualization
                 throw new ArgumentException("Size params should be positive");
 
             var rectangle = Rectangle.Empty;
-            if (Rectangles.Count == 0)
-            {
-                TryPutRectangleToCorners(Center, rectangleSize, out rectangle);
-            }
-            else
-            {
-                foreach (var point in points.ToEnumerable())
-                    if (TryPutRectangleToCorners(point, rectangleSize, out rectangle))
-                        break;
-            }
+            foreach (var point in points.ToEnumerable())
+                if (TryPutRectangleToCorners(point, rectangleSize, out rectangle))
+                    break;
 
             Rectangles.Add(rectangle);
             SaveRectangleBorderPoints(rectangle);
