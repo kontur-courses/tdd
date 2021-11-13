@@ -63,6 +63,8 @@ namespace TagsCloudVisualization
 
         public Bitmap DrawRectangles(Color backgroundColor, Color outlineColor, double scale)
         {
+            if (scale <= 0)
+                throw new ArgumentException($"{nameof(scale)} should be positive", nameof(scale));
             var initialSize = GetOptimalBitmapSize();
             using (var bmp = new Bitmap(initialSize.Width, initialSize.Height))
             {
