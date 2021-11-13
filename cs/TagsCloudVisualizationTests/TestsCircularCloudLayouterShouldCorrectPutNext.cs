@@ -83,23 +83,24 @@ namespace TagsCloudVisualizationTests
             rectangle.Location.Should().Be(layouterCenter);
         }
 
-        [Test]
-        public void ShouldBeCloserToCircleThanToSquare()
+        [TestCase(300)]
+        [TestCase(500)]
+        [TestCase(1000)]
+        public void FormShouldBeCloserToCircleThanToSquareWhenManyRectangles(int number)
         {
             var rectangleSize = new Size(30, 10);
             var layouterCenter = new Point(20, 10);
             RectanglesList = new List<Rectangle>();
             Layouter = new CircularCloudLayouter(layouterCenter);
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < number; i++)
                 RectanglesList.Add(Layouter.PutNextRectangle(rectangleSize));
             var sumArea = GetSumAreaOfRectangles(RectanglesList);
             var circleArea = GetCircleArea(GetCircleRadius(layouterCenter, RectanglesList));
             var enclosingRectangleArea = GetEnclosingRectangleArea(RectanglesList);
             var difCircleAndSum = sumArea/circleArea;
             var difSumAndEnclosingRectangle = sumArea/enclosingRectangleArea;
-            difCircleAndSum.Should().BeLessThan(difSumAndEnclosingRectangle);
+            difCircleAndSum.Should().BeGreaterThan(difSumAndEnclosingRectangle);
         }
-
 
         [Test]
         public void SameRectanglesShouldNotIntersect()

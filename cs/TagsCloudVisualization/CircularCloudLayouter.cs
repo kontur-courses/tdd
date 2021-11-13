@@ -52,17 +52,17 @@ namespace TagsCloudVisualization
                 if (inputRectangle.Y == Center.Y)
                     break;
                 inputRectangle.Offset(0, directionYSign);
-            } 
+            }
             inputRectangle.Offset(0, -directionYSign);
 
-            while(!IsIntersect(inputRectangle))
+            while (!IsIntersect(inputRectangle))
             {
                 if (inputRectangle.X == Center.X)
                     break;
                 inputRectangle.Offset(directionXSign, 0);
             }
             inputRectangle.Offset(-directionXSign, 0);
-            
+
             inputRectangle.Offset(directionXSign, directionYSign);
             if (IsIntersect(inputRectangle))
                 inputRectangle.Offset(-directionXSign, -directionYSign);

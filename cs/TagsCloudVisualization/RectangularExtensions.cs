@@ -7,10 +7,10 @@ namespace TagsCloudVisualization
     {
         public static IEnumerable<Point> GetRectangleNodes(this Rectangle rectangle)
         {
-            yield return new Point(rectangle.X, rectangle.Y); //LU
-            yield return new Point(rectangle.X + rectangle.Width, rectangle.Y); //RU
-            yield return new Point(rectangle.X + rectangle.Width, rectangle.Y + rectangle.Height); //RD
-            yield return new Point(rectangle.X, rectangle.Y + rectangle.Height); //LD
+            yield return new Point(rectangle.X, rectangle.Y);
+            yield return new Point(rectangle.X + rectangle.Width, rectangle.Y);
+            yield return new Point(rectangle.X + rectangle.Width, rectangle.Y + rectangle.Height);
+            yield return new Point(rectangle.X, rectangle.Y + rectangle.Height);
         }
     }
 }
