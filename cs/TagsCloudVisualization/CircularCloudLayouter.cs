@@ -24,15 +24,14 @@ namespace TagsCloudVisualization
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
            if (rectangleSize.Width == 0 || rectangleSize.Height == 0)
-                throw new ArgumentException();
-            var nextRectangle = CreateNewRectangle(rectangleSize);
-            while (RectangleList.Any(rectangle => rectangle.IntersectsWith(nextRectangle)))
-                nextRectangle = CreateNewRectangle(rectangleSize);
-            if(nextRectangle.Location != Center)
-                nextRectangle = CenterElement(nextRectangle);
-
-            RectangleList.Add(nextRectangle);
-            return nextRectangle;
+                throw new ArgumentException(); 
+           var nextRectangle = CreateNewRectangle(rectangleSize);
+           while (RectangleList.Any(rectangle => rectangle.IntersectsWith(nextRectangle))) 
+               nextRectangle = CreateNewRectangle(rectangleSize);
+           if(nextRectangle.Location != Center)
+               nextRectangle = CenterElement(nextRectangle);
+           RectangleList.Add(nextRectangle);
+           return nextRectangle;
         }
 
         private Rectangle CreateNewRectangle(Size rectangleSize)

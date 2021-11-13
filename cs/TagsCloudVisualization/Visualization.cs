@@ -20,11 +20,11 @@ namespace TagsCloudVisualization
 
         public void DrawAndSaveImage(Size imageSize, string path, ImageFormat format)
         {
-            var image = new Bitmap(imageSize.Width, imageSize.Height);
-            image = DrawRectangles(image);
-            image.Save(path, format);
-            image.Dispose();
-            Dispose();
+            using (var image = new Bitmap(imageSize.Width, imageSize.Height))
+            {
+                var drawImage = DrawRectangles(image);
+                drawImage.Save(path, format);
+            }
         }
 
         private Bitmap DrawRectangles(Bitmap image)
