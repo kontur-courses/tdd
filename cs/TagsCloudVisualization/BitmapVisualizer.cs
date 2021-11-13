@@ -37,50 +37,23 @@ namespace TagsCloudVisualization
             for (var i = 0; i < rectangles.Length; i++) rectangles[i].Offset(offset);
         }
 
-        public void Save(string fileName, Color backgroundColor, Color outlineColor, DirectoryInfo dir = null, double scale = 1)
+        public Bitmap DrawRectangles(Color backgroundColor, Color outlineColor)
         {
-            dir = dir ?? new DirectoryInfo(Environment.CurrentDirectory);
-            if (!dir.Exists) dir.Create();
-            var path = Path.Combine(dir.FullName, fileName);
-            using (var bmpToSave = DrawRectangles(backgroundColor, outlineColor, scale))
-            {
-                SaveToPath(bmpToSave, path);
-            }
-
-        }
-
-        private static void SaveToPath(Bitmap bmp, string path)
-        {
-            try
-            {
-                bmp.Save(path);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Can't save file to: {path}", ex);
-            }
-        }
-
-        public Bitmap DrawRectangles(Color backgroundColor, Color outlineColor, double scale = 1)
-        {
-            if (scale <= 0)
-                throw new ArgumentException($"{nameof(scale)} should be positive", nameof(scale));
             var initialSize = GetOptimalBitmapSize();
-            using (var bmp = new Bitmap(initialSize.Width, initialSize.Height))
+            var bmp = new Bitmap(initialSize.Width, initialSize.Height);
+            OffsetRectanglesToCenter(bmp);
+            using (var graphics = Graphics.FromImage(bmp))
             {
-                OffsetRectanglesToCenter(bmp);
-                using (var graphics = Graphics.FromImage(bmp))
+                graphics.Clear(backgroundColor);
+                using (var pen = new Pen(outlineColor))
                 {
-                    graphics.Clear(backgroundColor);
-                    using (var pen = new Pen(outlineColor))
-                    {
-                        graphics.DrawRectangles(pen, rectangles);
-                    }
+                    graphics.DrawRectangles(pen, rectangles);
                 }
-
-                var scaledSize = new Size((int)(initialSize.Width * scale), (int)(initialSize.Height * scale));
-                return new Bitmap(bmp, scaledSize);
             }
+
+            return bmp;
+
         }
+
     }
 }

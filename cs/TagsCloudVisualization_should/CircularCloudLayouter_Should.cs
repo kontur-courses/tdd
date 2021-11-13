@@ -32,10 +32,13 @@ namespace TagsCloudVisualizationTests
                 var rectangles = layouter.GetRectangles();
                 var visualizer = new BitmapVisualizer(rectangles);
                 var directoryToSave = new DirectoryInfo(@"../../../TestFails");
-                visualizer.Save($"{TestContext.CurrentContext.Test.Name}.Failed.png", Color.Black, Color.Red,
-                    directoryToSave, 0.3);
+                var fileName = $"{TestContext.CurrentContext.Test.Name}.Failed.{rectangles.Length}rectangles.png";
+                using (var bmp = visualizer.DrawRectangles(Color.Black, Color.Red))
+                {
+                    bmp.Save( fileName, directoryToSave);
+                }
                 var fullPath = Path.Combine(directoryToSave.FullName,
-                    $"{TestContext.CurrentContext.Test.Name}.Failed.{rectangles.Length}rectangles.png");
+                    fileName);
                 Console.WriteLine($"Tag cloud visualization saved to file: {fullPath}");
             }
         }
