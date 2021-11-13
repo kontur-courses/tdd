@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Drawing.Imaging;
 
-namespace TagsCloudVisualization.Interfaces
+namespace TagsCloudVisualization.FileManagers
 {
     public interface IFileSaver
     {

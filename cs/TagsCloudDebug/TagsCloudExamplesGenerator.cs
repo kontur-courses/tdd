@@ -2,6 +2,9 @@
 using System.Drawing.Imaging;
 using System.Linq;
 using TagsCloudVisualization;
+using TagsCloudVisualization.CloudLayouterLogic;
+using TagsCloudVisualization.Drawing;
+using TagsCloudVisualization.FileManagers;
 
 namespace TagsCloudDebug
 {
@@ -9,6 +12,7 @@ namespace TagsCloudDebug
     {
         static void Main(string[] args)
         {
+            args = new[] { "100", "150", "200" };
             if (args.Length == 0)
             {
                 GenerateImage();

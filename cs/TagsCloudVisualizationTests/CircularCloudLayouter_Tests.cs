@@ -7,6 +7,9 @@ using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
+using TagsCloudVisualization.CloudLayouterLogic;
+using TagsCloudVisualization.Drawing;
+using TagsCloudVisualization.FileManagers;
 
 namespace TagsCloudVisualizationTests
 {

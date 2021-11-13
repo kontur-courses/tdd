@@ -3,6 +3,7 @@ using System.Drawing;
 using NUnit.Framework;
 using FluentAssertions;
 using TagsCloudVisualization;
+using TagsCloudVisualization.CloudLayouterLogic;
 
 namespace TagsCloudVisualizationTests
 {
