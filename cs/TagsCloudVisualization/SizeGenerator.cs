@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public class SizeGenerator
+    public class SizeGenerator : ISizeGenerator
     {
         private readonly Random random;
         private readonly int maxHeight;
@@ -21,16 +21,10 @@ namespace TagsCloudVisualization
             this.maxHeight = maxHeight;
         }
 
-        public List<Size> GenerateSizes(int count)
+        public IEnumerable<Size> GenerateSizes(int count)
         {
-            var generatedSizes = new List<Size>();
-
             for (var i = 0; i < count; i++)
-            {
-                generatedSizes.Add(new Size(random.Next(minWidth, maxWidth), random.Next(minHeight, maxHeight)));
-            }
-
-            return generatedSizes;
+                yield return new Size(random.Next(minWidth, maxWidth), random.Next(minHeight, maxHeight));
         }
     }
 }
