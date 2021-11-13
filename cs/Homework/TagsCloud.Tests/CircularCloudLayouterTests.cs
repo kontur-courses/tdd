@@ -157,7 +157,7 @@ namespace TagsCloud.Tests
         }
 
         private IEnumerable<(Rectangle, IEnumerable<Rectangle>)> GetItemAndListWithoutIt(
-            List<Rectangle> rects)
+            IReadOnlyCollection<Rectangle> rects)
         {
             return rects.Select(x => (x, rects.Where(y => y != x)));
         }

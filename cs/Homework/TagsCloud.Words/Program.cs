@@ -2,12 +2,12 @@
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using JetBrains.ReSharper.TestRunner.Abstractions.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using TagsCloud.Visualization;
 using TagsCloud.Visualization.ContainerVisitor;
 using TagsCloud.Visualization.Drawer;
-using TagsCloud.Visualization.FontService;
+using TagsCloud.Visualization.Extensions;
+using TagsCloud.Visualization.FontFactory;
 using TagsCloud.Visualization.LayoutContainer;
 using TagsCloud.Visualization.Models;
 using TagsCloud.Visualization.PointGenerator;
@@ -73,10 +73,7 @@ namespace TagsCloud.Words
             collection.AddScoped<IWordsFilter, WordsFilter>();
             collection.AddScoped<IWordsParser, WordsParser>();
 
-            // TODO Problem: think how to inject IFontService
-            collection.AddScoped<Func<Word, int, int, Font>>(_ =>
-                (word, min, max) => new FontService(min, max).CalculateFont(word));
-
+            collection.AddScoped<FontFactory>();
             collection.AddScoped<IWordsSizeService, WordsSizeService>();
             collection.AddScoped<WordsContainerBuilder>();
 

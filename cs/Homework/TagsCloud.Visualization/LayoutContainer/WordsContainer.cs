@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using JetBrains.ReSharper.TestRunner.Abstractions.Extensions;
 using TagsCloud.Visualization.ContainerVisitor;
 using TagsCloud.Visualization.Extensions;
 using TagsCloud.Visualization.Models;

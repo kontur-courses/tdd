@@ -28,7 +28,8 @@ namespace TagsCloud.Tests
         [Test]
         public void GetNext_Should_ReturnPoints_WithSameRadii()
         {
-            var points = sut.GenerateNextPoint().Take(100)
+            var points = sut.GenerateNextPoint()
+                .Take(10)
                 .ToList();
 
             var radii = points.Select(x => x.GetDistance(center)).ToList();
@@ -40,9 +41,13 @@ namespace TagsCloud.Tests
         [Test]
         public void GetNext_Should_ReturnPoints_WithIncreasingRadius()
         {
-            var points = sut.GenerateNextPoint().Take(100).ToList();
+            var points = sut.GenerateNextPoint()
+                .Take(100)
+                .ToList();
 
-            var radii = points.Select(x => x.GetDistance(center)).ToList();
+            var radii = points
+                .Select(x => x.GetDistance(center))
+                .ToList();
 
             foreach (var (previous, current) in radii.Zip(radii.Skip(1)))
                 (current - previous).Should().BeGreaterThanOrEqualTo(0);
