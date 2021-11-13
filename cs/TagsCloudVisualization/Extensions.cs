@@ -13,11 +13,16 @@ namespace TagsCloudVisualization
             yield return new PointF(rectangle.Right, rectangle.Bottom);
             yield return new PointF(rectangle.Left, rectangle.Bottom);
         }
+        
+        public static bool IsEmpty(this RectangleF rectangle, double precision)
+        {
+            return Math.Abs(rectangle.Width * rectangle.Height) < precision;
+        }
 
         public static bool Contacts(this RectangleF rectangle, RectangleF other)
         {
-            return Math.Abs(rectangle.Top - other.Top) < 0.01 && (Math.Abs(rectangle.Left - other.Right) < 0.01 || Math.Abs(rectangle.Right - other.Left) < 0.01) ||
-                Math.Abs(rectangle.Left - other.Left) < 0.01 && (Math.Abs(rectangle.Top - other.Bottom) < 0.01 || Math.Abs(rectangle.Bottom - other.Top) < 0.01);
+            return rectangle.Top == other.Top && (rectangle.Left == other.Right || rectangle.Right == other.Left) ||
+                rectangle.Left == other.Left && (rectangle.Top == other.Bottom || rectangle.Bottom == other.Top);
         }
 
         public static double DistanceTo(this PointF point, PointF other)

@@ -5,7 +5,7 @@ namespace TagsCloudVisualization
 {
     public class TagsCloudVisualiser
     {
-        public CircularCloudLayouter layouter;
+        private CircularCloudLayouter layouter;
 
         public TagsCloudVisualiser(Point center)
         {
@@ -31,13 +31,13 @@ namespace TagsCloudVisualization
             graphics.TranslateTransform(-frame.Location.X, -frame.Location.Y);
             graphics.FillRectangles(Brushes.Red, layouter.Rectangles.ToArray());
             graphics.DrawRectangles(new Pen(Color.Black, (float)frame.Width / bitmapSize.Width * 4), layouter.Rectangles.ToArray());
-            graphics.DrawPolygon(new Pen(Color.Blue, (float)frame.Width / bitmapSize.Width * 4), layouter.CurrentPerimeter.Vertexes.ToArray());
+            graphics.DrawPolygon(new Pen(Color.Blue, (float)frame.Width / bitmapSize.Width * 4), layouter.Figure.Vertexes.ToArray());
             return image;
         }
 
         public Bitmap DrawCloud(Size bitmapSize)
         {
-            var radius = (int)(layouter.CurrentPerimeter.Vertexes.Select(p => p.DistanceTo(layouter.Center)).Max() * 1.1);
+            var radius = (int)(layouter.Figure.Vertexes.Select(p => p.DistanceTo(layouter.Center)).Max() * 1.1);
             return DrawCloud(new Rectangle(-radius, -radius, radius * 2, radius * 2), bitmapSize);
         }
     }
