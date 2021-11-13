@@ -145,7 +145,6 @@ namespace TagsCloudVisualizationTests
 
         public double GetEnclosingRectangleArea(List<Rectangle> rectangles)
         {
-            var vertexes = new List<Point>();
             var xMax = int.MinValue;
             var xMin = int.MaxValue;
             var yMin = int.MaxValue;
