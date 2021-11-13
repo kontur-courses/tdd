@@ -164,9 +164,7 @@ namespace TagsCloudVisualizationTests
             var sortListYCords = yCords.ToList().OrderBy(y => y).ToList();
             var yMin = sortListYCords.First();
             var yMax = sortListYCords.Last();
-            var enclosingRectangle = new Rectangle(xMin, yMin, xMax - xMin, yMax - yMin);
-            return enclosingRectangle.Height * enclosingRectangle.Width;
-
+            return (yMax - yMin) * (xMax - xMin);
         }
 
         public double GetCircleArea(double circleRadius)
