@@ -4,8 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using TagsCloudVisualization;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualizationTests
 {
     public class CircularCloudLayoterTests
     {
@@ -22,7 +23,7 @@ namespace TagsCloudVisualization
         {
             var center = new Point(10, 30);
             var layouter =  new CircularCloudLayouter(center);
-            layouter.Center.Should().Be(new Point(10,30));
+            layouter.Center.Should().Be(center);
         }
 
         [Test]
