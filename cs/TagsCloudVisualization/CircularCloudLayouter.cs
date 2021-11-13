@@ -23,6 +23,8 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
+           if (rectangleSize.Width == 0 || rectangleSize.Height == 0)
+                throw new ArgumentException();
             var nextRectangle = CreateNewRectangle(rectangleSize);
             while (RectangleList.Any(rectangle => rectangle.IntersectsWith(nextRectangle)))
                 nextRectangle = CreateNewRectangle(rectangleSize);
@@ -36,8 +38,8 @@ namespace TagsCloudVisualization
         private Rectangle CreateNewRectangle(Size rectangleSize)
         {
             var rectangleCenterLocation = LayouterSpiral.GetNextPoint(Center);
-            var rectangleX = rectangleCenterLocation.X - rectangleSize.Width / 2;
-            var rectangleY = rectangleCenterLocation.Y - rectangleSize.Height / 2;
+            var rectangleX = rectangleCenterLocation.X - Math.Sign(rectangleSize.Width)*rectangleSize.Width / 2;
+            var rectangleY = rectangleCenterLocation.Y - Math.Sign(rectangleSize.Height)*rectangleSize.Height / 2;
             var rectangle = new Rectangle(rectangleX, rectangleY, rectangleSize.Width, rectangleSize.Height);
             return rectangle;
         }

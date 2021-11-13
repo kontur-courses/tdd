@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using NUnit.Framework.Constraints;
 using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
 
@@ -35,9 +36,20 @@ namespace TagsCloudVisualizationTests
             }
         }
 
+
+        [TestCase(0, 1)]
+        [TestCase(1,0)]
+        public void ShouldThrowExceptionWhenPutRectangleWithZeroEdge(int width, int height)
+        {
+            var rectangleSize = new Size(width, height);
+            var layouterCenter = new Point(_random.Next(), _random.Next());
+            Layouter = new CircularCloudLayouter(layouterCenter);
+            Action put = () => Layouter.PutNextRectangle(rectangleSize);
+            put.Should().Throw<ArgumentException>();
+        }
+
         [TestCase(-5, 10)]
         [TestCase(5, -5)]
-        [TestCase(0, 0)]
         [TestCase(10, 10)]
         public void ShouldNotThrowIfPutRectangleWithCorrectSize(int width, int height)
         {
@@ -62,6 +74,12 @@ namespace TagsCloudVisualizationTests
             for (int i = 0; i < 300; i++)
             {
                 var rectangleSize = new Size(random.Next(-100, 100), random.Next(-100, 100));
+                if (rectangleSize.Width == 0 || rectangleSize.Height == 0)
+                {
+                    i--;
+                    continue;
+                }
+
                 RectanglesList.Add(Layouter.PutNextRectangle(rectangleSize));
             }
             foreach (var rectangle in RectanglesList)
@@ -77,7 +95,9 @@ namespace TagsCloudVisualizationTests
         public void SingleRectangleInCenterPutCorrectly()
         {
             var rectangleSize = new Size(_random.Next(-100, 100), _random.Next(-100, 100));
-            var layouterCenter = new Point(_random.Next(0,100), _random.Next(0,100));
+            var layouterCenter = new Point(Size.Empty);
+            while (layouterCenter.X == 0 || layouterCenter.Y == 0)
+                layouterCenter = new Point(_random.Next(0,100), _random.Next(0,100));
             Layouter = new CircularCloudLayouter(layouterCenter);
             var rectangle = Layouter.PutNextRectangle(rectangleSize);
             rectangle.Location.Should().Be(layouterCenter);
@@ -89,11 +109,19 @@ namespace TagsCloudVisualizationTests
         public void FormShouldBeCloserToCircleThanToSquareWhenManyRectangles(int number)
         {
             var rectangleSize = new Size(_random.Next(30, 100), _random.Next(30,100));
+            //var rectangleSize = new Size(_random.Next(-100, 100), _random.Next(-100, 100));
             var layouterCenter = new Point(_random.Next(0, 1000), _random.Next(0, 1000));
             RectanglesList = new List<Rectangle>();
             Layouter = new CircularCloudLayouter(layouterCenter);
             for (int i = 0; i < number; i++)
+            {
+                if (rectangleSize.Height == 0 || rectangleSize.Width == 0)
+                {
+                    i--;
+                    continue;
+                }
                 RectanglesList.Add(Layouter.PutNextRectangle(rectangleSize));
+            }
             var sumArea = GetSumAreaOfRectangles(RectanglesList);
             var circleArea = GetCircleArea(GetCircleRadius(layouterCenter, RectanglesList));
             
@@ -112,7 +140,15 @@ namespace TagsCloudVisualizationTests
             RectanglesList = new List<Rectangle>();
             Layouter = new CircularCloudLayouter(layouterCenter);
             for (int i = 0; i < 300; i++)
+            {
+                if (rectangleSize.Height == 0 || rectangleSize.Width == 0)
+                {
+                    i--;
+                    continue;
+                }
                 RectanglesList.Add(Layouter.PutNextRectangle(rectangleSize));
+            }
+
             foreach (var rectangle in RectanglesList)
             {
                 var act = RectanglesList
