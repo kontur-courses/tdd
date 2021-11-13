@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using NUnit.Framework;
@@ -11,22 +10,20 @@ namespace TagsCloudVisualizationTests
     {
         private ArchimedeanSpiral spiral;
         private List<Point> points;
-        private Point center;
 
         [SetUp]
         public void Setup()
         {
-            center = Point.Empty;
-            spiral = new ArchimedeanSpiral(center);
+            spiral = new ArchimedeanSpiral(Point.Empty);
             points = new List<Point>();
         }
 
-        
+
         [Test]
         public void GetNextPoint_ReturnsSpiralCenter_OnFirstCall()
         {
             var point = spiral.GetNextPoint();
-            point.Should().Be(center);
+            point.Should().Be(Point.Empty);
         }
 
         [Test]
