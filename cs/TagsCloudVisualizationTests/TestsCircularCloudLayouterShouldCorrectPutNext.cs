@@ -52,7 +52,7 @@ namespace TagsCloudVisualizationTests
         [TestCase(20, -10)]
         [TestCase(-15, -5)]
         [TestCase(-15, 5)]
-        public void ShouldNotIntersectWithRectangles(int width, int height) // список
+        public void ShouldNotIntersectWithRectangles(int width, int height)
         {
             var layouterCenter = new Point(width, height);
             Layouter = new CircularCloudLayouter(layouterCenter);
