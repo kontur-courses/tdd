@@ -19,17 +19,9 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
-        public void ShouldCreateCenterCorrectly()
-        {
-            var center = new Point(10, 30);
-            var layouter =  new CircularCloudLayouter(center);
-            layouter.Center.Should().Be(center);
-        }
-
-        [Test]
         public void SingleRectangleInCenterPutCorrectly()
         {
-            var rectangleSize = new Size(30, 10);
+            var rectangleSize = new Size(50, 60);
             var layouterCenter = new Point(20, 10);
             var layouter = new CircularCloudLayouter(layouterCenter);
             var rectangle = layouter.PutNextRectangle(rectangleSize);
@@ -39,7 +31,7 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void RectanglesShouldBeInCircle()
         {
-            var rectangleSize = new Size(30, 10);
+            var rectangleSize = new Size(60, 120);
             var layouterCenter = new Point(20, 10);
             var layouter = new CircularCloudLayouter(layouterCenter);
             for (int i = 0; i < 300; i++)
