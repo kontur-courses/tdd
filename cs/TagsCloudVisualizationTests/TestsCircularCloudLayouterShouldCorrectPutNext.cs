@@ -74,12 +74,6 @@ namespace TagsCloudVisualizationTests
             for (int i = 0; i < 300; i++)
             {
                 var rectangleSize = new Size(ceedRandom.Next(-100,100), ceedRandom.Next(-100,100));
-                if (rectangleSize.Width == 0 || rectangleSize.Height == 0)
-                {
-                    i--;
-                    continue;
-                }
-
                 RectanglesList.Add(layouter.PutNextRectangle(rectangleSize));
             }
             foreach (var rectangle in RectanglesList)
@@ -140,11 +134,6 @@ namespace TagsCloudVisualizationTests
             var layouter = new CircularCloudLayouter(layouterCenter);
             for (int i = 0; i < 300; i++)
             {
-                if (rectangleSize.Height == 0 || rectangleSize.Width == 0)
-                {
-                    i--;
-                    continue;
-                }
                 RectanglesList.Add(layouter.PutNextRectangle(rectangleSize));
             }
 
