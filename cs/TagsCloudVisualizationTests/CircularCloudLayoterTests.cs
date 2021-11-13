@@ -142,8 +142,7 @@ namespace TagsCloudVisualizationTests
             {
                 var visualization = new Visualization(_layouter.GetRectangleList, new Pen(Color.White, 3));
                 var testName = TestContext.CurrentContext.Test.Name;
-                
-                var path = Environment.CurrentDirectory + "\\" + testName +"."+ ImageFormat.Jpeg;
+                var path = AppDomain.CurrentDomain.BaseDirectory + "\\" + testName +"."+ ImageFormat.Jpeg;
                 Console.WriteLine($"Tag cloud visualization saved to file {path}");
                 visualization.DrawAndSaveImage(new Size(5000, 5000), path, ImageFormat.Jpeg);
             }
