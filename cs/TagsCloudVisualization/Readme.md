@@ -1,4 +1,4 @@
-﻿# Tags cloud visualization
+# Tags cloud visualization
 
 ###Первая раскладка
 <img src="ExamplesIMG/1.png" alt="Первая раскладка">
