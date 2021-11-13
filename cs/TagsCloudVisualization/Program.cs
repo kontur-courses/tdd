@@ -21,7 +21,7 @@ namespace TagsCloudVisualization
             var fileName = $@"{count}{isSameSizedString}RectanglesWithSizesFrom{minRectSize}To{maxRectSize}.png";
             var dirPath = @"../../../ExamplePictures";
             var bmpVisualizer = new BitmapVisualizer(rectangles);
-            bmpVisualizer.Save(fileName, 0.3, Color.Black, Color.White, new DirectoryInfo(dirPath));
+            bmpVisualizer.Save(fileName, Color.Black, Color.White, new DirectoryInfo(dirPath), 0.3);
         }
     }
 }

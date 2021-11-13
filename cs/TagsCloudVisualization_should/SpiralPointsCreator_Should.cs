@@ -41,14 +41,14 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
-        public void CreateExpectedNumberOfPoints(int number)
+        public void CreateExpectedNumberOfPoints()
         {
             var pointsCount = 100;
             var creator = new SpiralPointsCreator(new Point(0, 0));
             var points = new List<Point>();
             for (var i = 1; i <= pointsCount; i++) points.Add(creator.GetNextPoint());
 
-            points.Count.Should().Be(number);
+            points.Count.Should().Be(pointsCount);
         }
     }
 }

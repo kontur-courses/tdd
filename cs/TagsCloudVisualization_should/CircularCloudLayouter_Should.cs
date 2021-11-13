@@ -1,11 +1,11 @@
-﻿using FluentAssertions;
-using FluentAssertions.Extensions;
-using NUnit.Framework;
-using NUnit.Framework.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using FluentAssertions;
+using FluentAssertions.Extensions;
+using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTests
@@ -32,7 +32,8 @@ namespace TagsCloudVisualizationTests
                 var rectangles = layouter.GetRectangles();
                 var visualizer = new BitmapVisualizer(rectangles);
                 var directoryToSave = new DirectoryInfo(@"../../../TestFails");
-                visualizer.Save($"{TestContext.CurrentContext.Test.Name}.Failed.png", 0.5, Color.Black, Color.Red, directoryToSave);
+                visualizer.Save($"{TestContext.CurrentContext.Test.Name}.Failed.png", Color.Black, Color.Red,
+                    directoryToSave, 0.3);
                 var fullPath = Path.Combine(directoryToSave.FullName,
                     $"{TestContext.CurrentContext.Test.Name}.Failed.{rectangles.Length}rectangles.png");
                 Console.WriteLine($"Tag cloud visualization saved to file: {fullPath}");

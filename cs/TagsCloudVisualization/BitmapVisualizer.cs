@@ -37,7 +37,7 @@ namespace TagsCloudVisualization
             for (var i = 0; i < rectangles.Length; i++) rectangles[i].Offset(offset);
         }
 
-        public void Save(string fileName, double scale, Color backgroundColor, Color outlineColor, DirectoryInfo dir = null)
+        public void Save(string fileName, Color backgroundColor, Color outlineColor, DirectoryInfo dir = null, double scale = 1)
         {
             dir = dir ?? new DirectoryInfo(Environment.CurrentDirectory);
             if (!dir.Exists) dir.Create();
@@ -61,7 +61,7 @@ namespace TagsCloudVisualization
             }
         }
 
-        public Bitmap DrawRectangles(Color backgroundColor, Color outlineColor, double scale)
+        public Bitmap DrawRectangles(Color backgroundColor, Color outlineColor, double scale = 1)
         {
             if (scale <= 0)
                 throw new ArgumentException($"{nameof(scale)} should be positive", nameof(scale));
