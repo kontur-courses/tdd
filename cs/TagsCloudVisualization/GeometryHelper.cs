@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -36,5 +38,9 @@ namespace TagsCloudVisualization
 
             return new PointF(x, y);
         }
+
+        public static Size GetRectanglesCommonSize(IEnumerable<Rectangle> rectangles, int framing = 500)
+            => rectangles.Aggregate(new Rectangle(), Rectangle.Union).Size
+               + new Size(framing, framing);
     }
 }
