@@ -12,7 +12,7 @@ namespace TagsCloudVisualization
         private const double CurveStartingRadius = 0;
         private const double MinimumCurveAngleStep = 0.2;
         private const double CurveAngleStepSlowDown = 0.002;
-        private double _directionBetweenRoundsCoeff = 1 / (2 * Math.PI);
+        private const double DirectionBetweenRoundsCoeff = 1 / (2 * Math.PI);
         private double _curveAngleStep = Math.PI / 10;
         private double _currentCurveAngle;
 
@@ -25,9 +25,8 @@ namespace TagsCloudVisualization
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             CheckRectangleSizeCorrectness(rectangleSize);
-            Rectangle result = default(Rectangle);
             var nextRectangleCoordinates = GetNextRectangleCoordinates(rectangleSize);
-            result = GetRectangleByCenter(nextRectangleCoordinates, rectangleSize);
+            var result = GetRectangleByCenter(nextRectangleCoordinates, rectangleSize);
             Rectangles.Add(result);
             return result;
         }
@@ -71,20 +70,20 @@ namespace TagsCloudVisualization
             if (_curveAngleStep > MinimumCurveAngleStep)
                 _curveAngleStep -= CurveAngleStepSlowDown;
             return new Point(
-                Convert.ToInt32((CurveStartingRadius + _directionBetweenRoundsCoeff * _currentCurveAngle) 
+                Convert.ToInt32((CurveStartingRadius + DirectionBetweenRoundsCoeff * _currentCurveAngle) 
                                 * Math.Cos(_currentCurveAngle)) + CloudCenter.X,
-                Convert.ToInt32((CurveStartingRadius + _directionBetweenRoundsCoeff * _currentCurveAngle) 
+                Convert.ToInt32((CurveStartingRadius + DirectionBetweenRoundsCoeff * _currentCurveAngle) 
                                 * Math.Sin(_currentCurveAngle)) + CloudCenter.Y);
         }
 
-        private Rectangle GetRectangleByCenter(Point centerCoords, Size rectangleSize)
+        private static Rectangle GetRectangleByCenter(Point centerCoords, Size rectangleSize)
         {
             var location = new Point(centerCoords.X - rectangleSize.Width / 2,
                 centerCoords.Y - rectangleSize.Height / 2);
             return new Rectangle(location, rectangleSize);
         }
 
-        private void CheckRectangleSizeCorrectness(Size rectangleSize)
+        private static void CheckRectangleSizeCorrectness(Size rectangleSize)
         {
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException();

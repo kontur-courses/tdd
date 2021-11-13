@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
-    class VectorShould
+    internal class VectorShould
     {
         [Test]
         public void InitializeFieldsAfterInstanceCreation()

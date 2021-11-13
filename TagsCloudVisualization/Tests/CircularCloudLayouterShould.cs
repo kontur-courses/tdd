@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
@@ -13,6 +12,7 @@ namespace TagsCloudVisualization.Tests
     public class CircularCloudLayouterShould
     {
         private CircularCloudLayouter _testLayout;
+        private const int BrushecCount = 17;
         private static readonly List<Brush> BrushList = new List<Brush>
         {
             Brushes.Blue, Brushes.Aquamarine, Brushes.BlueViolet,
@@ -27,22 +27,20 @@ namespace TagsCloudVisualization.Tests
         public void SaveLayout()
         {
             var testResult = TestContext.CurrentContext.Result.Outcome.Status;
-            if (testResult == TestStatus.Failed && _testLayout != null)
-            {
-                var testName = TestContext.CurrentContext.Test.Name;
-                var testDirectory = TestContext.CurrentContext.TestDirectory + "\\";
-                var image = new Bitmap(1500, 1500);
-                var graphics = Graphics.FromImage(image);
-                graphics.Clear(Color.Black);
-                foreach (var rect in _testLayout.Rectangles)
-                    graphics.FillRectangle(GetRandomBrush(), rect);
+            if (testResult != TestStatus.Failed || _testLayout == null) return;
+            var testName = TestContext.CurrentContext.Test.Name;
+            var testDirectory = TestContext.CurrentContext.TestDirectory + "\\";
+            var image = new Bitmap(1500, 1500);
+            var graphics = Graphics.FromImage(image);
+            graphics.Clear(Color.Black);
+            foreach (var rect in _testLayout.Rectangles)
+                graphics.FillRectangle(GetRandomBrush(), rect);
 
-                var pathToImage = testDirectory + testName + ".bmp";
-                image.Save(pathToImage);
+            var pathToImage = testDirectory + testName + ".bmp";
+            image.Save(pathToImage);
 
-                var message = $"Tag cloud visualization saved to file {pathToImage}";
-                TestContext.Out.WriteLine(message);
-            }
+            var message = $"Tag cloud visualization saved to file {pathToImage}";
+            TestContext.Out.WriteLine(message);
         }
 
         [Test]
@@ -143,6 +141,7 @@ namespace TagsCloudVisualization.Tests
                 foreach (var secondRect in layouter.Rectangles)
                     if (firstRect.IntersectsWith(secondRect) && firstRect != secondRect)
                         return true;
+
             return false;
         }
 
@@ -159,21 +158,23 @@ namespace TagsCloudVisualization.Tests
                     new Size(rnd.Next(minWidth, maxWidth), rnd.Next(minHeight, maxHeight)));
         }
 
-        private double GetCloudDeviation(double cloudValue, double deviateFrom)
+        private static double GetCloudDeviation(double cloudValue, double deviateFrom)
         {
             return 1 - Math.Abs(cloudValue / deviateFrom);
         }
 
-        private (double minLength, double maxLength) GetMinMaxHullVectorsLengths(
+        private static (double minLength, double maxLength) GetMinMaxHullVectorsLengths(
             Point center, IReadOnlyCollection<Point> hull)
         {
-            var hullVectorsLengths = hull.Select(point => new Vector(center, point).GetLength());
+            var hullVectorsLengths = hull
+                .Select(point => new Vector(center, point).GetLength())
+                .ToArray();
             return (hullVectorsLengths.Min(), hullVectorsLengths.Max());
         }
 
         private static Brush GetRandomBrush()
         {
-            var randomBrushNumber = new Random(Guid.NewGuid().GetHashCode()).Next(17);
+            var randomBrushNumber = new Random(Guid.NewGuid().GetHashCode()).Next(BrushecCount);
             return BrushList[randomBrushNumber];
         }
     }

@@ -30,7 +30,7 @@ namespace TagsCloudVisualization
             IReadOnlyCollection<Rectangle> rectangles)
         {
             return rectangles
-                .SelectMany(rect => new Point[]
+                .SelectMany(rect => new List<Point>
                 {
                     new Point(rect.Left, rect.Bottom),
                     new Point(rect.Right, rect.Bottom),
@@ -44,10 +44,7 @@ namespace TagsCloudVisualization
         public static IReadOnlyCollection<Point> GetConvexHull(IReadOnlyCollection<Point> points)
         {
             var pointsCount = points.Count;
-            if (pointsCount <= 3)
-                return points;
-
-            return GetConvexHullByJarvisAlgorithm(points);
+            return pointsCount <= 3 ? points : GetConvexHullByJarvisAlgorithm(points);
         }
 
         private static IReadOnlyCollection<Point> GetConvexHullByJarvisAlgorithm(
@@ -56,7 +53,7 @@ namespace TagsCloudVisualization
             var convexHull = new List<Point>();
             var leftMostPoint = GetLeftMostPoint(points);
             var lastAddedPoint = leftMostPoint;
-            var hullCandidate = default(Point);
+            Point hullCandidate;
             do
             {
                 hullCandidate = GetBestCandidate(points, lastAddedPoint);
