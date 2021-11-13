@@ -5,9 +5,9 @@ namespace TagsCloud.Visualization.Models
 {
     public class WordWithBorder : IDisposable
     {
-        public Word Word { get; set; }
-        public Font Font { get; set; }
-        public Rectangle Border { get; set; }
+        public Word Word { get; init; }
+        public Font Font { get; init; }
+        public Rectangle Border { get; init; }
 
         public void Dispose()
         {

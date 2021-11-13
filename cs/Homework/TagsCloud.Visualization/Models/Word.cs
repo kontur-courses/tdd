@@ -2,7 +2,7 @@
 {
     public class Word
     {
-        public string Content { get; set; }
-        public int Count { get; set; }
+        public string Content { get; init; }
+        public int Count { get; init; }
     }
 }

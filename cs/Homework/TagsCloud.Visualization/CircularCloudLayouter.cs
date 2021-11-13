@@ -58,18 +58,13 @@ namespace TagsCloud.Visualization
         {
             var shiftingRectangle = rectangle;
             while (!shiftingRectangle.IntersectsWith(rectangles)
-                   && !IsOnTheSameAxis(shiftingRectangle.GetCenter(), center))
+                   && !shiftingRectangle.GetCenter().IsOnTheSameAxisWith(center))
             {
                 rectangle = shiftingRectangle;
                 shiftingRectangle.Offset(offset);
             }
 
             return rectangle;
-        }
-
-        private bool IsOnTheSameAxis(Point point, Point otherPoint)
-        {
-            return point.X == otherPoint.X || point.Y == otherPoint.Y;
         }
     }
 }

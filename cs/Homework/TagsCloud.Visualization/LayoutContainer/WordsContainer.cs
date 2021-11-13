@@ -11,6 +11,11 @@ namespace TagsCloud.Visualization.LayoutContainer
 {
     public class WordsContainer : ILayoutContainer<WordWithBorder>, IDisposable
     {
+        public void Dispose()
+        {
+            Items?.ForEach(x => x.Dispose());
+        }
+
         public IEnumerable<WordWithBorder> Items { get; init; }
 
         public (int, int) GetWidthAndHeight()
@@ -32,11 +37,6 @@ namespace TagsCloud.Visualization.LayoutContainer
         public void Accept(Graphics graphics, IContainerVisitor visitor)
         {
             visitor.Visit(graphics, this);
-        }
-
-        public void Dispose()
-        {
-            Items?.ForEach(x => x.Dispose());
         }
     }
 }

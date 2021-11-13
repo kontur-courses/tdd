@@ -6,13 +6,12 @@ namespace TagsCloud.Visualization.FontService
 {
     public class FontService : IFontService
     {
+        private const int MaxFontSize = 2000;
         private readonly int maxCount;
-        private readonly int maxFontSize;
         private readonly int minCount;
 
-        public FontService(int maxFontSize, int minCount, int maxCount)
+        public FontService(int minCount, int maxCount)
         {
-            this.maxFontSize = maxFontSize;
             this.minCount = minCount;
             this.maxCount = maxCount;
         }
@@ -21,7 +20,7 @@ namespace TagsCloud.Visualization.FontService
         {
             var fontSize = word.Count <= minCount
                 ? 1
-                : Convert.ToInt32(maxFontSize * (word.Count - minCount) / (maxCount - minCount));
+                : Convert.ToInt32(MaxFontSize * (word.Count - minCount) / (maxCount - minCount));
             return new Font("Times new roman", fontSize, FontStyle.Regular);
         }
     }

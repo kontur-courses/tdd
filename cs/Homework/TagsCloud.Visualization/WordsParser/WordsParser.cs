@@ -6,7 +6,7 @@ using TagsCloud.Visualization.WordsFilter;
 
 namespace TagsCloud.Visualization.WordsParser
 {
-    public class WordsParser
+    public class WordsParser : IWordsParser
     {
         private const string WordsPattern = @"\W+";
         private readonly IWordsFilter wordsFilter;

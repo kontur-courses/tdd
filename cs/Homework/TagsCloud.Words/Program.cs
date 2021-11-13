@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using JetBrains.ReSharper.TestRunner.Abstractions.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using TagsCloud.Visualization;
 using TagsCloud.Visualization.ContainerVisitor;
 using TagsCloud.Visualization.Drawer;
@@ -18,37 +19,30 @@ namespace TagsCloud.Words
 {
     public class Program
     {
-        private const int MaxFontSize = 2000;
-        private static readonly Point Center = Point.Empty;
-
         public static void Main(string[] args)
         {
-            var words = ParseWordsFromFile(GetInputFilename());
+            var serviceProvider = CreateServiceProvider(Point.Empty);
 
-            var maxCount = words.Max(x => x.Count);
-            var minCount = words.Min(x => x.Count);
+            var parsedWords = ParseWordsFromFile(serviceProvider, GetInputFilename());
 
-            // TODO replace with di container
-            var fontService = new FontService(MaxFontSize, minCount, maxCount);
-            var wordsSizeService = new WordsSizeService();
-            var archimedesSpiralPointGenerator = new ArchimedesSpiralPointGenerator(Center);
-            var layouter = new CircularCloudLayouter(Center, archimedesSpiralPointGenerator);
-            var wordsBuilder = new WordsContainerBuilder(layouter, fontService, wordsSizeService);
-            var visitor = new RandomColorDrawerVisitor();
-            var drawer = new Drawer(visitor);
+            var maxCount = parsedWords.Max(x => x.Count);
+            var minCount = parsedWords.Min(x => x.Count);
 
-            words.ForEach(x => wordsBuilder.Add(x));
+            var wordsBuilder = serviceProvider.GetRequiredService<WordsContainerBuilder>();
+            parsedWords.ForEach(x => wordsBuilder.Add(x, minCount, maxCount));
 
             using var container = wordsBuilder.Build();
+
+            var drawer = serviceProvider.GetRequiredService<IDrawer>();
             using var image = drawer.Draw(container);
             var path = GetDirectoryForSavingExamples() + "\\words4.png";
             image.Save(path);
         }
 
-        private static Word[] ParseWordsFromFile(string path)
+        private static Word[] ParseWordsFromFile(IServiceProvider serviceProvider, string path)
         {
             var text = File.ReadAllText(path);
-            return new WordsParser(new WordsFilter())
+            return serviceProvider.GetRequiredService<IWordsParser>()
                 .CountWordsFrequency(text)
                 .OrderByDescending(x => x.Value)
                 .Select(x => new Word {Content = x.Key, Count = x.Value})
@@ -67,10 +61,33 @@ namespace TagsCloud.Words
         private static string GetInputFilename()
         {
             var solutionPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..\\..\\..\\..\\"));
-            var path = Path.Combine(solutionPath, "Examples");
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            return path + "\\refactoring.txt";
+            if (!Directory.Exists(solutionPath))
+                Directory.CreateDirectory(solutionPath);
+            return solutionPath + "\\refactoring.txt";
+        }
+
+        private static IServiceProvider CreateServiceProvider(Point center)
+        {
+            var collection = new ServiceCollection();
+
+            collection.AddScoped<IWordsFilter, WordsFilter>();
+            collection.AddScoped<IWordsParser, WordsParser>();
+
+            // TODO Problem: think how to inject IFontService
+            collection.AddScoped<Func<Word, int, int, Font>>(_ =>
+                (word, min, max) => new FontService(min, max).CalculateFont(word));
+
+            collection.AddScoped<IWordsSizeService, WordsSizeService>();
+            collection.AddScoped<WordsContainerBuilder>();
+
+            collection.AddScoped<IPointGenerator>(_ => new ArchimedesSpiralPointGenerator(center));
+            collection.AddScoped<ICloudLayouter>(provider
+                => new CircularCloudLayouter(center, provider.GetService<IPointGenerator>()));
+
+            collection.AddScoped<IContainerVisitor, RandomColorDrawerVisitor>();
+            collection.AddScoped<IDrawer, Drawer>();
+
+            return collection.BuildServiceProvider();
         }
     }
 }
