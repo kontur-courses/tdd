@@ -89,8 +89,8 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void SingleRectangleInCenterPutCorrectly()
         {
-            var seedRandom = new Random(6847866);
-            var rectangleSize = new Size(seedRandom.Next(-100,100), seedRandom.Next(-100,100));
+
+            var rectangleSize = new Size(50, 60);
             var layouterCenter = new Point(2500,2500);
             var layouter = new CircularCloudLayouter(layouterCenter);
             var rectangle = layouter.PutNextRectangle(rectangleSize);
