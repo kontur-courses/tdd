@@ -82,22 +82,6 @@ namespace TagsCloudVisualizationTests
             var rectangle = Layouter.PutNextRectangle(rectangleSize);
             rectangle.Location.Should().Be(layouterCenter);
         }
-        /*
-        [Test]
-        public void RectanglesShouldBeInCircle()
-        {
-            var rectangleSize = new Size(60, 120);
-            var layouterCenter = new Point(2000, 1000);
-            RectanglesList = new List<Rectangle>();
-            Layouter = new CircularCloudLayouter(layouterCenter);
-            for (int i = 0; i < 300; i++)
-                RectanglesList.Add(Layouter.PutNextRectangle(rectangleSize));
-            var sumArea = GetSumAreaOfRectangles(RectanglesList);
-            var circleArea = GetCircleArea(GetCircleRadius(layouterCenter, RectanglesList));
-            var density = sumArea / circleArea;
-            density.Should().BeLessThan(1);
-        }
-        */
 
         [Test]
         public void ShouldBeCloserToCircleThanToSquare()
@@ -152,10 +136,7 @@ namespace TagsCloudVisualizationTests
         {
             double result = 0;
             foreach (var rectangle in rectangles)
-            {
-                var rectangleArea = rectangle.Height * rectangle.Width;
-                result += rectangleArea;
-            }
+                result += rectangle.Height * rectangle.Width;
             return result;
         }
 
