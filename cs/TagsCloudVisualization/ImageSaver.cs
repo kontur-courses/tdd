@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class ImageSaver : ISaver
+    public class ImageSaver : IFileSaver
     {
         public void SaveImage(Bitmap bitmap, string fileName, ImageFormat imageFormat, string path = ".")
         {
@@ -23,7 +23,7 @@ namespace TagsCloudVisualization
                 throw new ArgumentException("File name is null or consists only of white-space characters");
             }
 
-            var invalidCharacters = @"/\<>*:?""|";
+            const string invalidCharacters = @"/\<>*:?""|";
             if (fileName.Any(symbol => invalidCharacters.Contains(symbol)))
             {
                 throw new ArgumentException("File name contains invalid characters");
