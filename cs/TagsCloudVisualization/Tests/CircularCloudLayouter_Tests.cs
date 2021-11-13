@@ -31,7 +31,7 @@ namespace TagsCloudVisualization.Tests
         [SetUp]
         public void SetUp()
         {
-            cloudLayouter = new CircularCloudLayouter(new PointF(), new Spiral(0.01f, 1));
+            cloudLayouter = new CircularCloudLayouter(new Spiral(0.01f, 1, new PointF()));
         }
 
         [TearDown]
@@ -91,7 +91,7 @@ namespace TagsCloudVisualization.Tests
             int width,
             int height)
         {
-            cloudLayouter = new CircularCloudLayouter(new Point(xCloudPosition, yCloudPosition), new Spiral(0.2f, 1));
+            cloudLayouter = new CircularCloudLayouter(new Spiral(0.2f, 1, new Point(xCloudPosition, yCloudPosition)));
 
             var tag = cloudLayouter.PutNextRectangle(new Size(width, height));
 
@@ -118,7 +118,7 @@ namespace TagsCloudVisualization.Tests
         [TestCase(15, 15, 5000, TestName = "Same execution time for large sizes")]
         public void PutNextRectangle_ShouldWorkFast(int width, int height, int count)
         {
-            cloudLayouter = new CircularCloudLayouter(new PointF(), new Spiral(0.1f, 0.65));
+            cloudLayouter = new CircularCloudLayouter(new Spiral(0.1f, 0.65, new PointF()));
             var size = new Size(width, height);
 
             Action act = () =>
@@ -127,7 +127,7 @@ namespace TagsCloudVisualization.Tests
                     cloudLayouter.PutNextRectangle(size);
             };
 
-            act.ExecutionTime().Should().BeLessThan(500.Milliseconds());
+            act.ExecutionTime().Should().BeLessThan(1000.Milliseconds());
         }
 
         private double GetDensity(CircularCloudLayouter cloudLayouter)

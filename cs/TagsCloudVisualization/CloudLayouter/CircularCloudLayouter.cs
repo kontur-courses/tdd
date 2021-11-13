@@ -9,17 +9,15 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter : ICloudLayouter
     {
         private readonly List<RectangleF> tagCloud;
-        private readonly PointF center;
-        private readonly Spiral spiral;
+        private readonly IPointGenerator pointGenerator;
         private RectangleF cloudRectangle;
         public RectangleF Unioned => cloudRectangle;
         public SizeF SizeF => new SizeF(cloudRectangle.Width, cloudRectangle.Height);
 
-        public CircularCloudLayouter(PointF center, Spiral spiral)
+        public CircularCloudLayouter(IPointGenerator pointGenerator)
         {
             tagCloud = new List<RectangleF>();
-            this.center = center;
-            this.spiral = spiral;
+            this.pointGenerator = pointGenerator;
         }
 
 
@@ -47,7 +45,7 @@ namespace TagsCloudVisualization
 
         private RectangleF GetNextRectangle(Size size)
         {
-            var points = spiral.GetPoints(center, size);
+            var points = pointGenerator.GetPoints(size);
             var rectangles = points.Select(p => GetRectangleByCenterPoint(p, size));
             var suitableRectangle = rectangles.First(r => !IsIntersectWithCloud(r));
             return suitableRectangle;

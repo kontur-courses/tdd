@@ -4,20 +4,22 @@ using System.Drawing;
 
 namespace TagsCloudVisualization.PointGenerator
 {
-    public class Spiral
+    public class Spiral : IPointGenerator
     {
         private double spiralPitch;
         private readonly float anglePitch;
         private readonly double pitchCoefficient;
+        private readonly PointF center;
         private readonly Cache cache = new Cache();
 
-        public Spiral(float anglePitch, double densityCoefficient)
+        public Spiral(float anglePitch, double densityCoefficient, PointF center)
         {
             this.anglePitch = anglePitch;
+            this.center = center;
             pitchCoefficient = 20 * densityCoefficient * densityCoefficient;
         }
 
-        public IEnumerable<PointF> GetPoints(PointF center, Size size)
+        public IEnumerable<PointF> GetPoints(Size size)
         {
             spiralPitch = Math.Min(size.Height, size.Width)/pitchCoefficient;
             foreach (var (radius, angle) in GetArchimedeanSpiral(cache.GetParameter(size)))
