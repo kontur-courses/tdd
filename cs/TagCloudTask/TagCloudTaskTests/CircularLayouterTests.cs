@@ -90,6 +90,17 @@ namespace TagCloudTaskTests
             actualRatio.Should().BeGreaterOrEqualTo(expectedRatio);
         }
 
+        [Test]
+        public void CircularLayouter_CloudDensityTest()
+        {
+            PutNextNRectangles(256);
+            var expectedSquaresRatio = 0.5d;
+
+            var actualSquaresRatio = GetSquaresRatio();
+
+            actualSquaresRatio.Should().BeGreaterOrEqualTo(expectedSquaresRatio);
+        }
+
         [TearDown]
         public void TearDown()
         {
@@ -104,6 +115,17 @@ namespace TagCloudTaskTests
             var path = tagCloud.SaveBitmap(true, true, false);
 
             Console.WriteLine($"Tag cloud visualization saved to file\n{path}");
+        }
+
+        private double GetSquaresRatio()
+        {
+            var radius = layouter.GetCloudBoundaryRadius();
+            var circleSquare = 2 * Math.PI * radius * radius;
+
+            var boundaryBox = layouter.GetRectanglesBoundaryBox();
+            var rectanglesSquare = boundaryBox.Width * boundaryBox.Height;
+
+            return rectanglesSquare / circleSquare;
         }
 
         private bool IsLayoutTest(TestContext context)
