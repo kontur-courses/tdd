@@ -18,8 +18,6 @@ namespace TagsCloudVisualization
 
         public CircularCloudLayouter(Point center)
         {
-            if (center == Point.Empty)
-                throw new ArgumentException();
             Center = center;
             LayouterSpiral = new Spiral();
             RectangleList = new List<Rectangle>();

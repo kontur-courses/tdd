@@ -21,13 +21,17 @@ namespace TagsCloudVisualizationTests
             creating.Should().NotThrow();
         }
 
-        [Test]
-        public void CloudLayouterConstructorShouldThrowExceptionOnIncorrectArguments()
+        [TestCase(-5, 10)]
+        [TestCase(5, -5)]
+        [TestCase(0, 0)]
+        [TestCase(10, 10)]
+        public void ShouldNotThrowExceptionWithCorrectSize(int width, int height)
         {
-            var center = Point.Empty;
-            Action creating = () => new CircularCloudLayouter(center);
-            creating.Should().Throw<ArgumentException>();
+            var layouterCenter = new Point(width,height);
+            Action creating = () => new CircularCloudLayouter(layouterCenter);
+            creating.Should().NotThrow();
         }
+
     }
     [TestFixture]
     [Category("VisualizationTests")]
@@ -56,9 +60,7 @@ namespace TagsCloudVisualizationTests
             var sumArea = GetSumAreaOfRectangles(_layouter);
             var circleArea = GetCircleArea(GetCircleRadius(_layouter));
             var density = sumArea / circleArea;
-            density.Should().BeLessThan(0); 
-            // !!!
-            // Заменить на 1 
+            density.Should().BeLessThan(1);
         }
 
         [Test]
@@ -82,7 +84,7 @@ namespace TagsCloudVisualizationTests
         [TestCase(5,-5)]
         [TestCase(0,0)]
         [TestCase(10, 10)]
-        public void ShouldNotPutInvalidRectangle(int width, int height)
+        public void ShouldNotThrowIfPutRectangleWithCorrectSize(int width, int height)
         {
             var rectangleSize = new Size(width, height);
             var layouterCenter = new Point(20, 10);
