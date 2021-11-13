@@ -28,7 +28,7 @@ namespace TagsCloudVisualizationTests
                 using (var visualization = new Visualization(RectanglesList, new Pen(Color.White, 3)))
                 {
                     var testName = TestContext.CurrentContext.Test.Name;
-                    var path = AppDomain.CurrentDomain.BaseDirectory + "" + testName + "." + ImageFormat.Jpeg;
+                    var path = AppDomain.CurrentDomain.BaseDirectory + testName + "." + ImageFormat.Jpeg;
                     Console.WriteLine($"Tag cloud visualization saved to file {path}");
                     visualization.DrawAndSaveImage(new Size(5000, 5000), path, ImageFormat.Jpeg);
                 }
@@ -146,16 +146,25 @@ namespace TagsCloudVisualizationTests
         public double GetEnclosingRectangleArea(List<Rectangle> rectangles)
         {
             var vertexes = new List<Point>();
+            var xMax = int.MinValue;
+            var xMin = int.MaxValue;
+            var yMin = int.MaxValue;
+            var yMax = int.MinValue;
             foreach (var rectangle in rectangles)
             {
                 foreach (var node in rectangle.GetRectangleNodes())
                 {
-                    vertexes.Add(node);
+                    if (node.X > xMax)
+                        xMax = node.X;
+                    if (node.Y > yMax)
+                        yMax = node.Y;
+                    if (node.X < xMin)
+                        xMin = node.X;
+                    if (node.Y < yMin)
+                        yMin = node.Y;
                 }
             }
-            var sortListXCords = vertexes.Select(vertex => vertex.X).ToList().OrderBy(x => x).ToList();
-            var sortListYCords = vertexes.Select(vertex => vertex.Y).ToList().OrderBy(y => y).ToList();
-            return (sortListYCords.Last() - sortListYCords.First()) * ( sortListXCords.Last() -sortListXCords.First());
+            return (xMax - xMin) * (yMax - yMin);
         }
 
         public double GetCircleArea(double circleRadius)
