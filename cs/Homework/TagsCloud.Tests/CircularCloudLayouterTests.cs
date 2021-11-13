@@ -7,18 +7,20 @@ using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using TagsCloud.Visualization;
+using TagsCloud.Visualization.ContainerVisitor;
 using TagsCloud.Visualization.Drawer;
 using TagsCloud.Visualization.Extensions;
+using TagsCloud.Visualization.LayoutContainer;
 using TagsCloud.Visualization.PointGenerator;
 
 namespace TagsCloud.Tests
 {
     public class CircularCloudLayouterTests
     {
+        private readonly Drawer drawer = new(new RandomColorDrawerVisitor());
         private Point center;
         private List<Rectangle> rectangles;
         private CircularCloudLayouter sut;
-        private readonly DrawerSettings drawerSettings = new() {Color = Color.Red};
 
         [SetUp]
         public void InitLayouter()
@@ -35,8 +37,8 @@ namespace TagsCloud.Tests
                 && rectangles.Count > 0)
             {
                 var testName = TestContext.CurrentContext.Test.Name;
-                var drawer = new TestDrawer();
-                using var image = drawer.Draw(rectangles.ToArray(), drawerSettings);
+                var rectanglesContainer = new RectanglesContainer {Items = rectangles};
+                using var image = drawer.Draw(rectanglesContainer);
                 var path = Path.Combine(GetDirectoryForSavingFailedTest(), $"{testName}.png");
                 image.Save(path);
 
@@ -93,7 +95,7 @@ namespace TagsCloud.Tests
         public void PutNextRectangle_Rectangles_Should_HaveDifferentCentres()
         {
             rectangles = PutRandomRectangles(10);
-            
+
             rectangles.Should().OnlyHaveUniqueItems(x => x.GetCenter());
         }
 
@@ -114,6 +116,7 @@ namespace TagsCloud.Tests
             var width = random.Next(300);
             var height = random.Next(200);
             var size = new Size(width, height);
+            var expectedSquareSqrt = Math.Sqrt(width * height * count);
 
             rectangles = Enumerable.Range(0, count)
                 .Select(_ => sut.PutNextRectangle(size))
@@ -121,7 +124,7 @@ namespace TagsCloud.Tests
 
             foreach (var rectangle in rectangles)
                 rectangle.Location.GetDistance(center).Should()
-                    .BeLessThan(Math.Sqrt(width * height * count));
+                    .BeLessThan(expectedSquareSqrt, rectangle.ToString());
         }
 
         [TestCase(1000, TestName = "Big count")]

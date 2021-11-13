@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\TagsCloud.Visualization\TagsCloud.Visualization.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="JetBrains.ReSharper.TestRunner.Abstractions, Version=1.2.7.0, Culture=neutral, PublicKeyToken=5c492ec4f3eccde3">
+        <HintPath>..\..\..\..\..\..\..\..\Program Files\JetBrains\JetBrains Rider 2020.3.4\lib\ReSharperHost\TestRunner\netcoreapp2.0\JetBrains.ReSharper.TestRunner.Abstractions.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+</Project>

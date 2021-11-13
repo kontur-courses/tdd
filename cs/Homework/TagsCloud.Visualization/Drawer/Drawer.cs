@@ -1,51 +1,38 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
-using TagsCloud.Visualization.Extensions;
+using TagsCloud.Visualization.ContainerVisitor;
+using TagsCloud.Visualization.LayoutContainer;
 
 namespace TagsCloud.Visualization.Drawer
 {
-    public class DrawerSettings
-    {
-        public Color Color { get; set; }
-    }
-
-    public abstract class Drawer : IDrawer
+    public class Drawer : IDrawer
     {
         private const int OffsetX = 100;
         private const int OffsetY = 100;
-        protected DrawerSettings Settings;
+        private readonly IContainerVisitor visitor;
 
-        public Image Draw([NotNull] Rectangle[] rectangles, DrawerSettings settings)
+        public Drawer(IContainerVisitor visitor)
         {
-            if (rectangles.Length == 0)
-                throw new ArgumentException("rectangles array cannot be empty");
-            Settings = settings ?? throw new NullReferenceException(nameof(settings));
+            this.visitor = visitor;
+        }
 
-            var (width, height) = GetWidthAndHeight(rectangles);
+        public Image Draw<T>(ILayoutContainer<T> layoutContainer)
+        {
+            if (!layoutContainer.Items.Any())
+                throw new ArgumentException("rectangles array cannot be empty");
+
+            var (width, height) = layoutContainer.GetWidthAndHeight();
             var (widthWithOffset, heightWithOffset) = (width + OffsetX, height + OffsetY);
-            var center = rectangles.First().GetCenter();
+            var center = layoutContainer.GetCenter();
             var bitmap = new Bitmap(widthWithOffset, heightWithOffset);
             using var graphics = Graphics.FromImage(bitmap);
 
             graphics.TranslateTransform(center.X + widthWithOffset / 2, center.Y + heightWithOffset / 2);
 
-            Transform(graphics, rectangles);
+            layoutContainer.Accept(graphics, visitor);
 
             return bitmap;
-        }
-
-        protected abstract void Transform(Graphics graphics, Rectangle[] rectangles);
-
-        private (int width, int height) GetWidthAndHeight(Rectangle[] rectangles)
-        {
-            var maxRight = rectangles.Max(x => x.Right);
-            var minLeft = rectangles.Min(x => x.Left);
-            var maxBottom = rectangles.Max(x => x.Bottom);
-            var minTop = rectangles.Min(x => x.Top);
-
-            return (Math.Abs(maxRight - minLeft), Math.Abs(maxBottom - minTop));
         }
     }
 }
