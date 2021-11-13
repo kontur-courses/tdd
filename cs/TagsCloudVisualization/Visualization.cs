@@ -30,6 +30,7 @@ namespace TagsCloudVisualization
             foreach (var rectangle in RectangleList)
                 graphics.DrawRectangle(ColorPen, rectangle);
             graphics.Dispose();
+            ColorPen.Dispose();
             return image;
         }
     }
