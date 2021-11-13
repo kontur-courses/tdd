@@ -20,7 +20,7 @@ namespace TagsCloudVisualization
         public Visualizer(Size size, Color backgroundColor)
         {
             cloudLayouter =
-                new CircularCloudLayouter(new PointF(size.Width / 2f, size.Height / 2f), new Spiral(0.01f, 1));
+                new CircularCloudLayouter(new PointF(size.Width / 2f, size.Height / 2f), new Spiral(0.01f, 2));
             bitmap = new Bitmap(size.Width, size.Height);
             graphics = Graphics.FromImage(bitmap);
             graphics.FillRectangle(new SolidBrush(backgroundColor), 0, 0, size.Width, size.Height);
