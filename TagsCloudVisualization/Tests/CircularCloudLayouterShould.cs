@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -112,9 +113,10 @@ namespace TagsCloudVisualization.Tests
 
         private static bool AreRectanglesIntersected(CircularCloudLayouter layouter)
         {
-            foreach (var firstRect in layouter.Rectangles)
-                foreach (var secondRect in layouter.Rectangles)
-                    if (firstRect.IntersectsWith(secondRect) && firstRect != secondRect)
+            var rectangles = layouter.Rectangles.ToList();
+            for (var i = 0; i < rectangles.Count; i++)
+                for (var j = i + 1; j < rectangles.Count; j++)
+                    if (rectangles[i].IntersectsWith(rectangles[j]) && rectangles[i] != rectangles[j])
                         return true;
 
             return false;
