@@ -35,7 +35,7 @@ namespace TagsCloudVisualization
                         new PointF(r.X + cloudLayouter.SizeF.Width / 2, r.Y + cloudLayouter.SizeF.Height / 2),
                         r.Size)).ToArray();
             graphics.FillRectangles(new SolidBrush(Color.Coral), cloudWithOffsetLocation);
-            graphics.DrawRectangles(new Pen(Color.Firebrick), cloudWithOffsetLocation);
+            graphics.DrawRectangles(new Pen(Color.Firebrick, 1f), cloudWithOffsetLocation);
             bitmap.Save(file);
         }
 
