@@ -9,3 +9,6 @@
 
 ### Третья раскладка
 <img src="ExamplesIMG/3.png" alt="Третья раскладка">
+
+### Четвертая раскладка (прямоугольники)
+<img src="ExamplesIMG/rectangles.png" alt="Прямоугольники">

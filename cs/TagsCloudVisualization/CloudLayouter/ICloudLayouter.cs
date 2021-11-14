@@ -4,8 +4,10 @@ namespace TagsCloudVisualization.CloudLayouter
 {
     public interface ICloudLayouter
     {
-        SizeF Size { get;}
+        SizeF SizeF { get;}
         PointF Center { get; }
         RectangleF PutNextRectangle(Size rectangleSize);
+
+        RectangleF[] GetCloud();
     }
 }

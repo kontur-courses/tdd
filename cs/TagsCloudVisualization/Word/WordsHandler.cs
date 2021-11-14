@@ -26,7 +26,7 @@ namespace TagsCloudVisualization
                 template.Add(new WordParameter(word, wordRectangle, font));
             }
 
-            template.Size = CloudLayouter.Size.ToSize();
+            template.Size = CloudLayouter.SizeF.ToSize();
             template.Center = CloudLayouter.Center;
             return template;
         }

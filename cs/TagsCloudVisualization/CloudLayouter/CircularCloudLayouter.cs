@@ -11,7 +11,7 @@ namespace TagsCloudVisualization.CloudLayouter
         private readonly List<RectangleF> tagCloud;
         private readonly IPointGenerator pointGenerator;
         public RectangleF CloudRectangle { get; private set; }
-        public SizeF Size => new SizeF(CloudRectangle.Width, CloudRectangle.Height);
+        public SizeF SizeF => new SizeF(CloudRectangle.Width, CloudRectangle.Height);
 
         public PointF Center => pointGenerator.Center;
 

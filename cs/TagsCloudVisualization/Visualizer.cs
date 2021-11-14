@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using TagsCloudVisualization.CloudLayouter;
 using TagsCloudVisualization.PointGenerator;
@@ -8,11 +9,11 @@ namespace TagsCloudVisualization
     public class Visualizer
     {
         private static readonly Brush Brush = Brushes.Black;
-        private CircularCloudLayouter cloudLayouter;
+        private ICloudLayouter cloudLayouter;
         private readonly Bitmap bitmap;
         private readonly Graphics graphics;
 
-        public Visualizer(CircularCloudLayouter cloudLayouter) : this(cloudLayouter.Size.ToSize(), Color.Bisque)
+        public Visualizer(ICloudLayouter cloudLayouter) : this(cloudLayouter.SizeF.ToSize(), Color.Bisque)
         {
             this.cloudLayouter = cloudLayouter;
         }
@@ -31,17 +32,19 @@ namespace TagsCloudVisualization
             var cloudWithOffsetLocation = cloudLayouter.GetCloud()
                 .Select(r =>
                     new RectangleF(
-                        new PointF(r.X + cloudLayouter.Size.Width / 2, r.Y + cloudLayouter.Size.Height / 2),
+                        new PointF(r.X + cloudLayouter.SizeF.Width / 2, r.Y + cloudLayouter.SizeF.Height / 2),
                         r.Size)).ToArray();
-            graphics.DrawRectangles(Pens.Aqua, cloudWithOffsetLocation);
+            graphics.FillRectangles(new SolidBrush(Color.Coral), cloudWithOffsetLocation);
+            graphics.DrawRectangles(new Pen(Color.Firebrick), cloudWithOffsetLocation);
             bitmap.Save(file);
         }
 
         public void Draw(Template template, string filename)
         {
+            var bitmapCenter = new PointF(bitmap.Width / 2f, bitmap.Height / 2f);
+            var offset = new PointF(bitmapCenter.X - template.Center.X, bitmapCenter.Y - template.Center.Y);
             foreach (var wordParameter in template.GetWords())
             {
-                var offset = new PointF(template.Size.Width / 2f, template.Size.Height / 2f);
                 var rectangleF = wordParameter.WordRectangleF;
                 rectangleF.Offset(offset);
                 graphics.DrawString(wordParameter.Word, wordParameter.Font, Brush, rectangleF);

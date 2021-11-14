@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using TagsCloudVisualization.CloudLayouter;
 
 namespace TagsCloudVisualization
 {
     public static class Examples
     {
-        private static readonly List<string> Words = new List<string>()
+        private static readonly List<string> Words = new()
         {
             "camping", "cooking", "crafts", "cube", "circus", "christmas", "dance", "desert", "design", "democracy",
             "death", "dogs", "drama", "discovery", "dragons", "dream",
@@ -43,6 +44,15 @@ namespace TagsCloudVisualization
         {
             var random = new Random();
             return Words.Select(word => (word, new Font(fontName, random.Next(10, 40)))).ToList();
+        }
+
+        public static void RandomFill(ICloudLayouter cloudLayouter, int rectanglesCount, Size maxSize)
+        {
+            var random = new Random();
+            for (var i = 0; i < rectanglesCount; i++)
+            {
+                cloudLayouter.PutNextRectangle(new Size(random.Next(1, maxSize.Width), random.Next(1, maxSize.Height)));
+            }
         }
     }
 }
