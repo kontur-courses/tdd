@@ -40,11 +40,11 @@ namespace TagsCloudVisualization
 
         private Point ShiftRectangleToCloudCenter(Point rectCenter, Size rectSize)
         {
-            rectCenter = GetSuitableRectCenterInPointDirection(rectCenter,
+            rectCenter = GetSuitableRectCenterInDirection(rectCenter,
                 rectSize, CloudCenter);
-            rectCenter = GetSuitableRectCenterInPointDirection(rectCenter,
+            rectCenter = GetSuitableRectCenterInDirection(rectCenter,
                 rectSize, new Point(rectCenter.X, CloudCenter.Y));
-            rectCenter = GetSuitableRectCenterInPointDirection(rectCenter,
+            rectCenter = GetSuitableRectCenterInDirection(rectCenter,
                 rectSize, new Point(CloudCenter.X, rectCenter.Y));
             return rectCenter;
         }
@@ -90,7 +90,7 @@ namespace TagsCloudVisualization
         private bool DoesRectIntersectAnyOther(Rectangle rect)
             => Rectangles.Any(r => r != rect && rect.IntersectsWith(r));
 
-        private Point GetSuitableRectCenterInPointDirection(Point rectCenter, Size rectSize,
+        private Point GetSuitableRectCenterInDirection(Point rectCenter, Size rectSize,
             Point directionPoint)
         {
             var leftBorder = directionPoint;
