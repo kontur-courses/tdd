@@ -84,7 +84,7 @@ namespace TagsCloudVisualization
         private static void CheckRectangleSizeCorrectness(Size rectangleSize)
         {
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
-                throw new ArgumentException();
+                throw new ArgumentException("Width or height is less than or equal to 0");
         }
 
         private bool DoesRectIntersectAnyOther(Rectangle rect)
