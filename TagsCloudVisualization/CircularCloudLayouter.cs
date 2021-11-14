@@ -95,10 +95,8 @@ namespace TagsCloudVisualization
         {
             var leftBorder = directionPoint;
             var rightBorder = rectCenter;
-            //var vectLen = new Vector(leftBorder, rightBorder).GetLength();
             var borderDistance = leftBorder.GetDistanceTo(rightBorder);
             const int eps = 2;
-            //while (vectLen > eps)
             while (borderDistance > eps)
             {
                 var middle = new Point(
@@ -109,7 +107,6 @@ namespace TagsCloudVisualization
                     leftBorder = middle;
                 else
                     rightBorder = middle;
-                //vectLen = new Vector(leftBorder, rightBorder).GetLength();
                 borderDistance = leftBorder.GetDistanceTo(rightBorder);
             }
             return rightBorder;
