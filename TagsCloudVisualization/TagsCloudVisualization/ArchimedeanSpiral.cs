@@ -12,12 +12,12 @@ namespace TagsCloudVisualization
         /// <summary>
         /// Радиус витков
         /// </summary>
-        protected double Radius;
+        private double Radius;
 
         /// <summary>
         /// Текущий угол в радианах
         /// </summary>
-        protected double Phi;
+        private double Phi;
 
         public ArchimedeanSpiral() : base() 
         {
