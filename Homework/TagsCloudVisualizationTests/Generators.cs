@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("ConsoleAppForUsingTests")]
 namespace TagsCloudVisualizationTests
 {
-    public static class Generators
+    internal static class Generators
     {
         public static IEnumerable<Point> CenterGenerator()
         {
@@ -19,7 +21,7 @@ namespace TagsCloudVisualizationTests
             yield return new Point(-10, 0);
         }
         
-        public static IEnumerable<SizeF> RectanglesSizeGenerator()
+        public static IEnumerable<SizeF> RectanglesRandomSizeGenerator()
         {
             var random = new Random();
 

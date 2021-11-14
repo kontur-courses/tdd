@@ -32,6 +32,9 @@ namespace TagsCloudVisualization.Layouters
             return rect;
         }
 
+        public IEnumerable<RectangleF> PutNextRectangles(IEnumerable<SizeF> rectanglesSizes)
+            => rectanglesSizes.Select(PutNextRectangle);
+
         private RectangleF FindRectanglePosition(SizeF rectangleSize)
         {
             var rect = new RectangleF(
