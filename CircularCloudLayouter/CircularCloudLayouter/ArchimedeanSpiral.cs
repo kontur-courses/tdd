@@ -3,17 +3,17 @@ using System.Drawing;
 
 namespace TagsCloudVisualizer
 {
-    class ArchimedeanSpiral
+    class ArchimedeanSpiral : ISpiral
     {
-        private double currentAngle = 0;
+        private double currentAngle;
         private readonly double angleSpeed;
         private double currentRadius;
         private readonly double linearSpeed;
         private Point center;
-        public Point CurrentPoint { get; private set; }
+        private Point CurrentPoint { get; set; }
         public ArchimedeanSpiral(Point center, double angleSpeed = 0.108, double linearSpeed = 0.032)
         {
-            if (angleSpeed == 0 && linearSpeed == 0)
+            if (angleSpeed == 0 || linearSpeed == 0)
             {
                 throw new ArgumentException();
             }

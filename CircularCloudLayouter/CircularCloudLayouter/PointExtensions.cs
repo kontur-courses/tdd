@@ -15,5 +15,11 @@ namespace TagsCloudVisualizer
         {
             return new Point(p1.X + dX, p1.Y + dY);
         }
+        public static Rectangle GetRectangleWithCenterInPoint(this Point center, Size rectangleSize)
+        {
+            var locationX = center.X - rectangleSize.Width / 2;
+            var locationY = center.Y - rectangleSize.Height / 2;
+            return new Rectangle(new Point(locationX, locationY), rectangleSize);
+        }
     }
 }

@@ -30,7 +30,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -70,6 +70,8 @@
     <Compile Include="CircularCloudLayouter_Tests.cs" />
     <Compile Include="GeometryHelper.cs" />
     <Compile Include="GeometryHelper_Tests.cs" />
+    <Compile Include="ICloudLayouter.cs" />
+    <Compile Include="ISpiral.cs" />
     <Compile Include="PointExtensions.cs" />
     <Compile Include="PointExtensions_Tests.cs" />
     <Compile Include="Program.cs" />

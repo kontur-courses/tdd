@@ -7,141 +7,95 @@ using System.Text;
 using System.Reflection;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.IO;
 
 namespace TagsCloudVisualizer
 {
     [TestFixture]
     class CircularCloudLayouter_Tests
     {
-        private readonly StringBuilder logs = new StringBuilder();
-        private readonly Random random = new Random();
         private CircularCloudLayouter CCL;
+
         [SetUp]
-        public void SetUpCCLAndLogs()
+        public void SetUpCCL()
         {
             CCL = new CircularCloudLayouter(new ArchimedeanSpiral(new Point(500, 500)));
-            logs.Clear();
         }
 
-        [Test]
-        public void PutNewRectangle_WithTwoRandomRectanglesRunning1000Times_MustNotIntersect()
+        [TestCase(new int[] { 1, 2, 3, 4 })]
+        [TestCase(new int[] { 4, 3, 3, 4 })]
+        [TestCase(new int[] { 10, 20, 1, 1 })]
+        [TestCase(new int[] { 1, 1, 2, 50 })]
+        [TestCase(new int[] { 64, 23, 42, 12 })]
+        public void PutNewRectangle_WithTwoRectangles_MustNotIntersect(int[] sizes)
         {
-            for (int i = 0; i < 1000; i++)
-            {
-                SetUpCCLAndLogs();
-                var rect1 = PutRandomRectangleAndLogIt(1, 10);
-                var rect2 = PutRandomRectangleAndLogIt(1, 10);
-                rect1.IntersectsWith(rect2).Should().BeFalse();
-            }
+            var rectangle1 = CCL.PutNewRectangle(new Size(sizes[0], sizes[1]));
+            var rectangle2 = CCL.PutNewRectangle(new Size(sizes[2], sizes[3]));
+
+            rectangle1.IntersectsWith(rectangle2).Should().BeFalse();
         }
 
-        public double GetDiagonalLength(Rectangle rect1)
+        [TestCase(new int[] { 1, 2, 3, 4 })]
+        [TestCase(new int[] { 4, 3, 3, 4 })]
+        [TestCase(new int[] { 10, 20, 1, 1 })]
+        [TestCase(new int[] { 1, 1, 2, 50 })]
+        [TestCase(new int[] { 64, 23, 42, 12 })]
+        public void PutNewRectangle_WithTwoRectangles_MustLocatedTightly(int[] sizes)
         {
-            var leftBottomCorner1 = new Point(rect1.Left, rect1.Bottom);
-            var rightUpperCorner1 = new Point(rect1.Right, rect1.Top);
-            return leftBottomCorner1.GetDistanceTo(rightUpperCorner1);
+            var rectangle1 = CCL.PutNewRectangle(new Size(sizes[0], sizes[1]));
+            var rectangle2 = CCL.PutNewRectangle(new Size(sizes[2], sizes[3]));
+
+            var distance = rectangle1.Location.GetDistanceTo(rectangle2.Location);
+            var maxDistance = GetMaximalTightDistanceBetweenRectangles(rectangle1, rectangle2);
+
+            distance.Should().BeLessThanOrEqualTo(maxDistance);
         }
 
-        public double GetMaximalTightDistanceBetweenRectangles(Rectangle rect1, Rectangle rect2)
+        [TestCase(new int[] { 1, 2, 3, 4, 5, 6 })]
+        [TestCase(new int[] { 4, 3, 3, 4, 1, 1 })]
+        [TestCase(new int[] { 10, 20, 1, 1, 20, 12 })]
+        [TestCase(new int[] { 1, 1, 2, 50, 33, 43 })]
+        [TestCase(new int[] { 64, 23, 42, 12, 42, 42 })]
+        public void PutNewRectangle_WithThreeRectangles_MustLocatedTightly(int[] sizes)
         {
-            var rect1diagonal = GetDiagonalLength(rect1);
-            var rect2diagonal = GetDiagonalLength(rect2);
-            return rect1diagonal + rect2diagonal;
+            var rectangle1 = CCL.PutNewRectangle(new Size(sizes[0], sizes[1]));
+            var rectangle2 = CCL.PutNewRectangle(new Size(sizes[2], sizes[3]));
+            var rectangle3 = CCL.PutNewRectangle(new Size(sizes[4], sizes[5]));
+
+            var distance12 = rectangle1.Location.GetDistanceTo(rectangle2.Location);
+            var distance13 = rectangle1.Location.GetDistanceTo(rectangle3.Location);
+            var maxDistance12 = GetMaximalTightDistanceBetweenRectangles(rectangle1, rectangle2);
+            var maxDistance13 = GetMaximalTightDistanceBetweenRectangles(rectangle1, rectangle3);
+
+            distance12.Should().BeLessThanOrEqualTo(maxDistance12);
+            distance13.Should().BeLessThanOrEqualTo(maxDistance13);
         }
 
-        [Test]
-        public void PutNewRectangle_WithTwoRandomRectanglesRunning10000Times_MustLocatedTightly()
+        [TestCase(-1, -1)]
+        [TestCase(0, -1)]
+        [TestCase(-1, 0)]
+        public void PutNewRectangle_WithNonPositiveSize_ShouldThrow(int x, int y)
         {
-            for (int i = 0; i < 10000; i++)
-            {
-                SetUpCCLAndLogs();
-                var rect1 = PutRandomRectangleAndLogIt(1, 30);
-                var rect2 = PutRandomRectangleAndLogIt(1, 30);
-                var distanceBetweenCenters = rect1.Location.GetDistanceTo(rect2.Location);
-                var maxDistance = GetMaximalTightDistanceBetweenRectangles(rect1, rect2);
-                distanceBetweenCenters.Should().BeLessThanOrEqualTo(maxDistance);
-            }
-        }
-
-        public Rectangle PutRandomRectangleAndLogIt(int minSize, int maxSize)
-        {
-            var rect1 = CCL.PutNewRectangle(new Size(random.Next(minSize, maxSize),
-                                                     random.Next(minSize, maxSize)));
-            logs.Append(rect1.ToJson());
-            return rect1;
-        }
-
-        [Test]
-        public void PutNewRectangle_WithFourRandomRectanglesRunning1000Times_MustLocatedTightly()
-        {
-            for (int i = 0; i < 1000; i++)
-            {
-                SetUpCCLAndLogs();
-                var rect1 = PutRandomRectangleAndLogIt(2, 8);
-                for (int j = 0; j < 3; j++)
-                {
-                    logs.Append("\n");
-                    var rectJ = PutRandomRectangleAndLogIt(2, 8);
-                    var distanceBetweenCenters = rect1.Location.GetDistanceTo(rectJ.Location);
-                    var maxDistance = GetMaximalTightDistanceBetweenRectangles(rect1, rectJ);
-                    AssertThatWithLogging(distanceBetweenCenters <= maxDistance);
-                }
-            }
-        }
-
-        public void AssertThatWithLogging(bool assertion)
-        {
-            if (!assertion)
-            {
-                TestContext.WriteLine(logs.ToString());
-            }
-            Assert.That(assertion);
-        }
-
-        [Test]
-        public void PutNewRectangle_WithNonPositiveSize_ShouldThrow()
-        {
-            for (int i = 0; i < 1000; i++)
-            {
-                var size = new Size(random.Next(-4, 1), random.Next(-4, 1));
-                Action t = () => CCL.PutNewRectangle(size);
-                t.Should().Throw<ArgumentException>();
-            }
+            Action t = () => CCL.PutNewRectangle(new Size(x, y));
+            t.Should().Throw<ArgumentException>();
         }
 
         [TearDown]
         public void TearDown()
         {
-            var result = TestContext.CurrentContext.Result.GetSecretUsingFieldInfo();
-            var rects = result.Split('\n');
-            var rectList = new List<Rectangle>();
-            if (TestContext.CurrentContext.Result.FailCount > 0)
+            if (TestContext.CurrentContext.Result.FailCount> 0)
             {
-                for (int i = 0; i < rects.Length - 1; i++)
-                {
-                    var rect = rects[i];
-                    var j = (JsonConvert.DeserializeObject<JsonRectangle>(rect));
-                    rectList.Add(new Rectangle(j.X, j.Y, j.Width, j.Height));
-                }
-                string filePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-                BitmapSaver.SaveRectangleRainbowBitmap(rectList, filePath + "\\Bitmap4.bmp");
+                var myDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                Directory.CreateDirectory("TagCloudVisualizer");
+                var path = "\\TagCloudVisualizer\\";
+                var fullPath = myDocsPath + path + TestContext.CurrentContext.Test.FullName + ".bmp";
+                BitmapSaver.SaveRectangleRainbowBitmap(CCL.GetRectangles(), fullPath);
             }
         }
-    }
 
-    public class JsonRectangle
-    {
-        public int X { get; set; }
-        public int Y { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
-    }
-    public static class SecretFinder
-    {
-        public static string GetSecretUsingFieldInfo(this TestContext.ResultAdapter keeper)
+        private double GetMaximalTightDistanceBetweenRectangles(Rectangle rect1, Rectangle rect2)
         {
-            FieldInfo fieldInfo = typeof(TestContext.ResultAdapter).GetField("_result", BindingFlags.Instance | BindingFlags.NonPublic);
-            return ((TestCaseResult)fieldInfo.GetValue(keeper)).Output;
+            return rect1.GetDiagonalLength() + rect2.GetDiagonalLength();
         }
     }
 }

@@ -19,7 +19,6 @@ namespace TagsCloudVisualizer
         [TestCase(0, 0, -Math.PI, 1, ExpectedResult = new int[] { -1, 0 })]
         [TestCase(0, 0, Math.PI, -1, ExpectedResult = new int[] { 1, 0 })]
         [TestCase(1, 1, Math.PI, 1, ExpectedResult = new int[] { 0, 1 })]
-        [TestCase(3, 3, 0, 1, ExpectedResult = new int[] { 4, 3 })]
         [TestCase(3, 3, 0.0001, 0.0001, ExpectedResult = new int[] { 3, 3 })]
         public int[] GetNextPoint_AfterOneInvoking_ShouldReturnCorrectPoint(int x, int y, double angle, double linear)
         {
@@ -44,6 +43,18 @@ namespace TagsCloudVisualizer
         public void Constructor_IfBothSpeedsAreZero_ShouldThrow()
         {
             Action action = () => new ArchimedeanSpiral(new Point(0, 0), 0, 0);
+            action.Should().Throw<Exception>();
+        }
+        [Test]
+        public void Constructor_IfAngleSpeedIsZero_ShouldThrow()
+        {
+            Action action = () => new ArchimedeanSpiral(new Point(0, 0), 0, 100);
+            action.Should().Throw<Exception>();
+        }
+        [Test]
+        public void Constructor_IfLinearSpeedIsZero_ShouldThrow()
+        {
+            Action action = () => new ArchimedeanSpiral(new Point(0, 0), 100, 0);
             action.Should().Throw<Exception>();
         }
     }

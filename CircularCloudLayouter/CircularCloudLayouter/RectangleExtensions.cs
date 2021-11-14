@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,12 @@ namespace TagsCloudVisualizer
             sb.Append("\"Width\":" + rectangle.Width + ",");
             sb.Append("\"Height\":" + rectangle.Height + "}");
             return sb.ToString();
+        }
+        public static double GetDiagonalLength(this Rectangle rect1)
+        {
+            var leftBottomCorner1 = new Point(rect1.Left, rect1.Bottom);
+            var rightUpperCorner1 = new Point(rect1.Right, rect1.Top);
+            return leftBottomCorner1.GetDistanceTo(rightUpperCorner1);
         }
     }
 }

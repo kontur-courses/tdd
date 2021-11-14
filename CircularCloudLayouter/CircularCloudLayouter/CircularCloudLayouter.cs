@@ -4,27 +4,19 @@ using System.Drawing;
 
 namespace TagsCloudVisualizer
 {
-    class CircularCloudLayouter
+    class CircularCloudLayouter : ICloudLayouter
     {
-        private readonly ArchimedeanSpiral spiral;
+        private readonly ISpiral spiral;
         private readonly List<Rectangle> rectangles = new List<Rectangle>();
 
-        public CircularCloudLayouter(ArchimedeanSpiral spiral)
+        public List<Rectangle> GetRectangles()
         {
-            this.spiral = spiral;
-        }
-        
-        Rectangle GetRectangleWithCenterInPoint(Size rectangleSize, Point center)
-        {
-            var locationX = center.X - rectangleSize.Width / 2;
-            var locationY = center.Y - rectangleSize.Height / 2;
-            return new Rectangle(new Point(locationX, locationY), rectangleSize);
+            return rectangles;
         }
 
-        Rectangle CreateRectangleFromSpiral(Size rectangleSize)
+        public CircularCloudLayouter(ISpiral spiral)
         {
-            var currentPoint = spiral.GetNextPoint();
-            return GetRectangleWithCenterInPoint(rectangleSize, currentPoint);
+            this.spiral = spiral;
         }
 
         public Rectangle PutNewRectangle(Size rectangleSize)
@@ -40,6 +32,12 @@ namespace TagsCloudVisualizer
             }
             rectangles.Add(rectangle);
             return rectangle;
+        }
+
+        private Rectangle CreateRectangleFromSpiral(Size rectangleSize)
+        {
+            var currentPoint = spiral.GetNextPoint();
+            return currentPoint.GetRectangleWithCenterInPoint(rectangleSize);
         }
     }
 }
