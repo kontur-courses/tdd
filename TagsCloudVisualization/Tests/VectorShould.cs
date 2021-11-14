@@ -20,7 +20,7 @@ namespace TagsCloudVisualization.Tests
             vector.End.Should().BeEquivalentTo(end);
         }
 
-        [TestCaseSource(nameof(VectorLengthTestData))]
+        [TestCaseSource(nameof(GetVectorLengthTestData))]
         public void CalculateCorrectLength(Point begin, Point end, double expectedLength)
         {
             var vectorLength = new Vector(begin, end).GetLength();
@@ -28,17 +28,14 @@ namespace TagsCloudVisualization.Tests
             vectorLength.Should().Be(expectedLength);
         }
 
-        private static IEnumerable<TestCaseData> VectorLengthTestData
+        private static IEnumerable<TestCaseData> GetVectorLengthTestData()
         {
-            get
-            {
-                yield return new TestCaseData(new Point(0, 0), new Point(0,0), 0)
-                    .SetName("when the beginning and the end are the same");
-                yield return new TestCaseData(new Point(0, 0), new Point(-3, -4), 5)
-                    .SetName("when coordinates are negative");
-                yield return new TestCaseData(new Point(1, 1), new Point(4, 5), 5)
-                    .SetName("when common case is given");
-            }
+            yield return new TestCaseData(new Point(0, 0), new Point(0,0), 0)
+                .SetName("when the beginning and the end are the same");
+            yield return new TestCaseData(new Point(0, 0), new Point(-3, -4), 5)
+                .SetName("when coordinates are negative");
+            yield return new TestCaseData(new Point(1, 1), new Point(4, 5), 5)
+                .SetName("when common case is given");
         }
     }
 }

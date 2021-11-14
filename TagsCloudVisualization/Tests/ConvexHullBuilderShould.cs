@@ -8,13 +8,13 @@ namespace TagsCloudVisualization.Tests
     [TestFixture]
     public class ConvexHullBuilderShould
     {
-        [TestCaseSource(nameof(RotationDirectionTestData))]
+        [TestCaseSource(nameof(GetRotationDirectionTestData))]
         public int ReturnCorrectVectorToPointRotationDirection(Vector vector, Point point)
         {
             return ConvexHullBuilder.GetRotationDirection(vector, point);
         }
 
-        [TestCaseSource(nameof(MinimalConvexHullTestData))]
+        [TestCaseSource(nameof(GetMinimalConvexHullTestData))]
         public void ReturnCorrectMinimalConvexHull(IReadOnlyCollection<Point> givenPoints,
             IReadOnlyCollection<Point> expectedConvexHull)
         {
@@ -46,7 +46,7 @@ namespace TagsCloudVisualization.Tests
 
         }
 
-        private static IEnumerable<TestCaseData> MinimalConvexHullTestData()
+        private static IEnumerable<TestCaseData> GetMinimalConvexHullTestData()
         {
             yield return new TestCaseData(
                 new List<Point>
@@ -93,7 +93,7 @@ namespace TagsCloudVisualization.Tests
                 .SetName("when points count more than three");
         }
 
-        private static IEnumerable<TestCaseData> RotationDirectionTestData()
+        private static IEnumerable<TestCaseData> GetRotationDirectionTestData()
         {
             yield return new TestCaseData(
                 new Vector(new Point(1, 1), new Point(4, 3)),
