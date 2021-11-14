@@ -12,16 +12,6 @@ namespace TagsCloudVisualization.Tests
     public class CircularCloudLayouterShould
     {
         private CircularCloudLayouter _testLayout;
-        private const int BrushecCount = 17;
-        private static readonly List<Brush> BrushList = new List<Brush>
-        {
-            Brushes.Blue, Brushes.Aquamarine, Brushes.BlueViolet,
-            Brushes.CornflowerBlue, Brushes.DarkBlue, Brushes.DarkCyan,
-            Brushes.Indigo, Brushes.SteelBlue, Brushes.SlateBlue,
-            Brushes.Purple, Brushes.SkyBlue, Brushes.Navy, Brushes.DarkCyan,
-            Brushes.DarkSlateGray, Brushes.DarkOrchid, Brushes.MediumAquamarine,
-            Brushes.MidnightBlue
-        };
 
         [TearDown]
         public void SaveLayout()
@@ -30,15 +20,8 @@ namespace TagsCloudVisualization.Tests
             if (testResult != TestStatus.Failed || _testLayout == null) return;
             var testName = TestContext.CurrentContext.Test.Name;
             var testDirectory = TestContext.CurrentContext.TestDirectory + "\\";
-            var image = new Bitmap(1500, 1500);
-            var graphics = Graphics.FromImage(image);
-            graphics.Clear(Color.Black);
-            foreach (var rect in _testLayout.Rectangles)
-                graphics.FillRectangle(GetRandomBrush(), rect);
-
             var pathToImage = testDirectory + testName + ".bmp";
-            image.Save(pathToImage);
-
+            CloudLayouterPainter.Draw(_testLayout,pathToImage);
             var message = $"Tag cloud visualization saved to file {pathToImage}";
             TestContext.Out.WriteLine(message);
         }
@@ -170,12 +153,6 @@ namespace TagsCloudVisualization.Tests
                 .Select(point => point.GetDistanceTo(center))
                 .ToArray();
             return (hullVectorsLengths.Min(), hullVectorsLengths.Max());
-        }
-
-        private static Brush GetRandomBrush()
-        {
-            var randomBrushNumber = new Random(Guid.NewGuid().GetHashCode()).Next(BrushecCount);
-            return BrushList[randomBrushNumber];
         }
     }
 }
