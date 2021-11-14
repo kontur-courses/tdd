@@ -88,10 +88,9 @@ namespace TagsCloudVisualization.Tests
             var center = new Point(750, 750);
             var layouter = new CircularCloudLayouter(center);
 
-            PutRandomRectangles(layouter, 750);
+            PutRandomRectangles(layouter, 500);
             _testLayout = layouter;
-            var cloudConvexHull = layouter.GetCloudConvexHull();
-            var enclosingCircleRadius = GetMinMaxHullVectorsLengths(center, cloudConvexHull).maxLength;
+            var enclosingCircleRadius = layouter.EnclosingRadius;
             var enclosingCircleArea = Math.PI * enclosingCircleRadius * enclosingCircleRadius;
             var cloudArea = layouter.Rectangles.Sum(rect => rect.Width * rect.Height);
             var deviation = GetCloudDeviation(cloudArea, enclosingCircleArea);

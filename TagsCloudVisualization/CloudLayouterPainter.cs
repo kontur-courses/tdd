@@ -21,7 +21,7 @@ namespace TagsCloudVisualization
         {
             const double imageSizeLimit = 5000;
             const double border = 100;
-            var cloudEnclosingCircleRadius = layouter.GetCloudEnclosingRadius();
+            var cloudEnclosingCircleRadius = layouter.EnclosingRadius;
             var imageRadius = (int)Math.Min(cloudEnclosingCircleRadius + border, imageSizeLimit);
             var imageCenter = new Point(imageRadius, imageRadius);
             var imageSize = 2 * imageRadius;
@@ -30,6 +30,7 @@ namespace TagsCloudVisualization
             var image = new Bitmap(imageSize, imageSize);
             var graphics = Graphics.FromImage(image);
             graphics.Clear(Color.Black);
+
             foreach (var rect in layouter.Rectangles)
             {
                 var shiftedLocation = rect.Location.AddShift(imageShift);
