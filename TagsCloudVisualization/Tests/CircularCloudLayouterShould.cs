@@ -67,7 +67,7 @@ namespace TagsCloudVisualization.Tests
 
         [Test]
         [Repeat(10)]
-        public void MakeCloudCircleDeviationLessThanTwentyFivePercents()
+        public void MakeCloudCircleDeviationLessThanTwentyFivePercent()
         {
             var center = new Point(200, -200);
             var layouter = new CircularCloudLayouter(center);
@@ -83,7 +83,7 @@ namespace TagsCloudVisualization.Tests
 
         [Test]
         [Repeat(10)]
-        public void MakeCloudDenseDeviationLessThanThirtyPercents()
+        public void MakeCloudDensityDeviationLessThanThirtyPercent()
         {
             var center = new Point(750, 750);
             var layouter = new CircularCloudLayouter(center);
