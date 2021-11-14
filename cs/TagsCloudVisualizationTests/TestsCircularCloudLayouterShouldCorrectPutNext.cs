@@ -62,19 +62,13 @@ namespace TagsCloudVisualizationTests
         [TestCase(20, -10)]
         [TestCase(-15, -5)]
         [TestCase(-15, 5)]
-        public void ShouldNotIntersectWithRectangles(int width, int height)
+        public void ShouldNotIntersectWithSameRectangles(int width, int height)
         {
             var layouterCenter = new Point(width, height);
             var layouter = new CircularCloudLayouter(layouterCenter);
-            var seedRandom = new Random(549067798);
+            var rectangleSize = new Size(50, 100);
             for (int i = 0; i < 300; i++)
             {
-                var rectangleSize = new Size(seedRandom.Next(-100,100), seedRandom.Next(-100,100));
-                if (rectangleSize.Height == 0 || rectangleSize.Width == 0)
-                {
-                    i--;
-                    continue;
-                }
                 _rectanglesList.Add(layouter.PutNextRectangle(rectangleSize));
             }
             foreach (var rectangle in _rectanglesList)
@@ -104,8 +98,6 @@ namespace TagsCloudVisualizationTests
         {
             var seedRandom = new Random(seed);
             Size rectangleSize = new Size(Point.Empty);
-            
-
             var layouterCenter = new Point(2500, 2500);
             var layouter = new CircularCloudLayouter(layouterCenter);
             for (int i = 0; i < number; i++)
