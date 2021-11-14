@@ -18,17 +18,23 @@ namespace TagsCloudVisualization
 
         public static void Draw(CircularCloudLayouter layouter, string imagePathToSave)
         {
-            var cloudEnclosingCircleRadius = layouter.GetCloudEnclosingRadius();
             const double imageSizeLimit = 5000;
             const double border = 100;
+            var cloudEnclosingCircleRadius = layouter.GetCloudEnclosingRadius();
             var imageRadius = (int)Math.Min(cloudEnclosingCircleRadius + border, imageSizeLimit);
             var imageCenter = new Point(imageRadius, imageRadius);
-            var considerSize = 2 * imageRadius;
-            var image = new Bitmap(considerSize, considerSize);
+            var imageSize = 2 * imageRadius;
+            var imageShift = layouter.CloudCenter.GetShiftTo(imageCenter);
+
+            var image = new Bitmap(imageSize, imageSize);
             var graphics = Graphics.FromImage(image);
             graphics.Clear(Color.Black);
             foreach (var rect in layouter.Rectangles)
-                graphics.FillRectangle(GetRandomBrush(), rect);
+            {
+                var shiftedLocation = rect.Location.AddShift(imageShift);
+                graphics.FillRectangle(GetRandomBrush(),
+                    new Rectangle(shiftedLocation, rect.Size));
+            }
             image.Save(imagePathToSave);
         }
 
