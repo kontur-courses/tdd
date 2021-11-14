@@ -15,12 +15,14 @@ namespace TagsCloudTests
         private Point center;
         private CircularCloudLayouter sut;
         private Rectangle[] rectangles;
+        private Utils utils;
 
         [SetUp]
         public void Setup()
         {
             center = new Point(0, 0);
             sut = new CircularCloudLayouter(center);
+            utils = new Utils();
         }
 
         [TearDown]
@@ -70,7 +72,8 @@ namespace TagsCloudTests
             var rnd = new Random(seed);
             var sizeFactory = new Func<Size>(() =>
                 new Size(rnd.Next(20, 50), rnd.Next(10, 20)));
-            rectangles = GetRectangles(count, sizeFactory);
+
+            rectangles = utils.GetRectangles(count, () => sut.PutNextRectangle(sizeFactory.Invoke()));
             
             rectangles
                 .ContainsIntersectingRectangles()
@@ -81,7 +84,9 @@ namespace TagsCloudTests
         [TestCase(500)]
         public void PutNextRectangle_ShouldReturnNotIntersectRectangles_WhenSameSize(int count)
         {
-            rectangles = GetRectangles(count, () => new Size(20, 40));
+            var sizeFactory = new Func<Size>(() => new Size(20, 40));
+            
+            rectangles = utils.GetRectangles(count, () => sut.PutNextRectangle(sizeFactory.Invoke()));
             
             rectangles
                 .ContainsIntersectingRectangles()
@@ -100,19 +105,13 @@ namespace TagsCloudTests
             var layoutArea = count * width * height;
             var expectedRadius = Math.Sqrt(layoutArea / Math.PI);
             var sizeFactory = new Func<Size>(() => new Size(width, height));
-
-            rectangles = GetRectangles(count, sizeFactory);
+            
+            rectangles = utils.GetRectangles(count, () => sut.PutNextRectangle(sizeFactory.Invoke()));
             var distanceX = (double)rectangles.Select(rectangle => rectangle.GetCenter().X).Max() - center.X;
             var distanceY = (double)rectangles.Select(rectangle => rectangle.GetCenter().Y).Max() - center.Y;
 
             Math.Abs(distanceX - expectedRadius).Should().BeLessThan(precision);
             Math.Abs(distanceY - expectedRadius).Should().BeLessThan(precision);
-        }
-        
-        private Rectangle[] GetRectangles(int count, Func<Size> sizeFactory)
-        {
-            return Enumerable.Range(0, count).Select(x =>
-                sut.PutNextRectangle(sizeFactory.Invoke())).ToArray();
         }
     }
 }
