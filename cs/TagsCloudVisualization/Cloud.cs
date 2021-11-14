@@ -42,9 +42,8 @@ namespace TagsCloudVisualization
             if(getRectanglesByColorIndex == null) 
                 getRectanglesByColorIndex = GetRectanglesByColorIndexDefaultFunc(colors);
             var gr = Graphics.FromImage(bitmap);
-
-            gr.FillRectangle(new SolidBrush(backgroundColor), 
-                new Rectangle(new Point(), bitmapSize));
+            
+            gr.Clear(backgroundColor);
             VisualizeCenter(gr, referenceCenter);
             VisualizeRectangles(fillRectangles, getRectanglesByColorIndex, referenceCenter, pens, gr);
 

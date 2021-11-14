@@ -184,7 +184,7 @@ namespace TagsCloudVisualizationTests
             cloud.CustomVisualize(filename, size, colors, background, fillRect);
         }
 
-        private List<Size> GetRandomSizes(int count, int min, int max, int seed = 0)
+        private static List<Size> GetRandomSizes(int count, int min, int max, int seed = 0)
         {
             var rnd = new Random(seed);
             var result = new List<Size>();
