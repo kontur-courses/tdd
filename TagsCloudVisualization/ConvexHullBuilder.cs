@@ -43,8 +43,7 @@ namespace TagsCloudVisualization
 
         public static IReadOnlyCollection<Point> GetConvexHull(IReadOnlyCollection<Point> points)
         {
-            var pointsCount = points.Count;
-            return pointsCount <= 3 ? points : GetConvexHullByJarvisAlgorithm(points);
+            return points.Count <= 3 ? points : GetConvexHullByJarvisAlgorithm(points);
         }
 
         private static IReadOnlyCollection<Point> GetConvexHullByJarvisAlgorithm(

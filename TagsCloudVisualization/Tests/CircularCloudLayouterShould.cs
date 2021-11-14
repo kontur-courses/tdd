@@ -78,7 +78,7 @@ namespace TagsCloudVisualization.Tests
             var (minLength, maxLength) = GetMinMaxHullVectorsLengths(center, cloudConvexHull);
             var deviation = GetCloudDeviation(minLength, maxLength);
 
-            deviation.Should().BeLessOrEqualTo(0.0001);
+            deviation.Should().BeLessOrEqualTo(0.25);
         }
 
         [Test]
