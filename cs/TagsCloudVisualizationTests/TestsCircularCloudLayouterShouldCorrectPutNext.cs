@@ -125,14 +125,16 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
-        public void SameRectanglesShouldNotIntersect()
+        public void RectanglesShouldNotIntersect()
         {
             var seedRandom = new Random(546748576);
-            var rectangleSize = new Size(seedRandom.Next(-100,100), seedRandom.Next(-100,100));
+            var rectangleSize = new Size(Point.Empty);
             var layouterCenter = new Point(2500, 2500);
             var layouter = new CircularCloudLayouter(layouterCenter);
             for (int i = 0; i < 300; i++)
             {
+                while(rectangleSize.Width == 0|| rectangleSize.Height == 0)
+                    rectangleSize = new Size(seedRandom.Next(-100, 100), seedRandom.Next(-100, 100));
                 _rectanglesList.Add(layouter.PutNextRectangle(rectangleSize));
             }
 
