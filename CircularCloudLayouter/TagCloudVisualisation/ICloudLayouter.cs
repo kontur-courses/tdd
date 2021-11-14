@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TagsCloudVisualizer
+namespace TagCloudVisualisation
 {
-    interface ISpiral
+    public interface ICloudLayouter
     {
-        Point GetNextPoint();
+        Rectangle PutNewRectangle(Size rectangleSize);
     }
 }

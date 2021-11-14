@@ -3,16 +3,12 @@ using NUnit.Framework;
 using NUnit.Framework.Internal;
 using System;
 using System.Drawing;
-using System.Text;
-using System.Reflection;
-using Newtonsoft.Json;
-using System.Collections.Generic;
 using System.IO;
 
-namespace TagsCloudVisualizer
+namespace TagCloudVisualisation
 {
     [TestFixture]
-    class CircularCloudLayouter_Tests
+    public class CircularCloudLayouter_Tests
     {
         private CircularCloudLayouter CCL;
 
@@ -93,7 +89,7 @@ namespace TagsCloudVisualizer
             }
         }
 
-        private double GetMaximalTightDistanceBetweenRectangles(Rectangle rect1, Rectangle rect2)
+        private static double GetMaximalTightDistanceBetweenRectangles(Rectangle rect1, Rectangle rect2)
         {
             return rect1.GetDiagonalLength() + rect2.GetDiagonalLength();
         }

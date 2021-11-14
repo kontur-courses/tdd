@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace TagsCloudVisualizer
+namespace TagCloudVisualisation
 {
     public static class PointExtensions
     {
@@ -11,10 +11,12 @@ namespace TagsCloudVisualizer
             var dY = p1.Y - p2.Y;
             return Math.Sqrt(dX * dX + dY * dY);
         }
+
         public static Point Displace(this Point p1, int dX, int dY)
         {
             return new Point(p1.X + dX, p1.Y + dY);
         }
+
         public static Rectangle GetRectangleWithCenterInPoint(this Point center, Size rectangleSize)
         {
             var locationX = center.X - rectangleSize.Width / 2;

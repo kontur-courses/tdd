@@ -1,22 +1,24 @@
 ﻿using System;
 using System.Drawing;
 
-namespace TagsCloudVisualizer
+namespace TagCloudVisualisation
 {
-    class ArchimedeanSpiral : ISpiral
+    public class ArchimedeanSpiral : ISpiral
     {
-        private double currentAngle;
         private readonly double angleSpeed;
-        private double currentRadius;
         private readonly double linearSpeed;
+
+        private double currentAngle;
+        private double currentRadius;
         private Point center;
-        private Point CurrentPoint { get; set; }
+
         public ArchimedeanSpiral(Point center, double angleSpeed = 0.108, double linearSpeed = 0.032)
         {
             if (angleSpeed == 0 || linearSpeed == 0)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("angleSpeed or linearSpeed should not be 0");
             }
+
             this.linearSpeed = linearSpeed;
             this.angleSpeed = angleSpeed;
             this.center = center;
@@ -31,5 +33,7 @@ namespace TagsCloudVisualizer
             currentAngle += angleSpeed;
             return CurrentPoint;
         }
+
+        private Point CurrentPoint { get; set; }
     }
 }

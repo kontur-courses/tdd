@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-
-namespace TagsCloudVisualizer
+namespace TagCloudVisualisation
 {
     public static class GeometryHelper
     {

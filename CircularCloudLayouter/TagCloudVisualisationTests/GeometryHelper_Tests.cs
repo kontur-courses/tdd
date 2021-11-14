@@ -1,9 +1,10 @@
 ﻿using NUnit.Framework;
 using System;
 
-namespace TagsCloudVisualizer
+namespace TagCloudVisualisation
 {
-    class GeometryHelper_Tests
+    [TestFixture]
+    public class GeometryHelper_Tests
     {
         [TestCase(0, 0, ExpectedResult = new int[] { 0, 0 })]
         [TestCase(1, 0, ExpectedResult = new int[] { 0, 0 })]

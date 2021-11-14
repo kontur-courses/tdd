@@ -1,9 +1,10 @@
 ﻿using NUnit.Framework;
 using System.Drawing;
 
-namespace TagsCloudVisualizer
+namespace TagCloudVisualisation
 {
-    class PointExtensions_Tests
+    [TestFixture]
+    public class PointExtensions_Tests
     {
         [TestCase(new int[] { 0, 0 }, 1, 1, ExpectedResult = new int[] { 1, 1 })]
         [TestCase(new int[] { 0, 0 }, 2, 2, ExpectedResult = new int[] { 2, 2 })]

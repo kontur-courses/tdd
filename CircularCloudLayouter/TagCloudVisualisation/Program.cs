@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace TagsCloudVisualizer
+namespace TagCloudVisualisation
 { 
-    class Program
+    public class Program
     {
-        static void Main()
+        public static void Main()
         {
             var folder = "RenderedPictures";
             System.IO.Directory.CreateDirectory(folder);
@@ -14,6 +14,7 @@ namespace TagsCloudVisualizer
             GenerateSecondPictureAndOpen(folder);
             GenerateThirdPictureAndOpen(folder);
         }
+
         private static void GenerateFirstPictureAndOpen(string folder)
         {
             var random = new Random();
@@ -22,8 +23,10 @@ namespace TagsCloudVisualizer
             {
                 CCL.PutNewRectangle(new Size(random.Next(1, 100), random.Next(1, 100)));
             }
+
             BitmapSaver.SaveRectangleRainbowBitmap(CCL.GetRectangles(), folder + @"\1.bmp");
         }
+
         private static void GenerateSecondPictureAndOpen(string folder)
         {
             var random = new Random();
@@ -32,8 +35,10 @@ namespace TagsCloudVisualizer
             {
                 CCL.PutNewRectangle(new Size(random.Next(1, 20), random.Next(1, 20)));
             }
+
             BitmapSaver.SaveRectangleRainbowBitmap(CCL.GetRectangles(), folder + @"\2.bmp");
         }
+
         private static void GenerateThirdPictureAndOpen(string folder)
         {
             var random = new Random();
@@ -42,6 +47,7 @@ namespace TagsCloudVisualizer
             {
                 CCL.PutNewRectangle(new Size(random.Next(2, 10), random.Next(4, 40)));
             }
+
             BitmapSaver.SaveRectangleRainbowBitmap(CCL.GetRectangles(), folder + @"\3.bmp");
         }
     }
