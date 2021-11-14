@@ -21,7 +21,7 @@ namespace TagsCloudVisualization
         {
             var pointGenerator = new Spiral(0.1f, 0.9, new PointF());
             var cloudLayouter = new CircularCloudLayouter(pointGenerator);
-            Examples.RandomFill(cloudLayouter, 150, new Size(50, 50));
+            Examples.RandomFill(cloudLayouter, 400, new Size(50, 50));
             var visualizer = new Visualizer(cloudLayouter);
             visualizer.DrawRectangles(path);
         }
