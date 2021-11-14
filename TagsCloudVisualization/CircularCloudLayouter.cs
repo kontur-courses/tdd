@@ -51,8 +51,8 @@ namespace TagsCloudVisualization
 
         private Point GetNextRectCenter(Size rectSize)
         {
-            if (Rectangles.Count == 0)
-                return GetNextCurvePoint();
+            //if (Rectangles.Count == 0)
+            //    return GetNextCurvePoint();
             var nextRectCenter = GetNextCurvePoint();
             var nextRect = GetRectangleByCenter(nextRectCenter, rectSize);
             while (IfRectIntersectAnyOther(nextRect))
