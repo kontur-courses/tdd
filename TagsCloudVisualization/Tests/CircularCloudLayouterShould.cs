@@ -74,7 +74,7 @@ namespace TagsCloudVisualization.Tests
 
             PutRandomRectangles(layouter, 500);
             _testLayout = layouter;
-            var cloudConvexHull = GetCloudConvexHull(layouter);
+            var cloudConvexHull = layouter.GetCloudConvexHull();
             var (minLength, maxLength) = GetMinMaxHullVectorsLengths(center, cloudConvexHull);
             var deviation = GetCloudDeviation(minLength, maxLength);
 
@@ -90,20 +90,13 @@ namespace TagsCloudVisualization.Tests
 
             PutRandomRectangles(layouter, 750);
             _testLayout = layouter;
-            var cloudConvexHull = GetCloudConvexHull(layouter);
+            var cloudConvexHull = layouter.GetCloudConvexHull();
             var enclosingCircleRadius = GetMinMaxHullVectorsLengths(center, cloudConvexHull).maxLength;
             var enclosingCircleArea = Math.PI * enclosingCircleRadius * enclosingCircleRadius;
             var cloudArea = layouter.Rectangles.Sum(rect => rect.Width * rect.Height);
             var deviation = GetCloudDeviation(cloudArea, enclosingCircleArea);
 
             deviation.Should().BeLessOrEqualTo(0.3);
-        }
-
-        private static IReadOnlyCollection<Point> GetCloudConvexHull(CircularCloudLayouter layouter)
-        {
-            var rectanglesPoints = ConvexHullBuilder.GetRectanglesPointsSet(layouter.Rectangles);
-            var cloudConvexHull = ConvexHullBuilder.GetConvexHull(rectanglesPoints);
-            return cloudConvexHull;
         }
 
         [Test]

@@ -87,4 +87,14 @@ namespace TagsCloudVisualization
             return points.OrderBy(p => p.X).First();
         }
     }
+
+    public static class CircularCloudLayouterExtensions
+    {
+        public static IReadOnlyCollection<Point> GetCloudConvexHull(this CircularCloudLayouter layouter)
+        {
+            var rectanglesPoints = ConvexHullBuilder.GetRectanglesPointsSet(layouter.Rectangles);
+            var cloudConvexHull = ConvexHullBuilder.GetConvexHull(rectanglesPoints);
+            return cloudConvexHull;
+        }
+    }
 }
