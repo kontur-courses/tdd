@@ -43,29 +43,41 @@ namespace TagsCloudVisualization
         private Rectangle GetShiftedToCenterRectangle(Rectangle rectangle)
         {
             var center = rectangle.GetCenter();
-            var shift =  new Point(Math.Sign(_center.X - center.X), Math.Sign(_center.Y - center.Y));
+            var shiftX = new Size(Math.Sign(_center.X - center.X), 0);
+            var shiftY = new Size(0, Math.Sign(_center.Y - center.Y));
 
-            while (Math.Abs(_center.X - rectangle.GetCenter().X) > 0)
-            {
-                rectangle.X += shift.X;
-                if (_rectangles.Any(rect => rect.IntersectsWith(rectangle)))
-                {
-                    rectangle.X -= shift.X;
-                    break;
-                }
-            }
+            if (!shiftX.IsEmpty)
+                rectangle = ShiftUntilIntersection(rectangle,
+                    rect => new Rectangle(rect.Location + shiftX, rect.Size),
+                    rect => IsRectangleAtCenterAxis(rect, point => point.X));
 
-            while (Math.Abs(_center.Y - rectangle.GetCenter().Y) > 0)
-            {
-                rectangle.Y += shift.Y;
-                if (_rectangles.Any(rect => rect.IntersectsWith(rectangle)))
-                {
-                    rectangle.Y -= shift.Y;
-                    break;
-                }
-            }
+            if (!shiftY.IsEmpty)
+                rectangle = ShiftUntilIntersection(rectangle,
+                    rect => new Rectangle(rect.Location + shiftY, rect.Size),
+                    rect => IsRectangleAtCenterAxis(rect, point => point.Y));
 
             return rectangle;
+        }
+
+        private Rectangle ShiftUntilIntersection(Rectangle rectangle, Func<Rectangle, Rectangle> shift,
+            Func<Rectangle, bool> isAtCenterAxis)
+        {
+            var shifted = rectangle;
+
+            while (!isAtCenterAxis(shifted))
+            {
+                var temp = shift(shifted);
+                if (_rectangles.Any(rect => rect.IntersectsWith(temp))) break;
+                shifted = temp;
+            }
+
+            return shifted;
+        }
+
+        private bool IsRectangleAtCenterAxis(Rectangle rectangle, Func<Point, int> getAxis)
+        {
+            var rectangleCenter = rectangle.GetCenter();
+            return Math.Abs(getAxis(_center) - getAxis(rectangleCenter)) == 0;
         }
     }
 }
