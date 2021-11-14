@@ -3,14 +3,14 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public class PointGenerator
+    public class ArchimedeanSpiralPointGenerator
     {
         private readonly Point start;
         private readonly double coefficient;
         private readonly double step;
         private double angle;
         
-        public PointGenerator(Point start, double coefficient = 1, double angleDelta = Math.PI / 360)
+        public ArchimedeanSpiralPointGenerator(Point start, double coefficient = 1, double angleDelta = Math.PI / 360)
         {
             this.start = start;
             this.coefficient = coefficient;

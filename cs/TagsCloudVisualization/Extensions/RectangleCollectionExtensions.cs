@@ -7,10 +7,10 @@ namespace TagsCloudVisualization
 {
     public static class RectangleCollectionExtensions
     {
-        public static Size GetSize(this IEnumerable<Rectangle> rectangles)
+        public static Size GetMinCanvasSize(this IEnumerable<Rectangle> rectangles)
         {
-            var (right, bottom) = (int.MinValue, int.MinValue);
-            var (left, top) = (int.MaxValue, int.MaxValue);
+            var (left, right) = (int.MaxValue, int.MinValue);
+            var (bottom, top) = (int.MinValue, int.MaxValue);
             foreach (var rectangle in rectangles)
             {
                 right = Math.Max(right, rectangle.Right);
@@ -21,7 +21,7 @@ namespace TagsCloudVisualization
             return new Size(right - left, bottom - top);
         }
 
-        public static bool IsAnyInCollectionIntersects(this IEnumerable<Rectangle> rectangles)
+        public static bool ContainsIntersectingRectangles(this IEnumerable<Rectangle> rectangles)
         {
             return rectangles
                 .Any(rectangle => rectangle.IntersectsWith(rectangles.Where(rec => rec != rectangle)));

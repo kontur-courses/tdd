@@ -2,11 +2,11 @@
 
 namespace TagsCloudVisualization
 {
-    public class Visualization
+    public class RectanglesDrawer
     {
         public Image Draw(Rectangle[] rectangles, Color color)
         {
-            var layoutSize = rectangles.GetSize();
+            var layoutSize = rectangles.GetMinCanvasSize();
             var bitmap = new Bitmap(layoutSize.Width, layoutSize.Height);
             using var graphics = Graphics.FromImage(bitmap);
             

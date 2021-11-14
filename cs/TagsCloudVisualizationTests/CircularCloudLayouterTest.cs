@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -15,14 +14,13 @@ namespace TagsCloudTests
     {
         private Point center;
         private CircularCloudLayouter sut;
-        private List<Rectangle> rectangles;
+        private Rectangle[] rectangles;
 
         [SetUp]
         public void Setup()
         {
             center = new Point(0, 0);
             sut = new CircularCloudLayouter(center);
-            rectangles = new List<Rectangle>();
         }
 
         [TearDown]
@@ -31,12 +29,12 @@ namespace TagsCloudTests
             if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure) 
                 return;
             var testName = TestContext.CurrentContext.Test.Name + ".bmp";
-            var drawer = new Visualization();
+            var drawer = new RectanglesDrawer();
             var path = Path.Combine(TestContext.CurrentContext.TestDirectory, "FailureTestImages");
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             var pathToImage = Path.Combine(path, testName);
-            var image = drawer.Draw(rectangles.ToArray(), Color.Red);
+            var image = drawer.Draw(rectangles, Color.Red);
             image.Save(pathToImage);
             
             Console.WriteLine($"Tag cloud visualization saved to file {pathToImage}");
@@ -75,7 +73,7 @@ namespace TagsCloudTests
             rectangles = GetRectangles(count, sizeFactory);
             
             rectangles
-                .IsAnyInCollectionIntersects()
+                .ContainsIntersectingRectangles()
                 .Should().BeFalse();
         }
         
@@ -86,7 +84,7 @@ namespace TagsCloudTests
             rectangles = GetRectangles(count, () => new Size(20, 40));
             
             rectangles
-                .IsAnyInCollectionIntersects()
+                .ContainsIntersectingRectangles()
                 .Should().BeFalse();
         }
         
@@ -110,10 +108,10 @@ namespace TagsCloudTests
             Math.Abs(distanceY - expectedRadius).Should().BeLessThan(precision);
         }
         
-        private List<Rectangle> GetRectangles(int count, Func<Size> sizeFactory)
+        private Rectangle[] GetRectangles(int count, Func<Size> sizeFactory)
         {
             return Enumerable.Range(0, count).Select(x =>
-                sut.PutNextRectangle(sizeFactory.Invoke())).ToList();
+                sut.PutNextRectangle(sizeFactory.Invoke())).ToArray();
         }
     }
 }

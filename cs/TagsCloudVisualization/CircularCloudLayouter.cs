@@ -6,12 +6,12 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private readonly PointGenerator pointGenerator;
+        private readonly ArchimedeanSpiralPointGenerator archimedeanSpiralPointGenerator;
         private readonly List<Rectangle> rectangles;
 
         public CircularCloudLayouter(Point center)
         {
-            pointGenerator = new PointGenerator(center);
+            archimedeanSpiralPointGenerator = new ArchimedeanSpiralPointGenerator(center);
             rectangles = new List<Rectangle>();
         }
 
@@ -32,7 +32,7 @@ namespace TagsCloudVisualization
             Rectangle rectangle;
             do 
             {
-                var point = pointGenerator.GetNextPoint();
+                var point = archimedeanSpiralPointGenerator.GetNextPoint();
                 var location = new Point(point.X - size.Width / 2, point.Y - size.Height / 2);
                 rectangle = new Rectangle(location, size);
             } while (rectangle.IntersectsWith(rectangles));

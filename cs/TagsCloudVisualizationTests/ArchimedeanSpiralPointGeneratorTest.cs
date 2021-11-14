@@ -10,18 +10,18 @@ namespace TagsCloudTests
     public class PointGeneratorTest
     {
         private Point start;
+        private ArchimedeanSpiralPointGenerator sut;
         
         [SetUp]
         public void SetUp()
         {
             start = new Point(0, 0);
+            sut = new ArchimedeanSpiralPointGenerator(start);
         }
 
         [Test]
         public void GetNextPoint_ShouldReturnStartPoint_WhenCalledFirstTime()
         {
-            var sut = new PointGenerator(start);
-
             var actualPoint = sut.GetNextPoint();
 
             actualPoint.Should().BeEquivalentTo(start);
@@ -30,13 +30,11 @@ namespace TagsCloudTests
         [Test]
         public void GetNextPoint_ShouldReturnPointsWithIncreasingDistanceToStart()
         {
-            var sut = new PointGenerator(start);
             var points = Enumerable.Range(0, 100).Select(x => sut.GetNextPoint()).ToList();
             
             var actualRadius = points.Select(point => point.DistanceTo(start)).ToList();
 
             var expectedRadius = actualRadius.OrderBy(x => x);
-
             actualRadius.Should().BeEquivalentTo(expectedRadius);
         }
     }
