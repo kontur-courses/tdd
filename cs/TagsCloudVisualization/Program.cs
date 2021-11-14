@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Reflection;
+using TagsCloudVisualization.CloudLayouter;
 using TagsCloudVisualization.PointGenerator;
 
 namespace TagsCloudVisualization

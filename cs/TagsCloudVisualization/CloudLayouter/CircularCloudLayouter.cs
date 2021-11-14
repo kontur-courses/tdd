@@ -4,17 +4,16 @@ using System.Drawing;
 using System.Linq;
 using TagsCloudVisualization.PointGenerator;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.CloudLayouter
 {
     public class CircularCloudLayouter : ICloudLayouter
     {
         private readonly List<RectangleF> tagCloud;
         private readonly IPointGenerator pointGenerator;
-        private RectangleF cloudRectangle;
-        public RectangleF Unioned => cloudRectangle;
-        public SizeF Size => new SizeF(cloudRectangle.Width, cloudRectangle.Height);
+        public RectangleF CloudRectangle { get; private set; }
+        public SizeF Size => new SizeF(CloudRectangle.Width, CloudRectangle.Height);
 
-        public PointF Center => pointGenerator.GetCenter();
+        public PointF Center => pointGenerator.Center;
 
         public CircularCloudLayouter(IPointGenerator pointGenerator)
         {
@@ -32,34 +31,21 @@ namespace TagsCloudVisualization
             return tag;
         }
 
-        public RectangleF[] GetCloud()
-        {
-            return tagCloud.ToArray();
-        }
+        public RectangleF[] GetCloud() => tagCloud.ToArray();
 
         private void UpdateCloudBorders(RectangleF newTag)
         {
-            cloudRectangle = RectangleF.Union(cloudRectangle, newTag);
+            CloudRectangle = RectangleF.Union(CloudRectangle, newTag);
         }
 
         private RectangleF GetNextRectangle(Size size)
         {
             var points = pointGenerator.GetPoints(size);
-            var rectangles = points.Select(p => GetRectangleByCenterPoint(p, size));
+            var rectangles = points.Select(p => p.GetRectangle(size));
             var suitableRectangle = rectangles.First(r => !IsIntersectWithCloud(r));
             return suitableRectangle;
         }
 
-        private RectangleF GetRectangleByCenterPoint(PointF rectangleCenter, Size size)
-        {
-            return new RectangleF(
-                new PointF(rectangleCenter.X - size.Width / 2f, rectangleCenter.Y - size.Height / 2f),
-                size);
-        }
-
-        private bool IsIntersectWithCloud(RectangleF newTag)
-        {
-            return tagCloud.Any(tag => tag.IntersectsWith(newTag));
-        }
+        private bool IsIntersectWithCloud(RectangleF newTag) => tagCloud.Any(tag => tag.IntersectsWith(newTag));
     }
 }

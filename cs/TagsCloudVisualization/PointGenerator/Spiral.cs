@@ -9,13 +9,13 @@ namespace TagsCloudVisualization.PointGenerator
         private double spiralPitch;
         private readonly float anglePitch;
         private readonly double pitchCoefficient;
-        private readonly PointF center;
+        public PointF Center { get; }
         private readonly Cache cache = new Cache();
 
         public Spiral(float anglePitch, double densityCoefficient, PointF center)
         {
             this.anglePitch = anglePitch;
-            this.center = center;
+            Center = center;
             pitchCoefficient = 20 * densityCoefficient * densityCoefficient;
         }
 
@@ -26,15 +26,10 @@ namespace TagsCloudVisualization.PointGenerator
             {
                 cache.UpdateParameter(size, angle);
                 var (x, y) = PolarToCartesian(radius, angle);
-                yield return new PointF(x + center.X, y + center.Y);
+                yield return new PointF(x + Center.X, y + Center.Y);
             }
         }
-
-        public PointF GetCenter()
-        {
-            return center;
-        }
-
+        
         private IEnumerable<(float radius, float angle)> GetArchimedeanSpiral(float currentAngle)
         {
             while (true)

@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Linq;
+using TagsCloudVisualization.CloudLayouter;
 using TagsCloudVisualization.PointGenerator;
 
 namespace TagsCloudVisualization
@@ -24,20 +24,6 @@ namespace TagsCloudVisualization
             bitmap = new Bitmap(size.Width, size.Height);
             graphics = Graphics.FromImage(bitmap);
             graphics.FillRectangle(new SolidBrush(backgroundColor), 0, 0, size.Width, size.Height);
-        }
-
-        public void Draw(IEnumerable<(string, Font)> words, string filename)
-        {
-            foreach (var (word, font) in words)
-                DrawString(word, font);
-            bitmap.Save(filename);
-        }
-
-        private void DrawString(string word, Font font)
-        {
-            var wordSize = graphics.MeasureString(word, font).ToSize() + new Size(1, 1);
-            var wordRectangle = cloudLayouter.PutNextRectangle(wordSize);
-            graphics.DrawString(word, font, Brush, wordRectangle, StringFormat.GenericDefault);
         }
 
         public void DrawRectangles(string file)

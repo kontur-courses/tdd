@@ -4,9 +4,9 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using FluentAssertions.Extensions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using TagsCloudVisualization.CloudLayouter;
 using TagsCloudVisualization.PointGenerator;
 
 namespace TagsCloudVisualization.Tests
@@ -15,14 +15,13 @@ namespace TagsCloudVisualization.Tests
     class CircularCloudLayouter_Tests
     {
         private CircularCloudLayouter sut;
-        private string failedTestsData = "TestsImg";
+        private const string FailedTestsData = "TestsImg";
 
         public CircularCloudLayouter_Tests()
         {
-            var dir = failedTestsData;
-            if (!Directory.Exists(dir))
+            if (!Directory.Exists(FailedTestsData))
             {
-                Directory.CreateDirectory(dir);
+                Directory.CreateDirectory(FailedTestsData);
             }
         }
 
@@ -37,7 +36,7 @@ namespace TagsCloudVisualization.Tests
         {
             if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
             var visualizer = new Visualizer(sut);
-            var fileToSave = failedTestsData + "/" + TestContext.CurrentContext.Test.FullName + ".png";
+            var fileToSave = FailedTestsData + "/" + TestContext.CurrentContext.Test.FullName + ".png";
             visualizer.DrawRectangles(fileToSave);
             var path = Path.GetFullPath(fileToSave);
             Console.WriteLine($"Tag cloud visualization saved to file {path}");
@@ -104,7 +103,7 @@ namespace TagsCloudVisualization.Tests
 
         private double GetDensity(CircularCloudLayouter cloudLayouter)
         {
-            var union = cloudLayouter.Unioned;
+            var union = cloudLayouter.CloudRectangle;
             var unionRectsArea = union.Height * union.Width;
             var sumOfAreas = cloudLayouter.GetCloud().Sum(rectangle => rectangle.Height * rectangle.Width);
             return sumOfAreas / unionRectsArea;

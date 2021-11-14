@@ -26,7 +26,9 @@ namespace TagsCloudVisualization.Tests
         {
             var center = new PointF(9,2);
             var spiral = new Spiral(0.2f, 0.5, center);
+            
             var points = spiral.GetPoints( new Size(5, 5)).Take(100).ToArray();
+            
             for (var i = 1; i < points.Length; i++)
             {
                 var previousRadius = center.DistanceTo(points[i - 1]);

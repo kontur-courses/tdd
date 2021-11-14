@@ -44,15 +44,5 @@ namespace TagsCloudVisualization
             var random = new Random();
             return Words.Select(word => (word, new Font(fontName, random.Next(10, 40)))).ToList();
         }
-
-        public static void AddWord(string word)
-        {
-            Words.Add(word);
-        }
-
-        public static void ClearWords()
-        {
-            Words.Clear();
-        }
     }
 }
