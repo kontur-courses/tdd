@@ -15,11 +15,13 @@ namespace TagsCloudVisualization
         private const double DirectionBetweenRoundsCoeff = 1 / (2 * Math.PI);
         private double _curveAngleStep = Math.PI / 10;
         private double _currentCurveAngle;
+        private double _enclosingCircleRadius;
 
         public CircularCloudLayouter(Point center)
         {
             Rectangles = new List<Rectangle>();
             CloudCenter = center;
+            _enclosingCircleRadius = 0;
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -27,6 +29,7 @@ namespace TagsCloudVisualization
             CheckRectangleSizeCorrectness(rectangleSize);
             var nextRectangleCoordinates = GetNextRectangleCoordinates(rectangleSize);
             var result = GetRectangleByCenter(nextRectangleCoordinates, rectangleSize);
+            _enclosingCircleRadius = RecalculateEnclosingCircleRadius(result);
             Rectangles.Add(result);
             return result;
         }
@@ -110,6 +113,21 @@ namespace TagsCloudVisualization
                 borderDistance = leftBorder.GetDistanceTo(rightBorder);
             }
             return rightBorder;
+        }
+
+        private double RecalculateEnclosingCircleRadius(Rectangle rect)
+        {
+            var rectEdges = new List<Point>
+            {
+                new Point(rect.Left, rect.Bottom),
+                new Point(rect.Right, rect.Bottom),
+                new Point(rect.Left, rect.Height),
+                new Point(rect.Right, rect.Height),
+            };
+            var edgeDistancesToCenter = rectEdges
+                .Select(p => p.GetDistanceTo(CloudCenter))
+                .Max();
+            return Math.Max(_enclosingCircleRadius, edgeDistancesToCenter);
         }
     }
 }
