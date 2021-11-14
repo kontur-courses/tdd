@@ -1,6 +1,6 @@
 ﻿- Простой пример:\
 ![Alt text](Pictures/1.png?raw=true)
-- Много одинаковых:\
+- 1000 одинаковых:\
 ![Alt text](Pictures/2.png?raw=true)
 - Много случайных:\
 ![Alt text](Pictures/3.png?raw=true)
