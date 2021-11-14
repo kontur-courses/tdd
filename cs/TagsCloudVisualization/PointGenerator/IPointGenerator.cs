@@ -7,6 +7,7 @@ namespace TagsCloudVisualization.PointGenerator
     {
 
         IEnumerable<PointF> GetPoints(Size size);
+        PointF GetCenter();
 
     }
 }

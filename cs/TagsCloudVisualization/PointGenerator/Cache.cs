@@ -7,7 +7,7 @@ namespace TagsCloudVisualization.PointGenerator
     {
         private readonly Dictionary<Size, float> sizeToCircleParameter = new Dictionary<Size, float>();
 
-        public float GetParameter(Size size)
+        public float SafeGetParameter(Size size)
         {
             if (!sizeToCircleParameter.ContainsKey(size))
                 sizeToCircleParameter[size] = 0;
@@ -19,7 +19,5 @@ namespace TagsCloudVisualization.PointGenerator
         {
             sizeToCircleParameter[size] = radius;
         }
-        
-        
     }
 }

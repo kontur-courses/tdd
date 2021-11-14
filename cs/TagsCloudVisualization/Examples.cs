@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class Examples
+    public static class Examples
     {
         private static readonly List<string> Words = new List<string>()
         {

@@ -6,10 +6,11 @@ namespace TagsCloudVisualization
 {
     public class WordsHandler
     {
-        private ICloudLayouter cloudLayouter;
+        public ICloudLayouter CloudLayouter { get; }
+
         public WordsHandler(ICloudLayouter cloudLayouter)
         {
-            this.cloudLayouter = cloudLayouter;
+            CloudLayouter = cloudLayouter;
         }
 
         public Template Handle(List<(string, Font)> words)
@@ -20,10 +21,12 @@ namespace TagsCloudVisualization
             foreach (var (word, font) in words)
             {
                 var wordSize = graphics.MeasureString(word, font).ToSize() + new Size(1, 1);
-                var wordRectangle = cloudLayouter.PutNextRectangle(wordSize);
+                var wordRectangle = CloudLayouter.PutNextRectangle(wordSize);
                 template.Add(new WordParameter(word, wordRectangle, font));
             }
 
+            template.Size = CloudLayouter.Size.ToSize();
+            template.Center = CloudLayouter.Center;
             return template;
         }
         

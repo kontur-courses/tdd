@@ -22,12 +22,17 @@ namespace TagsCloudVisualization.PointGenerator
         public IEnumerable<PointF> GetPoints(Size size)
         {
             spiralPitch = Math.Min(size.Height, size.Width)/pitchCoefficient;
-            foreach (var (radius, angle) in GetArchimedeanSpiral(cache.GetParameter(size)))
+            foreach (var (radius, angle) in GetArchimedeanSpiral(cache.SafeGetParameter(size)))
             {
                 cache.UpdateParameter(size, angle);
                 var (x, y) = PolarToCartesian(radius, angle);
                 yield return new PointF(x + center.X, y + center.Y);
             }
+        }
+
+        public PointF GetCenter()
+        {
+            return center;
         }
 
         private IEnumerable<(float radius, float angle)> GetArchimedeanSpiral(float currentAngle)

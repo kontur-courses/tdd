@@ -12,14 +12,15 @@ namespace TagsCloudVisualization
         private readonly IPointGenerator pointGenerator;
         private RectangleF cloudRectangle;
         public RectangleF Unioned => cloudRectangle;
-        public SizeF SizeF => new SizeF(cloudRectangle.Width, cloudRectangle.Height);
+        public SizeF Size => new SizeF(cloudRectangle.Width, cloudRectangle.Height);
+
+        public PointF Center => pointGenerator.GetCenter();
 
         public CircularCloudLayouter(IPointGenerator pointGenerator)
         {
             tagCloud = new List<RectangleF>();
             this.pointGenerator = pointGenerator;
         }
-
 
         public RectangleF PutNextRectangle(Size rectangleSize)
         {
@@ -36,12 +37,10 @@ namespace TagsCloudVisualization
             return tagCloud.ToArray();
         }
 
-
         private void UpdateCloudBorders(RectangleF newTag)
         {
             cloudRectangle = RectangleF.Union(cloudRectangle, newTag);
         }
-
 
         private RectangleF GetNextRectangle(Size size)
         {

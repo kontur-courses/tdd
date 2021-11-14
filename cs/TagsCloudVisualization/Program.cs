@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Reflection;
+using TagsCloudVisualization.PointGenerator;
 
 namespace TagsCloudVisualization
 {
@@ -9,17 +10,17 @@ namespace TagsCloudVisualization
     {
         public static void Main()
         {
-            DrawExample(Examples.GenerateFirstExample("Arial"), new Size(1000, 800),"../../../ExamplesIMG/1.png");
-            DrawExample(Examples.GenerateSecondExample("Arial"), new Size(1000, 800), "../../../ExamplesIMG/2.png");
-            DrawExample(Examples.GenerateThirdExample("Arial"), new Size(1000, 800), "../../../ExamplesIMG/3.png");
+            Draw(Examples.GenerateFirstExample("Arial"), "../../../ExamplesIMG/1.png");
+            Draw(Examples.GenerateSecondExample("Arial"), "../../../ExamplesIMG/2.png");
+            Draw(Examples.GenerateThirdExample("Arial"), "../../../ExamplesIMG/3.png");
         }
 
-        private static void DrawExample(List<(string, Font)> words, Size size, string filename)
+        private static void Draw(List<(string, Font)> example1, string filename)
         {
-            var visualizer = new Visualizer(size, Color.Bisque);
-            visualizer.Draw(words, filename);
+            var handler = new WordsHandler(new CircularCloudLayouter(new Spiral(0.1f, 0.8, new PointF(0, 0))));
+            var template = handler.Handle(example1);
+            var visualizer = new Visualizer(template.Size, Color.Bisque);
+            visualizer.Draw(template, filename);
         }
-
-        
     }
 }

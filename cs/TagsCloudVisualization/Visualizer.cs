@@ -12,7 +12,7 @@ namespace TagsCloudVisualization
         private readonly Bitmap bitmap;
         private readonly Graphics graphics;
 
-        public Visualizer(CircularCloudLayouter cloudLayouter) : this(cloudLayouter.SizeF.ToSize(), Color.Bisque)
+        public Visualizer(CircularCloudLayouter cloudLayouter) : this(cloudLayouter.Size.ToSize(), Color.Bisque)
         {
             this.cloudLayouter = cloudLayouter;
         }
@@ -45,7 +45,7 @@ namespace TagsCloudVisualization
             var cloudWithOffsetLocation = cloudLayouter.GetCloud()
                 .Select(r =>
                     new RectangleF(
-                        new PointF(r.X + cloudLayouter.SizeF.Width / 2, r.Y + cloudLayouter.SizeF.Height / 2),
+                        new PointF(r.X + cloudLayouter.Size.Width / 2, r.Y + cloudLayouter.Size.Height / 2),
                         r.Size)).ToArray();
             graphics.DrawRectangles(Pens.Aqua, cloudWithOffsetLocation);
             bitmap.Save(file);
@@ -55,7 +55,10 @@ namespace TagsCloudVisualization
         {
             foreach (var wordParameter in template.GetWords())
             {
-                graphics.DrawString(wordParameter.Word, wordParameter.Font, Brush, wordParameter.WordRectangleF);
+                var offset = new PointF(template.Size.Width / 2f, template.Size.Height / 2f);
+                var rectangleF = wordParameter.WordRectangleF;
+                rectangleF.Offset(offset);
+                graphics.DrawString(wordParameter.Word, wordParameter.Font, Brush, rectangleF);
             }
 
             bitmap.Save(filename);
