@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -42,7 +41,7 @@ namespace TagsCloudVisualization
 
         private static Brush GetRandomBrush()
         {
-            var randomBrushNumber = new Random(Guid.NewGuid().GetHashCode()).Next(BrushList.Count);
+            var randomBrushNumber = new Random().Next(BrushList.Count);
             return BrushList[randomBrushNumber];
         }
     }
