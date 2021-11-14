@@ -12,34 +12,34 @@ namespace TagsCloudVisualization
         /// <summary>
         /// Радиус витков
         /// </summary>
-        protected double Radius;
+        private double _radius;
 
         /// <summary>
         /// Текущий угол в радианах
         /// </summary>
-        protected double Phi;
+        private double _phi;
 
         public ArchimedeanSpiral() : base() 
         {
-            Radius = 1;
-            Phi = 0;
+            _radius = 1;
+            _phi = 0;
         }
 
         public ArchimedeanSpiral(Point center) : base(center)
         {
-            Radius = 1;
-            Phi = 0;
+            _radius = 1;
+            _phi = 0;
         }
 
         public override IEnumerable<Point> GetDiscretePoints(double deltaAngle = 0.01)
         {
             while (true)
             {
-                var rho = Phi * Radius / (2 * Math.PI);
-                var cartesian = CoordinatesConverter.ToCartesian(rho, Phi);
+                var rho = _phi * _radius / (2 * Math.PI);
+                var cartesian = CoordinatesConverter.ToCartesian(rho, _phi);
                 var point = new Point(cartesian.X + OffsetX, cartesian.Y + OffsetY);
 
-                Phi += deltaAngle;
+                _phi += deltaAngle;
                 yield return point;
             }
         }
