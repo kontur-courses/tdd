@@ -40,11 +40,11 @@ namespace TagsCloudVisualization
 
         private Point ShiftRectangleToCloudCenter(Point rectCenter, Size rectSize)
         {
-            rectCenter = GetSuitableRectLocationInPointDirection(rectCenter,
+            rectCenter = GetSuitableRectCenterInPointDirection(rectCenter,
                 rectSize, CloudCenter);
-            rectCenter = GetSuitableRectLocationInPointDirection(rectCenter,
+            rectCenter = GetSuitableRectCenterInPointDirection(rectCenter,
                 rectSize, new Point(rectCenter.X, CloudCenter.Y));
-            rectCenter = GetSuitableRectLocationInPointDirection(rectCenter,
+            rectCenter = GetSuitableRectCenterInPointDirection(rectCenter,
                 rectSize, new Point(CloudCenter.X, rectCenter.Y));
             return rectCenter;
         }
@@ -90,14 +90,16 @@ namespace TagsCloudVisualization
         private bool DoesRectIntersectAnyOther(Rectangle rect)
             => Rectangles.Any(r => r != rect && rect.IntersectsWith(r));
 
-        private Point GetSuitableRectLocationInPointDirection(Point rectCenter, Size rectSize,
+        private Point GetSuitableRectCenterInPointDirection(Point rectCenter, Size rectSize,
             Point directionPoint)
         {
             var leftBorder = directionPoint;
             var rightBorder = rectCenter;
-            var vectLen = new Vector(leftBorder, rightBorder).GetLength();
+            //var vectLen = new Vector(leftBorder, rightBorder).GetLength();
+            var borderDistance = leftBorder.GetDistanceTo(rightBorder);
             const int eps = 2;
-            while (vectLen > eps)
+            //while (vectLen > eps)
+            while (borderDistance > eps)
             {
                 var middle = new Point(
                     (leftBorder.X + rightBorder.X) / 2,
@@ -107,7 +109,8 @@ namespace TagsCloudVisualization
                     leftBorder = middle;
                 else
                     rightBorder = middle;
-                vectLen = new Vector(leftBorder, rightBorder).GetLength();
+                //vectLen = new Vector(leftBorder, rightBorder).GetLength();
+                borderDistance = leftBorder.GetDistanceTo(rightBorder);
             }
             return rightBorder;
         }

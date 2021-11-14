@@ -167,7 +167,7 @@ namespace TagsCloudVisualization.Tests
             Point center, IReadOnlyCollection<Point> hull)
         {
             var hullVectorsLengths = hull
-                .Select(point => new Vector(center, point).GetLength())
+                .Select(point => point.GetDistanceTo(center))
                 .ToArray();
             return (hullVectorsLengths.Min(), hullVectorsLengths.Max());
         }
