@@ -7,8 +7,12 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     { 
-        public readonly List<Rectangle> Rectangles;
-        public readonly Point CloudCenter;
+        private readonly List<Rectangle> _rectangles;
+        public IReadOnlyCollection<Rectangle> Rectangles
+            => _rectangles;
+        private readonly Point _cloudCenter;
+        public Point CloudCenter
+            => new Point(_cloudCenter.X, _cloudCenter.Y);
         private const double CurveStartingRadius = 0;
         private const double MinimumCurveAngleStep = 0.2;
         private const double CurveAngleStepSlowDown = 0.002;
@@ -19,8 +23,8 @@ namespace TagsCloudVisualization
 
         public CircularCloudLayouter(Point center)
         {
-            Rectangles = new List<Rectangle>();
-            CloudCenter = center;
+            _rectangles = new List<Rectangle>();
+            _cloudCenter = center;
             _enclosingCircleRadius = 0;
         }
 
@@ -30,7 +34,7 @@ namespace TagsCloudVisualization
             var nextRectangleCoordinates = GetNextRectangleCoordinates(rectangleSize);
             var result = GetRectangleByCenter(nextRectangleCoordinates, rectangleSize);
             _enclosingCircleRadius = RecalculateEnclosingCircleRadius(result);
-            Rectangles.Add(result);
+            _rectangles.Add(result);
             return result;
         }
 
@@ -94,7 +98,7 @@ namespace TagsCloudVisualization
         }
 
         private bool DoesRectIntersectAnyOther(Rectangle rect)
-            => Rectangles.Any(r => r != rect && rect.IntersectsWith(r));
+            => _rectangles.Any(r => r != rect && rect.IntersectsWith(r));
 
         private Point GetSuitableRectCenterInDirection(Point rectCenter, Size rectSize,
             Point directionPoint)
