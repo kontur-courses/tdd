@@ -51,11 +51,9 @@ namespace TagsCloudVisualization
 
         private Point GetNextRectCenter(Size rectSize)
         {
-            //if (Rectangles.Count == 0)
-            //    return GetNextCurvePoint();
             var nextRectCenter = GetNextCurvePoint();
             var nextRect = GetRectangleByCenter(nextRectCenter, rectSize);
-            while (IfRectIntersectAnyOther(nextRect))
+            while (DoesRectIntersectAnyOther(nextRect))
             {
                 nextRectCenter = GetNextCurvePoint();
                 nextRect = GetRectangleByCenter(nextRectCenter, rectSize);
@@ -89,7 +87,7 @@ namespace TagsCloudVisualization
                 throw new ArgumentException();
         }
 
-        private bool IfRectIntersectAnyOther(Rectangle rect)
+        private bool DoesRectIntersectAnyOther(Rectangle rect)
             => Rectangles.Any(r => r != rect && rect.IntersectsWith(r));
 
         private Point ShiftRectangleToPoint(Point rectCenter, Size rectSize,
@@ -105,7 +103,7 @@ namespace TagsCloudVisualization
                     (leftBorder.X + rightBorder.X) / 2,
                     (leftBorder.Y + rightBorder.Y) / 2);
                 var pos = GetRectangleByCenter(middle, rectSize);
-                if (IfRectIntersectAnyOther(pos))
+                if (DoesRectIntersectAnyOther(pos))
                     leftBorder = middle;
                 else
                     rightBorder = middle;
