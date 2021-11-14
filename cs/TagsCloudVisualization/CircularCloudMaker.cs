@@ -30,41 +30,42 @@ namespace TagsCloudVisualization
                 {
                     vertexes.Add(vertex);
                 }
-                foreach (var segment in rectangle.GetSegments())
-                {
-                    pointsOnSides.Add(new PointF((segment.Item1.X + segment.Item2.X) / 2,
-                        (segment.Item1.Y + segment.Item2.Y) / 2));
-                }
+                AddSidePoints(vertexes);
                 return rectangle;
             }
-            foreach (var rectanglePlacement in vertexes.Concat(pointsOnSides)
+            foreach (var (center, placement) in vertexes.Concat(pointsOnSides)
                 .Select(p => Tuple.Create(GetRectangleCenter(p, rectangleSize), p))
                 .OrderBy(p => Center.DistanceTo(p.Item1)))
             {
-                var rectangle = GetRectangle(rectanglePlacement.Item1, rectangleSize);
-                if (!RectangleCanBePlaced(rectangle, rectanglePlacement.Item2)) continue;
+                var rectangle = GetRectangle(center, rectangleSize);
+                if (!RectangleCanBePlaced(rectangle, placement)) continue;
                 rectangles.Add(rectangle);
-                AddRectangle(rectangle, rectanglePlacement.Item2);
+                AddRectangle(rectangle, placement);
                 return rectangle;
             }
             return default;
+        }
+
+        private void AddSidePoints(IEnumerable<PointF> points)
+        {
+            foreach (var point in points)
+            {
+                pointsOnSides.Add(new PointF(point.X, Center.Y));
+                pointsOnSides.Add(new PointF(Center.X, point.Y));
+            }
         }
 
         private void AddRectangle(RectangleF rectangle, PointF location)
         {
             var points = rectangle.GetPoints().ToList();
             if (pointsOnSides.Contains(location))
-            {
                 pointsOnSides.Remove(location);
-                pointsOnSides.Add(OffsetPointFromCenter(location, rectangle.Width, rectangle.Height));
-            }
             else
             {
                 points.Remove(location);
                 vertexes.Remove(location);
             }
-
-            var tempSize = new Size(1, 1);
+            AddSidePoints(points);
             points.ForEach(p => vertexes.Add(p));
         }
 
@@ -86,9 +87,9 @@ namespace TagsCloudVisualization
 
         private bool RectangleCanBePlaced(RectangleF rectangle, PointF location)
         {
-            var result = rectangles
+            var canBePlaced = rectangles
                 .All(r => !r.IntersectsWith(rectangle));
-            if (result) 
+            if (canBePlaced)
                 return true;
             var tempSize = new Size(1, 1);
             var possibleRect = GetRectangle(GetRectangleCenter(location, tempSize), tempSize);

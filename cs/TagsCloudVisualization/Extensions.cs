@@ -24,11 +24,6 @@ namespace TagsCloudVisualization
             }
             yield return (vertexes[^1], vertexes[0]);
         }
-        
-        public static bool IsEmpty(this RectangleF rectangle, double precision)
-        {
-            return Math.Abs(rectangle.Width * rectangle.Height) < precision;
-        }
 
         public static bool Contacts(this RectangleF rectangle, RectangleF other)
         {

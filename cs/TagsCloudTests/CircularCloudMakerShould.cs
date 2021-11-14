@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
@@ -27,7 +28,7 @@ namespace TagsCloudTests
             var visualizer = new TagsCloudVisualiser(maker);
             var image = visualizer.DrawCloud(new Size(800, 800));
             var fileName = TestContext.CurrentContext.Test.Name + "Fail.png";
-            image.Save(fileName, ImageFormat.Png);
+            image?.Save(fileName, ImageFormat.Png);
             Console.WriteLine("Failed test saved at " + Directory.GetCurrentDirectory() + "\\" + fileName);
         }
         
@@ -117,18 +118,14 @@ namespace TagsCloudTests
         [Test]
         public void RectanglesPlacedInsideHole()
         {
-            /*layouter.PutNextRectangle(new Size(2, 2));
-            layouter.PutNextRectangle(new Size(2, 2));
-            layouter.PutNextRectangle(new Size(2, 2));
-            layouter.PutNextRectangle(new Size(2, 2));
-            layouter.PutNextRectangle(new Size(2, 2));
-            layouter.PutNextRectangle(new Size(10, 2));
-            layouter.PutNextRectangle(new Size(6, 2));
-            layouter.PutNextRectangle(new Size(10, 2));
-            layouter.PutNextRectangle(new Size(6, 2));
-            layouter.PutNextRectangle(new Size(2, 2));
-            var expectedPoses = new []{new PointF(1, -3)};
-            layouter.Rectangles[^1].Should().Be(expected);*/
+            maker.PutNextRectangle(new Size(2, 2));
+            maker.PutNextRectangle(new Size(6, 2));
+            maker.PutNextRectangle(new Size(6, 2));
+            maker.PutNextRectangle(new Size(2, 6));
+            maker.PutNextRectangle(new Size(2, 6));
+            maker.PutNextRectangle(new Size(2, 2));
+            var expectedPoses = new []{new PointF(-3, -1), new PointF(1, -1)};
+            expectedPoses.Contains(maker.Rectangles[^1].Location).Should().BeTrue();
         }
     }
 }
