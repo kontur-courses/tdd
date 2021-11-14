@@ -3,26 +3,9 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class TagsCloudVisualiser
+    public static class TagsCloudVisualiser
     {
-        private CircularCloudMaker maker;
-
-        public TagsCloudVisualiser(Point center)
-        {
-            maker = new CircularCloudMaker(center);
-        }
-
-        public TagsCloudVisualiser(CircularCloudMaker maker)
-        {
-            this.maker = maker;
-        }
-
-        public RectangleF PutRectangle(Size size)
-        {
-            return maker.PutNextRectangle(size);
-        }
-
-        public Bitmap DrawCloud(Rectangle frame, Size bitmapSize)
+        public static Bitmap DrawCloud(CircularCloudMaker maker, Rectangle frame, Size bitmapSize)
         {
             var image = new Bitmap(bitmapSize.Width, bitmapSize.Height);
             var graphics = Graphics.FromImage(image);
@@ -34,10 +17,10 @@ namespace TagsCloudVisualization
             return image;
         }
 
-        public Bitmap DrawCloud(Size bitmapSize)
+        public static Bitmap DrawCloud(CircularCloudMaker maker, Size bitmapSize)
         {
             var radius = (int)(maker.Radius * 1.1);
-            return DrawCloud(new Rectangle(-radius, -radius, radius * 2, radius * 2), bitmapSize);
+            return DrawCloud(maker,new Rectangle(-radius, -radius, radius * 2, radius * 2), bitmapSize);
         }
     }
 }

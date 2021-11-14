@@ -12,10 +12,10 @@ namespace TagsCloudVisualization
     {
         static void Main(string[] args)
         {
-            var visualiser = new TagsCloudVisualiser(new Point());
+            var maker = new CircularCloudMaker(new Point());
             var random = new Random();
             var sizes = new List<Size>();
-            for(var i = 0; i < 200; i++)
+            for(var i = 0; i < 1000; i++)
             {
                 var height = random.Next(1, 5);
                 sizes.Add(new Size(random.Next(1, 5), height));
@@ -24,10 +24,10 @@ namespace TagsCloudVisualization
             var n = 0;
             foreach (var size in sizes)
             {
-                visualiser.PutRectangle(size);
+                maker.PutRectangle(size);
                 Console.WriteLine(n++);
             }
-            var image = visualiser.DrawCloud(new Size(1000, 1000));
+            var image = TagsCloudVisualiser.DrawCloud(maker, new Size(1000, 1000));
             image.Save("testimage.png", ImageFormat.Png);
             Process.Start(new ProcessStartInfo(Directory.GetCurrentDirectory() + "\\testimage.png") { UseShellExecute = true });
         }
