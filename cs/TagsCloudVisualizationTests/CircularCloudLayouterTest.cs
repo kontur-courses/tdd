@@ -63,11 +63,11 @@ namespace TagsCloudTests
             rectangle.GetCenter().Should().Be(center);
         }
 
-        [TestCase(100)]
-        [TestCase(500)]
-        public void PutNextRectangle_ShouldReturnNotIntersectRectangles_WhenRandomSize(int count)
+        [TestCase(100, 1)]
+        [TestCase(500, 1)]
+        public void PutNextRectangle_ShouldReturnNotIntersectRectangles_WhenRandomSize(int count, int seed)
         {
-            var rnd = new Random();
+            var rnd = new Random(seed);
             var sizeFactory = new Func<Size>(() =>
                 new Size(rnd.Next(20, 50), rnd.Next(10, 20)));
             rectangles = GetRectangles(count, sizeFactory);
@@ -89,11 +89,12 @@ namespace TagsCloudTests
         }
         
 
-        [TestCase(10, 200, 300, 100, TestName = "small count of big rectangles")]
-        [TestCase(100, 20, 30, 10, TestName = "big count of small rectangles")]
-        public void PutNextRectangle_ShouldReturnRectanglesThatFormACircle(int count, int maxWidth, int maxHeight, int precision)
+        [TestCase(10, 1, 200, 300, 100, TestName = "small count of big rectangles")]
+        [TestCase(100, 1, 20, 30, 10, TestName = "big count of small rectangles")]
+        public void PutNextRectangle_ShouldReturnRectanglesThatFormACircle(int count, int seed, int maxWidth,
+            int maxHeight, int precision)
         {
-            var rnd = new Random();
+            var rnd = new Random(seed);
             var width = rnd.Next(1, maxWidth);
             var height = rnd.Next(1, maxWidth);
             var layoutArea = count * width * height;
