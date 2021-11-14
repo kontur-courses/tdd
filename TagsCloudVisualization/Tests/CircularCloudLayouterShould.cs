@@ -69,16 +69,16 @@ namespace TagsCloudVisualization.Tests
         [Repeat(10)]
         public void MakeCloudCircleDeviationLessThanTwentyFivePercents()
         {
-            var center = new Point(750, 750);
+            var center = new Point(0, 0);
             var layouter = new CircularCloudLayouter(center);
 
-            PutRandomRectangles(layouter, 1000);
+            PutRandomRectangles(layouter, 100);
             _testLayout = layouter;
             var cloudConvexHull = GetCloudConvexHull(layouter);
             var (minLength, maxLength) = GetMinMaxHullVectorsLengths(center, cloudConvexHull);
             var deviation = GetCloudDeviation(minLength, maxLength);
 
-            deviation.Should().BeLessOrEqualTo(0.25);
+            deviation.Should().BeLessOrEqualTo(0.0001);
         }
 
         [Test]

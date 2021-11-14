@@ -34,6 +34,9 @@ namespace TagsCloudVisualization
             return result;
         }
 
+        public double GetCloudEnclosingRadius()
+            => _enclosingCircleRadius;
+
         private Point GetNextRectangleCoordinates(Size rectSize)
         {
             var nextRectCenter = GetNextRectCenter(rectSize);

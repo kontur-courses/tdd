@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
@@ -21,7 +18,13 @@ namespace TagsCloudVisualization
 
         public static void Draw(CircularCloudLayouter layouter, string imagePathToSave)
         {
-            var image = new Bitmap(1500, 1500);
+            var cloudEnclosingCircleRadius = layouter.GetCloudEnclosingRadius();
+            const double imageSizeLimit = 5000;
+            const double border = 100;
+            var imageRadius = (int)Math.Min(cloudEnclosingCircleRadius + border, imageSizeLimit);
+            var imageCenter = new Point(imageRadius, imageRadius);
+            var considerSize = 2 * imageRadius;
+            var image = new Bitmap(considerSize, considerSize);
             var graphics = Graphics.FromImage(image);
             graphics.Clear(Color.Black);
             foreach (var rect in layouter.Rectangles)
