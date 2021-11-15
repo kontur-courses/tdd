@@ -47,8 +47,10 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="CommandLineCloudOptions.cs" />
+        <Compile Include="RangeValidatorAttribute.cs" />
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="StringValidatorAttribute.cs" />
     </ItemGroup>
     <ItemGroup>
       <None Include="packages.config" />

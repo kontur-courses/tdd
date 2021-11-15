@@ -12,12 +12,12 @@ namespace TagsCloudVisualization
         public static Bitmap GetBitmapWithRectangles(IEnumerable<Rectangle> rectangles)
         {
             var rects = rectangles.ToList();
-            if (rects.Count is 0)
+            if (!rects.Any())
                 throw new ArgumentException($"rectangle list is empty");
 
-            var middleRectangle = rects.First();
-            var actualCenter = new Point(middleRectangle.X + middleRectangle.Width / 2, 
-                                         middleRectangle.Y + middleRectangle.Height / 2);
+            var firstRectangle = rects.First();
+            var actualCenter = new Point(firstRectangle.X + firstRectangle.Width / 2, 
+                                         firstRectangle.Y + firstRectangle.Height / 2);
 
             var bmp = new Bitmap(
                 Math.Abs(rects.Max(x => x.Right) - rects.Min(x => x.Left)) + Margin,

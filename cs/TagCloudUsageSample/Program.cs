@@ -17,35 +17,37 @@ namespace TagCloudUsageSample
                 .ParseArguments<CommandLineCloudOptions>(args)
                 .WithParsed(options =>
                 {
-                    string firstFileName = null;
-                    
-                    for (var j = 0; j < options.CloudCount; j++)
+                    if (!options.Validate(out var message))
                     {
-                        var fullFileName = options.SavePath.TrimEnd(Path.DirectorySeparatorChar) +
-                                           Path.DirectorySeparatorChar +
-                                           options.FileName +
-                                           (options.CloudCount == 1 ? "" : $"({j})") +
-                                           ".jpg";
-                        
-                        firstFileName ??= fullFileName;
-
-                        var rects = GetRectangles(
-                            new CircularCloudLayouter(Point.Empty),
-                            options.RectangleCount,
-                            options.SizeCoefficient,
-                            options.MinimumRectHeight);
-                        
-                        if (File.Exists(fullFileName))
-                            File.Delete(fullFileName);
-                
-                        RectanglePainter
-                            .GetBitmapWithRectangles(rects)
-                            .Save(fullFileName, ImageFormat.Jpeg);
+                        Console.WriteLine(message);
+                        return;
                     }
-                    
+
+                    CreateTags(options, out var firstFileName);
                     if (firstFileName is not null && options.OpenFirst)
                         System.Diagnostics.Process.Start(firstFileName);
                 });
+        }
+
+        private static void CreateTags(CommandLineCloudOptions options, out string firstFileName)
+        {
+            firstFileName = null;
+            
+            for (var j = 0; j < options.CloudCount; j++)
+            {
+                var fullFileName = options.GetFullFilenameByNumber(j);
+                File.Delete(fullFileName);
+                firstFileName ??= fullFileName;
+                    
+                var rects = GetRectangles(
+                    new CircularCloudLayouter(Point.Empty),
+                    options.RectangleCount,
+                    options.SizeCoefficient,
+                    options.MinimumRectHeight);
+                        
+                RectanglePainter.GetBitmapWithRectangles(rects)
+                    .Save(fullFileName, ImageFormat.Jpeg);
+            }
         }
     
         private static IEnumerable<Rectangle> GetRectangles(
