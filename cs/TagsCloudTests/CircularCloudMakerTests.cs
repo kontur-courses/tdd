@@ -131,8 +131,8 @@ namespace TagsCloudTests
             maker.PutRectangle(new Size(2, 6));
             maker.PutRectangle(new Size(2, 6));
             maker.PutRectangle(new Size(2, 2));
-            var expectedPoses = new []{new PointF(-3, -1), new PointF(1, -1)};
-            expectedPoses.Contains(maker.Rectangles[^1].Location).Should().BeTrue();
+            var expectedCoords = new []{new PointF(-3, -1), new PointF(1, -1)};
+            expectedCoords.Contains(maker.Rectangles[^1].Location).Should().BeTrue();
         }
     }
 }

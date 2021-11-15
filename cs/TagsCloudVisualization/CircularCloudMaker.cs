@@ -35,21 +35,20 @@ namespace TagsCloudVisualization
 
         private RectangleF PutNextRectangle(Size rectangleSize)
         {
-            foreach (var (center, placement) in placementLocations
+            var (rectangle, placementLocation) = placementLocations
                 .Select(p => (rectangleCenter: GetRectangleCenter(p, rectangleSize), placementLocation: p))
-                .OrderBy(p => GetDistanceBetween(Center, p.rectangleCenter)))
-            {
-                var rectangle = CreateRectangle(center, rectangleSize);
-                if (!RectangleCanBePlaced(rectangle, placement)) continue;
-                AddRectanglePointsToPlacementLocations(rectangle, placement);
-                return rectangle;
-            }
-            return default;
+                .OrderBy(p => GetDistanceBetween(Center, p.rectangleCenter))
+                .Select(points => (rectangle: CreateRectangle(points.rectangleCenter, rectangleSize),
+                    points.placementLocation))
+                .First(x => RectangleCanBePlaced(x.rectangle, x.placementLocation));
+            
+            AddRectanglePointsToPlacementLocations(rectangle, placementLocation);
+            return rectangle;
         }
 
         private void AddRectanglePointsToPlacementLocations(RectangleF rectangle, PointF placement)
         {
-            var points = GetPoints(rectangle).ToList();
+            var points = GetPoints(rectangle);
             points.Remove(placement);
             placementLocations.Remove(placement);
             rectangles.Add(rectangle);
@@ -96,12 +95,15 @@ namespace TagsCloudVisualization
             return Math.Sqrt((point.X - other.X)*(point.X - other.X) + (point.Y - other.Y) * (point.Y - other.Y));
         }
         
-        private static IEnumerable<PointF> GetPoints(RectangleF rectangle)
+        private static List<PointF> GetPoints(RectangleF rectangle)
         {
-            yield return rectangle.Location;
-            yield return new PointF(rectangle.Right, rectangle.Top);
-            yield return new PointF(rectangle.Right, rectangle.Bottom);
-            yield return new PointF(rectangle.Left, rectangle.Bottom);
+            return new List<PointF>()
+            {
+                rectangle.Location,
+                new PointF(rectangle.Right, rectangle.Top),
+                new PointF(rectangle.Right, rectangle.Bottom),
+                new PointF(rectangle.Left, rectangle.Bottom)
+            };
         }
     }
 }
