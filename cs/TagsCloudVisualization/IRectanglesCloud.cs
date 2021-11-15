@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    interface IRectanglesCloud
+    public interface IRectanglesCloud
     {
+        IReadOnlyList<RectangleF> Rectangles { get; }
+        PointF Center { get; }
     }
 }
