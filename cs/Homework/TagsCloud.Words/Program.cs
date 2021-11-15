@@ -35,7 +35,7 @@ namespace TagsCloud.Words
 
             var drawer = serviceProvider.GetRequiredService<IDrawer>();
             using var image = drawer.Draw(container);
-            var path = GetDirectoryForSavingExamples() + "\\words4.png";
+            var path = GetDirectoryForSavingExamples() + "\\words_test.png";
             image.Save(path);
         }
 
@@ -63,7 +63,7 @@ namespace TagsCloud.Words
             var solutionPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..\\..\\..\\..\\"));
             if (!Directory.Exists(solutionPath))
                 Directory.CreateDirectory(solutionPath);
-            return solutionPath + "\\refactoring.txt";
+            return solutionPath + "\\snake.txt";
         }
 
         private static IServiceProvider CreateServiceProvider(Point center)
@@ -73,7 +73,7 @@ namespace TagsCloud.Words
             collection.AddScoped<IWordsFilter, WordsFilter>();
             collection.AddScoped<IWordsParser, WordsParser>();
 
-            collection.AddScoped<FontFactory>();
+            collection.AddScoped<IFontFactory, FontFactory>();
             collection.AddScoped<IWordsSizeService, WordsSizeService>();
             collection.AddScoped<WordsContainerBuilder>();
 

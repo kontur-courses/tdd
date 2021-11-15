@@ -1,0 +1,980 @@
+﻿using System.Drawing;
+using System.Linq;
+using FluentAssertions;
+using NUnit.Framework;
+using TagsCloud.Visualization.PointGenerator;
+
+namespace TagsCloud.Tests
+{
+    public class ArchimedesSpiralPointGeneratorTest
+    {
+        private readonly Point center = new(10, 10);
+        private ArchimedesSpiralPointGenerator sut;
+
+        [SetUp]
+        public void InitGenerator()
+        {
+            sut = new ArchimedesSpiralPointGenerator(center);
+        }
+
+        [Test]
+        public void GetNext_OnFirstCall_Should_ReturnCenter()
+        {
+            var point = sut.GenerateNextPoint().First();
+
+            point.Should().BeEquivalentTo(center);
+        }
+
+        [Test]
+        public void GetNext_Should_ReturnPoints_WithSameRadii()
+        {
+            var points = sut.GenerateNextPoint()
+                .Take(10)
+                .ToList();
+
+            var radii = points.Select(x => x.GetDistance(center)).ToList();
+
+            foreach (var (previous, current) in radii.Zip(radii.Skip(1)))
+                current.Should().BeInRange(previous, previous + 1);
+        }
+
+        [Test]
+        public void GetNext_Should_ReturnPoints_WithIncreasingRadius()
+        {
+            var points = sut.GenerateNextPoint()
+                .Take(100)
+                .ToList();
+
+            var radii = points
+                .Select(x => x.GetDistance(center))
+                .ToList();
+
+            foreach (var (previous, current) in radii.Zip(radii.Skip(1)))
+                (current - previous).Should().BeGreaterThanOrEqualTo(0);
+        }
+    }
+}﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using FluentAssertions;
+using NUnit.Framework;
+using NUnit.Framework.Interfaces;
+using TagsCloud.Visualization;
+using TagsCloud.Visualization.ContainerVisitor;
+using TagsCloud.Visualization.Drawer;
+using TagsCloud.Visualization.Extensions;
+using TagsCloud.Visualization.LayoutContainer;
+using TagsCloud.Visualization.PointGenerator;
+
+namespace TagsCloud.Tests
+{
+    public class CircularCloudLayouterTests
+    {
+        private readonly Drawer drawer = new(new RandomColorDrawerVisitor());
+        private Point center;
+        private List<Rectangle> rectangles;
+        private CircularCloudLayouter sut;
+
+        [SetUp]
+        public void InitLayouter()
+        {
+            rectangles = new List<Rectangle>();
+            center = new Point(10, 10);
+            sut = new CircularCloudLayouter(center, new ArchimedesSpiralPointGenerator(center));
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome == ResultState.Failure
+                && rectangles.Count > 0)
+            {
+                var testName = TestContext.CurrentContext.Test.Name;
+                var rectanglesContainer = new RectanglesContainer {Items = rectangles};
+                using var image = drawer.Draw(rectanglesContainer);
+                var path = Path.Combine(GetDirectoryForSavingFailedTest(), $"{testName}.png");
+                image.Save(path);
+
+                Console.WriteLine(TestContext.CurrentContext.Test.Name + " failed");
+                Console.WriteLine("Tag cloud visualization saved to file " + path);
+            }
+        }
+
+
+        [TestCase(0, 1, TestName = "Only one is zero")]
+        [TestCase(0, 0, TestName = "Both coordinates are zero")]
+        [TestCase(-1, 3, TestName = "Negative width")]
+        public void PutNextRectangle_Should_ThrowException_WhenSizeNotPositive(int width, int height)
+        {
+            var size = new Size(width, height);
+
+            Assert.Throws<ArgumentException>(() => sut.PutNextRectangle(size));
+        }
+
+        [TestCase(1)]
+        [TestCase(5)]
+        [TestCase(10)]
+        public void PutNextRectangle_RectanglesAmount_ShouldBeEqual_AmountOfAdded(int count)
+        {
+            rectangles = PutRandomRectangles(count);
+
+            rectangles.Should().HaveCount(count);
+        }
+
+        [Test]
+        public void PutNextRectangle_ShouldNot_ChangeSize()
+        {
+            var size = new Size(12, 34);
+
+            var rectangle = sut.PutNextRectangle(size);
+
+            rectangle.Size.Should().Be(size);
+        }
+
+        [TestCase(10, 10)]
+        [TestCase(10, 1)]
+        [TestCase(123, 45)]
+        [TestCase(1, 200)]
+        public void PutNextRectangle_FirstRectangle_Should_BePlacedInCenter(int width, int height)
+        {
+            var rectangle = sut.PutNextRectangle(new Size(width, height));
+
+            var rectangleCenter = rectangle.GetCenter();
+
+            rectangleCenter.Should().Be(center);
+        }
+
+        [Test]
+        public void PutNextRectangle_Rectangles_Should_HaveDifferentCentres()
+        {
+            rectangles = PutRandomRectangles(10);
+
+            rectangles.Should().OnlyHaveUniqueItems(x => x.GetCenter());
+        }
+
+        [Test]
+        public void PutNextRectangle_Should_PlaceRectangles_WithoutIntersection()
+        {
+            rectangles = PutRandomRectangles(20);
+
+            foreach (var (rectangle, otherRectangles) in GetItemAndListWithoutIt(rectangles))
+                rectangle.IntersectsWith(otherRectangles).Should().BeFalse();
+        }
+
+        [TestCase(200, TestName = "Big count")]
+        [TestCase(5, TestName = "Little count")]
+        public void PutNextRectangle_Should_PlaceRectangles_CloseToRoundForm(int count)
+        {
+            var random = new Random();
+            var width = random.Next(300);
+            var height = random.Next(200);
+            var size = new Size(width, height);
+            var expectedSquareSqrt = Math.Sqrt(width * height * count);
+
+            rectangles = Enumerable.Range(0, count)
+                .Select(_ => sut.PutNextRectangle(size))
+                .ToList();
+
+            foreach (var rectangle in rectangles)
+                rectangle.Location.GetDistance(center).Should()
+                    .BeLessThan(expectedSquareSqrt, rectangle.ToString());
+        }
+
+        [TestCase(1000, TestName = "Big count")]
+        [TestCase(5, TestName = "Little count")]
+        public void PutNextRectangle_Should_PlaceRectangles_Tightly(int count)
+        {
+            rectangles = PutRandomRectangles(count);
+
+            var expected = Math.Max(
+                rectangles.Max(rectangle => rectangle.Width),
+                rectangles.Max(rectangle => rectangle.Height)
+            );
+
+            foreach (var (rect, otherRects) in GetItemAndListWithoutIt(rectangles))
+            {
+                var minDistanceToOtherRectangles = otherRects
+                    .Min(x => x.GetCenter().GetDistance(rect.GetCenter()));
+
+                minDistanceToOtherRectangles.Should().BeLessOrEqualTo(expected);
+            }
+        }
+
+        private List<Rectangle> PutRandomRectangles(int count, int maxWidth = 100, int maxHeight = 100)
+        {
+            var rnd = new Random();
+            var sizes = Enumerable.Range(0, count)
+                .Select(_ => new Size(rnd.Next(1, maxWidth), rnd.Next(1, maxHeight)));
+
+            return sizes.Select(x => sut.PutNextRectangle(x)).ToList();
+        }
+
+        private IEnumerable<(Rectangle, IEnumerable<Rectangle>)> GetItemAndListWithoutIt(
+            IReadOnlyCollection<Rectangle> rects)
+        {
+            return rects.Select(x => (x, rects.Where(y => y != x)));
+        }
+
+        private static string GetDirectoryForSavingFailedTest()
+        {
+            var solutionPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..\\..\\..\\..\\"));
+            var path = Path.Combine(solutionPath, "FailedTestsPictures");
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            return path;
+        }
+    }
+}﻿using System;
+using System.Drawing;
+
+namespace TagsCloud.Tests
+{
+    public static class PointExtensions
+    {
+        public static double GetDistance(this Point from, Point to)
+        {
+            return Math.Sqrt((to.X - from.X) * (to.X - from.X) + (to.Y - from.Y) * (to.Y - from.Y));
+        }
+    }
+}﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using FluentAssertions;
+using NUnit.Framework;
+using TagsCloud.Visualization.WordsFilter;
+using TagsCloud.Visualization.WordsParser;
+
+namespace TagsCloud.Tests
+{
+    public class WordsParserTests
+    {
+        private WordsParser sut;
+
+        [SetUp]
+        public void InitParser()
+        {
+            sut = new WordsParser(new WordsFilter());
+        }
+
+        [TestCaseSource(typeof(TestDataGenerator))]
+        public void CountWordsFrequency_Should_ParseCorrectly_When(string text, Dictionary<string, int> expectedResult)
+        {
+            var result = sut.CountWordsFrequency(text);
+
+            result.Should().Equal(expectedResult);
+        }
+
+        [Test]
+        public void CountWordsFrequency_Should_ThrowException_OnNullInput()
+        {
+            Assert.Throws<ArgumentNullException>(() => sut.CountWordsFrequency(null));
+        }
+    }
+
+    public class TestDataGenerator : IEnumerable<TestCaseData>
+    {
+        public IEnumerator<TestCaseData> GetEnumerator()
+        {
+            yield return new TestCaseData("", new Dictionary<string, int>()).SetName("Empty text");
+            yield return new TestCaseData("    ", new Dictionary<string, int>()).SetName("Whitespace text");
+            yield return new TestCaseData(", , , , ,", new Dictionary<string, int>()).SetName("Only commas");
+            yield return new TestCaseData("test test test", new Dictionary<string, int> {{"test", 3}}).SetName(
+                "Simple text");
+            yield return new TestCaseData("test Test TEST", new Dictionary<string, int> {{"test", 3}}).SetName(
+                "Different case");
+            yield return new TestCaseData("test,test,test", new Dictionary<string, int> {{"test", 3}}).SetName(
+                "Separated by comma");
+            yield return new TestCaseData("test\ntest\ntest", new Dictionary<string, int> {{"test", 3}}).SetName(
+                "Separated by new line");
+            yield return new TestCaseData("hello world hello world",
+                    new Dictionary<string, int> {{"hello", 2}, {"world", 2}})
+                .SetName("Two different words");
+            yield return new TestCaseData("тест test", new Dictionary<string, int> {{"test", 1}, {"тест", 1}})
+                .SetName("Different languages");
+            yield return new TestCaseData("1234 1234", new Dictionary<string, int> {{"1234", 2}}).SetName("Digits");
+            yield return new TestCaseData("Another brick in the wall",
+                    new Dictionary<string, int> {{"another", 1}, {"brick", 1}, {"wall", 1}})
+                .SetName("Boring words");
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+    }
+}//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+using System;
+using System.Reflection;
+
+[assembly: System.Reflection.AssemblyCompanyAttribute("TagsCloud.Tests")]
+[assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyProductAttribute("TagsCloud.Tests")]
+[assembly: System.Reflection.AssemblyTitleAttribute("TagsCloud.Tests")]
+[assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
+
+// Создано классом WriteCodeFragment MSBuild.
+
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using TagsCloud.Visualization.Extensions;
+using TagsCloud.Visualization.PointGenerator;
+
+namespace TagsCloud.Visualization
+{
+    public class CircularCloudLayouter : ICloudLayouter
+    {
+        private readonly Point center;
+        private readonly IPointGenerator pointGenerator;
+        private readonly List<Rectangle> rectangles = new();
+
+        public CircularCloudLayouter(Point center, IPointGenerator pointGenerator)
+        {
+            this.center = center;
+            this.pointGenerator = pointGenerator;
+        }
+
+        public Rectangle PutNextRectangle(Size rectangleSize)
+        {
+            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+                throw new ArgumentException($"rectangle's width and height must be positive, but was: {rectangleSize}");
+
+            var rectangle = GetFirstCorrectRectangle(rectangleSize);
+
+            rectangle = ShiftRectangleToCenter(rectangle);
+
+            rectangles.Add(rectangle);
+
+            return rectangle;
+        }
+
+        private Rectangle GetFirstCorrectRectangle(Size rectangleSize)
+        {
+            var rectangleCenter = new Size(rectangleSize.Width / 2, rectangleSize.Height / 2);
+            foreach (var point in pointGenerator.GenerateNextPoint())
+            {
+                var rectangle = new Rectangle(point - rectangleCenter, rectangleSize);
+                if (!rectangle.IntersectsWith(rectangles))
+                    return rectangle;
+            }
+
+            throw new Exception("point generator must generate points infinitely");
+        }
+
+        private Rectangle ShiftRectangleToCenter(Rectangle rectangle)
+        {
+            var rectangleCenter = rectangle.GetCenter();
+            var direction = new Point(center.X - rectangleCenter.X, center.Y - rectangleCenter.Y);
+            var offset = new Point(Math.Sign(direction.X), Math.Sign(direction.Y));
+
+            return Shift(Shift(rectangle, new Point(offset.X, 0)), new Point(0, offset.Y));
+        }
+
+        private Rectangle Shift(Rectangle rectangle, Point offset)
+        {
+            var shiftingRectangle = rectangle;
+            while (!shiftingRectangle.IntersectsWith(rectangles)
+                   && !shiftingRectangle.GetCenter().IsOnTheSameAxisWith(center))
+            {
+                rectangle = shiftingRectangle;
+                shiftingRectangle.Offset(offset);
+            }
+
+            return rectangle;
+        }
+    }
+}﻿using System.Drawing;
+
+namespace TagsCloud.Visualization
+{
+    public interface ICloudLayouter
+    {
+        Rectangle PutNextRectangle(Size rectangleSize);
+    }
+}﻿using System.Drawing;
+using TagsCloud.Visualization.LayoutContainer;
+
+namespace TagsCloud.Visualization.ContainerVisitor
+{
+    public interface IContainerVisitor
+    {
+        void Visit(Graphics graphics, RectanglesContainer cont);
+        void Visit(Graphics graphics, WordsContainer container);
+    }
+}﻿using System;
+using System.Drawing;
+using System.Linq;
+using TagsCloud.Visualization.LayoutContainer;
+
+namespace TagsCloud.Visualization.ContainerVisitor
+{
+    public class RandomColorDrawerVisitor : IContainerVisitor
+    {
+        private readonly Random random = new();
+
+        public void Visit(Graphics graphics, RectanglesContainer cont)
+        {
+            using var pen = new Pen(GetRandomColor());
+            graphics.DrawRectangles(pen, cont.Items.ToArray());
+        }
+
+        public void Visit(Graphics graphics, WordsContainer container)
+        {
+            foreach (var word in container.Items)
+            {
+                var drawFormat = new StringFormat
+                {
+                    Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center
+                };
+                using var brush = new SolidBrush(GetRandomColor());
+                graphics.DrawString(word.Word.Content,
+                    word.Font, brush, word.Border, drawFormat);
+            }
+        }
+
+        private Color GetRandomColor()
+        {
+            return Color.FromArgb(random.Next(256), random.Next(256), random.Next(256));
+        }
+    }
+}﻿using System;
+using System.Drawing;
+using System.Linq;
+using TagsCloud.Visualization.ContainerVisitor;
+using TagsCloud.Visualization.LayoutContainer;
+
+namespace TagsCloud.Visualization.Drawer
+{
+    public class Drawer : IDrawer
+    {
+        private const int OffsetX = 100;
+        private const int OffsetY = 100;
+        private readonly IContainerVisitor visitor;
+
+        public Drawer(IContainerVisitor visitor)
+        {
+            this.visitor = visitor;
+        }
+
+        public Image Draw<T>(ILayoutContainer<T> layoutContainer)
+        {
+            if (!layoutContainer.Items.Any())
+                throw new ArgumentException("rectangles array cannot be empty");
+
+            var (width, height) = layoutContainer.GetWidthAndHeight();
+            var (widthWithOffset, heightWithOffset) = (width + OffsetX, height + OffsetY);
+            var center = layoutContainer.GetCenter();
+            var bitmap = new Bitmap(widthWithOffset, heightWithOffset);
+            using var graphics = Graphics.FromImage(bitmap);
+
+            graphics.TranslateTransform(center.X + widthWithOffset / 2, center.Y + heightWithOffset / 2);
+
+            layoutContainer.Accept(graphics, visitor);
+
+            return bitmap;
+        }
+    }
+}﻿using System.Drawing;
+using TagsCloud.Visualization.LayoutContainer;
+
+namespace TagsCloud.Visualization.Drawer
+{
+    public interface IDrawer
+    {
+        Image Draw<T>(ILayoutContainer<T> layoutContainer);
+    }
+}﻿using System;
+using System.Collections.Generic;
+
+namespace TagsCloud.Visualization.Extensions
+{
+    public static class EnumerableExtensions
+    {
+        public static void ForEach<T>(this IEnumerable<T> collection, Action<T> func)
+        {
+            foreach (var item in collection)
+                func(item);
+        }
+    }
+}﻿using System.Drawing;
+
+namespace TagsCloud.Visualization.Extensions
+{
+    public static class PointExtensions
+    {
+        public static bool IsOnTheSameAxisWith(this Point point, Point otherPoint)
+        {
+            return point.X == otherPoint.X || point.Y == otherPoint.Y;
+        }
+    }
+}﻿using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+
+namespace TagsCloud.Visualization.Extensions
+{
+    public static class RectangleExtensions
+    {
+        public static bool IntersectsWith(this Rectangle rectangle, IEnumerable<Rectangle> other)
+        {
+            return other.Any(rectangle.IntersectsWith);
+        }
+
+        public static Point GetCenter(this Rectangle rectangle)
+        {
+            return new(rectangle.Left + rectangle.Width / 2,
+                rectangle.Top + rectangle.Height / 2);
+        }
+    }
+}﻿using System.Drawing;
+using TagsCloud.Visualization.Models;
+
+namespace TagsCloud.Visualization.FontFactory
+{
+    public class FontFactory
+    {
+        private const int MaxFontSize = 2000;
+
+        public Font GetFont(Word word, int minCount, int maxCount)
+        {
+            var fontSize = word.Count <= minCount
+                ? 1
+                : MaxFontSize * (word.Count - minCount) / (maxCount - minCount);
+            return new Font("Times new roman", fontSize, FontStyle.Regular);
+        }
+    }
+}﻿using System.Collections.Generic;
+using System.Drawing;
+
+namespace TagsCloud.Visualization.LayoutContainer
+{
+    public interface ILayoutContainer<out T> : IVisitable
+    {
+        IEnumerable<T> Items { get; }
+        (int, int) GetWidthAndHeight();
+        Point GetCenter();
+    }
+}﻿using System.Drawing;
+using TagsCloud.Visualization.ContainerVisitor;
+
+namespace TagsCloud.Visualization.LayoutContainer
+{
+    public interface IVisitable
+    {
+        void Accept(Graphics graphics, IContainerVisitor visitor);
+    }
+}﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using TagsCloud.Visualization.ContainerVisitor;
+using TagsCloud.Visualization.Extensions;
+
+namespace TagsCloud.Visualization.LayoutContainer
+{
+    public class RectanglesContainer : ILayoutContainer<Rectangle>
+    {
+        public IEnumerable<Rectangle> Items { get; init; }
+
+        public (int, int) GetWidthAndHeight()
+        {
+            var maxRight = Items.Max(x => x.Right);
+            var minLeft = Items.Min(x => x.Left);
+            var maxBottom = Items.Max(x => x.Bottom);
+            var minTop = Items.Min(x => x.Top);
+
+            return (Math.Abs(maxRight - minLeft), Math.Abs(maxBottom - minTop));
+        }
+
+        public Point GetCenter()
+        {
+            return Items.First().GetCenter();
+        }
+
+        public void Accept(Graphics graphics, IContainerVisitor visitor)
+        {
+            visitor.Visit(graphics, this);
+        }
+    }
+}﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using TagsCloud.Visualization.ContainerVisitor;
+using TagsCloud.Visualization.Extensions;
+using TagsCloud.Visualization.Models;
+
+namespace TagsCloud.Visualization.LayoutContainer
+{
+    public class WordsContainer : ILayoutContainer<WordWithBorder>, IDisposable
+    {
+        public void Dispose()
+        {
+            Items?.ForEach(x => x.Dispose());
+        }
+
+        public IEnumerable<WordWithBorder> Items { get; init; }
+
+        public (int, int) GetWidthAndHeight()
+        {
+            var rectangles = Items.Select(x => x.Border).ToArray();
+            var maxRight = rectangles.Max(x => x.Right);
+            var minLeft = rectangles.Min(x => x.Left);
+            var maxBottom = rectangles.Max(x => x.Bottom);
+            var minTop = rectangles.Min(x => x.Top);
+
+            return (Math.Abs(maxRight - minLeft), Math.Abs(maxBottom - minTop));
+        }
+
+        public Point GetCenter()
+        {
+            return Items.First().Border.GetCenter();
+        }
+
+        public void Accept(Graphics graphics, IContainerVisitor visitor)
+        {
+            visitor.Visit(graphics, this);
+        }
+    }
+}﻿using System.Collections.Generic;
+using TagsCloud.Visualization.Models;
+using TagsCloud.Visualization.WordsSizeService;
+
+namespace TagsCloud.Visualization.LayoutContainer
+{
+    public class WordsContainerBuilder
+    {
+        private readonly FontFactory.FontFactory fontFactory;
+        private readonly ICloudLayouter layouter;
+        private readonly List<WordWithBorder> words = new();
+        private readonly IWordsSizeService wordsSizeService;
+
+        public WordsContainerBuilder(
+            ICloudLayouter layouter,
+            IWordsSizeService wordsSizeService,
+            FontFactory.FontFactory fontFactory)
+        {
+            this.layouter = layouter;
+            this.wordsSizeService = wordsSizeService;
+            this.fontFactory = fontFactory;
+        }
+
+        public WordsContainerBuilder Add(Word word, int min, int max)
+        {
+            var font = fontFactory.GetFont(word, min, max);
+            var size = wordsSizeService.CalculateSize(word, font);
+            var rectangle = layouter.PutNextRectangle(size);
+            words.Add(new WordWithBorder {Word = word, Font = font, Border = rectangle});
+            return this;
+        }
+
+        public WordsContainer Build()
+        {
+            return new() {Items = words};
+        }
+    }
+}﻿namespace TagsCloud.Visualization.Models
+{
+    public class Word
+    {
+        public string Content { get; init; }
+        public int Count { get; init; }
+    }
+}﻿using System;
+using System.Drawing;
+
+namespace TagsCloud.Visualization.Models
+{
+    public class WordWithBorder : IDisposable
+    {
+        public Word Word { get; init; }
+        public Font Font { get; init; }
+        public Rectangle Border { get; init; }
+
+        public void Dispose()
+        {
+            Font?.Dispose();
+        }
+    }
+}//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+using System;
+using System.Reflection;
+
+[assembly: System.Reflection.AssemblyCompanyAttribute("TagsCloud.Visualization")]
+[assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyProductAttribute("TagsCloud.Visualization")]
+[assembly: System.Reflection.AssemblyTitleAttribute("TagsCloud.Visualization")]
+[assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
+
+// Создано классом WriteCodeFragment MSBuild.
+
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+
+namespace TagsCloud.Visualization.PointGenerator
+{
+    public class ArchimedesSpiralPointGenerator : IPointGenerator
+    {
+        private readonly double angleDelta;
+        private readonly Point center;
+        private readonly double xAxisCompression;
+        private readonly double yAxisCompression;
+        private double angle;
+
+        public ArchimedesSpiralPointGenerator(
+            Point center,
+            double angleDelta = Math.PI / 360,
+            double xAxisCompression = 1,
+            double yAxisCompression = 1)
+        {
+            this.center = center;
+            this.angleDelta = angleDelta;
+            this.xAxisCompression = xAxisCompression;
+            this.yAxisCompression = yAxisCompression;
+        }
+
+        public IEnumerable<Point> GenerateNextPoint()
+        {
+            while (true)
+            {
+                var x = Convert.ToInt32(xAxisCompression * Math.Cos(angle) * angle + center.X);
+                var y = Convert.ToInt32(yAxisCompression * Math.Sin(angle) * angle + center.Y);
+
+                angle += angleDelta;
+
+                yield return new Point(x, y);
+            }
+
+            // ReSharper disable once IteratorNeverReturns
+        }
+    }
+}﻿using System.Collections.Generic;
+using System.Drawing;
+
+namespace TagsCloud.Visualization.PointGenerator
+{
+    public interface IPointGenerator
+    {
+        IEnumerable<Point> GenerateNextPoint();
+    }
+}﻿namespace TagsCloud.Visualization.WordsFilter
+{
+    public interface IWordsFilter
+    {
+        bool IsWordValid(string word);
+    }
+}﻿using System.Collections.Generic;
+
+namespace TagsCloud.Visualization.WordsFilter
+{
+    public class WordsFilter : IWordsFilter
+    {
+        // TODO Move to config file and read on init
+        private readonly HashSet<string> prepositions =
+            new()
+            {
+                "a", "and", "or", "to", "in", "into", "on", "for", "by", "during", "the", "our", "is",
+                "of", "he", "she", "we", "his", "her", "that", "it", "as", "at", "but", "with", "was", "had", "has",
+                "have", "which", "were", "so", "from", "been", "without", "you", "who", "me", "are", "their",
+                "my", "be", "no", "not", "when", "him", "my", "said", "if", "how", "an"
+            };
+
+        public bool IsWordValid(string word)
+        {
+            return !prepositions.Contains(word);
+        }
+    }
+}﻿using System.Collections.Generic;
+
+namespace TagsCloud.Visualization.WordsParser
+{
+    public interface IWordsParser
+    {
+        Dictionary<string, int> CountWordsFrequency(string text);
+    }
+}﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using TagsCloud.Visualization.WordsFilter;
+
+namespace TagsCloud.Visualization.WordsParser
+{
+    public class WordsParser : IWordsParser
+    {
+        private const string WordsPattern = @"\W+";
+        private readonly IWordsFilter wordsFilter;
+
+        public WordsParser(IWordsFilter wordsFilter)
+        {
+            this.wordsFilter = wordsFilter;
+        }
+
+        public Dictionary<string, int> CountWordsFrequency(string text)
+        {
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+
+            return Regex.Split(text.ToLower(), WordsPattern)
+                .Where(w => w.Length > 1 && wordsFilter.IsWordValid(w))
+                .GroupBy(s => s)
+                .ToDictionary(x => x.Key, x => x.Count());
+        }
+    }
+}﻿using System.Drawing;
+using TagsCloud.Visualization.Models;
+
+namespace TagsCloud.Visualization.WordsSizeService
+{
+    public interface IWordsSizeService
+    {
+        Size CalculateSize(Word word, Font font);
+    }
+}﻿using System;
+using System.Drawing;
+using TagsCloud.Visualization.Models;
+
+namespace TagsCloud.Visualization.WordsSizeService
+{
+    public class WordsSizeService : IWordsSizeService
+    {
+        public Size CalculateSize(Word word, Font font)
+        {
+            using var graphics = Graphics.FromHwnd(IntPtr.Zero);
+            return Size.Ceiling(graphics.MeasureString(word.Content, font));
+        }
+    }
+}﻿using System;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
+using TagsCloud.Visualization;
+using TagsCloud.Visualization.ContainerVisitor;
+using TagsCloud.Visualization.Drawer;
+using TagsCloud.Visualization.Extensions;
+using TagsCloud.Visualization.FontFactory;
+using TagsCloud.Visualization.LayoutContainer;
+using TagsCloud.Visualization.Models;
+using TagsCloud.Visualization.PointGenerator;
+using TagsCloud.Visualization.WordsFilter;
+using TagsCloud.Visualization.WordsParser;
+using TagsCloud.Visualization.WordsSizeService;
+
+namespace TagsCloud.Words
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var serviceProvider = CreateServiceProvider(Point.Empty);
+
+            var parsedWords = ParseWordsFromFile(serviceProvider, GetInputFilename());
+
+            var maxCount = parsedWords.Max(x => x.Count);
+            var minCount = parsedWords.Min(x => x.Count);
+
+            var wordsBuilder = serviceProvider.GetRequiredService<WordsContainerBuilder>();
+            parsedWords.ForEach(x => wordsBuilder.Add(x, minCount, maxCount));
+
+            using var container = wordsBuilder.Build();
+
+            var drawer = serviceProvider.GetRequiredService<IDrawer>();
+            using var image = drawer.Draw(container);
+            var path = GetDirectoryForSavingExamples() + "\\words_test.png";
+            image.Save(path);
+        }
+
+        private static Word[] ParseWordsFromFile(IServiceProvider serviceProvider, string path)
+        {
+            var text = File.ReadAllText(path);
+            return serviceProvider.GetRequiredService<IWordsParser>()
+                .CountWordsFrequency(text)
+                .OrderByDescending(x => x.Value)
+                .Select(x => new Word {Content = x.Key, Count = x.Value})
+                .ToArray();
+        }
+
+        private static string GetDirectoryForSavingExamples()
+        {
+            var solutionPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..\\..\\..\\..\\"));
+            var path = Path.Combine(solutionPath, "Examples");
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            return path;
+        }
+
+        private static string GetInputFilename()
+        {
+            var solutionPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..\\..\\..\\..\\"));
+            if (!Directory.Exists(solutionPath))
+                Directory.CreateDirectory(solutionPath);
+            return solutionPath + "\\snake.txt";
+        }
+
+        private static IServiceProvider CreateServiceProvider(Point center)
+        {
+            var collection = new ServiceCollection();
+
+            collection.AddScoped<IWordsFilter, WordsFilter>();
+            collection.AddScoped<IWordsParser, WordsParser>();
+
+            collection.AddScoped<FontFactory>();
+            collection.AddScoped<IWordsSizeService, WordsSizeService>();
+            collection.AddScoped<WordsContainerBuilder>();
+
+            collection.AddScoped<IPointGenerator>(_ => new ArchimedesSpiralPointGenerator(center));
+            collection.AddScoped<ICloudLayouter>(provider
+                => new CircularCloudLayouter(center, provider.GetService<IPointGenerator>()));
+
+            collection.AddScoped<IContainerVisitor, RandomColorDrawerVisitor>();
+            collection.AddScoped<IDrawer, Drawer>();
+
+            return collection.BuildServiceProvider();
+        }
+    }
+}//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+using System;
+using System.Reflection;
+
+[assembly: System.Reflection.AssemblyCompanyAttribute("TagsCloud.Words")]
+[assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyProductAttribute("TagsCloud.Words")]
+[assembly: System.Reflection.AssemblyTitleAttribute("TagsCloud.Words")]
+[assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
+
+// Создано классом WriteCodeFragment MSBuild.
+

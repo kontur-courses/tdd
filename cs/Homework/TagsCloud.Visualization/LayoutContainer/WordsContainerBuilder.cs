@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TagsCloud.Visualization.FontFactory;
 using TagsCloud.Visualization.Models;
 using TagsCloud.Visualization.WordsSizeService;
 
@@ -6,7 +7,7 @@ namespace TagsCloud.Visualization.LayoutContainer
 {
     public class WordsContainerBuilder
     {
-        private readonly FontFactory.FontFactory fontFactory;
+        private readonly IFontFactory fontFactory;
         private readonly ICloudLayouter layouter;
         private readonly List<WordWithBorder> words = new();
         private readonly IWordsSizeService wordsSizeService;
@@ -14,7 +15,7 @@ namespace TagsCloud.Visualization.LayoutContainer
         public WordsContainerBuilder(
             ICloudLayouter layouter,
             IWordsSizeService wordsSizeService,
-            FontFactory.FontFactory fontFactory)
+            IFontFactory fontFactory)
         {
             this.layouter = layouter;
             this.wordsSizeService = wordsSizeService;

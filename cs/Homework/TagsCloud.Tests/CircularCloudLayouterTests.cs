@@ -23,7 +23,7 @@ namespace TagsCloud.Tests
         private CircularCloudLayouter sut;
 
         [SetUp]
-        public void InitLayouter()
+        public void SetUp()
         {
             rectangles = new List<Rectangle>();
             center = new Point(10, 10);

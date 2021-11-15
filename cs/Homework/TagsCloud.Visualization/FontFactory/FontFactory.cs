@@ -3,7 +3,7 @@ using TagsCloud.Visualization.Models;
 
 namespace TagsCloud.Visualization.FontFactory
 {
-    public class FontFactory
+    public class FontFactory : IFontFactory
     {
         private const int MaxFontSize = 2000;
 
