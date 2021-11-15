@@ -45,7 +45,6 @@ namespace TagsCloudVisualization
                 list.Add(item);
             list.Add(itemToAdd);
             list.ToEnumerable().Should().HaveCount(count + 1)
-                .And.Contain(itemsToAdd)
                 .And.Contain(itemsToAdd);
         }
         

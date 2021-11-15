@@ -19,6 +19,7 @@ namespace TagsCloudVisualization
         {
             if (!IsNewValue(value))
                 return;
+            values.Add(value);
 
             var node = new Node<TValue>(value);
             if (root is null)
@@ -45,15 +46,7 @@ namespace TagsCloudVisualization
             previousNode.Next = node;
             node.Next = currentNode;
         }
-
-        private bool IsNewValue(TValue value)
-        {
-            if (values.Contains(value))
-                return false;
-            values.Add(value);
-            return true;
-        }
-
+        
         public IEnumerable<TValue> ToEnumerable()
         {
             var node = root;
@@ -62,6 +55,11 @@ namespace TagsCloudVisualization
                 yield return node.Value;
                 node = node.Next;
             }
+        }
+        
+        private bool IsNewValue(TValue value)
+        {
+            return !values.Contains(value);
         }
     }
 
