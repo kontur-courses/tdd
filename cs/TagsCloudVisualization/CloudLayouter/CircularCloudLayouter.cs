@@ -12,7 +12,6 @@ namespace TagsCloudVisualization.CloudLayouter
         private readonly IPointGenerator pointGenerator;
         public RectangleF CloudRectangle { get; private set; }
         public SizeF SizeF => new SizeF(CloudRectangle.Width, CloudRectangle.Height);
-
         public PointF Center => pointGenerator.Center;
 
         public CircularCloudLayouter(IPointGenerator pointGenerator)

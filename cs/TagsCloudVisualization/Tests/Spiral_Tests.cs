@@ -15,9 +15,9 @@ namespace TagsCloudVisualization.Tests
         {
             var center = new PointF(2, 6);
             var spiral = new Spiral(0.2f, 0.5, center);
-
+            
             var firstPoint = spiral.GetPoints(new Size(1, 1)).First();
-
+            
             firstPoint.Should().Be(center);
         }
         

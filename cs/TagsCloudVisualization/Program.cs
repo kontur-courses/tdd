@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
-using System.Reflection;
 using TagsCloudVisualization.CloudLayouter;
 using TagsCloudVisualization.PointGenerator;
 
@@ -21,7 +19,7 @@ namespace TagsCloudVisualization
         {
             var pointGenerator = new Spiral(0.1f, 0.9, new PointF());
             var cloudLayouter = new CircularCloudLayouter(pointGenerator);
-            Examples.RandomFill(cloudLayouter, 400, new Size(50, 50));
+            Examples.RandomFill(400, cloudLayouter, new Size(5, 5), new Size(50, 50));
             var visualizer = new Visualizer(cloudLayouter);
             visualizer.DrawRectangles(path);
         }

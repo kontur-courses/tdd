@@ -46,12 +46,12 @@ namespace TagsCloudVisualization
             return Words.Select(word => (word, new Font(fontName, random.Next(10, 40)))).ToList();
         }
 
-        public static void RandomFill(ICloudLayouter cloudLayouter, int rectanglesCount, Size maxSize)
+        public static void RandomFill(int rectanglesCount, ICloudLayouter cloudLayouter, Size minSize, Size maxSize)
         {
             var random = new Random();
             for (var i = 0; i < rectanglesCount; i++)
             {
-                cloudLayouter.PutNextRectangle(new Size(random.Next(1, maxSize.Width), random.Next(1, maxSize.Height)));
+                cloudLayouter.PutNextRectangle(new Size(random.Next(minSize.Width, maxSize.Width), random.Next(minSize.Height, maxSize.Height)));
             }
         }
     }

@@ -7,7 +7,6 @@ namespace TagsCloudVisualization.CloudLayouter
         SizeF SizeF { get;}
         PointF Center { get; }
         RectangleF PutNextRectangle(Size rectangleSize);
-
         RectangleF[] GetCloud();
     }
 }

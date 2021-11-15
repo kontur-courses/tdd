@@ -9,12 +9,10 @@ namespace TagsCloudVisualization
     {
         private readonly List<WordParameter> words = new List<WordParameter>();
         public Size Size { get; set; }
-
         public PointF Center { get; set; }
 
         public Template()
         {
-            
         }
 
         public Template(IEnumerable<WordParameter> words)

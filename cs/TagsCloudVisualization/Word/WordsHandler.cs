@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using TagsCloudVisualization.CloudLayouter;
 
@@ -17,7 +16,7 @@ namespace TagsCloudVisualization
         public Template Handle(List<(string, Font)> words)
         {
             var template = new Template();
-            var fakeImage = new Bitmap(1,1); 
+            var fakeImage = new Bitmap(1, 1);
             var graphics = Graphics.FromImage(fakeImage);
             foreach (var (word, font) in words)
             {
@@ -30,6 +29,5 @@ namespace TagsCloudVisualization
             template.Center = CloudLayouter.Center;
             return template;
         }
-        
     }
 }

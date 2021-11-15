@@ -11,7 +11,6 @@ namespace TagsCloudVisualization.PointGenerator
         {
             if (!sizeToCircleParameter.ContainsKey(size))
                 sizeToCircleParameter[size] = 0;
-
             return sizeToCircleParameter[size];
         }
 
