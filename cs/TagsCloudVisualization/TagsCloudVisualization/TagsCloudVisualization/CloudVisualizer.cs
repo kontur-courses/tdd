@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
-    public class CloudVisualizator : ICloudVisualizator
+    public class CloudVisualizer : ICloudVisualizer
     {
         private Bitmap bitmap;
         private Graphics graphic;
         private Point imageCenter;
         private Point cloudCenter;
-        public CloudVisualizator(Size imageSize, Point cloudCenter)
+        public CloudVisualizer(Size imageSize, Point cloudCenter)
         {
             bitmap = new Bitmap(imageSize.Width, imageSize.Height);
             graphic = Graphics.FromImage(bitmap);
@@ -34,9 +34,10 @@ namespace TagsCloudVisualization
                 DrawRectangle(pen, rectangle);
         }
 
-        public void SaveImage(string path)
+        public Bitmap GetImage()
         {
-            bitmap.Save(path);
+            return bitmap;
         }
+
     }
 }

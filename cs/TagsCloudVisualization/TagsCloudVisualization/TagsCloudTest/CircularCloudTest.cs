@@ -13,24 +13,26 @@ namespace TagsCloudTest
     public class CircularCloudTest
     {
         private ICloudLayouter cloud;
+        private Func<int, int, int> getNextInt = (min, max) => new Random().Next(min,max);
+
+        [SetUp]
+        public void CreateCloud()
+        {
+            var center = new Point(getNextInt(-int.MaxValue,int.MaxValue), getNextInt(-int.MaxValue, int.MaxValue));
+            cloud = new CircularCloudLayouter(center);
+        }
 
         [Test]
         public void PutNextRectangle_RectangleWithCenterInCloudCenter_WhenPutFirstRectangle()
         {
-            var center = new Point(5, 5);
-            var cloud = new CircularCloudLayouter(center);
-            this.cloud = cloud;
-
             var rectangle = cloud.PutNextRectangle(new Size(3,1));
 
-            rectangle.Location.Should().Be(center);
+            rectangle.Location.Should().Be(cloud.Center);
         }
 
         [Test]
         public void PutNextRectangle_ArgumentException_WhenPutRectangleWithNegativeSize()
         {
-            var center = new Point(0, 0);
-            var cloud = new CircularCloudLayouter(center);
             Action action = () => cloud.PutNextRectangle(new Size(-2, 0));
 
             action.Should().Throw<ArgumentException>();
@@ -42,22 +44,16 @@ namespace TagsCloudTest
         [TestCase(2)]
         public void PutNextRectangle_RectanglesDoNotIntersect_WhenPutRectanglesOfTheSameSize(int rectanglesCount)
         {
-            var center = new Point(3, 8);
-            var cloud = new CircularCloudLayouter(center);
             var rectanglesSize = new Size(3, 2);
             var rectangles = new List<Rectangle>();
-            this.cloud = cloud;
 
             for (var i = 0; i < rectanglesCount; i++)
                 rectangles.Add(cloud.PutNextRectangle(rectanglesSize));
 
             foreach (var r1 in rectangles)
-                foreach(var r2 in rectangles)
-                {
-                    if (r1 == r2)
-                        continue;
-                    r1.IntersectsWith(r2).Should().BeFalse();
-                }
+                rectangles.Where(rect => rect != r1).
+                    Any(rect => rect.IntersectsWith(r1)).
+                    Should().BeFalse();
         }
 
         [TestCase(1000)]
@@ -66,26 +62,17 @@ namespace TagsCloudTest
         [TestCase(2)]
         public void PutNextRectangle_RectanglesDoNotIntersect_WhenPutRectanglesOfRandomSize(int rectanglesCount)
         {
-            var rnd = new Random();
-            var center = new Point(3, 8);
-            var cloud = new CircularCloudLayouter(center);
             var rectangles = new List<Rectangle>();
-            this.cloud = cloud;
 
             for (var i = 0; i < rectanglesCount; i++)
             {
-                var width = rnd.Next(1, 1000);
-                var height = rnd.Next(1, 1000);
-                rectangles.Add(cloud.PutNextRectangle(new Size(width,height)));
+                rectangles.Add(cloud.PutNextRectangle(new Size(getNextInt(1,1000), getNextInt(1, 1000))));
             }
 
             foreach (var r1 in rectangles)
-                foreach (var r2 in rectangles)
-                {
-                    if (r1 == r2)
-                        continue;
-                    r1.IntersectsWith(r2).Should().BeFalse();
-                }
+                rectangles.Where(rect => rect != r1).
+                    Any(rect => rect.IntersectsWith(r1)).
+                    Should().BeFalse();
         }
 
         [TestCase(2)]
@@ -93,34 +80,21 @@ namespace TagsCloudTest
         [TestCase(2000)]
         public void PutNextRectangle_RectanglesAreCloseToCenter_WhenPutRectanglesOfTheSameSize(int rectanglesCount)
         {
-            var center = new Point(1, 3);
-            var cloud = new CircularCloudLayouter(center);
             var sizeRectangle = new Size(2, 2);
             var rectangles = new List<Rectangle>();
-            this.cloud = cloud;
 
             for (var i = 0; i < rectanglesCount; i++)
                 rectangles.Add(cloud.PutNextRectangle(sizeRectangle));
 
-
             foreach (var r1 in rectangles) 
             {
-                if (r1.Location == center)
+                if (r1.Location == cloud.Center)
                     continue;
-                var newR1 = ShiftRectangleToGoalByDelta(r1, center);
-                var hasIntersect = false;
-                foreach (var r2 in rectangles)
-                {
-                    if (r1 == r2)
-                        continue;
+                var newR1 = ShiftRectangleToGoalByDelta(r1, cloud.Center);
 
-                    if(newR1.IntersectsWith(r2))
-                    {
-                        hasIntersect = true;
-                        break;
-                    }    
-                }
-                hasIntersect.Should().BeTrue();
+                rectangles.Where(rect => rect != r1).
+                    Any(rect => rect.IntersectsWith(newR1)).
+                    Should().BeTrue();
             }
         }
 
@@ -129,37 +103,24 @@ namespace TagsCloudTest
         [TestCase(10)]
         public void PutNextRectangle_RectanglesAreCloseToCenter_WhenPutRectanglesOfRandomSize(int rectanglesCount)
         {
-            var rnd = new Random();
-            var center = new Point(1, 3);
-            var cloud = new CircularCloudLayouter(center);
             var rectangles = new List<Rectangle>();
-            this.cloud = cloud;
 
             for (var i = 0; i < rectanglesCount; i++)
             {
-                var width = rnd.Next(1, 1000);
-                var height = rnd.Next(1, 1000);
+                var width = getNextInt(1,1000);
+                var height = getNextInt(1, 1000);
                 rectangles.Add(cloud.PutNextRectangle(new Size(width, height)));
             }
 
             foreach (var r1 in rectangles)
             {
-                if (r1.Location == center)
+                if (r1.Location == cloud.Center)
                     continue;
-                var newR1 = ShiftRectangleToGoalByDelta(r1, center);
-                var hasIntersect = false;
-                foreach (var r2 in rectangles)
-                {
-                    if (r1 == r2)
-                        continue;
+                var newR1 = ShiftRectangleToGoalByDelta(r1, cloud.Center);
 
-                    if (newR1.IntersectsWith(r2))
-                    {
-                        hasIntersect = true;
-                        break;
-                    }
-                }
-                hasIntersect.Should().BeTrue();
+                rectangles.Where(rect => rect != r1).
+                    Any(rect => rect.IntersectsWith(newR1)).
+                    Should().BeTrue();
             }
         }
 
@@ -167,7 +128,7 @@ namespace TagsCloudTest
         public void DerivedTearDown() 
         {
             var resultStatus = TestContext.CurrentContext.Result.Outcome.Status;
-            if(resultStatus == NUnit.Framework.Interfaces.TestStatus.Failed && cloud!=null)
+            if(resultStatus == NUnit.Framework.Interfaces.TestStatus.Failed  && cloud!=null)
             {
                 var path = @$"..\..\..\CloudImages\{TestContext.CurrentContext.Test.Name}.png";
 
@@ -177,9 +138,10 @@ namespace TagsCloudTest
 
                 var imageSize = new Size(width, width);
 
-                var visualizator = new CloudVisualizator(imageSize, cloud.Center);
+                var visualizator = new CloudVisualizer(imageSize, cloud.Center);
                 visualizator.DrawRectangles(new Pen(new SolidBrush(Color.Red)), cloud.Rectangles);
-                visualizator.SaveImage(path);
+                var resultImage = visualizator.GetImage();
+                resultImage.Save(path);
 
                 TestContext.WriteLine($"Tag cloud visualization saved to file {Path.GetFullPath(path)}");
             }

@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
-    public interface ICloudVisualizator
+    public interface ICloudVisualizer
     {
         void DrawRectangle(Pen pen, Rectangle rectangle);
         void DrawRectangles(Pen pen, List<Rectangle> rectangles);
-        void SaveImage(string path);
+        Bitmap GetImage();
     }
 }
