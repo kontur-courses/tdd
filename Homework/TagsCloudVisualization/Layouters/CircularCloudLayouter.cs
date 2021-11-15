@@ -8,8 +8,8 @@ namespace TagsCloudVisualization.Layouters
 {
     public class CircularCloudLayouter
     {
+        public readonly HashSet<RectangleF> rectangles;
         private readonly Point center;
-        private readonly HashSet<RectangleF> rectangles;
         private readonly Spiral spiral;
         
         public CircularCloudLayouter(Point center)

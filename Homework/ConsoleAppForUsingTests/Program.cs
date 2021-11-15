@@ -13,13 +13,13 @@ namespace ConsoleAppForTests
         static void Main(string[] args)
         {
             var layouter = new CircularCloudLayouter(new Point(400, 300));
-            var visualizator = new CircularCloudVisualizator(layouter);
+            var visualizator = new CircularCloudVisualizator();
 
-            var rectangles = new List<SizeF>();
+            var rectangles = new List<RectangleF>();
 
             for (var i = 0; i < 100; ++i)
             {
-                rectangles.Add(new SizeF(30, 50));
+                rectangles.Add(layouter.PutNextRectangle(new SizeF(30, 50)));
             }
 
             var random = new Random();

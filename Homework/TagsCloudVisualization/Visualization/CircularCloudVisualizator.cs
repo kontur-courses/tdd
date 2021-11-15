@@ -12,12 +12,10 @@ namespace TagsCloudVisualization.Visualization
         private readonly Graphics graphics;
         private string path;
         private Pen pen;
-        private CircularCloudLayouter layouter;
         private readonly Random random;
 
-        public CircularCloudVisualizator(CircularCloudLayouter layouter, string imageSavingPath = "./")
+        public CircularCloudVisualizator(string imageSavingPath = "./")
         {
-            this.layouter = layouter;
             path = imageSavingPath;
 
             bitmap = new Bitmap(800, 600);
@@ -26,49 +24,51 @@ namespace TagsCloudVisualization.Visualization
             random = new Random();
         }
 
-        public void PutRectangle(SizeF rectangleSize)
+        public void PutRectangle(RectangleF rectangle)
         {
-            var rectangle = layouter.PutNextRectangle(rectangleSize);
             graphics.DrawRectangles(pen, new []{ rectangle });
         }
 
-        public void PutRectangles(IEnumerable<SizeF> rectanglesSizes)
+        public void PutRectangles(IEnumerable<RectangleF> rectangles)
         {
-            foreach (var rectangleSize in rectanglesSizes)
+            foreach (var rectangle in rectangles)
             {
-                PutRectangle(rectangleSize);
+                PutRectangle(rectangle);
             }
         }
 
-        public void PutWordInRectangle(string word, SizeF rectangleSize)
+        public void PutWordInRectangle(string word, RectangleF rectangle)
         {
-            var rectangle = layouter.PutNextRectangle(rectangleSize);
             var wordSize = (int) rectangle.Width / word.Length;
             graphics.DrawString(word, new Font(FontFamily.GenericSansSerif, wordSize), pen.Brush, rectangle);
         }
 
-        public void PutWordsInRectangles(IEnumerable<string> words, IEnumerable<SizeF> rectanglesSizes)
+        public void PutWordsInRectangles(IEnumerable<string> words, IEnumerable<RectangleF> rectangles)
         {
-            if (words.Count() != rectanglesSizes.Count())
+            if (words.Count() != rectangles.Count())
             {
                 throw new ArgumentException("Texts and Rectangles counts should be the same");
             }
 
-            foreach (var tuple in words.Zip(rectanglesSizes))
+            foreach (var tuple in words.Zip(rectangles))
             {
                 PutWordInRectangle(tuple.First, tuple.Second);
             }
         }
 
-        public void SaveImage(string imageName)
+        public string SaveImage(string imageName)
         {
-            bitmap.Save(imageName);
+            var savingPath = path + imageName;
+            bitmap.Save(savingPath);
+            return savingPath;
         }
 
-        public void SaveImage()
+        public string SaveImage()
         {
             var randomNumber = random.Next();
-            bitmap.Save(randomNumber.ToString() + ".png");
+            var savingPath = path + randomNumber.ToString() + ".png";
+            bitmap.Save(savingPath);
+            return savingPath;
         }
     }
 }

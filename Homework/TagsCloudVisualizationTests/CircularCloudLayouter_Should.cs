@@ -4,9 +4,11 @@ using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
 using TagsCloudVisualization.Extensions;
 using TagsCloudVisualization.Layouters;
+using TagsCloudVisualization.Visualization;
 
 namespace TagsCloudVisualizationTests
 {
@@ -14,12 +16,30 @@ namespace TagsCloudVisualizationTests
     public class CircularCloudLayouter_Should
     {
         private const float Epsilon = 1e-5f;
-        
+        private CircularCloudLayouter layouter;
+        private CircularCloudVisualizator visualizator;
+        private readonly Point center = new Point(300, 400); 
+
+        [SetUp]
+        public void SetUp()
+        {
+            layouter = new CircularCloudLayouter(center);
+            visualizator = new CircularCloudVisualizator();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status is TestStatus.Failed or TestStatus.Inconclusive)
+            {
+                visualizator.PutRectangles(layouter.rectangles);
+                Console.WriteLine($"Tags cloud visualizaton is saved to {visualizator.SaveImage()}");
+            }
+        }
+
         [Test]
         public void PutRectangles_WithoutIntersections()
         {
-            var layouter = new CircularCloudLayouter(new Point(0, 0));
-
             var rectangles = Generators.RectanglesRandomSizeGenerator()
                 .Select(r => layouter.PutNextRectangle(r))
                 .ToList(); // To avoid multiple enumeration
@@ -34,19 +54,14 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void PutNextRectangle_ThrowsArgumentException_WhenSizeIsNegative()
         {
-            var layouter = new CircularCloudLayouter(new Point(0, 0));
-
             Action act = () => layouter.PutNextRectangle(new SizeF(-1, -1));
 
             act.Should().Throw<ArgumentException>();
         }
 
         [Test]
-        [TestCaseSource(typeof(Generators), nameof(Generators.CenterGenerator))]
-        public void PutNextRectangle_PutFirstRectangleAtCenter_WithCustomCenter(Point center)
+        public void PutNextRectangle_PutFirstRectangleAtCenter_WithCustomCenter()
         {
-            var layouter = new CircularCloudLayouter(center);
-
             var rectangleSize = new SizeF(50, 50);
 
             var rectangle = layouter.PutNextRectangle(rectangleSize);
@@ -59,7 +74,7 @@ namespace TagsCloudVisualizationTests
         public void PutNextRectangle_AverageRandomSizeRectanglesCloudDensity_Between65And85Percent()
         {
             var avgDensity = Generators.CenterGenerator()
-                .Select(center => GetCloudDensity(center, Generators.RectanglesRandomSizeGenerator()))
+                .Select(center => GetCloudDensity(Generators.RectanglesRandomSizeGenerator()))
                 .Average();
 
             avgDensity.Should().BeApproximately(0.75, 0.1);
@@ -70,16 +85,17 @@ namespace TagsCloudVisualizationTests
         {
             var avgDensity = Generators.CenterGenerator()
                 .Select(center => 
-                    GetCloudDensity(center, 
+                    GetCloudDensity(
                         Enumerable.Repeat(Generators.RectanglesRandomSizeGenerator().Take(1).Single(), 100)))
                 .Average();
             
             avgDensity.Should().BeApproximately(0.8, 0.1);
         }
-
-        private double GetCloudDensity(Point center, IEnumerable<SizeF> rectanglesSizes)
+        
+        
+        private double GetCloudDensity(IEnumerable<SizeF> rectanglesSizes)
         {
-            var layouter = new CircularCloudLayouter(center);
+            layouter = new CircularCloudLayouter(center);
 
             var rectanglesArea = 0.0f;
 
