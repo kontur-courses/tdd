@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using FluentAssertions;
-using FluentAssertions.Extensions;
 using NUnit.Framework;
 
 namespace TagsCloudVisualization
@@ -59,11 +59,38 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void GetSpiralPoints_IsLazy()
+        public void GetSpiralPoints_ReturnsDifferentPoints()
         {
-            var generator = new SpiralPointsGenerator();
+            var points = new List<Point>();
+            var enumerator = new SpiralPointsGenerator(new Point(100, 100), 10, 0, 0.1, 1).GetSpiralPoints()
+                .GetEnumerator();
 
-            generator.ExecutionTimeOf(g => g.GetSpiralPoints().Count()).Should().BeGreaterThan(1000.Milliseconds());
+            enumerator.MoveNext();
+            for (var i = 0; i < 100; i++)
+            {
+                enumerator.MoveNext();
+                points.Should().NotContain(enumerator.Current);
+                points.Add(enumerator.Current);
+            }
+        }
+
+        [Test]
+        public void GetSpiralPoints_ReturnsPoints_WithIncreasingDistanceToCenter()
+        {
+            var distances = new List<double>();
+            var center = new Point(100, 100);
+            var enumerator = new SpiralPointsGenerator(center, 10, 0, 0.1, 1).GetSpiralPoints().GetEnumerator();
+
+            enumerator.MoveNext();
+            for (var i = 0; i < 100; i++)
+            {
+                enumerator.MoveNext();
+                var point = enumerator.Current;
+                var distance = Math.Sqrt((center.X - point.X) * (center.X - point.X) +
+                                         (center.Y - point.Y) * (center.Y - point.Y));
+                distances.Should().NotContain(distance);
+                distances.Add(distance);
+            }
         }
     }
 }

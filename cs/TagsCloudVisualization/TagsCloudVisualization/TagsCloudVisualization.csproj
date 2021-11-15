@@ -63,6 +63,8 @@
         <Compile Include="CloudVisualizer.cs" />
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="RectangleExtensions.cs" />
+        <Compile Include="RectangleExtensionsTests.cs" />
         <Compile Include="SpiralPointsGenerator.cs" />
         <Compile Include="SpiralPointsGeneratorTests.cs" />
     </ItemGroup>
@@ -73,6 +75,7 @@
       <Content Include="README.md" />
     </ItemGroup>
     <ItemGroup>
+      <Folder Include="ExceptionsImages" />
       <Folder Include="Samples" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

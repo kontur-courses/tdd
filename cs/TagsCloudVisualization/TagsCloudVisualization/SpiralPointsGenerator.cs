@@ -7,7 +7,7 @@ namespace TagsCloudVisualization
     public class SpiralPointsGenerator
     {
         public readonly Size Size;
-        
+
         private double currentAngle;
         private double spiralRadius;
 
@@ -15,16 +15,8 @@ namespace TagsCloudVisualization
         private readonly double radiusDelta;
         private readonly Point center;
 
-        public SpiralPointsGenerator() : this(new Point(0, 0))
-        {
-        }
-
-        public SpiralPointsGenerator(
-            Point center, 
-            double startRadius = 10, 
-            double startAngle = 0,
-            double angleDelta = Math.PI / 180, 
-            double radiusDelta = 0.01)
+        public SpiralPointsGenerator(Point center, double startRadius = 10, double startAngle = 0,
+            double angleDelta = Math.PI / 180, double radiusDelta = 0.01)
         {
             if (startRadius < 0)
             {

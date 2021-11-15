@@ -6,22 +6,16 @@ namespace TagsCloudVisualization
 {
     public static class CloudVisualizer
     {
-        public static Bitmap Draw(
-            CircularCloudLayouter layouter, 
-            int numberOfTags, 
-            List<Color> colors, 
-            Size size, 
-            Color backgroundColor)
+        public static Bitmap Draw(CircularCloudLayouter layouter, List<Color> colors, Color backgroundColor)
         {
             var bitmap = new Bitmap(layouter.Size.Width, layouter.Size.Height);
             var graphics = Graphics.FromImage(bitmap);
             graphics.Clear(backgroundColor);
             var rnd = new Random();
-
-            for (var i = 0; i < numberOfTags; i++)
+            foreach (var rectangle in layouter.Rectangles)
             {
                 var pen = new Pen(colors[rnd.Next(colors.Count)], 0);
-                graphics.DrawRectangle(pen, layouter.PutNextRectangle(size));
+                graphics.DrawRectangle(pen, rectangle);
             }
 
             return bitmap;

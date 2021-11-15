@@ -8,42 +8,41 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         public readonly Size Size;
-
-        private readonly List<Rectangle> rectangles;
+        public readonly List<Rectangle> Rectangles;
+        
         private readonly SpiralPointsGenerator pointsGenerator;
-
-        public CircularCloudLayouter() : this(new SpiralPointsGenerator())
-        {
-        }
 
         public CircularCloudLayouter(SpiralPointsGenerator pointsGenerator)
         {
             Size = pointsGenerator.Size;
-            rectangles = new List<Rectangle>();
+            Rectangles = new List<Rectangle>();
             this.pointsGenerator = pointsGenerator;
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            if (rectangleSize.Width < 0 || rectangleSize.Height < 0)
+            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
             {
                 throw new ArgumentException($"Width and height can't be negative");
             }
 
-            rectangles.Add(new Rectangle(GetNextPointForRectangle(rectangleSize), rectangleSize));
-            return rectangles.Last();
+            var nextRectangle = new Rectangle(GetNextPointForRectangle(rectangleSize), rectangleSize);
+
+            if (nextRectangle.Location.X < 0 || nextRectangle.Location.Y < 0 ||
+                nextRectangle.Location.X + nextRectangle.Width > Size.Width ||
+                nextRectangle.Location.Y + nextRectangle.Height > Size.Height)
+            {
+                throw new Exception("Don't have enough space to put next rectangle");
+            }
+
+            Rectangles.Add(nextRectangle);
+            return Rectangles.Last();
         }
 
         private Point GetNextPointForRectangle(Size rectangleSize)
         {
             return pointsGenerator.GetSpiralPoints()
-                .FirstOrDefault(p => !IntersectsWithRectangles(new Rectangle(p, rectangleSize)));
-        }
-
-        private bool IntersectsWithRectangles(Rectangle rectangle)
-        {
-            return rectangles
-                .Any(r => r.IntersectsWith(rectangle));
+                .FirstOrDefault(p => !new Rectangle(p, rectangleSize).IntersectsWithRectangles(Rectangles));
         }
     }
 }

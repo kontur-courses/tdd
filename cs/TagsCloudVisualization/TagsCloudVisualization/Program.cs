@@ -5,17 +5,32 @@ using System.Drawing.Imaging;
 
 namespace TagsCloudVisualization
 {
-  internal class Program
-  {
-    public static void Main(string[] args)
+    internal static class Program
     {
-        var pointsGenerator = new SpiralPointsGenerator(new Point(1000, 1000), 10, 0, Math.PI / 180, 0.01);
-        var bmt = CloudVisualizer.Draw(new CircularCloudLayouter(pointsGenerator),
-            1500, new List<Color>()
+        public static void Main(string[] args)
+        {
+            var layouter = new CircularCloudLayouter(new SpiralPointsGenerator(new Point(500, 500)));
+            for (var i = 0; i < 500; i++)
             {
-                Color.Red, Color.Brown, Color.Firebrick, Color.Tomato, Color.Maroon, Color.Salmon, Color.DeepPink
-            }, new Size(30, 30), Color.Black);
-        bmt.Save("1500_tags.png", ImageFormat.Png);
+                layouter.PutNextRectangle(GenerateRandomSize(new Size(10, 10), new Size(60, 60)));
+            }
+
+            CloudVisualizer.Draw(layouter, new List<Color>()
+                {
+                    Color.Aqua,
+                    Color.Blue,
+                    Color.Aquamarine,
+                    Color.Cyan,
+                    Color.Indigo,
+                    Color.Navy
+                }, Color.Black)
+                .Save("../../Samples/RandomSizes.png", ImageFormat.Png);
+        }
+
+        private static Size GenerateRandomSize(Size minSize, Size maxSize)
+        {
+            var rnd = new Random();
+            return new Size(rnd.Next(minSize.Width, maxSize.Width), rnd.Next(minSize.Height, maxSize.Height));
+        }
     }
-  }
 }
