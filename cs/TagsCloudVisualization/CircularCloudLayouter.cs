@@ -24,11 +24,13 @@ namespace TagsCloudVisualization
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException("Размеры прямоугольника должны быть больше 0");
 
-            var optimalPoint = GetNextRectOptimalPoint(rectangleSize);
-            if (optimalPoint == null)
-                throw new InvalidOperationException("Невозможно определить расположение нового прямоугольника");
+            var newRect = rects.Any()
+                ? rects.SelectMany(rect => GetPossibleRectangles(rect, rectangleSize))
+                    .MinBy(possibleRect => possibleRect.Distance).Rect
+                : new Rectangle(
+                    new Point(LayoutCenter.X - rectangleSize.Width / 2, LayoutCenter.Y - rectangleSize.Height / 2),
+                    rectangleSize);
 
-            var newRect = new Rectangle(optimalPoint.Value, rectangleSize);
             rects.Add(newRect);
             return newRect;
         }
@@ -71,53 +73,33 @@ namespace TagsCloudVisualization
             bitmap.Save(path);
         }
 
-        private Point? GetNextRectOptimalPoint(Size rectSize)
+        private IEnumerable<(Rectangle Rect, double Distance)> GetPossibleRectangles(Rectangle rect, Size newRectSize)
         {
-            if (!rects.Any())
-                return new Point(LayoutCenter.X - rectSize.Width / 2, LayoutCenter.Y - rectSize.Height / 2);
-
-            (Point? Point, double Distance) FindOptimalPoint(Point start, Point end)
+            (Point, Point)[] waypoints =
             {
-                (Point? Point, double Distance) optimalPoint = (null, double.PositiveInfinity);
-                for (var x = start.X; x <= end.X; x++)
-                {
-                    for (var y = start.Y; y <= end.Y; y++)
-                    {
-                        var newPoint = new Point(x, y);
-                        var tempRect = new Rectangle(newPoint, rectSize);
-                        var distance = tempRect.GetRectangleCenter().GetDistance(LayoutCenter);
+                (new Point(rect.Left - newRectSize.Width, rect.Top - newRectSize.Height),
+                    new Point(rect.Right, rect.Top - newRectSize.Height)),
+                (new Point(rect.Right, rect.Top - newRectSize.Height),
+                    new Point(rect.Right, rect.Bottom)),
+                (new Point(rect.Left - newRectSize.Width, rect.Bottom),
+                    new Point(rect.Right, rect.Bottom)),
+                (new Point(rect.Left - newRectSize.Width, rect.Top - newRectSize.Height),
+                    new Point(rect.Left - newRectSize.Width, rect.Bottom))
+            };
 
-                        if (!rects.Any(r => r.IntersectsWith(tempRect)) && distance < optimalPoint.Distance)
-                            optimalPoint = (newPoint, distance);
+            foreach (var (start, stop) in waypoints)
+            {
+                for (var x = start.X; x <= stop.X; x++)
+                {
+                    for (var y = start.Y; y <= stop.Y; y++)
+                    {
+                        var newRect = new Rectangle(new Point(x, y), newRectSize);
+                        var distance = newRect.GetRectangleCenter().GetDistance(LayoutCenter);
+                        if (!rects.Any(r => r.IntersectsWith(newRect)))
+                            yield return (newRect, distance);
                     }
                 }
-
-                return optimalPoint;
             }
-
-            var nextRectOptimalPoints = new List<(Point? Point, double Distance)>();
-            foreach (var rect in rects)
-            {
-                (Point? Point, double Distance)[] optimalPoints =
-                {
-                    FindOptimalPoint(
-                        new Point(rect.Left - rectSize.Width, rect.Top - rectSize.Height),
-                        new Point(rect.Right, rect.Top - rectSize.Height)),
-                    FindOptimalPoint(
-                        new Point(rect.Right, rect.Top - rectSize.Height),
-                        new Point(rect.Right, rect.Bottom)),
-                    FindOptimalPoint(
-                        new Point(rect.Left - rectSize.Width, rect.Bottom),
-                        new Point(rect.Right, rect.Bottom)),
-                    FindOptimalPoint(
-                        new Point(rect.Left - rectSize.Width, rect.Top - rectSize.Height),
-                        new Point(rect.Left - rectSize.Width, rect.Bottom))
-                };
-
-                nextRectOptimalPoints.AddRange(optimalPoints);
-            }
-
-            return nextRectOptimalPoints.MinBy(p => p.Distance).Point;
         }
     }
 }
