@@ -1,54 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 
 namespace TagCloudVisualisation
 { 
     public class Program
     {
+        private static Random random = new Random();
         public static void Main()
         {
             var folder = "RenderedPictures";
             System.IO.Directory.CreateDirectory(folder);
-            GenerateFirstPictureAndOpen(folder);
-            GenerateSecondPictureAndOpen(folder);
-            GenerateThirdPictureAndOpen(folder);
+            var size = new Size(1000, 1000);
+            GeneratePicture(folder, 20, "1", 20, 150, size);
+            GeneratePicture(folder, 400, "2", 4, 40, size);
+            GeneratePicture(folder, 5000, "3", 2, 5, size);
+            var folderPath = Environment.CurrentDirectory + "\\" + folder;
+            Process.Start("explorer.exe", folderPath);
         }
 
-        private static void GenerateFirstPictureAndOpen(string folder)
+        private static void GeneratePicture(string folder, int amount, string name, int minRectSize, int maxRectSize, Size bitmapSize)
         {
-            var random = new Random();
             var CCL = new CircularCloudLayouter(new ArchimedeanSpiral(new Point(500, 500)));
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < amount; i++)
             {
-                CCL.PutNewRectangle(new Size(random.Next(1, 100), random.Next(1, 100)));
+                CCL.PutNewRectangle(new Size(random.Next(minRectSize, maxRectSize), random.Next(minRectSize, maxRectSize)));
             }
 
-            BitmapSaver.SaveRectangleRainbowBitmap(CCL.GetRectangles(), folder + @"\1.bmp");
-        }
-
-        private static void GenerateSecondPictureAndOpen(string folder)
-        {
-            var random = new Random();
-            var CCL = new CircularCloudLayouter(new ArchimedeanSpiral(new Point(500, 500)));
-            for (int i = 0; i < 200; i++)
-            {
-                CCL.PutNewRectangle(new Size(random.Next(1, 20), random.Next(1, 20)));
-            }
-
-            BitmapSaver.SaveRectangleRainbowBitmap(CCL.GetRectangles(), folder + @"\2.bmp");
-        }
-
-        private static void GenerateThirdPictureAndOpen(string folder)
-        {
-            var random = new Random();
-            var CCL = new CircularCloudLayouter(new ArchimedeanSpiral(new Point(500, 500)));
-            for (int i = 0; i < 3000; i++)
-            {
-                CCL.PutNewRectangle(new Size(random.Next(2, 10), random.Next(4, 40)));
-            }
-
-            BitmapSaver.SaveRectangleRainbowBitmap(CCL.GetRectangles(), folder + @"\3.bmp");
+            BitmapSaver.SaveRectangleRainbowBitmap(CCL.GetRectangles(), folder + @"\" + name + ".bmp", bitmapSize);
         }
     }
 }

@@ -6,10 +6,10 @@ namespace TagCloudVisualisation
 {
     public static class BitmapSaver
     {
-        public static void SaveRectangleRainbowBitmap(IEnumerable<Rectangle> rectangles, string path)
+        public static void SaveRectangleRainbowBitmap(IEnumerable<Rectangle> rectangles, string path, Size size)
         {
             var random = new Random();
-            var bitmap = new Bitmap(1000, 1000);
+            var bitmap = new Bitmap(size.Width, size.Height);
             var graphics = Graphics.FromImage(bitmap);
             foreach (var rectangle in rectangles)
             {

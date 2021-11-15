@@ -1,8 +1,14 @@
-﻿namespace TagCloudVisualisation
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace TagCloudVisualisation
 {
     class TestProgram
     {
-        static void Main()
+        public static void Main()
         {
 
         }

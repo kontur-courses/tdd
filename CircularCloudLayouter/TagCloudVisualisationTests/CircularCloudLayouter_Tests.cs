@@ -79,13 +79,14 @@ namespace TagCloudVisualisation
         [TearDown]
         public void TearDown()
         {
-            if (TestContext.CurrentContext.Result.FailCount> 0)
+            if (TestContext.CurrentContext.Result.FailCount == 0)
             {
                 var myDocsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 Directory.CreateDirectory("TagCloudVisualizer");
                 var path = "\\TagCloudVisualizer\\";
                 var fullPath = myDocsPath + path + TestContext.CurrentContext.Test.FullName + ".bmp";
-                BitmapSaver.SaveRectangleRainbowBitmap(CCL.GetRectangles(), fullPath);
+                BitmapSaver.SaveRectangleRainbowBitmap(CCL.GetRectangles(), fullPath, new Size(500,500));
+                Console.WriteLine("Tag cloud visualization saved to file " + fullPath);
             }
         }
 

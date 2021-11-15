@@ -6,3 +6,4 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>", Scope = "member", Target = "~M:TagCloudVisualisation.BitmapSaver.SaveRectangleRainbowBitmap(System.Collections.Generic.IEnumerable{System.Drawing.Rectangle},System.String)")]
+[assembly: SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "<Pending>", Scope = "member", Target = "~M:TagCloudVisualisation.BitmapSaver.SaveRectangleRainbowBitmap(System.Collections.Generic.IEnumerable{System.Drawing.Rectangle},System.String,System.Drawing.Size)")]
