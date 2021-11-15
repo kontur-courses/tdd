@@ -15,24 +15,21 @@ namespace TagsCloudVisualization
         {
             this.square = new ExpandingSquare(center);
             this.squareEnumerator = square.GetEnumerator();
-            squareEnumerator.MoveNext();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            Point potencialCenter;
-            do
+            while (squareEnumerator.MoveNext())
             {
-                potencialCenter = squareEnumerator.Current;
-                var newRectangle = new Rectangle(potencialCenter - rectangleSize / 2, rectangleSize);
+                var potentialCenter = squareEnumerator.Current;
+                var newRectangle = new Rectangle(potentialCenter - rectangleSize / 2, rectangleSize);
                 if (puttedRectangles.All(x => !x.IntersectsWith(newRectangle)))
                 {
                     puttedRectangles.Add(newRectangle);
                     return newRectangle;
                 }
-            } while (squareEnumerator.MoveNext());
+            }
 
-            //Какую ошибку принято выкидывать, если был достигнут недостигаемый код?
             throw new Exception("Circular Cloud Layouter worked incorrect");
         }
     }

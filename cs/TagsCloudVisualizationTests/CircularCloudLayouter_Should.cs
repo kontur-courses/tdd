@@ -38,18 +38,6 @@ namespace TagsCloudVisualizationTests
             }
         }
 
-        [TestCase(0, 0, TestName = "When center in (0,0)")]
-        [TestCase(10, 20, TestName = "When center in first circle quarter")]
-        [TestCase(-10, 20, TestName = "When center in second circle quarter")]
-        [TestCase(-10, -20, TestName = "When center in third circle quarter")]
-        [TestCase(10, -20, TestName = "When center in fourth circle quarter")]
-        public void NotThrow_InConstructor_When(int x, int y)
-        {
-            var center = new Point(x, y);
-            Action lambda = () => new CircularCloudLayouter(center);
-            lambda.Should().NotThrow();
-        }
-
         [TestCase(0, 0, TestName = "Start position is (0,0)")]
         [TestCase(10, 20, TestName = "Start position is not (0,0)")]
         public void ReturnRectangleWithCenterInStartPosition_OnFirstIteration_When(int x, int y)
@@ -138,7 +126,7 @@ namespace TagsCloudVisualizationTests
             var layouter = new CircularCloudLayouter(startPoint);
             var rectangles = sizes.Select(x => layouter.PutNextRectangle(x)).ToArray();
             InitializeLayoutMarkedTest(rectangles);
-            
+
             var maxDistance = 0d;
             var allowedMaxDistance = 1000;
             foreach (var rect1 in rectangles)
@@ -154,7 +142,7 @@ namespace TagsCloudVisualizationTests
             maxDistance.Should().BeLessThan(allowedMaxDistance);
         }
 
-        //Здесь я взял несколько рабочих тестов и приписал Assert.Fail(), чтобы протестировать пункт 3 из задачи
+        //Здесь я взял несколько тестов и приписал Assert.Fail(), чтобы протестировать пункт 3 из задачи
         [Test]
         [LayoutTestMarker]
         public void FailingTest1()
@@ -182,9 +170,9 @@ namespace TagsCloudVisualizationTests
                 new Rectangle(new Point(100, -100), new Size(100, 100)),
                 new Rectangle(new Point(-100, 100), new Size(100, 100))
             };
-            
+
             InitializeLayoutMarkedTest(rectangles);
-            
+
             Assert.Fail();
         }
 
@@ -200,7 +188,7 @@ namespace TagsCloudVisualizationTests
                 new Rectangle(new Point(150, 150), new Size(100, 100))
             };
             InitializeLayoutMarkedTest(rectangles);
-            
+
             Assert.Fail();
         }
 

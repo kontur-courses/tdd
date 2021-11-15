@@ -3,26 +3,15 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using NUnit.Framework;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTests
 {
     [TestFixture]
-    public class ExpendingSquare_Should
+    public class ExpandingSquare_Should
     {
-        [TestCase(10, 10, TestName = "Center in first circle quarter")]
-        [TestCase(-10, 10, TestName = "Center in second circle quarter")]
-        [TestCase(-10, -10, TestName = "Center in third circle quarter")]
-        [TestCase(10, -10, TestName = "Center in fourth circle quarter")]
-        [TestCase(0, 0, TestName = "Center in (0, 0)")]
-        public void NotThrowExceptionsInConstructor_When(int x, int y)
-        {
-            var center = new Point(x, y);
-            Action action = () => new ExpandingSquare(center);
-            action.Should().NotThrow();
-        }
-
         [TestCase(0, 0, TestName = "Center in (0, 0)")]
         [TestCase(5, 6, TestName = "Center is not in (0, 0)")]
         public void ReturnCenterPointOnFirstIteration_When(int x, int y)
@@ -52,7 +41,9 @@ namespace TagsCloudVisualizationTests
             };
 
             var actualPoints = square.Take(expectedPoints.Count).ToList();
-            actualPoints.Should().BeEquivalentTo(expectedPoints);
+            actualPoints.Should().BeEquivalentTo(
+                expectedPoints,
+                config => config.WithStrictOrdering());
         }
 
         [Test]
@@ -71,26 +62,17 @@ namespace TagsCloudVisualizationTests
 
             firstSquarePoints.Intersect(secondSquarePoints).Should().BeEmpty();
         }
-
-
-        //А такой тест не нарушает паттерн AAA?
+        
         [Test]
         public void ReturnValuesWithIncreasingChebyshevDistance()
         {
             var startPoint = new Point(5, 6);
             var square = new ExpandingSquare(startPoint);
 
-            var maxDistance = 0;
             var pointsCount = 500;
-
-            foreach (var point in square.Take(pointsCount))
+            using (new AssertionScope())
             {
-                var distance = Math.Max(
-                    Math.Abs(point.X - startPoint.X),
-                    Math.Abs(point.Y - startPoint.Y));
-                distance.Should().BeGreaterOrEqualTo(maxDistance);
-
-                maxDistance = distance;
+                DistanceShouldExpire(square.Take(pointsCount), startPoint);
             }
         }
 
@@ -102,6 +84,20 @@ namespace TagsCloudVisualizationTests
             var takenPointsCount = 10000;
 
             var difficultListToCreate = square.Take(takenPointsCount).ToList();
+        }
+
+        private void DistanceShouldExpire(IEnumerable<Point> points, Point startPoint)
+        {
+            var maxDistance = 0;
+            foreach (var point in points)
+            {
+                var distance = Math.Max(
+                    Math.Abs(point.X - startPoint.X),
+                    Math.Abs(point.Y - startPoint.Y));
+                distance.Should().BeGreaterOrEqualTo(maxDistance);
+
+                maxDistance = distance;
+            }
         }
     }
 }
