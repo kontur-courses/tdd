@@ -7,5 +7,7 @@ namespace TagsCloudVisualization
     {
         IReadOnlyList<RectangleF> Rectangles { get; }
         PointF Center { get; }
+
+        public RectangleF GetCloudBoundingRectangle();
     }
 }

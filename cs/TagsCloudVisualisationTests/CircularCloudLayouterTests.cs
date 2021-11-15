@@ -171,7 +171,7 @@ namespace TagsCloudVisualizationTests
         //[TestCase("..\\..\\..\\..\\TagsCloudVisualization\\images\\CF2.jpg", 500, 10, 30, false)]
         public void CustomVisualize(string filename, int count, int min, int max, bool fillRect)
         {
-            InitialiseCustomLayouter(new PointF(50, 10));
+            InitialiseCustomLayouter(new PointF(100, 10));
             var colors = new List<Color>
             {
                 Color.DarkRed, Color.OrangeRed, Color.DarkGreen, Color.GreenYellow, 
@@ -181,7 +181,7 @@ namespace TagsCloudVisualizationTests
             var size = new Size(1000, 1000);
             var sizes = GetRandomSizes(count, min, max);
             PutSeveralRectangles(sizes);
-            cloud.CustomVisualize(filename, size, colors, background, fillRect);
+            cloud.CustomVisualize(filename, size, colors, background, 25, fillRect);
         }
 
         private static List<Size> GetRandomSizes(int count, int min, int max, int seed = 0)

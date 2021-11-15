@@ -26,52 +26,64 @@ namespace TagsCloudVisualization
             Size bitmapSize,
             List<Color> colors,
             Color backgroundColor,
+            float minMargin = 10,
             bool fillRectangles = false,
             Func<int, List<RectangleF>> getRectanglesByColorIndex = null)
         {
             var bitmap = new Bitmap(bitmapSize.Width, bitmapSize.Height);
-            var referenceCenter = GetCloudCenterOnImage(bitmap);
             var pens = colors.Select(c => new Pen(c, 1))
                 .ToList();
             if (getRectanglesByColorIndex == null)
                 getRectanglesByColorIndex = GetRectanglesByColorIndexDefaultFunc(colors);
             var gr = Graphics.FromImage(bitmap);
+            var k = CalculateScaleModifier(bitmapSize, minMargin);
+
+            gr.TranslateTransform(bitmapSize.Width / 2, bitmapSize.Height / 2);
+            gr.ScaleTransform(k, k);
 
             gr.Clear(backgroundColor);
-            VisualizeCenter(gr, referenceCenter);
-            VisualizeRectangles(fillRectangles, getRectanglesByColorIndex, referenceCenter, pens, gr);
+            VisualizeRectangles(fillRectangles, getRectanglesByColorIndex, pens, gr);
+            VisualizeCenter(gr);
 
             bitmap.Save(filename);
         }
 
-        private PointF GetCloudCenterOnImage(Bitmap image)
+        private float CalculateScaleModifier(Size bitmapSize, float minMargin)
         {
-            var imageCenter = new PointF(image.Width / 2, image.Height / 2);
-            return new PointF(imageCenter.X + cloud.Center.X, imageCenter.Y + cloud.Center.Y);
+            var cloudBoundingRectangle = cloud.GetCloudBoundingRectangle();
+
+            var imageBoundingRectangle = RectangleFExtensions
+                .GetRectangleByCenter(bitmapSize, new PointF());
+            var offset = imageBoundingRectangle
+                .GetRectanglesBoundsMaxOffset(cloudBoundingRectangle);
+            var offsetWidth = offset.X + minMargin;
+            var offsetHeight = offset.Y + minMargin;
+            return Math.Min(1, Math.Min(
+                bitmapSize.Width / (bitmapSize.Width + 2 * offsetWidth),
+                bitmapSize.Height / (bitmapSize.Height + 2 * offsetHeight)));
         }
 
-        private void VisualizeCenter(Graphics gr, PointF refCenter)
+        private void VisualizeCenter(Graphics gr)
         {
-            var brush = new SolidBrush(Color.Black);
+            var brush = new SolidBrush(Color.White);
             var centerRect = RectangleFExtensions
-                .GetRectangleByCenter(new Size(1, 1), refCenter);
+                .GetRectangleByCenter(new Size(8, 8), cloud.Center);
             gr.FillEllipse(brush, centerRect);
         }
 
         private void VisualizeRectangles(bool fillRectangles,
             Func<int, List<RectangleF>> getRectanglesByColorIndex,
-            PointF refCenter,
             List<Pen> pens,
             Graphics gr)
         {
             if (fillRectangles)
                 for (var i = 0; i < pens.Count; i++)
                     gr.FillRectangles(new SolidBrush(pens[i].Color),
-                        GetRectanglesToDraw(getRectanglesByColorIndex, refCenter, i));
+                        GetRectanglesToDraw(getRectanglesByColorIndex, i));
             else
                 for (var i = 0; i < pens.Count; i++)
                     gr.DrawRectangles(pens[i],
-                        GetRectanglesToDraw(getRectanglesByColorIndex, refCenter, i));
+                        GetRectanglesToDraw(getRectanglesByColorIndex, i));
         }
 
         private Func<int, List<RectangleF>> GetRectanglesByColorIndexDefaultFunc
@@ -82,12 +94,10 @@ namespace TagsCloudVisualization
                     .ToList();
         }
 
-        private RectangleF[] GetRectanglesToDraw(Func<int, List<RectangleF>> getRectanglesByColorIndex,
-            PointF refCenter,
-            int i)
+        private RectangleF[] GetRectanglesToDraw
+            (Func<int, List<RectangleF>> getRectanglesByColorIndex, int i)
             => getRectanglesByColorIndex(i)
-                .Select(r => new RectangleF(
-                    (r.Location.ToVector() + refCenter.ToVector()).ToPointF(), r.Size))
+                .Select(r => new RectangleF(r.Location, r.Size))
                 .ToArray();
     }
 }
