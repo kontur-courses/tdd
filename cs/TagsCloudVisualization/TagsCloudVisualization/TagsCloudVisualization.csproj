@@ -75,7 +75,7 @@
       <Content Include="README.md" />
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="ExceptionsImages" />
+      <Folder Include="FailsImages" />
       <Folder Include="Samples" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

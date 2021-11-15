@@ -9,7 +9,7 @@ namespace TagsCloudVisualization
     {
         public readonly Size Size;
         public readonly List<Rectangle> Rectangles;
-        
+
         private readonly SpiralPointsGenerator pointsGenerator;
 
         public CircularCloudLayouter(SpiralPointsGenerator pointsGenerator)

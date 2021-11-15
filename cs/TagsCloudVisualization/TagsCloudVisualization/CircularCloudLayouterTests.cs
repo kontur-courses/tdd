@@ -13,7 +13,7 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouterTests
     {
         private CircularCloudLayouter layouter;
-        private const string ExceptionsDirectory = "ExceptionsImages";
+        private const string FailsDirectory = "FailsImages";
 
         [SetUp]
         public void InitLayouter()
@@ -27,9 +27,9 @@ namespace TagsCloudVisualization
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Passed) return;
             var context = TestContext.CurrentContext;
             var fileName = context.Test.FullName + ".png";
-            var path = Path.Combine("../../" + ExceptionsDirectory, fileName);
+            var path = Path.Combine("../../" + FailsDirectory, fileName);
             CloudVisualizer.Draw(layouter, new List<Color>() {Color.Black}, Color.White).Save(path, ImageFormat.Png);
-            Console.WriteLine($"Tag cloud visualization saved to file {fileName} in {ExceptionsDirectory}");
+            Console.WriteLine($"Tag cloud visualization saved to file {fileName} in {FailsDirectory}");
         }
 
         [TestCase(0, 1, TestName = "width is zero")]
