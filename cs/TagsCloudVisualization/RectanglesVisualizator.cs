@@ -15,37 +15,25 @@ namespace TagsCloudVisualization
             this.cloud = cloud;
         }
 
-        public void DefaultVisualize(string filename)
+        public void Visualize(RectanglesVisualizatorSettings settings)
         {
-            var size = new Size(800, 800);
-            var colors = new List<Color> { Color.DarkGreen };
-            CustomVisualize(filename, size, colors, Color.White);
-        }
 
-        public void CustomVisualize(string filename,
-            Size bitmapSize,
-            List<Color> colors,
-            Color backgroundColor,
-            float minMargin = 10,
-            bool fillRectangles = false,
-            Func<int, List<RectangleF>> getRectanglesByColorIndex = null)
-        {
+            var bitmapSize = settings.bitmapSize;
             var bitmap = new Bitmap(bitmapSize.Width, bitmapSize.Height);
-            var pens = colors.Select(c => new Pen(c, 1))
+            var pens = settings.colors.Select(c => new Pen(c, 1))
                 .ToList();
-            if (getRectanglesByColorIndex == null)
-                getRectanglesByColorIndex = GetRectanglesByColorIndexDefaultFunc(colors);
             var gr = Graphics.FromImage(bitmap);
-            var k = CalculateScaleModifier(bitmapSize, minMargin);
+            var k = CalculateScaleModifier(bitmapSize, settings.minMargin);
 
             gr.TranslateTransform(bitmapSize.Width / 2, bitmapSize.Height / 2);
             gr.ScaleTransform(k, k);
 
-            gr.Clear(backgroundColor);
-            VisualizeRectangles(fillRectangles, getRectanglesByColorIndex, pens, gr);
+            gr.Clear(settings.backgroundColor);
+            VisualizeRectangles
+                (settings.fillRectangles, settings.getRectanglesByColorIndex, pens, gr);
             VisualizeCenter(gr);
 
-            bitmap.Save(filename);
+            bitmap.Save(settings.filename);
         }
 
         private float CalculateScaleModifier(Size bitmapSize, float minMargin)
@@ -72,31 +60,28 @@ namespace TagsCloudVisualization
         }
 
         private void VisualizeRectangles(bool fillRectangles,
-            Func<int, List<RectangleF>> getRectanglesByColorIndex,
+            Func<int, IRectanglesCloud, List<RectangleF>> getRectanglesByColorIndex,
             List<Pen> pens,
             Graphics gr)
         {
             if (fillRectangles)
                 for (var i = 0; i < pens.Count; i++)
+                {
                     gr.FillRectangles(new SolidBrush(pens[i].Color),
                         GetRectanglesToDraw(getRectanglesByColorIndex, i));
+
+                }
             else
                 for (var i = 0; i < pens.Count; i++)
+                {
                     gr.DrawRectangles(pens[i],
                         GetRectanglesToDraw(getRectanglesByColorIndex, i));
-        }
-
-        private Func<int, List<RectangleF>> GetRectanglesByColorIndexDefaultFunc
-            (List<Color> colors)
-        {
-            return colorIndex =>
-                cloud.Rectangles.Where((t, i) => i % colors.Count == colorIndex)
-                    .ToList();
+                }
         }
 
         private RectangleF[] GetRectanglesToDraw
-            (Func<int, List<RectangleF>> getRectanglesByColorIndex, int i)
-            => getRectanglesByColorIndex(i)
+            (Func<int, IRectanglesCloud, List<RectangleF>> getRectanglesByColorIndex, int i)
+            => getRectanglesByColorIndex(i, cloud)
                 .Select(r => new RectangleF(r.Location, r.Size))
                 .ToArray();
     }

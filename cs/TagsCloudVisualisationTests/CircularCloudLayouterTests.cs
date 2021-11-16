@@ -146,7 +146,7 @@ namespace TagsCloudVisualizationTests
             var message = $"Test {name} down!\n" +
                 $"Tag cloud visualization saved to file {path}";
 
-            cloud.DefaultVisualize(path);
+            cloud.Visualize(path);
             TestContext.WriteLine(message);
         }
 
@@ -162,7 +162,7 @@ namespace TagsCloudVisualizationTests
         {
             var sizes = GetRandomSizes(count, min, max);
             PutSeveralRectangles(sizes);
-            cloud.DefaultVisualize(filename);
+            cloud.Visualize(filename);
         }
 
         //[TestCase("..\\..\\..\\..\\TagsCloudVisualization\\images\\C1.jpg", 400, 10, 30, true)]
@@ -181,7 +181,7 @@ namespace TagsCloudVisualizationTests
             var size = new Size(1000, 1000);
             var sizes = GetRandomSizes(count, min, max);
             PutSeveralRectangles(sizes);
-            cloud.CustomVisualize(filename, size, colors, background, 25, fillRect);
+            cloud.Visualize(filename, size, colors, background, 25, fillRect);
         }
 
         private static List<Size> GetRandomSizes(int count, int min, int max, int seed = 0)
