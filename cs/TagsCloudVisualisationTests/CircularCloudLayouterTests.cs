@@ -182,7 +182,7 @@ namespace TagsCloudVisualizationTests
                 (filename, size, colors, background, 25, fillRect);
             var sizes = GetRandomSizes(count, min, max);
             PutSeveralRectangles(sizes);
-            new RectanglesVisualizator(cloud).Visualize(settings);
+            new RectanglesVisualizator().Visualize(settings, cloud);
         }
 
         private static List<Size> GetRandomSizes(int count, int min, int max, int seed = 0)
@@ -203,7 +203,7 @@ namespace TagsCloudVisualizationTests
         private void Visualize(string filename)
         {
             var settings = new RectanglesVisualizatorSettings(filename);
-            new RectanglesVisualizator(cloud).Visualize(settings);
+            new RectanglesVisualizator().Visualize(settings, cloud);
         }
     }
 }

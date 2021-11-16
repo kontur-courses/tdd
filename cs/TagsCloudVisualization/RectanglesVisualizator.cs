@@ -8,35 +8,27 @@ namespace TagsCloudVisualization
 {
     public class RectanglesVisualizator
     {
-        private readonly IRectanglesCloud cloud;
-
-        public RectanglesVisualizator(IRectanglesCloud cloud)
+        public void Visualize(RectanglesVisualizatorSettings settings, IRectanglesCloud cloud)
         {
-            this.cloud = cloud;
-        }
-
-        public void Visualize(RectanglesVisualizatorSettings settings)
-        {
-
             var bitmapSize = settings.bitmapSize;
             var bitmap = new Bitmap(bitmapSize.Width, bitmapSize.Height);
             var pens = settings.colors.Select(c => new Pen(c, 1))
                 .ToList();
             var gr = Graphics.FromImage(bitmap);
-            var k = CalculateScaleModifier(bitmapSize, settings.minMargin);
+            var k = CalculateScaleModifier(cloud, bitmapSize, settings.minMargin);
 
             gr.TranslateTransform(bitmapSize.Width / 2, bitmapSize.Height / 2);
             gr.ScaleTransform(k, k);
 
             gr.Clear(settings.backgroundColor);
             VisualizeRectangles
-                (settings.fillRectangles, settings.getRectanglesByColorIndex, pens, gr);
-            VisualizeCenter(gr);
+                (settings.fillRectangles, settings.getRectanglesByColorIndex, cloud, pens, gr);
+            VisualizeCenter(cloud, gr);
 
             bitmap.Save(settings.filename);
         }
 
-        private float CalculateScaleModifier(Size bitmapSize, float minMargin)
+        private float CalculateScaleModifier(IRectanglesCloud cloud, Size bitmapSize, float minMargin)
         {
             var cloudBoundingRectangle = cloud.GetCloudBoundingRectangle();
 
@@ -51,7 +43,7 @@ namespace TagsCloudVisualization
                 bitmapSize.Height / (bitmapSize.Height + 2 * offsetHeight)));
         }
 
-        private void VisualizeCenter(Graphics gr)
+        private void VisualizeCenter(IRectanglesCloud cloud,Graphics gr)
         {
             var brush = new SolidBrush(Color.White);
             var centerRect = RectangleFExtensions
@@ -61,6 +53,7 @@ namespace TagsCloudVisualization
 
         private void VisualizeRectangles(bool fillRectangles,
             Func<int, IRectanglesCloud, List<RectangleF>> getRectanglesByColorIndex,
+            IRectanglesCloud cloud,
             List<Pen> pens,
             Graphics gr)
         {
@@ -68,19 +61,21 @@ namespace TagsCloudVisualization
                 for (var i = 0; i < pens.Count; i++)
                 {
                     gr.FillRectangles(new SolidBrush(pens[i].Color),
-                        GetRectanglesToDraw(getRectanglesByColorIndex, i));
+                        GetRectanglesToDraw(getRectanglesByColorIndex, cloud, i));
 
                 }
             else
                 for (var i = 0; i < pens.Count; i++)
                 {
                     gr.DrawRectangles(pens[i],
-                        GetRectanglesToDraw(getRectanglesByColorIndex, i));
+                        GetRectanglesToDraw(getRectanglesByColorIndex, cloud, i));
                 }
         }
 
         private RectangleF[] GetRectanglesToDraw
-            (Func<int, IRectanglesCloud, List<RectangleF>> getRectanglesByColorIndex, int i)
+            (Func<int, IRectanglesCloud, List<RectangleF>> getRectanglesByColorIndex,
+                IRectanglesCloud cloud,
+                int i)
             => getRectanglesByColorIndex(i, cloud)
                 .Select(r => new RectangleF(r.Location, r.Size))
                 .ToArray();
