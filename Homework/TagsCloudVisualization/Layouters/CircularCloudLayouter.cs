@@ -10,11 +10,11 @@ namespace TagsCloudVisualization.Layouters
     {
         public readonly HashSet<RectangleF> rectangles;
         private readonly Point center;
-        private readonly Spiral spiral;
-        
+        private readonly IPointLayouter pointLayouter;
+
         public CircularCloudLayouter(Point center)
         {
-            spiral = new Spiral(center);
+            pointLayouter = new Spiral(center);
             rectangles = new HashSet<RectangleF>();
         }
 
@@ -24,34 +24,30 @@ namespace TagsCloudVisualization.Layouters
             {
                 throw new ArgumentException("Rectangle size should be positive floating point numbers");
             }
-            
-            var rect = FindRectanglePosition(rectangleSize);
-            
+
+            var rect = GetNextRectanglePosition(rectangleSize);
+
             rectangles.Add(rect);
-            
+
             return rect;
         }
 
+        // ReSharper disable once UnusedMember.Global
         public IEnumerable<RectangleF> PutNextRectangles(IEnumerable<SizeF> rectanglesSizes)
             => rectanglesSizes.Select(PutNextRectangle);
 
-        private RectangleF FindRectanglePosition(SizeF rectangleSize)
+        private RectangleF GetNextRectanglePosition(SizeF rectangleSize)
         {
-            var rect = new RectangleF(
-                spiral.CurrentPoint.X - rectangleSize.Width / 2,
-                spiral.CurrentPoint.Y - rectangleSize.Height / 2,
-                rectangleSize.Height,
-                rectangleSize.Width);
-            
-            while (rect.IntersectsWithAny(rectangles))
+            var rect = new RectangleF();
+            do
             {
-                spiral.IncreaseSize();
                 rect = new RectangleF(
-                    spiral.CurrentPoint.X - rectangleSize.Width / 2,
-                    spiral.CurrentPoint.Y - rectangleSize.Height / 2,
+                    pointLayouter.CurrentPoint.X - rectangleSize.Width / 2,
+                    pointLayouter.CurrentPoint.Y - rectangleSize.Height / 2,
                     rectangleSize.Height,
                     rectangleSize.Width);
-            }
+                pointLayouter.GetNextPoint();
+            } while (rect.IntersectsWithAnyOf(rectangles));
 
             return rect;
         }

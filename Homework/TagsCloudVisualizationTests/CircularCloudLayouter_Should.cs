@@ -5,7 +5,6 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using TagsCloudVisualization;
 using TagsCloudVisualization.Extensions;
 using TagsCloudVisualization.Layouters;
 using TagsCloudVisualization.Visualization;
@@ -18,7 +17,9 @@ namespace TagsCloudVisualizationTests
         private const float Epsilon = 1e-5f;
         private CircularCloudLayouter layouter;
         private CircularCloudVisualizator visualizator;
-        private readonly Point center = new Point(300, 400); 
+        private readonly Point center = new (300, 400);
+        private const int rectanglesCount = 100;
+        private const int cloudsCount = 100;
 
         [SetUp]
         public void SetUp()
@@ -33,15 +34,16 @@ namespace TagsCloudVisualizationTests
             if (TestContext.CurrentContext.Result.Outcome.Status is TestStatus.Failed or TestStatus.Inconclusive)
             {
                 visualizator.PutRectangles(layouter.rectangles);
-                Console.WriteLine($"Tags cloud visualizaton is saved to {visualizator.SaveImage()}");
+                var testName = TestContext.CurrentContext.Test.Name;
+                Console.WriteLine($"Tags cloud visualizaton is saved to {visualizator.SaveImage(testName)}");
             }
         }
 
         [Test]
         public void PutRectangles_WithoutIntersections()
         {
-            var rectangles = Generators.RectanglesRandomSizeGenerator()
-                .Select(r => layouter.PutNextRectangle(r))
+            var rectangles = layouter
+                .PutNextRectangles(Enumerable.Repeat(new SizeF(10, 10), rectanglesCount))
                 .ToList(); // To avoid multiple enumeration
 
             rectangles
@@ -71,28 +73,38 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
-        public void PutNextRectangle_AverageRandomSizeRectanglesCloudDensity_Between65And85Percent()
+        [Repeat(100)]
+        public void PutNextRectangle_AverageRandomSizeRectanglesCloudDensity_GreaterThan60Percents()
         {
-            var avgDensity = Generators.CenterGenerator()
-                .Select(center => GetCloudDensity(Generators.RectanglesRandomSizeGenerator()))
-                .Average();
+            var avgDensity = 0.0;
 
-            avgDensity.Should().BeApproximately(0.75, 0.1);
+            for (int i = 0; i < cloudsCount; i++)
+            {
+                avgDensity += GetCloudDensity(Generators.RectanglesRandomSizeGenerator(rectanglesCount));
+            }
+
+            avgDensity /= cloudsCount;
+
+            avgDensity.Should().BeGreaterThan(0.6);
         }
 
         [Test]
-        public void PutNextRectangle_AverageSameSizeRectanglesCloudDensity_Between70And90Percents()
+        [Repeat(100)]
+        public void PutNextRectangle_AverageSameSizeRectanglesCloudDensity_GreaterThan70Percents()
         {
-            var avgDensity = Generators.CenterGenerator()
-                .Select(center => 
-                    GetCloudDensity(
-                        Enumerable.Repeat(Generators.RectanglesRandomSizeGenerator().Take(1).Single(), 100)))
-                .Average();
-            
-            avgDensity.Should().BeApproximately(0.8, 0.1);
+            var avgDensity = 0.0;
+
+            foreach (var size in Generators.RectanglesRandomSizeGenerator(cloudsCount))
+            {
+                avgDensity += GetCloudDensity(Enumerable.Repeat(size, rectanglesCount));
+            }
+
+            avgDensity /= cloudsCount;
+
+            avgDensity.Should().BeGreaterThan(0.7);
         }
-        
-        
+
+
         private double GetCloudDensity(IEnumerable<SizeF> rectanglesSizes)
         {
             layouter = new CircularCloudLayouter(center);
@@ -100,7 +112,7 @@ namespace TagsCloudVisualizationTests
             var rectanglesArea = 0.0f;
 
             var lastRectangle = new RectangleF();
-            
+
             foreach (var rectangleSize in rectanglesSizes)
             {
                 lastRectangle = layouter.PutNextRectangle(rectangleSize);

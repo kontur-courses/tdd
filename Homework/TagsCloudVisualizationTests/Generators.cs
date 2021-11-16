@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("ConsoleAppForUsingTests")]
 namespace TagsCloudVisualizationTests
 {
     internal static class Generators
@@ -20,17 +18,16 @@ namespace TagsCloudVisualizationTests
             yield return new Point(10, 0);
             yield return new Point(-10, 0);
         }
-        
-        public static IEnumerable<SizeF> RectanglesRandomSizeGenerator()
+
+        public static IEnumerable<SizeF> RectanglesRandomSizeGenerator(int rectanglesCount)
         {
             var random = new Random();
 
-            for (var i = 0; i < 100; ++i)
+            for (var i = 0; i < rectanglesCount; ++i)
             {
-                // +0.01f is added to avoid NextDouble returned zero
                 yield return new SizeF(
-                    (float) random.NextDouble() * random.Next(1, 100) + 0.01f,
-                    (float) random.NextDouble() * random.Next(1, 100) + 0.01f);
+                    (float) 0.3 * random.Next(1, 100),
+                    (float) 0.3 * random.Next(1, 100));
             }
         }
     }

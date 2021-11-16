@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Numerics;
 
 namespace TagsCloudVisualization.Extensions
 {
@@ -8,7 +7,7 @@ namespace TagsCloudVisualization.Extensions
     {
         public static float DistanceTo(this PointF from, PointF to)
         {
-            return (float) Math.Sqrt(Math.Pow(Math.Abs(from.X - to.X), 2) + Math.Pow(Math.Abs(from.Y - to.Y), 2));
+            return (float) Math.Sqrt((from.X - to.X) * (from.X - to.X) + (from.Y - to.Y) * (from.Y - to.Y));
         }
     }
 }

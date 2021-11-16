@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using TagsCloudVisualization.Layouters;
 
 namespace TagsCloudVisualization.Visualization
 {
@@ -10,8 +9,8 @@ namespace TagsCloudVisualization.Visualization
     {
         private readonly Bitmap bitmap;
         private readonly Graphics graphics;
-        private string path;
-        private Pen pen;
+        private readonly string path;
+        private readonly Pen pen;
         private readonly Random random;
 
         public CircularCloudVisualizator(string imageSavingPath = "./")
@@ -26,7 +25,7 @@ namespace TagsCloudVisualization.Visualization
 
         public void PutRectangle(RectangleF rectangle)
         {
-            graphics.DrawRectangles(pen, new []{ rectangle });
+            graphics.DrawRectangles(pen, new[] {rectangle});
         }
 
         public void PutRectangles(IEnumerable<RectangleF> rectangles)
@@ -56,17 +55,9 @@ namespace TagsCloudVisualization.Visualization
             }
         }
 
-        public string SaveImage(string imageName)
+        public string SaveImage(string imageName="TagsCloudVisualization")
         {
             var savingPath = path + imageName;
-            bitmap.Save(savingPath);
-            return savingPath;
-        }
-
-        public string SaveImage()
-        {
-            var randomNumber = random.Next();
-            var savingPath = path + randomNumber.ToString() + ".png";
             bitmap.Save(savingPath);
             return savingPath;
         }
