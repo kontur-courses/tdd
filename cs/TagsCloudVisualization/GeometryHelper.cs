@@ -42,5 +42,13 @@ namespace TagsCloudVisualization
         public static Size GetRectanglesCommonSize(IEnumerable<Rectangle> rectangles, int framing = 500)
             => rectangles.Aggregate(new Rectangle(), Rectangle.Union).Size
                + new Size(framing, framing);
+
+        public static IEnumerable<Point> GetAllPointIntoRectangle(Rectangle rectangle)
+        {
+            var range1 = Enumerable.Range(rectangle.Left + 1, rectangle.Right - rectangle.Left);
+            var range2 = Enumerable.Range(rectangle.Top + 1, rectangle.Bottom - rectangle.Top);
+
+            return range1.SelectMany(r1 => range2.Select(r2 => new Point(r1, r2)));
+        }
     }
 }

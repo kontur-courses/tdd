@@ -13,12 +13,15 @@ namespace TagsCloudVisualization
         private const float Pi2 = 2 * MathF.PI;
 
         private readonly List<Rectangle> rectangles = new();
+        private readonly HashSet<Point> usedPoints = new();
+
 
         private float currentStepAngle = MathF.PI / 2;
         private float currentRadius;
-        private float radiusStep = 1;
+        private float radiusStep = 10;
         private int currentStep = 1;
-        private int limiter = 100;
+        private int limiter = 100000;
+        private int countSteps = 1;
 
 
         public CircularCloudLayouter(Point center)
@@ -33,6 +36,7 @@ namespace TagsCloudVisualization
             var nextRectangle = new Rectangle(location, rectangleSize);
 
             rectangles.Add(nextRectangle);
+            usedPoints.UnionWith(GeometryHelper.GetAllPointIntoRectangle(nextRectangle));
 
             return nextRectangle;
         }
@@ -41,11 +45,10 @@ namespace TagsCloudVisualization
         private Point GetRectangleLocation(Size rectangleSize)
         {
             if (rectangles.Count != 0) return SearchPointOnCircle(rectangleSize);
-            
+
             currentRadius = Math.Min(rectangleSize.Height, rectangleSize.Width);
             return GeometryHelper
                 .GetRectangleLocationFromCentre(Center, rectangleSize);
-
         }
 
         private Point SearchPointOnCircle(Size rectangleSize)
@@ -60,13 +63,21 @@ namespace TagsCloudVisualization
                         GeometryHelper.GetPointOnCircle(Center, currentRadius, angle);
                     var rectangleLocation =
                         GeometryHelper.GetRectangleLocationFromCentre(rectangleCentre, rectangleSize);
+                    angle = currentStep * currentStepAngle;
+                    currentStep++;
+                    
+                    if (usedPoints.Contains(rectangleLocation)) continue;
 
                     var rectangle = new Rectangle(rectangleLocation, rectangleSize);
 
-                    angle = currentStep * currentStepAngle;
-                    currentStep++;
 
-                    if (!rectangles.Any(r => r.IntersectsWith(rectangle))) return rectangle.Location;
+                    if (!rectangles.Any(r => r.IntersectsWith(rectangle)))
+                    {
+                        currentStep = 1;
+                        currentRadius = 1;
+                        currentStepAngle = MathF.PI / 2;
+                        return rectangle.Location;
+                    }
                 }
 
                 UpdateParameters();
@@ -75,11 +86,13 @@ namespace TagsCloudVisualization
             throw new Exception();
         }
 
-        
+
         private void UpdateParameters()
         {
             currentRadius += radiusStep;
-            currentStepAngle /= 2;
+            if (countSteps % 4 == 0)
+                currentStepAngle /= 2;
+            countSteps++;
             currentStep = 1;
         }
 
