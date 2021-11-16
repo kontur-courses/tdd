@@ -145,8 +145,7 @@ namespace TagsCloudVisualizationTests
             var path = Path.GetFullPath($"..\\..\\..\\images\\{name}.jpg");
             var message = $"Test {name} down!\n" +
                 $"Tag cloud visualization saved to file {path}";
-
-            cloud.Visualize(path);
+            Visualize(path);
             TestContext.WriteLine(message);
         }
 
@@ -162,7 +161,7 @@ namespace TagsCloudVisualizationTests
         {
             var sizes = GetRandomSizes(count, min, max);
             PutSeveralRectangles(sizes);
-            cloud.Visualize(filename);
+            Visualize(filename);
         }
 
         //[TestCase("..\\..\\..\\..\\TagsCloudVisualization\\images\\C1.jpg", 400, 10, 30, true)]
@@ -179,9 +178,11 @@ namespace TagsCloudVisualizationTests
             };
             var background = Color.Black;
             var size = new Size(1000, 1000);
+            var settings = new RectanglesVisualizatorSettings
+                (filename, size, colors, background, 25, fillRect);
             var sizes = GetRandomSizes(count, min, max);
             PutSeveralRectangles(sizes);
-            cloud.Visualize(filename, size, colors, background, 25, fillRect);
+            new RectanglesVisualizator(cloud).Visualize(settings);
         }
 
         private static List<Size> GetRandomSizes(int count, int min, int max, int seed = 0)
@@ -197,6 +198,12 @@ namespace TagsCloudVisualizationTests
         {
             foreach (var sz in sizes)
                 layouter.PutNextRectangle(sz);
+        }
+
+        private void Visualize(string filename)
+        {
+            var settings = new RectanglesVisualizatorSettings(filename);
+            new RectanglesVisualizator(cloud).Visualize(settings);
         }
     }
 }

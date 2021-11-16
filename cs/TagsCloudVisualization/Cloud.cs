@@ -20,30 +20,6 @@ namespace TagsCloudVisualization
         public void AddRectangle(RectangleF rectangle) 
             => rectangles.Add(rectangle);
 
-        public void Visualize(string filename)
-        {
-            new RectanglesVisualizator(this)
-                .Visualize(new RectanglesVisualizatorSettings(filename));
-        }
-
-        public void Visualize(string filename,
-            Size bitmapSize, 
-            List<Color> colors,
-            Color backgroundColor,
-            float mimMargin = 10,
-            bool fillRectangles = false,
-            Func<int, IRectanglesCloud, List<RectangleF>> getRectanglesByColorIndex = null)
-        {
-            new RectanglesVisualizator(this).Visualize(new RectanglesVisualizatorSettings(
-                filename,
-                bitmapSize,
-                colors,
-                backgroundColor,
-                mimMargin,
-                fillRectangles,
-                getRectanglesByColorIndex));
-        }
-
         public RectangleF GetCloudBoundingRectangle()
         {
             var xMin = 0f;
