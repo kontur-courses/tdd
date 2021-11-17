@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -25,7 +26,8 @@ namespace TagsCloudVisualizationTests
         public void SetUp()
         {
             layouter = new CircularCloudLayouter(center);
-            visualizator = new CircularCloudVisualizator();
+            visualizator = new CircularCloudVisualizator(800, 600, Color.Black,
+                Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName);
         }
 
         [TearDown]

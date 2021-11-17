@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 
 namespace TagsCloudVisualization.Visualization
@@ -11,16 +12,19 @@ namespace TagsCloudVisualization.Visualization
         private readonly Graphics graphics;
         private readonly string path;
         private readonly Pen pen;
-        private readonly Random random;
 
-        public CircularCloudVisualizator(string imageSavingPath = "./")
+        public CircularCloudVisualizator(
+            int imageWidth,
+            int imageHeight,
+            Color penColor,
+            string imageSavingPath = "../../../TagsCloudVisualizations/")
         {
             path = imageSavingPath;
-
-            bitmap = new Bitmap(800, 600);
+            Directory.CreateDirectory(imageSavingPath);
+            
+            bitmap = new Bitmap(imageWidth, imageHeight);
             graphics = Graphics.FromImage(bitmap);
-            pen = new Pen(Color.Black);
-            random = new Random();
+            pen = new Pen(penColor);
         }
 
         public void PutRectangle(RectangleF rectangle)
@@ -55,7 +59,7 @@ namespace TagsCloudVisualization.Visualization
             }
         }
 
-        public string SaveImage(string imageName="TagsCloudVisualization")
+        public string SaveImage(string imageName="TagsCloudVisualization.png")
         {
             var savingPath = path + imageName;
             bitmap.Save(savingPath);
