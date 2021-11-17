@@ -20,7 +20,6 @@ namespace TagsCloudVisualization
         private float currentRadius;
         private float radiusStep = 10;
         private int currentStep = 1;
-        private int limiter = 100000;
         private int countSteps = 1;
 
 
@@ -32,6 +31,9 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
+            if (rectangleSize.Height < 0 || rectangleSize.Width < 0)
+                throw new ArgumentException();
+
             var location = GetRectangleLocation(rectangleSize);
             var nextRectangle = new Rectangle(location, rectangleSize);
 
@@ -47,25 +49,28 @@ namespace TagsCloudVisualization
             if (rectangles.Count != 0) return SearchPointOnCircle(rectangleSize);
 
             currentRadius = Math.Min(rectangleSize.Height, rectangleSize.Width);
+
             return GeometryHelper
                 .GetRectangleLocationFromCentre(Center, rectangleSize);
         }
 
         private Point SearchPointOnCircle(Size rectangleSize)
         {
-            while (currentRadius < limiter)
+            while (true)
             {
                 var angle = currentStep * currentStepAngle;
 
                 while (angle < Pi2)
                 {
+                    angle = currentStep * currentStepAngle;
+                    currentStep++;
+
                     var rectangleCentre =
                         GeometryHelper.GetPointOnCircle(Center, currentRadius, angle);
                     var rectangleLocation =
                         GeometryHelper.GetRectangleLocationFromCentre(rectangleCentre, rectangleSize);
-                    angle = currentStep * currentStepAngle;
-                    currentStep++;
-                    
+
+
                     if (usedPoints.Contains(rectangleLocation)) continue;
 
                     var rectangle = new Rectangle(rectangleLocation, rectangleSize);
@@ -82,15 +87,13 @@ namespace TagsCloudVisualization
 
                 UpdateParameters();
             }
-
-            throw new Exception();
         }
 
 
         private void UpdateParameters()
         {
             currentRadius += radiusStep;
-            if (countSteps % 4 == 0)
+            if (countSteps % 4 == 0 && currentStepAngle >= MathF.PI / 180 * 5)
                 currentStepAngle /= 2;
             countSteps++;
             currentStep = 1;

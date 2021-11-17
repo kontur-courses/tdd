@@ -13,12 +13,14 @@ namespace TagsCloudVisualization.Tests
     {
         private CircularCloudLayouter cloudLayouter;
 
+        
         [SetUp]
         public void SetCloudLayouter()
         {
             cloudLayouter = new CircularCloudLayouter(new Point(0, 0));
         }
 
+        
         [TearDown]
         public void RecordMistakes()
         {
@@ -32,6 +34,7 @@ namespace TagsCloudVisualization.Tests
                               $"./TagsCloudVisualization/Tests/Tests_Images/{fileName}");
         }
 
+        
         [TestCase(0, 0)]
         [TestCase(1, 1)]
         [TestCase(-1, 1)]
@@ -47,11 +50,12 @@ namespace TagsCloudVisualization.Tests
                 "Constructor shouldn't change central point");
         }
 
+        
         [TestCase(0, 0, 2, 2, -1, -1)]
         [TestCase(0, 0, 3, 3, -2, -2)]
         [TestCase(0, 0, 0, 0, 0, 0)]
         [TestCase(3, 4, 5, 7, 0, 0)]
-        public void PutNextRectangle_FirstRectangle_ShouldPutOnCentre
+        public void PutNextRectangle_FirstRectangle_ShouldPutOnCenter
         (int cX, int cY, int width, int height, int expX,
             int expY)
         {
@@ -65,7 +69,7 @@ namespace TagsCloudVisualization.Tests
             var actualRectangle = cloudLayouter.PutNextRectangle(size);
 
             actualRectangle.Location.Should().Be(expectedLocation,
-                "The first rectangle should be in the centre");
+                "The first rectangle should be in the Center");
         }
 
 
@@ -77,10 +81,7 @@ namespace TagsCloudVisualization.Tests
             PutManiRectangles(size, 20);
 
 
-            Assert.IsFalse(cloudLayouter.GetRectangles()
-                .SelectMany(x => cloudLayouter.GetRectangles()
-                    .Select(y => (x, y))).Where(x => x.x != x.y)
-                .Any(pair => pair.x.IntersectsWith(pair.y)));
+            Assert.IsFalse(AnyRectanglesIsIntersecting(cloudLayouter.GetRectangles()));
         }
 
 
@@ -98,66 +99,11 @@ namespace TagsCloudVisualization.Tests
                 new Size(37, 27),
                 new Size(1, 2),
                 new Size(40, 60),
-                new Size(85, 50),
-                new Size(100, 100),
-                new Size(300, 450),
-                new Size(219, 168),
-                new Size(37, 27),
-                new Size(1, 2),
-                new Size(40, 60),
-                new Size(85, 50),
-                new Size(100, 100),
-                new Size(300, 450),
-                new Size(219, 168),
-                new Size(37, 27),
-                new Size(1, 2),
-                new Size(40, 60),
-                new Size(85, 50),
-                new Size(100, 100),
-                new Size(300, 450),
-                new Size(219, 168),
-                new Size(37, 27),
-                new Size(40, 60),
-                new Size(85, 50),
-                new Size(40, 60),
-                new Size(85, 50),
-                new Size(40, 60),
-                new Size(85, 50),
-                new Size(40, 60),
-                new Size(85, 50),
-                new Size(40, 60),
-                new Size(85, 50),
-                new Size(40, 60),
-                new Size(85, 50),
-                new Size(40, 60),
-                new Size(85, 50),
-                new Size(40, 60),
-                new Size(85, 50),
-                new Size(40, 60),
-                new Size(85, 50),
-                new Size(40, 60),
-                new Size(85, 50),
-                new Size(40, 60),
-                new Size(85, 50),
-                new Size(40, 60),
-                new Size(85, 50),
-                new Size(40, 60),
-                new Size(85, 50), new Size(40, 60),
-                new Size(85, 50),
-                new Size(40, 60),
-                new Size(85, 50),
-                new Size(40, 60),
-                new Size(85, 50),
-                
             };
 
 
             PutManiRectangles(sizes);
-            Painter.Paint(cloudLayouter.GetRectangles());
-            Assert.IsFalse(cloudLayouter.GetRectangles()
-                .SelectMany(x => cloudLayouter.GetRectangles()
-                    .Select(y => (x, y))).Where(x => x.x != x.y)
-                .Any(pair => pair.x.IntersectsWith(pair.y)));
+            Assert.IsFalse(AnyRectanglesIsIntersecting(cloudLayouter.GetRectangles()));
         }
 
 
@@ -168,6 +114,13 @@ namespace TagsCloudVisualization.Tests
         }
 
 
+        private bool AnyRectanglesIsIntersecting(IEnumerable<Rectangle> rectangles)
+            => rectangles
+                .SelectMany(x => cloudLayouter.GetRectangles()
+                    .Select(y => (x, y))).Where(x => x.x != x.y)
+                .Any(pair => pair.x.IntersectsWith(pair.y));
+
+        
         private void PutManiRectangles(IEnumerable<Size> sizes)
         {
             foreach (var size in sizes)

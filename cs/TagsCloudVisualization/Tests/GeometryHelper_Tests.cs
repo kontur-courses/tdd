@@ -50,13 +50,13 @@ namespace TagsCloudVisualization.Tests
         [TestCase(2, 0, 3, 3, 0, -2)]
         [TestCase(0, 0, 0, 0, 0, 0)]
         public void GetRectangleLocation_ShouldBe_ExpectedValue
-            (float xCentre, float yCentre, int width, int height, int xExpect, int yExpect)
+            (float xCenter, float yCenter, int width, int height, int xExpect, int yExpect)
         {
-            var centralPoint = new PointF(xCentre, yCentre);
+            var centralPoint = new PointF(xCenter, yCenter);
             var size = new Size(width, height);
             var expectedLocation = new Point(xExpect, yExpect);
 
-            var actualLocation = GeometryHelper.GetRectangleLocationFromCentre(centralPoint, size);
+            var actualLocation = GeometryHelper.GetRectangleLocationFromCenter(centralPoint, size);
 
             actualLocation.Should().Be(expectedLocation);
         }
@@ -66,15 +66,15 @@ namespace TagsCloudVisualization.Tests
         [TestCase(1, 1, 3, 2, 2.5f, 2)]
         [TestCase(0, 0, 0, 0, 0, 0)]
         [TestCase(-5, -3, 1, 3, -4.5f, -1.5f)]
-        public void GetRectangleCentre_ShouldBe_ExpectedValue
+        public void GetRectangleCenter_ShouldBe_ExpectedValue
             (int x, int y, int width, int height, float xExpect, float yExpect)
         {
             var rectangle = new Rectangle(x, y, width, height);
 
-            var actualCentre = GeometryHelper.GetRectangleCentre(rectangle);
+            var actualCenter = GeometryHelper.GetRectangleCenter(rectangle);
 
-            actualCentre.X.Should().BeApproximately(xExpect, Delta);
-            actualCentre.Y.Should().BeApproximately(yExpect, Delta);
+            actualCenter.X.Should().BeApproximately(xExpect, Delta);
+            actualCenter.Y.Should().BeApproximately(yExpect, Delta);
         }
 
         
@@ -85,8 +85,8 @@ namespace TagsCloudVisualization.Tests
         public void GetPointOnCircle_ShouldBe_ExpectedValue
             (int cX, int cY, float radius, float angle, float expX, float expY)
         {
-            var centre = new Point(cX, cY);
-            var actualPoint = GeometryHelper.GetPointOnCircle(centre, radius, angle);
+            var Center = new Point(cX, cY);
+            var actualPoint = GeometryHelper.GetPointOnCircle(Center, radius, angle);
 
             actualPoint.X.Should().BeApproximately(expX, Delta);
             actualPoint.Y.Should().BeApproximately(expY, Delta);
