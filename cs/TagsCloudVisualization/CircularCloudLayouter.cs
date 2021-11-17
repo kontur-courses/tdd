@@ -10,17 +10,9 @@ namespace TagsCloudVisualization
         public Point Center { get; }
 
 
-        private const float Pi2 = 2 * MathF.PI;
-
         private readonly List<Rectangle> rectangles = new();
         private readonly HashSet<Point> usedPoints = new();
-
-
-        private float currentStepAngle = MathF.PI / 2;
-        private float currentRadius;
-        private float radiusStep = 10;
-        private int currentStep = 1;
-        private int countSteps = 1;
+        public readonly CloudLayouterParameters Parameters = new();
 
 
         public CircularCloudLayouter(Point center)
@@ -34,8 +26,7 @@ namespace TagsCloudVisualization
             if (rectangleSize.Height < 0 || rectangleSize.Width < 0)
                 throw new ArgumentException();
 
-            var location = GetRectangleLocation(rectangleSize);
-            var nextRectangle = new Rectangle(location, rectangleSize);
+            var nextRectangle = GetNextRectangle(rectangleSize);
 
             rectangles.Add(nextRectangle);
             usedPoints.UnionWith(GeometryHelper.GetAllPointIntoRectangle(nextRectangle));
@@ -44,59 +35,41 @@ namespace TagsCloudVisualization
         }
 
 
-        private Point GetRectangleLocation(Size rectangleSize)
+        private Rectangle GetNextRectangle(Size rectangleSize)
         {
-            if (rectangles.Count != 0) return SearchPointOnCircle(rectangleSize);
+            if (rectangles.Count != 0)
+                return SearchRectangleOnCircle(rectangleSize);
 
-            currentRadius = Math.Min(rectangleSize.Height, rectangleSize.Width);
-
-            return GeometryHelper
-                .GetRectangleLocationFromCentre(Center, rectangleSize);
+            var rectangleLocation = GeometryHelper
+                .GetRectangleLocationFromCenter(Center, rectangleSize);
+            
+            return new Rectangle(rectangleLocation, rectangleSize);
         }
 
-        private Point SearchPointOnCircle(Size rectangleSize)
+        private Rectangle SearchRectangleOnCircle(Size rectangleSize)
         {
             while (true)
             {
-                var angle = currentStep * currentStepAngle;
-
-                while (angle < Pi2)
+                while (Parameters.IsNextAngleLessThanPi2())
                 {
-                    angle = currentStep * currentStepAngle;
-                    currentStep++;
+                    var rectangleCenter =
+                        GeometryHelper.GetPointOnCircle(Center, Parameters.CurrentRadius, Parameters.NextAngle);
 
-                    var rectangleCentre =
-                        GeometryHelper.GetPointOnCircle(Center, currentRadius, angle);
                     var rectangleLocation =
-                        GeometryHelper.GetRectangleLocationFromCentre(rectangleCentre, rectangleSize);
-
+                        GeometryHelper.GetRectangleLocationFromCenter(rectangleCenter, rectangleSize);
 
                     if (usedPoints.Contains(rectangleLocation)) continue;
 
                     var rectangle = new Rectangle(rectangleLocation, rectangleSize);
 
+                    if (rectangles.Any(r => r.IntersectsWith(rectangle))) continue;
 
-                    if (!rectangles.Any(r => r.IntersectsWith(rectangle)))
-                    {
-                        currentStep = 1;
-                        currentRadius = 1;
-                        currentStepAngle = MathF.PI / 2;
-                        return rectangle.Location;
-                    }
+                    Parameters.ResetRadius();
+                    return rectangle;
                 }
 
-                UpdateParameters();
+                Parameters.BoostRadius();
             }
-        }
-
-
-        private void UpdateParameters()
-        {
-            currentRadius += radiusStep;
-            if (countSteps % 4 == 0 && currentStepAngle >= MathF.PI / 180 * 5)
-                currentStepAngle /= 2;
-            countSteps++;
-            currentStep = 1;
         }
 
 

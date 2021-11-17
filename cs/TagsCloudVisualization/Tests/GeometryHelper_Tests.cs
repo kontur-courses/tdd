@@ -85,8 +85,8 @@ namespace TagsCloudVisualization.Tests
         public void GetPointOnCircle_ShouldBe_ExpectedValue
             (int cX, int cY, float radius, float angle, float expX, float expY)
         {
-            var Center = new Point(cX, cY);
-            var actualPoint = GeometryHelper.GetPointOnCircle(Center, radius, angle);
+            var center = new Point(cX, cY);
+            var actualPoint = GeometryHelper.GetPointOnCircle(center, radius, angle);
 
             actualPoint.X.Should().BeApproximately(expX, Delta);
             actualPoint.Y.Should().BeApproximately(expY, Delta);
