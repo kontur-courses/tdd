@@ -15,39 +15,45 @@ namespace TagsCloudVisualization
             return MathF.Sqrt(x * x + y * y);
         }
 
-        public static PointF GetRectangleCenter(Rectangle rect)
+        public static Point GetRectangleCenter(Rectangle rect)
         {
-            var x = rect.X + rect.Width / 2.0f;
-            var y = rect.Y + rect.Height / 2.0f;
-
-            return new PointF(x, y);
-        }
-
-        public static Point GetRectangleLocationFromCenter(PointF rectCenter, Size size)
-        {
-            var x = (int)Math.Floor(rectCenter.X - size.Width / 2.0);
-            var y = (int)Math.Floor(rectCenter.Y - size.Height / 2.0);
+            var x = rect.X + (int)MathF.Round(rect.Width / 2.0f);
+            var y = rect.Y + (int)MathF.Round(rect.Height / 2.0f);
 
             return new Point(x, y);
         }
 
-        public static PointF GetPointOnCircle(Point Center, float radius, float angle)
+        public static Point GetRectangleLocationFromCenter(Point rectCenter, Size size)
         {
-            var x = Center.X + MathF.Cos(angle) * radius;
-            var y = Center.Y - MathF.Sin(angle) * radius;
+            var x = (int)MathF.Floor(rectCenter.X - size.Width / 2.0f);
+            var y = (int)MathF.Floor(rectCenter.Y - size.Height / 2.0f);
 
-            return new PointF(x, y);
+            return new Point(x, y);
+        }
+
+        public static Point GetPointOnCircle(Point center, float radius, float angle)
+        {
+            var x = center.X + (int)MathF.Round(MathF.Cos(angle) * radius);
+            var y = center.Y - (int)MathF.Round(MathF.Sin(angle) * radius);
+
+            return new Point(x, y);
         }
 
         public static Size GetRectanglesCommonSize(IEnumerable<Rectangle> rectangles, int framing = 500)
-            => rectangles.Aggregate(new Rectangle(), Rectangle.Union).Size
-               + new Size(framing, framing);
+        {
+            var commonRectangle = Rectangle.Empty;
+            var frame = new Size(framing, framing);
+            
+            rectangles.Aggregate(commonRectangle, Rectangle.Union);
+
+            return commonRectangle.Size + frame;
+        }
 
         public static IEnumerable<Point> GetAllPointIntoRectangle(Rectangle rectangle)
         {
-            if(rectangle.Size.IsEmpty)
+            if (rectangle.Size.IsEmpty)
                 return ArraySegment<Point>.Empty;
-            
+
             var xRange = Enumerable.Range(rectangle.Left + 1, rectangle.Right - rectangle.Left);
             var yRange = Enumerable.Range(rectangle.Top + 1, rectangle.Bottom - rectangle.Top);
 

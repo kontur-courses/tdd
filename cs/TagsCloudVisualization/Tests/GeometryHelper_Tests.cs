@@ -8,8 +8,6 @@ namespace TagsCloudVisualization.Tests
     [TestFixture]
     public class GeometryHelper_Tests
     {
-        private const float Delta = 1e-3f;
-
         [TestCase(1, 1, 1, 1)]
         [TestCase(0, 0, 1, 1)]
         [TestCase(1, 1, 0, 0)]
@@ -41,7 +39,7 @@ namespace TagsCloudVisualization.Tests
 
             var actualDistance = GeometryHelper.GetDistanceBetweenPoints(point1, point2);
 
-            actualDistance.Should().BeApproximately(expectedDistance, Delta);
+            actualDistance.Should().BeApproximately(expectedDistance, 0.001f);
         }
 
 
@@ -50,9 +48,9 @@ namespace TagsCloudVisualization.Tests
         [TestCase(2, 0, 3, 3, 0, -2)]
         [TestCase(0, 0, 0, 0, 0, 0)]
         public void GetRectangleLocation_ShouldBe_ExpectedValue
-            (float xCenter, float yCenter, int width, int height, int xExpect, int yExpect)
+            (int xCenter, int yCenter, int width, int height, int xExpect, int yExpect)
         {
-            var centralPoint = new PointF(xCenter, yCenter);
+            var centralPoint = new Point(xCenter, yCenter);
             var size = new Size(width, height);
             var expectedLocation = new Point(xExpect, yExpect);
 
@@ -61,35 +59,35 @@ namespace TagsCloudVisualization.Tests
             actualLocation.Should().Be(expectedLocation);
         }
 
-        
+
         [TestCase(0, 0, 2, 2, 1, 1)]
-        [TestCase(1, 1, 3, 2, 2.5f, 2)]
+        [TestCase(1, 1, 3, 2, 2, 2)]
         [TestCase(0, 0, 0, 0, 0, 0)]
-        [TestCase(-5, -3, 1, 3, -4.5f, -1.5f)]
+        [TestCase(-5, -3, 1, 3, -4, -1)]
         public void GetRectangleCenter_ShouldBe_ExpectedValue
-            (int x, int y, int width, int height, float xExpect, float yExpect)
+            (int x, int y, int width, int height, int xExpect, int yExpect)
         {
             var rectangle = new Rectangle(x, y, width, height);
 
             var actualCenter = GeometryHelper.GetRectangleCenter(rectangle);
 
-            actualCenter.X.Should().BeApproximately(xExpect, Delta);
-            actualCenter.Y.Should().BeApproximately(yExpect, Delta);
+            actualCenter.X.Should().Be(xExpect);
+            actualCenter.Y.Should().Be(yExpect);
         }
 
-        
+
         [TestCase(0, 0, 1, MathF.PI / 2, 0, -1)]
         [TestCase(0, 0, 1, 0, 1, 0)]
         [TestCase(1, 1, 1, MathF.PI / 2, 1, 0)]
         [TestCase(1, 1, 1, 0, 2, 1)]
         public void GetPointOnCircle_ShouldBe_ExpectedValue
-            (int cX, int cY, float radius, float angle, float expX, float expY)
+            (int cX, int cY, int radius, float angle, int expX, int expY)
         {
             var center = new Point(cX, cY);
             var actualPoint = GeometryHelper.GetPointOnCircle(center, radius, angle);
 
-            actualPoint.X.Should().BeApproximately(expX, Delta);
-            actualPoint.Y.Should().BeApproximately(expY, Delta);
+            actualPoint.X.Should().Be(expX);
+            actualPoint.Y.Should().Be(expY);
         }
     }
 }
