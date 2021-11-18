@@ -22,7 +22,7 @@ namespace TagsCloudVisualization.Tests
 
         
         [TearDown]
-        public void RecordMistakes()
+        public void PrintVisualizationForDownTests()
         {
             if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
 
@@ -30,6 +30,7 @@ namespace TagsCloudVisualization.Tests
                            TestContext.CurrentContext.Result.FailCount;
 
             Painter.Paint(cloudLayouter.GetRectangles(), fileName);
+            
             Console.WriteLine("Tag cloud visualization saved to file " +
                               $"./TagsCloudVisualization/Tests/Tests_Images/{fileName}");
         }
@@ -78,10 +79,9 @@ namespace TagsCloudVisualization.Tests
         {
             var size = new Size(3, 2);
 
-            PutManiRectangles(size, 20);
-
-
-            Assert.IsFalse(AnyRectanglesIsIntersecting(cloudLayouter.GetRectangles()));
+            PutManyRectangles(size, 20);
+            
+            Assert.IsFalse(HasIntersectingRectangles(cloudLayouter.GetRectangles()));
         }
 
 
@@ -103,18 +103,18 @@ namespace TagsCloudVisualization.Tests
 
 
             PutManiRectangles(sizes);
-            Assert.IsFalse(AnyRectanglesIsIntersecting(cloudLayouter.GetRectangles()));
+            Assert.IsFalse(HasIntersectingRectangles(cloudLayouter.GetRectangles()));
         }
 
 
-        private void PutManiRectangles(Size size, int count)
+        private void PutManyRectangles(Size size, int count)
         {
             for (; count > 0; count--)
                 cloudLayouter.PutNextRectangle(size);
         }
 
 
-        private bool AnyRectanglesIsIntersecting(IEnumerable<Rectangle> rectangles)
+        private bool HasIntersectingRectangles(IEnumerable<Rectangle> rectangles)
             => rectangles
                 .SelectMany(x => cloudLayouter.GetRectangles()
                     .Select(y => (x, y))).Where(x => x.x != x.y)
