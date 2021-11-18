@@ -6,53 +6,53 @@ namespace TagsCloudVisualization.Tests
     [TestFixture]
     public class CloudLayouterParameters_Tests
     {
-        private CloudLayouterParameters cloudLayouterParameters;
+        private CloudLayoutParameters cloudLayoutParameters;
 
         [SetUp]
         public void SetParameters()
         {
-            cloudLayouterParameters = new CloudLayouterParameters();
+            cloudLayoutParameters = new CloudLayoutParameters();
         }
 
         [Test]
         public void BoostRadius_ShouldChange_CurrentRadius()
         {
-            var firstRadius = cloudLayouterParameters.CurrentRadius;
+            var firstRadius = cloudLayoutParameters.Radius;
 
-            cloudLayouterParameters.BoostRadius();
+            cloudLayoutParameters.BoostRadius();
 
-            cloudLayouterParameters.CurrentRadius.Should().NotBe(firstRadius);
+            cloudLayoutParameters.Radius.Should().NotBe(firstRadius);
         }
 
         [Test]
         public void BoostRadius_ShouldChange_StepAngle()
         {
-            cloudLayouterParameters = new CloudLayouterParameters(startAngle: 2, countRadiusBoostsForChangeAngle: 2);
+            cloudLayoutParameters = new CloudLayoutParameters(startAngle: 2, countBoostsForChangeAngle: 2);
             
-            cloudLayouterParameters.BoostRadius();
-            cloudLayouterParameters.BoostRadius();
+            cloudLayoutParameters.BoostRadius();
+            cloudLayoutParameters.BoostRadius();
 
-            cloudLayouterParameters.StepAngle.Should().BeApproximately(1f, 0.001f);
+            cloudLayoutParameters.StepAngle.Should().BeApproximately(1f, 0.001f);
         }
 
         [Test]
         public void ResetRadius_ShouldSetCurrentRadius_ToFirstRadius()
         {
-            var firstRadius = cloudLayouterParameters.CurrentRadius;
+            var firstRadius = cloudLayoutParameters.Radius;
 
-            cloudLayouterParameters.BoostRadius();
-            cloudLayouterParameters.BoostRadius();
-            cloudLayouterParameters.ResetRadius();
+            cloudLayoutParameters.BoostRadius();
+            cloudLayoutParameters.BoostRadius();
+            cloudLayoutParameters.ResetRadius();
 
-            cloudLayouterParameters.CurrentRadius.Should().Be(firstRadius);
+            cloudLayoutParameters.Radius.Should().Be(firstRadius);
         }
 
         [Test]
         public void CurrentAngle_ShouldChangeSelf_AfterInvoke()
         {
-            var firstAngle = cloudLayouterParameters.NextAngle;
+            var firstAngle = cloudLayoutParameters.NextAngle;
             
-            cloudLayouterParameters.NextAngle.Should().NotBe(firstAngle);
+            cloudLayoutParameters.NextAngle.Should().NotBe(firstAngle);
         }
     }
 }
