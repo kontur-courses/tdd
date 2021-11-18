@@ -9,7 +9,7 @@ using NUnit.Framework.Interfaces;
 namespace TagsCloudVisualization.Tests
 {
     [TestFixture]
-    public class CircularCloudLayouter_Tests
+    public class CircularCloudLayouterTests
     {
         private CircularCloudLayouter cloudLayouter;
 
