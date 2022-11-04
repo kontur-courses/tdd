@@ -1,6 +1,9 @@
 ﻿using System.Drawing;
+using System.Drawing.Imaging;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using TagCloudVisualizer.CloudLayouter;
+using TagCloudVisualizer.TagCloudImageGenerator;
 
 namespace TagCloudVisualiser_Tests;
 
@@ -18,6 +21,26 @@ public class CircularCloudLayouter_Tests
         layouter = new CircularCloudLayouter(CENTER);
     }
 
+    [TearDown]
+    public void TearDownTest()
+    {
+        if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure)
+            return;
+
+        var path = Environment.CurrentDirectory + "\\FailedTests\\";
+        if (!Directory.Exists(path))
+            Directory.CreateDirectory(path);
+
+        var timestamp = DateTime.Now;
+        var filename = $"{TestContext.CurrentContext.Test.Name}_{timestamp:yyyy-MM-dd-HH-mm-ss}.png";
+        var fullpath = path + filename;
+        
+        var image = TagCloudImageGenerator.GenerateImage(layouter.Rectangles.ToArray(), CANVAS_SIZE);
+        image.Save(fullpath, ImageFormat.Png);
+        
+        Console.WriteLine($"Image of generated tag cloud saved as {fullpath}");
+    }
+    
     [TestCase(0, 0, Description = "Zero coordinates")]
     [TestCase(1, 1, Description = "Positive coordinates")]
     [TestCase(-1, -1, Description = "Negative coordinates")]
