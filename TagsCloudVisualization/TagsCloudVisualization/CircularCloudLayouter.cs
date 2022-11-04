@@ -12,12 +12,16 @@ namespace TagsCloudVisualization
 {
     internal class CircularCloudLayouter
     {
+        public Size screensize;
         public IDictionary<string, int> sizeDictionary;
-        private Bitmap bitmap = new Bitmap(Image.FromFile("C:\\Users\\Lodgent\\Desktop\\git clones\\tdd\\TagsCloudVisualization\\white.jpg"));
+        private Bitmap bitmap;
         private Graphics g;
-        public CircularCloudLayouter(IDictionary<string, int> sizeDictionary)
+        
+        public CircularCloudLayouter(IDictionary<string, int> sizeDictionary,Size screensize)
         {
             this.sizeDictionary = sizeDictionary;
+            this.screensize = screensize;
+            bitmap=new Bitmap(screensize.Width, screensize.Height);
             g = Graphics.FromImage(bitmap);
         }
         public Tuple<string,Size,Font> GetRectangleOptions()
