@@ -29,9 +29,36 @@ public class CircularCloudLayouter : ICloudLayouter
             result = new Rectangle(anchorPoint, rectangleSize);
         } while (rectangles.Any(r => r.IntersectsWith(result)));
         
+        if (rectangles.Count > 0)
+            result = ShiftRectangleToCenter(result);
         rectangles.Add(result);
 
         return result;
+    }
+
+    private Rectangle ShiftRectangleToCenter(Rectangle rectangle)
+    {
+        var deltaX = rectangle.X > center.X ? -1 : 1;
+        var deltaY = rectangle.Y > center.Y ? -1 : 1;
+
+        var previousAnchor = new Point(rectangle.X, rectangle.Y);
+        while (!rectangles.Any(r => r.IntersectsWith(rectangle)) && rectangle.X != center.X)
+        {
+            previousAnchor = new Point(rectangle.X, rectangle.Y);
+            var anchor = new Point(rectangle.X + deltaX, rectangle.Y);
+            rectangle = new Rectangle(anchor, rectangle.Size);
+        }
+        rectangle = new Rectangle(previousAnchor, rectangle.Size);
+        
+        while (!rectangles.Any(r => r.IntersectsWith(rectangle)) && rectangle.Y != center.Y)
+        {
+            previousAnchor = new Point(rectangle.X, rectangle.Y);
+            var anchor = new Point(rectangle.X, rectangle.Y + deltaY);
+            rectangle = new Rectangle(anchor, rectangle.Size);
+        }
+        rectangle = new Rectangle(previousAnchor, rectangle.Size);
+
+        return rectangle;
     }
 
     private Point GetAnchorPoint(Point rectangleCenter, Size rectangleSize)
