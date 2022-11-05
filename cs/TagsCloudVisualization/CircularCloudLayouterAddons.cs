@@ -43,5 +43,12 @@ namespace TagsCloudVisualization
                      || firstRect.Y > secondRect.Y + secondRect.Height
                      || firstRect.Y + firstRect.Height < secondRect.Y);
         }
+
+        public void Clear()
+        {
+            rectangles.Clear();
+            spiralPoints.Clear();
+            angle = 0;
+        }
     }
 }

@@ -30,5 +30,13 @@ namespace TagsCloudVisualization
             for (var i = 0; i < amountRectangles; i++)
                 PutNextRectangle(new Size(rnd.Next(25, 80), rnd.Next(25, 80)));
         }
+        
+        public void DrawCircularCloud(int imageWidth, int imageHeight)
+        {
+            var imageCreator = new ImageCreator(imageWidth, imageHeight, center);
+            imageCreator.DrawRectangles(rectangles);
+            imageCreator.DrawSpiral(spiralPoints);
+            imageCreator.SaveImage();
+        }
     }
 }
