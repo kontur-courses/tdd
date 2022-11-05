@@ -1,5 +1,6 @@
 using System.Drawing;
 using CircularCloudLayouter;
+using CircularCloudLayouter.WeightedLayouter;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -9,6 +10,7 @@ namespace TagsCloudVisualization_Tests;
 public class CircularCloudLayouter_Should
 {
     private ICircularCloudLayouter _defaultCircularCloudLayouter = null!;
+    private Random _random = new();
 
     [SetUp]
     public void Setup()
@@ -36,5 +38,11 @@ public class CircularCloudLayouter_Should
         var actualRect = new WeightedCircularCloudLayouter(center).PutNextRectangle(new Size(1, 2));
         var actualCenter = actualRect.Location + actualRect.Size / 2;
         actualCenter.Should().Be(center);
+    }
+
+    [Test]
+    public void ReturnNonIntersectedRectangles_ForSmallRects()
+    {
+        
     }
 }

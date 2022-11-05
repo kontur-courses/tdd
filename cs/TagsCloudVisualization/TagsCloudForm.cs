@@ -1,4 +1,6 @@
 using CircularCloudLayouter;
+using CircularCloudLayouter.WeightedLayouter;
+using CircularCloudLayouter.WeightedLayouter.Forming;
 using Timer = System.Windows.Forms.Timer;
 
 namespace TagsCloudVisualization;
@@ -9,7 +11,7 @@ public partial class TagsCloudForm : Form
     private Timer? _timer;
 
     private readonly ICircularCloudLayouter _circularCloudLayouter =
-        new WeightedCircularCloudLayouter(new Point(900, 500));
+        new WeightedCircularCloudLayouter(new Point(900, 500), FormFactors.Circle);
 
     private readonly List<(Rectangle rect, Brush brush)> _rectanglesBrushes = new();
 
