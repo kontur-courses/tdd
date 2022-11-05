@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BowlingGame", "BowlingGame\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.csproj", "{B5108E20-2ACF-4ED9-84FE-2A718050FC94}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircularCloudLayouter_Tests", "CircularCloudLayouter_Tests\CircularCloudLayouter_Tests.csproj", "{4028D0F0-8011-44DC-B795-81DA1E9B4F12}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircularCloudLayouter", "CircularCloudLayouter\CircularCloudLayouter.csproj", "{CF91AA6A-4352-4876-8912-70B8436B5F51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{10B53EB6-1543-4B3D-8035-AE81B8C9F584}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +27,18 @@ Global
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4028D0F0-8011-44DC-B795-81DA1E9B4F12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4028D0F0-8011-44DC-B795-81DA1E9B4F12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4028D0F0-8011-44DC-B795-81DA1E9B4F12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4028D0F0-8011-44DC-B795-81DA1E9B4F12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF91AA6A-4352-4876-8912-70B8436B5F51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF91AA6A-4352-4876-8912-70B8436B5F51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF91AA6A-4352-4876-8912-70B8436B5F51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF91AA6A-4352-4876-8912-70B8436B5F51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10B53EB6-1543-4B3D-8035-AE81B8C9F584}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10B53EB6-1543-4B3D-8035-AE81B8C9F584}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10B53EB6-1543-4B3D-8035-AE81B8C9F584}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10B53EB6-1543-4B3D-8035-AE81B8C9F584}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
