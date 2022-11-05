@@ -35,11 +35,14 @@ public class WeightedCircularCloudLayouter : ICircularCloudLayouter
         var rect = RectanglesPlaced == 0
             ? new Rectangle(_center - rectSize / 2, rectSize)
             : _sideLayouters
+                .AsParallel()
                 .MinBy(layouter => layouter.CalculateCoefficient())!
                 .GetNextRectangle(rectSize);
 
-        foreach (var sideLayouter in _sideLayouters)
-            sideLayouter.UpdateWeights(rect);
+        Parallel.ForEach(
+            _sideLayouters,
+            layouter => layouter.UpdateWeights(rect)
+        );
 
         RectanglesPlaced++;
         return rect;
