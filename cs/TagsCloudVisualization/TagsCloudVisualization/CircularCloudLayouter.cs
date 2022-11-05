@@ -6,16 +6,6 @@ namespace TagsCloudVisualization;
 class CircularCloudLayouter
 {
     private RectanglesNet _rectanglesNet;
-    
-    public Point CenterMass
-    {
-        get { return _rectanglesNet.CenterMass; }
-    }
-    
-    public Point Center
-    {
-        get { return _rectanglesNet.Center; }
-    }
 
     public CircularCloudLayouter(Point center)
     {

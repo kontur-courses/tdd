@@ -6,42 +6,32 @@ namespace TagsCloudVisualization;
 
 public class RectanglesNet
 {
-    private const float speed = 1;
+    private const float alpha = 0.1f;
     
     private Point _center;
     
-    public Point CenterMass
-    {
-        get { return _centerOfMass.ToPoint(); }
-    }
-    public Point Center
-    {
-        get { return _center; }
-    }
-
     private List<Rectangle> _rectangles;
-    private FloatPoint _centerOfMass;
+    private Spiral _spiral;
+
+    public List<Rectangle> Rectangles
+    {
+        get
+        {
+            return _rectangles;
+        }
+    }
 
     public RectanglesNet(Point center)
     {
         _center = center;
-        _centerOfMass = center.ToFloatPoint();
         _rectangles = new();
+        _spiral = new(alpha, center);
     }
 
     public Rectangle AddRectToNet(Size rectangleSize)
     {
-        Vector2 direction = -new Vector2(
-            _centerOfMass.X - _center.X, 
-            _centerOfMass.Y - _center.Y
-            );
-        // Vector2 direction = Vector2.Zero;
-        direction =
-            direction
-                .RandomRotate();
-            //.Normalize();
-        Point position = _center;
-        Rectangle rect = new(position, rectangleSize);
+        _spiral.SetNewStartAngle(new Random().NextSingle() * (float)Math.PI * 2);
+        Rectangle rect = new(_center, rectangleSize);
         Rectangle intersectedRect;
         while (true)
         {
@@ -51,36 +41,35 @@ public class RectanglesNet
                 UpdateRectangleList(rect);
                 return rect;
             }
-            else
-            {
-                rect = OustRect(rect, intersectedRect, direction);
-            }
-
-            position = UpdateCoord(position, direction); //TODO: out или ref
-            rect.X = position.X;
-            rect.Y = position.Y;
+            rect = UpdateCoord(rect);
         }
     }
 
-    public Point UpdateCoord(Point position, Vector2 direction)
+    public Rectangle UpdateCoord(Rectangle r)
     {
-        position.X = (int)(position.X + direction.X * speed);
-        position.Y = (int)(position.Y + direction.Y * speed);
-        return position;
+        _spiral.IncreaseAngle(Math.Min(r.Width, r.Height));
+        return new Rectangle(
+            _spiral.ToCartesian(),
+            r.Size
+            );
     }
     
     public Rectangle OustRect(Rectangle rect, Rectangle intersectedRect, Vector2 direction)
     {
-        if (direction.X > 0)
-            rect.X = intersectedRect.X + rect.Width;
+        if (intersectedRect.Width > intersectedRect.Height)
+        {
+            if (direction.Y > 0)
+                rect.Y = intersectedRect.Y + rect.Height;
+            else
+                rect.Y = intersectedRect.Y - rect.Height;
+        }
         else
-            rect.X = intersectedRect.X - rect.Width;
-        
-        if (direction.Y > 0)
-            rect.Y = intersectedRect.Y + rect.Height;
-        else
-            rect.Y = intersectedRect.Y - rect.Height;
-        
+        {
+            if (direction.X > 0)
+                rect.X = intersectedRect.X + rect.Width;
+            else
+                rect.X = intersectedRect.X - rect.Width;
+        }
         return rect;
     }
 
@@ -95,100 +84,45 @@ public class RectanglesNet
 
     private void UpdateRectangleList(Rectangle rect)
     {
-        var n = _rectangles.Count;
         _rectangles.Add(rect);
-        _centerOfMass = (_centerOfMass*n + rect.Location.ToFloatPoint()) / (n+1);
     }
 }
 
-public class FloatPoint
+class Spiral
 {
-    public float X { get; set; }
-    public float Y { get; set; }
+    private float _alpha;
+    private float _phi0;
+    private Point _center;
     
-    public FloatPoint(float x, float y)
+    private float _phi;
+    private float R
     {
-        X = x;
-        Y = y;
+        get { return _alpha * (_phi - _phi0); }
     }
 
-    public FloatPoint(Point p)
+    public Spiral(float alpha, Point center, float phi0 = 0)
     {
-        X = p.X;
-        Y = p.Y;
+        _alpha = alpha;
+        _phi0 = phi0;
+        _center = center;
     }
     
-    public static FloatPoint operator *(FloatPoint p, float n)
+    public void SetNewStartAngle(float phi0)
     {
-        return new FloatPoint(
-            p.X * n,
-            p.Y * n
-        );
-    }
-    
-    public static FloatPoint operator +(FloatPoint p, FloatPoint other)
-    {
-        return new FloatPoint(
-            p.X + other.X,
-            p.Y + other.Y
-        );
+        _phi0 = phi0;
+        _phi = phi0;
     }
 
-    public static FloatPoint operator /(FloatPoint p, float n)
+    public void IncreaseAngle(float angle)
     {
-        return new FloatPoint(
-            p.X / n,
-            p.Y / n
-        );
+        _phi += angle;
     }
 
-    public Point ToPoint()
+    public Point ToCartesian()
     {
         return new Point(
-            (int)X,
-            (int)Y
-        );
-    }
-}
-
-public static class PointExtensions
-{
-    public static FloatPoint ToFloatPoint(this Point p)
-    {
-        return new FloatPoint(
-            p.X,
-            p.Y
+            (int)(R * Math.Cos(_phi)) + _center.X,
+            (int)(R * Math.Sin(_phi) + _center.Y)
             );
-    }
-}
-
-public static class Vector2Extensions
-{
-    private const float dispersion = 3f;
-    
-    public static Vector2 RandomRotate(this Vector2 v)
-    {
-        if (v == Vector2.Zero)
-            return Vector2.One.RandomRotate();
-        return v.Rotate(new Random().NextSingle() * dispersion*2 - dispersion);
-    }
-    
-    public static Vector2 Rotate(this Vector2 v, float angle) {
-        var sin = Math.Sin(angle);
-        var cos = Math.Cos(angle);
-         
-        var tx = v.X;
-        var ty = v.Y;
-        v.X = (float)((cos * tx) - (sin * ty));
-        v.Y = (float)((sin * tx) + (cos * ty));
-        return v;
-    }
-
-    public static Vector2 Normalize(this Vector2 v)
-    {
-        return new Vector2(
-            v.X/v.Length(),
-            v.Y/v.Length()
-        );
     }
 }
