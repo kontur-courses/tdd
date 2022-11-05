@@ -25,11 +25,11 @@ namespace TagsCloudVisualization
             gp.FillRectangle(Brushes.White, new Rectangle(0,0, imageWidth, imageHeight));
         }
 
-        public void DrawSpiral(List<Point> rects)
+        public void DrawSpiral(List<Point> points)
         {
-            for (var i = 1; i < rects.Count; i++)
+            for (var i = 1; i < points.Count; i++)
             {
-                gp.DrawLine(Pens.Black, rects[i].X + shiftX,rects[i].Y + shiftY , rects[i - 1].X + shiftX, rects[i - 1].Y + shiftY );
+                gp.DrawLine(Pens.Black, points[i].X + shiftX,points[i].Y + shiftY , points[i - 1].X + shiftX, points[i - 1].Y + shiftY );
             }
         }
         

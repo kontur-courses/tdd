@@ -26,7 +26,7 @@ namespace TagsCloudVisualization
         
         private Point GetPotentialPoint()
         {
-            angle += 0.3f;
+            angle += 0.1f;
             var x = 5.0f * angle * Math.Cos(angle);
             var y =  2.5f * angle * Math.Sin(angle);
 
@@ -36,7 +36,7 @@ namespace TagsCloudVisualization
             return point;
         }
 
-        private static bool IsRectanglesIntersect(Rectangle firstRect, Rectangle secondRect)
+        public static bool IsRectanglesIntersect(Rectangle firstRect, Rectangle secondRect)
         {
             return !(firstRect.X > secondRect.X + secondRect.Width
                      || firstRect.X + firstRect.Width < secondRect.X

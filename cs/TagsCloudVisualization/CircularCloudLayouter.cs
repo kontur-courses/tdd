@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 
 namespace TagsCloudVisualization
 {
     public partial class CircularCloudLayouter
     {
+        public int RectangleCount => rectangles.Count;
+        
         private readonly Point center;
         private readonly List<Rectangle> rectangles;
         private readonly List<Point> spiralPoints;
@@ -28,15 +29,14 @@ namespace TagsCloudVisualization
         {
             var rnd = new Random();
             for (var i = 0; i < amountRectangles; i++)
-                PutNextRectangle(new Size(rnd.Next(25, 80), rnd.Next(25, 80)));
+                PutNextRectangle(new Size(rnd.Next(60, 120), rnd.Next(25, 60)));
         }
         
-        public void DrawCircularCloud(int imageWidth, int imageHeight)
+        public void DrawCircularCloud(int imageWidth, int imageHeight, string path = null)
         {
             var imageCreator = new ImageCreator(imageWidth, imageHeight, center);
             imageCreator.DrawRectangles(rectangles);
-            imageCreator.DrawSpiral(spiralPoints);
-            imageCreator.SaveImage();
+            imageCreator.SaveImage(path);
         }
     }
 }

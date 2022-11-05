@@ -6,9 +6,9 @@ namespace TagsCloudVisualization
     {
         public static void Main()
         {
-            var cloudLayouter = new CircularCloudLayouter(new Point(300, 300));
-            cloudLayouter.GenerateRandomCloud(30);
-            cloudLayouter.DrawCircularCloud(600, 600);
+            var cloudLayouter = new CircularCloudLayouter(new Point(750, 750));
+            cloudLayouter.GenerateRandomCloud(2000);
+            cloudLayouter.DrawCircularCloud(1500, 1500);
         }
     }
 }
