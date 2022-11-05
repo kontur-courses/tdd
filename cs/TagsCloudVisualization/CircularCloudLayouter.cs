@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -20,7 +21,37 @@ namespace TagsCloudVisualization
 
         public void PutNextRectangle(Size rectangleSize)
         {
-            throw new NotImplementedException();
+            rectangles.Add(new Rectangle(GetNextRectanglePosition(rectangleSize), rectangleSize));
+        }
+        
+        private Point GetNextRectanglePosition(Size rectangleSize)
+        {
+            var nextPoint = new Point(0, 0);
+
+            if (rectangles.Count == 0)
+                return nextPoint;
+
+            var point = GetPotentialPoint();
+
+            while (rectangles.Any(rectangle =>
+                       IsRectanglesIntersect(new Rectangle(point, rectangleSize), rectangle)))
+                point = GetPotentialPoint();
+            
+            nextPoint = point;
+
+            return nextPoint;
+        }
+        
+        private Point GetPotentialPoint()
+        {
+            angle += 0.3f;
+            var x = 5.0f * angle * Math.Cos(angle);
+            var y =  2.5f * angle * Math.Sin(angle);
+
+            var point = new Point((int)x, (int)y);
+            spiralPoints.Add(point);
+                
+            return point;
         }
 
         private static bool IsRectanglesIntersect(Rectangle firstRect, Rectangle secondRect)
