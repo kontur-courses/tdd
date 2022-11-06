@@ -36,7 +36,6 @@ public class WeightedSegmentsCollection
     {
         if (newSegment.Length == 0)
             return;
-        var modified = new List<LinkedListNode<WeightedSegment>>();
         if (_segments.Count == 0)
         {
             _segments.AddFirst(newSegment);
@@ -44,29 +43,25 @@ public class WeightedSegmentsCollection
         else if (newSegment.End <= Start)
         {
             if (newSegment.End < Start)
-                modified.Add(_segments.AddFirst(new WeightedSegment(newSegment.End, Start)));
-            modified.Add(_segments.AddFirst(newSegment));
+                _segments.AddFirst(new WeightedSegment(newSegment.End, Start));
+            _segments.AddFirst(newSegment);
         }
         else if (newSegment.Start >= End)
         {
             if (newSegment.Start > End)
-                modified.Add(_segments.AddLast(new WeightedSegment(End, newSegment.Start)));
-            modified.Add(_segments.AddLast(newSegment));
+                _segments.AddLast(new WeightedSegment(End, newSegment.Start));
+            _segments.AddLast(newSegment);
         }
         else
         {
-            modified.AddRange(InsertWithIntersectionsHandling(newSegment));
+            InsertWithIntersectionsHandling(newSegment);
         }
-
-        foreach (var node in modified.Where(node => node.List == _segments))
-            OptimizeNodeNeighbours(node);
     }
 
-    private IEnumerable<LinkedListNode<WeightedSegment>> InsertWithIntersectionsHandling(WeightedSegment newSegment)
+    private void InsertWithIntersectionsHandling(WeightedSegment newSegment)
     {
         var intersections = GetNodesIntersectedWith(newSegment).ToList();
         var added = _segments.AddBefore(intersections.First(), newSegment);
-        yield return added;
 
         foreach (var node in intersections)
         {
@@ -77,12 +72,12 @@ public class WeightedSegmentsCollection
                     _segments.Remove(added);
 
                 if (newSegment.End > node.Value.End)
-                    yield return added = _segments.AddAfter(node, newSegment.WithStart(node.Value.End));
+                    added = _segments.AddAfter(node, newSegment.WithStart(node.Value.End));
             }
             else
             {
                 if (node.Value.Start < newSegment.Start)
-                    yield return _segments.AddBefore(added, node.Value.WithEnd(added.Value.Start));
+                    _segments.AddBefore(added, node.Value.WithEnd(added.Value.Start));
 
                 node.Value = node.Value.WithStart(Math.Min(added.Value.End, node.Value.End));
                 if (node.Value.Length == 0)
@@ -103,57 +98,73 @@ public class WeightedSegmentsCollection
         }
     }
 
-    private void OptimizeNodeNeighbours(LinkedListNode<WeightedSegment> node)
+    public void OptimizeWeights()
     {
-        OptimizePreviousNeighbours(node);
-        OptimizeNextNeighbours(node);
-    }
-
-    private void OptimizeNextNeighbours(LinkedListNode<WeightedSegment> node)
-    {
-        while (node.Previous is not null)
+        var current = _segments.First;
+        while (current?.Next is not null)
         {
-            var curVal = node.Value;
-            var prevVal = node.Previous.Value;
-
-            if (curVal.Weight > prevVal.Weight && prevVal.Length <= _optimizationOptions.MaxLengthToRemove)
+            if (current.Previous is null)
             {
-                node.Value = curVal.WithStart(prevVal.Start);
-                _segments.Remove(node.Previous);
+                current = current.Next;
+                continue;
             }
-            else if (Math.Abs(curVal.Weight - prevVal.Weight) <= _optimizationOptions.MaxWeightDeltaToCombine)
-            {
-                node.Value = new WeightedSegment(prevVal.Start, curVal.End, Math.Max(curVal.Weight, prevVal.Weight));
-                _segments.Remove(node.Previous);
-            }
-            else
-            {
-                break;
-            }
+            if (TryMaxLengthOptimization(current))
+                continue;
+            if (TryWeightDeltaOptimization(current))
+                continue;
+            current = current.Next;
         }
     }
 
-    private void OptimizePreviousNeighbours(LinkedListNode<WeightedSegment> node)
+    private bool TryMaxLengthOptimization(LinkedListNode<WeightedSegment> node)
     {
-        while (node.Next is not null)
-        {
-            var curVal = node.Value;
-            var nextVal = node.Next.Value;
+        if (node.Value.Length > _optimizationOptions.MaxLengthToRemove)
+            return false;
 
-            if (curVal.Weight > nextVal.Weight && nextVal.Length <= _optimizationOptions.MaxLengthToRemove)
-            {
-                node.Value = curVal.WithEnd(nextVal.End);
-                _segments.Remove(node.Next);
-            }
-            else if (Math.Abs(curVal.Weight - nextVal.Weight) <= _optimizationOptions.MaxWeightDeltaToCombine)
-            {
-                node.Value = new WeightedSegment(curVal.Start, nextVal.End, Math.Max(curVal.Weight, nextVal.Weight));
-                _segments.Remove(node.Next);
-            }
-            else
-            {
-                break;
-            }
+        if (node.Previous!.Value.Weight >= node.Value.Weight && node.Previous.Value.Weight < node.Next!.Value.Weight)
+        {
+            CombineWithPrev(node, node.Previous.Value.Weight);
+            return true;
         }
+
+        if (node.Next!.Value.Weight >= node.Value.Weight)
+        {
+            CombineWithNext(node, node.Next.Value.Weight);
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool TryWeightDeltaOptimization(LinkedListNode<WeightedSegment> node)
+    {
+        var prevWeightDelta = Math.Abs(node.Value.Weight - node.Previous!.Value.Weight);
+        var nextWeightDelta = Math.Abs(node.Value.Weight - node.Next!.Value.Weight);
+
+        if (prevWeightDelta <= _optimizationOptions.MaxWeightDeltaToCombine)
+        {
+            CombineWithPrev(node, Math.Max(node.Value.Weight, node.Previous.Value.Weight));
+            return true;
+        }
+
+        if (nextWeightDelta <= _optimizationOptions.MaxWeightDeltaToCombine)
+        {
+            CombineWithNext(node, Math.Max(node.Value.Weight, node.Next.Value.Weight));
+            return true;
+        }
+
+        return false;
+    }
+
+    private void CombineWithPrev(LinkedListNode<WeightedSegment> node, int combinedWeight)
+    {
+        node.Value = new WeightedSegment(node.Previous!.Value.Start, node.Value.End, combinedWeight);
+        _segments.Remove(node.Previous);
+    }
+
+    private void CombineWithNext(LinkedListNode<WeightedSegment> node, int combinedWeight)
+    {
+        node.Value = new WeightedSegment(node.Value.Start, node.Next!.Value.End, combinedWeight);
+        _segments.Remove(node.Next);
     }
 }

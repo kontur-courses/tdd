@@ -6,9 +6,9 @@ namespace CircularCloudLayouter.WeightedLayouter.SideLayouters;
 
 public abstract class WeightedSideLayouter
 {
-    private const int NeighboursSpace = 1;
+    private const int NeighboursSpace = 2;
 
-    private static readonly WeightedSegmentsOptimizationOptions OptimizationOptions = new(2 * NeighboursSpace, 2);
+    private static readonly WeightedSegmentsOptimizationOptions OptimizationOptions = new(2 * NeighboursSpace, NeighboursSpace);
 
     protected readonly WeightedSegmentsCollection SideWeights = new(OptimizationOptions);
 
@@ -29,6 +29,8 @@ public abstract class WeightedSideLayouter
     public abstract Rectangle GetNextRectangle(Size rectSize);
 
     public abstract void UpdateWeights(Rectangle rect);
+
+    public void OptimizeWeights() => SideWeights.OptimizeWeights();
 
     protected (int Absolute, int Relative) FindNextRectPos(int sideLength, int middle)
     {
