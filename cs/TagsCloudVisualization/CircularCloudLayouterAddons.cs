@@ -37,10 +37,7 @@ namespace TagsCloudVisualization
 
         public static bool IsRectanglesIntersect(Rectangle firstRect, Rectangle secondRect)
         {
-            return !(firstRect.X > secondRect.X + secondRect.Width
-                     || firstRect.X + firstRect.Width < secondRect.X
-                     || firstRect.Y > secondRect.Y + secondRect.Height
-                     || firstRect.Y + firstRect.Height < secondRect.Y);
+            return !Rectangle.Intersect(firstRect, secondRect).IsEmpty;
         }
 
         public void Clear()
