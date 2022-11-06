@@ -18,17 +18,15 @@ public class WeightedSegmentsCollection
     public int Length =>
         End - Start;
 
-    public double AverageWeight =>
-        _segments.Count > 0
-            ? _segments.Average(segment => segment.FullWeight)
-            : throw new InvalidOperationException("No segments added!");
+    public int GetWeightAt(int point) =>
+        _segments.Where(s => s.Start <= point && s.End >= point).Max(s => s.Weight);
 
 
     public void UpdateGreaterWeights(WeightedSegment newSegment)
     {
         if (newSegment.Length == 0)
             return;
-        
+
         if (_segments.Count == 0)
         {
             _segments.AddFirst(newSegment);

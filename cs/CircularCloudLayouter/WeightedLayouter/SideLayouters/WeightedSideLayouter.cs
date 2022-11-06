@@ -18,8 +18,10 @@ public abstract class WeightedSideLayouter
         FormFactor = formFactor;
     }
 
-    public virtual double CalculateCoefficient() =>
-        SideWeights.AverageWeight;
+    public double CalculateCoefficient() =>
+        SideWeights.Segments.Max(s => s.Weight) * RatioCoefficient;
+
+    protected abstract double RatioCoefficient { get; }
 
     public abstract Rectangle GetNextRectangle(Size rectSize);
 
@@ -35,7 +37,7 @@ public abstract class WeightedSideLayouter
         var bestScore = double.MinValue;
         var bestSegment = new WeightedSegment(0, 0, int.MaxValue);
 
-        foreach (var segment in GetSegmentsWithOffset(GetOffsetLength(sideLength)))
+        foreach (var segment in SideWeights.Segments)
         {
             mergedWeight = HandleNewSegment(segment, mergedSegments, sideLength, mergedWeight);
             var min = mergedSegments.Peek().Start;
@@ -45,7 +47,7 @@ public abstract class WeightedSideLayouter
                 continue;
 
             var mergedStart = FormFactor.GetPreferredStart(min, max, sideLength, middle);
-            
+
             var mergedDistToCenter = GetDistToCenter(mergedStart, sideLength, middle);
             var score = FormFactor.GetSegmentScore(mergedWeight, mergedDistToCenter);
 
@@ -57,19 +59,6 @@ public abstract class WeightedSideLayouter
         }
 
         return GetResultPos(bestSegment);
-    }
-
-    private static int GetOffsetLength(int sideLength) =>
-        (int) Math.Floor(OffsetCoefficient * sideLength);
-
-    private IEnumerable<WeightedSegment> GetSegmentsWithOffset(int offsetLength)
-    {
-        var startOffset = new WeightedSegment(SideWeights.Start - offsetLength, SideWeights.Start);
-        var endOffset = new WeightedSegment(SideWeights.End, SideWeights.End + offsetLength);
-
-        return new[] {startOffset}
-            .Concat(SideWeights.Segments)
-            .Concat(new[] {endOffset});
     }
 
     private static int HandleNewSegment(

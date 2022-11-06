@@ -5,8 +5,6 @@ public class FormFactor
     private readonly Func<int, int, int, int, int> _preferredStartCalculator;
     private readonly Func<int, double, double> _segmentScoreCalculator;
 
-    public double WidthToHeightRatio { get; }
-
     public FormFactor(
         Func<int, int, int, int, int> preferredStartCalculator,
         Func<int, double, double> segmentScoreCalculator,
@@ -22,6 +20,8 @@ public class FormFactor
 
     public FormFactor WithRatio(double widthToHeightRatio) =>
         new(_preferredStartCalculator, _segmentScoreCalculator, widthToHeightRatio);
+
+    public double WidthToHeightRatio { get; }
 
     public int GetPreferredStart(int min, int max, int sideLength, int middle)
     {

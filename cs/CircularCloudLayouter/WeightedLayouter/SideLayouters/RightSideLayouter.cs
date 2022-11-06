@@ -9,8 +9,7 @@ public class RightSideLayouter : WeightedSideLayouter
     {
     }
 
-    public override double CalculateCoefficient() =>
-        base.CalculateCoefficient() / FormFactor.WidthToHeightRatio;
+    protected override double RatioCoefficient => 1;
 
     public override Rectangle GetNextRectangle(Size rectSize)
     {

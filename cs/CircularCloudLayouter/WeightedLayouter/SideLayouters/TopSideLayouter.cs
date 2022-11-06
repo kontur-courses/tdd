@@ -9,6 +9,8 @@ public class TopSideLayouter : WeightedSideLayouter
     {
     }
 
+    protected override double RatioCoefficient => FormFactor.WidthToHeightRatio;
+
     public override Rectangle GetNextRectangle(Size rectSize)
     {
         var resPos = FindNextRectPos(rectSize.Width, Center.X);
