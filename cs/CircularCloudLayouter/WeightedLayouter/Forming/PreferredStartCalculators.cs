@@ -4,9 +4,9 @@ public static class PreferredStartCalculators
 {
     public static readonly Func<int, int, int, int, int> CloserToMiddle =
         (min, max, sideLength, middle) =>
-            max < middle + sideLength / 2
+            max < middle + sideLength / 2d
                 ? max - sideLength
-                : Math.Max(min, middle - sideLength / 2);
+                : Math.Max(min, (2 * middle - sideLength) / 2);
 
     public static readonly Func<int, int, int, int, int> CloserToEdges =
         (min, max, sideLength, middle) =>
