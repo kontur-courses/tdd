@@ -5,22 +5,24 @@ namespace TagsCloudVisualization
 {
     public class ArchimedeanSpiral
     {
-        private double _a = 0;
-        private double _b = 1;
+        public Point StartPoint { get; }
+        public double StartRadius { get; }
+        public double ExtendRatio { get;  }
 
-        public ArchimedeanSpiral(double a = 0, double b = 1)
+        public ArchimedeanSpiral(Point startPoint, double startRadius = 0, double extendRatio = 1)
         {
-            if (a < 0 || b <= 0)
+            StartPoint = startPoint;
+            if (startRadius < 0 || extendRatio <= 0)
                 throw new ArgumentException("Parameters cannot be negative.");
-            _a = a;
-            _b = b;
+            StartRadius = startRadius;
+            ExtendRatio = extendRatio;
         }
 
         public Point GetPoint(double angle)
         {
-            double radius = _a + _b * angle;
-            int x = Convert.ToInt32(radius * Math.Cos(angle));
-            int y = Convert.ToInt32(radius * Math.Sin(angle));
+            double radius = StartRadius + ExtendRatio * angle;
+            int x = StartPoint.X + Convert.ToInt32(radius * Math.Cos(angle));
+            int y = StartPoint.Y + Convert.ToInt32(radius * Math.Sin(angle));
             return new Point(x, y);
         }
     }

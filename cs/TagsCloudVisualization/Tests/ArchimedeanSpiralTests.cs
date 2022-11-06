@@ -15,18 +15,18 @@ namespace TagsCloudVisualization.Tests
         {
             get
             {
-                yield return new TestCaseData(-1, 1).SetName("a < 0");
-                yield return new TestCaseData(1, -1).SetName("b < 0");
-                yield return new TestCaseData(1, 0).SetName("b == 0");
-                yield return new TestCaseData(-1, -1).SetName("a <0 and b < 0");
-                yield return new TestCaseData(-1, 0).SetName("a <0 and b == 0");
+                yield return new TestCaseData(new Point(1, 1), -1, 1).SetName("startRadius < 0");
+                yield return new TestCaseData(new Point(1, 1), 1, -1).SetName("extendRatio < 0");
+                yield return new TestCaseData(new Point(1, 1), 1, 0).SetName("extendRatio == 0");
+                yield return new TestCaseData(new Point(1, 1), -1, -1).SetName("startRadius < 0 and extendRatio < 0");
+                yield return new TestCaseData(new Point(1, 1), -1, 0).SetName("startRadius < 0 and extendRatio == 0");
             }
         }
         
         [TestCaseSource(nameof(Instance_IncorrectParameters))]
-        public void Instance_IncorrectParameters_ShouldFail(int a, int b)
+        public void Instance_IncorrectParameters_ShouldFail(Point startPoint, int startRadius, int extendRatio)
         {
-            Action instantiating = () => new ArchimedeanSpiral(a, b);
+            Action instantiating = () => new ArchimedeanSpiral(startPoint, startRadius, extendRatio);
             instantiating.Should().Throw<ArgumentException>();
         }
         
@@ -34,32 +34,31 @@ namespace TagsCloudVisualization.Tests
         {
             get
             {
-                yield return new TestCaseData(1, 1);
-                yield return new TestCaseData(0, 1);
-                yield return new TestCaseData(2, 3);
+                yield return new TestCaseData(new Point(1, 1), 1, 1);
+                yield return new TestCaseData(new Point(1, 1), 0, 1);
+                yield return new TestCaseData(new Point(1, 1), 2, 3);
             }
         }
         
         [TestCaseSource(nameof(Instance_CorrectParameters))]
-        public void Instance_CorrectParameters_ShouldNotFail(int a, int b)
+        public void Instance_CorrectParameters_ShouldNotFail(Point startPoint, int startRadius, int extendRatio)
         {
-            Action instantiating = () => new ArchimedeanSpiral(a, b);
+            Action instantiating = () => new ArchimedeanSpiral(startPoint, startRadius, extendRatio);
             instantiating.Should().NotThrow<ArgumentException>();
         }
         #endregion
 
         private ArchimedeanSpiral _spiral;
         [SetUp]
-        public void Setup()
+        public void SetUp()
         {
-            _spiral = new ArchimedeanSpiral(0, 1);
+            _spiral = new ArchimedeanSpiral(new Point(500, 500), 0, 1);
         }
-        
         public static IEnumerable<TestCaseData> GetPoint
         {
             get
             {
-                yield return new TestCaseData(0, Point.Empty).SetName("Start position");
+                yield return new TestCaseData(0, Point.Empty).SetName("Zero angle should return start position");
                 yield return new TestCaseData(Math.PI / 2, new Point(0, Convert.ToInt32(Math.PI / 2))).SetName("Pi/2 angle");
                 yield return new TestCaseData(Math.PI, new Point(-Convert.ToInt32(Math.PI), 0)).SetName("Pi angle");
                 yield return new TestCaseData(3 * Math.PI / 2, new Point(0, -Convert.ToInt32(3 * Math.PI / 2))).SetName("3*Pi/2 angle");
@@ -69,9 +68,9 @@ namespace TagsCloudVisualization.Tests
         }
 
         [TestCaseSource(nameof(GetPoint))]
-        public void GetPoint_ShouldReturnPoint(double angle, Point point)
+        public void GetPoint_ShouldReturnPoint(double angle, Point result)
         {
-            _spiral.GetPoint(angle).Should().Be(point);
+            _spiral.GetPoint(angle).Should().Be(result + (Size)_spiral.StartPoint);
         }
     }
 }
