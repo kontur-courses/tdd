@@ -11,7 +11,7 @@ namespace TagsCloudVisualization_Tests;
 [TestFixture]
 public class CircularCloudLayouter_PerformanceTests
 {
-    private const int IterationsCount = 10_000;
+    private const int IterationsCount = 5000;
     private static readonly Random Random = new();
 
     [TestCase(1, 1, TestName = "Small width and height")]
@@ -22,7 +22,7 @@ public class CircularCloudLayouter_PerformanceTests
     {
         var layouter = new WeightedCircularCloudLayouter(new Point(0, 0));
         var size = new Size(width, height);
-        Invoking(() => PutEqualsRects(layouter, size)).ExecutionTime().Should().BeLessThan(10.Seconds());
+        Invoking(() => PutEqualsRects(layouter, size)).ExecutionTime().Should().BeLessThan(1.Seconds());
     }
 
     private static void PutEqualsRects(ICircularCloudLayouter layouter, Size size)
