@@ -1,19 +1,19 @@
 # Примеры визуализации изображений:
 
 > ## Круг
-> ![Circle](VisualizationExamplesImages\Circle.png)
+> ![Circle](VisualizationExamplesImages/Circle.png)
 
 > ## Квадрат
-> ![Square](VisualizationExamplesImages\Square.png)
+> ![Square](VisualizationExamplesImages/Square.png)
 
 > ## Эллипс
-> ![Ellipse](VisualizationExamplesImages\Ellipse.png)
+> ![Ellipse](VisualizationExamplesImages/Ellipse.png)
 
 > ## Прямоугольник
-> ![Rectangle](VisualizationExamplesImages\Rectangle.png)
+> ![Rectangle](VisualizationExamplesImages/Rectangle.png)
 
 > ## Крест
-> ![Cross](VisualizationExamplesImages\Cross.png)
+> ![Cross](VisualizationExamplesImages/Cross.png)
 
 > ## Цветок
-> ![Flower](VisualizationExamplesImages\Flower.png)
+> ![Flower](VisualizationExamplesImages/Flower.png)
