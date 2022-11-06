@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -17,23 +18,18 @@ namespace TagsCloudVisualization
         {
             bitmap = new Bitmap(imageWidth, imageHeight);
             gp = Graphics.FromImage(bitmap);
-            gp.FillRectangle(Brushes.White, new Rectangle(0,0, imageWidth, imageHeight));
+            
+            gp.FillRectangle(new SolidBrush(Color.FromArgb(255, 0, 34, 43)), new Rectangle(0,0, imageWidth, imageHeight));
         }
 
         public void DrawSpiral(List<Point> points)
         {
-            for (var i = 1; i < points.Count; i++)
-            {
-                gp.DrawLine(Pens.Black, points[i].X,points[i].Y, points[i - 1].X, points[i - 1].Y);
-            }
+            gp.DrawLines(Pens.Black, points.ToArray());
         }
         
-        public void DrawRectangles(List<Rectangle> rects)
+        public void DrawRectangles(IEnumerable<Rectangle> rects)
         {
-            foreach (var rect in rects)
-            {
-                gp.DrawRectangle(Pens.Black, new Rectangle(rect.X, rect.Y, rect.Width, rect.Height));
-            }
+            gp.DrawRectangles(new Pen(Color.FromArgb(255, 217,92,6)), rects.ToArray());
         }
 
         public void SaveImage(string path = null)
