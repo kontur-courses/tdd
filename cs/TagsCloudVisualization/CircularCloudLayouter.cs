@@ -5,10 +5,13 @@ using System.Text;
 
 namespace TagsCloudVisualization
 {
-    class CircularCloudLayouter
+    public class CircularCloudLayouter
     {
-        CircularCloudLayouter(Point center)
+        private readonly Point center;
+        public CircularCloudLayouter(Point center)
         {
+            if (center.X < 0 || center.Y < 0) throw new ArgumentException();
+            this.center = center;
         }
 
         Rectangle PutNextRectangle(Size rectangleSize)
