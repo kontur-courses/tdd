@@ -13,21 +13,21 @@ namespace ExampleSaver
 
             for (int i = 0; i < 2; i++)
             {
-                var img = new Bitmap(size.Width, size.Height);
-                var g = Graphics.FromImage(img);
-                g.Clear(Color.SlateBlue);
+                using var img = new Bitmap(size.Width, size.Height);
+                var graphics = Graphics.FromImage(img);
+                graphics.Clear(Color.SlateBlue);
                 for (int j = 0; j < 100; j++)
                 {
-                    var rand = new Random();
-                    var rect = layouter.PutNextRectangle(new Size(10 + rand.Next(20), 10 + rand.Next(20)));
-                    g.DrawRectangle(new Pen(new SolidBrush(Color.Orange), 1) { Alignment = PenAlignment.Inset }, rect);
+                    var rect = layouter.PutNextRectangle(new Size(10 + Random.Shared.Next(20), 10 + Random.Shared.Next(20)));
+                    graphics.DrawRectangle(new Pen(new SolidBrush(Color.Orange), 1) { Alignment = PenAlignment.Inset }, rect);
                 }
 
                 var localPath = string.Format(CultureInfo.InvariantCulture, "../../../../Resources/imgs/Density{0}_AngleStep{1}.jpg", layouter.Density, layouter.AngleStep);
                 img.Save(Path.GetFullPath(localPath));
+                Console.WriteLine($"Image saved: {localPath}");
                 layouter.Density *= 100;
                 layouter.AngleStep *= 100;
-                layouter.Rectangles.Clear();
+                layouter.Clear();
             }
         }
     }

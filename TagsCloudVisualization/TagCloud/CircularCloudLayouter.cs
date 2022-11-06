@@ -1,11 +1,14 @@
 ﻿using System.ComponentModel;
 using System.Drawing;
+using TagsCloudVisualization;
+
 namespace TagCloud;
 
 public class CircularCloudLayouter
 {
-    public readonly Point Crenter;
-    public List<Rectangle> Rectangles { get; private set; }
+    public readonly Point Center;
+    private readonly List<Rectangle> rectangles;
+    public IReadOnlyList<Rectangle> Rectangles => rectangles;
 
     /// <summary>
     /// Density check step. Applies only to the next added rectangles
@@ -19,8 +22,8 @@ public class CircularCloudLayouter
 
     public CircularCloudLayouter(Point center)
     {
-        Rectangles = new();
-        Crenter = center;
+        rectangles = new();
+        Center = center;
         Density = 0.01;
         AngleStep = 0.01;
     }
@@ -30,28 +33,29 @@ public class CircularCloudLayouter
         if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
             throw new ArgumentException("Size can't be negative");
 
-        var rectangle = new Rectangle();
+        
         foreach (var pointInPolar in GenerateArchimedeanSpiralRadiuses(0, Density, AngleStep))
         {
-            var rectangleCenter = ToCartesianCoordinate(pointInPolar.Item1, pointInPolar.Item2);
-            var position = new Point(Crenter.X + rectangleCenter.X - rectangleSize.Width / 2, 
-                                     Crenter.Y + rectangleCenter.Y - rectangleSize.Height / 2);
-            rectangle = new Rectangle(position, rectangleSize);
+            var rectangleCenter = (Point)pointInPolar;
+            var position = new Point(Center.X + rectangleCenter.X - rectangleSize.Width / 2, 
+                                     Center.Y + rectangleCenter.Y - rectangleSize.Height / 2);
+
+            var rectangle = new Rectangle(position, rectangleSize);
             if (!HasOverlapWith(rectangle))
             {
-                Rectangles.Add(rectangle);
-                break;
+                rectangles.Add(rectangle);
+                return rectangle;
             }
         }
-        return rectangle;
+        throw new Exception("There is no place for the rectangle");
     }
 
     public bool HasOverlapWith(Rectangle rectangle)
     {
-        return Rectangles.Any(x => x.IntersectsWith(rectangle));
+        return rectangles.Any(x => x.IntersectsWith(rectangle));
     }
 
-    private static IEnumerable<Tuple<double, double>> GenerateArchimedeanSpiralRadiuses(double offset, double density , double angleStep)
+    private static IEnumerable<PolarPoint> GenerateArchimedeanSpiralRadiuses(double offset, double density , double angleStep)
     {
         /** Archimedean Spiral  
          * Formula: r = a + b * θ,
@@ -60,20 +64,18 @@ public class CircularCloudLayouter
          * θ – angle in polar system, 
          * r – radius in polar system
          */
-        var angle = 0.0;
+        var nextAngle = 0.0;
         var nextRadius = 0.0;
-        while (!double.IsInfinity(nextRadius))
+        while (nextRadius < int.MaxValue / 2)
         {
-            yield return Tuple.Create(nextRadius, angle);
-            nextRadius = offset + density * angle;
-            angle += angleStep;
+            yield return new PolarPoint(nextRadius, nextAngle);
+            nextRadius = offset + density * nextAngle;
+            nextAngle += angleStep;
         }
     }
 
-    private static Point ToCartesianCoordinate(double radius, double angle)
+    public void Clear()
     {
-        var x = (int)Math.Round(radius * Math.Cos(angle));
-        var y = (int)Math.Round(radius * Math.Sin(angle));
-        return new Point(x, y);
+        rectangles.Clear();
     }
 }
