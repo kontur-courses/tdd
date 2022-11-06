@@ -17,7 +17,7 @@ public class BottomSideLayouter : WeightedSideLayouter
         var resPos = FindNextRectPos(rectSize.Width, Center.X);
         return new Rectangle(
             resPos.Absolute,
-            Center.Y + resPos.Relative + 2,
+            Center.Y + resPos.Relative,
             rectSize.Width, rectSize.Height
         );
     }
