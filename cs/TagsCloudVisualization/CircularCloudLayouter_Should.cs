@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using FluentAssertions;
+using System.Drawing.Imaging;
 
 namespace TagsCloudVisualization
 {
@@ -78,6 +79,70 @@ namespace TagsCloudVisualization
             var distMoreAvr = distanceToExtremePoints.Where(x => x > 1.2 * avr || x < 0.8 * avr);
             distMoreAvr.Count()
                 .Should().Be(0, "расстояния до крайних точек не должны отличаться от среднего больше, чем на 20%");
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        [Ignore("Ignore a test")]
+        public void CreateNewImageCloudLayouter(bool input)
+        {
+            var cloudLayouter = new CircularCloudLayouter(new Point(400, 250),input);
+            cloudLayouter.PutNextRectangle(new Size(300, 100));
+            cloudLayouter.PutNextRectangle(new Size(100, 31));
+            cloudLayouter.PutNextRectangle(new Size(50, 52));
+            cloudLayouter.PutNextRectangle(new Size(100, 31));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(50, 21));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(50, 100));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(50, 20));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(50, 20));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(50, 20));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(50, 20));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(50, 20));
+            cloudLayouter.PutNextRectangle(new Size(100, 31));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(50, 20));
+            cloudLayouter.PutNextRectangle(new Size(50, 20));
+            cloudLayouter.PutNextRectangle(new Size(50, 20));
+            cloudLayouter.PutNextRectangle(new Size(50, 20));
+            cloudLayouter.PutNextRectangle(new Size(50, 20));
+
+            var bmp = new Bitmap(800, 500);
+            using (Graphics gph = Graphics.FromImage(bmp))
+            {
+                var blackPen = new Pen(Color.Black, 3);
+                foreach (var rect in cloudLayouter.Rectangles)
+                {
+                    gph.DrawRectangle(blackPen, rect);
+                }
+                if (input)
+                    bmp.Save("CloudLayouterWithOffsetToCenter.bmp");
+                else
+                    bmp.Save("CloudLayouter.bmp");
+            }
         }
     }
 }
