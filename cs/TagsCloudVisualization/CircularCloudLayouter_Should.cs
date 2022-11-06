@@ -20,5 +20,19 @@ namespace TagsCloudVisualization
             };
             act.Should().Throw<ArgumentException>();
         }
+
+        [Test]
+        public void PutNextRectangle_ShouldReturnRectangleInCenter_WhenOneRectangle()
+        {
+            var center = new System.Drawing.Point(400, 250);
+            var cloudLayouter = new CircularCloudLayouter(center);
+            var rectangleSize = new Size(200, 30);
+            var point = new Point(center.X - rectangleSize.Width / 2, center.Y - rectangleSize.Height / 2);
+            var expectedRect = new Rectangle(point, rectangleSize);
+
+            var rect = cloudLayouter.PutNextRectangle(rectangleSize);
+
+            rect.Should().BeEquivalentTo(expectedRect);
+        }
     }
 }

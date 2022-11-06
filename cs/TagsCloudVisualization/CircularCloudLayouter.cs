@@ -14,9 +14,10 @@ namespace TagsCloudVisualization
             this.center = center;
         }
 
-        Rectangle PutNextRectangle(Size rectangleSize)
+        public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            return new Rectangle();
+            var point = new Point(center.X - rectangleSize.Width / 2, center.Y - rectangleSize.Height / 2);
+            return new Rectangle(point,rectangleSize);
         }
     }
 }
