@@ -6,7 +6,7 @@ namespace TagsCloudVisualization;
 public partial class TagsCloudForm : Form
 {
     private readonly Color _backColor = Color.FromArgb(0, 35, 45);
-    private readonly FormFactor _formFactor = StandardFormFactors.Circle;
+    private readonly FormFactor _formFactor = StandardFormFactors.Rectangle;
 
     private readonly Timer _timer = new();
     private const int DrawingInterval = 5;

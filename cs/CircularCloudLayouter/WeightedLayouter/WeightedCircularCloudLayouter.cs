@@ -11,7 +11,7 @@ public class WeightedCircularCloudLayouter : ICircularCloudLayouter
 
     public int RectanglesPlaced { get; private set; }
 
-    public WeightedCircularCloudLayouter(Point center) : this(center, StandardFormFactors.Square)
+    public WeightedCircularCloudLayouter(Point center) : this(center, StandardFormFactors.Rectangle)
     {
     }
 
