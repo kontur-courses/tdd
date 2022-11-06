@@ -35,10 +35,11 @@ namespace TagsCloudVisualization
             rect.Should().BeEquivalentTo(expectedRect);
         }
 
-        [Test]
-        public void PutNextRectangle_ShouldReturnIntersectedRectangles()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void PutNextRectangle_ShouldReturnIntersectedRectangles(bool input)
         {
-            var cloudLayouter = new CircularCloudLayouter(new System.Drawing.Point(400, 250));
+            var cloudLayouter = new CircularCloudLayouter(new System.Drawing.Point(400, 250),input);
 
             cloudLayouter.PutNextRectangle(new Size(300, 100));
             cloudLayouter.PutNextRectangle(new Size(100, 31));
@@ -52,11 +53,12 @@ namespace TagsCloudVisualization
             cloudLayouter.Rectangles.AreIntersected().Should().BeFalse();
         }
 
-        [Test]
-        public void PutNextRectangle_ShouldArrangeRectanglesInShapeCircle()
+        [TestCase(true)]
+        [TestCase(false)]
+        public void PutNextRectangle_ShouldArrangeRectanglesInShapeCircle(bool input)
         {
             var center = new System.Drawing.Point(400, 250);
-            var cloudLayouter = new CircularCloudLayouter((center));
+            var cloudLayouter = new CircularCloudLayouter(center, input);
             cloudLayouter.PutNextRectangle(new Size(300, 100));
             cloudLayouter.PutNextRectangle(new Size(100, 31));
             cloudLayouter.PutNextRectangle(new Size(50, 52));
