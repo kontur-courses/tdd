@@ -1,4 +1,4 @@
-namespace CircularCloudLayouter;
+namespace CircularCloudLayouter.Segments;
 
 public class Segment : IEquatable<Segment>
 {

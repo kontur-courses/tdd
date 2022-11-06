@@ -1,14 +1,17 @@
 using System.Drawing;
+using CircularCloudLayouter.Segments;
 using CircularCloudLayouter.WeightedLayouter.Forming;
 
 namespace CircularCloudLayouter.WeightedLayouter.SideLayouters;
 
 public abstract class WeightedSideLayouter
 {
-    private const int NeighboursSpace = 2;
-    private const double OffsetCoefficient = 0.8;
+    private const int NeighboursSpace = 1;
 
-    protected readonly WeightedSegmentsCollection SideWeights = new();
+    private static readonly WeightedSegmentsOptimizationOptions OptimizationOptions = new(2 * NeighboursSpace, 2);
+
+    protected readonly WeightedSegmentsCollection SideWeights = new(OptimizationOptions);
+
     protected readonly Point Center;
     protected readonly FormFactor FormFactor;
 
