@@ -34,5 +34,48 @@ namespace TagsCloudVisualization
 
             rect.Should().BeEquivalentTo(expectedRect);
         }
+
+        [Test]
+        public void PutNextRectangle_ShouldReturnIntersectedRectangles()
+        {
+            var cloudLayouter = new CircularCloudLayouter(new System.Drawing.Point(400, 250));
+
+            cloudLayouter.PutNextRectangle(new Size(300, 100));
+            cloudLayouter.PutNextRectangle(new Size(100, 31));
+            cloudLayouter.PutNextRectangle(new Size(50, 52));
+            cloudLayouter.PutNextRectangle(new Size(100, 31));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(50, 21));
+
+            cloudLayouter.Rectangles.AreIntersected().Should().BeFalse();
+        }
+
+        [Test]
+        public void PutNextRectangle_ShouldArrangeRectanglesInShapeCircle()
+        {
+            var center = new System.Drawing.Point(400, 250);
+            var cloudLayouter = new CircularCloudLayouter((center));
+            cloudLayouter.PutNextRectangle(new Size(300, 100));
+            cloudLayouter.PutNextRectangle(new Size(100, 31));
+            cloudLayouter.PutNextRectangle(new Size(50, 52));
+            cloudLayouter.PutNextRectangle(new Size(100, 31));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(100, 30));
+            cloudLayouter.PutNextRectangle(new Size(50, 21));
+
+            var distanceToExtremePoints = new List<int>();
+            distanceToExtremePoints.Add(center.X - cloudLayouter.Rectangles.Min(x => x.Left));
+            distanceToExtremePoints.Add(cloudLayouter.Rectangles.Max(x => x.Right) - center.X);
+            distanceToExtremePoints.Add(center.Y - cloudLayouter.Rectangles.Min(x => x.Top));
+            distanceToExtremePoints.Add(cloudLayouter.Rectangles.Max(x => x.Bottom) - center.Y);
+
+            var avr = distanceToExtremePoints.Average();
+            var distMoreAvr = distanceToExtremePoints.Where(x => x > 1.2 * avr || x < 0.8 * avr);
+            distMoreAvr.Count()
+                .Should().Be(0, "расстояния до крайних точек не должны отличаться от среднего больше, чем на 20%");
+        }
     }
 }
