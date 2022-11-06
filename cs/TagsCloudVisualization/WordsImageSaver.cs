@@ -39,8 +39,8 @@ public static class WordsImageSaver
         }
 
         return new Size(
-            Math.Min(maxRight - minLeft, MaxWidth),
-            Math.Min(maxBottom - minTop, MaxHeight)
+            Math.Min(maxRight - minLeft + 50, MaxWidth),
+            Math.Min(maxBottom - minTop + 50, MaxHeight)
         );
     }
 
