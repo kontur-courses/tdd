@@ -37,7 +37,11 @@ public abstract class WeightedSideLayouter
         var bestScore = double.MinValue;
         var bestSegment = new WeightedSegment(0, 0, int.MaxValue);
 
-        foreach (var segment in SideWeights.Segments)
+        var segments = SideWeights.Length >= sideLength
+            ? SideWeights.Segments
+            : GetSegmentsWithOffset((int) Math.Ceiling((sideLength - SideWeights.Length) / 2d));
+
+        foreach (var segment in segments)
         {
             mergedWeight = HandleNewSegment(segment, mergedSegments, sideLength, mergedWeight);
             var min = mergedSegments.Peek().Start;
@@ -81,4 +85,14 @@ public abstract class WeightedSideLayouter
 
     private static (int Absolute, int Relative) GetResultPos(WeightedSegment segment) =>
         (segment.Start + NeighboursSpace, segment.Weight + NeighboursSpace);
+
+    private IEnumerable<WeightedSegment> GetSegmentsWithOffset(int offsetLength)
+    {
+        yield return new WeightedSegment(SideWeights.Start - offsetLength, SideWeights.Start);
+
+        foreach (var segment in SideWeights.Segments)
+            yield return segment;
+
+        yield return new WeightedSegment(SideWeights.End, SideWeights.End + offsetLength);
+    }
 }
