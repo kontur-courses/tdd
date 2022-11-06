@@ -1,6 +1,3 @@
-using System.Drawing.Imaging;
-using CircularCloudLayouter;
-using CircularCloudLayouter.WeightedLayouter;
 using CircularCloudLayouter.WeightedLayouter.Forming;
 using Timer = System.Windows.Forms.Timer;
 
@@ -8,32 +5,17 @@ namespace TagsCloudVisualization;
 
 public partial class TagsCloudForm : Form
 {
-    private readonly FormFactor _formFactor = StandardFormFactors.Circle;
-    private ICircularCloudLayouter _circularCloudLayouter = null!;
-    
-    private readonly Random _random = new();
-    private readonly Timer _timer = new();
-
-    private const int DrawingInterval = 10;
-    private const string WordsFilePath = "words.txt";
-    private const string ResultsFolderPath = "results";
-
     private readonly Color _backColor = Color.FromArgb(0, 35, 45);
+    private readonly FormFactor _formFactor = StandardFormFactors.Circle;
 
-    private readonly Color _mainWordColor = Color.White;
-    private const int MainWordMinFontSize = 25;
-    private const int MainWordMaxFontSize = 32;
-    private string _mainWord = null!;
+    private readonly Timer _timer = new();
+    private const int DrawingInterval = 5;
 
-    private readonly Color _wordsColor = Color.FromArgb(250, 100, 0);
-    private const int WordsMinFontSize = 6;
-    private const int WordsMaxFontSize = 15;
-    private string[] _words = null!;
-
-    private readonly Dictionary<string, TextDrawingData> _textDrawingDatas = new();
-    private int _wordsToPaintCount = -1;
-    
+    private readonly WordsLoader _wordsLoader = new();
+    private WordsDrawingDataHandler _drawingDataHandler = null!;
     private Graphics _graphics = null!;
+
+    private int _wordsToPaintCount = -1;
 
 
     protected override void OnLoad(EventArgs e)
@@ -43,105 +25,51 @@ public partial class TagsCloudForm : Form
         WindowState = FormWindowState.Maximized;
         BackColor = _backColor;
 
-        _circularCloudLayouter = new WeightedCircularCloudLayouter(
-            new Point(ClientSize.Width / 2, ClientSize.Height / 2),
+        _graphics = CreateGraphics();
+        _graphics.TranslateTransform(ClientSize.Width / 2f, ClientSize.Height / 2f);
+
+        _drawingDataHandler = new WordsDrawingDataHandler(
+            new Point(0, 0),
             _formFactor.WithRatio((double) ClientSize.Width / ClientSize.Height)
         );
-
-        _graphics = CreateGraphics();
-
-        LoadWords();
         InitializeTimer();
-    }
-
-    private void LoadWords()
-    {
-        var fileWords = File.ReadAllLines(WordsFilePath);
-
-        _mainWord = fileWords[0];
-        _words = fileWords
-            .Skip(1)
-            .OrderBy(_ => _random.Next())
-            .ToArray();
     }
 
     private void InitializeTimer()
     {
         _timer.Interval = DrawingInterval;
-        _timer.Tick += (_, _) =>
-        {
-            if (_wordsToPaintCount++ < 0)
-            {
-                DrawMainWord(_graphics);
-            }
-            else if (_wordsToPaintCount < _words.Length)
-            {
-                DrawWord(_graphics, _words[_wordsToPaintCount]);
-            }
-            else
-            {
-                _timer.Stop();
-                Parallel.Invoke(SaveResult);
-            }
-        };
+        _timer.Tick += OnTimerOnTick;
         _timer.Start();
     }
 
-    private void SaveResult()
+    private void OnTimerOnTick(object? o, EventArgs eventArgs)
     {
-        var bitmap = new Bitmap(ClientSize.Width, ClientSize.Height);
-        var ghx = Graphics.FromImage(bitmap);
-        foreach (var (word, data) in _textDrawingDatas)
-            ghx.DrawString(word, data.Font, data.Brush, data.Rectangle);
-        
-        if (!Directory.Exists(ResultsFolderPath))
-            Directory.CreateDirectory(ResultsFolderPath);
-        var resultName = DateTime.Now.ToString("yy-MM-dd hh-mm-ss") + ".png";
-        var resultPath = Path.Combine(ResultsFolderPath, resultName);
-        bitmap.Save(resultPath, ImageFormat.Png);
+        if (_wordsToPaintCount >= _wordsLoader.Words.Count)
+        {
+            _timer.Stop();
+            Parallel.Invoke(() => WordsImageSaver.SaveResult(_drawingDataHandler));
+            return;
+        }
+
+        if (_wordsToPaintCount < 0)
+            DrawWord(_wordsLoader.MainWord, _graphics, true);
+        else
+            DrawWord(_wordsLoader.Words[_wordsToPaintCount], _graphics);
+        _wordsToPaintCount++;
     }
 
     protected override void OnPaint(PaintEventArgs e)
     {
-        var ghx = e.Graphics;
-        DrawMainWord(ghx);
-        var lastWordIndex = Math.Min(_wordsToPaintCount, _words.Length);
+        DrawWord(_wordsLoader.MainWord, _graphics, true);
+
+        var lastWordIndex = Math.Min(_wordsToPaintCount, _wordsLoader.Words.Count);
         for (var i = 0; i < lastWordIndex; i++)
-            DrawWord(ghx, _words[i]);
+            DrawWord(_wordsLoader.Words[i], _graphics);
     }
 
-    private void DrawMainWord(Graphics ghx) =>
-        DrawWord(ghx, _mainWord, MainWordMinFontSize, MainWordMaxFontSize, _mainWordColor);
-
-    private void DrawWord(Graphics ghx, string word) =>
-        DrawWord(ghx, word, WordsMinFontSize, WordsMaxFontSize, _wordsColor);
-
-    private void DrawWord(Graphics ghx, string word, int minFont, int maxFont, Color color)
+    private void DrawWord(string word, Graphics ghx, bool isMain = false)
     {
-        if (!_textDrawingDatas.ContainsKey(word))
-            CreateTextData(ghx, word, minFont, maxFont, color);
-        var data = _textDrawingDatas[word];
-        ghx.DrawString(word, data.Font, data.Brush, data.Rectangle);
+        var data = _drawingDataHandler.GetTextDrawingData(word, ghx, isMain);
+        ghx.DrawString(data.Text, data.Font, data.Brush, data.Rectangle, data.Format);
     }
-
-    private void CreateTextData(
-        Graphics graphics,
-        string word,
-        int minFont, int maxFont,
-        Color color
-    )
-    {
-        var font = new Font(FontFamily.GenericSansSerif, _random.Next(minFont, maxFont + 1));
-        var brush = new SolidBrush(color);
-        var rect = GetTextRectangle(word, font, graphics);
-        _textDrawingDatas[word] = new TextDrawingData(font, brush, rect);
-    }
-
-    private Rectangle GetTextRectangle(string word, Font font, Graphics ghx)
-    {
-        var size = Size.Ceiling(ghx.MeasureString(word, font));
-        return _circularCloudLayouter.PutNextRectangle(size);
-    }
-
-    private record TextDrawingData(Font Font, Brush Brush, Rectangle Rectangle);
 }
