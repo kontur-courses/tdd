@@ -43,19 +43,32 @@ public class CircularCloudLayouter_Should
         actualCenter.Y.Should().BeGreaterThan(centerY - 1).And.BeLessOrEqualTo(centerY + 1);
     }
 
-    [TestCase(1, 1, 1, 1, TestName = "Small equal values")]
-    [TestCase(100_000, 100_000, 100_000, 100_000, TestName = "Big equal values")]
-    [TestCase(1, 1, 100_000, 100_000, TestName = "Small width and big height equal values")]
-    [TestCase(100_000, 100_000, 1, 1, TestName = "Big width and small height equal values")]
-    [TestCase(1, 100_000, 1, 100_000, TestName = "Different values")]
-    public void ReturnNonIntersectingRects_OnRandomValues(int minWidth, int maxWidth, int minHeight, int maxHeight)
+    [TestCase(1, 1, TestName = "Small width and height")]
+    [TestCase(100_000, 100_000, TestName = "Big width and height")]
+    [TestCase(1, 100_000, TestName = "Small width and big height")]
+    [TestCase(100_000, 1, TestName = "Big width and small height")]
+    public void ReturnNonIntersectingRects_OnEqualsValues(int width, int height)
+    {
+        var rects = new List<Rectangle>();
+        var size = new Size(width, height);
+        for (var i = 0; i < 1000; i++)
+        {
+            var newRect = _defaultCircularCloudLayouter.PutNextRectangle(size);
+            rects.Any(rect => rect.IntersectsWith(newRect))
+                .Should().BeFalse("rectangles should not intersects");
+            rects.Add(newRect);
+        }
+    }
+
+    [Test]
+    public void ReturnNonIntersectingRects_OnRandomValues()
     {
         var rects = new List<Rectangle>();
         for (var i = 0; i < 1000; i++)
         {
             var size = new Size(
-                _random.Next(minWidth, maxWidth + 1),
-                _random.Next(minHeight, maxHeight + 1)
+                _random.Next(1, 100_000),
+                _random.Next(1, 100_000)
             );
             var newRect = _defaultCircularCloudLayouter.PutNextRectangle(size);
             rects.Any(rect => rect.IntersectsWith(newRect))
