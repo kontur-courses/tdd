@@ -15,7 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Images" />
+      <Folder Include="FailureImages" />
     </ItemGroup>
 
 </Project>
