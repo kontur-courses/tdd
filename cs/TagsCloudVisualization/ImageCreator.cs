@@ -12,14 +12,9 @@ namespace TagsCloudVisualization
         
         private readonly Bitmap bitmap;
         private readonly Graphics gp;
-        private readonly int shiftX;
-        private readonly int shiftY;
-        
-        public ImageCreator(int imageWidth, int imageHeight, Point center)
+
+        public ImageCreator(int imageWidth, int imageHeight)
         {
-            shiftX = center.X;
-            shiftY = center.Y;
-            
             bitmap = new Bitmap(imageWidth, imageHeight);
             gp = Graphics.FromImage(bitmap);
             gp.FillRectangle(Brushes.White, new Rectangle(0,0, imageWidth, imageHeight));
@@ -29,7 +24,7 @@ namespace TagsCloudVisualization
         {
             for (var i = 1; i < points.Count; i++)
             {
-                gp.DrawLine(Pens.Black, points[i].X + shiftX,points[i].Y + shiftY , points[i - 1].X + shiftX, points[i - 1].Y + shiftY );
+                gp.DrawLine(Pens.Black, points[i].X,points[i].Y, points[i - 1].X, points[i - 1].Y);
             }
         }
         
@@ -37,7 +32,7 @@ namespace TagsCloudVisualization
         {
             foreach (var rect in rects)
             {
-                gp.DrawRectangle(Pens.Black, new Rectangle(rect.X + shiftX, rect.Y + shiftY, rect.Width, rect.Height));
+                gp.DrawRectangle(Pens.Black, new Rectangle(rect.X, rect.Y, rect.Width, rect.Height));
             }
         }
 

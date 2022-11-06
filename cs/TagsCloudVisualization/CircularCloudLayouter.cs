@@ -7,11 +7,12 @@ namespace TagsCloudVisualization
     public partial class CircularCloudLayouter
     {
         public int RectangleCount => rectangles.Count;
-        
-        private readonly Point center;
-        private readonly List<Rectangle> rectangles;
-        private readonly List<Point> spiralPoints;
+        public List<Rectangle> Rectangles => rectangles;
+
         private double angle = 0;
+        private readonly Point center;
+        private readonly List<Point> spiralPoints;
+        private readonly List<Rectangle> rectangles;
 
         public CircularCloudLayouter(Point center)
         {
@@ -32,9 +33,12 @@ namespace TagsCloudVisualization
                 PutNextRectangle(new Size(rnd.Next(60, 120), rnd.Next(25, 60)));
         }
         
-        public void DrawCircularCloud(int imageWidth, int imageHeight, string path = null)
+        public void DrawCircularCloud(int imageWidth, int imageHeight, bool needDrawSpiral = false ,string path = null)
         {
-            var imageCreator = new ImageCreator(imageWidth, imageHeight, center);
+            var imageCreator = new ImageCreator(imageWidth, imageHeight);
+
+            if (needDrawSpiral)
+                imageCreator.DrawSpiral(spiralPoints);
             imageCreator.DrawRectangles(rectangles);
             imageCreator.SaveImage(path);
         }

@@ -8,27 +8,26 @@ namespace TagsCloudVisualization
     {
         private Point GetNextRectanglePosition(Size rectangleSize)
         {
-            var nextPoint = new Point(0, 0);
-
+            var shiftX = -rectangleSize.Width / 2;
+            var shiftY = -rectangleSize.Height / 2;
+            
             if (rectangles.Count == 0)
-                return nextPoint;
+                return new Point(center.X + shiftX, center.Y + shiftY);
 
-            var point = GetPotentialPoint();
+            var potentialPoint = GetPotentialPoint();
 
             while (rectangles.Any(rectangle =>
-                       IsRectanglesIntersect(new Rectangle(point, rectangleSize), rectangle)))
-                point = GetPotentialPoint();
-            
-            nextPoint = point;
+                       IsRectanglesIntersect(new Rectangle(potentialPoint, rectangleSize), rectangle)))
+                potentialPoint = GetPotentialPoint();
 
-            return nextPoint;
+            return potentialPoint;
         }
         
         private Point GetPotentialPoint()
         {
             angle += 0.1f;
-            var x = 5.0f * angle * Math.Cos(angle);
-            var y =  2.5f * angle * Math.Sin(angle);
+            var x = center.X + 5.0f * angle * Math.Cos(angle);
+            var y = center.Y + 2.5f * angle * Math.Sin(angle);
 
             var point = new Point((int)x, (int)y);
             spiralPoints.Add(point);
