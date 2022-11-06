@@ -11,7 +11,7 @@ namespace TagsCloudVisualization_Tests;
 [TestFixture]
 public class CircularCloudLayouter_PerformanceTests
 {
-    private const int IterationsCount = 5000;
+    private const int IterationsCount = 10000;
     private static readonly Random Random = new();
 
     [TestCase(1, 1, TestName = "Small width and height")]

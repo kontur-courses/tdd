@@ -3,6 +3,7 @@ using CircularCloudLayouter;
 using CircularCloudLayouter.WeightedLayouter;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using static FluentAssertions.FluentActions;
 
 namespace TagsCloudVisualization_Tests;
@@ -10,13 +11,15 @@ namespace TagsCloudVisualization_Tests;
 [TestFixture]
 public class CircularCloudLayouter_Should
 {
-    private ICircularCloudLayouter _defaultCircularCloudLayouter = null!;
     private readonly Random _random = new();
+    private ICircularCloudLayouter _defaultCircularCloudLayouter = null!;
+    private List<Rectangle> _rectangles = null!;
 
     [SetUp]
     public void Setup()
     {
         _defaultCircularCloudLayouter = new WeightedCircularCloudLayouter(new Point(0, 0));
+        _rectangles = new List<Rectangle>();
     }
 
     [TestCase(3, 4, TestName = "Usual rectangle")]
@@ -24,9 +27,9 @@ public class CircularCloudLayouter_Should
     public void ReturnCorrectSizeRectangle_Successful(int width, int height)
     {
         var size = new Size(width, height);
-        _defaultCircularCloudLayouter
-            .PutNextRectangle(new Size(width, height)).Size
-            .Should().Be(size);
+        var rect = _defaultCircularCloudLayouter.PutNextRectangle(new Size(width, height));
+        _rectangles.Add(rect);
+        rect.Size.Should().Be(size);
     }
 
     [TestCase(0, 0, TestName = "Zero placed rectangle")]
@@ -38,42 +41,49 @@ public class CircularCloudLayouter_Should
     {
         var actualRect = new WeightedCircularCloudLayouter(new Point(centerX, centerY))
             .PutNextRectangle(new Size(1, 2));
+        _rectangles.Add(actualRect);
         var actualCenter = actualRect.Location + actualRect.Size / 2;
+
         actualCenter.X.Should().BeGreaterThan(centerX - 1).And.BeLessOrEqualTo(centerX + 1);
         actualCenter.Y.Should().BeGreaterThan(centerY - 1).And.BeLessOrEqualTo(centerY + 1);
     }
 
     [TestCase(1, 1, TestName = "Small width and height")]
-    [TestCase(100_000, 100_000, TestName = "Big width and height")]
-    [TestCase(1, 100_000, TestName = "Small width and big height")]
-    [TestCase(100_000, 1, TestName = "Big width and small height")]
+    [TestCase(1000, 1000, TestName = "Big width and height")]
+    [TestCase(1, 1000, TestName = "Small width and big height")]
+    [TestCase(1000, 1, TestName = "Big width and small height")]
     public void ReturnNonIntersectingRects_OnEqualsValues(int width, int height)
     {
-        var rects = new List<Rectangle>();
         var size = new Size(width, height);
-        for (var i = 0; i < 1000; i++)
+        for (var i = 0; i < 100; i++)
         {
             var newRect = _defaultCircularCloudLayouter.PutNextRectangle(size);
-            rects.Any(rect => rect.IntersectsWith(newRect))
+            _rectangles.Add(newRect);
+
+            _rectangles
+                .Take(_rectangles.Count - 1)
+                .Any(rect => rect.IntersectsWith(newRect))
                 .Should().BeFalse("rectangles should not intersects");
-            rects.Add(newRect);
         }
+        // true.Should().BeFalse();
     }
 
     [Test]
+    [Repeat(10)]
     public void ReturnNonIntersectingRects_OnRandomValues()
     {
-        var rects = new List<Rectangle>();
-        for (var i = 0; i < 1000; i++)
+        for (var i = 0; i < 100; i++)
         {
             var size = new Size(
-                _random.Next(1, 100_000),
-                _random.Next(1, 100_000)
+                _random.Next(1, 1000),
+                _random.Next(1, 1000)
             );
             var newRect = _defaultCircularCloudLayouter.PutNextRectangle(size);
-            rects.Any(rect => rect.IntersectsWith(newRect))
+            _rectangles.Add(newRect);
+            _rectangles
+                .Take(_rectangles.Count - 1)
+                .Any(rect => rect.IntersectsWith(newRect))
                 .Should().BeFalse("rectangles should not intersects");
-            rects.Add(newRect);
         }
     }
 
@@ -84,20 +94,22 @@ public class CircularCloudLayouter_Should
     [TestCase(-100, 0, TestName = "Negative x, zero y")]
     [TestCase(10_000_000, 10_000_000, TestName = "Big positive values")]
     [TestCase(-10_000_000, -10_000_000, TestName = "Big negative values")]
+    [Repeat(10)]
     public void ReturnNonIntersectingRects_OnAnyCenterPosition(int centerX, int centerY)
     {
         var layouter = new WeightedCircularCloudLayouter(new Point(centerX, centerY));
-        var rects = new List<Rectangle>();
-        for (var i = 0; i < 1000; i++)
+        for (var i = 0; i < 100; i++)
         {
             var size = new Size(
-                _random.Next(1, 100_000),
-                _random.Next(1, 100_000)
+                _random.Next(1, 1000),
+                _random.Next(1, 1000)
             );
             var newRect = layouter.PutNextRectangle(size);
-            rects.Any(rect => rect.IntersectsWith(newRect))
+            _rectangles.Add(newRect);
+            _rectangles
+                .Take(_rectangles.Count - 1)
+                .Any(rect => rect.IntersectsWith(newRect))
                 .Should().BeFalse("rectangles should not intersects");
-            rects.Add(newRect);
         }
     }
 
@@ -109,5 +121,14 @@ public class CircularCloudLayouter_Should
         Invoking(() => _defaultCircularCloudLayouter.PutNextRectangle(new Size(width, height)))
             .Should().Throw<ArgumentException>().And.Message.ToLower()
             .Should().ContainAll(messageParts);
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed || _rectangles.Count == 0)
+            return;
+        var filePath = ErrorImageSaver.SaveErrorResult(_rectangles, TestContext.CurrentContext.Test.Name);
+        TestContext.Out.WriteLine("Image with error saved to " + filePath);
     }
 }
