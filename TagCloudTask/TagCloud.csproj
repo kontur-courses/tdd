@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net7.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <UseWindowsForms>true</UseWindowsForms>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FluentAssertions" Version="6.8.0" />
+      <PackageReference Include="NUnit" Version="3.13.3" />
+    </ItemGroup>
+
+</Project>
