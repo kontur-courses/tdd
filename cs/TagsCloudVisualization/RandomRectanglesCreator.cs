@@ -7,6 +7,8 @@ namespace TagsCloudVisualization
 {
     public static class RandomRectanglesCreator
     {
+        private static readonly Random Random = new Random();
+        
         public static Rectangle[] GetRectangles(int count, Point center, double spiralStep = 1d)
         {
             var circularCloudLayouter = new CircularCloudLayouter(center, spiralStep);
@@ -21,11 +23,10 @@ namespace TagsCloudVisualization
         private static IEnumerable<Size> GetSizesOfRectangle(int count,
             int minWidth = 10, int maxWidth = 100, int minHeight = 5, int maxHeight = 40)
         {
-            var rd = new Random();
             for (var i = 0; i < count; i++)
             {
-                var width = rd.Next(minWidth, maxWidth);
-                var height = rd.Next(minHeight, maxHeight);
+                var width = Random.Next(minWidth, maxWidth);
+                var height = Random.Next(minHeight, maxHeight);
                 if (width < height)
                 {
                     i--;

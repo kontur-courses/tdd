@@ -84,7 +84,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="CircularCloudLayouter.cs" />
-        <Compile Include="CircularCloudLayouter_Should.cs" />
+        <Compile Include="CircularCloudLayouterTest.cs" />
         <Compile Include="Form1.cs">
             <SubType>Form</SubType>
         </Compile>

@@ -11,25 +11,37 @@ namespace TagsCloudVisualization
     [TestFixture]
     public class CircularCloudLayouter_Should
     {
-        private List<Rectangle> rectangles = new List<Rectangle>();
-        private readonly Point center = new Point(200, 100);
+        private List<Rectangle> rectangles;
+        private Point center;
+        private CircularCloudLayouter circularCloudLayouter;
+
+        [OneTimeSetUp]
+        public void StartTest()
+        {
+            center = new Point(200, 100);
+        }
+        
+        [SetUp]
+        public void SetupTest()
+        {
+            rectangles = new List<Rectangle>();
+            circularCloudLayouter = new CircularCloudLayouter(center);
+        }
         
         [Test]
-        public void PutNextRectangle_ShouldReturnFirstRectangle_ThatContainsCenter()
+        public void PutNextRectangle_FirstGotRectangle_ShouldContainsCenter()
         {
-            var circularCloudLayouter = new CircularCloudLayouter(center);
             rectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(10, 5)));
-            rectangles[0].Contains(center).Should().Be(true);
+            rectangles.First().Contains(center).Should().Be(true);
         }
         
         [TestCase(2)]
         [TestCase(10)]
         [TestCase(40)]
         [TestCase(100)]
-        public void PutNextRectangle_ShouldNotHas_IntersectRectangles(int count)
+        public void PutNextRectangle_ShouldReturnRectangles_WithoutIntersections(int count)
         {
             var size = new Size(20, 5);
-            var circularCloudLayouter = new CircularCloudLayouter(center);
             rectangles = Enumerable.Range(0, count)
                 .Select(item => circularCloudLayouter.PutNextRectangle(size))
                 .ToList();
@@ -45,8 +57,11 @@ namespace TagsCloudVisualization
         }
 
         [TearDown]
-        public void SaveImage_OnTearDown()
+        public void SaveImage_OnFailTest()
         {
+            var a = TestContext.CurrentContext;
+            if (a.Result.FailCount == 0)
+                return;
             var filename = $"Failed test {TestContext.CurrentContext.Test.Name} image at {DateTime.Now:dd-MM-yyyy HH_mm_ss}.jpg";
             var bitmap = TagCloudDrawer.Draw(rectangles.ToArray(),
                 400, 200, center,
