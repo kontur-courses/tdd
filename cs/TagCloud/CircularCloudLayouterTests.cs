@@ -1,23 +1,54 @@
 using System;
 using System.Drawing;
+using System.IO;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace TagCloud
 {
     public class CircularCloudLayouterTests
     {
+        private readonly string failedTestsPictureFolder = "FailedTestsPicture";
+        private CircularCloudLayouter testedTagCloud;
+
+        [SetUp]
+        public void PrepareCircularCloudLayouter()
+        {
+            testedTagCloud = new CircularCloudLayouter();
+        }
+
+        [TearDown]
+        public void SavePicture_WhenTestFailed()
+        {
+            var context = TestContext.CurrentContext;
+            if (context.Result.Outcome.Status != TestStatus.Failed)
+                return;
+
+            Directory.CreateDirectory(failedTestsPictureFolder);
+            var fileName = $"{context.Test.MethodName}{new Random().Next()}";
+            var filePath = Path.Combine(failedTestsPictureFolder, fileName);
+
+            File.WriteAllText(filePath + ".txt", $"The test {context.Test.FullName} failed with an error: {context.Result.Message}" + 
+                                                 Environment.NewLine + "StackTrace:" + context.Result.StackTrace);
+            TagCloudVisualization.SaveAsBitmap(testedTagCloud, filePath + ".bmp");
+
+            TestContext.WriteLine($"Tag cloud visualization saved to file {filePath}");
+        }
+
+
+
         [TestCase(0, 0)]
         [TestCase(5, 10)]
         public void Ctor_SetCenterPoint(int x, int y)
         {
             var planningCenter = new Point(x, y);
 
-            var cloud = new CircularCloudLayouter(planningCenter);
+            testedTagCloud = new CircularCloudLayouter(planningCenter);
 
-            cloud.Center.Should().BeEquivalentTo(planningCenter);
-            cloud.GetWidth().Should().Be(0);
-            cloud.GetHeight().Should().Be(0);
+            testedTagCloud.Center.Should().BeEquivalentTo(planningCenter);
+            testedTagCloud.GetWidth().Should().Be(0);
+            testedTagCloud.GetHeight().Should().Be(0);
         }
 
         [TestCase(0, 0)]
@@ -25,9 +56,7 @@ namespace TagCloud
         [TestCase(10, 0)]
         public void PutNextRectangle_ThrowArgumentException(int width, int height)
         {
-            var cloud = new CircularCloudLayouter();
-
-            Action act = () => cloud.PutNextRectangle(new Size(width, height));
+            Action act = () => testedTagCloud.PutNextRectangle(new Size(width, height));
 
             act.Should().Throw<ArgumentException>();
         }
@@ -36,31 +65,27 @@ namespace TagCloud
         [TestCase(50)]
         public void GetWidth_EqualsToTheReactangleWidth(int width)
         {
-            var cloud = new CircularCloudLayouter();
+            testedTagCloud.PutNextRectangle(new Size(width, 3));
 
-            cloud.PutNextRectangle(new Size(width, 3));
-
-            cloud.GetWidth().Should().Be(width);
+            testedTagCloud.GetWidth().Should().Be(width);
         }
 
         [TestCase(100)]
         [TestCase(50)]
         public void GetHeight_EqualsToTheReactangleHeight(int height)
         {
-            var cloud = new CircularCloudLayouter();
+            testedTagCloud.PutNextRectangle(new Size(3, height));
 
-            cloud.PutNextRectangle(new Size(3, height));
-
-            cloud.GetHeight().Should().Be(height);
+            testedTagCloud.GetHeight().Should().Be(height);
         }
 
         [TestCase(0, 0, 35, 75)]
         [TestCase(3, 3, 5, 5)]
         public void PutNextRectangle_FirstRectangleMustBeInCenter(int centerX, int centerY, int reactWidth, int reactHeight)
         {
-            var cloud = new CircularCloudLayouter(new Point(centerX, centerY));
+            testedTagCloud = new CircularCloudLayouter(new Point(centerX, centerY));
 
-            var rectangle = cloud.PutNextRectangle(new Size(reactWidth, reactHeight));
+            var rectangle = testedTagCloud.PutNextRectangle(new Size(reactWidth, reactHeight));
             var planningReactLocation = new Point(centerX - reactWidth / 2, centerY - reactHeight / 2);
 
             rectangle.Location.Should().BeEquivalentTo(planningReactLocation);
