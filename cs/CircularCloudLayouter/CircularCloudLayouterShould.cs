@@ -15,9 +15,6 @@ namespace CircularCloudLayouter
     [TestFixture]
     public class CircularCloudLayouterShould
     {
-
-
-
         private CircularCloudLayouter cloud;
         private static readonly Size ScreenSize = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Size;
         private readonly Point center = new Point(ScreenSize.Width / 2, ScreenSize.Height / 2);
@@ -41,15 +38,15 @@ namespace CircularCloudLayouter
             return false;
         }
 
-        [TestCase(110, 110)]
-        public void Test_CircularCloudLayouter_FirstRectangleInCenter(int width, int height)
+        [Test]
+        public void Test_CircularCloudLayouter_FirstRectangleInCenter()
         {
-            var sizeRectangle = new Size(width, height);
+            var sizeRectangle = new Size(110, 110);
             var r = cloud.PutNextRectangle(sizeRectangle);
 
 
             r.Size.Should().Be(sizeRectangle);
-            r.Location.Should().Be(new Point(center.X - width / 2, center.Y - height / 2));
+            r.Location.Should().Be(new Point(center.X - sizeRectangle.Width / 2, center.Y - sizeRectangle.Height / 2));
 
         }
 
