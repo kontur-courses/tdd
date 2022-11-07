@@ -51,4 +51,14 @@ public class TagCloud_Should
         var size = new Size(10, 10);
         layouter.PutNextRectangle(size).Size.Should().Be(size);
     }
+    
+    [Test]
+    public void PutNextRectangle_ReturnRectangles_DontIntersect()
+    {
+        var layouter = new CircularCloudLayouter(new Point(0, 0));
+        var size = new Size(10, 10);
+        var rect1 = layouter.PutNextRectangle(size);
+        var rect2 = layouter.PutNextRectangle(size);
+        rect1.IntersectsWith(rect2).Should().BeFalse();
+    }
 }
