@@ -41,11 +41,7 @@ public class WeightedCircularCloudLayouter : ICircularCloudLayouter
 
         Parallel.ForEach(
             _sideLayouters,
-            layouter =>
-            {
-                layouter.UpdateWeights(rect);
-                layouter.OptimizeWeights();
-            }
+            layouter => layouter.UpdateWeights(rect)
         );
 
         RectanglesPlaced++;

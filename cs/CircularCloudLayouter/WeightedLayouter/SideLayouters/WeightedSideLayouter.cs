@@ -8,9 +8,10 @@ public abstract class WeightedSideLayouter
 {
     private const int NeighboursSpace = 2;
 
-    private static readonly WeightedSegmentsOptimizationOptions OptimizationOptions = new(2 * NeighboursSpace, NeighboursSpace);
+    private static readonly WeightedSegmentsOptimizationOptions OptimizationOptions =
+        new(2 * NeighboursSpace, NeighboursSpace);
 
-    protected readonly WeightedSegmentsCollection SideWeights = new(OptimizationOptions);
+    private readonly WeightedCollection _sideWeights = new(OptimizationOptions);
 
     protected readonly Point Center;
     protected readonly FormFactor FormFactor;
@@ -22,15 +23,22 @@ public abstract class WeightedSideLayouter
     }
 
     public double CalculateCoefficient() =>
-        SideWeights.Segments.Max(s => s.Weight) * RatioCoefficient;
+        _sideWeights.MaxWeight * RatioCoefficient;
 
     protected abstract double RatioCoefficient { get; }
 
     public abstract Rectangle GetNextRectangle(Size rectSize);
 
-    public abstract void UpdateWeights(Rectangle rect);
+    public void UpdateWeights(Rectangle rect)
+    {
+        var newWeights = ParseWeights(rect);
+        if (newWeights.Weight < 0)
+            return;
+        _sideWeights.UpdateGreaterWeights(newWeights);
+        _sideWeights.OptimizeWeights();
+    }
 
-    public void OptimizeWeights() => SideWeights.OptimizeWeights();
+    protected abstract WeightedSegment ParseWeights(Rectangle rectangle);
 
     protected (int Absolute, int Relative) FindNextRectPos(int sideLength, int middle)
     {
@@ -42,9 +50,9 @@ public abstract class WeightedSideLayouter
         var bestScore = double.MinValue;
         var bestSegment = new WeightedSegment(0, 0, int.MaxValue);
 
-        var segments = SideWeights.Length >= sideLength
-            ? SideWeights.Segments
-            : GetSegmentsWithOffset((int) Math.Ceiling((sideLength - SideWeights.Length) / 2d));
+        var segments = _sideWeights.FullLength >= sideLength
+            ? _sideWeights
+            : GetSegmentsWithOffset((int) Math.Ceiling((sideLength - _sideWeights.FullLength) / 2d));
 
         foreach (var segment in segments)
         {
@@ -93,11 +101,25 @@ public abstract class WeightedSideLayouter
 
     private IEnumerable<WeightedSegment> GetSegmentsWithOffset(int offsetLength)
     {
-        yield return new WeightedSegment(SideWeights.Start - offsetLength, SideWeights.Start);
+        yield return new WeightedSegment(_sideWeights.Start - offsetLength, _sideWeights.Start);
 
-        foreach (var segment in SideWeights.Segments)
+        foreach (var segment in _sideWeights)
             yield return segment;
 
-        yield return new WeightedSegment(SideWeights.End, SideWeights.End + offsetLength);
+        yield return new WeightedSegment(_sideWeights.End, _sideWeights.End + offsetLength);
+    }
+
+    private IEnumerable<WeightedSegment> WeightsWithRequiredOffset(int minLength)
+    {
+        var offsetLength = (int) Math.Ceiling((minLength - _sideWeights.FullLength) / 2d);
+
+        if (offsetLength > 0)
+            yield return new WeightedSegment(_sideWeights.Start - offsetLength, _sideWeights.Start);
+
+        foreach (var segment in _sideWeights)
+            yield return segment;
+
+        if (offsetLength > 0)
+            yield return new WeightedSegment(_sideWeights.End, _sideWeights.End + offsetLength);
     }
 }

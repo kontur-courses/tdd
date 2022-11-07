@@ -22,11 +22,6 @@ public class LeftSideLayouter : WeightedSideLayouter
         );
     }
 
-    public override void UpdateWeights(Rectangle rect)
-    {
-        var weight = Center.X - rect.Left;
-        if (weight < 0)
-            return;
-        SideWeights.UpdateGreaterWeights(new WeightedSegment(rect.Top, rect.Bottom, weight));
-    }
+    protected override WeightedSegment ParseWeights(Rectangle rect) =>
+        new(rect.Top, rect.Bottom, Center.X - rect.Left);
 }

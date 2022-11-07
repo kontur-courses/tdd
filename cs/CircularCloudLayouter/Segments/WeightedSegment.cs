@@ -14,8 +14,8 @@ public class WeightedSegment : Segment, IEquatable<WeightedSegment>
     {
     }
 
-    public override WeightedSegment WithStart(int start) => new (base.WithStart(start), Weight);
-    public override WeightedSegment WithEnd(int end) => new (base.WithEnd(end), Weight);
+    public override WeightedSegment WithStart(int start) => new(base.WithStart(start), Weight);
+    public override WeightedSegment WithEnd(int end) => new(base.WithEnd(end), Weight);
 
     public override bool Equals(object? obj)
     {
