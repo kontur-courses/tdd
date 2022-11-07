@@ -46,7 +46,7 @@ namespace TagsCloudVisualization
             {
                 pointer = new Point((int)(center.X + Math.Cos(angle) * angle / (0.3 * Math.PI)),
                     (int)(center.Y + Math.Sin(angle) * angle / (0.3 * Math.PI)));
-                adjustAngle = adjustAngle <= 0.015 ? 0.15 : Math.PI / 4 / (int)(angle / (2 * Math.PI) + 1);
+                adjustAngle = adjustAngle <= 0.017 ? 0.017 : Math.PI / 4 / (int)(angle / (2 * Math.PI) + 1);
                 angle += adjustAngle;
                 if (PointLiesInRectangles(pointer))
                     continue;
