@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using TagsCloudVisualization.Structures;
 
 namespace TagsCloudVisualization
 {
@@ -12,6 +13,8 @@ namespace TagsCloudVisualization
         private readonly Point center;
         public readonly List<Point> SpiralPoints;
 
+        protected QuadTree QuadTree { get; }
+
         public CircularCloudLayouter(Point center)
         {
             canvas = GetRectangleAtPositionOfCenter(center, 2 * new Size(center));
@@ -19,8 +22,9 @@ namespace TagsCloudVisualization
             spiral = new Spiral(center, Math.PI / 360, 2).GetEnumerator();
             this.center = center;
             SpiralPoints = new();
-        }
 
+            QuadTree = new QuadTree(canvas);
+        }
 
         private Rectangle GetRectangleAtPositionOfCenter(Point position, Size rectangleSize)
         {
@@ -37,7 +41,8 @@ namespace TagsCloudVisualization
             {
                 var rectangle = GetRectangleAtPositionOfCenter(spiral.Current, rectangleSize);
                 SpiralPoints.Add(spiral.Current);
-                if (rectangle.IntersectsWith(rectangles))
+
+                if (QuadTree.HasContent(rectangle))
                     continue;
 
                 CheckIfRectangleIsOutsideOfCanvas(rectangle);
@@ -46,6 +51,7 @@ namespace TagsCloudVisualization
                     rectangle = TryShiftToCenter(rectangle, i % 2 == 0);
 
                 rectangles.Add(rectangle);
+                QuadTree.Insert(rectangle);
                 return rectangle;
             }
 
@@ -79,8 +85,8 @@ namespace TagsCloudVisualization
 
                 if (newDistance >= oldDistance)
                     break;
-
-                if (!newRectangle.IntersectsWith(rectangles))
+                
+                if (!QuadTree.HasContent(newRectangle))
                     rectangle = newRectangle;
 
 

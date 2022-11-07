@@ -16,11 +16,11 @@ namespace TagsCloudVisualization
         private readonly Pen spiralPen;
         private readonly CircularCloudLayouter layouter;
 
-        public Painter(Size imageSize, Pen rectanglePen, Pen spiralPen)
+        public Painter(Size imageSize, Pen rectanglePen, Pen spiralPen, RectangleGenerator generator)
         {
             image = new Bitmap(imageSize.Width, imageSize.Height);
             graphics = Graphics.FromImage(image);
-            generator = new RectangleGenerator(imageSize / 100, imageSize / 20);
+            this.generator = generator;
             this.rectanglePen = rectanglePen;
             this.spiralPen = spiralPen;
             layouter = new CircularCloudLayouter(new Point(imageSize / 2));
