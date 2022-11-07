@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Text;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
 using NUnit.Framework;
 
 namespace TagCloud
