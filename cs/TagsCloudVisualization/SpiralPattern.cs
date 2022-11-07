@@ -52,6 +52,7 @@ namespace TagsCloudVisualization
                 };
                 angle++;
             }
+            // ReSharper disable once IteratorNeverReturns
         }
     }
 }

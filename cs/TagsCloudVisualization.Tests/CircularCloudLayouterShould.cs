@@ -14,11 +14,8 @@ namespace TagsCloudVisualization.Tests
         {
             circularCloud = new CircularCloudLayouter(Point.Empty);
         }
-
-        [TestCase(0, 1, TestName = "Zero width")]
-        [TestCase(1, 0, TestName = "Zero height")]
-        [TestCase(-1, 1, TestName = "Negative width")]
-        [TestCase(1, -1, TestName = "Negative height")]
+        
+        [TestCaseSource(typeof(TestData), nameof(TestData.IncorrectSize))]
         [Parallelizable(scope: ParallelScope.All)] 
         public void PutNextRectangle_IncorrectSize_ArgumentException(int width, int height)
         {
@@ -26,8 +23,7 @@ namespace TagsCloudVisualization.Tests
             putNextRectangle.Should().Throw<ArgumentException>();
         }
 
-        [TestCase(new[] {3, 3, 2}, new[] {2, 1, 4})]
-        [TestCase(new[] {1, 2, 4}, new[] {10, 10, 10})]
+        [TestCaseSource(typeof(TestData), nameof(TestData.CorrectSizes))]
         [Parallelizable(scope: ParallelScope.None)] 
         public void PutNextRectangle_CorrectSize_FigureCount(int[] widths, int[] heights)
         {
