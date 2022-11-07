@@ -21,4 +21,8 @@
       <ProjectReference Include="..\TagsCloudVisualization\TagsCloudVisualization.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="FailedResults" />
+    </ItemGroup>
+
 </Project>
