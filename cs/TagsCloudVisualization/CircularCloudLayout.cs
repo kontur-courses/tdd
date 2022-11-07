@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -147,19 +148,9 @@ namespace TagsCloudVisualization
             return true;
         }
 
-        private bool PointLiesInRectangles(Point p)
-        {
-            var result = false;
-            PlacedRectangles.ForEach(x => result = result || x.Contains(p));
-            return result;
-        }
+        private bool PointLiesInRectangles(Point p) => PlacedRectangles.Any(x => x.Contains(p));
 
-        private bool RectangleIntesects(Rectangle rectangle)
-        {
-            var result = false;
-            PlacedRectangles.ForEach(x => result = result || x.IntersectsWith(rectangle));
-            return result;
-        }
+        private bool RectangleIntesects(Rectangle rectangle) => PlacedRectangles.Any(x => x.IntersectsWith(rectangle));
 
         private bool RectangleOutOfCircleRange(Rectangle rectangle)
         {
