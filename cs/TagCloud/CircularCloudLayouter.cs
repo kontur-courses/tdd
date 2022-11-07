@@ -12,6 +12,8 @@ public class CircularCloudLayouter
         spiralEnumerator = GetSpiralPoints(center, 0.01, 0.01).GetEnumerator();
     }
 
+    public Rectangle[] Rectangles => rectangles.ToArray();
+
     public Rectangle PutNextRectangle(Size rectangleSize)
     {
         if (rectangleSize.Width == 0 || rectangleSize.Height == 0)
