@@ -21,12 +21,14 @@ namespace TagsCloudVisualization.WPF
     {
         private readonly Random random = new();
         private Brush customColor = Brushes.Beige;
-        private CircularCloudLayouter circularCloudLayouter = new(new Point(400, 225));
         private readonly DispatcherTimer timer = new();
+
+        private CircularCloudLayouter circularCloud;
         
         public MainWindow()
         {
             InitializeComponent();
+            UpdateCircularCloudFromTextBox();
             MyCanvas.Focus();
             timer.Interval = TimeSpan.FromSeconds(.2);
             timer.Start();
@@ -37,7 +39,7 @@ namespace TagsCloudVisualization.WPF
             customColor = GetRandomColor();
             
             var rectangleFromCloud =
-                circularCloudLayouter.PutNextRectangle(new Size(random.Next(25, 50), random.Next(25, 50)));
+                circularCloud.PutNextRectangle(new Size(random.Next(25, 50), random.Next(25, 50)));
             var canvasRect = new System.Windows.Shapes.Rectangle
             {
                 Width = rectangleFromCloud.Width,
@@ -59,16 +61,44 @@ namespace TagsCloudVisualization.WPF
 
         private void Start(object sender, RoutedEventArgs e)
         {
-            if (string.CompareOrdinal((string?) StartButton.Content, "Start") == 0)
+            if (string.CompareOrdinal((string?) StartButton.Header, "Start") == 0)
             {
-                StartButton.Content = "Stop";
+                UpdateCircularCloudFromTextBox();
+                StartButton.Header = "Stop";
                 timer.Tick += DrawRectangle;
             }
             else
             {
-                 StartButton.Content = "Start";
-                 timer.Tick -= DrawRectangle;               
+                 StartButton.Header = "Start";
+                 timer.Tick -= DrawRectangle;
             }
+        }
+
+        private void Clear(object sender, RoutedEventArgs e)
+        {
+            UpdateCircularCloudFromTextBox();
+            MyCanvas.Children.Clear();
+        }
+
+        private void UpdateCircularCloudFromTextBox()
+        {
+            var isNumber = int.TryParse(TbSteps.Text, out var steps);
+            if (!isNumber)
+                steps = 1;
+            
+            circularCloud =
+                new CircularCloudLayouter(new Point((int) (MyWindow.Width / 2),
+                    (int) (MyWindow.Height / 2)), steps);
+        }
+
+        private void UpdateInterval(object sender, TextChangedEventArgs e)
+        {
+            var isNumber = double.TryParse(TbSpeed.Text, out var speed);
+            if (!isNumber)
+                speed = 0.2;
+            
+            timer.Interval = TimeSpan.FromSeconds(speed);
+            MyCanvas.Children.Clear();
         }
     }
 }

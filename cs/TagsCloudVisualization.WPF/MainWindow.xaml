@@ -5,9 +5,34 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TagsCloudVisualization.WPF"
         mc:Ignorable="d"
+        Name="MyWindow"
         Title="TagsCloud" Height="450" Width="800">
-        <Canvas Name="MyCanvas" Background="Black" Focusable="True">
-                <Button Width="100" Height="25" Name="StartButton"
-                        Canvas.Left="350" Content="Start" Click="Start"></Button>
-        </Canvas>
+        <Grid>
+                <Canvas Name="MyCanvas" Background="Black" Focusable="True">
+                </Canvas>               
+                <Menu VerticalAlignment="Top">
+                        <MenuItem Width="40" Header="File" FontSize="12">
+                                <MenuItem Header="Start" Name="StartButton" Click="Start"></MenuItem>
+                                <MenuItem Header="Clear" Name="ClearButton" Click="Clear"></MenuItem>
+                                <MenuItem Header="Save Picture"></MenuItem>
+                        </MenuItem>
+                        <MenuItem Width="40" Header="Edit" FontSize="12">
+                                <MenuItem Header="Step"></MenuItem>
+                                <TextBox
+                                        Name="TbSteps"
+                                        TextChanged="Clear"
+                                        VerticalScrollBarVisibility="Disabled">
+                                        Input Step Value
+                                </TextBox>
+                                <MenuItem Header="Speed"></MenuItem>
+                                <TextBox
+                                        Name="TbSpeed"
+                                        TextChanged="UpdateInterval"
+                                        VerticalScrollBarVisibility="Disabled">
+                                        Input sleep time (seconds)
+                                </TextBox>
+                                <MenuItem Header="Save Picture"></MenuItem>
+                        </MenuItem>
+                </Menu>
+        </Grid>
 </Window>
