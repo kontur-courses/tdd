@@ -7,6 +7,7 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using TagsCloudVisualization.Abstractions;
 
 namespace TagsCloudVisualization.Tests;
 

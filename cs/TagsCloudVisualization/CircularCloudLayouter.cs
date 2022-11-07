@@ -1,11 +1,12 @@
 ﻿using System.Drawing;
+using TagsCloudVisualization.Abstractions;
 
 namespace TagsCloudVisualization;
 
 public class CircularCloudLayouter : ICloudLayouter
 {
     private readonly List<Rectangle> rectangles = new();
-    private readonly SpiralPointGenerator pointGenerator;
+    private readonly IPointGenerator pointGenerator;
 
     public CircularCloudLayouter(Point center)
     {

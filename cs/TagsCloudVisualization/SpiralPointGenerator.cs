@@ -1,8 +1,9 @@
 ﻿using System.Drawing;
+using TagsCloudVisualization.Abstractions;
 
 namespace TagsCloudVisualization;
 
-public class SpiralPointGenerator
+public class SpiralPointGenerator : IPointGenerator
 {
     private readonly Point center;
     private readonly double step;
