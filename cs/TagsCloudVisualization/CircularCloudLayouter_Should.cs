@@ -6,18 +6,28 @@ using System.Text;
 using NUnit.Framework;
 using FluentAssertions;
 using System.Drawing.Imaging;
+using System.IO;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization
 {
     [TestFixture]
     public class CircularCloudLayouter_Should
     {
+        private CircularCloudLayouter cloudLayouter;
+
+        [SetUp]
+        public void SetUp()
+        {
+            cloudLayouter = new CircularCloudLayouter(new Point(400, 250));
+        }
+
         [Test]
         public void CircularCloudLayouter_ShouldThrowArgumentException_WhenNegativeX_Y()
         {
             Action act = () =>
             {
-                var cloudLayouter = new CircularCloudLayouter(new Point(-1, -1));
+                var c = new CircularCloudLayouter(new Point(-1, -1));
             };
             act.Should().Throw<ArgumentException>();
         }
@@ -25,8 +35,7 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_ShouldReturnRectangleInCenter_WhenOneRectangle()
         {
-            var center = new System.Drawing.Point(400, 250);
-            var cloudLayouter = new CircularCloudLayouter(center);
+            var center = cloudLayouter.Center;
             var rectangleSize = new Size(200, 30);
             var point = new Point(center.X - rectangleSize.Width / 2, center.Y - rectangleSize.Height / 2);
             var expectedRect = new Rectangle(point, rectangleSize);
@@ -40,8 +49,8 @@ namespace TagsCloudVisualization
         [TestCase(false)]
         public void PutNextRectangle_ShouldReturnIntersectedRectangles(bool input)
         {
-            var cloudLayouter = new CircularCloudLayouter(new System.Drawing.Point(400, 250),input);
-
+            if (input) 
+                cloudLayouter.IsOffsetToCenter = true;
             cloudLayouter.PutNextRectangle(new Size(300, 100));
             cloudLayouter.PutNextRectangle(new Size(100, 31));
             cloudLayouter.PutNextRectangle(new Size(50, 52));
@@ -58,8 +67,9 @@ namespace TagsCloudVisualization
         [TestCase(false)]
         public void PutNextRectangle_ShouldArrangeRectanglesInShapeCircle(bool input)
         {
-            var center = new System.Drawing.Point(400, 250);
-            var cloudLayouter = new CircularCloudLayouter(center, input);
+            if (input)
+                cloudLayouter.IsOffsetToCenter = true;
+            var center = cloudLayouter.Center;
             cloudLayouter.PutNextRectangle(new Size(300, 100));
             cloudLayouter.PutNextRectangle(new Size(100, 31));
             cloudLayouter.PutNextRectangle(new Size(50, 52));
@@ -79,14 +89,19 @@ namespace TagsCloudVisualization
             var distMoreAvr = distanceToExtremePoints.Where(x => x > 1.2 * avr || x < 0.8 * avr);
             distMoreAvr.Count()
                 .Should().Be(0, "расстояния до крайних точек не должны отличаться от среднего больше, чем на 20%");
+            //если поменять строки на закоменченные, можно проверить, что задача 3 работает
+            //var distMoreAvr = distanceToExtremePoints.Where(x => x > 1.1 * avr || x < 0.9 * avr);
+            //distMoreAvr.Count()
+            //    .Should().Be(0, "расстояния до крайних точек не должны отличаться от среднего больше, чем на 10%");
         }
 
         [TestCase(true)]
         [TestCase(false)]
-        [Ignore("Ignore a test")]
+        //[Ignore("Ignore a test")]
         public void CreateNewImageCloudLayouter(bool input)
         {
-            var cloudLayouter = new CircularCloudLayouter(new Point(400, 250),input);
+            if (input)
+                cloudLayouter.IsOffsetToCenter = true;
             cloudLayouter.PutNextRectangle(new Size(300, 100));
             cloudLayouter.PutNextRectangle(new Size(100, 31));
             cloudLayouter.PutNextRectangle(new Size(50, 52));
@@ -130,19 +145,21 @@ namespace TagsCloudVisualization
             cloudLayouter.PutNextRectangle(new Size(50, 20));
             cloudLayouter.PutNextRectangle(new Size(50, 20));
 
-            var bmp = new Bitmap(800, 500);
-            using (Graphics gph = Graphics.FromImage(bmp))
+            cloudLayouter.SaveBitmap(TestContext.CurrentContext.Test.Name);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            var testResult = TestContext.CurrentContext.Result.Outcome;
+
+            if (Equals(testResult, ResultState.Failure) ||
+                Equals(testResult == ResultState.Error))
             {
-                var blackPen = new Pen(Color.Black, 3);
-                foreach (var rect in cloudLayouter.Rectangles)
-                {
-                    gph.DrawRectangle(blackPen, rect);
-                }
-                if (input)
-                    bmp.Save("CloudLayouterWithOffsetToCenter.bmp");
-                else
-                    bmp.Save("CloudLayouter.bmp");
+                cloudLayouter.SaveBitmap(TestContext.CurrentContext.Test.Name);
+                throw new Exception("Tag cloud visualization saved to file " + Environment.CurrentDirectory + " " +TestContext.CurrentContext.Test.Name);
             }
         }
+
     }
 }

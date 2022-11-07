@@ -8,19 +8,19 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         public List<Rectangle> Rectangles { get; set; }
-        private readonly Point center;
+        public readonly Point Center;
         private readonly double offsetPoint;
         private readonly double spiralStep;
         private int lastNumberPoint;
-        private readonly bool isOffsetToCenter;
+        public bool IsOffsetToCenter { get; set; }
 
         public CircularCloudLayouter(Point center, bool isOffsetToCenter, double offsetPoint, double spiralStep)
         {
             if (center.X < 0 || center.Y < 0) throw new ArgumentException();
             this.spiralStep = spiralStep;
             this.offsetPoint = offsetPoint;
-            this.center = center;
-            this.isOffsetToCenter = isOffsetToCenter;
+            Center = center;
+            IsOffsetToCenter = isOffsetToCenter;
             Rectangles = new List<Rectangle>();
             lastNumberPoint = 0;
         }
@@ -40,13 +40,13 @@ namespace TagsCloudVisualization
             {
                 var phi = lastNumberPoint * spiralStep;
                 var r = offsetPoint * lastNumberPoint;
-                var x = (int)(r * Math.Cos(phi)) + center.X;
-                var y = (int)(r * Math.Sin(phi)) + center.Y;
+                var x = (int)(r * Math.Cos(phi)) + Center.X;
+                var y = (int)(r * Math.Sin(phi)) + Center.Y;
                 var point = new Point(x - rectangleSize.Width / 2, y - rectangleSize.Height / 2);
                 rect = new Rectangle(point, rectangleSize);
                 if (!rect.AreIntersected(Rectangles))
                 {
-                    if (isOffsetToCenter) rect = OffsetToCenter(rect);
+                    if (IsOffsetToCenter) rect = OffsetToCenter(rect);
                     break;
                 }
             }
@@ -57,18 +57,18 @@ namespace TagsCloudVisualization
         private Rectangle OffsetToCenter(Rectangle rect)
         {
             var point = rect.Location;
-            while (center.X - 1 > rect.Center().X || center.X + 1 < rect.Center().X)
+            while (Center.X - 1 > rect.Center().X || Center.X + 1 < rect.Center().X)
             {
-                var newX = ((rect.Center().X < center.X) ? 1 : -1) + point.X;
+                var newX = ((rect.Center().X < Center.X) ? 1 : -1) + point.X;
                 var pointNew = new Point(newX, point.Y);
                 var rectNew = new Rectangle(pointNew, rect.Size);
                 if (rectNew.AreIntersected(Rectangles)) break;
                 point = pointNew;
                 rect = rectNew;
             }
-            while (center.Y - 1 > rect.Center().Y || center.Y + 1 < rect.Center().Y)
+            while (Center.Y - 1 > rect.Center().Y || Center.Y + 1 < rect.Center().Y)
             {
-                var newY = ((rect.Center().Y < center.Y) ? 1 : -1) + point.Y;
+                var newY = ((rect.Center().Y < Center.Y) ? 1 : -1) + point.Y;
                 var pointNew = new Point(point.X, newY);
                 var rectNew = new Rectangle(pointNew, rect.Size);
                 if (rectNew.AreIntersected(Rectangles)) break;
@@ -76,6 +76,20 @@ namespace TagsCloudVisualization
                 rect = rectNew;
             }
             return rect;
+        }
+
+        public void SaveBitmap(string btmName)
+        {
+            var bmp = new Bitmap(800, 500);
+            using (Graphics gph = Graphics.FromImage(bmp))
+            {
+                var blackPen = new Pen(Color.Black, 1);
+                foreach (var rect in Rectangles)
+                {
+                    gph.DrawRectangle(blackPen, rect);
+                }
+                bmp.Save(btmName + ".bmp");
+            }
         }
     }
 }
