@@ -14,11 +14,7 @@ public class CircularCloudLayouterTests
     [SetUp]
     public void Setup()
     {
-        layouter = new CircularCloudLayouter(new Point(500, 500))
-        {
-            Density = 0.1,
-            AngleStep = 0.1
-        };
+        layouter = new CircularCloudLayouter(new Point(500, 500));
     }
 
     [TearDown]
@@ -27,14 +23,11 @@ public class CircularCloudLayouterTests
         if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
         {
             using var bitmap = new Bitmap(center.X * 2, center.Y * 2);
-            var g = Graphics.FromImage(bitmap);
-
+            using var graphics = Graphics.FromImage(bitmap);
+            using var brush = new SolidBrush(Color.Orange);
+            using var pen = new Pen(brush, 1) { Alignment = PenAlignment.Inset };
             for (int i = 0; i < layouter.Rectangles.Count; i++)
-            {
-                using var brush = new SolidBrush(Color.Orange);
-                using var pen = new Pen(brush, 2) { Alignment = PenAlignment.Inset };
-                g.DrawRectangle(pen, layouter.Rectangles[i]);
-            }
+                graphics.DrawRectangle(pen, layouter.Rectangles[i]);
 
             var testName = TestContext.CurrentContext.Test.Name;
             var debugPath = TestContext.CurrentContext.TestDirectory;
@@ -128,10 +121,9 @@ public class CircularCloudLayouterTests
     }
 
     [Test]
-    public void PutNextRectangle_IsСloudDensely()
+    public void PutNextRectangle_IsDefaultСloudDensely()
     {
         const double accuracy = 0.2;
-        layouter.Density = 0.01;
 
         // The more rectangles, the more accurately repeats the shape of a circle
         for (int i = 0; i < 200; i++)

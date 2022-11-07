@@ -9,6 +9,8 @@ public class CircularCloudLayouter
     public readonly Point Center;
     private readonly List<Rectangle> rectangles;
     public IReadOnlyList<Rectangle> Rectangles => rectangles;
+    public bool IsNextAddedFromBeginning { get; set; }
+    private PolarPoint CurrentPosition { get; set; }
 
     /// <summary>
     /// Density check step. Applies only to the next added rectangles
@@ -33,8 +35,10 @@ public class CircularCloudLayouter
         if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
             throw new ArgumentException("Size can't be negative");
 
-        
-        foreach (var pointInPolar in GenerateArchimedeanSpiralRadiuses(0, Density, AngleStep))
+        if(IsNextAddedFromBeginning)
+            CurrentPosition = new PolarPoint();
+
+        foreach (var pointInPolar in GenerateArchimedeanSpiralRadiuses(CurrentPosition, 0, Density, AngleStep))
         {
             var rectangleCenter = (Point)pointInPolar;
             var position = new Point(Center.X + rectangleCenter.X - rectangleSize.Width / 2, 
@@ -44,6 +48,7 @@ public class CircularCloudLayouter
             if (!HasOverlapWith(rectangle))
             {
                 rectangles.Add(rectangle);
+                CurrentPosition = new PolarPoint(pointInPolar.Radius, pointInPolar.Angle);
                 return rectangle;
             }
         }
@@ -52,10 +57,16 @@ public class CircularCloudLayouter
 
     public bool HasOverlapWith(Rectangle rectangle)
     {
-        return rectangles.Any(x => x.IntersectsWith(rectangle));
+        foreach(var existingRectangle in rectangles)
+        {
+            if (existingRectangle.IntersectsWith(rectangle))
+                return true;
+        }
+
+        return false;
     }
 
-    private static IEnumerable<PolarPoint> GenerateArchimedeanSpiralRadiuses(double offset, double density , double angleStep)
+    private static IEnumerable<PolarPoint> GenerateArchimedeanSpiralRadiuses(PolarPoint start, double offset, double density , double angleStep)
     {
         /** Archimedean Spiral  
          * Formula: r = a + b * θ,
@@ -64,8 +75,8 @@ public class CircularCloudLayouter
          * θ – angle in polar system, 
          * r – radius in polar system
          */
-        var nextAngle = 0.0;
-        var nextRadius = 0.0;
+        var nextAngle = start.Angle;
+        var nextRadius = start.Radius;
         while (nextRadius < int.MaxValue / 2)
         {
             yield return new PolarPoint(nextRadius, nextAngle);
