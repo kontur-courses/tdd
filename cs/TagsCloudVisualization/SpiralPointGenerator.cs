@@ -2,18 +2,18 @@
 
 namespace TagsCloudVisualization;
 
-public class Spiral
+public class SpiralPointGenerator
 {
     private readonly Point center;
-    private readonly float step;
+    private readonly double step;
     private readonly int parameter;
-    private float angle;
+    private double angle;
 
-    public Spiral(Point center, int parameter = 2, float step = 1f)
+    public SpiralPointGenerator(Point center, int parameter = 1, double step = 0.02)
     {
         if (parameter == 0)
             throw new ArgumentException("Parameter should be not equal zero");
-        if (step == 0.0f)
+        if (step == 0.0)
             throw new ArgumentException("Step should be not equal zero");
         this.center = center;
         this.step = step;
@@ -22,18 +22,16 @@ public class Spiral
 
     public Point Next()
     {
-        if (angle == 0.0f)
+        if (angle == 0.0)
         {
             angle += step;
             return center;
         }
 
-        int x = parameter * (int)Math.Round(angle * Math.Cos(angle)) + center.X;
-        int y = parameter * (int)Math.Round(angle * Math.Sin(angle)) + center.Y;
-
-        var nextPoint = new Point(x, y);
+        int x = Convert.ToInt32(parameter * angle * Math.Cos(angle) + center.X);
+        int y = Convert.ToInt32(parameter * angle * Math.Sin(angle) + center.Y);
         angle += step;
 
-        return nextPoint;
+        return new Point(x, y);
     }
 }
