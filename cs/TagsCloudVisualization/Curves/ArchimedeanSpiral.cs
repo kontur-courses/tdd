@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Drawing;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Curves
 {
-    public class ArchimedeanSpiral
+    public class ArchimedeanSpiral : ICurve
     {
         public Point StartPoint { get; }
         public double StartRadius { get; }
-        public double ExtendRatio { get;  }
+        public double ExtendRatio { get; }
 
         public ArchimedeanSpiral(Point startPoint, double startRadius = 0, double extendRatio = 1)
         {
