@@ -1,16 +1,12 @@
 ﻿using System.Drawing;
-using System.Linq;
 
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayout
     {
         private readonly int radius;
-        private readonly Point center;
-        private Point pointer;
-        private Size currentSize;
-        private Rectangle bufferedRectangle;
-        public List<Rectangle> PlacedRectangles { get; }
+        private readonly List<Point> spiralPoints;
+        private List<Rectangle> placedRectangles;
 
         public CircularCloudLayout(Point center)
         {
@@ -18,152 +14,104 @@ namespace TagsCloudVisualization
                 throw new ArgumentException("X sould be positive number");
             if (center.Y < 1)
                 throw new ArgumentException("Y sould be positive number");
-            this.center = center;
             radius = center.X < center.Y ? center.X : center.Y;
-            PlacedRectangles = new();
+            placedRectangles = new();
+            spiralPoints = new SpiralDrawer(center).GetSpiralPoints();
         }
 
         public bool PutNextRectangle(Size size, out Rectangle rectangle)
         {
             rectangle = new Rectangle();
-            currentSize = size;
-            if (!ValidateSize())
+            if (!ValidateSize(size))
                 throw new ArgumentException("Both dimensions must be above zero");
-            if (PlacedRectangles.Count == 0)
-                return TryPlaceRectangleInCenter(out rectangle);
-            if (!TryFindPositionByMovePointerInSpiral())
+            if (placedRectangles.Count == 0)
+                return TryPlaceRectangleInCenter(out rectangle, size);
+            foreach (var point in spiralPoints)
+            {
+                if (PointLiesInRectangles(point))
+                    continue;
+                rectangle = TryPlaceRectangle(point, size);
+                if (rectangle.IsEmpty)
+                    continue;
+                OffsetRectangle(ref rectangle);
+                break;
+            }
+
+            if (rectangle.IsEmpty)
                 return false;
-            rectangle = bufferedRectangle;
-            PlacedRectangles.Add(rectangle);
+            placedRectangles.Add(rectangle);
             return true;
         }
 
-        private bool TryFindPositionByMovePointerInSpiral()
-        {
-            double angle = 0;
-            double adjustAngle = 1;
-            while (center.X + Math.Cos(angle) * angle / 0.95 > 0
-                   && center.Y + Math.Sin(angle) * angle / 0.95 > 0)
-            {
-                pointer = new Point((int)(center.X + Math.Cos(angle) * angle / 0.95),
-                    (int)(center.Y + Math.Sin(angle) * angle / 0.95));
-                var coilCount = (int)(angle / (2 * Math.PI) + 1);
-                adjustAngle = adjustAngle <= 0.017 ? 0.017 : Math.PI / 4 / coilCount;
-                angle += adjustAngle;
-                if (PointLiesInRectangles(pointer))
-                    continue;
-                if (TryPlaceRectangle())
-                {
-                    OffsetRectangle();
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private void OffsetRectangle()
+        private void OffsetRectangle(ref Rectangle rectangle)
         {
             var canOffsetX = true;
             var canOffsetY = true;
             while (canOffsetY || canOffsetX)
             {
-                canOffsetX = bufferedRectangle.GetCenter().X > center.X
-                    ? TryOffSetleft(bufferedRectangle)
-                    : TryOffSetRight(bufferedRectangle);
-                canOffsetY = bufferedRectangle.GetCenter().Y > center.Y
-                    ? TryOffSetUp(bufferedRectangle)
-                    : TryOffSetDown(bufferedRectangle);
+                canOffsetX = rectangle.GetCenter().X > spiralPoints[0].X
+                    ? TryOffSet(ref rectangle, -1, 0, (rectangle) => rectangle.GetCenter().X < spiralPoints[0].X)
+                    : TryOffSet(ref rectangle, 1, 0, (rectangle) => rectangle.GetCenter().X > spiralPoints[0].X);
+                canOffsetY = rectangle.GetCenter().Y > spiralPoints[0].Y
+                    ? TryOffSet(ref rectangle, 0, -1, (rectangle) => rectangle.GetCenter().Y < spiralPoints[0].Y)
+                    : TryOffSet(ref rectangle, 0, 1, (rectangle) => rectangle.GetCenter().Y > spiralPoints[0].Y);
             }
         }
 
-        private bool TryOffSetleft(Rectangle rect)
+        private bool TryOffSet(ref Rectangle rectangle, int x, int y, Func<Rectangle, bool> closeToCenter)
         {
-            var buffer = rect;
-            buffer.Offset(-1, 0);
-            if (buffer.GetCenter().X < center.X)
+            var buffer = rectangle;
+            buffer.Offset(x, y);
+            if (closeToCenter(buffer))
                 return false;
             if (RectangleIntersects(buffer))
                 return false;
-            bufferedRectangle = buffer;
+            rectangle = buffer;
             return true;
         }
 
-        private bool TryOffSetRight(Rectangle rect)
+        private Rectangle AdjustRectanglePosition(Point point, Size size)
         {
-            var buffer = rect;
-            buffer.Offset(1, 0);
-            if (buffer.GetCenter().X > center.X)
-                return false;
-            if (RectangleIntersects(buffer))
-                return false;
-            bufferedRectangle = buffer;
-            return true;
+            var x = point.X > spiralPoints[0].X ? point.X : point.X - size.Width;
+            var y = point.Y > spiralPoints[0].Y ? point.Y : point.Y - size.Height;
+            return new Rectangle(new Point(x, y), size);
         }
 
-        private bool TryOffSetUp(Rectangle rect)
+        private Rectangle TryPlaceRectangle(Point pointer, Size size)
         {
-            var buffer = rect;
-            buffer.Offset(0, -1);
-            if (buffer.GetCenter().Y < center.Y)
-                return false;
-            if (RectangleIntersects(buffer))
-                return false;
-            bufferedRectangle = buffer;
-            return true;
+            var rectangle = AdjustRectanglePosition(pointer, size);
+            if (!RectangleIntersects(rectangle) && !RectangleOutOfCircleRange(rectangle))
+                return rectangle;
+            return new Rectangle();
         }
 
-        private bool TryOffSetDown(Rectangle rect)
+        private bool TryPlaceRectangleInCenter(out Rectangle rectangle, Size size)
         {
-            var buffer = rect;
-            buffer.Offset(0, 1);
-            if (buffer.GetCenter().Y > center.Y)
-                return false;
-            if (RectangleIntersects(buffer))
-                return false;
-            bufferedRectangle = buffer;
-            return true;
-        }
-
-        private Rectangle AdjustRectangle(Point point)
-        {
-            var x = point.X > center.X ? point.X : point.X - currentSize.Width;
-            var y = point.Y > center.Y ? point.Y : point.Y - currentSize.Height;
-            return new Rectangle(new Point(x, y), currentSize);
-        }
-
-        private bool TryPlaceRectangle()
-        {
-            bufferedRectangle = AdjustRectangle(pointer);
-            return !RectangleIntersects(bufferedRectangle) && !RectangleOutOfCircleRange(bufferedRectangle);
-        }
-
-        private bool TryPlaceRectangleInCenter(out Rectangle rectangle)
-        {
-            rectangle = new Rectangle(new Point(center.X - currentSize.Width / 2, center.Y - currentSize.Height / 2),
-                currentSize);
+            rectangle = new Rectangle(
+                new Point(spiralPoints[0].X - size.Width / 2, spiralPoints[0].Y - size.Height / 2),
+                size);
             if (RectangleOutOfCircleRange(rectangle))
                 return false;
-            PlacedRectangles.Add(rectangle);
+            placedRectangles.Add(rectangle);
             return true;
         }
 
-        private bool PointLiesInRectangles(Point p) => PlacedRectangles.Any(x => x.Contains(p));
+        private bool PointLiesInRectangles(Point p) => placedRectangles.Any(x => x.Contains(p));
 
-        private bool RectangleIntersects(Rectangle rectangle) => PlacedRectangles.Any(x => x.IntersectsWith(rectangle));
+        private bool RectangleIntersects(Rectangle rectangle) => placedRectangles.Any(x => x.IntersectsWith(rectangle));
 
         private bool RectangleOutOfCircleRange(Rectangle rectangle)
         {
-            var x1 = rectangle.X - center.X;
-            var y1 = rectangle.Y - center.Y;
-            var x2 = rectangle.Right - center.X;
-            var y2 = rectangle.Bottom - center.Y;
+            var x1 = rectangle.Left - spiralPoints[0].X;
+            var y1 = rectangle.Top - spiralPoints[0].Y;
+            var x2 = rectangle.Right - spiralPoints[0].X;
+            var y2 = rectangle.Bottom - spiralPoints[0].Y;
             return Math.Sqrt(x1 * x1 + y1 * y1) > radius
                    || Math.Sqrt(x2 * x2 + y1 * y1) > radius
                    || Math.Sqrt(x1 * x1 + y2 * y2) > radius
                    || Math.Sqrt(x2 * x2 + y2 * y2) > radius;
         }
 
-        private bool ValidateSize() => currentSize.Height > 0 && currentSize.Width > 0;
+        private bool ValidateSize(Size size) => size.Height > 0 && size.Width > 0;
     }
 }
