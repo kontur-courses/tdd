@@ -26,6 +26,8 @@ public class CloudDrawer : ICloudDrawer
             graphics.DrawRectangles(pen, layouter.GetTagsLayout().ToArray());
         }
 
+        if (!Directory.Exists(SavePath))
+            Directory.CreateDirectory(SavePath);
         newbmp.Save(path, ImageFormat.Bmp);
         newbmp.Dispose();
     }
