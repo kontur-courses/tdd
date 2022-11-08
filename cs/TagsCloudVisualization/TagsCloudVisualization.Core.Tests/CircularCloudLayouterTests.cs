@@ -5,51 +5,51 @@ namespace TagsCloudVisualization.Core.Tests
 {
     public class CircularCloudLayouterTests
     {
-        private Point center;
-        private CircularCloudLayouter circularCloudLayouter;
+        private Point _center;
+        private CircularCloudLayouter _circularCloudLayouter;
 
         [SetUp]
         public void Setup()
         {
-            center = new Point(100, 100);
-            circularCloudLayouter = new CircularCloudLayouter(center);
+            _center = new Point(100, 100);
+            _circularCloudLayouter = new CircularCloudLayouter(_center);
         }
 
-        [TestCase(5, 5, TestName = "Ctor. x, y > 0 and x = y")]
-        [TestCase(5, 15, TestName = "Ctor. x, y > 0 and x != y")]
-        [TestCase(0, 0, TestName = "Ctor. x, y = 0")]
+        [TestCase(5, 5, TestName = "Constructor. x, y > 0 and x = y")]
+        [TestCase(5, 15, TestName = "Constructor. x, y > 0 and x != y")]
+        [TestCase(0, 0, TestName = "Constructor. x, y = 0")]
         public void Constructor_WhenCorrectArgs_ShouldNotThrow(int x, int y)
         {
             Assert.DoesNotThrow(() => new CircularCloudLayouter(new Point(x, y)));
         }
-        [TestCase(-5, -5, TestName = "Ctor. x, y < 0")]
-        [TestCase(-5, 5, TestName = "Ctor. x < 0 and y > 0")]
-        [TestCase(5, -5, TestName = "Ctor. x > 0 and y < 0")]
+        [TestCase(-5, -5, TestName = "Constructor. x, y < 0")]
+        [TestCase(-5, 5, TestName = "Constructor. x < 0 and y > 0")]
+        [TestCase(5, -5, TestName = "Constructor. x > 0 and y < 0")]
         public void Constructor_WhenIncorrectArgs_ShouldThrow(int x, int y)
         {
             Assert.Throws<ArgumentException>(() => new CircularCloudLayouter(new Point(x, y)));
         }
 
-        [TestCase(-5, -5, TestName = "x, y < 0")]
-        [TestCase(-5, 5, TestName = "x < 0 and y > 0")]
-        [TestCase(5, -5, TestName = "x > 0 and y < 0")]
-        [TestCase(0, 0, TestName = "x, y = 0")]
+        [TestCase(-5, -5, TestName = "PutNextRectangle. x, y < 0")]
+        [TestCase(-5, 5, TestName = "PutNextRectangle. x < 0 and y > 0")]
+        [TestCase(5, -5, TestName = "PutNextRectangle. x > 0 and y < 0")]
+        [TestCase(0, 0, TestName = "PutNextRectangle. x, y = 0")]
         public void PutNextRectangle_WhenIncorrectArgs_ShouldThrow(int width, int height)
         {
-            Assert.Throws<ArgumentException>(() => circularCloudLayouter.PutNextRectangle(new Size(width, height)));
+            Assert.Throws<ArgumentException>(() => _circularCloudLayouter.PutNextRectangle(new Size(width, height)));
         }
 
-        [TestCase(5, 5, TestName = "x, y > 0 and x = y" )]
-        [TestCase(5, 10, TestName = "x, y > 0 and x < y")]
-        [TestCase(10, 5, TestName = "x, y > 0 and x > y")]
+        [TestCase(5, 5, TestName = "PutNextRectangle. x, y > 0 and x = y")]
+        [TestCase(5, 10, TestName = "PutNextRectangle. x, y > 0 and x < y")]
+        [TestCase(10, 5, TestName = "PutNextRectangle. x, y > 0 and x > y")]
         public void PutNextRectangle_WhenCorrectArgsPutRect_ShouldBeEqualSizes(int width, int height)
         {
             var size = new Size(width, height);
-            var rect = circularCloudLayouter.PutNextRectangle(new Size(width, height));
+            var rect = _circularCloudLayouter.PutNextRectangle(new Size(width, height));
             rect.Size.Should().Be(size);
         }
 
-        [Test]
+        [TestCase(TestName = "PutNextRectangle. Check rect intersection")]
         public void PutNextRectangle_CheckRectIntersections_ShouldBeFalse()
         {  
             var rnd = new Random();
