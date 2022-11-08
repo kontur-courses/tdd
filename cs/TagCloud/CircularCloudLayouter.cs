@@ -11,16 +11,20 @@ namespace TagCloud
 
         public List<Rectangle> Reactangles { get; }
 
+        private SpiralGenerator spiralGenerator;
+
         public CircularCloudLayouter()
         {
             Center = new Point();
             Reactangles = new List<Rectangle>();
+            spiralGenerator = new SpiralGenerator(Center);
         }
 
         public CircularCloudLayouter(Point center)
         {
             Center = center;
             Reactangles = new List<Rectangle>();
+            spiralGenerator = new SpiralGenerator(Center);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -41,15 +45,15 @@ namespace TagCloud
         private Point GetNextReactanglePoint(Size rectangleSize)
         {
             if (Reactangles.Count == 0)
-                return ShiftPointRelativeTo(GetCenterPointFor(rectangleSize), Center);
+                return spiralGenerator.GetNextPoint(null); //ShiftPointRelativeTo(GetCenterPointFor(rectangleSize), Center);
             else
             {
-                throw new NotImplementedException();
+                return spiralGenerator.GetNextPoint(Reactangles.Last());
             }
         }
 
         private Point ShiftPointRelativeTo(Point point, Point otherPoint) =>
-            Point.Subtract(point, new Size(otherPoint));
+            Point.Add(point, new Size(otherPoint));
 
         private Point GetCenterPointFor(Size rectangleSize) =>
             new Point(-rectangleSize.Width / 2, -rectangleSize.Height / 2);

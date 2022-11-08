@@ -9,7 +9,7 @@ namespace TagCloud
 
         public static void SaveAsBitmap(CircularCloudLayouter tagCloud, string file)
         {
-            var bitmap = new Bitmap( tagCloud.GetWidth()+1, tagCloud.GetHeight()+1);
+            var bitmap = new Bitmap(1000, 1000);//tagCloud.GetWidth(), tagCloud.GetHeight());
             using (var graphics = Graphics.FromImage(bitmap))
             {
                 foreach (var reactangle in tagCloud.Reactangles)

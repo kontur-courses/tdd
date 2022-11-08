@@ -22,11 +22,12 @@ namespace TagCloud
         [Test]
         public void SaveAsBitmap_TagCloudInFile_Success()
         {
-            var tagCloud = new CircularCloudLayouter(new Point(5, 5));
+            var tagCloud = new CircularCloudLayouter(new Point(500, 500));
             var tempBmpFile = "temp.bmp";
 
             File.Delete(tempBmpFile);
-            tagCloud.PutNextRectangle(new Size(200, 100));
+            for(int i=0;i<1000;i++)
+                tagCloud.PutNextRectangle(new Size(20, 10));
             SaveAsBitmap(tagCloud, tempBmpFile);
 
             File.Exists(tempBmpFile).Should().BeTrue();
