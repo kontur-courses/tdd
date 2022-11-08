@@ -1,0 +1,77 @@
+﻿Algorithm
+API
+Argument
+Array
+ASCII
+Assignment Operators
+Blocks
+Block-Based Programming Language
+Boolean
+Bug
+Build
+C++
+Call
+Char
+Class
+Code
+Coding
+Coding Language
+Command
+Compilation
+Conditionals
+Constants
+CSS
+Data
+Data Structure
+Data Types
+Database
+Debugging
+Declaration
+Drag and Drop
+Else Statements
+Endless Loop
+Event
+Exception
+Expression
+F.A.I.L
+For Loop
+Framework
+Function
+Hardcode
+HTML
+IDE
+If Statement
+Java
+JavaScript
+jQuery
+JSON
+Loop
+Machine Language
+Null
+Object-Oriented Programming
+Objects
+OS
+Output
+PHP
+Pixel
+Programs
+Programming
+Programming Language
+Python
+Run
+SASS
+Scripting Language
+Scripts
+Server
+Source Code
+Sprites
+Statement
+Syntax
+Token
+URL
+User Interface Design
+Variable
+Variable Types
+While Loop
+XML
+Conclusion

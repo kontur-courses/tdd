@@ -19,27 +19,36 @@ namespace TagsCloudVisualization.WPF
         private readonly DispatcherTimer timer = new();
         private const double DefaultDpi = 96.0;
 
+        private readonly string[] words;
+        private const string PathToWords = "../../../Words.txt";
+
         private CircularCloudLayouter? circularCloud;
         
         public MainWindow()
         {
             InitializeComponent();
             UpdateCircularCloudFromTextBox();
+            words = GetWordsFromTxt(PathToWords);
             MyCanvas.Focus();
-            timer.Interval = TimeSpan.FromSeconds(.2);
+            timer.Interval = TimeSpan.FromSeconds(.1);
             timer.Start();
+        }
+
+        private static string[] GetWordsFromTxt(string path)
+        {
+            return File.ReadAllLines(path);
         }
 
         private void DrawRectangle(object? sender, EventArgs e)
         {
             customColor = GetRandomColor();
-            var text = new[] {"1.Hello", "2.Hello Hello", "3.Hello Hello Hello"}[random.Next(3)];
+            var text = words[random.Next(words.Length)];
 
             if (circularCloud == null) 
                 return;
 
             var rectangleFromCloud =
-                circularCloud.PutNextRectangle(new Size(text.Length * 7, 25));
+                circularCloud.PutNextRectangle(new Size(text.Length * 8, random.Next(20, 30)));
                 // circularCloud.PutNextRectangle(new Size(random.Next(25, 50), random.Next(25, 50)));
             // var canvasRect = new System.Windows.Shapes.Rectangle
             // {
