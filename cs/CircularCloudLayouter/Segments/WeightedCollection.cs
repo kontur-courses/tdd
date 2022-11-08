@@ -99,9 +99,9 @@ public class WeightedCollection :
     private IEnumerable<LinkedListNode<WeightedSegment>> GetNodesIntersectedWith(Segment segment)
     {
         var current = _segments.First;
-        while (current != null && segment.Start >= current.Value.End)
+        while (current is not null && segment.Start >= current.Value.End)
             current = current.Next;
-        while (current != null && segment.End > current.Value.Start)
+        while (current is not null && segment.End > current.Value.Start)
         {
             yield return current;
             current = current.Next;
@@ -149,22 +149,11 @@ public class WeightedCollection :
 
     private bool TryWeightDeltaOptimization(LinkedListNode<WeightedSegment> node)
     {
-        var prevWeightDelta = Math.Abs(node.Value.Weight - node.Previous!.Value.Weight);
-        var nextWeightDelta = Math.Abs(node.Value.Weight - node.Next!.Value.Weight);
+        if (Math.Abs(node.Value.Weight - node.Next!.Value.Weight) > _optimizationOptions.MaxWeightDeltaToCombine)
+            return false;
 
-        if (prevWeightDelta <= _optimizationOptions.MaxWeightDeltaToCombine)
-        {
-            CombineWithPrev(node, Math.Max(node.Value.Weight, node.Previous.Value.Weight));
-            return true;
-        }
-
-        if (nextWeightDelta <= _optimizationOptions.MaxWeightDeltaToCombine)
-        {
-            CombineWithNext(node, Math.Max(node.Value.Weight, node.Next.Value.Weight));
-            return true;
-        }
-
-        return false;
+        CombineWithNext(node, Math.Max(node.Value.Weight, node.Next.Value.Weight));
+        return true;
     }
 
     private void CombineWithPrev(LinkedListNode<WeightedSegment> node, int combinedWeight)
@@ -209,7 +198,7 @@ public class WeightedCollection :
             _segments.Remove(node);
         else
             node.Value = new WeightedSegment(node.Value.Start, node.Value.End);
-        
+
         return true;
     }
 

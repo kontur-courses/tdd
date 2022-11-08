@@ -22,6 +22,15 @@ public class CircularCloudLayouter_Should
         _rectangles = new List<Rectangle>();
     }
 
+    [TearDown]
+    public void TearDown()
+    {
+        if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed || _rectangles.Count == 0)
+            return;
+        var filePath = ErrorImageSaver.SaveErrorResult(_rectangles, TestContext.CurrentContext.Test.Name);
+        TestContext.Out.WriteLine("Image with error saved to " + filePath);
+    }
+
     [TestCase(3, 4, TestName = "Usual rectangle")]
     [TestCase(500_000, 900_000, TestName = "Big rectangle")]
     public void ReturnCorrectSizeRectangle_Successful(int width, int height)
@@ -121,14 +130,5 @@ public class CircularCloudLayouter_Should
         Invoking(() => _defaultCircularCloudLayouter.PutNextRectangle(new Size(width, height)))
             .Should().Throw<ArgumentException>().And.Message.ToLower()
             .Should().ContainAll(messageParts);
-    }
-
-    [TearDown]
-    public void TearDown()
-    {
-        if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed || _rectangles.Count == 0)
-            return;
-        var filePath = ErrorImageSaver.SaveErrorResult(_rectangles, TestContext.CurrentContext.Test.Name);
-        TestContext.Out.WriteLine("Image with error saved to " + filePath);
     }
 }

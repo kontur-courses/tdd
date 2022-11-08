@@ -35,7 +35,6 @@ public class WeightedCircularCloudLayouter : ICircularCloudLayouter
         var rect = RectanglesPlaced == 0
             ? new Rectangle(_center - rectSize / 2, rectSize)
             : _sideLayouters
-                .AsParallel()
                 .MinBy(layouter => layouter.CalculateCoefficient())!
                 .GetNextRectangle(rectSize);
 
