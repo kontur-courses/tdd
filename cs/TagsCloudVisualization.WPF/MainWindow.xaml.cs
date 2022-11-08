@@ -23,7 +23,7 @@ namespace TagsCloudVisualization.WPF
         private readonly string[] words;
         private const string PathToWords = "../../../Words.txt";
 
-        private CircularCloudLayouter? circularCloud;
+        private ICloudLayouter<Rectangle>? circularCloud;
         
         public MainWindow()
         {
@@ -35,30 +35,28 @@ namespace TagsCloudVisualization.WPF
             timer.Start();
         }
 
-        private static string[] GetWordsFromTxt(string path)
-        {
-            return File.ReadAllLines(path);
-        }
+        private static string[] GetWordsFromTxt(string path) => File.ReadAllLines(path);
 
         private void DrawRectangle(object? sender, EventArgs e)
         {
-            customColor = GetRandomColor();
-            var text = words[random.Next(words.Length)];
-
-            if (circularCloud == null) 
+            if (circularCloud is null)
                 return;
+            
+            customColor = GetRandomColor();
+            var currentWord = words[random.Next(words.Length)];
 
             Rectangle rectangleFromCloud;
             UIElement figure;
             if (PrintRectangles.IsChecked is not null && (bool) PrintRectangles.IsChecked)
             {
-                rectangleFromCloud = circularCloud.PutNextRectangle(new Size(random.Next(25, 50), random.Next(25, 50)));
+                rectangleFromCloud = circularCloud.PutNextRectangle(SizeCreator.GetRandomRectangleSize(25, 50));
                 figure = CreateRectangle(rectangleFromCloud);
             }
             else
             {
-                rectangleFromCloud = circularCloud.PutNextRectangle(new Size(text.Length * 8, random.Next(20, 30)));
-                figure = CreateTextBox(rectangleFromCloud, text);
+                figure = CreateTextBox(currentWord);
+                rectangleFromCloud =
+                    circularCloud.PutNextRectangle(SizeCreator.GetRectangleSize((TextBox) figure));
             }
             
             Canvas.SetLeft(figure, rectangleFromCloud.X);
@@ -67,16 +65,14 @@ namespace TagsCloudVisualization.WPF
             MyCanvas.Children.Add(figure);
         }
 
-        private TextBox CreateTextBox(Rectangle rectangleFromCloud, string text)
+        private TextBox CreateTextBox(string text)
         {
             return new TextBox
             {
-                Width = rectangleFromCloud.Width,
-                Height = rectangleFromCloud.Height,
                 Foreground = customColor,
                 Background = Brushes.Black,
-                TextAlignment = TextAlignment.Center,
-                Text = text,
+                FontSize = random.Next(10, 15),
+                Text = text
             };
         }
 
@@ -185,6 +181,32 @@ namespace TagsCloudVisualization.WPF
 
             using var stm = File.Create(filename);
             enc.Save(stm);
+        }
+    }
+
+    internal static class SizeCreator
+    {
+        private static readonly Random Random = new();
+        private const int BorderLength = 5;
+
+        public static Size GetRandomRectangleSize(int randomFrom, int randomTo) =>
+            new(Random.Next(randomFrom, randomTo), Random.Next(randomFrom, randomTo));
+
+        public static Size GetRectangleSize(TextBox tb)
+        {
+#pragma warning disable CS0618
+            var formattedText = new FormattedText(tb.Text, CultureInfo.CurrentUICulture,
+#pragma warning restore CS0618
+                FlowDirection.LeftToRight,
+                new Typeface(tb.FontFamily, 
+                    tb.FontStyle, 
+                    tb.FontWeight, 
+                    tb.FontStretch),
+                tb.FontSize,
+                Brushes.Black, 
+                new NumberSubstitution());
+
+            return new Size((int) formattedText.Width + BorderLength, (int) formattedText.Height + BorderLength);
         }
     }
 }
