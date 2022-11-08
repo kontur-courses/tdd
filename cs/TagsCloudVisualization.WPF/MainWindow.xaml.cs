@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Globalization;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -99,6 +100,12 @@ namespace TagsCloudVisualization.WPF
             
             timer.Interval = TimeSpan.FromSeconds(speed);
             MyCanvas.Children.Clear();
+        }
+
+        private void StepSliderChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (StepSlider is not null && TbSteps is not null)
+                TbSteps.Text = StepSlider.Value.ToString(CultureInfo.InvariantCulture).Split('.')[0];
         }
     }
 }

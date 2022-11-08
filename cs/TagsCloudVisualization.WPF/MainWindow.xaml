@@ -13,25 +13,23 @@
                 <Menu VerticalAlignment="Top">
                         <MenuItem Width="40" Header="File" FontSize="12">
                                 <MenuItem Header="Start" Name="StartButton" Click="Start"></MenuItem>
-                                <MenuItem Header="Clear" Name="ClearButton" Click="Clear"></MenuItem>
+                                <MenuItem Header="Clear" Click="Clear"></MenuItem>
                                 <MenuItem Header="Save Picture"></MenuItem>
                         </MenuItem>
                         <MenuItem Width="40" Header="Edit" FontSize="12">
-                                <MenuItem Header="Step"></MenuItem>
-                                <TextBox
-                                        Name="TbSteps"
-                                        TextChanged="Clear"
-                                        VerticalScrollBarVisibility="Disabled">
-                                        Input Step Value
-                                </TextBox>
-                                <MenuItem Header="Speed"></MenuItem>
-                                <TextBox
-                                        Name="TbSpeed"
-                                        TextChanged="UpdateInterval"
-                                        VerticalScrollBarVisibility="Disabled">
-                                        Input sleep time (seconds)
-                                </TextBox>
-                                <MenuItem Header="Save Picture"></MenuItem>
+                                <StackPanel Width="100">
+                                        <Label Content="Step"/>
+                                        <Slider x:Name="StepSlider" Minimum="1" Maximum="20" 
+                                                TickPlacement = "BottomRight" ValueChanged="StepSliderChanged"/>
+                                        <TextBox x:Name="TbSteps" TextChanged="Clear"/>
+                                </StackPanel>
+                                <StackPanel Width="100">
+                                        <Label Content="Speed"/>
+                                        <Slider x:Name="SpeedSlider" Minimum="0.1" Maximum="10" TickFrequency = "2" 
+                                                TickPlacement = "BottomRight"/>
+                                        <TextBox x:Name="TbSpeed" Text="{Binding ElementName=SpeedSlider, Path=Value,
+                                         UpdateSourceTrigger=PropertyChanged}" TextChanged="UpdateInterval"/>
+                                </StackPanel>
                         </MenuItem>
                 </Menu>
         </Grid>
