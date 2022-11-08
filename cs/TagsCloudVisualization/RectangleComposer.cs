@@ -1,4 +1,6 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace TagsCloudVisualization
 {
@@ -17,7 +19,7 @@ namespace TagsCloudVisualization
 
         public Rectangle GetNextRectangleInCloud(Size newRect)
         {
-            var location = new Point(Spiral.Center.X, Spiral.Center.Y);
+            var location = new Point(Spiral.center.X, Spiral.center.Y);
             var rectangle = new Rectangle(location, newRect);
             var rectOnSpiral = FindFreePlaceOnSpiral(rectangle);
             var centeredRect = MoveToCenter(rectOnSpiral);
@@ -35,14 +37,14 @@ namespace TagsCloudVisualization
                     var newLoc = new Point(point.X - newRectange.Width / 2, point.Y - newRectange.Height / 2);
                     newRectange.Location = newLoc;
 
-                    if (IsRectangleNotIntersectOther(newRectange, Rectangles))
+                    if (!IsRectangleIntersectOther(newRectange, Rectangles))
                     {
                         Spiral.FreePoints.Remove(point);
                         return newRectange;
                     }
                 }
 
-                Spiral.AddMorePointsInSpiral(10);
+                Spiral.AddOneMorePointInSpiral();
             }
         }
 
@@ -52,11 +54,11 @@ namespace TagsCloudVisualization
                 rect.X + rect.Width / 2, 
                 rect.Y + rect.Height / 2);
 
-            var delX = rectCenter.X - Spiral.Center.X;
-            var delY = rectCenter.Y - Spiral.Center.Y;
+            var delX = rectCenter.X - Spiral.center.X;
+            var delY = rectCenter.Y - Spiral.center.Y;
             var angleToCenter = Math.Atan2(delY, delX);
 
-            while (!IsRectangleInCenter(rect, Spiral.Center))
+            while (!IsRectangleInCenter(rect, Spiral.center))
             {
                 Point nextPoint;
 
@@ -83,14 +85,12 @@ namespace TagsCloudVisualization
                 var newLoc = new Point(rect.Location.X + nextPoint.X, rect.Location.Y + nextPoint.Y);
                 var newRect = new Rectangle(newLoc, rect.Size);
 
-                if (!IsRectangleNotIntersectOther(newRect, Rectangles))
+                if (IsRectangleIntersectOther(newRect, Rectangles))
                 {
                     return rect;
                 }
-                else
-                {
-                    rect.Location = newLoc;
-                }
+
+                rect.Location = newLoc;
             }
 
             return rect;
@@ -105,35 +105,26 @@ namespace TagsCloudVisualization
             return new Point((int)xStep, (int)yStep);
         }
 
-        public static bool IsRectangleNotIntersectOther(Rectangle rect, List<Rectangle> other)
+        public static bool IsRectangleIntersectOther(Rectangle rect, List<Rectangle> other)
         {
-            var flag = true;
-
             foreach (var rec in other)
             {
                 if (rec.IntersectsWith(rect))
                 {
-                    flag = false;
+                    return true;
                 }
             }
 
-            return flag;
+            return false;
         }
 
         public static bool IsRectangleInCenter(Rectangle rect, Point center)
         {
-            var rectCenter = new Point(
-                rect.X + rect.Width / 2 - center.X,
-                rect.Y + rect.Height / 2 - center.Y);
+            var rectCenterX = rect.X + rect.Width / 2 - center.X;
+            var rectCenterY = rect.Y + rect.Height / 2 - center.Y;
 
-            if (Math.Abs(rectCenter.X) < centerAreaRadius && 
-                Math.Abs(rectCenter.Y) < centerAreaRadius)
-            {
-                return true;
-            }
-             
-            return false;
+            return (Math.Abs(rectCenterX) < centerAreaRadius &&
+                Math.Abs(rectCenterY) < centerAreaRadius);
         }
     }
-
 }

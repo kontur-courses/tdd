@@ -22,15 +22,15 @@ namespace TagsCloudVisualization
 
             var spiral = new Spiral(center);
 
-            spiral.Center.Should().Be(center);
+            spiral.center.Should().Be(center);
         }
 
         [Test]
         public void Spiral_CreateWithParams_ShouldHave2Points()
         {
-            var center = new Point(0, 0);
+            var center = Point.Empty;
 
-            var spiral = new Spiral(center, 30, 500, 10);
+            var spiral = new Spiral(center, 30, 10);
 
             spiral.Points.Count.Should().Be(2);
         }
@@ -38,7 +38,7 @@ namespace TagsCloudVisualization
         [Test]
         public void Spiral_CreateWithoutParams_ShouldHave2Points()
         {
-            var center = new Point(0, 0);
+            var center = Point.Empty;
 
             var spiral = new Spiral(center);
 
@@ -51,7 +51,7 @@ namespace TagsCloudVisualization
         [TestCase(100)]
         public void AddMorePointsInSpiral_AddPoints_ShouldAddNewPoints(int quantity)
         {
-            var center = new Point(0, 0);
+            var center = Point.Empty;
             var spiral = new Spiral(center);
             int expectedQuantity;
 
@@ -64,7 +64,10 @@ namespace TagsCloudVisualization
                 expectedQuantity = spiral.Points.Count + quantity;
             }
 
-            spiral.AddMorePointsInSpiral(quantity);
+            for (int i = 0; i < quantity; i++)
+            {
+                spiral.AddOneMorePointInSpiral();
+            }
 
             spiral.Points.Count.Should().Be(expectedQuantity);
             spiral.FreePoints.Count.Should().Be(expectedQuantity);

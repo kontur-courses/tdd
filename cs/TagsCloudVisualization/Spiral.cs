@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 
@@ -8,25 +10,23 @@ namespace TagsCloudVisualization
     {
         public List<Point> Points { get; set; }
         public List<Point> FreePoints { get; set; }
-        public Point Center { get; private set; }
-        private double segmentLength;
-        private double helixPitch;
-        private int pointsQuantity;
+        public readonly Point center;
+        private readonly double segmentLength;
+        private readonly double helixPitch;
         private double lastX, lastY;
 
-        public Spiral(Point center, double segmentLength = 50, int pointsQuantity = 200, double helixPitch = 20)
+        public Spiral(Point center, double segmentLength = 50, double helixPitch = 20)
         {
             Points = new List<Point>();
             FreePoints = new List<Point>();
-            Center = center;
+            this.center = center;
             this.segmentLength = segmentLength;
-            this.pointsQuantity = pointsQuantity;
             this.helixPitch = helixPitch;
 
             double x = 0, y = 0;
-            AddPoint(Center.X, Center.Y);
+            AddPoint(this.center.X, this.center.Y);
             y += segmentLength;
-            AddPoint(Center.X + x, Center.Y + y);
+            AddPoint(this.center.X + x, this.center.Y + y);
             lastX = x;
             lastY = y;
         }
@@ -38,23 +38,16 @@ namespace TagsCloudVisualization
             FreePoints.Add(addedPoint);
         }
 
-        public void AddMorePointsInSpiral(int addQuantity)
+        public void AddOneMorePointInSpiral()
         {
-            var cycleLimit = Points.Count + addQuantity;
-
-            for (int i = Points.Count; i < cycleLimit; ++i)
-            {
-                double r = Math.Sqrt(lastX * lastX + lastY * lastY);
-                double tx = helixPitch * lastX + r * lastY;
-                double ty = helixPitch * lastY - r * lastX;
-                double tLen = Math.Sqrt(tx * tx + ty * ty);
-                double k = segmentLength / tLen;
-                lastX -= tx * k;
-                lastY -= ty * k;
-                AddPoint(Center.X + lastX, Center.Y + lastY);
-            }
+            double r = Math.Sqrt(lastX * lastX + lastY * lastY);
+            double tx = helixPitch * lastX + r * lastY;
+            double ty = helixPitch * lastY - r * lastX;
+            double tLen = Math.Sqrt(tx * tx + ty * ty);
+            double k = segmentLength / tLen;
+            lastX -= tx * k;
+            lastY -= ty * k;
+            AddPoint(center.X + lastX, center.Y + lastY);
         }
-
-
     }
 }

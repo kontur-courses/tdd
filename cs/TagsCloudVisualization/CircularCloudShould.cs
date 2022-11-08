@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestPlatform.TestHost;
 using NUnit.Framework;
@@ -8,31 +9,27 @@ namespace TagsCloudVisualization
     [TestFixture]
     public class CircularCloudShould
     {
-        private static readonly object[] _sourceLists =
+        private static IEnumerable<TestCaseData> SourceLists
         {
-            new object[]
+            get
             {
-                new List<Size>
+                yield return new TestCaseData(new Size[]
                 {
                     new Size(100, 100),
                     new Size(50, 100),
                     new Size(50, 50),
                     new Size(20, 30)
-                }
-            },
-            new object[]
-            {
-                new List<Size>
+                });
+
+                yield return new TestCaseData(new Size[]
                 {
                     new Size(100, 100),
                     new Size(200, 200),
                     new Size(100, 50),
                     new Size(5, 5)
-                }
-            },
-            new object[]
-            {
-                new List<Size>
+                });
+
+                yield return new TestCaseData(new Size[]
                 {
                     new Size(100, 100),
                     new Size(100, 100),
@@ -41,24 +38,25 @@ namespace TagsCloudVisualization
                     new Size(100, 100),
                     new Size(100, 100),
                     new Size(100, 100),
-                }
+                });
             }
-        };
+        }
 
         [Test]
-        public void CircularCloudLayouter_CreateNewLayouter_ReturnNewClassInstance()
+        public void CircularCloudLayouter_CreateNewLayouter_ShouldInitComposerAndSpiral()
         {
-            var center = new Point(0, 0);
+            var center = Point.Empty;
 
             var layouter = new CircularCloudLayouter(center);
 
-            layouter.Should().NotBeNull();
+            layouter.Composer.Should().NotBeNull();
+            layouter.Composer.Spiral.Should().NotBeNull();
         }
 
         [Test]
         public void PutNextRectangle_AddSingleRectInCenter_RectLocationInCenter()
         {
-            var center = new Point(0, 0);
+            var center = Point.Empty;
             var layouter = new CircularCloudLayouter(center);
             var rectSize = new Size(100, 100);
 
@@ -68,10 +66,10 @@ namespace TagsCloudVisualization
             rectCenter.Should().Be(center);
         }
 
-        [TestCaseSource("_sourceLists")]
-        public void PutNextRectangle_AddManyRect_RectsShouldBeAdded(List<Size> addRects)
+        [TestCaseSource(nameof(SourceLists))]
+        public void PutNextRectangle_AddManyRect_RectsShouldBeAdded(Size[] addRects)
         {
-            var center = new Point(0, 0);
+            var center = Point.Empty;
             var layouter = new CircularCloudLayouter(center);
 
             var expectedList = new List<Rectangle>();
@@ -82,13 +80,13 @@ namespace TagsCloudVisualization
                 expectedList.Add(new Rectangle(rect.Location, size));
             }
 
-            layouter.Rectangles.Count.Should().Be(addRects.Count);
+            layouter.Composer.Rectangles.Count.Should().Be(addRects.Length);
         }
 
-        [TestCaseSource("_sourceLists")]
-        public void PutNextRectangle_AddManyRect_RectsShouldNotIntersect(List<Size> addRects)
+        [TestCaseSource(nameof(SourceLists))]
+        public void PutNextRectangle_AddManyRect_RectsShouldNotIntersect(Size[] addRects)
         {
-            var center = new Point(0, 0);
+            var center = Point.Empty;
             var layouter = new CircularCloudLayouter(center);
 
             var expectedList = new List<Rectangle>();
@@ -99,7 +97,7 @@ namespace TagsCloudVisualization
                 expectedList.Add(new Rectangle(rect.Location, size));
             }
 
-            IsRectanglesIntersect(layouter.Rectangles).Should().BeFalse();
+            IsRectanglesIntersect(layouter.Composer.Rectangles).Should().BeFalse();
         }
 
         [TestCase(0, 0)]
@@ -109,12 +107,12 @@ namespace TagsCloudVisualization
         public void PutNextRectangle_AddWrongSize_RectNotAdded(int width, int height)
         {
             var sizeToAdd = new Size(width, height);
-            var center = new Point(0, 0);
+            var center = Point.Empty;
             var layouter = new CircularCloudLayouter(center);
 
             var nextRect = layouter.PutNextRectangle(sizeToAdd);
 
-            layouter.Rectangles.Count.Should().Be(0);
+            layouter.Composer.Rectangles.Count.Should().Be(0);
             nextRect.Should().Be(Rectangle.Empty);
         }
 

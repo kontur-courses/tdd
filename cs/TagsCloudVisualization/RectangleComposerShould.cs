@@ -15,7 +15,7 @@ namespace TagsCloudVisualization
         [Test]
         public void FindFreePlaceOnSpiral_WhenNoFreePlace_ShouldExpandSpiral()
         {
-            var layouter = new CircularCloudLayouter(new Point(0, 0));
+            var layouter = new CircularCloudLayouter(Point.Empty);
             var beginSpiralLength = layouter.Composer.Spiral.Points.Count;
             var rect = new Rectangle(0, 0, 10, 10);
 
@@ -32,7 +32,7 @@ namespace TagsCloudVisualization
         [TestCase(100, -100)]
         public void MoveToCenter_SingleRectAside_ShouldMoveToCenter(int posX, int posY)
         {
-            var layouter = new CircularCloudLayouter(new Point(0, 0));
+            var layouter = new CircularCloudLayouter(Point.Empty);
             var rect = new Rectangle(posX, posY, 10, 10);
 
             var offsetRect = layouter.Composer.MoveToCenter(rect);
@@ -47,7 +47,7 @@ namespace TagsCloudVisualization
         [Test]
         public void MoveToCenter_RectAsideAndRectInCenter_AsideMoveToCenter()
         {
-            var layouter = new CircularCloudLayouter(new Point(0, 0));
+            var layouter = new CircularCloudLayouter(Point.Empty);
             layouter.PutNextRectangle(new Size(100, 100));
             var rect = new Rectangle(500, 0, 10, 10);
             var expectedRectLocation = new Point(52, 0);
@@ -60,7 +60,7 @@ namespace TagsCloudVisualization
         [Test]
         public void GetNextPointToCenter_ZeroAngle_PointShouldBeZero()
         {
-            var layouter = new CircularCloudLayouter(new Point(0, 0));
+            var layouter = new CircularCloudLayouter(Point.Empty);
             var expectedPoint = new Point(RectangleComposer.stepToCenter, 0);
 
             var nextPoint = layouter.Composer.GetNextPointToCenter(0);
@@ -82,7 +82,7 @@ namespace TagsCloudVisualization
         [Test]
         public void IsRectangleInCenter_PointNotInCenterArea_ShouldReturnFalse()
         {
-            var center = new Point(0, 0);
+            var center = Point.Empty;
             var rect = new Rectangle(15, 5, 10, 10);
 
             var checkLocationInArea = RectangleComposer.IsRectangleInCenter(rect, center);
@@ -91,7 +91,7 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void IsRectangleNotIntersectOther_CommonData_ShouldReturnTrue()
+        public void IsRectangleIntersectOther_CommonData_ShouldReturnTrue()
         {
             var rectangle = new Rectangle(100, 100, 10, 10);
             var rects = new List<Rectangle>
@@ -102,13 +102,13 @@ namespace TagsCloudVisualization
                 new Rectangle(30, 30, 5, 5)
             };
 
-            var intersectFlag = RectangleComposer.IsRectangleNotIntersectOther(rectangle, rects);
+            var intersectFlag = RectangleComposer.IsRectangleIntersectOther(rectangle, rects);
 
-            intersectFlag.Should().BeTrue();
+            intersectFlag.Should().BeFalse();
         }
 
         [Test]
-        public void IsRectangleNotIntersectOther_IntersectsRects_ShouldReturnFalse()
+        public void IsRectangleIntersectOther_IntersectsRects_ShouldReturnFalse()
         {
             var rectangle = new Rectangle(100, 100, 100, 100);
             var rects = new List<Rectangle>
@@ -116,9 +116,9 @@ namespace TagsCloudVisualization
                 new Rectangle(0, 0, 125, 125),
             };
 
-            var intersectFlag = RectangleComposer.IsRectangleNotIntersectOther(rectangle, rects);
+            var intersectFlag = RectangleComposer.IsRectangleIntersectOther(rectangle, rects);
 
-            intersectFlag.Should().BeFalse();
+            intersectFlag.Should().BeTrue();
         }
     }
 }

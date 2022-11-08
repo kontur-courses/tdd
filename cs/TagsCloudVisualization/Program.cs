@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using System.Security.Cryptography;
 
@@ -15,12 +16,11 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         public RectangleComposer Composer { get; set; }
-        public List<Rectangle> Rectangles { get; set; }
 
         public CircularCloudLayouter(Point center) // в конструкторе это позиция центра облака тегов
         {
-            Rectangles = new List<Rectangle>();
-            Composer = new RectangleComposer(Rectangles, center);
+            var rectangles = new List<Rectangle>();
+            Composer = new RectangleComposer(rectangles, center);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -36,15 +36,7 @@ namespace TagsCloudVisualization
 
         public bool CheckSizeAvailable(Size checkAvailable)
         {
-            if (checkAvailable.Width <= 0 || checkAvailable.Height <= 0)
-            {
-                return false;
-            }
-
-            return true;
+            return (checkAvailable.Width > 0 && checkAvailable.Height > 0);
         }
     }
-
-    
-
 }
