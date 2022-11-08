@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace TagCloud
 {
-    public class TagCloudBuilder
+    public class TagCloudBuilder : ITagCloudEngine
     {
         private int width, height;
         
@@ -23,10 +23,10 @@ namespace TagCloud
         public List<Rectangle> Rectangles { get; } = new();
         
 
-        public TagCloudBuilder(int width, int height, int pointsSkip=0)
+        public TagCloudBuilder(Size size, int pointsSkip=0)
         {
-            this.height = height;
-            this.width = width;
+            this.height = size.Height;
+            this.width = size.Width;
             centerPoint = new Point(width / 2, height / 2);
             this.pointsSkip = pointsSkip;
             
@@ -47,43 +47,82 @@ namespace TagCloud
             return point;
         }
 
-        public void IterationOfDrawSpiral()
-        {
-            var p = GetNextSpiralPoint();
-            spiralAngle += AngleOffset * pointsSkip;
-            scale += Density * pointsSkip;
+        // for testing spiral 
+        // public void IterationOfDrawSpiral()
+        // {
+        //     var p = GetNextSpiralPoint();
+        //     spiralAngle += AngleOffset * pointsSkip;
+        //     scale += Density * pointsSkip;
+        //
+        //     //Console.WriteLine($"{p.X} {p.Y}");
+        //     Graphics.DrawLine(new Pen(Brushes.Black, 1f), p, new Point(p.X+1, p.Y+1));
+        // }
 
-            //Console.WriteLine($"{p.X} {p.Y}");
-            Graphics.DrawLine(new Pen(Brushes.Black, 1f), p, new Point(p.X+1, p.Y+1));
-        }
+        // public void DrawRectangle(Rectangle rectangle)
+        // {
+        //     var p = GetNextSpiralPoint();
+        //     spiralAngle += AngleOffset * pointsSkip;
+        //     scale += Density * pointsSkip;
+        //     
+        //     var foundRectangle = new Rectangle(p - rectangle.Size / 2, rectangle.Size);
+        //     bool isIntersectWithSpiral = Rectangles
+        //         .Any(r => r.IntersectsWith(foundRectangle));
+        //     
+        //     while (isIntersectWithSpiral)
+        //     {
+        //         p = GetNextSpiralPoint();
+        //         Graphics.DrawLine(new Pen(Brushes.IndianRed, 1f), p, new Point(p.X+1, p.Y+1));
+        //         spiralAngle += AngleOffset * pointsSkip;
+        //         scale += Density * pointsSkip;
+        //         
+        //         isIntersectWithSpiral = Rectangles
+        //             .Any(r => r.IntersectsWith(new Rectangle(
+        //                 p - rectangle.Size/2
+        //                 , rectangle.Size)));
+        //     }
+        //     
+        //     foundRectangle = new Rectangle(p - rectangle.Size/2, rectangle.Size);
+        //     Rectangles.Add(foundRectangle);
+        //
+        //     Graphics.DrawRectangle(new Pen(Color.Blue, 1f), foundRectangle);
+        // }
 
-        public void DrawRectangle(Rectangle rectangle)
+        public Rectangle GetNextRectangle(Size sizeOfRectangle)
         {
-            var p = GetNextSpiralPoint();
+            if (sizeOfRectangle.Height <= 0
+                || sizeOfRectangle.Width <= 0)
+                throw new ArgumentException();
+            
+            // получаем новую точку на спирали
+            // TODO вынести в отдельный метод
+            var currentPoint = GetNextSpiralPoint();
             spiralAngle += AngleOffset * pointsSkip;
             scale += Density * pointsSkip;
             
-            var foundRectangle = new Rectangle(p - rectangle.Size/2, rectangle.Size);
-            bool isIntersectWithSpiral = Rectangles
+            // проверим, есть ли пересечение прямоугольника, построенного
+            // на этой точке, с другими прямоугольниками
+            var foundRectangle = new Rectangle(currentPoint - sizeOfRectangle / 2, sizeOfRectangle);
+            var isIntersectWithSpiral = Rectangles
                 .Any(r => r.IntersectsWith(foundRectangle));
             
+            // если есть, то будем получать до тех пор, пока
+            // не найдем подходящую точку
             while (isIntersectWithSpiral)
             {
-                p = GetNextSpiralPoint();
-                Graphics.DrawLine(new Pen(Brushes.IndianRed, 1f), p, new Point(p.X+1, p.Y+1));
+                // TODO вынести в отдельный метод
+                currentPoint = GetNextSpiralPoint();
                 spiralAngle += AngleOffset * pointsSkip;
                 scale += Density * pointsSkip;
                 
                 isIntersectWithSpiral = Rectangles
                     .Any(r => r.IntersectsWith(new Rectangle(
-                        p - rectangle.Size/2
-                        , rectangle.Size)));
+                        currentPoint - sizeOfRectangle/2
+                        , sizeOfRectangle)));
             }
             
-            foundRectangle = new Rectangle(p - rectangle.Size/2, rectangle.Size);
+            foundRectangle = new Rectangle(currentPoint - sizeOfRectangle / 2, sizeOfRectangle);
             Rectangles.Add(foundRectangle);
-
-            Graphics.DrawRectangle(new Pen(Color.Blue, 1f), foundRectangle);
+            return foundRectangle;
         }
     }
 }

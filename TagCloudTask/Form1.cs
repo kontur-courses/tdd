@@ -29,23 +29,23 @@ namespace TagCloud
         
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            this.Width = 1280;
-            this.Height = 768;
-            var tagCloudBuilder = new TagCloudBuilder(this.Width, this.Height, 0);
-            /*for (int i = 0; i < 2000; i++)
-            {
-                tagCloudBuilder.IterationOfDrawSpiral();
-            }*/
-            var r = new Random();
-            for (var i = 0; i < 800; i++)
-            {
-                int w = (int)(50- (i/20) - r.Next(0,2));
-                int h = (int)(25 - (i/40) - r.Next(0,2));
-                tagCloudBuilder.DrawRectangle(new Rectangle(0, 0, w, h));
-            }
-
-            Bitmap bitamp = tagCloudBuilder.Bitmap;
-            print(bitamp, e);
+            // this.Width = 1280;
+            // this.Height = 768;
+            // var tagCloudBuilder = new TagCloudBuilder(this.Size, 0);
+            // /*for (int i = 0; i < 2000; i++)
+            // {
+            //     tagCloudBuilder.IterationOfDrawSpiral();
+            // }*/
+            // var r = new Random();
+            // for (var i = 0; i < 800; i++)
+            // {
+            //     int w = (int)(50- (i/20) - r.Next(0,2));
+            //     int h = (int)(25 - (i/40) - r.Next(0,2));
+            //     tagCloudBuilder.DrawRectangle(new Rectangle(0, 0, w, h));
+            // }
+            //
+            // Bitmap bitamp = tagCloudBuilder.Bitmap;
+            // print(bitamp, e);
         }
     }
 }
