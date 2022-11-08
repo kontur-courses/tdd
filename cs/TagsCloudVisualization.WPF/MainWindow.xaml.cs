@@ -31,7 +31,7 @@ namespace TagsCloudVisualization.WPF
             UpdateCircularCloudFromTextBox();
             words = GetWordsFromTxt(PathToWords);
             MyCanvas.Focus();
-            timer.Interval = TimeSpan.FromSeconds(.1);
+            timer.Interval = TimeSpan.FromSeconds(0);
             timer.Start();
         }
 
@@ -96,7 +96,6 @@ namespace TagsCloudVisualization.WPF
         {
             if (string.CompareOrdinal((string?) StartButton.Header, "Start") == 0)
             {
-                UpdateCircularCloudFromTextBox();
                 StartButton.Header = "Stop";
                 timer.Tick += DrawRectangle;
             }

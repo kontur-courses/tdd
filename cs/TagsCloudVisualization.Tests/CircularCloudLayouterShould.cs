@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization.Tests
 {
@@ -13,6 +14,14 @@ namespace TagsCloudVisualization.Tests
         public void Setup()
         {
             circularCloud = new CircularCloudLayouter(Point.Empty);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Warning)
+            {
+            }
         }
         
         [TestCaseSource(typeof(TestData), nameof(TestData.IncorrectSize))]
