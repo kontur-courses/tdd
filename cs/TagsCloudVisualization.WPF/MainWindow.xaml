@@ -30,6 +30,9 @@
                                         <TextBox x:Name="TbSpeed" Text="{Binding ElementName=SpeedSlider, Path=Value,
                                          UpdateSourceTrigger=PropertyChanged}" TextChanged="UpdateInterval"/>
                                 </StackPanel>
+                                <CheckBox Name="PrintRectangles" Content="Throw Rectangles?"
+                                          IsChecked="True" Click="Clear">
+                                </CheckBox>
                         </MenuItem>
                 </Menu>
         </Grid>

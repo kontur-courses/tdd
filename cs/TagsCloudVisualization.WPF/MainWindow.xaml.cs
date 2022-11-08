@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Windows;
@@ -47,26 +48,28 @@ namespace TagsCloudVisualization.WPF
             if (circularCloud == null) 
                 return;
 
-            var rectangleFromCloud =
-                circularCloud.PutNextRectangle(new Size(text.Length * 8, random.Next(20, 30)));
-                // circularCloud.PutNextRectangle(new Size(random.Next(25, 50), random.Next(25, 50)));
-            // var canvasRect = new System.Windows.Shapes.Rectangle
-            // {
-            //     Width = rectangleFromCloud.Width,
-            //     Height = rectangleFromCloud.Height,
-            //     Fill = customColor,
-            //     StrokeThickness = 2,
-            //     Stroke = Brushes.LightBlue,
-            // };
-            // var label = new Label
-            // {
-            //     Width = rectangleFromCloud.Width,
-            //     Height = rectangleFromCloud.Height,
-            //     Content = "Hello",
-            //     Foreground = Brushes.Azure,
-            // };
+            Rectangle rectangleFromCloud;
+            UIElement figure;
+            if (PrintRectangles.IsChecked is not null && (bool) PrintRectangles.IsChecked)
+            {
+                rectangleFromCloud = circularCloud.PutNextRectangle(new Size(random.Next(25, 50), random.Next(25, 50)));
+                figure = CreateRectangle(rectangleFromCloud);
+            }
+            else
+            {
+                rectangleFromCloud = circularCloud.PutNextRectangle(new Size(text.Length * 8, random.Next(20, 30)));
+                figure = CreateTextBox(rectangleFromCloud, text);
+            }
+            
+            Canvas.SetLeft(figure, rectangleFromCloud.X);
+            Canvas.SetTop(figure, rectangleFromCloud.Y);
+            
+            MyCanvas.Children.Add(figure);
+        }
 
-            var canvasTb = new TextBox
+        private TextBox CreateTextBox(Rectangle rectangleFromCloud, string text)
+        {
+            return new TextBox
             {
                 Width = rectangleFromCloud.Width,
                 Height = rectangleFromCloud.Height,
@@ -75,15 +78,18 @@ namespace TagsCloudVisualization.WPF
                 TextAlignment = TextAlignment.Center,
                 Text = text,
             };
+        }
 
-            // Canvas.SetLeft(canvasRect, rectangleFromCloud.X);
-            // Canvas.SetTop(canvasRect, rectangleFromCloud.Y);
-            
-            Canvas.SetLeft(canvasTb, rectangleFromCloud.X);
-            Canvas.SetTop(canvasTb, rectangleFromCloud.Y);
-            
-            // MyCanvas.Children.Add(canvasRect);
-            MyCanvas.Children.Add(canvasTb);
+        private System.Windows.Shapes.Rectangle CreateRectangle(Rectangle rectangleFromCloud)
+        {
+            return new System.Windows.Shapes.Rectangle
+            {
+                Width = rectangleFromCloud.Width,
+                Height = rectangleFromCloud.Height,
+                Fill = customColor,
+                StrokeThickness = 2,
+                Stroke = Brushes.LightBlue,
+            };
         }
 
         private SolidColorBrush GetRandomColor() => new(Color.FromRgb((byte) random.Next(1, 255),
