@@ -27,7 +27,7 @@ namespace TagsCloudVisualization
         public Tuple<string,Size,Font> GetRectangleOptions()
         {
             if (sizeDictionary.Count == 0)
-                return new Tuple<string, Size, Font>("",new Size(0,0),new Font("Times",1));
+                return new Tuple<string, Size, Font>("text",new Size(0,0),new Font("Times",1));
             var nextRectangleSize = sizeDictionary.First();
             sizeDictionary.Remove(nextRectangleSize);
             var font = new Font("Times", nextRectangleSize.Value);

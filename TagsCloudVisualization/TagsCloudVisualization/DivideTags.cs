@@ -22,7 +22,7 @@ namespace TagsCloudVisualization
             if (tags == null)
                 tags = this.tags;
             if (sizeAvgTagSize == 0)
-                throw new ArgumentNullException();
+                throw new ArgumentNullException("sizeAvgTagSize must be > 0");
 
             var repeatDictionary = tags.GetDictionary();
 
