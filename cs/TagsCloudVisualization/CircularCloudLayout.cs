@@ -83,7 +83,7 @@ namespace TagsCloudVisualization
             buffer.Offset(-1, 0);
             if (buffer.GetCenter().X < center.X)
                 return false;
-            if (RectangleIntesects(buffer))
+            if (RectangleIntersects(buffer))
                 return false;
             bufferedRectangle = buffer;
             return true;
@@ -95,7 +95,7 @@ namespace TagsCloudVisualization
             buffer.Offset(1, 0);
             if (buffer.GetCenter().X > center.X)
                 return false;
-            if (RectangleIntesects(buffer))
+            if (RectangleIntersects(buffer))
                 return false;
             bufferedRectangle = buffer;
             return true;
@@ -107,7 +107,7 @@ namespace TagsCloudVisualization
             buffer.Offset(0, -1);
             if (buffer.GetCenter().Y < center.Y)
                 return false;
-            if (RectangleIntesects(buffer))
+            if (RectangleIntersects(buffer))
                 return false;
             bufferedRectangle = buffer;
             return true;
@@ -119,7 +119,7 @@ namespace TagsCloudVisualization
             buffer.Offset(0, 1);
             if (buffer.GetCenter().Y > center.Y)
                 return false;
-            if (RectangleIntesects(buffer))
+            if (RectangleIntersects(buffer))
                 return false;
             bufferedRectangle = buffer;
             return true;
@@ -135,7 +135,7 @@ namespace TagsCloudVisualization
         private bool TryPlaceRectangle()
         {
             bufferedRectangle = AdjustRectangle(pointer);
-            return !RectangleIntesects(bufferedRectangle) && !RectangleOutOfCircleRange(bufferedRectangle);
+            return !RectangleIntersects(bufferedRectangle) && !RectangleOutOfCircleRange(bufferedRectangle);
         }
 
         private bool TryPlaceRectangleInCenter(out Rectangle rectangle)
@@ -150,7 +150,7 @@ namespace TagsCloudVisualization
 
         private bool PointLiesInRectangles(Point p) => PlacedRectangles.Any(x => x.Contains(p));
 
-        private bool RectangleIntesects(Rectangle rectangle) => PlacedRectangles.Any(x => x.IntersectsWith(rectangle));
+        private bool RectangleIntersects(Rectangle rectangle) => PlacedRectangles.Any(x => x.IntersectsWith(rectangle));
 
         private bool RectangleOutOfCircleRange(Rectangle rectangle)
         {

@@ -27,8 +27,8 @@ namespace CircularCloudLayoutTests
         }
 
         [Test]
-        public void PlacedRectangles_Should_Fill_80Precent_OfCircleSpace()
-        {
+        public void PlacedRectangles_Should_Fill_80Percent_OfCircleSpace()
+        { 
             var area = 0;
             var expectedCoveredArea = (int)(Math.PI * radiusOfLayoutCircle * radiusOfLayoutCircle * 0.8);
 
