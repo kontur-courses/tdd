@@ -15,5 +15,7 @@ namespace TagsCloudVisualization
             Enumerable.Range(0, 265).ToList().ForEach(x => list.Add(new Size(15, 10)));
             return list;
         }
+
+        public static List<Size> Shuffle(List<Size> list) => list.OrderBy(i => Guid.NewGuid()).ToList();
     }
 }

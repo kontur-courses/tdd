@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using static TagsCloudVisualization.SizeListBulder;
 
 namespace TagsCloudVisualization
 {
@@ -8,7 +7,7 @@ namespace TagsCloudVisualization
         public static void Main(string[] args)
         {
             var layout = new CircularCloudLayout(new Point(200, 200));
-            var sizes = GetCustomSizes();
+            var sizes = SizeListBulder.Shuffle(SizeListBulder.GetCustomSizes());
             var rectanglesOutput = new List<Rectangle>();
             sizes.ForEach(x =>
             {
