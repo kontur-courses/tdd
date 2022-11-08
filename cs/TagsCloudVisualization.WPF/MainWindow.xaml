@@ -8,13 +8,13 @@
         Name="MyWindow"
         Title="TagsCloud" Height="450" Width="800">
         <Grid>
-                <Canvas Name="MyCanvas" Background="Black" Focusable="True">
+                <Canvas x:Name="MyCanvas" Background="Black" Focusable="True">
                 </Canvas>               
                 <Menu VerticalAlignment="Top">
                         <MenuItem Width="40" Header="File" FontSize="12">
                                 <MenuItem Header="Start" Name="StartButton" Click="Start"></MenuItem>
                                 <MenuItem Header="Clear" Click="Clear"></MenuItem>
-                                <MenuItem Header="Save Picture"></MenuItem>
+                                <MenuItem Header="Save Picture" Click="SavePicture"></MenuItem>
                         </MenuItem>
                         <MenuItem Width="40" Header="Edit" FontSize="12">
                                 <StackPanel Width="100">
