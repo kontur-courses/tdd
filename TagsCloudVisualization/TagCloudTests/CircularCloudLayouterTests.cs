@@ -26,7 +26,7 @@ public class CircularCloudLayouterTests
             using var graphics = Graphics.FromImage(bitmap);
             using var brush = new SolidBrush(Color.Orange);
             using var pen = new Pen(brush, 1) { Alignment = PenAlignment.Inset };
-            for (int i = 0; i < layouter.Rectangles.Count; i++)
+            for (var i = 0; i < layouter.Rectangles.Count; i++)
                 graphics.DrawRectangle(pen, layouter.Rectangles[i]);
 
             var testName = TestContext.CurrentContext.Test.Name;
@@ -54,11 +54,10 @@ public class CircularCloudLayouterTests
     [Test]
     public void PutNextRectangle_ThrowException_OnHaveNoSpace()
     {
-        layouter.AngleStep = int.MaxValue;
-        layouter.Density = int.MaxValue;
+        var layouter = new CircularCloudLayouter(this.layouter.Center, int.MaxValue, int.MaxValue);
         var action = () =>
                 {
-                    for (int i = 0; i < 100; i++)
+                    for (var i = 0; i < 100; i++)
                         layouter.PutNextRectangle(new Size(int.MaxValue, int.MaxValue));
                 };
         action.Should().Throw<Exception>().WithMessage("There is no place for the rectangle");
@@ -126,7 +125,7 @@ public class CircularCloudLayouterTests
         const double accuracy = 0.2;
 
         // The more rectangles, the more accurately repeats the shape of a circle
-        for (int i = 0; i < 200; i++)
+        for (var i = 0; i < 200; i++)
             layouter.PutNextRectangle(new Size(50, 20));
 
         var rects = layouter.Rectangles;
@@ -141,7 +140,7 @@ public class CircularCloudLayouterTests
     [Test]
     public void PutNextRectangle_DefaultСloudIsCircle()
     {
-        for (int i = 0; i < 13; i++)
+        for (var i = 0; i < 13; i++)
             layouter.PutNextRectangle(new Size(50, 50));
 
         var rects = layouter.Rectangles;
