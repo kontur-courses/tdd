@@ -29,7 +29,7 @@ public class WeightedCircularCloudLayouter : ICircularCloudLayouter
 
     public Rectangle PutNextRectangle(Size rectSize)
     {
-        if (rectSize.Height == 0 || rectSize.Width == 0)
+        if (rectSize.Height <= 0 || rectSize.Width <= 0)
             throw new ArgumentException($"{nameof(rectSize.Width)} and {nameof(rectSize.Height)} cannot be zero!");
 
         var rect = RectanglesPlaced == 0

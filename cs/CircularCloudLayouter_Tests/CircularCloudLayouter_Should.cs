@@ -123,8 +123,11 @@ public class CircularCloudLayouter_Should
     }
 
     [TestCase(0, 10, "width", TestName = "Zero width")]
+    [TestCase(-5, 10, "width", TestName = "Negative width")]
     [TestCase(10, 0, "height", TestName = "Zero height")]
+    [TestCase(10, -5, "height", TestName = "Negative height")]
     [TestCase(0, 0, "width", "height", TestName = "Zero width, zero height")]
+    [TestCase(-5, -4, "width", "height", TestName = "Negative width, negative height")]
     public void ThrowExceptions_OnIncorrectSize(int width, int height, params string[] messageParts)
     {
         Invoking(() => _defaultCircularCloudLayouter.PutNextRectangle(new Size(width, height)))
