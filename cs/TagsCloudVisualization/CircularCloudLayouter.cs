@@ -57,7 +57,7 @@ namespace TagsCloudVisualization
         private Rectangle OffsetToCenter(Rectangle rect)
         {
             var point = rect.Location;
-            while (Center.X - 1 > rect.Center().X || Center.X + 1 < rect.Center().X)
+            while (rect.CanBeShiftedToPointX(Center))
             {
                 var newX = ((rect.Center().X < Center.X) ? 1 : -1) + point.X;
                 var pointNew = new Point(newX, point.Y);
@@ -66,7 +66,7 @@ namespace TagsCloudVisualization
                 point = pointNew;
                 rect = rectNew;
             }
-            while (Center.Y - 1 > rect.Center().Y || Center.Y + 1 < rect.Center().Y)
+            while (rect.CanBeShiftedToPointY(Center))
             {
                 var newY = ((rect.Center().Y < Center.Y) ? 1 : -1) + point.Y;
                 var pointNew = new Point(point.X, newY);
@@ -81,15 +81,13 @@ namespace TagsCloudVisualization
         public void SaveBitmap(string btmName)
         {
             var bmp = new Bitmap(800, 500);
-            using (Graphics gph = Graphics.FromImage(bmp))
+            using Graphics gph = Graphics.FromImage(bmp);
+            var blackPen = new Pen(Color.Black, 1);
+            foreach (var rect in Rectangles)
             {
-                var blackPen = new Pen(Color.Black, 1);
-                foreach (var rect in Rectangles)
-                {
-                    gph.DrawRectangle(blackPen, rect);
-                }
-                bmp.Save(btmName + ".bmp");
+                gph.DrawRectangle(blackPen, rect);
             }
+            bmp.Save(btmName + ".bmp");
         }
     }
 }

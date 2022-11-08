@@ -27,7 +27,7 @@ namespace TagsCloudVisualization
         {
             Action act = () =>
             {
-                var c = new CircularCloudLayouter(new Point(-1, -1));
+                var circularCloudLayouter = new CircularCloudLayouter(new Point(-1, -1));
             };
             act.Should().Throw<ArgumentException>();
         }
@@ -157,7 +157,8 @@ namespace TagsCloudVisualization
                 Equals(testResult == ResultState.Error))
             {
                 cloudLayouter.SaveBitmap(TestContext.CurrentContext.Test.Name);
-                throw new Exception("Tag cloud visualization saved to file " + Environment.CurrentDirectory + " " +TestContext.CurrentContext.Test.Name);
+                Console.WriteLine("Tag cloud visualization saved to file " + Environment.CurrentDirectory 
+                                                                           + "\\" + TestContext.CurrentContext.Test.Name+ ".bmp");
             }
         }
 
