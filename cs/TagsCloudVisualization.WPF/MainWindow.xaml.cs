@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using Color = System.Windows.Media.Color;
 using Point = System.Drawing.Point;
@@ -18,9 +12,6 @@ using Size = System.Drawing.Size;
 
 namespace TagsCloudVisualization.WPF
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private readonly Random random = new();
@@ -42,22 +33,48 @@ namespace TagsCloudVisualization.WPF
         private void DrawRectangle(object? sender, EventArgs e)
         {
             customColor = GetRandomColor();
-            
+            var text = new[] {"1.Hello", "2.Hello Hello", "3.Hello Hello Hello"}[random.Next(3)];
+
+            if (circularCloud == null) 
+                return;
+
             var rectangleFromCloud =
-                circularCloud.PutNextRectangle(new Size(random.Next(25, 50), random.Next(25, 50)));
-            var canvasRect = new System.Windows.Shapes.Rectangle
+                circularCloud.PutNextRectangle(new Size(text.Length * 7, 25));
+                // circularCloud.PutNextRectangle(new Size(random.Next(25, 50), random.Next(25, 50)));
+            // var canvasRect = new System.Windows.Shapes.Rectangle
+            // {
+            //     Width = rectangleFromCloud.Width,
+            //     Height = rectangleFromCloud.Height,
+            //     Fill = customColor,
+            //     StrokeThickness = 2,
+            //     Stroke = Brushes.LightBlue,
+            // };
+            // var label = new Label
+            // {
+            //     Width = rectangleFromCloud.Width,
+            //     Height = rectangleFromCloud.Height,
+            //     Content = "Hello",
+            //     Foreground = Brushes.Azure,
+            // };
+
+            var canvasTb = new TextBox
             {
                 Width = rectangleFromCloud.Width,
                 Height = rectangleFromCloud.Height,
-                Fill = customColor,
-                StrokeThickness = 2,
-                Stroke = Brushes.LightBlue,
+                Foreground = customColor,
+                Background = Brushes.Black,
+                TextAlignment = TextAlignment.Center,
+                Text = text,
             };
 
-            Canvas.SetLeft(canvasRect, rectangleFromCloud.X);
-            Canvas.SetTop(canvasRect, rectangleFromCloud.Y);
-
-            MyCanvas.Children.Add(canvasRect);
+            // Canvas.SetLeft(canvasRect, rectangleFromCloud.X);
+            // Canvas.SetTop(canvasRect, rectangleFromCloud.Y);
+            
+            Canvas.SetLeft(canvasTb, rectangleFromCloud.X);
+            Canvas.SetTop(canvasTb, rectangleFromCloud.Y);
+            
+            // MyCanvas.Children.Add(canvasRect);
+            MyCanvas.Children.Add(canvasTb);
         }
 
         private SolidColorBrush GetRandomColor() => new(Color.FromRgb((byte) random.Next(1, 255),
