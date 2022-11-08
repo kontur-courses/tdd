@@ -1,4 +1,7 @@
 using TagsCloudVisualization;
+using NUnit.Framework;
+using System.Drawing;
+using FluentAssertions;
 
 namespace CircularCloudLayoutTests
 {
@@ -19,7 +22,7 @@ namespace CircularCloudLayoutTests
             placedRectanglesOutput = new();
             radiusOfLayoutCircle = center.X < center.Y ? center.X : center.Y;
             layout = new CircularCloudLayout(center);
-            GetCustomSizes().ForEach(x =>
+            SizeListBulder.GetCustomSizes().ForEach(x =>
             {
                 if (layout.PutNextRectangle(x, out Rectangle rect))
                     placedRectanglesOutput.Add(rect);
