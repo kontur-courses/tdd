@@ -86,12 +86,11 @@
         <Compile Include="ArchimedeanSpiral.cs" />
         <Compile Include="CircularCloudLayouter.cs" />
         <Compile Include="CircularCloudLayouterVisualisator.cs" />
-        <Compile Include="Extensions.cs" />
+        <Compile Include="Extensions\GraphicsExtensions.cs" />
+        <Compile Include="Extensions\RectangleExtensions.cs" />
+        <Compile Include="Extensions\SizeExtensions.cs" />
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="Tests\ArchimedeanSpiralTests.cs" />
-        <Compile Include="Tests\CircularCloudLayouterTests.cs" />
-        <Compile Include="Tests\ExtensionsTests.cs" />
     </ItemGroup>
     <ItemGroup>
       <None Include="packages.config" />

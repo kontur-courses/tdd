@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using NUnit.Framework;
+using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization.Tests
 {

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using NUnit;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
