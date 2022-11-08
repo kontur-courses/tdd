@@ -8,21 +8,18 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         private readonly Rectangle canvas;
-        private readonly List<Rectangle> rectangles;
         private readonly IEnumerator<Point> spiral;
-        private readonly Point center;
+        public readonly Point Center;
         public readonly List<Point> SpiralPoints;
 
         protected QuadTree QuadTree { get; }
 
-        public CircularCloudLayouter(Point center)
+        public CircularCloudLayouter(Size canvasSize)
         {
-            canvas = GetRectangleAtPositionOfCenter(center, 2 * new Size(center));
-            rectangles = new();
-            spiral = new Spiral(center, Math.PI / 360, 2).GetEnumerator();
-            this.center = center;
-            SpiralPoints = new();
-
+            Center = new Point(canvasSize / 2);
+            canvas = GetRectangleAtPositionOfCenter(Center, canvasSize);
+            spiral = new Spiral(Center, Math.PI / 360, 2).GetEnumerator();
+            SpiralPoints = new List<Point>();
             QuadTree = new QuadTree(canvas);
         }
 
@@ -42,7 +39,7 @@ namespace TagsCloudVisualization
                 var rectangle = GetRectangleAtPositionOfCenter(spiral.Current, rectangleSize);
                 SpiralPoints.Add(spiral.Current);
 
-                if (QuadTree.HasContent(rectangle))
+                if (QuadTree.IntersectsWith(rectangle))
                     continue;
 
                 CheckIfRectangleIsOutsideOfCanvas(rectangle);
@@ -50,7 +47,6 @@ namespace TagsCloudVisualization
                 for (var i = 0; i < 4; i++)
                     rectangle = TryShiftToCenter(rectangle, i % 2 == 0);
 
-                rectangles.Add(rectangle);
                 QuadTree.Insert(rectangle);
                 return rectangle;
             }
@@ -68,25 +64,25 @@ namespace TagsCloudVisualization
 
         private Rectangle TryShiftToCenter(Rectangle rectangle, bool isVertical)
         {
-            var oldDistance = rectangle.Center().GetDistanceSquareTo(center);
+            var oldDistance = rectangle.Center().GetDistanceSquareTo(Center);
             var oldLocation = rectangle.Location;
             while (true)
             {
                 var newLocation = oldLocation;
 
                 if (isVertical)
-                    newLocation.Y += Math.Sign(center.Y - rectangle.Center().Y);
+                    newLocation.Y += Math.Sign(Center.Y - rectangle.Center().Y);
                 else
-                    newLocation.X += Math.Sign(center.X - rectangle.Center().X);
+                    newLocation.X += Math.Sign(Center.X - rectangle.Center().X);
 
 
                 var newRectangle = new Rectangle(newLocation, rectangle.Size);
-                var newDistance = newRectangle.Center().GetDistanceSquareTo(center);
+                var newDistance = newRectangle.Center().GetDistanceSquareTo(Center);
 
                 if (newDistance >= oldDistance)
                     break;
                 
-                if (!QuadTree.HasContent(newRectangle))
+                if (!QuadTree.IntersectsWith(newRectangle))
                     rectangle = newRectangle;
 
 

@@ -15,7 +15,7 @@ namespace TagsCloudVisualizationTests
     [TestFixture]
     public class CircularCloudLayouterTests
     {
-        private static readonly Point Center = new(1000, 1000);
+        private static readonly Size CanvasSize = new(2000, 2000);
         private static readonly Size MinRectangle = new(20, 15);
         private static readonly Size MaxRectangle = new(200, 100);
 
@@ -27,11 +27,11 @@ namespace TagsCloudVisualizationTests
         public void SetUp()
         {
             generator = new RectangleGenerator(MinRectangle, MaxRectangle);
-            layouter = new CircularCloudLayouter(Center);
-            rectangles = new();
+            layouter = new CircularCloudLayouter(CanvasSize);
+            rectangles = new List<Rectangle>();
         }
 
-        [Test, Category("MustDraw")]
+        [Test, Category("DrawImageWhenFail")]
         public void PutNextRectangle_RectanglesShouldBeCompact_For100Rectangles()
         {
             rectangles.Add(layouter.PutNextRectangle(generator.GetRandomRectangle()));
@@ -42,28 +42,27 @@ namespace TagsCloudVisualizationTests
                     var rectangle = layouter.PutNextRectangle(generator.GetRandomRectangle());
 
                     var closerRectangle = new Rectangle(rectangle.Location, rectangle.Size);
-                    closerRectangle.Y += Math.Sign(Center.Y - rectangle.Center().Y);
-                    closerRectangle.X += Math.Sign(Center.X - rectangle.Center().X);
+                    closerRectangle.Y += Math.Sign(layouter.Center.Y - rectangle.Center().Y);
+                    closerRectangle.X += Math.Sign(layouter.Center.X - rectangle.Center().X);
 
-                    var res = closerRectangle.IntersectsWith(rectangles);
-                    res.Should().BeTrue($"Iteration: {i}, rectangles should intersect: {closerRectangle.Location} can be placed");
+                    var result = closerRectangle.IntersectsWith(rectangles);
+                    result.Should().BeTrue($"Iteration: {i}, rectangles should intersect: {closerRectangle.Location} can be placed");
                     rectangles.Add(rectangle);
                 }
             }
         }
 
-        [Test, Category("MustDraw")]
+        [Test, Category("DrawImageWhenFail")]
         public void PutNextRectangle_ShouldNotIntersect_For100Rectangles()
         {
-            rectangles.Clear();
             using (new AssertionScope())
             {
                 for (var i = 0; i < 100; i++)
                 {
                     var rectangle = layouter.PutNextRectangle(generator.GetRandomRectangle());
 
-                    var res = rectangle.IntersectsWith(rectangles);
-                    res.Should().BeFalse($"Iteration: {i}, rectangles should not intersect. {rectangle.Location} wrong");
+                    var result = rectangle.IntersectsWith(rectangles);
+                    result.Should().BeFalse($"Iteration: {i}, rectangles should not intersect. {rectangle.Location} wrong");
 
                     rectangles.Add(rectangle);
                 }
@@ -71,11 +70,11 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
-        public void PutNextRectangle_ShouldThrowsException_WhenRectangleSizeBiggerThanCanvas()
+        public void PutNextRectangle_ShouldThrowException_WhenRectangleSizeBiggerThanCanvas()
         {
             Action action = () =>
             {
-                var layouter = new CircularCloudLayouter(new Point(2, 2));
+                var layouter = new CircularCloudLayouter(new Size(2, 2));
                 layouter.PutNextRectangle(new Size(10000, 1000));
             };
             action.Should().Throw<Exception>();
@@ -84,11 +83,11 @@ namespace TagsCloudVisualizationTests
 
         [TestCase(0, 0)]
         [TestCase(-7, 1)]
-        public void PutNextRectangle_ShouldThrowsArgumentException_WhenRectangleSizeNotPositive(int width, int height)
+        public void PutNextRectangle_ShouldThrowArgumentException_WhenRectangleSizeNotPositive(int width, int height)
         {
             Action action = () =>
             {
-                var layouter = new CircularCloudLayouter(new Point(100, 100));
+                var layouter = new CircularCloudLayouter(new Size(100, 100));
                 layouter.PutNextRectangle(new Size(width, height));
             };
             action.Should().Throw<ArgumentException>();
@@ -97,7 +96,7 @@ namespace TagsCloudVisualizationTests
         [TearDown]
         public void TearDown()
         {
-            if (!TestContext.CurrentContext.Test.Properties["Category"].Contains("MustDraw") ||
+            if (!TestContext.CurrentContext.Test.Properties["Category"].Contains("DrawImageWhenFail") ||
                 TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
 
             var path = "../../../errors/" + TestContext.CurrentContext.Test.MethodName + ".png";

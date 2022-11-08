@@ -23,7 +23,7 @@ namespace TagsCloudVisualization
             this.generator = generator;
             this.rectanglePen = rectanglePen;
             this.spiralPen = spiralPen;
-            layouter = new CircularCloudLayouter(new Point(imageSize / 2));
+            layouter = new CircularCloudLayouter(imageSize);
         }
 
         private void DrawRectangle(Rectangle rectangle)

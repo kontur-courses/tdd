@@ -5,7 +5,7 @@ namespace TagsCloudVisualization.Structures
     public class QuadTree
     {
         private readonly Rectangle canvas;
-        private readonly QuadTreeNode root;
+        protected readonly QuadTreeNode root;
 
         public QuadTree(Rectangle canvas)
         {
@@ -18,9 +18,9 @@ namespace TagsCloudVisualization.Structures
             root.Insert(item);
         }
 
-        public bool HasContent(Rectangle area)
+        public bool IntersectsWith(Rectangle area)
         {
-            return root.Query(area);
+            return root.IntersectsWith(area);
         }
     }
 }

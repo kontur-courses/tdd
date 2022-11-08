@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization.Structures
 {
@@ -22,35 +23,27 @@ namespace TagsCloudVisualization.Structures
         {
             get
             {
-                var count = 0;
-
-                foreach (var node in nodes)
-                    count += node.Count;
-
-                count += contents.Count;
-
-                return count;
+                return nodes.Sum(t => t.Count) + contents.Count;
             }
         }
 
-        public bool Query(Rectangle queryArea)
+        public bool IntersectsWith(Rectangle queryArea)
         {
-            foreach (var item in contents)
-                if (queryArea.IntersectsWith(item))
-                    return true;
+            if (contents.Any(queryArea.IntersectsWith))
+                return true;
 
             foreach (var node in nodes)
             {
                 if (node.IsEmpty)
                     continue;
 
-                if (node.Bounds.Contains(queryArea) && node.Query(queryArea))
+                if (node.Bounds.Contains(queryArea) && node.IntersectsWith(queryArea))
                     return true;
 
                 if (queryArea.Contains(node.Bounds))
                     return true;
 
-                if (node.Bounds.IntersectsWith(queryArea) && node.Query(queryArea))
+                if (node.Bounds.IntersectsWith(queryArea) && node.IntersectsWith(queryArea))
                     return true;
             }
 

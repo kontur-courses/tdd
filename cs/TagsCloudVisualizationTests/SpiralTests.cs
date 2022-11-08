@@ -27,7 +27,7 @@ namespace TagsCloudVisualizationTests
             spiral.First().Should().Be(Center);
         }
 
-        [Test, Timeout(1500)]
+        [Test]
         public void Enumerator_AngleShouldBePi_WhenOppositePoint()
         {
             var points = spiral.Take((int)1e5).ToArray();
@@ -42,7 +42,7 @@ namespace TagsCloudVisualizationTests
             }
         }
 
-        [Test, Timeout(1500)]
+        [Test]
         public void Enumerator_SpiralRadiusGrows_WhenIteratingWithBigDistance()
         {
             var points = spiral.Take((int)1e5).ToArray();
@@ -57,6 +57,12 @@ namespace TagsCloudVisualizationTests
                 }
             }
 
+        }
+
+        [Test, Timeout(1000)]
+        public void Enumerator_SpiralShouldBeFast_WhenGeneratingBigNumberOfPoints()
+        {
+            _ = spiral.Take((int)1e5).ToArray();
         }
 
         private double GetAngleFromPoint(Point point)
