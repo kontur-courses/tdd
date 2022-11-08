@@ -8,10 +8,10 @@ namespace CircularCloudLayoutTests
     [TestFixture]
     public class CircularCloudLayoutTests
     {
-        private int radiusOfLayoutCircle;
+        private int layoutRadius;
         private Point center;
         private CircularCloudLayout layout;
-        private List<Rectangle> placedRectanglesOutput;
+        private List<Rectangle> placedRectangles;
         private Bitmap picture;
         private Graphics g;
 
@@ -19,13 +19,13 @@ namespace CircularCloudLayoutTests
         public void SetupLayout()
         {
             center = new Point(200, 200);
-            placedRectanglesOutput = new();
-            radiusOfLayoutCircle = center.X < center.Y ? center.X : center.Y;
+            placedRectangles = new();
+            layoutRadius = center.X < center.Y ? center.X : center.Y;
             layout = new CircularCloudLayout(center);
             SizeListBulder.GetCustomSizes().ForEach(x =>
             {
                 if (layout.PutNextRectangle(x, out Rectangle rect))
-                    placedRectanglesOutput.Add(rect);
+                    placedRectangles.Add(rect);
             });
         }
 
@@ -33,9 +33,9 @@ namespace CircularCloudLayoutTests
         public void PlacedRectangles_Should_Fill_80Percent_OfCircleSpace()
         {
             var area = 0;
-            var expectedCoveredArea = (int)(Math.PI * radiusOfLayoutCircle * radiusOfLayoutCircle * 0.8);
+            var expectedCoveredArea = (int)(Math.PI * layoutRadius * layoutRadius * 0.8);
 
-            placedRectanglesOutput.ForEach(x => area += x.GetArea());
+            placedRectangles.ForEach(x => area += x.GetArea());
 
             area.Should().BeGreaterOrEqualTo(expectedCoveredArea);
         }
@@ -45,11 +45,11 @@ namespace CircularCloudLayoutTests
         {
             var doIntersects = false;
 
-            for (int i = 0; i < placedRectanglesOutput.Count - 1; i++)
+            for (int i = 0; i < placedRectangles.Count - 1; i++)
             {
-                for (int b = i + 1; b < placedRectanglesOutput.Count; b++)
+                for (int b = i + 1; b < placedRectangles.Count; b++)
                 {
-                    doIntersects = doIntersects || placedRectanglesOutput[i].IntersectsWith(placedRectanglesOutput[b]);
+                    doIntersects = doIntersects || placedRectangles[i].IntersectsWith(placedRectangles[b]);
                 }
             }
 
@@ -59,10 +59,10 @@ namespace CircularCloudLayoutTests
         [Test]
         public void PlacedRectangles_ActualCenter_ShouldNotDeviate_MoreThanFivePercent_From_CenterPoint()
         {
-            var maxX = placedRectanglesOutput.Select(x => x.Right).Max();
-            var maxY = placedRectanglesOutput.Select(x => x.Bottom).Max();
-            var minX = placedRectanglesOutput.Select(x => x.Left).Min();
-            var minY = placedRectanglesOutput.Select(x => x.Top).Min();
+            var maxX = placedRectangles.Select(x => x.Right).Max();
+            var maxY = placedRectangles.Select(x => x.Bottom).Max();
+            var minX = placedRectangles.Select(x => x.Left).Min();
+            var minY = placedRectangles.Select(x => x.Top).Min();
             var deviationX = center.X * 0.05;
             var deviationY = center.Y * 0.05;
 
@@ -122,16 +122,16 @@ namespace CircularCloudLayoutTests
         {
             var isOutside = false;
 
-            foreach (var rectangle in placedRectanglesOutput)
+            foreach (var rectangle in placedRectangles)
             {
                 var x1 = rectangle.Left - center.X;
                 var y1 = rectangle.Top - center.Y;
                 var x2 = rectangle.Right - center.X;
                 var y2 = rectangle.Bottom - center.Y;
-                isOutside = isOutside || Math.Sqrt(x1 * x1 + y1 * y1) > radiusOfLayoutCircle
-                                      || Math.Sqrt(x2 * x2 + y1 * y1) > radiusOfLayoutCircle
-                                      || Math.Sqrt(x1 * x1 + y2 * y2) > radiusOfLayoutCircle
-                                      || Math.Sqrt(x2 * x2 + y2 * y2) > radiusOfLayoutCircle;
+                isOutside = isOutside || Math.Sqrt(x1 * x1 + y1 * y1) > layoutRadius
+                                      || Math.Sqrt(x2 * x2 + y1 * y1) > layoutRadius
+                                      || Math.Sqrt(x1 * x1 + y2 * y2) > layoutRadius
+                                      || Math.Sqrt(x2 * x2 + y2 * y2) > layoutRadius;
             }
 
             isOutside.Should().BeFalse();
@@ -147,9 +147,9 @@ namespace CircularCloudLayoutTests
             picture = new(center.X * 2 + 5, center.Y * 2 + 5);
             g = Graphics.FromImage(picture);
             g.Clear(Color.White);
-            placedRectanglesOutput.ForEach(x => g.DrawRectangle(Pens.Black, x));
-            g.DrawEllipse(Pens.Black, center.X - radiusOfLayoutCircle, center.Y - radiusOfLayoutCircle,
-                radiusOfLayoutCircle * 2, radiusOfLayoutCircle * 2);
+            placedRectangles.ForEach(x => g.DrawRectangle(Pens.Black, x));
+            g.DrawEllipse(Pens.Black, center.X - layoutRadius, center.Y - layoutRadius,
+                layoutRadius * 2, layoutRadius * 2);
             var time = DateTime.Now.ToString("dd/MM/yyyy_HH-mm-ss");
             var path = Path.Combine(context.WorkDirectory, $"..\\..\\..\\CircularCloudLayout_{time}.bmp");
             Console.WriteLine($"Tag cloud visualization saved to file {path}");
