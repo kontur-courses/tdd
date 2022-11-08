@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization
 {
@@ -18,35 +19,38 @@ namespace TagsCloudVisualization
         public CircularCloudLayouter(Point center)
         {
             Center = center;
-            _spiral = new ArchimedeanSpiral(center, 0, 0.5);
+            _spiral = new ArchimedeanSpiral(center, 0, 0.25);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             Rectangle rectangle = new Rectangle(Point.Empty, rectangleSize);
-            PlaceRectangle(ref rectangle);
-            ShiftRectangleToCenter(ref rectangle);
+            rectangle = PlaceRectangle(rectangle);
+            rectangle = ShiftRectangleToCenter(rectangle);
             _rectangles.Add(rectangle);
             return rectangle;
         }
 
-        private void PlaceRectangle(ref Rectangle rectangle)
+        private Rectangle PlaceRectangle(Rectangle rectangle)
         {
             do {
                 rectangle.Location = _spiral.GetPoint(_angle);
                 _angle += _angleStep;
             } while (rectangle.IntersectsWith(_rectangles));
+
+            return rectangle;
         }
         
-        private void ShiftRectangleToCenter(ref Rectangle rectangle)
+        private Rectangle ShiftRectangleToCenter(Rectangle rectangle)
         {
             int dx = (rectangle.GetCenter().X < Center.X) ? 1 : -1;
-            ShiftRectangle(ref rectangle, dx, 0);
+            rectangle = ShiftRectangle(rectangle, dx, 0);
             int dy = (rectangle.GetCenter().Y < Center.Y) ? 1 : -1;
-            ShiftRectangle(ref rectangle, 0, dy);
+            rectangle = ShiftRectangle(rectangle, 0, dy);
+            return rectangle;
         }
         
-        private void ShiftRectangle(ref Rectangle rectangle, int dx, int dy)
+        private Rectangle ShiftRectangle(Rectangle rectangle, int dx, int dy)
         {
             Size offset = new Size(dx, dy);
             while (rectangle.IntersectsWith(_rectangles) == false && 
@@ -60,6 +64,8 @@ namespace TagsCloudVisualization
             {
                 rectangle.Location -= offset;
             }
+
+            return rectangle;
         }
     }
 }
