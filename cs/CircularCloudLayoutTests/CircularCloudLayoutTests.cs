@@ -31,7 +31,7 @@ namespace CircularCloudLayoutTests
 
         [Test]
         public void PlacedRectangles_Should_Fill_80Percent_OfCircleSpace()
-        { 
+        {
             var area = 0;
             var expectedCoveredArea = (int)(Math.PI * radiusOfLayoutCircle * radiusOfLayoutCircle * 0.8);
 
@@ -45,9 +45,9 @@ namespace CircularCloudLayoutTests
         {
             var doIntersects = false;
 
-            for (int i = 0; i < placedRectanglesOutput.Count - 2; i++)
+            for (int i = 0; i < placedRectanglesOutput.Count - 1; i++)
             {
-                for (int b = i + 1; b < placedRectanglesOutput.Count - 1; b++)
+                for (int b = i + 1; b < placedRectanglesOutput.Count; b++)
                 {
                     doIntersects = doIntersects || placedRectanglesOutput[i].IntersectsWith(placedRectanglesOutput[b]);
                 }
@@ -59,41 +59,20 @@ namespace CircularCloudLayoutTests
         [Test]
         public void PlacedRectangles_ActualCenter_ShouldNotDeviate_MoreThanFivePercent_From_CenterPoint()
         {
-            var maxX = 0;
-            var maxY = 0;
-            var minX = int.MaxValue;
-            var minY = int.MaxValue;
-            Point actualCenter;
+            var maxX = placedRectanglesOutput.Select(x => x.Right).Max();
+            var maxY = placedRectanglesOutput.Select(x => x.Bottom).Max();
+            var minX = placedRectanglesOutput.Select(x => x.Left).Min();
+            var minY = placedRectanglesOutput.Select(x => x.Top).Min();
             var deviationX = center.X * 0.05;
             var deviationY = center.Y * 0.05;
-            double actualDeviationX;
-            double actualDeviationY;
 
-            foreach (var rectangle in placedRectanglesOutput)
-            {
-                if (rectangle.Right > maxX)
-                    maxX = rectangle.Right;
-                if (rectangle.Bottom > maxY)
-                    maxY = rectangle.Bottom;
-                if (rectangle.Left < minX)
-                    minX = rectangle.Left;
-                if (rectangle.Top < minY)
-                    minY = rectangle.Top;
-            }
 
-            actualCenter = new Point((maxX + minX) / 2, (maxY + minY) / 2);
-            actualDeviationX = Math.Abs(center.X - actualCenter.X);
-            actualDeviationY = Math.Abs(center.Y - actualCenter.Y);
+            var actualCenter = new Point((maxX + minX) / 2, (maxY + minY) / 2);
+            double actualDeviationX = Math.Abs(center.X - actualCenter.X);
+            double actualDeviationY = Math.Abs(center.Y - actualCenter.Y);
 
             actualDeviationX.Should().BeLessOrEqualTo(deviationX);
             actualDeviationY.Should().BeLessOrEqualTo(deviationY);
-        }
-
-        [Test]
-        [Description("Testing output of PutNextRectangle method")]
-        public void PlacedRectangles_Should_BeEqual_LayoutPlacedRectangles()
-        {
-            placedRectanglesOutput.Should().BeEquivalentTo(layout.PlacedRectangles);
         }
 
         [TestCase(-1)]
@@ -115,7 +94,6 @@ namespace CircularCloudLayoutTests
         [Description("Layout size based on center point")]
         [TestCase(250, 100)]
         [TestCase(100, 250)]
-        [TestCase(250, 250)]
         public void PutNextRectangle_AddSizeBiggerThanLayoutSize_ShouldNotPlaceRectangle(int length, int height)
         {
             var layout = new CircularCloudLayout(new Point(100, 100));
@@ -126,8 +104,6 @@ namespace CircularCloudLayoutTests
 
         [TestCase(-1, 1)]
         [TestCase(0, 1)]
-        [TestCase(0, 0)]
-        [TestCase(-1, -1)]
         [TestCase(-1, 1)]
         [TestCase(0, 1)]
         public void PutNextRectangle_GiveSizeWhithNonpositiveDimensions_Should_ThrowArgumentException(int length,
@@ -140,7 +116,6 @@ namespace CircularCloudLayoutTests
             act.Should().Throw<ArgumentException>().WithMessage("Both dimensions must be above zero");
         }
 
-
         [Test]
         [Description("Circle based on center point")]
         public void PlacedRectangles_Should_LieInLimitingCircle()
@@ -149,8 +124,8 @@ namespace CircularCloudLayoutTests
 
             foreach (var rectangle in placedRectanglesOutput)
             {
-                var x1 = rectangle.X - center.X;
-                var y1 = rectangle.Y - center.Y;
+                var x1 = rectangle.Left - center.X;
+                var y1 = rectangle.Top - center.Y;
                 var x2 = rectangle.Right - center.X;
                 var y2 = rectangle.Bottom - center.Y;
                 isOutside = isOutside || Math.Sqrt(x1 * x1 + y1 * y1) > radiusOfLayoutCircle
