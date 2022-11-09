@@ -3,8 +3,8 @@
 > 
 
 >Rectangles With Step Size 20
-![RectanglesWithStep1](Images/RectanglesWithStep20.png)
+![RectanglesWithStepSize20](Images/RectanglesWithStep20.png)
 > 
  
 >Words With Step Size 1
-![RectanglesWithStep1](Images/WordsWithStep1.png)
+![WordsWithStepSize1](Images/WordsWithStep1.png)
