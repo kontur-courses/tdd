@@ -3,27 +3,33 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using TagsCloudVisualization.Curves;
 using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private readonly ArchimedeanSpiral _spiral;
         private readonly List<Rectangle> _rectangles = new List<Rectangle>();
-        private readonly double _angleStep = 0.01;
-        private double _angle = 0;
-        public Point Center { get; }
+        private readonly ICurve _curve;
+        private readonly double _curveStep;
+        private double _lastCurveParameter = 0;
         public IReadOnlyList<Rectangle> Rectangles => _rectangles;
-
-        public CircularCloudLayouter(Point center)
+        public Point Center { get; }
+        
+        public CircularCloudLayouter(ICurve curve, Point center, double curveStep = 0.01)
         {
             Center = center;
-            _spiral = new ArchimedeanSpiral(center, 0, 0.25);
+            _curve = curve;
+            _curveStep = curveStep;
         }
+
+        public CircularCloudLayouter(ICurve curve) : this(curve, Point.Empty) { }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
+            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+                throw new ArgumentException("Rectangles' width and height should be positive.");
             Rectangle rectangle = new Rectangle(Point.Empty, rectangleSize);
             rectangle = PlaceRectangle(rectangle);
             rectangle = ShiftRectangleToCenter(rectangle);
@@ -34,8 +40,8 @@ namespace TagsCloudVisualization
         private Rectangle PlaceRectangle(Rectangle rectangle)
         {
             do {
-                rectangle.Location = _spiral.GetPoint(_angle);
-                _angle += _angleStep;
+                rectangle.Location = _curve.GetPoint(_lastCurveParameter) + (Size)Center;
+                _lastCurveParameter += _curveStep;
             } while (rectangle.IntersectsWith(_rectangles));
 
             return rectangle;
@@ -61,9 +67,7 @@ namespace TagsCloudVisualization
             }
 
             if (rectangle.IntersectsWith(_rectangles))
-            {
                 rectangle.Location -= offset;
-            }
 
             return rectangle;
         }
