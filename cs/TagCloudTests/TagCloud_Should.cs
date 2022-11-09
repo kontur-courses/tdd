@@ -81,7 +81,7 @@ public class TagCloud_Should
     {
         const string filename = "filename.jpg";
         layouter.SaveAsImage(filename, new Size(800, 600));
-        File.Exists(filename);
+        File.Exists(filename).Should().BeTrue();
     }
 
     [Test]
