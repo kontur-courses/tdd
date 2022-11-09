@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization.WPF", "TagsCloudVisualization.WPF\TagsCloudVisualization.WPF.csproj", "{81774575-EE63-4658-A1C7-D65F83C8778D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloud.Tests", "TagsCloud.Tests\TagsCloud.Tests.csproj", "{D99D0436-DF12-454D-BEDF-A0CCF77F53B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloud", "TagsCloud\TagsCloud.csproj", "{B6111F1C-5C51-498B-B859-A00E34D987DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{81774575-EE63-4658-A1C7-D65F83C8778D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81774575-EE63-4658-A1C7-D65F83C8778D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81774575-EE63-4658-A1C7-D65F83C8778D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D99D0436-DF12-454D-BEDF-A0CCF77F53B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D99D0436-DF12-454D-BEDF-A0CCF77F53B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D99D0436-DF12-454D-BEDF-A0CCF77F53B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D99D0436-DF12-454D-BEDF-A0CCF77F53B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6111F1C-5C51-498B-B859-A00E34D987DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6111F1C-5C51-498B-B859-A00E34D987DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6111F1C-5C51-498B-B859-A00E34D987DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6111F1C-5C51-498B-B859-A00E34D987DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
