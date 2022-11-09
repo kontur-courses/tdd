@@ -6,12 +6,23 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouterTests
     {
         [Test]
-        public void PutNextRectangle_Should_ReturnZeroSizeRectangleInZeroPoint_WhenSizeIsZeroAndCenterIsZero()
+        public void PutNextRectangle_Should_ThrowArgumentException_WhenSizeIsZero()
         {
             var center = Point.Empty;
             var size = Size.Empty;
             var layouter = CircularCloudLayouterFactory.Get(center);
-            var expectedRectangle = new Rectangle(center, size);
+            
+            var action = () => layouter.PutNextRectangle(size);
+
+            action.Should().Throw<ArgumentException>();
+        }
+
+        [Test]
+        public void PutNextRectanlge_Should_ReturnNonZeroRectangleInZeroPoint_WhenSizeIsNotZeroAndCenterIsZero()
+        {
+            var size = new Size(100, 100);
+            var layouter = CircularCloudLayouterFactory.Get(Point.Empty);
+            var expectedRectangle = new Rectangle(new Point(-50, -50), size);
 
             var actualRectangle = layouter.PutNextRectangle(size);
 
@@ -19,14 +30,15 @@ namespace TagsCloudVisualization
         }
 
         [Test]
-        public void PutNextRectanlge_Should_ReturnNonZeroRectangleInZeroPoint_WhenSizeIsNotZeroAndCenterIsZero()
+        public void PutNextRectangle_Should_AddSecondRectangleOnTheFirstTop()
         {
-            var center = Point.Empty;
-            var size = new Size(100, 100);
-            var layouter = CircularCloudLayouterFactory.Get(center);
-            var expectedRectangle = new Rectangle(center, size);
+            var firstRectangleSize = new Size(200, 100);
+            var secondRectangleSize = new Size(100, 100);
+            var layouter = CircularCloudLayouterFactory.Get(Point.Empty);
+            var expectedRectangle = new Rectangle(new Point(-secondRectangleSize.Width / 2, -(firstRectangleSize.Height / 2 + secondRectangleSize.Height)), secondRectangleSize);
 
-            var actualRectangle = layouter.PutNextRectangle(size);
+            var firstRectangle = layouter.PutNextRectangle(firstRectangleSize);
+            var actualRectangle = layouter.PutNextRectangle(secondRectangleSize);
 
             actualRectangle.Should().Be(expectedRectangle);
         }
