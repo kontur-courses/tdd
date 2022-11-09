@@ -30,7 +30,7 @@ public class CircularCloudLayouterTests
     [Test]
     public void PutNextRectangle_ArgumentException_HugeSize()
     {
-        var rectangleSize = new Size(500, 500);
+        var rectangleSize = new Size(501, 501);
         var action = () => { _ = layouter.PutNextRectangle(rectangleSize); };
 
         action.Should().Throw<ArgumentException>();
@@ -39,8 +39,8 @@ public class CircularCloudLayouterTests
     [Test]
     public void PutNextRectangle_RectangleAtCenter_ValidSize()
     {
-        var rectangleSize = new Size(150, 150);
-        var expectedRectangle = new Rectangle(100, 100, 150, 150);
+        var rectangleSize = new Size(250, 250);
+        var expectedRectangle = new Rectangle(125, 125, 250, 250);
 
         var actualRectangle = layouter.PutNextRectangle(rectangleSize);
 
