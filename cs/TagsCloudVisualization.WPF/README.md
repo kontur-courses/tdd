@@ -6,5 +6,5 @@
 ![RectanglesWithStepSize20](Images/RectanglesWithStep20.png)
 > 
  
->Words With Step Size 1
+>Words With Step Size 1 (!!!!!!)
 ![WordsWithStepSize1](Images/WordsWithStep1.png)
