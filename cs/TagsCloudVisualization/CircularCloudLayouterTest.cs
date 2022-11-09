@@ -29,6 +29,7 @@ public class CircularCloudLayouterTest
         rect.X.Should().Be(450);
         rect.Y.Should().Be(450);
     }
+
     [Test]
     public void TwoCorrectRectangle_PutNextRectangle()
     {

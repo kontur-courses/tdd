@@ -90,4 +90,20 @@ public class CircularCloudLayouter
     {
         return Math.Sqrt(x * x + y * y);
     }
+    public bool SaveAsPic(string pathFolder)
+    {
+        Bitmap bitmap = new Bitmap(radius * 2, radius * 2);; 
+        Graphics graph = Graphics.FromImage(bitmap);
+        graph.DrawRectangles(new Pen(Color.Black), rectangles.ToArray());
+        bitmap.Save(pathFolder + "pics.btm");
+        return true;
+    }
+    public bool SaveAsPic(string pathFolder, string name)
+    {
+        Bitmap bitmap = new Bitmap(radius * 2, radius * 2);; 
+        Graphics graph = Graphics.FromImage(bitmap);
+        graph.DrawRectangles(new Pen(Color.Black), rectangles.ToArray());
+        bitmap.Save(pathFolder + "\\" + name);
+        return true;
+    }
 }
