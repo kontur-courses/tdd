@@ -45,7 +45,11 @@ namespace TagsCloudVisualization
             int suitableRectIndex = SmallestSuitableFreeRectangleIndex(rectangleSize);
             if (suitableRectIndex != -1)
             {
-                rect = ExtractFreeRectangleByIndex(suitableRectIndex);
+                var freeRectangle = ExtractFreeRectangleByIndex(suitableRectIndex);
+                rect.X = freeRectangle.X;
+                rect.Y += freeRectangle.Y;
+                rect.Width = rectangleSize.Width;
+                rect.Height = rectangleSize.Height;
             }
             else
             {
@@ -260,7 +264,7 @@ namespace TagsCloudVisualization
 
             return initialisedRectangle;
         }
-
+        
         private enum AddRectangleState
         {
             RightUp,
