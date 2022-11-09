@@ -11,7 +11,10 @@ namespace TagCloud
 
         public List<Rectangle> Reactangles { get; }
 
-        private SpiralPointGenerator spiralGenerator;
+        private double theta = 0;
+        private double radius = 0;
+        private readonly double thetaStep = Math.PI / 360;
+        private readonly double radiusStep = 0.01;
 
         public CircularCloudLayouter() : this(new Point())
         {
@@ -21,7 +24,6 @@ namespace TagCloud
         {
             Center = new Point(center.X, center.Y);
             Reactangles = new List<Rectangle>();
-            spiralGenerator = new SpiralPointGenerator(Center);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -46,8 +48,8 @@ namespace TagCloud
         {
             var reactangleCenter = GetCenterPointFor(rectangleSize);
             Point nextPoint = Reactangles.Count == 0 ? 
-                spiralGenerator.GetNextPoint(reactangleCenter) :
-                spiralGenerator.GetNextPoint(reactangleCenter);
+                GetNextPoint(reactangleCenter) :
+                GetNextPoint(reactangleCenter);
             return nextPoint;
         }
 
@@ -56,6 +58,17 @@ namespace TagCloud
 
         private Point GetCenterPointFor(Size rectangleSize) =>
             new Point(-rectangleSize.Width / 2, -rectangleSize.Height / 2);
+
+        public Point GetNextPoint(Point currentRectangleCenter)
+        {
+            var point = new Point(
+                x: Center.X + (int)(radius * Math.Cos(theta)),
+                y: Center.Y + (int)(radius * Math.Sin(theta)));
+
+            theta += thetaStep;
+            radius += radiusStep;
+            return Point.Add(point, new Size(currentRectangleCenter));
+        }
 
         public int GetWidth()
         {
