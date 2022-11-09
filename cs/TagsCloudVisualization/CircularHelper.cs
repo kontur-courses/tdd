@@ -4,13 +4,12 @@ namespace TagsCloudVisualization;
 
 public static class CircularHelper
 {
-    public static IEnumerable<Point> EnumeratePointsInArchimedesSpiral(
-        float k,
+    public static IEnumerable<Point> EnumeratePointsInArchimedesSpiral(float k,
         float angleStep,
-        Point center)
+        Point center, float startAngle = 0f)
     {
         var current = new PointF(center.X, center.Y);
-        var angle = 0f;
+        var angle = startAngle;
 
         while (true)
         {

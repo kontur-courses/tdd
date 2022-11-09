@@ -2,7 +2,7 @@
 
 namespace TagsCloudVisualization;
 
-public class CircularCloudLayouter
+public class CircularCloudLayouter : ICircularCloudLayouter
 {
     private const int MaximumShiftTriesCount = 100;
 
@@ -11,11 +11,13 @@ public class CircularCloudLayouter
 
     private readonly List<Rectangle> rectangles = new();
 
-    private readonly IEnumerator<Point> spiralEnumerator;
-
     private readonly Rectangle viewBoard;
 
     private int circularExitViewBoardCount;
+
+    private IEnumerator<Point> spiralEnumerator;
+
+    private bool spiralIsTurned;
 
 
     public CircularCloudLayouter(Point center)
@@ -51,13 +53,25 @@ public class CircularCloudLayouter
         while (spiralEnumerator.MoveNext())
         {
             rectangle = GetCenteredRectangle(rectangleSize, spiralEnumerator.Current);
-            if (!viewBoard.Contains(rectangle) && ++circularExitViewBoardCount > maximumCircularExitViewBoardCount)
-                throw new InvalidOperationException("view board is overflowed");
-            if (rectangles.All(otherRectangle => !otherRectangle.IntersectsWith(rectangle)))
+            if (!viewBoard.Contains(rectangle))
+                CheckOverflowOrTryTurnSpiral();
+            else if (rectangles.All(otherRectangle => !otherRectangle.IntersectsWith(rectangle)))
                 break;
         }
 
         return rectangle;
+    }
+
+    private void CheckOverflowOrTryTurnSpiral()
+    {
+        if (++circularExitViewBoardCount <= maximumCircularExitViewBoardCount)
+            return;
+        if (spiralIsTurned)
+            throw new InvalidOperationException("view board is overflowed");
+        spiralEnumerator = CircularHelper.EnumeratePointsInArchimedesSpiral(0.5f, 0.5f, center, MathF.PI)
+            .GetEnumerator();
+        spiralIsTurned = true;
+        circularExitViewBoardCount = 0;
     }
 
     private Rectangle TryShiftRectangleCloserToCenter(Rectangle rectangle)
