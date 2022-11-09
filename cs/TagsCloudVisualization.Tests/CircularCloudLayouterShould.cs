@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
@@ -9,19 +11,37 @@ namespace TagsCloudVisualization.Tests
     public class Tests
     {
         private CircularCloudLayouter circularCloud;
-        
+        private IImageFromTestSaver imageSaver;
+        private Painter<Rectangle> painter;
+        private List<Rectangle> rectangles;
+
         [SetUp]
         public void Setup()
         {
             circularCloud = new CircularCloudLayouter(Point.Empty);
+            imageSaver = new ErrorHandler();
+            painter = new RectanglePainter();
+            rectangles = new List<Rectangle>();
         }
 
         [TearDown]
         public void TearDown()
         {
-            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Warning)
-            {
-            }
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Warning || rectangles.Count == 0) 
+                return;
+            
+            var bitmapSize = painter.GetBitmapSize(rectangles);
+            var bitmap = new Bitmap(bitmapSize.Width, bitmapSize.Height);
+                
+            painter.Paint(rectangles, bitmap, painter.SetRandomRectangleColor);
+            var imageSavedSuccessfully =
+                imageSaver.TrySaveImageToFile(TestContext.CurrentContext.Test.Name, bitmap, out var path);
+
+            var outputMessage = imageSavedSuccessfully
+                    ? $"Tag cloud visualization saved to file <{path}>"
+                    : $"Tag cloud visualization not saved";
+
+            TestContext.Out.WriteLine(outputMessage);
         }
         
         [TestCaseSource(typeof(TestData), nameof(TestData.IncorrectSize))]
