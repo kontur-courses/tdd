@@ -21,7 +21,7 @@ namespace TagsCloudVisualization
             Vector r = new Vector(Enumerable.Repeat(200.0, equations.Count).ToArray());
             Vector startVector = new Vector(start.X, start.Y);
 
-            PenaltyMethods.PenaltyMethod(function, startVector, r, t => t, t => t, _ => 0, equations, new List<Func>(), out _, out _);
+            PenaltyMethods.PenaltyMethod(function, startVector, r, t => t, t => t / 2.0, _ => 0, equations, new List<Func>(), out _, out _);
             return new Point((int)Math.Round(startVector[0]), (int)Math.Round(startVector[1]));
         }
     }
