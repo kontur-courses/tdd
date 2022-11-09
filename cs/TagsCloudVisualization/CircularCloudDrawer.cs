@@ -4,36 +4,43 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Linq;
+using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouterVisualisator
+    public class CircularCloudDrawer
     {
         private readonly CircularCloudLayouter _layouter;
         private readonly Pen _pen = new Pen(Color.Red, 15);
         private readonly Random _random = new Random(1);
-        public CircularCloudLayouterVisualisator(CircularCloudLayouter layouter)
+        private const int BoundScale = 3;
+        public CircularCloudDrawer(CircularCloudLayouter layouter)
         {
             _layouter = layouter;
         }
         
         public Bitmap CreateImage()
         {
-            Size imageSize = FindBounds();
-            Bitmap image = new Bitmap(imageSize.Width * 3, imageSize.Height * 3);
+            Bitmap image = CreateBitmap();
             DrawRectangles(image);
-            DrawCircleAroundRectangles(image);
+            DrawCircleInCenterOfImage(image);
             return image;
+        }
+
+        private Bitmap CreateBitmap()
+        {
+            Size imageSize = FindBounds();
+            return new Bitmap(imageSize.Width * BoundScale, imageSize.Height * BoundScale);
         }
         
         private Size FindBounds()
         {
             int leftBound = _layouter.Rectangles.Min(rectangle => rectangle.Left);
             int rightBound = _layouter.Rectangles.Max(rectangle => rectangle.Right);
-            int width = rightBound - leftBound;
-            
             int bottomBound = _layouter.Rectangles.Max(rectangle => rectangle.Bottom);
             int topBound = _layouter.Rectangles.Min(rectangle => rectangle.Top);
+            
+            int width = rightBound - leftBound;
             int height = bottomBound - topBound;
 
             return new Size(width, height);
@@ -57,26 +64,22 @@ namespace TagsCloudVisualization
             return new Rectangle(rectanglePosition, rectangle.Size);
         }
 
-        private void DrawCircleAroundRectangles(Bitmap image)
+        private void DrawCircleInCenterOfImage(Bitmap image)
         {
             Graphics graphics = Graphics.FromImage(image);
             Point imageCenter = (Point)image.Size.Multiply(0.5);
-            float radius = Math.Max(image.Width, image.Height) * 0.25f;
+            float radius = Math.Max(image.Width, image.Height) / BoundScale;
             _pen.Color = Color.Black;
             graphics.DrawCircle(_pen, imageCenter, radius);
         }
 
         private Color GetRandomColor()
         {
-            int R = _random.Next() % 255;
-            int G = _random.Next() % 255;
-            int B = _random.Next() % 255;
-            return Color.FromArgb( R, G, B);
-        }
+            int R = 25 + _random.Next() % 215;
+            int G = 25 + _random.Next() % 215;
+            int B = 25 + _random.Next() % 215;
 
-        public void Save(Bitmap image, string filename="image.png")
-        {
-            image.Save(filename, ImageFormat.Png);
+            return Color.FromArgb( R, G, B);
         }
     }
 }
