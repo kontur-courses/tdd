@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
@@ -15,11 +16,11 @@ namespace TagsCloudVisualization
         private readonly List<Rectangle> rectangles;
         private readonly Func<int, Point> pointFinderFunc;
 
-        public CircularCloudLayouter(Point center)
+        public CircularCloudLayouter(Point center, Func<int, Point> pointFinderFunc)
         {
             Center = center;
             rectangles = new List<Rectangle>();
-            pointFinderFunc = SpiralFunction.GetPointFinderFunction(center);
+            this.pointFinderFunc = pointFinderFunc;
         }
 
         public List<Rectangle> GetRectangles()

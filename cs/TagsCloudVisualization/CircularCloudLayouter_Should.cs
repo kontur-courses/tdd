@@ -12,7 +12,8 @@ namespace TagsCloudVisualization
         [SetUp]
         public void SetUp()
         {
-            cloud = new CircularCloudLayouter(new Point(750, 750));
+            var center = new Point(750, 750);
+            cloud = new CircularCloudLayouter(center, SpiralFunction.GetPointFinderFunction(center));
         }
 
         [TestCase(-1, 1)]
