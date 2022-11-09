@@ -202,12 +202,12 @@ namespace TagsCloudVisualization
         }
         private Rectangle InitNextRectangle(Size rectangleSize)
         {
-            Rectangle to_return = new Rectangle(0, 0, 0, 0);
+            Rectangle initialisedRectangle = new Rectangle(0, 0, 0, 0);
             switch (currentAddState)
             {
                 case AddRectangleState.Rigth_Up:
                 {
-                    to_return = new Rectangle(
+                    initialisedRectangle = new Rectangle(
                         rightBottomCorner.X + center.X,
                         leftUpperCorner.Y + center.Y,
                         rectangleSize.Width,
@@ -217,7 +217,7 @@ namespace TagsCloudVisualization
 
                 case AddRectangleState.Bottom_Right:
                 {
-                    to_return = new Rectangle(
+                    initialisedRectangle = new Rectangle(
                         rightBottomCorner.X - rectangleSize.Width + center.X,
                         rightBottomCorner.Y + center.Y,
                         rectangleSize.Width,
@@ -228,7 +228,7 @@ namespace TagsCloudVisualization
 
                 case AddRectangleState.Left_Bottom:
                 {
-                    to_return = new Rectangle(
+                    initialisedRectangle = new Rectangle(
                         leftUpperCorner.X - rectangleSize.Width + center.X,
                         rightBottomCorner.Y - rectangleSize.Height + center.Y,
                         rectangleSize.Width,
@@ -238,7 +238,7 @@ namespace TagsCloudVisualization
 
                 case AddRectangleState.Up_Left:
                 {
-                    to_return = new Rectangle(
+                    initialisedRectangle = new Rectangle(
                         leftUpperCorner.X + center.X,
                         leftUpperCorner.Y - rectangleSize.Height + center.Y,
                         rectangleSize.Width,
@@ -248,7 +248,7 @@ namespace TagsCloudVisualization
 
             }
 
-            return to_return;
+            return initialisedRectangle;
         }
 
         private enum AddRectangleState
