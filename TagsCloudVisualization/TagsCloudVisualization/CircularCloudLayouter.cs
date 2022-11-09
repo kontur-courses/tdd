@@ -16,7 +16,7 @@ namespace TagsCloudVisualization
         private Point rightBottomCorner;
         private Point center;
 
-        private AddRectangleState currentAddState = AddRectangleState.Rigth_Up;
+        private AddRectangleState currentAddState = AddRectangleState.RightUp;
 
         private int rectangleCount = 0;
         public CircularCloudLayouter(Point center)
@@ -58,7 +58,7 @@ namespace TagsCloudVisualization
                 ResizeBorders(rectangleSize);
 
                 rectangleCount++;
-                if (currentAddState == AddRectangleState.Up_Left) currentAddState = AddRectangleState.Rigth_Up;
+                if (currentAddState == AddRectangleState.UpLeft) currentAddState = AddRectangleState.RightUp;
                 else currentAddState += 1;
             }
 
@@ -83,7 +83,7 @@ namespace TagsCloudVisualization
         {
             switch (currentAddState)
             {
-                case AddRectangleState.Rigth_Up:
+                case AddRectangleState.RightUp:
                 {
                     if (rightBottomCorner.Y > leftUpperCorner.Y + rectangleSize.Height)
                     {
@@ -103,7 +103,7 @@ namespace TagsCloudVisualization
                 }
                     break;
 
-                case AddRectangleState.Bottom_Right:
+                case AddRectangleState.BottomRight:
                 {
                     if (leftUpperCorner.X < rightBottomCorner.X - rectangleSize.Width)
                     {
@@ -123,7 +123,7 @@ namespace TagsCloudVisualization
                 }
                     break;
 
-                case AddRectangleState.Left_Bottom:
+                case AddRectangleState.LeftBottom:
                 {
                     if (leftUpperCorner.Y < rightBottomCorner.Y - rectangleSize.Height)
                     {
@@ -143,7 +143,7 @@ namespace TagsCloudVisualization
                 }
                     break;
 
-                case AddRectangleState.Up_Left:
+                case AddRectangleState.UpLeft:
                 {
                     if (rightBottomCorner.X > leftUpperCorner.X + rectangleSize.Width)
                     {
@@ -171,28 +171,28 @@ namespace TagsCloudVisualization
         {
             switch (currentAddState)
             {
-                case AddRectangleState.Rigth_Up:
+                case AddRectangleState.RightUp:
                     {
                         rightBottomCorner.Y = Math.Max(rightBottomCorner.Y, leftUpperCorner.Y + rectangleSize.Height);
                         rightBottomCorner.X = rightBottomCorner.X + rectangleSize.Width;
                     }
                     break;
 
-                case AddRectangleState.Bottom_Right:
+                case AddRectangleState.BottomRight:
                     {
                         rightBottomCorner.Y = rightBottomCorner.Y + rectangleSize.Height;
                         leftUpperCorner.X = Math.Min(leftUpperCorner.X, rightBottomCorner.X - rectangleSize.Width);
                     }
                     break;
 
-                case AddRectangleState.Left_Bottom:
+                case AddRectangleState.LeftBottom:
                     {
                         leftUpperCorner.Y = Math.Min(leftUpperCorner.Y, rightBottomCorner.Y - rectangleSize.Height);
                         leftUpperCorner.X = leftUpperCorner.X - rectangleSize.Width;
                     }
                     break;
 
-                case AddRectangleState.Up_Left:
+                case AddRectangleState.UpLeft:
                     {
                         rightBottomCorner.X = Math.Max(rightBottomCorner.X, leftUpperCorner.X + rectangleSize.Width);
                         leftUpperCorner.Y = leftUpperCorner.Y - rectangleSize.Height;
@@ -205,7 +205,7 @@ namespace TagsCloudVisualization
             Rectangle initialisedRectangle = new Rectangle(0, 0, 0, 0);
             switch (currentAddState)
             {
-                case AddRectangleState.Rigth_Up:
+                case AddRectangleState.RightUp:
                 {
                     initialisedRectangle = new Rectangle(
                         rightBottomCorner.X + center.X,
@@ -215,7 +215,7 @@ namespace TagsCloudVisualization
                 }
                     break;
 
-                case AddRectangleState.Bottom_Right:
+                case AddRectangleState.BottomRight:
                 {
                     initialisedRectangle = new Rectangle(
                         rightBottomCorner.X - rectangleSize.Width + center.X,
@@ -226,7 +226,7 @@ namespace TagsCloudVisualization
                 }
                     break;
 
-                case AddRectangleState.Left_Bottom:
+                case AddRectangleState.LeftBottom:
                 {
                     initialisedRectangle = new Rectangle(
                         leftUpperCorner.X - rectangleSize.Width + center.X,
@@ -236,7 +236,7 @@ namespace TagsCloudVisualization
                 }
                     break;
 
-                case AddRectangleState.Up_Left:
+                case AddRectangleState.UpLeft:
                 {
                     initialisedRectangle = new Rectangle(
                         leftUpperCorner.X + center.X,
@@ -253,10 +253,10 @@ namespace TagsCloudVisualization
 
         private enum AddRectangleState
         {
-            Rigth_Up,
-            Bottom_Right,
-            Left_Bottom,
-            Up_Left
+            RightUp,
+            BottomRight,
+            LeftBottom,
+            UpLeft
         }
     }
 }
