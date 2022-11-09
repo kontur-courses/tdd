@@ -39,14 +39,14 @@ namespace CircularCloudLayoutTests
             "Тест проверяет, что два наименьших квадрата (меньше чем шаг спирали) будут помещены с наименее возможным расстоянием друг от друга")]
         public void PlacedRectangles_PutTwoSmallestSquares_ShouldBePlacedPointBlank()
         {
-            var layout = new CircularCloudLayout(new Point(5, 5));
+            var layoutLocal = new CircularCloudLayout(new Point(5, 5));
             var smallestSquareSize = new Size(1, 1);
             Rectangle squareOne;
             Rectangle squareTwo;
             int distanceBetweenSquares;
 
-            layout.PutNextRectangle(smallestSquareSize, out squareOne);
-            layout.PutNextRectangle(smallestSquareSize, out squareTwo);
+            layoutLocal.PutNextRectangle(smallestSquareSize, out squareOne);
+            layoutLocal.PutNextRectangle(smallestSquareSize, out squareTwo);
             distanceBetweenSquares = Math.Abs(squareOne.Left - squareTwo.Left + squareOne.Top - squareTwo.Top);
 
             distanceBetweenSquares.Should().Be(1);
@@ -126,10 +126,10 @@ namespace CircularCloudLayoutTests
         [TestCase(100, 250)]
         public void PutNextRectangle_AddSizeBiggerThanLayoutSize_ShouldNotPlaceRectangle(int length, int height)
         {
-            var layout = new CircularCloudLayout(new Point(100, 100));
+            var layoutLocal = new CircularCloudLayout(new Point(100, 100));
             var size = new Size(length, height);
 
-            layout.PutNextRectangle(size, out Rectangle rectangle).Should().BeFalse();
+            layoutLocal.PutNextRectangle(size, out Rectangle rectangle).Should().BeFalse();
         }
 
         [TestCase(-1, 1)]
@@ -139,9 +139,9 @@ namespace CircularCloudLayoutTests
         public void PutNextRectangle_GiveSizeWhithNonpositiveDimensions_Should_ThrowArgumentException(int length,
             int height)
         {
-            var layout = new CircularCloudLayout(new Point(100, 100));
+            var layoutLocal = new CircularCloudLayout(new Point(100, 100));
 
-            Action act = () => layout.PutNextRectangle(new Size(length, height), out Rectangle rectangle);
+            Action act = () => layoutLocal.PutNextRectangle(new Size(length, height), out Rectangle rectangle);
 
             act.Should().Throw<ArgumentException>().WithMessage("Both dimensions must be above zero");
         }
