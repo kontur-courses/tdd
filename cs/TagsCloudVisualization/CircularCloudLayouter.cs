@@ -4,26 +4,26 @@ namespace TagsCloudVisualization;
 
 public class CircularCloudLayouter
 {
+    private const double CircularStep = 2;
+    private const double PolarAngleStep = 1;
     private readonly Point center;
-
-    private readonly Rectangle viewBoard;
-
-    private Point circularPoint;
-
-    private int circularExitViewBoardCount = 0;
 
     private readonly List<Rectangle> rectangles = new();
 
+    private readonly Rectangle viewBoard;
+
+    private int circularExitViewBoardCount;
+
+    private Point circularPoint;
+
     private double polarCircularAngle;
-    private const double CircularStep = 2;
-    private const double PolarAngleStep = 1;
 
     public CircularCloudLayouter(Point center)
     {
         if (center.IsEmpty || center.X <= 0 || center.Y <= 0)
             throw new ArgumentException("center point is invalid", nameof(center));
         this.center = center;
-        viewBoard = new Rectangle(Point.Empty, new Size(center) * 2);
+        viewBoard = new(Point.Empty, new Size(center) * 2);
         circularPoint = center;
     }
 
@@ -47,7 +47,7 @@ public class CircularCloudLayouter
             {
                 circularExitViewBoardCount++;
                 var polarCircularP = CircularStep * polarCircularAngle;
-                circularPoint = new Point((int)Math.Round(center.X + polarCircularP * Math.Cos(polarCircularAngle)),
+                circularPoint = new((int)Math.Round(center.X + polarCircularP * Math.Cos(polarCircularAngle)),
                     (int)Math.Round(center.Y + polarCircularP * Math.Sin(polarCircularAngle)));
                 polarCircularAngle += PolarAngleStep;
             }
@@ -57,7 +57,7 @@ public class CircularCloudLayouter
             if (intersectsWithAny)
             {
                 var polarCircularP = CircularStep * polarCircularAngle;
-                circularPoint = new Point((int)Math.Round(center.X + polarCircularP * Math.Cos(polarCircularAngle)),
+                circularPoint = new((int)Math.Round(center.X + polarCircularP * Math.Cos(polarCircularAngle)),
                     (int)Math.Round(center.Y + polarCircularP * Math.Sin(polarCircularAngle)));
                 polarCircularAngle += PolarAngleStep;
             }
@@ -69,37 +69,20 @@ public class CircularCloudLayouter
                     var rectangleCenterY = rectangle.Y - rectangle.Height / 2;
                     var shiftOffset = Point.Empty;
                     if (rectangleCenterX < center.X && rectangleCenterY < center.Y)
-                    {
-                        shiftOffset = new Point(1, 1);
-                    }
+                        shiftOffset = new(1, 1);
                     else if (rectangleCenterX > center.X && rectangleCenterY < center.Y)
-                    {
-                        shiftOffset = new Point(-1, 1);
-                    }
+                        shiftOffset = new(-1, 1);
                     else if (rectangleCenterX > center.X && rectangleCenterY > center.Y)
-                    {
-                        shiftOffset = new Point(-1, -1);
-                    }
+                        shiftOffset = new(-1, -1);
                     else if (rectangleCenterX < center.X && rectangleCenterY > center.Y)
-                    {
-                        shiftOffset = new Point(1, -1);
-                    }
+                        shiftOffset = new(1, -1);
                     else if (rectangleCenterX < center.X && rectangleCenterY == center.Y)
-                    {
-                        shiftOffset = new Point(1, 0);
-                    }
+                        shiftOffset = new(1, 0);
                     else if (rectangleCenterX > center.X && rectangleCenterY == center.Y)
-                    {
-                        shiftOffset = new Point(-1, 0);
-                    }
+                        shiftOffset = new(-1, 0);
                     else if (rectangleCenterY < center.Y && rectangleCenterX == center.X)
-                    {
-                        shiftOffset = new Point(0, 1);
-                    }
-                    else if (rectangleCenterY > center.Y && rectangleCenterX == center.X)
-                    {
-                        shiftOffset = new Point(0, -1);
-                    }
+                        shiftOffset = new(0, 1);
+                    else if (rectangleCenterY > center.Y && rectangleCenterX == center.X) shiftOffset = new(0, -1);
 
                     var shiftPosition = rectangle.Location;
                     shiftPosition.Offset(shiftOffset);

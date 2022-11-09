@@ -7,14 +7,14 @@ namespace TagCloudVisualization.UnitTests;
 [TestFixture]
 public class CircularCloudLayouterTests
 {
-    private CircularCloudLayouter layouter = null!;
-    private Point center = new Point(250, 250);
-
     [SetUp]
     public void SetUp()
     {
-        layouter = new CircularCloudLayouter(center);
+        layouter = new(center);
     }
+
+    private CircularCloudLayouter layouter = null!;
+    private readonly Point center = new(250, 250);
 
     [TestCase(-1, -1)]
     [TestCase(-1, 10)]
@@ -22,7 +22,7 @@ public class CircularCloudLayouterTests
     [TestCase(0, 0)]
     public void Constructor_Throws(int centerX, int centerY)
     {
-        var action = () => { _ = new CircularCloudLayouter(new Point(centerX, centerY)); };
+        var action = () => { _ = new CircularCloudLayouter(new(centerX, centerY)); };
 
         action.Should().Throw<ArgumentException>();
     }
@@ -58,8 +58,8 @@ public class CircularCloudLayouterTests
 
         actualFirstRectangle.TouchesWith(actualSecondRectangle).Should().BeTrue();
     }
-    
-    
+
+
     [Test]
     public void PutNextRectangle_SeveralRectangleThatAreTouchesButAreNotIntersects_SeveralValidSizes()
     {
