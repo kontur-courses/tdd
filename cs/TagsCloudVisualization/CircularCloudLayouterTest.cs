@@ -40,4 +40,14 @@ public class CircularCloudLayouterTest
         rect.X.Should().Be(550);
         rect.Y.Should().Be(442);
     }
+
+    [Test]
+    public void Add20RandomReactangleAndSaveAsPic_SaveAsPic()
+    {
+        Random rand = new Random();
+        for (int i = 0; i < 20; i++)
+            ccl.PutNextRectangle(new Size(rand.Next(10, 100), rand.Next(10, 100)));
+        ccl.SaveAsPic("D:");
+        File.Exists("D:\\pics.btm").Should().BeTrue();
+    }
 }

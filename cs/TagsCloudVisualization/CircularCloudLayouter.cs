@@ -95,7 +95,7 @@ public class CircularCloudLayouter
         Bitmap bitmap = new Bitmap(radius * 2, radius * 2);; 
         Graphics graph = Graphics.FromImage(bitmap);
         graph.DrawRectangles(new Pen(Color.Black), rectangles.ToArray());
-        bitmap.Save(pathFolder + "pics.btm");
+        bitmap.Save(pathFolder + "\\pics.btm");
         return true;
     }
     public bool SaveAsPic(string pathFolder, string name)
