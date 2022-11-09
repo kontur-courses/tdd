@@ -58,4 +58,26 @@ public class CircularCloudLayouterTests
 
         actualFirstRectangle.TouchesWith(actualSecondRectangle).Should().BeTrue();
     }
+    
+    
+    [Test]
+    public void PutNextRectangle_SeveralRectangleThatAreTouchesButAreNotIntersects_SeveralValidSizes()
+    {
+        var sizes = new[]
+        {
+            new Size(10, 10),
+            new Size(10, 10),
+            new Size(10, 10)
+        };
+
+        var rectangles = sizes.Select(layouter.PutNextRectangle).ToArray();
+
+        rectangles.Distinct().Should().HaveSameCount(rectangles);
+        rectangles.All(rectangle =>
+                rectangles.Where(other => other != rectangle).All(other => !other.IntersectsWith(rectangle))).Should()
+            .BeTrue();
+        rectangles.All(rectangle =>
+                rectangles.Where(other => other != rectangle).Any(other => other.TouchesWith(rectangle))).Should()
+            .BeTrue();
+    }
 }

@@ -32,7 +32,7 @@ public class CircularCloudLayouter
     {
         if (rectangleSize.Width > viewBoard.Width || rectangleSize.Height > viewBoard.Height)
             throw new ArgumentException("rectangleSize is greater than view board", nameof(rectangleSize));
-        
+
         if (rectangles.Count == 0)
         {
             var position = new Point(center.X - rectangleSize.Width / 2, center.Y - rectangleSize.Height / 2);
@@ -51,7 +51,7 @@ public class CircularCloudLayouter
                     (int)Math.Round(center.Y + polarCircularP * Math.Sin(polarCircularAngle)));
                 polarCircularAngle += PolarAngleStep;
             }
-            
+
             var rectangle = new Rectangle(circularPoint, rectangleSize);
             var intersectsWithAny = rectangles.Any(x => x.IntersectsWith(rectangle));
             if (intersectsWithAny)
@@ -63,8 +63,6 @@ public class CircularCloudLayouter
             }
             else
             {
-                
-
                 for (var i = 0; i < 10; i++)
                 {
                     var rectangleCenterX = rectangle.X - rectangle.Width / 2;
@@ -102,7 +100,7 @@ public class CircularCloudLayouter
                     {
                         shiftOffset = new Point(0, -1);
                     }
-                    
+
                     var shiftPosition = rectangle.Location;
                     shiftPosition.Offset(shiftOffset);
                     var shiftRectangle = new Rectangle(shiftPosition, rectangleSize);
@@ -111,6 +109,8 @@ public class CircularCloudLayouter
                         break;
                     rectangle = shiftRectangle;
                 }
+
+                rectangles.Add(rectangle);
 
                 return rectangle;
             }
