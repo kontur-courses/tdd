@@ -41,6 +41,24 @@ namespace CircularCloudLayoutTests
         }
 
         [Test]
+        [Description(
+            "Тест проверяет, что два наименьших квадрата (меньше чем шаг спирали) будут помещены с наименее возможным расстоянием друг от друга")]
+        public void PlacedRectangles_PutTwoSmallestSquares_ShouldBePlacedPointBlank()
+        {
+            var layout = new CircularCloudLayout(new Point(5, 5));
+            var smallestSquareSize = new Size(1, 1);
+            Rectangle squareOne;
+            Rectangle squareTwo;
+            int distanceBetweenSquares;
+
+            layout.PutNextRectangle(smallestSquareSize, out squareOne);
+            layout.PutNextRectangle(smallestSquareSize, out squareTwo);
+            distanceBetweenSquares = Math.Abs(squareOne.Left - squareTwo.Left + squareOne.Top - squareTwo.Top);
+
+            distanceBetweenSquares.Should().Be(1);
+        }
+
+        [Test]
         public void PlacedRectangles_Should_Not_IntersectEachOther()
         {
             var doIntersects = false;
