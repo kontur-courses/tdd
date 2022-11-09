@@ -7,7 +7,7 @@ namespace TagsCloudVisualization.Curves
     {
         public double StartRadius { get; }
         public double ExtendRatio { get; }
-        public ArchimedeanSpiral(double startRadius = 0, double extendRatio = 1)
+        public ArchimedeanSpiral(double startRadius = 0, double extendRatio = 0.25)
         {
             if (startRadius < 0 || extendRatio <= 0)
                 throw new ArgumentException("Parameters cannot be negative.");
