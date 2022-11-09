@@ -19,6 +19,7 @@ public class ArchimedeanSpiralIterator : ISpiralIterator
         {
             throw new ArgumentException("Step should be positive", nameof(step));
         }
+
         _spiral = spiral;
         _currentAngle = startAngle;
         _step = step;

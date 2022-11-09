@@ -4,8 +4,8 @@ namespace TagsCloudVisualization;
 
 public class ArchimedeanSpiral : ISpiral
 {
-    private const double DefaultCoefficient = 1d; 
-    
+    private const double DefaultCoefficient = 1d;
+
     private readonly Point _center;
     private readonly double _coefficient;
 

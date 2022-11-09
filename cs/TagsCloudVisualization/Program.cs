@@ -13,10 +13,10 @@ public class Program
         {
             cloudLayouter.PutNextRectangle(new Size(random.Next(50, 100), random.Next(10, 50)));
         }
-        
+
         using var bitmap = CloudImageGenerator.Generate(cloudLayouter);
-        
-        string directory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+
+        var directory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
         var path = Path.Combine(directory, "Images", "tag-cloud-100-first-quarter.bmp");
         bitmap.Save(path, ImageFormat.Bmp);
     }

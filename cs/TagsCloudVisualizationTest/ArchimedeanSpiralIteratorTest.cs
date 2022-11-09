@@ -7,7 +7,7 @@ namespace TagsCloudVisualizationTest;
 public class ArchimedeanSpiralIteratorTest
 {
     private ArchimedeanSpiral _spiral;
-    
+
     [SetUp]
     public void SetUp()
     {
@@ -45,7 +45,7 @@ public class ArchimedeanSpiralIteratorTest
     {
         var iterator = new ArchimedeanSpiralIterator(_spiral);
         var points = new List<Point>();
-        
+
         for (var i = 0; i < 50; i++)
             points.Add(iterator.Next());
 

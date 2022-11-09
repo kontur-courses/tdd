@@ -24,16 +24,16 @@ public class CircularCloudLayouter : ICloudLayouter
         {
             throw new ArgumentException("Rectangle sizes should be positive", nameof(rectangleSize));
         }
-        
+
         var rectangleLocation = CalculateRectangleLocation(_iterator.Next(), rectangleSize);
         var rectangle = new Rectangle(rectangleLocation, rectangleSize);
-        
+
         while (IntersectsWithAny(rectangle))
         {
             var rectangleCenter = _iterator.Next();
             rectangle.Location = CalculateRectangleLocation(rectangleCenter, rectangleSize);
         }
-        
+
         _rectangles.Add(rectangle);
         return rectangle;
     }
