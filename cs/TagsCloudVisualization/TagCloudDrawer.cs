@@ -7,6 +7,15 @@ namespace TagsCloudVisualization
 {
     public static class TagCloudDrawer
     {
+        public static Bitmap DrawWithAutoSize(
+            Rectangle[] rectangles,
+            Color bgColor, Color rectangleColor,
+            bool drawCenter = false, bool drawCircle = false)
+        {
+            var center = FindCenter(rectangles);
+            return Draw(rectangles, center.X * 2, center.Y * 2, center, bgColor, rectangleColor, drawCenter, drawCircle);
+        }
+        
         public static Bitmap Draw(
             Rectangle[] rectangles,
             int width, int height, Point center,
@@ -26,6 +35,30 @@ namespace TagsCloudVisualization
             if (drawCircle) DrawMaxCircle(g, center, rectangles);
 
             return myBitmap;
+        }
+
+        private static Point FindCenter(IReadOnlyCollection<Rectangle> rectangles)
+        {
+            if (rectangles.Count == 0)
+                throw new ArgumentException("rectangles can not be empty");
+            var firstRectangle = rectangles.First();
+            var centerX = firstRectangle.Left + firstRectangle.Width / 2;
+            var centerY = firstRectangle.Top + firstRectangle.Height / 2;
+            return new Point(centerX, centerY);
+        }
+
+        private static Size FindSizeByRectangles(IEnumerable<Rectangle> rectangles)
+        {
+            var width = 0;
+            var height = 0;
+            foreach (var rectangle in rectangles)
+            {
+                width = Math.Max(width, rectangle.Right);
+                height = Math.Max(height, rectangle.Bottom);
+            }
+            width += 10;
+            height += 10;
+            return new Size(width, height);
         }
 
         private static void DrawCenter(Graphics g, Point center)

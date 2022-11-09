@@ -63,8 +63,7 @@ namespace TagsCloudVisualization
             if (a.Result.FailCount == 0)
                 return;
             var filename = $"Failed test {TestContext.CurrentContext.Test.Name} image at {DateTime.Now:dd-MM-yyyy HH_mm_ss}.jpg";
-            var bitmap = TagCloudDrawer.Draw(rectangles.ToArray(),
-                400, 200, center,
+            var bitmap = TagCloudDrawer.DrawWithAutoSize(rectangles.ToArray(),
                 Color.Black, Color.DarkOrange,
                 true, true);
             bitmap.Save(filename);
