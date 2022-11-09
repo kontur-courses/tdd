@@ -10,12 +10,12 @@ public class CircularCloudLayouterPresentationProxy : ICircularCloudLayouter, ID
     private readonly Bitmap bitmap;
     private readonly Graphics graphics;
     private readonly CircularCloudLayouter layouter;
-    private readonly Font numbersFont;
     private readonly Pen linePen;
+    private readonly Font numbersFont;
     private readonly Pen rectanglePen;
+    private int counter;
     private Point previous = Point.Empty;
-    private int counter = 0;
-    
+
     public CircularCloudLayouterPresentationProxy(Point center)
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -25,7 +25,7 @@ public class CircularCloudLayouterPresentationProxy : ICircularCloudLayouter, ID
         graphics = Graphics.FromImage(bitmap);
         graphics.FillRectangle(Brushes.White, new(Point.Empty, new Size(center) * 2));
 
-        numbersFont = new Font(FontFamily.GenericMonospace, 10, FontStyle.Regular, GraphicsUnit.Pixel);
+        numbersFont = new(FontFamily.GenericMonospace, 10, FontStyle.Regular, GraphicsUnit.Pixel);
         linePen = new(Color.Blue, 1);
         rectanglePen = new(Color.Red, 1);
     }

@@ -105,10 +105,10 @@ public class CircularCloudLayouterTests
 
     private static IEnumerable<TestCaseData> PutNextRectangle_PrintImage_PresentationProxy_Source()
     {
-        yield return new TestCaseData(0, 80, new Size(100, 25), new Size(50, 20));
-        yield return new TestCaseData(20021011, 80, new Size(100, 25), new Size(50, 20));
-        yield return new TestCaseData(20221109, 80, new Size(100, 25), new Size(50, 20));
-        yield return new TestCaseData(1, 1000, new Size(10, 10), new Size(10, 10));
+        yield return new(0, 80, new Size(100, 25), new Size(50, 20));
+        yield return new(20021011, 80, new Size(100, 25), new Size(50, 20));
+        yield return new(20221109, 80, new Size(100, 25), new Size(50, 20));
+        yield return new(1, 1000, new Size(10, 10), new Size(10, 10));
     }
 
     [TestCaseSource(nameof(PutNextRectangle_PrintImage_PresentationProxy_Source))]
