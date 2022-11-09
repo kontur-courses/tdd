@@ -25,7 +25,7 @@
       <HintPath>..\..\..\OptimizationMethods\OptimizationMethods\bin\Release\NumMath.dll</HintPath>
     </Reference>
     <Reference Include="OptimizationMethods">
-      <HintPath>..\..\..\OptimizationMethods\OptimizationMethods\bin\Debug\OptimizationMethods.dll</HintPath>
+      <HintPath>..\..\..\OptimizationMethods\OptimizationMethods\bin\Release\OptimizationMethods.dll</HintPath>
     </Reference>
   </ItemGroup>
 
