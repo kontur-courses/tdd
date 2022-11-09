@@ -34,6 +34,10 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
+        <Reference Include="BitmapNet, Version=1.0.1.0, Culture=neutral, PublicKeyToken=null">
+          <HintPath>..\packages\Bitmap.Net.1.0.1\lib\netstandard2.0\BitmapNet.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
         <Reference Include="FluentAssertions, Version=6.8.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a">
           <HintPath>..\packages\FluentAssertions.6.8.0\lib\net47\FluentAssertions.dll</HintPath>
           <Private>True</Private>
@@ -49,6 +53,10 @@
         <Reference Include="System.Core" />
         <Reference Include="System.Data" />
         <Reference Include="System.Drawing" />
+        <Reference Include="System.Drawing.Common, Version=7.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+          <HintPath>..\packages\System.Drawing.Common.7.0.0\lib\net462\System.Drawing.Common.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
         <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
           <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
           <Private>True</Private>
@@ -91,11 +99,19 @@
     <ItemGroup>
         <Compile Include="CircularCloudLayouter.cs" />
         <Compile Include="CircularCloudLayouterTests.cs" />
+        <Compile Include="CircularCloudVisualizator.cs" />
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="Spiral.cs" />
     </ItemGroup>
     <ItemGroup>
       <None Include="packages.config" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="readme.md" />
+      <Content Include="visualizations\visualization1.jpg" />
+      <Content Include="visualizations\visualization2.jpg" />
+      <Content Include="visualizations\visualization3.jpg" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
@@ -103,7 +119,9 @@
         <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
       </PropertyGroup>
       <Error Condition="!Exists('..\packages\NUnit.3.13.3\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NUnit.3.13.3\build\NUnit.props'))" />
+      <Error Condition="!Exists('..\packages\Microsoft.NETFramework.ReferenceAssemblies.net48.1.0.3\build\Microsoft.NETFramework.ReferenceAssemblies.net48.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.NETFramework.ReferenceAssemblies.net48.1.0.3\build\Microsoft.NETFramework.ReferenceAssemblies.net48.targets'))" />
     </Target>
+    <Import Project="..\packages\Microsoft.NETFramework.ReferenceAssemblies.net48.1.0.3\build\Microsoft.NETFramework.ReferenceAssemblies.net48.targets" Condition="Exists('..\packages\Microsoft.NETFramework.ReferenceAssemblies.net48.1.0.3\build\Microsoft.NETFramework.ReferenceAssemblies.net48.targets')" />
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
          Other similar extension points exist, see Microsoft.Common.targets.
     <Target Name="BeforeBuild">

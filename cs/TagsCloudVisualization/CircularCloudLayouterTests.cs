@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization
 {
@@ -11,12 +12,16 @@ namespace TagsCloudVisualization
     {
         private CircularCloudLayouter layouter;
         private Point center;
+        private CircularCloudVisualizator visualizator;
+        private List<Rectangle> rectangles;
 
         [SetUp]
         public void SetUp()
         {
-            center = new Point(0, 0);
+            center = new Point(400, 400);
             layouter = new CircularCloudLayouter(center);
+            visualizator = new CircularCloudVisualizator(new Size(800, 800));
+            rectangles = new List<Rectangle>();
         }
 
         [TestCase(0, 0, TestName = "Zero coordinates")]
@@ -71,15 +76,29 @@ namespace TagsCloudVisualization
         public void PutNextRectangle_ShouldNotIntersectRectangles()
         {
             var rnd = new Random();
-            var rectangles = new List<Rectangle>();
             for (var i = 0; i < 100; i++)
             {
-                var rectangle = layouter.PutNextRectangle(new Size(rnd.Next(1, 10), rnd.Next(1, 5)));
+                var rectangle = layouter.PutNextRectangle(new Size(rnd.Next(10, 100), rnd.Next(10, 50)));
                 rectangles.Add(rectangle);
             }
 
             foreach (var rectangle in rectangles)
                 rectangles.Any(rect => rect.IntersectsWith(rectangle) && rect != rectangle).Should().BeFalse();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            var testResult = TestContext.CurrentContext.Result.Outcome;
+            var path = "../mistake.jpg";
+
+            if (Equals(testResult, ResultState.Failure) ||
+                Equals(testResult == ResultState.Error))
+            {
+                visualizator.DrawRectangles(rectangles);
+                visualizator.SaveCanvas(path);
+                Console.WriteLine($"Tag cloud visualization saved to file {path}", path);
+            }
         }
     }
 }

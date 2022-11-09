@@ -6,7 +6,7 @@ namespace TagsCloudVisualization
 {
     public class Spiral
     {
-        private const double AngleOffset = 1;
+        private const double AngleOffset = 0.1;
         private const double RadiusOffset = 0.1;
         private Point center;
         private List<Point> usedPoints;

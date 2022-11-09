@@ -4,12 +4,12 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudVisualization
+    public class CircularCloudVisualizator
     {
         private Bitmap canvas;
         private Graphics graphics;
 
-        public CircularCloudVisualization(Size canvasSize)
+        public CircularCloudVisualizator(Size canvasSize)
         {
             canvas = new Bitmap(canvasSize.Width, canvasSize.Height);
             graphics = Graphics.FromImage(canvas);
