@@ -26,17 +26,17 @@ public class CircularCloudLayouterTest
     public void CorrectCenterRectangle_PutNextRectangle()
     {
         var rect = ccl.PutNextRectangle(new Size(100, 100));
-        rect.X.Should().Be(-50);
-        rect.Y.Should().Be(-50);
+        rect.X.Should().Be(450);
+        rect.Y.Should().Be(450);
     }
     [Test]
     public void TwoCorrectRectangle_PutNextRectangle()
     {
         var rect = ccl.PutNextRectangle(new Size(100, 100));
-        rect.X.Should().Be(-50);
-        rect.Y.Should().Be(-50);
+        rect.X.Should().Be(450);
+        rect.Y.Should().Be(450);
         rect = ccl.PutNextRectangle(new Size(100, 100));
-        rect.X.Should().Be(-150);
-        rect.Y.Should().Be(-50);
+        rect.X.Should().Be(550);
+        rect.Y.Should().Be(442);
     }
 }

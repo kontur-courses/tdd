@@ -1,13 +1,10 @@
-﻿using System.Drawing;
-
-namespace TagsCloudVisualization;
+﻿namespace TagsCloudVisualization;
 
 public class CircularCloudLayouter
 {
     private Point center;
-    private double radius;
-    private Rectangle buffer;
-    public List<Rectangle> rectangles = new List<Rectangle>();
+    private int radius;
+    private List<Rectangle> rectangles = new();
     public CircularCloudLayouter(Point center)
     {
         if (center.X <= 0 || center.Y <= 0)
@@ -19,47 +16,55 @@ public class CircularCloudLayouter
     {
         if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
             throw new ArgumentException("Height and Width much be positive");
-        int angel = 0;
-        int x = 0;
-        int y = 0;
-        while (GetDiagonal(x, y) < radius)
-        {
-            var centerRect = new Point(x, y);
-            var xRect = x - (int)(rectangleSize.Width / 2);
-            var yRect = y - (int)(rectangleSize.Height / 2);
-            buffer = new Rectangle(xRect, yRect, rectangleSize.Width, rectangleSize.Height);
-            var stepLength = GetStepLengthToSpiral(10);
-            angel += 10;
-            x = (int)(angel * Math.Cos(angel) * stepLength);
-            y = (int)(angel * Math.Sin(angel) * stepLength);
-            if(rectangles.Count == 0) break;
-            if (CheckIntersect(buffer) && CheckInsideRectangles(centerRect) && rectangles.Count > 0)
-            {
-                var horizontalOffset = true;
-                var verticalOffset = true;
-                int count = 0;
-                while ((horizontalOffset || verticalOffset) && count < 100)
-                {
-                    horizontalOffset = buffer.GetCenter().X < 0
-                        ? TryToOffset(1, 0)
-                        : TryToOffset(-1, 0);
-                    verticalOffset = buffer.GetCenter().Y < 0
-                        ? TryToOffset(0, 1)
-                        : TryToOffset(0, -1);
-                    count += 1;
-                }
-                break;
-            }
-        }
-
-        if (GetDiagonal(x, y) > radius ||
-            GetDiagonal(rectangleSize.Height, rectangleSize.Width) > 2 * radius)
+        Rectangle buffer = new(); 
+        if (!TryToPutRectangleInsideSpiral(rectangleSize, out buffer))
             throw new ArgumentException("Rectangle size so much");
         rectangles.Add(buffer);
         return buffer;
     }
 
-    private bool TryToOffset(int x, int y)
+    private bool TryToPutRectangleInsideSpiral(Size rectangleSize, out Rectangle buffer)
+    {
+        int x, y = x = 0;
+        double angel = 0;
+        buffer = new Rectangle();
+        while (GetDiagonal(x, y) < radius)
+        {
+            var rectPos = new Point(x - rectangleSize.Width / 2 + center.X,
+                y - rectangleSize.Height / 2 + center.Y);
+            buffer = new Rectangle(rectPos, rectangleSize);
+            var stepLength = GetStepLengthToSpiral(7);
+            angel += Math.PI/180;
+            x = (int)(angel * Math.Cos(angel) * stepLength);
+            y = (int)(angel * Math.Sin(angel) * stepLength);
+            if (rectangleSize.GetDiagonal() > 2 * radius) return false;
+            if (rectangles.Count == 0) return true;
+            if (CheckIntersect(buffer) && CheckInsideRectangles(buffer.GetCenter()))
+            {
+                
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void CorrectPosition(Rectangle buffer)
+    {
+        var horizontalOffset = true;
+        var verticalOffset = true;
+        int count = 0;
+        while ((horizontalOffset || verticalOffset) && count < 1000)
+        {
+            horizontalOffset = buffer.GetCenter().X < center.X
+                ? TryToOffset(1, 0, buffer)
+                : TryToOffset(-1, 0, buffer);
+            verticalOffset = buffer.GetCenter().Y < center.Y
+                ? TryToOffset(0, 1, buffer)
+                : TryToOffset(0, -1, buffer);
+            count += 1;
+        }
+    }
+    private bool TryToOffset(int x, int y, Rectangle buffer)
     {
         buffer.Offset(x, y);
         if (rectangles.Any(x => x.IntersectsWith(buffer)))
