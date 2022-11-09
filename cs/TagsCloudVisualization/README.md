@@ -11,8 +11,8 @@
 ## Custom parameters:
 ##  ExtendRatio = 0.25, CurveStep = 0.5
 ### 50 rectangles
-![step60](./Images/50rectangles_0.25extend_0.5step.png)
+![Custom1](./Images/50rectangles_0.25extend_0.5step.png)
 
 ##  ExtendRatio = 2.5, CurveStep = 0.01
 ### 50 rectangles
-![leftCenter](./Images/50rectangles_2.5extend_0.01step.png)
+![Custom2](./Images/50rectangles_2.5extend_0.01step.png)
