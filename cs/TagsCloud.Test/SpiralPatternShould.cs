@@ -1,9 +1,7 @@
-using System;
 using System.Drawing;
 using FluentAssertions;
-using NUnit.Framework;
 
-namespace TagsCloudVisualization.Tests
+namespace TagsCloud.Test
 {
     [TestFixture]
     public class SpiralPatternShould

@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Drawing;
 
-namespace TagsCloudVisualization
+namespace TagsCloud
 {
     public class SpiralPattern : IFigurePattern
     {

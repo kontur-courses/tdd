@@ -1,7 +1,6 @@
-using System.Collections.Generic;
 using System.Drawing;
 
-namespace TagsCloudVisualization
+namespace TagsCloud
 {
     public abstract class CloudLayouter<T> : ICloudLayouter<T>
     {

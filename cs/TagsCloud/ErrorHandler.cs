@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
-using System.Reflection;
 
-namespace TagsCloudVisualization.Tests
+namespace TagsCloud
 {
     public class ErrorHandler : IImageFromTestSaver
     {
-        private const string DateTimeFormat = "MM/dd/yy hh-mm-ss";
+        private const string DateTimeFormat = "MM-dd-yy hh-mm-ss";
         private const string DirectoryName = "Error_Test_Images";
 
         public bool TrySaveImageToFile(string testName, Image image, out string path)
         {
+            Directory.SetCurrentDirectory("../../../");
             if (!Directory.Exists(DirectoryName))
                 Directory.CreateDirectory(DirectoryName);
 
@@ -22,7 +19,9 @@ namespace TagsCloudVisualization.Tests
             
             try
             {
+#pragma warning disable CA1416
                 image.Save(path, ImageFormat.Png);
+#pragma warning restore CA1416
                 return true;
             }
             catch

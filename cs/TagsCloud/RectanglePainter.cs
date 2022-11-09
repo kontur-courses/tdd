@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 
-namespace TagsCloudVisualization.Tests
+namespace TagsCloud
 {
     public class RectanglePainter : Painter<Rectangle>
     {
         public override void Paint(IEnumerable<Rectangle> figures, Image bitmap, Action colorChanger = null)
         {
+#pragma warning disable CA1416
             var graphics = Graphics.FromImage(bitmap);
             graphics.TranslateTransform(bitmap.Width / 2f, bitmap.Height / 2f);
 
@@ -15,6 +14,7 @@ namespace TagsCloudVisualization.Tests
             {
                 colorChanger?.Invoke();
                 graphics.FillRectangle(RectangleColor, figure);
+#pragma warning restore CA1416
             }
         }
 

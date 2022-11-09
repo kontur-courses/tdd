@@ -1,7 +1,6 @@
 using System.Drawing;
-using NUnit.Framework;
 
-namespace TagsCloudVisualization.Tests
+namespace TagsCloud.Test
 {
     public class TestData
     {
@@ -22,8 +21,8 @@ namespace TagsCloudVisualization.Tests
 
         public static TestCaseData[] CorrectSizes =
         {
-            new TestCaseData(new[] {3, 3, 2}, new[] {2, 1, 4}),
-            new TestCaseData(new[] {1, 2, 4}, new[] {10, 10, 10})
+            new(new[] {3, 3, 2}, new[] {2, 1, 4}),
+            new(new[] {1, 2, 4}, new[] {10, 10, 10})
         };
 
         public static TestCaseData[] IncorrectStepCount =

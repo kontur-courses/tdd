@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace TagsCloudVisualization
+namespace TagsCloud
 {
     internal interface IPlacer<out T>
     {

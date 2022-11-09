@@ -7,6 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Reference Include="System.Drawing.Common">
+        <HintPath>..\TagsCloud.Tests\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
       <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
     </ItemGroup>
 

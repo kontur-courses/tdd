@@ -1,8 +1,6 @@
-using System;
 using System.Drawing;
-using System.Linq;
 
-namespace TagsCloudVisualization
+namespace TagsCloud
 {
     public sealed class CircularCloudLayouter : CloudLayouter<Rectangle>
     {

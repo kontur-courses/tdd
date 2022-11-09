@@ -1,10 +1,8 @@
-using System;
 using System.Drawing;
 using FluentAssertions;
-using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 
-namespace TagsCloudVisualization.Tests
+namespace TagsCloud.Test
 {
     [TestFixture]
     public class CircularCloudLayouterShould
@@ -15,15 +13,6 @@ namespace TagsCloudVisualization.Tests
         private List<Rectangle> rectangles;
 
         private readonly Random random = new();
-
-        public CircularCloudLayouterShould(CircularCloudLayouter circularCloud, IImageFromTestSaver imageSaver,
-            Painter<Rectangle> painter, List<Rectangle> rectangles)
-        {
-            this.circularCloud = circularCloud;
-            this.imageSaver = imageSaver;
-            this.painter = painter;
-            this.rectangles = rectangles;
-        }
 
         [SetUp]
         public void Setup()
@@ -41,7 +30,9 @@ namespace TagsCloudVisualization.Tests
                 return;
             
             var bitmapSize = painter.GetBitmapSize(rectangles);
+#pragma warning disable CA1416
             var bitmap = new Bitmap(bitmapSize.Width, bitmapSize.Height);
+#pragma warning restore CA1416
                 
             painter.Paint(rectangles, bitmap, painter.SetRandomRectangleColor);
             var imageSavedSuccessfully =
@@ -77,7 +68,7 @@ namespace TagsCloudVisualization.Tests
         {
             for (var index = 0; index < 10; index++)
                 rectangles.Add(circularCloud.PutNextRectangle(new Size(random.Next(25, 50), random.Next(25, 50))));
-
+            
             circularCloud.Figures.Count.Should().Be(0);
         }
     }

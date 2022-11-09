@@ -15,10 +15,15 @@
         <PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
         <PackageReference Include="NUnit.Analyzers" Version="3.3.0" />
         <PackageReference Include="coverlet.collector" Version="3.1.2" />
+        <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\TagsCloud\TagsCloud.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Error_Test_Images" />
     </ItemGroup>
 
 </Project>

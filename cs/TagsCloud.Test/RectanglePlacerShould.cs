@@ -1,7 +1,6 @@
 using System.Drawing;
-using NUnit.Framework;
 
-namespace TagsCloudVisualization.Tests
+namespace TagsCloud.Test
 {
     [TestFixture]
     public class RectanglePlacerShould

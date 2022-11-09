@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\TagsCloudVisualization\TagsCloudVisualization.csproj" />
+      <ProjectReference Include="..\TagsCloud\TagsCloud.csproj" />
     </ItemGroup>
 
 </Project>
