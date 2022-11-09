@@ -1,5 +1,6 @@
 using System.Drawing;
 using FluentAssertions;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
 
 namespace TagCloudVisualization.UnitTests;
@@ -13,9 +14,36 @@ public class CircularCloudLayouterTests
         layouter = new(center);
     }
 
-    private CircularCloudLayouter layouter = null!;
+    [TearDown]
+    public void TearDown()
+    {
+        if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+        {
+            var fileName = $"test-{TestContext.CurrentContext.Test.FullName}-{TestContext.CurrentContext.Test.ID}.png";
+            var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            var fullPath = Path.Combine(baseDirectory, fileName);
+            layouter.SaveToFile(fullPath);
+            TestContext.Out.WriteLine($"Tag cloud visualization saved to file {fullPath}");
+        }
+
+        layouter.Dispose();
+    }
+
+    private CircularCloudLayouterPresentationProxy layouter = null!;
     private readonly Point center = new(250, 250);
 
+    [Test]
+    public void TearDown_Example()
+    {
+        _ = layouter.PutNextRectangle(new Size(50, 50));
+        _ = layouter.PutNextRectangle(new Size(50, 50));
+        _ = layouter.PutNextRectangle(new Size(50, 50));
+        _ = layouter.PutNextRectangle(new Size(50, 50));
+        _ = layouter.PutNextRectangle(new Size(50, 50));
+
+        false.Should().BeTrue();
+    }
+    
     [TestCase(-1, -1)]
     [TestCase(-1, 10)]
     [TestCase(10, -1)]
@@ -114,7 +142,6 @@ public class CircularCloudLayouterTests
     [TestCaseSource(nameof(PutNextRectangle_PrintImage_PresentationProxy_Source))]
     public void PutNextRectangle_PrintImage_PresentationProxy(int randomSeed, int count, Size maxSize, Size minSize)
     {
-        var proxy = new CircularCloudLayouterPresentationProxy(center);
         var random = new Random(randomSeed);
         var sizes = Enumerable.Range(0, count)
             .Select(_ =>
@@ -122,7 +149,8 @@ public class CircularCloudLayouterTests
                     random.Next(minSize.Height, maxSize.Height + 1)))
             .ToArray();
 
-        _ = sizes.Select(proxy.PutNextRectangle).ToArray();
-        proxy.SaveToFile($"test-{minSize}-{maxSize}-{randomSeed}-{count}.png");
+        var action = () => { return _ = sizes.Select(layouter.PutNextRectangle).ToArray(); };
+
+        action.Should().NotThrow();
     }
 }
