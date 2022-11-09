@@ -1,11 +1,12 @@
 ﻿using System.Drawing;
+using TagsCloudVisualization.Core.Interfaces;
 
 namespace TagsCloudVisualization.Core
 {
-    public class ArchimedeanSpiral
+    public class ArchimedeanSpiral : IArchimedeanSpiral
     {
         private readonly Point _center;
-        private readonly HashSet<Point> _oldPoints = new HashSet<Point>();
+        private readonly HashSet<Point> _oldPoints = new ();
 
         public ArchimedeanSpiral(Point center)
         {
@@ -13,7 +14,26 @@ namespace TagsCloudVisualization.Core
         }
         public Point GetNextPoint()
         {
-            throw new NotImplementedException();
+            float newAngle = 0;
+
+            while (true)
+            {
+                var rad = 2 * newAngle;
+
+                var x = (_center.X + rad * Math.Cos(newAngle));
+                var y = (_center.Y + rad * Math.Sin(newAngle));
+
+                var point = new Point((int)x, (int)y);
+
+                if (!_oldPoints.Contains(point))
+                {
+                    _oldPoints.Add(point);
+                    return point;
+                }
+
+                newAngle += (float)(5 * Math.PI / 180);
+            }
         }
+
     }
 }
