@@ -28,6 +28,16 @@ public class CircularCloudLayouterTests
     }
 
     [Test]
+    public void PutNextRectangle_InvalidOperationException_OverflowedByRectangles()
+    {
+        var rectangleSize = new Size(500, 500);
+        var action = () => { _ = layouter.PutNextRectangle(rectangleSize); };
+
+        action.Should().NotThrow();
+        action.Should().Throw<InvalidOperationException>();
+    }
+
+    [Test]
     public void PutNextRectangle_ArgumentException_HugeSize()
     {
         var rectangleSize = new Size(501, 501);
@@ -66,18 +76,30 @@ public class CircularCloudLayouterTests
         var sizes = new[]
         {
             new Size(10, 10),
+            new Size(20, 20),
+            new Size(30, 30),
             new Size(10, 10),
-            new Size(10, 10)
+            new Size(20, 20),
+            new Size(30, 30),
+            new Size(10, 10),
+            new Size(20, 20),
+            new Size(30, 30)
         };
 
         var rectangles = sizes.Select(layouter.PutNextRectangle).ToArray();
 
         rectangles.Distinct().Should().HaveSameCount(rectangles);
-        rectangles.All(rectangle =>
-                rectangles.Where(other => other != rectangle).All(other => !other.IntersectsWith(rectangle))).Should()
-            .BeTrue();
-        rectangles.All(rectangle =>
-                rectangles.Where(other => other != rectangle).Any(other => other.TouchesWith(rectangle))).Should()
-            .BeTrue();
+        foreach (var rectangle in rectangles)
+        {
+            rectangles
+                .Where(other => other != rectangle)
+                .Should()
+                .Match(otherRectangles => otherRectangles.All(other => !other.IntersectsWith(rectangle)));
+
+            rectangles
+                .Where(other => other != rectangle)
+                .Should()
+                .Match(otherRectangles => otherRectangles.Any(other => other.TouchesWith(rectangle)));
+        }
     }
 }

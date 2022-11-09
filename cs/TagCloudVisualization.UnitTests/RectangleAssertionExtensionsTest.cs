@@ -11,7 +11,7 @@ public class RectangleAssertionExtensionsTest
     {
         var a = new Rectangle(0, 0, 10, 10);
         var b = new Rectangle(10, 0, 10, 10);
-        
+
         a.TouchesWith(b).Should().BeTrue();
     }
 
@@ -20,7 +20,7 @@ public class RectangleAssertionExtensionsTest
     {
         var a = new Rectangle(0, 0, 10, 10);
         var b = new Rectangle(20, 0, 10, 10);
-        
+
         a.TouchesWith(b).Should().BeFalse();
     }
 
@@ -29,7 +29,7 @@ public class RectangleAssertionExtensionsTest
     {
         var a = new Rectangle(0, 0, 10, 10);
         var b = new Rectangle(9, 0, 10, 10);
-        
+
         a.TouchesWith(b).Should().BeFalse();
     }
 }
