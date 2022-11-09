@@ -26,11 +26,14 @@ namespace TagCloud
             var tempBmpFile = "temp.bmp";
 
             File.Delete(tempBmpFile);
-            for(int i=0;i<1000;i++)
-                tagCloud.PutNextRectangle(new Size(20, 10));
+
+            File.Exists(tempBmpFile).Should().BeFalse($"file {tempBmpFile} was deleted");
+
+            for (int i = 200; i > 1; i -= 2)
+                tagCloud.PutNextRectangle(new Size(i, i / 2));
             SaveAsBitmap(tagCloud, tempBmpFile);
 
-            File.Exists(tempBmpFile).Should().BeTrue();
+            File.Exists(tempBmpFile).Should().BeTrue($"file {tempBmpFile} must be generated");
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
@@ -63,7 +64,7 @@ namespace TagCloud
 
         [TestCase(100)]
         [TestCase(50)]
-        public void GetWidth_EqualsToTheReactangleWidth(int width)
+        public void GetWidth_EqualsToTheRectangleWidth(int width)
         {
             testedTagCloud.PutNextRectangle(new Size(width, 3));
 
@@ -72,7 +73,7 @@ namespace TagCloud
 
         [TestCase(100)]
         [TestCase(50)]
-        public void GetHeight_EqualsToTheReactangleHeight(int height)
+        public void GetHeight_EqualsToTheRectangleHeight(int height)
         {
             testedTagCloud.PutNextRectangle(new Size(3, height));
 
@@ -89,6 +90,23 @@ namespace TagCloud
             var planningReactLocation = new Point(centerX - reactWidth / 2, centerY - reactHeight / 2);
 
             rectangle.Location.Should().BeEquivalentTo(planningReactLocation);
+        }
+
+        [TestCase(0, 0, 350, 750)]
+        [TestCase(3, 3, 500, 500)]
+        public void PutNextRectangle_ReturnedNotIntersectedRectangle(int centerX, int centerY, int firstRectWidth, int firstRectHeight)
+        {
+            testedTagCloud = new CircularCloudLayouter(new Point(centerX, centerY));
+
+            do
+            {
+                var newRect = testedTagCloud.PutNextRectangle(new Size(firstRectWidth, firstRectHeight));
+                testedTagCloud.Reactangles.Where(rect => rect != newRect).All(rect => !rect.IntersectsWith(newRect))
+                    .Should().BeTrue();
+
+                firstRectHeight /= 2;
+                firstRectWidth /= 2;
+            } while (firstRectHeight > 1 && firstRectWidth > 1);
         }
     }
 }

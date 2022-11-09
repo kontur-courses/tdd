@@ -11,45 +11,44 @@ namespace TagCloud
 
         public List<Rectangle> Reactangles { get; }
 
-        private SpiralGenerator spiralGenerator;
+        private SpiralPointGenerator spiralGenerator;
 
-        public CircularCloudLayouter()
+        public CircularCloudLayouter() : this(new Point())
         {
-            Center = new Point();
-            Reactangles = new List<Rectangle>();
-            spiralGenerator = new SpiralGenerator(Center);
         }
 
         public CircularCloudLayouter(Point center)
         {
-            Center = center;
+            Center = new Point(center.X, center.Y);
             Reactangles = new List<Rectangle>();
-            spiralGenerator = new SpiralGenerator(Center);
+            spiralGenerator = new SpiralPointGenerator(Center);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Height < 1 || rectangleSize.Width < 1)
                 throw new ArgumentException("");
-
-            var rectangle = GetNextReactangle(rectangleSize);
-
+            Rectangle rectangle;
+            do
+            {
+                rectangle = GetNextRectangle(rectangleSize);
+            }
+            while (Reactangles.Any(r => r.IntersectsWith(rectangle)));
             Reactangles.Add(rectangle);
 
             return rectangle;
         }
 
-        private Rectangle GetNextReactangle(Size rectangleSize) =>
-            new Rectangle(GetNextReactanglePoint(rectangleSize), rectangleSize);
+        private Rectangle GetNextRectangle(Size rectangleSize) =>
+            new Rectangle(GetNextRectanglePoint(rectangleSize), rectangleSize);
 
-        private Point GetNextReactanglePoint(Size rectangleSize)
+        private Point GetNextRectanglePoint(Size rectangleSize)
         {
-            if (Reactangles.Count == 0)
-                return spiralGenerator.GetNextPoint(null); //ShiftPointRelativeTo(GetCenterPointFor(rectangleSize), Center);
-            else
-            {
-                return spiralGenerator.GetNextPoint(Reactangles.Last());
-            }
+            var reactangleCenter = GetCenterPointFor(rectangleSize);
+            Point nextPoint = Reactangles.Count == 0 ? 
+                spiralGenerator.GetNextPoint(reactangleCenter) :
+                spiralGenerator.GetNextPoint(reactangleCenter);
+            return nextPoint;
         }
 
         private Point ShiftPointRelativeTo(Point point, Point otherPoint) =>
