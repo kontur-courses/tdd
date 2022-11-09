@@ -7,4 +7,4 @@ for (int i = 0; i < 25; i++)
 {
     cloud.PutNextRectangle(new Size(rnd.Next(50, 150), rnd.Next(50, 150)));
 }
-Drawer.CreateImage(1500, 1500, cloud.Rectangles, "first layout");
+Drawer.CreateImage(1500, 1500, cloud.GetRectangles(), "first layout");

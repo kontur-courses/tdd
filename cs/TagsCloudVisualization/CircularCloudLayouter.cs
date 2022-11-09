@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,14 +11,20 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         public readonly Point Center;
-        public List<Rectangle> Rectangles { get; private set; }
-        private double _dr = 0.01; // delta radius in SpiralFunction
-        private double _fi = 0.0368; // angle in SpiralFunction
+
+        private readonly List<Rectangle> rectangles;
+        private readonly Func<int, Point> pointFinderFunc;
 
         public CircularCloudLayouter(Point center)
         {
             Center = center;
-            Rectangles = new List<Rectangle>();
+            rectangles = new List<Rectangle>();
+            pointFinderFunc = SpiralFunction.GetPointFinderFunction(center);
+        }
+
+        public List<Rectangle> GetRectangles()
+        {
+            return new List<Rectangle>(rectangles);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -26,33 +33,30 @@ namespace TagsCloudVisualization
                 throw new ArgumentException("only positive size");
             var rect = FindFreePlaceForNewRectangle(rectangleSize);
             TryMoveRectangleCloserToCenter(ref rect);
-            Rectangles.Add(rect);
+            rectangles.Add(rect);
             return rect;
         }
 
         private void TryMoveRectangleCloserToCenter(ref Rectangle rect)
         {
-            var rectCenter = rect.GetCenter();
-            if (rectCenter.X != Center.X)
+            var xStep = rect.GetCenter().X > Center.X ? new Point(-1, 0) : new Point(1, 0);
+            TryMoveRectangleToTarget(rect.GetCenter().X, Center.X, xStep, ref rect);
+
+            var yStep = rect.GetCenter().Y > Center.Y ? new Point(0, -1) : new Point(0, 1);
+            TryMoveRectangleToTarget(rect.GetCenter().Y, Center.Y, yStep, ref rect);
+        }
+        
+        private void TryMoveRectangleToTarget(int startPos, int targetPos, Point stepPoint, ref Rectangle rect)
+        {
+            var step = targetPos > startPos ? 1 : -1;
+            while (NotIntersectOthers(rect) && startPos != targetPos)
             {
-                var dx = (-1) * Math.Abs(rectCenter.X - Center.X) / (rectCenter.X - Center.X);
-                while (NotIntersectOthers(rect) && rect.GetCenter().X != Center.X)
-                {
-                    rect.X += dx;
-                }
-                if (!NotIntersectOthers(rect))
-                    rect.X -= dx;
+                startPos += step;
+                rect.Location = rect.Location.Plus(stepPoint);
             }
-            if (rectCenter.Y != Center.Y)
-            {
-                var dy = (-1) * Math.Abs(rectCenter.Y - Center.Y) / (rectCenter.Y - Center.Y);
-                while (NotIntersectOthers(rect) && rect.GetCenter().Y != Center.Y)
-                {
-                    rect.Y += dy;
-                }
-                if (!NotIntersectOthers(rect))
-                    rect.Y -= dy;
-            }
+
+            if (!NotIntersectOthers(rect))
+                rect.Location = rect.Location.Minus(stepPoint);
         }
 
         private Rectangle FindFreePlaceForNewRectangle(Size rectangleSize)
@@ -60,13 +64,10 @@ namespace TagsCloudVisualization
             var arg = 0;
             while (true)
             {
-                var rectCenter = SpiralFunction(arg);
-                var rect = new Rectangle()
-                {
-                    Size = rectangleSize,
-                    X = rectCenter.X - rectangleSize.Width / 2,
-                    Y = rectCenter.Y - rectangleSize.Height / 2,
-                };
+                var rectCenter = pointFinderFunc(arg);
+                var x = rectCenter.X - rectangleSize.Width / 2;
+                var y = rectCenter.Y - rectangleSize.Height / 2;
+                var rect = new Rectangle(new Point(x, y), rectangleSize);
                 if (NotIntersectOthers(rect))
                     return rect;
                 arg++;
@@ -75,17 +76,7 @@ namespace TagsCloudVisualization
 
         private bool NotIntersectOthers(Rectangle rect)
         {
-            foreach (var r in Rectangles)
-                if (rect.IntersectsWith(r))
-                    return false;
-            return true;
-        }
-
-        private Point SpiralFunction(int arg)
-        {
-            return new Point(
-                (int)(Center.X + _dr * arg * Math.Cos(_fi * arg)),
-                (int)(Center.Y + _dr * arg * Math.Sin(_fi * arg)));
+            return rectangles.All(r => !rect.IntersectsWith(r));
         }
     }
 }
