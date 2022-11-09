@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
@@ -18,6 +15,7 @@ namespace TagsCloudVisualization
         private AddRectangleState currentAddState = AddRectangleState.RightUp;
 
         private int rectangleCount = 0;
+
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
@@ -34,21 +32,20 @@ namespace TagsCloudVisualization
                 rightBottomCorner = new Point(
                     rectangleSize.Width + leftUpperCorner.X,
                     rectangleSize.Height + leftUpperCorner.Y);
-                
+
                 return new Rectangle(
                     leftUpperCorner.X + center.X,
-                    leftUpperCorner.Y+center.Y,
+                    leftUpperCorner.Y + center.Y,
                     rectangleSize.Width,
                     rectangleSize.Height);
             }
 
 
             Rectangle rect = new Rectangle(0, 0, 0, 0);
-            if (CheckForSuitableFreeRectangle(rectangleSize, ref rect))
+            int suitableRectIndex = SmallestSuitableFreeRectangleIndex(rectangleSize);
+            if (suitableRectIndex != -1)
             {
-                FreeRectangles.Remove(rect);
-                rect.Width = rectangleSize.Width;
-                rect.Height = rectangleSize.Height;
+                rect = ExtractFreeRectangleByIndex(suitableRectIndex);
             }
             else
             {
@@ -64,18 +61,31 @@ namespace TagsCloudVisualization
             return rect;
         }
 
-        private bool CheckForSuitableFreeRectangle(Size rectangleSize, ref Rectangle rectangle)
+        private int SmallestSuitableFreeRectangleIndex(Size rectangleSize)
         {
-            foreach (var rect in FreeRectangles)
+            int index = -1;
+            int minSquare = -1;
+            for (int i = 0; i < FreeRectangles.Count; i++)
             {
+                var rect = FreeRectangles[i];
                 if (rect.Width >= rectangleSize.Width && rect.Height >= rectangleSize.Height)
                 {
-                    rectangle = rect;
-                    return true;
+                    if (index == -1 || minSquare > rect.Width * rect.Height)
+                    {
+                        index = i;
+                        minSquare = rect.Width * rect.Height;
+                    }
                 }
             }
 
-            return false;
+            return index;
+        }
+
+        private Rectangle ExtractFreeRectangleByIndex(int index)
+        {
+            Rectangle rect = FreeRectangles[index];
+            FreeRectangles.RemoveAt(index);
+            return rect;
         }
 
         private void AddFreeRectangle(Size rectangleSize)
@@ -171,34 +181,35 @@ namespace TagsCloudVisualization
             switch (currentAddState)
             {
                 case AddRectangleState.RightUp:
-                    {
-                        rightBottomCorner.Y = Math.Max(rightBottomCorner.Y, leftUpperCorner.Y + rectangleSize.Height);
-                        rightBottomCorner.X = rightBottomCorner.X + rectangleSize.Width;
-                    }
+                {
+                    rightBottomCorner.Y = Math.Max(rightBottomCorner.Y, leftUpperCorner.Y + rectangleSize.Height);
+                    rightBottomCorner.X = rightBottomCorner.X + rectangleSize.Width;
+                }
                     break;
 
                 case AddRectangleState.BottomRight:
-                    {
-                        rightBottomCorner.Y = rightBottomCorner.Y + rectangleSize.Height;
-                        leftUpperCorner.X = Math.Min(leftUpperCorner.X, rightBottomCorner.X - rectangleSize.Width);
-                    }
+                {
+                    rightBottomCorner.Y = rightBottomCorner.Y + rectangleSize.Height;
+                    leftUpperCorner.X = Math.Min(leftUpperCorner.X, rightBottomCorner.X - rectangleSize.Width);
+                }
                     break;
 
                 case AddRectangleState.LeftBottom:
-                    {
-                        leftUpperCorner.Y = Math.Min(leftUpperCorner.Y, rightBottomCorner.Y - rectangleSize.Height);
-                        leftUpperCorner.X = leftUpperCorner.X - rectangleSize.Width;
-                    }
+                {
+                    leftUpperCorner.Y = Math.Min(leftUpperCorner.Y, rightBottomCorner.Y - rectangleSize.Height);
+                    leftUpperCorner.X = leftUpperCorner.X - rectangleSize.Width;
+                }
                     break;
 
                 case AddRectangleState.UpLeft:
-                    {
-                        rightBottomCorner.X = Math.Max(rightBottomCorner.X, leftUpperCorner.X + rectangleSize.Width);
-                        leftUpperCorner.Y = leftUpperCorner.Y - rectangleSize.Height;
-                    }
+                {
+                    rightBottomCorner.X = Math.Max(rightBottomCorner.X, leftUpperCorner.X + rectangleSize.Width);
+                    leftUpperCorner.Y = leftUpperCorner.Y - rectangleSize.Height;
+                }
                     break;
             }
         }
+
         private Rectangle InitNextRectangle(Size rectangleSize)
         {
             Rectangle initialisedRectangle = new Rectangle(0, 0, 0, 0);
