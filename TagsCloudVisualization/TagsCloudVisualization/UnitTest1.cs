@@ -13,7 +13,6 @@ namespace TagsCloudVisualization
         public void Setup()
         {
             layout = new CircularCloudLayouter(new Point(0, 0));
-            layout.FillFreeRectangles = true;
         }
 
         [Test]

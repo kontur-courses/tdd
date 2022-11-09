@@ -9,7 +9,6 @@ namespace TagsCloudVisualization
 {
     internal class CircularCloudLayouter
     {
-        public bool FillFreeRectangles = true;
         public List<Rectangle> FreeRectangles = new List<Rectangle>();
 
         private Point leftUpperCorner;
@@ -45,7 +44,7 @@ namespace TagsCloudVisualization
 
 
             Rectangle rect = new Rectangle(0, 0, 0, 0);
-            if (FillFreeRectangles && CheckForSuitableFreeRectangle(rectangleSize, ref rect))
+            if (CheckForSuitableFreeRectangle(rectangleSize, ref rect))
             {
                 FreeRectangles.Remove(rect);
                 rect.Width = rectangleSize.Width;
