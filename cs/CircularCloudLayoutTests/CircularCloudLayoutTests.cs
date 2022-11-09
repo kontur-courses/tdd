@@ -30,6 +30,7 @@ namespace CircularCloudLayoutTests
         }
 
         [Test]
+        [Category("ToDraw")]
         public void PlacedRectangles_Should_Fill_80Percent_OfCircleSpace()
         {
             var area = 0;
@@ -59,6 +60,7 @@ namespace CircularCloudLayoutTests
         }
 
         [Test]
+        [Category("ToDraw")]
         public void PlacedRectangles_Should_Not_IntersectEachOther()
         {
             var doIntersects = false;
@@ -75,6 +77,7 @@ namespace CircularCloudLayoutTests
         }
 
         [Test]
+        [Category("ToDraw")]
         public void PlacedRectangles_ActualCenter_ShouldNotDeviate_MoreThanFivePercent_From_CenterPoint()
         {
             var maxX = placedRectangles.Select(x => x.Right).Max();
@@ -135,6 +138,7 @@ namespace CircularCloudLayoutTests
         }
 
         [Test]
+        [Category("ToDraw")]
         [Description("Circle based on center point")]
         public void PlacedRectangles_Should_LieInLimitingCircle()
         {
@@ -159,8 +163,8 @@ namespace CircularCloudLayoutTests
         public void Cleanup()
         {
             var context = TestContext.CurrentContext;
-
-            if (!(context.Result.FailCount > 0))
+            string? category = (string)TestContext.CurrentContext.Test.Properties.Get("Category");
+            if (!(context.Result.FailCount > 0) || category != "ToDraw")
                 return;
             picture = new(center.X * 2 + 5, center.Y * 2 + 5);
             g = Graphics.FromImage(picture);
@@ -169,8 +173,9 @@ namespace CircularCloudLayoutTests
             g.DrawEllipse(Pens.Black, center.X - layoutRadius, center.Y - layoutRadius,
                 layoutRadius * 2, layoutRadius * 2);
             var time = DateTime.Now.ToString("dd/MM/yyyy_HH-mm-ss");
-            var path = Path.Combine(context.WorkDirectory, $"..\\..\\..\\CircularCloudLayout_{time}.bmp");
-            Console.WriteLine($"Tag cloud visualization saved to file {path}");
+            var path = Path.Combine(context.WorkDirectory,
+                $"..\\..\\..\\CircularCloudLayout_{context.Test.Name}_{time}.bmp");
+            Console.WriteLine($"Tag cloud visualization saved to file CircularCloudLayout_{context.Test.Name}_{time}");
             picture.Save(path);
         }
     }
