@@ -24,7 +24,9 @@ namespace TagsCloudVisualization
         [TestCase(100500, 100500, TestName = "Big positive coordinates")]
         public void Constructor_ShouldNotThrowArgumentException_OnCorrectInput(int x, int y)
         {
-            Assert.DoesNotThrow(() => new CircularCloudLayouter(new Point(x, y)));
+            var centralPoint = new Point(x, y);
+            Action act = () => new CircularCloudLayouter(centralPoint);
+            act.Should().NotThrow();
         }
 
         [Test]
@@ -38,9 +40,10 @@ namespace TagsCloudVisualization
         [Test]
         public void PutNextRectangle_ShouldPlaceFirstRectangleInCenter()
         {
-            layouter.PutNextRectangle(new Size(8, 8))
-                .Should()
-                .BeEquivalentTo(new Rectangle(new Point(center.X - 4, center.Y - 4), new Size(8, 8)));
+            var size = new Size(8, 8);
+            var rectangleInCenter = new Rectangle(new Point(center.X - 4, center.Y - 4), size);
+            var rectangle = layouter.PutNextRectangle(size);
+            rectangle.Should().BeEquivalentTo(rectangleInCenter);
         }
 
         [TestCase(1, -3, TestName = "Y < 0")]
@@ -48,7 +51,9 @@ namespace TagsCloudVisualization
         [TestCase(-3, -3, TestName = "X < 0, Y < 0")]
         public void PutNextRectangle_ShouldThrowArgumentException_OnIncorrectInput(int x, int y)
         {
-            Assert.Throws<ArgumentException>(() => layouter.PutNextRectangle(new Size(x, y)));
+            var size = new Size(x, y);
+            Action act = () => layouter.PutNextRectangle(size);
+            act.Should().Throw<ArgumentException>().WithMessage("Wrong size of rectangle");
         }
 
         [TestCase(0, 3, TestName = "X = 0, Y > 0")]
@@ -57,7 +62,9 @@ namespace TagsCloudVisualization
         [TestCase(10000, 10000, TestName = "Big rectangle")]
         public void PutNextRectangle_ShouldNotThrowException_OnCorrectInput(int x, int y)
         {
-            Assert.DoesNotThrow(() => layouter.PutNextRectangle(new Size(x, y)));
+            var size = new Size(x, y);
+            Action act = () => layouter.PutNextRectangle(size);
+            act.Should().NotThrow();
         }
 
         [Test]
@@ -68,9 +75,11 @@ namespace TagsCloudVisualization
             for (var i = 0; i < 100; i++)
             {
                 var rectangle = layouter.PutNextRectangle(new Size(rnd.Next(1, 10), rnd.Next(1, 5)));
-                rectangles.Where(x => x.IntersectsWith(rectangle)).ToList().Should().BeEmpty();
                 rectangles.Add(rectangle);
             }
+
+            foreach (var rectangle in rectangles)
+                rectangles.Any(rect => rect.IntersectsWith(rectangle) && rect != rectangle).Should().BeFalse();
         }
     }
 }
