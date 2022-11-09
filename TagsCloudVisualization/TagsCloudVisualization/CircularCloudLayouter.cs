@@ -10,7 +10,6 @@ namespace TagsCloudVisualization
     internal class CircularCloudLayouter
     {
         public bool FillFreeRectangles = true;
-        //Sorted by Width
         public List<Rectangle> FreeRectangles = new List<Rectangle>();
 
         private Point leftUpperCorner;
