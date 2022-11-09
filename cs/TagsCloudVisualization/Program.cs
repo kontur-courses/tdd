@@ -17,7 +17,7 @@ public class Program
         using var bitmap = CloudImageGenerator.Generate(cloudLayouter);
         
         string directory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
-        var path = Path.Combine(directory, "Images", "tag-cloud-200-first-quarter.bmp");
+        var path = Path.Combine(directory, "Images", "tag-cloud-100-first-quarter.bmp");
         bitmap.Save(path, ImageFormat.Bmp);
     }
 }
