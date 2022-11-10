@@ -11,11 +11,11 @@ namespace TagsCloudVisualization
 
     internal class TagCloud
     {
-         
+
         private FrequencyTags tags;
         private List<TextRectangle> rectangles;
         private Size srcSize;
-        private List<Point> emptyPoints ;
+        private List<Point> emptyPoints;
 
         public TagCloud(FrequencyTags tags = null)
         {
@@ -26,10 +26,11 @@ namespace TagsCloudVisualization
 
         public List<TextRectangle> GetRectangles() => rectangles;
         public Size GetScreenSize() => srcSize;
+        public int GetSize() => emptyPoints.MaxBy(x => x.X).X;
 
-        public void CreateTagCloud(int heightSize=1000)
+        public void CreateTagCloud(int heightSize = 1000)
         {
-            srcSize = new Size(heightSize* 2, heightSize);
+            srcSize = new Size(heightSize * 2, heightSize * 2);
             var arithmeticSpiral = new ArithmeticSpiral(new Point(srcSize / 2));
             var sizeDictionary = new DivideTags((srcSize.Height + srcSize.Width) * 2, tags).sizeDictionary;
             var circularCloudLayouter = new CircularCloudLayouter(sizeDictionary, srcSize);
@@ -37,7 +38,8 @@ namespace TagsCloudVisualization
             var filledEmptySpaces = false;
             while (true)
             {
-                if (TryFillRectangle(arithmeticSpiral, circularCloudLayouter, ref nextSizeRectangle, ref filledEmptySpaces)) 
+                if (TryFillRectangle(arithmeticSpiral, circularCloudLayouter, ref nextSizeRectangle,
+                        ref filledEmptySpaces))
                     break;
             }
         }
@@ -75,7 +77,8 @@ namespace TagsCloudVisualization
             return filledEmptySpaced;
         }
 
-        private bool AddRectangle(Point point, CircularCloudLayouter circularCloudLayouter, ref Tuple<string, Size, Font> nextSizeRectangle)
+        private bool AddRectangle(Point point, CircularCloudLayouter circularCloudLayouter,
+            ref Tuple<string, Size, Font> nextSizeRectangle)
         {
             bool clearused;
             var rectangle = new Rectangle(point - nextSizeRectangle.Item2 / 2, nextSizeRectangle.Item2);

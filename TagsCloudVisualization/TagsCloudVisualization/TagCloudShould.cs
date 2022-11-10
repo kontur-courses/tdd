@@ -6,7 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization
 {
@@ -28,6 +30,7 @@ namespace TagsCloudVisualization
             var frequencyTags = new FrequencyTags(new[] { "1", "2", "3", "4" });
             frequencyTags.Count.Should().Be(4);
         }
+
         [Test]
         public void FrequencyTags_TagsShouldBeEqual()
         {
@@ -36,14 +39,7 @@ namespace TagsCloudVisualization
                 pair.Value.Should().Be(1);
         }
 
-      
-
-
-
-
-
-
-        [TestCase(0,TestName = "ZeroSize")]
+        [TestCase(0, TestName = "ZeroSize")]
         [TestCase(-1, TestName = "NegativeSize")]
         [TestCase(int.MinValue, TestName = "MinIntSize")]
 
@@ -56,11 +52,12 @@ namespace TagsCloudVisualization
         [Test]
         public void DivideTags_CheckRoundDownToIntSizeTags()
         {
-            var frequencyTags = new FrequencyTags(new []{"1","2","3","4"});
-            var dividedTags = new DivideTags(5,frequencyTags);
+            var frequencyTags = new FrequencyTags(new[] { "1", "2", "3", "4" });
+            var dividedTags = new DivideTags(5, frequencyTags);
             foreach (var pair in dividedTags.sizeDictionary)
                 pair.Value.Should().Be(1); // 5/4 = 1.25 round to 1  
         }
+
         [Test]
         public void DivideTags_CheckRoundUpToIntSizeTags()
         {
@@ -69,6 +66,7 @@ namespace TagsCloudVisualization
             foreach (var pair in dividedTags.sizeDictionary)
                 pair.Value.Should().Be(2); // 7/4 = 1.75 round to 2  
         }
+
         [Test]
         public void DivideTags_CheckRoundToIntSizeTags()
         {
@@ -77,13 +75,15 @@ namespace TagsCloudVisualization
             foreach (var pair in dividedTags.sizeDictionary)
                 pair.Value.Should().Be(2); // 6/4 = 1.5 round to 2  
         }
+
         [Test]
         public void DivideTags_WhenDifferentSizeTags_CheckCount()
         {
-            var frequencyTags = new FrequencyTags(new[] { "1", "2", "2"});
+            var frequencyTags = new FrequencyTags(new[] { "1", "2", "2" });
             var dividedTags = new DivideTags(2, frequencyTags);
             dividedTags.sizeDictionary.Values.Count.Should().Be(2);
         }
+
         [Test]
         public void DivideTags_WhenDifferentSizeTags_CheckSize()
         {
@@ -101,8 +101,9 @@ namespace TagsCloudVisualization
             var size = int.MaxValue;
             var dividedTags = new DivideTags(size, frequencyTags);
             foreach (var pair in dividedTags.sizeDictionary)
-                pair.Value.Should().Be((int)Math.Round((double)size/frequencyTags.Count));
+                pair.Value.Should().Be((int)Math.Round((double)size / frequencyTags.Count));
         }
+
         [Test]
         public void CircularCloudLayouter_WhenTagsEmpty()
         {
@@ -112,6 +113,7 @@ namespace TagsCloudVisualization
             circularCloudLayouter.GetNextRectangle(new Point(0, 0));
             circularCloudLayouter.GetNextRectangle(new Point(0, 0)).IsEmpty.Should().BeTrue();
         }
+
         [Test]
         public void CircularCloudLayouterThrowException_WhenTagsEmpty()
         {
@@ -124,7 +126,7 @@ namespace TagsCloudVisualization
             exceptionAction.Should().Throw<InvalidOperationException>();
         }
 
-        [Test,Timeout(500)]
+        [Test, Timeout(500)]
         public void TimeoutArithmeticSpiral_WhenBigCountOperation()
         {
             var spiral = new ArithmeticSpiral(new Point(0, 0));
@@ -164,6 +166,7 @@ namespace TagsCloudVisualization
             Action action = () => new TextRectangle(new Rectangle(10, 10, 10, 10), text, new Font("Times", 10));
             action.Should().Throw<ArgumentNullException>();
         }
+
         [Test]
         public void ThrowException_WhenNullTextRectangleFieldFont()
         {
@@ -171,13 +174,34 @@ namespace TagsCloudVisualization
             Action action = () => new TextRectangle(new Rectangle(10, 10, 10, 10), "text", null);
             action.Should().Throw<ArgumentNullException>();
         }
-        
+
     }
 
     [TestFixture]
     public class TagCloudShould
     {
-   
+        private TagCloud tagCloud;
+        private Visualizator visualizator;
+
+        [TearDown]
+        public void PrintPathAndSaveIfTestIsDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
+                return;
+            if (tagCloud.GetRectangles().Count == 0)
+                tagCloud.CreateTagCloud();
+            visualizator = new Visualizator(tagCloud);
+            var testName = TestContext.CurrentContext.Test.Name + TestContext.CurrentContext.Result.FailCount;
+            visualizator.Save(testName, tagCloud);
+            Console.WriteLine("Tag cloud visualization saved to file: " + Environment.CurrentDirectory + "\\" +
+                              testName + ".png");
+        }
+
+        [SetUp]
+        public void SetUp()
+        {
+            tagCloud = new TagCloud();
+        }
 
         [Test]
         public void NoVisualization_NoIntersections()
@@ -186,13 +210,10 @@ namespace TagsCloudVisualization
             tagCloud.CreateTagCloud();
             var rectangles = tagCloud.GetRectangles();
             foreach (var rectangle in rectangles)
-            {
-                foreach (var thisRectangle in rectangles.Where(rect=> rect != rectangle))
-                {
-                    thisRectangle.rectangle.IntersectsWith(rectangle.rectangle).Should().BeFalse();
-                }
-            }
+            foreach (var thisRectangle in rectangles.Where(rect => rect != rectangle))
+                thisRectangle.rectangle.IntersectsWith(rectangle.rectangle).Should().BeFalse();
         }
+
         [Test]
         public void NoVisualization_NoArgumentExceptionWhenNotSpaceForSmallestTag()
         {
@@ -202,12 +223,11 @@ namespace TagsCloudVisualization
 
         public void ArgumentException_WhenHaveEmptySpaceSmall()
         {
-            var tagCloud = new TagCloud();
             tagCloud.CreateTagCloud();
             var srcSize = tagCloud.GetScreenSize();
-            var arithmeticSpiral = new ArithmeticSpiral(new Point( srcSize / 2));
+            var arithmeticSpiral = new ArithmeticSpiral(new Point(srcSize / 2));
             var point = arithmeticSpiral.GetPoint();
-            var rectangles=tagCloud.GetRectangles();
+            var rectangles = tagCloud.GetRectangles();
             var smallRectangle = rectangles.Last().rectangle;
             var smallOptions = new Tuple<string, Size, Font>("small", smallRectangle.Size, new Font("Times", 5));
             while (!new Rectangle(point - (smallOptions.Item2 / 2), smallOptions.Item2).IntersectsWith(smallRectangle))
@@ -215,41 +235,53 @@ namespace TagsCloudVisualization
                 point = arithmeticSpiral.GetPoint();
                 if (!rectangles
                         .Select(x =>
-                            x.rectangle.IntersectsWith(new Rectangle(point - (smallOptions.Item2 / 2), smallOptions.Item2)))
+                            x.rectangle.IntersectsWith(new Rectangle(point - (smallOptions.Item2 / 2),
+                                smallOptions.Item2)))
                         .Contains(true))
                 {
-                    throw new Exception($"Rectangle {smallOptions.Item2} input in space: {point - smallOptions.Item2 / 2}.But must in {smallRectangle.Location - smallOptions.Item2 / 2}");
+                    throw new Exception(
+                        $"Rectangle {smallOptions.Item2} input in space: {point - smallOptions.Item2 / 2}.But must in {smallRectangle.Location - smallOptions.Item2 / 2}");
                 }
             }
         }
-        [Test,Timeout(20000)]
+
+        [Test, Timeout(10000)]
         public void NoVisualization_Timeout()
         {
-            var tagCloud = new TagCloud();
             tagCloud.CreateTagCloud();
         }
-        [Test]
+
+        [Test, Timeout(10000)]
         public void Visualization_Timeout()
         {
-            var tagCloud = new TagCloud();
-            var visualizator = new Visualizator(tagCloud);
-            visualizator.Save("Visualization_Timeout", tagCloud);
+            tagCloud.CreateTagCloud();
+            visualizator = new Visualizator(tagCloud);
+            visualizator.Save(TestContext.CurrentContext.Test.Name, tagCloud);
         }
 
         [Test]
         public void Visualization_WithRandomSave()
         {
-            var testName = TestContext.CurrentContext.Test.Name+TestContext.CurrentContext.Result.FailCount;
             var random = new Random(123);
             var strsplt = new string[400];
             for (var i = 0; i < 400; i++)
                 strsplt[i] = random.Next(1, 100).ToString();
-            var tagCloud = new TagCloud(new FrequencyTags(string.Join(", ", strsplt).Split(", ")));
-            var visualizator = new Visualizator(tagCloud);
-            
-            visualizator.Save(testName, tagCloud);
-            Console.WriteLine("Tag cloud visualization saved to file " +
-                              $"./TagsCloudVisualization/saved_images/{testName}");
+            tagCloud = new TagCloud(new FrequencyTags(string.Join(", ", strsplt).Split(", ")));
+            tagCloud.CreateTagCloud();
+            visualizator = new Visualizator(tagCloud);
+            visualizator.Save(TestContext.CurrentContext.Test.Name, tagCloud);
+
+        }
+
+        [Test]
+        public void Visualization_ErrorForSaveTimeout()
+        {
+            var random = new Random(123);
+            var strsplt = new string[400];
+            for (var i = 0; i < 400; i++)
+                strsplt[i] = random.Next(1, 100).ToString();
+            tagCloud = new TagCloud(new FrequencyTags(string.Join(", ", strsplt).Split(", ")));
+            throw new Exception("This test create for homework№3");
 
         }
     }
