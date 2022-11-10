@@ -19,13 +19,13 @@
 
   <ItemGroup>
     <Reference Include="EParser">
-      <HintPath>..\..\..\OptimizationMethods\OptimizationMethods\bin\Release\EParser.dll</HintPath>
+      <HintPath>EParser.dll</HintPath>
     </Reference>
     <Reference Include="NumMath">
-      <HintPath>..\..\..\OptimizationMethods\OptimizationMethods\bin\Release\NumMath.dll</HintPath>
+      <HintPath>NumMath.dll</HintPath>
     </Reference>
     <Reference Include="OptimizationMethods">
-      <HintPath>..\..\..\OptimizationMethods\OptimizationMethods\bin\Release\OptimizationMethods.dll</HintPath>
+      <HintPath>OptimizationMethods.dll</HintPath>
     </Reference>
   </ItemGroup>
 
