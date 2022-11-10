@@ -4,33 +4,33 @@ namespace TagCloudVisualizer.CloudLayouter;
 
 public class FermatSpiral
 {
-    private readonly int step;
+    private readonly int angleStep;
     private readonly Point center;
-    private int phi;
-    private int a;
+    private int currentAngle;
+    private int spiralRadiusCoefficient;
 
-    public FermatSpiral(Point center, int a = 1, int step = 1)
+    public FermatSpiral(Point center, int spiralRadiusCoefficient = 1, int angleStep = 1)
     {
-        this.a = a;
-        this.step = step;
+        this.spiralRadiusCoefficient = spiralRadiusCoefficient;
+        this.angleStep = angleStep;
         this.center = center;
-        phi = 0;
+        currentAngle = 0;
     }
 
     public Point GetNextPoint()
     {
-        if (phi == 0)
+        if (currentAngle == 0)
         {
-            phi += step;
+            currentAngle += angleStep;
             return center;
         }
         
-        var result = new Point((int)(a * Math.Sqrt(phi) * Math.Cos(phi) + center.X),
-            (int)(a * Math.Sqrt(phi) * Math.Sin(phi)) + center.Y);
+        var result = new Point((int)(spiralRadiusCoefficient * Math.Sqrt(currentAngle) * Math.Cos(currentAngle) + center.X),
+            (int)(spiralRadiusCoefficient * Math.Sqrt(currentAngle) * Math.Sin(currentAngle)) + center.Y);
 
-        if (a < 0)
-            phi += step;
-        a = -a;
+        if (spiralRadiusCoefficient < 0)
+            currentAngle += angleStep;
+        spiralRadiusCoefficient = -spiralRadiusCoefficient;
         return result;
     }
 }

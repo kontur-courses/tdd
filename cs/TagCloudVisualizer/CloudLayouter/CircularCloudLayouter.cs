@@ -7,7 +7,6 @@ public class CircularCloudLayouter : ICloudLayouter
     private readonly Point center;
     private readonly FermatSpiral fermatSpiral;
     private readonly List<Rectangle> rectangles = new ();
-    public IReadOnlyList<Rectangle> Rectangles => rectangles;
 
     public CircularCloudLayouter(Point center)
     {
