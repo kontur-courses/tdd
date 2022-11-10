@@ -1,4 +1,5 @@
 using CircularCloudLayouter.WeightedLayouter.Forming;
+using CircularCloudLayouter.WeightedLayouter.Forming.Standard;
 using Timer = System.Windows.Forms.Timer;
 
 namespace TagsCloudVisualization;

@@ -74,7 +74,6 @@ public class CircularCloudLayouter_Should
                 .Any(rect => rect.IntersectsWith(newRect))
                 .Should().BeFalse("rectangles should not intersects");
         }
-        // true.Should().BeFalse();
     }
 
     [Test]

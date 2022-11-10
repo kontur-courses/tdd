@@ -1,25 +1,11 @@
 namespace CircularCloudLayouter.WeightedLayouter.Forming;
 
-public class FormFactor
+public abstract class FormFactor
 {
-    private readonly Func<int, int, int, int, int> _preferredStartCalculator;
-    private readonly Func<int, double, double> _segmentScoreCalculator;
-
-    public FormFactor(
-        Func<int, int, int, int, int> preferredStartCalculator,
-        Func<int, double, double> segmentScoreCalculator,
-        double widthToHeightRatio = 1
-    )
+    protected FormFactor(double widthToHeightRatio)
     {
-        _preferredStartCalculator = preferredStartCalculator ??
-                                    throw new ArgumentNullException(nameof(preferredStartCalculator));
-        _segmentScoreCalculator = segmentScoreCalculator ??
-                                  throw new ArgumentNullException(nameof(segmentScoreCalculator));
         WidthToHeightRatio = widthToHeightRatio;
     }
-
-    public FormFactor WithRatio(double widthToHeightRatio) =>
-        new(_preferredStartCalculator, _segmentScoreCalculator, widthToHeightRatio);
 
     public double WidthToHeightRatio { get; }
 
@@ -27,9 +13,12 @@ public class FormFactor
     {
         if (max - min < sideLength)
             throw new ArgumentException("Not enough space to place side!");
-        return _preferredStartCalculator(min, max, sideLength, middle);
+        return CalculatePreferredStart(min, max, sideLength, middle);
     }
 
-    public double GetSegmentScore(int weight, double distToCenter) =>
-        _segmentScoreCalculator(weight, distToCenter);
+    public abstract double GetSegmentScore(int weight, double distToCenter);
+
+    public abstract FormFactor WithRatio(double widthToHeightRatio);
+
+    protected abstract int CalculatePreferredStart(int min, int max, int sideLength, int middle);
 }

@@ -8,10 +8,10 @@ public abstract class WeightedSideLayouter
 {
     private const int NeighboursSpace = 2;
 
-    private static readonly WeightedSegmentsOptimizationOptions OptimizationOptions =
-        new(2 * NeighboursSpace, NeighboursSpace);
+    private static readonly IWeightedSegmentsOptimizer Optimizer =
+        new SimpleWeightedSegmentsOptimizer(2 * NeighboursSpace, NeighboursSpace);
 
-    private readonly WeightedCollection _sideWeights = new(OptimizationOptions);
+    private readonly WeightedCollection _sideWeights = new(Optimizer);
 
     protected readonly Point Center;
     protected readonly FormFactor FormFactor;
@@ -50,11 +50,7 @@ public abstract class WeightedSideLayouter
         var bestScore = double.MinValue;
         var bestSegment = new WeightedSegment(0, 0, int.MaxValue);
 
-        var segments = _sideWeights.FullLength >= sideLength
-            ? _sideWeights
-            : GetSegmentsWithOffset((int) Math.Ceiling((sideLength - _sideWeights.FullLength) / 2d));
-
-        foreach (var segment in segments)
+        foreach (var segment in SegmentsWithRequiredOffset(sideLength))
         {
             mergedWeight = HandleNewSegment(segment, mergedSegments, sideLength, mergedWeight);
             var min = mergedSegments.Peek().Start;
@@ -99,17 +95,7 @@ public abstract class WeightedSideLayouter
     private static (int Absolute, int Relative) GetResultPos(WeightedSegment segment) =>
         (segment.Start + NeighboursSpace, segment.Weight + NeighboursSpace);
 
-    private IEnumerable<WeightedSegment> GetSegmentsWithOffset(int offsetLength)
-    {
-        yield return new WeightedSegment(_sideWeights.Start - offsetLength, _sideWeights.Start);
-
-        foreach (var segment in _sideWeights)
-            yield return segment;
-
-        yield return new WeightedSegment(_sideWeights.End, _sideWeights.End + offsetLength);
-    }
-
-    private IEnumerable<WeightedSegment> WeightsWithRequiredOffset(int minLength)
+    private IEnumerable<WeightedSegment> SegmentsWithRequiredOffset(int minLength)
     {
         var offsetLength = (int) Math.Ceiling((minLength - _sideWeights.FullLength) / 2d);
 

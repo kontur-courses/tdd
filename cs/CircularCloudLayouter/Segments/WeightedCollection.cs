@@ -6,7 +6,7 @@ public class WeightedCollection :
     ICollection<WeightedSegment>,
     IReadOnlyCollection<WeightedSegment>
 {
-    private readonly WeightedSegmentsOptimizationOptions _optimizationOptions;
+    private readonly IWeightedSegmentsOptimizer _optimizer;
     private readonly LinkedList<WeightedSegment> _segments = new();
 
     public int Start =>
@@ -27,13 +27,9 @@ public class WeightedCollection :
 
     public bool IsReadOnly => false;
 
-    public WeightedCollection() : this(WeightedSegmentsOptimizationOptions.Default)
+    public WeightedCollection(IWeightedSegmentsOptimizer optimizer)
     {
-    }
-
-    public WeightedCollection(WeightedSegmentsOptimizationOptions optimizationOptions)
-    {
-        _optimizationOptions = optimizationOptions;
+        _optimizer = optimizer;
     }
 
     public int WeightAt(int point) =>
@@ -108,65 +104,7 @@ public class WeightedCollection :
         }
     }
 
-    public void OptimizeWeights()
-    {
-        var current = _segments.First;
-        while (current?.Next is not null)
-        {
-            if (current.Previous is null)
-            {
-                current = current.Next;
-                continue;
-            }
-
-            if (TryMaxLengthOptimization(current))
-                continue;
-            if (TryWeightDeltaOptimization(current))
-                continue;
-            current = current.Next;
-        }
-    }
-
-    private bool TryMaxLengthOptimization(LinkedListNode<WeightedSegment> node)
-    {
-        if (node.Value.Length > _optimizationOptions.MaxLengthToRemove)
-            return false;
-
-        if (node.Previous!.Value.Weight >= node.Value.Weight && node.Previous.Value.Weight < node.Next!.Value.Weight)
-        {
-            CombineWithPrev(node, node.Previous.Value.Weight);
-            return true;
-        }
-
-        if (node.Next!.Value.Weight >= node.Value.Weight)
-        {
-            CombineWithNext(node, node.Next.Value.Weight);
-            return true;
-        }
-
-        return false;
-    }
-
-    private bool TryWeightDeltaOptimization(LinkedListNode<WeightedSegment> node)
-    {
-        if (Math.Abs(node.Value.Weight - node.Next!.Value.Weight) > _optimizationOptions.MaxWeightDeltaToCombine)
-            return false;
-
-        CombineWithNext(node, Math.Max(node.Value.Weight, node.Next.Value.Weight));
-        return true;
-    }
-
-    private void CombineWithPrev(LinkedListNode<WeightedSegment> node, int combinedWeight)
-    {
-        node.Value = new WeightedSegment(node.Previous!.Value.Start, node.Value.End, combinedWeight);
-        _segments.Remove(node.Previous);
-    }
-
-    private void CombineWithNext(LinkedListNode<WeightedSegment> node, int combinedWeight)
-    {
-        node.Value = new WeightedSegment(node.Value.Start, node.Next!.Value.End, combinedWeight);
-        _segments.Remove(node.Next);
-    }
+    public void OptimizeWeights() => _optimizer.OptimizeWeights(_segments);
 
     public IEnumerator<WeightedSegment> GetEnumerator() =>
         _segments.GetEnumerator();
@@ -191,14 +129,15 @@ public class WeightedCollection :
         if (node is null)
             return false;
 
-        if (node.Value.Weight == MaxWeight)
-            MaxWeight = _segments.Max(s => s.Weight);
+        var removedWeight = node.Value.Weight;
 
         if (node.Previous is null || node.Next is null)
             _segments.Remove(node);
         else
             node.Value = new WeightedSegment(node.Value.Start, node.Value.End);
 
+        if (removedWeight == MaxWeight)
+            MaxWeight = _segments.Max(s => s.Weight);
         return true;
     }
 

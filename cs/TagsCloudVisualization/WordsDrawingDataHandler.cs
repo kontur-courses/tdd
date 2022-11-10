@@ -33,11 +33,12 @@ public class WordsDrawingDataHandler
         Center = center;
         _circularCloudLayouter = new WeightedCircularCloudLayouter(Center, formFactor);
     }
-    
+
     public Point Center { get; }
 
-    public IReadOnlyCollection<TextDrawingData> SavedDrawingDatas =>
-        _textDrawingDatas.Values;
+    public IEnumerable<TextDrawingData> SavedDrawingDatas => _textDrawingDatas.Values;
+
+    public record TextDrawingData(string Text, Font Font, Brush Brush, Rectangle Rectangle, StringFormat Format);
 
     public TextDrawingData GetTextDrawingData(string text, Graphics graphics, bool isMain = false)
     {
@@ -70,6 +71,4 @@ public class WordsDrawingDataHandler
         var size = Size.Ceiling(ghx.MeasureString(word, font));
         return _circularCloudLayouter.PutNextRectangle(size);
     }
-
-    public record TextDrawingData(string Text, Font Font, Brush Brush, Rectangle Rectangle, StringFormat Format);
 }
