@@ -8,7 +8,7 @@ namespace TagsCloudVisualization.Extensions
     {
         public static Point GetCenter(this Rectangle rectangle)
         {
-            Point topLeftPoint = rectangle.Location;
+            var topLeftPoint = rectangle.Location;
             return new Point(topLeftPoint.X + rectangle.Width / 2, topLeftPoint.Y + rectangle.Height / 2);
         }
         

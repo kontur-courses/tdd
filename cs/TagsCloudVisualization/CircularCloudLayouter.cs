@@ -30,7 +30,7 @@ namespace TagsCloudVisualization
         {
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException("Rectangles' width and height should be positive.");
-            Rectangle rectangle = new Rectangle(Point.Empty, rectangleSize);
+            var rectangle = new Rectangle(Point.Empty, rectangleSize);
             rectangle = PlaceRectangle(rectangle);
             rectangle = ShiftRectangleToCenter(rectangle);
             _rectangles.Add(rectangle);
@@ -49,16 +49,16 @@ namespace TagsCloudVisualization
         
         private Rectangle ShiftRectangleToCenter(Rectangle rectangle)
         {
-            int dx = (rectangle.GetCenter().X < Center.X) ? 1 : -1;
+            var dx = (rectangle.GetCenter().X < Center.X) ? 1 : -1;
             rectangle = ShiftRectangle(rectangle, dx, 0);
-            int dy = (rectangle.GetCenter().Y < Center.Y) ? 1 : -1;
+            var dy = (rectangle.GetCenter().Y < Center.Y) ? 1 : -1;
             rectangle = ShiftRectangle(rectangle, 0, dy);
             return rectangle;
         }
         
         private Rectangle ShiftRectangle(Rectangle rectangle, int dx, int dy)
         {
-            Size offset = new Size(dx, dy);
+            var offset = new Size(dx, dy);
             while (rectangle.IntersectsWith(_rectangles) == false && 
                    rectangle.GetCenter().X != Center.X &&
                    rectangle.GetCenter().Y != Center.Y)

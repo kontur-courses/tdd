@@ -26,8 +26,8 @@ namespace TagsCloudVisualization.Tests
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                CircularCloudDrawer visualisator = new CircularCloudDrawer(_layouter);
-                Bitmap image = visualisator.CreateImage();
+                var visualisator = new CircularCloudDrawer(_layouter);
+                var image = visualisator.CreateImage();
                 IBitmapSaver saver = new HardDriveSaver();
                 saver.Save(image, TestContext.CurrentContext.Test.Name);
             }
@@ -35,19 +35,19 @@ namespace TagsCloudVisualization.Tests
 
         private void PutAllRectangles(IReadOnlyList<Size> rectangles)
         {
-            foreach (Size rectangleSize in rectangles)
+            foreach (var rectangleSize in rectangles)
                 _layouter.PutNextRectangle(rectangleSize);
         }
 
         private Size GetBoundsSize()
         {
-            int leftBound = _layouter.Rectangles.Min(rectangle => rectangle.Left);
-            int rightBound = _layouter.Rectangles.Max(rectangle => rectangle.Right);
-            int bottomBound = _layouter.Rectangles.Max(rectangle => rectangle.Bottom);
-            int topBound = _layouter.Rectangles.Min(rectangle => rectangle.Top);
+            var leftBound = _layouter.Rectangles.Min(rectangle => rectangle.Left);
+            var rightBound = _layouter.Rectangles.Max(rectangle => rectangle.Right);
+            var bottomBound = _layouter.Rectangles.Max(rectangle => rectangle.Bottom);
+            var topBound = _layouter.Rectangles.Min(rectangle => rectangle.Top);
             
-            int width = rightBound - leftBound;
-            int height = bottomBound - topBound;
+            var width = rightBound - leftBound;
+            var height = bottomBound - topBound;
 
             return new Size(width, height);
         }
@@ -82,9 +82,9 @@ namespace TagsCloudVisualization.Tests
         {
             PutAllRectangles(sizesOfRectangles);
             
-            foreach (Rectangle rectangle1 in _layouter.Rectangles)
+            foreach (var rectangle1 in _layouter.Rectangles)
             {
-                foreach (Rectangle rectangle2 in _layouter.Rectangles)
+                foreach (var rectangle2 in _layouter.Rectangles)
                 {
                     if (rectangle1 == rectangle2)
                         continue;
@@ -122,9 +122,8 @@ namespace TagsCloudVisualization.Tests
         public void PutNextRectangle_Area_ShouldBeLessThan(IReadOnlyList<Size> sizesOfRectangles, double maxArea)
         {
             PutAllRectangles(sizesOfRectangles);
-            Size boundsSize = GetBoundsSize();
+            var boundsSize = GetBoundsSize();
             double area = boundsSize.Height * boundsSize.Width;
-            Console.WriteLine(area);
             area.Should().BeLessOrEqualTo(maxArea);
         }
     }

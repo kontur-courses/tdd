@@ -21,7 +21,7 @@ namespace TagsCloudVisualization
         
         public Bitmap CreateImage()
         {
-            Bitmap image = CreateBitmap();
+            var image = CreateBitmap();
             DrawRectangles(image);
             DrawCircleInCenterOfImage(image);
             return image;
@@ -29,45 +29,45 @@ namespace TagsCloudVisualization
 
         private Bitmap CreateBitmap()
         {
-            Size imageSize = FindBounds();
+            var imageSize = FindBounds();
             return new Bitmap(imageSize.Width * BoundScale, imageSize.Height * BoundScale);
         }
         
         private Size FindBounds()
         {
-            int leftBound = _layouter.Rectangles.Min(rectangle => rectangle.Left);
-            int rightBound = _layouter.Rectangles.Max(rectangle => rectangle.Right);
-            int bottomBound = _layouter.Rectangles.Max(rectangle => rectangle.Bottom);
-            int topBound = _layouter.Rectangles.Min(rectangle => rectangle.Top);
+            var leftBound = _layouter.Rectangles.Min(rectangle => rectangle.Left);
+            var rightBound = _layouter.Rectangles.Max(rectangle => rectangle.Right);
+            var bottomBound = _layouter.Rectangles.Max(rectangle => rectangle.Bottom);
+            var topBound = _layouter.Rectangles.Min(rectangle => rectangle.Top);
             
-            int width = rightBound - leftBound;
-            int height = bottomBound - topBound;
+            var width = rightBound - leftBound;
+            var height = bottomBound - topBound;
 
             return new Size(width, height);
         }
 
         private void DrawRectangles(Bitmap image)
         {
-            Graphics graphics = Graphics.FromImage(image);
+            var graphics = Graphics.FromImage(image);
             graphics.SmoothingMode = SmoothingMode.HighQuality;
-            foreach (Rectangle rectangle in _layouter.Rectangles)
+            foreach (var rectangle in _layouter.Rectangles)
             {
                 _pen.Color = GetRandomColor();
-                Rectangle offsetRectangle = GetRectangleOffsetToCenter(rectangle, image);
+                var offsetRectangle = GetRectangleOffsetToCenter(rectangle, image);
                 graphics.DrawRectangle(_pen, offsetRectangle);
             }
         }
 
         private Rectangle GetRectangleOffsetToCenter(Rectangle rectangle, Bitmap image)
         {
-            Point rectanglePosition = rectangle.Location - (Size)_layouter.Center + image.Size.Multiply(0.5);
+            var rectanglePosition = rectangle.Location - (Size)_layouter.Center + image.Size.Multiply(0.5);
             return new Rectangle(rectanglePosition, rectangle.Size);
         }
 
         private void DrawCircleInCenterOfImage(Bitmap image)
         {
-            Graphics graphics = Graphics.FromImage(image);
-            Point imageCenter = (Point)image.Size.Multiply(0.5);
+            var graphics = Graphics.FromImage(image);
+            var imageCenter = (Point)image.Size.Multiply(0.5);
             float radius = Math.Max(image.Width, image.Height) / BoundScale;
             _pen.Color = Color.Black;
             graphics.DrawCircle(_pen, imageCenter, radius);
@@ -75,9 +75,9 @@ namespace TagsCloudVisualization
 
         private Color GetRandomColor()
         {
-            int R = 25 + _random.Next() % 215;
-            int G = 25 + _random.Next() % 215;
-            int B = 25 + _random.Next() % 215;
+            var R = 25 + _random.Next() % 215;
+            var G = 25 + _random.Next() % 215;
+            var B = 25 + _random.Next() % 215;
 
             return Color.FromArgb( R, G, B);
         }

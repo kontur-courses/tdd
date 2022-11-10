@@ -12,22 +12,22 @@ namespace TagsCloudVisualization
     {
         public static void Main(string[] args)
         {
-            Point center = new Point(500, 500);
-            ArchimedeanSpiral spiral = new ArchimedeanSpiral( 0, 2.5);
-            CircularCloudLayouter layouter = new CircularCloudLayouter(spiral, center);
-            int amountOfRectangles = 100;
+            var center = new Point(500, 500);
+            var spiral = new ArchimedeanSpiral( 0, 2.5);
+            var layouter = new CircularCloudLayouter(spiral, center);
+            var amountOfRectangles = 100;
 
-            Random random = new Random(1);
-            for (int i = 0; i < amountOfRectangles; i++)
+            var random = new Random(1);
+            for (var i = 0; i < amountOfRectangles; i++)
             {
-                int randomScale = random.Next() % 3 + 1;
-                Size size = new Size(100 * (random.Next() % 3 + 1), 
+                var randomScale = random.Next() % 3 + 1;
+                var size = new Size(100 * (random.Next() % 3 + 1), 
                     100 * (random.Next() % 3 + 1));
                 layouter.PutNextRectangle(size);
             }
 
-            CircularCloudDrawer drawer = new CircularCloudDrawer(layouter);
-            Bitmap image = drawer.CreateImage();
+            var drawer = new CircularCloudDrawer(layouter);
+            var image = drawer.CreateImage();
             IBitmapSaver saver = new HardDriveSaver();
             saver.Save(image, "image");
         }

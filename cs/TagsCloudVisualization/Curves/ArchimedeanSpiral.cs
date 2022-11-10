@@ -17,9 +17,9 @@ namespace TagsCloudVisualization.Curves
 
         public Point GetPoint(double angle)
         {
-            double radius = StartRadius + ExtendRatio * angle;
-            int x = Convert.ToInt32(radius * Math.Cos(angle));
-            int y = Convert.ToInt32(radius * Math.Sin(angle));
+            var radius = StartRadius + ExtendRatio * angle;
+            var x = Convert.ToInt32(radius * Math.Cos(angle));
+            var y = Convert.ToInt32(radius * Math.Sin(angle));
             return new Point(x, y);
         }
     }
