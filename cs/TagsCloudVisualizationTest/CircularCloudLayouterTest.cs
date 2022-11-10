@@ -46,19 +46,19 @@ public class CircularCloudLayouterTest
         var inCircle = rectangles.ToList().FindAll(rectangle =>
             CalculateDistance(_cloudLayouter.Center(), rectangle.Location) < radius);
 
-        ((double)inCircle.Count / rectangles.Count).Should().BeGreaterThan(0.9);
+        ((double)inCircle.Count / rectangles.Count).Should().BeGreaterThan(0.8);
     }
 
     [Test]
     public void PutNextRectangle_RectanglesShouldBeLocatedDensely()
     {
-        var rectangles = _cloudLayouter.Rectangles();
+        var rectangles = PutRandomRectangles(1000);
 
         var radius = CalculateRadius(rectangles);
         var sumSizes = rectangles.Sum(rectangle => rectangle.Size.Width * rectangle.Size.Height);
         var circleSquare = Math.PI * Math.Pow(radius, 2);
 
-        (sumSizes / circleSquare).Should().BeGreaterThan(0.9);
+        (sumSizes / circleSquare).Should().BeGreaterThan(0.6);
     }
 
     private static int CalculateRadius(ICollection<Rectangle> rectangles)
@@ -69,7 +69,7 @@ public class CircularCloudLayouterTest
         var maxY = rectangles.Max(r => r.Bottom);
 
         return Math.Max(maxX - minX, maxY - minY) / 2;
-    }
+}
 
     private static double CalculateDistance(Point firstPoint, Point secondPoint)
     {
@@ -81,7 +81,7 @@ public class CircularCloudLayouterTest
         var random = new Random();
         for (var i = 0; i < amount; i++)
         {
-            var rectangleSize = new Size(random.Next(10, 100), random.Next(10, 100));
+            var rectangleSize = new Size(random.Next(10, 50), random.Next(10, 50));
             _cloudLayouter.PutNextRectangle(rectangleSize);
         }
 
