@@ -45,11 +45,9 @@ namespace TagsCloudVisualization
             int suitableRectIndex = SmallestSuitableFreeRectangleIndex(rectangleSize);
             if (suitableRectIndex != -1)
             {
-                var freeRectangle = ExtractFreeRectangleByIndex(suitableRectIndex);
-                rect.X = freeRectangle.X;
-                rect.Y += freeRectangle.Y;
-                rect.Width = rectangleSize.Width;
-                rect.Height = rectangleSize.Height;
+                rect = CutOutFromFreeRectangleByIndex(suitableRectIndex, rectangleSize);
+                rect.X += center.X;
+                rect.Y += center.Y;
             }
             else
             {
@@ -85,11 +83,23 @@ namespace TagsCloudVisualization
             return index;
         }
 
-        private Rectangle ExtractFreeRectangleByIndex(int index)
+        private Rectangle CutOutFromFreeRectangleByIndex(int index, Size rectangleSize)
         {
-            Rectangle rect = FreeRectangles[index];
+            Rectangle freeRect = FreeRectangles[index];
             FreeRectangles.RemoveAt(index);
-            return rect;
+            if (freeRect.Width > rectangleSize.Width)
+            {
+                FreeRectangles.Add(new Rectangle(freeRect.X + rectangleSize.Width, freeRect.Y,
+                    freeRect.Width - rectangleSize.Width, rectangleSize.Height));
+            }
+
+            if (freeRect.Height > rectangleSize.Height)
+            {
+                FreeRectangles.Add(new Rectangle(freeRect.X, freeRect.Y + rectangleSize.Height,
+                    freeRect.Width, freeRect.Height - rectangleSize.Height));
+            }
+
+            return new Rectangle(freeRect.X, freeRect.Y, rectangleSize.Width, rectangleSize.Height);
         }
 
         private void AddFreeRectangle(Size rectangleSize)

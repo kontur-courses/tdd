@@ -23,7 +23,7 @@ namespace TagsCloudVisualization
         {
             bitmap = new Bitmap(bitmapSize.Width, bitmapSize.Height);
             graphics = Graphics.FromImage(bitmap);
-            pen = new Pen(Color.DarkRed, 1);
+            pen = new Pen(Color.Red, 2);
             this.scale = scale;
         }
 
