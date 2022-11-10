@@ -2,7 +2,6 @@
 using TagsCloudVisualization;
 
 CircularCloudLayouter circularCloudLayouter = new CircularCloudLayouter(new Point(50, 50));
-circularCloudLayouter.PutNextRectangle(new Size(0, 1));
 var btm = new Bitmap(100, 100);
 var g = Graphics.FromImage(btm);
 var strings =
