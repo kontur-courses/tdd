@@ -23,7 +23,7 @@ namespace TagsCloudVisualization.TagCloud
                 || rectangleSize.Width <= 0
                 || rectangleSize.Height <= 0)
             {
-                throw new AggregateException("Передан некорректный размер прямоугольника.");
+                throw new ArgumentException("Передан некорректный размер прямоугольника.");
             }
 
             var spiral = new Spiral(center);
