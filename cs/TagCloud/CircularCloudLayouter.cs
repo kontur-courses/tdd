@@ -1,23 +1,26 @@
-﻿using System.Drawing;
+﻿using System.Collections.Immutable;
+using System.Drawing;
 
 namespace TagCloud;
 
-public class CircularCloudLayouter
+public class CircularCloudLayouter : ICloudLayouter
 {
     private readonly List<Rectangle> rectangles = new();
     private readonly IEnumerator<Point> spiralEnumerator;
 
     public CircularCloudLayouter(Point center)
     {
-        spiralEnumerator = GetSpiralPoints(center, 0.01, 0.01).GetEnumerator();
+        Center = center;
+        spiralEnumerator = GetSpiralPoints(Center, 0.01, 0.01).GetEnumerator();
     }
 
-    public Rectangle[] Rectangles => rectangles.ToArray();
+    public Point Center { get; }
+    public ImmutableArray<Rectangle> Rectangles => rectangles.ToImmutableArray();
 
     public Rectangle PutNextRectangle(Size rectangleSize)
     {
-        if (rectangleSize.Width == 0 || rectangleSize.Height == 0)
-            throw new ArgumentException("Area of rectangle can't be zero");
+        if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+            throw new ArgumentException($"Width and height of the rectangle must be positive, but {rectangleSize}");
 
         var rectangle = CreateNewRectangle(rectangleSize);
         while (rectangles.Any(r => r.IntersectsWith(rectangle)))

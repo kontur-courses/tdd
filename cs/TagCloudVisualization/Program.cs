@@ -10,8 +10,7 @@ void DrawTagCloud(string filename, IEnumerable<Size> sizes)
 }
 
 var squareSizes = Enumerable.Range(1, 200)
-    .Select(n => new Size(30, 30))
-    .ToArray();
+    .Select(n => new Size(-30, 30));
 
 DrawTagCloud("squares.jpg", squareSizes);
 
