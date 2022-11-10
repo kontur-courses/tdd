@@ -69,7 +69,7 @@ public class CircularCloudLayouterTest
         var maxY = rectangles.Max(r => r.Bottom);
 
         return Math.Max(maxX - minX, maxY - minY) / 2;
-}
+    }
 
     private static double CalculateDistance(Point firstPoint, Point secondPoint)
     {
