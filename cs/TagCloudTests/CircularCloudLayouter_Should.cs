@@ -114,7 +114,7 @@ public class CircularCloudLayouter_Should
             rect1.IntersectsWith(rect2).Should().BeFalse();
     }
 
-    [TestCase(1, 25)]
+    [TestCase(1, 20)]
     [TestCase(100, 50)]
     [TestCase(250, 70)]
     [TestCase(500, 75)]
