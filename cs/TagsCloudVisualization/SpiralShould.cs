@@ -64,9 +64,12 @@ namespace TagsCloudVisualization
                 expectedQuantity = spiral.Points.Count + quantity;
             }
 
-            for (int i = 0; i < quantity; i++)
+            var spiralPoints = spiral.GetSpiralPoints();
+            var enumerator = spiralPoints.GetEnumerator();
+
+            for (int i = 0; i < quantity + 2; i++)
             {
-                spiral.AddOneMorePointInSpiral();
+                enumerator.MoveNext();
             }
 
             spiral.Points.Count.Should().Be(expectedQuantity);

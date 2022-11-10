@@ -30,22 +30,19 @@ namespace TagsCloudVisualization
 
         public Rectangle FindFreePlaceOnSpiral(Rectangle newRectange)
         {
-            while (true) // сомневаюсь, что это хорошая идея (наращиваем спираль до бесконечности)
+            foreach (var point in Spiral.GetSpiralPoints())
             {
-                foreach (var point in Spiral.FreePoints)
+                var newLoc = new Point(point.X - newRectange.Width / 2, point.Y - newRectange.Height / 2);
+                newRectange.Location = newLoc;
+
+                if (!IsRectangleIntersectOther(newRectange, Rectangles))
                 {
-                    var newLoc = new Point(point.X - newRectange.Width / 2, point.Y - newRectange.Height / 2);
-                    newRectange.Location = newLoc;
-
-                    if (!IsRectangleIntersectOther(newRectange, Rectangles))
-                    {
-                        Spiral.FreePoints.Remove(point);
-                        return newRectange;
-                    }
+                    Spiral.ReleasePoint(point);
+                    return newRectange;
                 }
-
-                Spiral.AddOneMorePointInSpiral();
             }
+            
+            return Rectangle.Empty;
         }
 
         public Rectangle MoveToCenter(Rectangle rect)

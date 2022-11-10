@@ -1,54 +1,63 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestPlatform.TestHost;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization
 {
     [TestFixture]
     public class CircularCloudShould
     {
-        private static IEnumerable<TestCaseData> SourceLists
+        private static TestCaseData[] SourceLists
         {
             get
             {
-                yield return new TestCaseData(new Size[]
+                return new TestCaseData[]
                 {
-                    new Size(100, 100),
-                    new Size(50, 100),
-                    new Size(50, 50),
-                    new Size(20, 30)
-                });
-
-                yield return new TestCaseData(new Size[]
-                {
-                    new Size(100, 100),
-                    new Size(200, 200),
-                    new Size(100, 50),
-                    new Size(5, 5)
-                });
-
-                yield return new TestCaseData(new Size[]
-                {
-                    new Size(100, 100),
-                    new Size(100, 100),
-                    new Size(100, 100),
-                    new Size(100, 100),
-                    new Size(100, 100),
-                    new Size(100, 100),
-                    new Size(100, 100),
-                });
+                    new TestCaseData(new Size[]
+                    {
+                        new Size(100, 100),
+                        new Size(50, 100),
+                        new Size(50, 50),
+                        new Size(20, 30)
+                    }),
+                    new TestCaseData(new Size[]
+                    {
+                        new Size(100, 100),
+                        new Size(200, 200),
+                        new Size(100, 50),
+                        new Size(5, 5)
+                    }),
+                    new TestCaseData(new Size[]
+                    {
+                        new Size(100, 100),
+                        new Size(100, 100),
+                        new Size(100, 100),
+                        new Size(100, 100),
+                        new Size(100, 100),
+                        new Size(100, 100),
+                        new Size(100, 100),
+                    })
+                };
             }
+        }
+
+        public CircularCloudLayouter layouter;
+
+        [SetUp]
+        public void SetUp()
+        {
+            var center = Point.Empty;
+
+            layouter = new CircularCloudLayouter(center);
         }
 
         [Test]
         public void CircularCloudLayouter_CreateNewLayouter_ShouldInitComposerAndSpiral()
         {
-            var center = Point.Empty;
-
-            var layouter = new CircularCloudLayouter(center);
-
             layouter.Composer.Should().NotBeNull();
             layouter.Composer.Spiral.Should().NotBeNull();
         }
@@ -57,7 +66,6 @@ namespace TagsCloudVisualization
         public void PutNextRectangle_AddSingleRectInCenter_RectLocationInCenter()
         {
             var center = Point.Empty;
-            var layouter = new CircularCloudLayouter(center);
             var rectSize = new Size(100, 100);
 
             var rect = layouter.PutNextRectangle(rectSize);
@@ -69,9 +77,6 @@ namespace TagsCloudVisualization
         [TestCaseSource(nameof(SourceLists))]
         public void PutNextRectangle_AddManyRect_RectsShouldBeAdded(Size[] addRects)
         {
-            var center = Point.Empty;
-            var layouter = new CircularCloudLayouter(center);
-
             var expectedList = new List<Rectangle>();
 
             foreach (var size in addRects)
@@ -86,9 +91,6 @@ namespace TagsCloudVisualization
         [TestCaseSource(nameof(SourceLists))]
         public void PutNextRectangle_AddManyRect_RectsShouldNotIntersect(Size[] addRects)
         {
-            var center = Point.Empty;
-            var layouter = new CircularCloudLayouter(center);
-
             var expectedList = new List<Rectangle>();
 
             foreach (var size in addRects)
@@ -107,8 +109,6 @@ namespace TagsCloudVisualization
         public void PutNextRectangle_AddWrongSize_RectNotAdded(int width, int height)
         {
             var sizeToAdd = new Size(width, height);
-            var center = Point.Empty;
-            var layouter = new CircularCloudLayouter(center);
 
             var nextRect = layouter.PutNextRectangle(sizeToAdd);
 
@@ -133,6 +133,31 @@ namespace TagsCloudVisualization
             }
 
             return false;
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            var testCont = TestContext.CurrentContext;
+            var result = testCont.Result.Outcome.Status;
+
+            if (result == TestStatus.Failed)
+            {
+                var fileName = testCont.Test.ID;
+                SaveFailPicture(layouter.Composer.Rectangles, fileName);
+            }
+        }
+
+        public static void SaveFailPicture(List<Rectangle> rects, string fileName)
+        {
+            var mapper = new Bitmapper(1024, 720);
+
+            var normalRects = mapper.NormolizeToCenterRects(rects);
+            mapper.DrawRectangles(normalRects, fileName);
+
+            Console.WriteLine("Tag cloud visualization saved to file " +
+                mapper.parentDirectory +
+                "\\" + fileName + ".jpg");
         }
     }
 }

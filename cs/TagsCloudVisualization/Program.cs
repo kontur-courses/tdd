@@ -1,42 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
 using System.Security.Cryptography;
 
 namespace TagsCloudVisualization
 {
-    //internal class Program
-    //{
-    //    static void Main(string[] args)
-    //    {
-    //        Console.WriteLine("Hello, World!");
-    //    }
-    //}
-
-    public class CircularCloudLayouter
+    internal class Program
     {
-        public RectangleComposer Composer { get; set; }
-
-        public CircularCloudLayouter(Point center) // в конструкторе это позиция центра облака тегов
+        static void Main(string[] args)
         {
-            var rectangles = new List<Rectangle>();
-            Composer = new RectangleComposer(rectangles, center);
-        }
-
-        public Rectangle PutNextRectangle(Size rectangleSize)
-        {
-            if (CheckSizeAvailable(rectangleSize))
-            {
-                var placedRectangle = Composer.GetNextRectangleInCloud(rectangleSize);
-                return placedRectangle;
-            }
-
-            return Rectangle.Empty;
-        }
-
-        public bool CheckSizeAvailable(Size checkAvailable)
-        {
-            return (checkAvailable.Width > 0 && checkAvailable.Height > 0);
+            Console.WriteLine("Hello, World!");
+          
+            var bitmap = new Bitmapper(1024, 720);
+            bitmap.DrawDefaultPictures();
         }
     }
 }

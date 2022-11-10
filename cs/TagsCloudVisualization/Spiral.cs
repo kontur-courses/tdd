@@ -24,30 +24,46 @@ namespace TagsCloudVisualization
             this.helixPitch = helixPitch;
 
             double x = 0, y = 0;
-            AddPoint(this.center.X, this.center.Y);
+            AddPoint(new Point(this.center.X, this.center.Y));
             y += segmentLength;
-            AddPoint(this.center.X + x, this.center.Y + y);
+            AddPoint(new Point(this.center.X + (int)x, this.center.Y + (int)y));
             lastX = x;
             lastY = y;
         }
 
-        public void AddPoint(double x, double y)
+        public void AddPoint(Point pointToAdd)
         {
-            var addedPoint = new Point((int)x, (int)y);
-            Points.Add(addedPoint);
-            FreePoints.Add(addedPoint);
+            Points.Add(pointToAdd);
+            FreePoints.Add(pointToAdd);
         }
 
-        public void AddOneMorePointInSpiral()
+        public void ReleasePoint(Point pointToRemove)
         {
-            double r = Math.Sqrt(lastX * lastX + lastY * lastY);
-            double tx = helixPitch * lastX + r * lastY;
-            double ty = helixPitch * lastY - r * lastX;
-            double tLen = Math.Sqrt(tx * tx + ty * ty);
-            double k = segmentLength / tLen;
-            lastX -= tx * k;
-            lastY -= ty * k;
-            AddPoint(center.X + lastX, center.Y + lastY);
+            FreePoints.Remove(pointToRemove);
+        }
+
+        public IEnumerable<Point> GetSpiralPoints()
+        {
+            foreach (var freePoint in FreePoints)
+            {
+                yield return freePoint;
+            }
+
+            // Точки из буффера закончились, вычисляем новые
+
+            while (true)
+            {
+                double r = Math.Sqrt(lastX * lastX + lastY * lastY);
+                double tx = helixPitch * lastX + r * lastY;
+                double ty = helixPitch * lastY - r * lastX;
+                double tLen = Math.Sqrt(tx * tx + ty * ty);
+                double k = segmentLength / tLen;
+                lastX -= tx * k;
+                lastY -= ty * k;
+                var newPoint = new Point((int)(center.X + lastX), (int)(center.Y + lastY));
+                AddPoint(newPoint);
+                yield return newPoint;
+            }
         }
     }
 }

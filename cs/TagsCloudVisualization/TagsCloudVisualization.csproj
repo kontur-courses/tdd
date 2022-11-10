@@ -1,10 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
 	  <TargetFramework>netcoreapp3.1</TargetFramework>
 	  <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-	  <RootNamespace>Samples</RootNamespace>
+	  <RootNamespace>TagsCloudVisualization</RootNamespace>
 	  <Nullable>enable</Nullable>
+	  <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +13,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
     <PackageReference Include="NUnit" Version="3.13.3" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.3.0" />
+    <PackageReference Include="System.Drawing.Common" Version="4.5.0" />
   </ItemGroup>
 
 </Project>

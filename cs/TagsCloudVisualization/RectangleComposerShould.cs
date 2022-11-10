@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -12,10 +13,12 @@ namespace TagsCloudVisualization
     [TestFixture]
     public class RectangleComposerShould
     {
+        private CircularCloudLayouter layouter;
+
         [Test]
         public void FindFreePlaceOnSpiral_WhenNoFreePlace_ShouldExpandSpiral()
         {
-            var layouter = new CircularCloudLayouter(Point.Empty);
+            layouter = new CircularCloudLayouter(Point.Empty);
             var beginSpiralLength = layouter.Composer.Spiral.Points.Count;
             var rect = new Rectangle(0, 0, 10, 10);
 
@@ -32,7 +35,7 @@ namespace TagsCloudVisualization
         [TestCase(100, -100)]
         public void MoveToCenter_SingleRectAside_ShouldMoveToCenter(int posX, int posY)
         {
-            var layouter = new CircularCloudLayouter(Point.Empty);
+            layouter = new CircularCloudLayouter(Point.Empty);
             var rect = new Rectangle(posX, posY, 10, 10);
 
             var offsetRect = layouter.Composer.MoveToCenter(rect);
@@ -47,7 +50,7 @@ namespace TagsCloudVisualization
         [Test]
         public void MoveToCenter_RectAsideAndRectInCenter_AsideMoveToCenter()
         {
-            var layouter = new CircularCloudLayouter(Point.Empty);
+            layouter = new CircularCloudLayouter(Point.Empty);
             layouter.PutNextRectangle(new Size(100, 100));
             var rect = new Rectangle(500, 0, 10, 10);
             var expectedRectLocation = new Point(52, 0);
@@ -60,7 +63,7 @@ namespace TagsCloudVisualization
         [Test]
         public void GetNextPointToCenter_ZeroAngle_PointShouldBeZero()
         {
-            var layouter = new CircularCloudLayouter(Point.Empty);
+            layouter = new CircularCloudLayouter(Point.Empty);
             var expectedPoint = new Point(RectangleComposer.stepToCenter, 0);
 
             var nextPoint = layouter.Composer.GetNextPointToCenter(0);
@@ -119,6 +122,25 @@ namespace TagsCloudVisualization
             var intersectFlag = RectangleComposer.IsRectangleIntersectOther(rectangle, rects);
 
             intersectFlag.Should().BeTrue();
+        }
+
+
+        // По ощущениям на этих тестах вывод неверных реализаций вообще не нужен (малоинформативен)
+        // Добавил на всякий случай
+        [TearDown]
+        public void TearDown()
+        {
+            var testCont = TestContext.CurrentContext;
+            var result = testCont.Result.Outcome.Status;
+
+            if (result == TestStatus.Failed)
+            {
+                var fileName = testCont.Test.ID;
+
+                CircularCloudShould.SaveFailPicture(layouter.Composer.Rectangles, fileName);
+            }
+
+            layouter = null;
         }
     }
 }
