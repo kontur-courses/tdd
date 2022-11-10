@@ -1,4 +1,4 @@
-﻿namespace TagsCloudVisualization.Interfaces;
+namespace TagsCloudVisualization.Interfaces;
 
 public interface ITagsCloudVisualization
 {
