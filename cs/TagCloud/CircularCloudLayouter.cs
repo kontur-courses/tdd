@@ -44,18 +44,13 @@ namespace TagCloud
 
         private Point GetNextRectanglePoint(Size rectangleSize)
         {
-            var reactangleCenter = GetCenterPointFor(rectangleSize);
-            Point nextPoint = Reactangles.Count == 0 ? 
-                spiralGenerator.GetNextPoint(reactangleCenter) :
-                spiralGenerator.GetNextPoint(reactangleCenter);
+            var rectangleCenter = GetCenterFor(rectangleSize);
+            Point nextPoint = spiralGenerator.GetNextPoint(rectangleCenter);
             return nextPoint;
         }
 
-        private Point ShiftPointRelativeTo(Point point, Point otherPoint) =>
-            Point.Add(point, new Size(otherPoint));
-
-        private Point GetCenterPointFor(Size rectangleSize) =>
-            new Point(-rectangleSize.Width / 2, -rectangleSize.Height / 2);
+        private Size GetCenterFor(Size rectangleSize) =>
+            new Size(-rectangleSize.Width / 2, -rectangleSize.Height / 2);
 
         public int GetWidth()
         {
