@@ -5,5 +5,6 @@ namespace TagsCloudVisualization.Layouter;
 public interface ICloudLayouter
 {
     Rectangle PutNextRectangle(Size rectangleSize);
-    Rectangle[] GetTagsLayout();
+    IEnumerable<Rectangle> GetRectanglesLayout();
+    void ClearRectanglesLayout();
 }

@@ -1,6 +1,8 @@
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework.Interfaces;
+using TagsCloudVisualization.Extensions;
+using TagsCloudVisualization.Geometry;
 using TagsCloudVisualization.Layouter;
 
 
@@ -10,28 +12,19 @@ namespace TagsCloudVisualization.Tests;
 public class CircularCloudLayouter_Should
 {
     private CircularCloudLayouter layouter;
-    private List<Size> sizes;
 
     [SetUp]
     public void SetUp()
     {
         var point = new Point(0, 0);
         layouter = new CircularCloudLayouter(point);
-        sizes = new List<Size>
-        {
-            new(20, 10),
-            new(10, 20),
-            new(20, 30),
-            new(20, 20),
-            new(50, 30),
-            new(10, 40)
-        };
     }
 
     [TearDown]
     public void TearDown()
     {
-        if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure) return;
+        if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure)
+            return;
         var path = Path.Combine(Directory.GetCurrentDirectory(), "Tests_fail");
         var drawer = new Drawing.CloudDrawer(layouter, path);
         var name = TestContext.CurrentContext.Test.Name + ".bmp";
@@ -57,19 +50,27 @@ public class CircularCloudLayouter_Should
     [TestCase(1, 0, TestName = "zero height")]
     [TestCase(-1, 1, TestName = "negative width")]
     [TestCase(1, -1, TestName = "negative height")]
-    public void PutNextRectangle_ThrowsArgumentException_WithIncorrectSize(int width, int height)
+    public void PutNextRectangle_ThrowsException_WithIncorrectSize(int width, int height)
     {
         Action put = () => layouter.PutNextRectangle(new Size(width, height));
-        put.Should().Throw<ArgumentException>().WithMessage("Size of rectangular must be positive");
+        put.Should().Throw<IncorrectSizeException>();
     }
 
     [Test]
-    public void PutNextRectangle_ShouldPlaceInRightPosition()
+    public void Rectangles_ShouldFormCircularFigure()
     {
-        foreach (var size in sizes)
-            layouter.PutNextRectangle(size);
-        layouter.GetTagsLayout().First().Should().BeEquivalentTo(new Rectangle(0, 0, 20, 10));
-        layouter.GetTagsLayout().Last().Should().BeEquivalentTo(new Rectangle(20, 16, 10, 40));
+        var rnd = new Random(30);
+        var countOfRectangles = 4000;
+        for (var i = 0; i < countOfRectangles; i++)
+            layouter.PutNextRectangle(new Size(rnd.Next(20, 50), rnd.Next(20, 50)));
+        var rectangles = layouter.GetRectanglesLayout().ToList();
+        var lastAddedRectangle = rectangles.Last();
+        var radius = lastAddedRectangle.GetPoints().Select(p => layouter.Center.GetDistance(p)).Max();
+        var circle = new Circle(radius, layouter.Center);
+        var rectanglesOutside = rectangles.Where(rec => !circle.ContainsRectangle(rec)).ToList();
+        if (rectanglesOutside.Count < countOfRectangles * 0.30)
+            rectanglesOutside = rectanglesOutside.Where(rec => !circle.ContainsMostPartOfRectangle(rec, 50)).ToList();
+        rectanglesOutside.Should().BeEmpty();
     }
 
     [Test]
@@ -86,29 +87,27 @@ public class CircularCloudLayouter_Should
     }
 
     [Test]
-    public void ClearLayout_ShouldMakeTagsEmpty()
+    public void ClearLayout_ShouldMakeRectanglesEmpty()
     {
-        foreach (var size in sizes)
-            layouter.PutNextRectangle(size);
-        layouter.ClearLayout();
-        layouter.GetTagsLayout().Should().BeEmpty();
+        layouter.PutNextRectangle(new Size(1, 2));
+        layouter.ClearRectanglesLayout();
+        layouter.GetRectanglesLayout().Should().BeEmpty();
     }
 
     [Test]
     public void Layout_ManyTags_WithoutIntersect()
     {
         var rnd = new Random(30);
-        var tags = new List<Rectangle>();
+        var rectangles = new List<Rectangle>();
         for (var i = 0; i < 400; i++)
-            tags.Add(layouter.PutNextRectangle(new Size(rnd.Next(20, 50), rnd.Next(20, 50))));
-
-        var tag = tags.Where(tag => tags.Where(t => t != tag).Any(t => t.IntersectsWith(tag)));
-        tag.Should().BeEmpty();
+            rectangles.Add(layouter.PutNextRectangle(new Size(rnd.Next(20, 50), rnd.Next(20, 50))));
+        var intersectRectangles = rectangles.Where(tag => rectangles.Any(t => t != tag && t.IntersectsWith(tag)));
+        intersectRectangles.Should().BeEmpty();
     }
 
     [Test]
     public void GetTestLayout_ShouldBeEmpty_WhenInitialized()
     {
-        layouter.GetTagsLayout().Should().BeEmpty();
+        layouter.GetRectanglesLayout().Should().BeEmpty();
     }
 }

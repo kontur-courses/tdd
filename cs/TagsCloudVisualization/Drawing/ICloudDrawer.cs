@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace TagsCloudVisualization.CloudDrawer;
+namespace TagsCloudVisualization.Drawing;
 
 public interface ICloudDrawer
 {

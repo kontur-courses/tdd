@@ -5,21 +5,21 @@ namespace TagsCloudVisualization.Layouter;
 public class CircularCloudLayouter : ICloudLayouter
 {
     public Point Center { get; }
-    private readonly List<Rectangle> tags;
+    private readonly List<Rectangle> rectangles;
     private Point currentPoint;
     private double angle;
 
     public CircularCloudLayouter(Point center)
     {
         Center = center;
-        tags = new List<Rectangle>();
+        rectangles = new List<Rectangle>();
         currentPoint = center;
     }
 
     public Rectangle PutNextRectangle(Size rectangleSize)
     {
         if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
-            throw new ArgumentException("Size of rectangular must be positive");
+            throw new IncorrectSizeException();
         var rectangle = new Rectangle(currentPoint, rectangleSize);
         while (!CanBePlaced(rectangle))
         {
@@ -27,18 +27,18 @@ public class CircularCloudLayouter : ICloudLayouter
             rectangle.Location = currentPoint;
         }
 
-        tags.Add(rectangle);
+        rectangles.Add(rectangle);
         return rectangle;
     }
 
-    public Rectangle[] GetTagsLayout()
+    public IEnumerable<Rectangle> GetRectanglesLayout()
     {
-        return tags.ToArray();
+        return rectangles.ToArray();
     }
 
-    public void ClearLayout()
+    public void ClearRectanglesLayout()
     {
-        tags.Clear();
+        rectangles.Clear();
         angle = 0.0;
     }
 
@@ -51,6 +51,6 @@ public class CircularCloudLayouter : ICloudLayouter
 
     private bool CanBePlaced(Rectangle rectangle)
     {
-        return tags.All(tag => !tag.IntersectsWith(rectangle));
+        return rectangles.All(rec => !rec.IntersectsWith(rectangle));
     }
 }
