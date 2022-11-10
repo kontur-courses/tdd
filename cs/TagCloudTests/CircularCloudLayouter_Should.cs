@@ -8,8 +8,8 @@ namespace TagCloudTests;
 
 public class CircularCloudLayouter_Should
 {
-    private Dictionary<string, CircularCloudLayouter> layouterByTestId = new();
-    
+    private readonly Dictionary<string, CircularCloudLayouter> layouterByTestId = new();
+
     [SetUp]
     public void SetUp()
     {
@@ -17,20 +17,23 @@ public class CircularCloudLayouter_Should
         var testId = TestContext.CurrentContext.Test.ID;
         layouterByTestId[testId] = layouter;
     }
-    
+
     [TearDown]
     public void TearDown()
     {
         if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure) return;
-        
+
         var testId = TestContext.CurrentContext.Test.ID;
-        if (layouterByTestId.ContainsKey(testId))
-        {
-            var layouter = layouterByTestId[testId];
-            var filename = $"{TestContext.CurrentContext.Test.Name}.jpg";
-            layouter.SaveAsImage(filename, new Size(800, 600));
-            Console.WriteLine($"Tag cloud visualization saved to file {filename}");
-        }
+        if (!layouterByTestId.ContainsKey(testId)) return;
+        
+        var filename = $"{TestContext.CurrentContext.Test.Name}.jpg";
+        var directory = new DirectoryInfo("../../../FallingTestsImages");
+        if (!directory.Exists) directory.Create();
+            
+        var layouter = layouterByTestId[testId];
+        new TagCloudDrawer().DrawTagCloud(layouter, filename, directory);
+            
+        Console.WriteLine($"Tag cloud visualization saved to file {directory.FullName}\\{filename}");
     }
 
     [TestCase(0, 0)]
@@ -41,9 +44,9 @@ public class CircularCloudLayouter_Should
     public void Constructor_DontThrowException(int x, int y)
     {
         var point = new Point(x, y);
-        
-        Action act = () => _ = new CircularCloudLayouter(point);
-        
+
+        var act = () => new CircularCloudLayouter(point);
+
         act.Should().NotThrow<Exception>();
     }
 
@@ -56,9 +59,9 @@ public class CircularCloudLayouter_Should
     {
         var layouter = layouterByTestId[TestContext.CurrentContext.Test.ID];
         var size = new Size(width, height);
-        
-        var act = () => _ = layouter.PutNextRectangle(size);
-        
+
+        var act = () => layouter.PutNextRectangle(size);
+
         act.Should().Throw<ArgumentException>()
             .WithMessage($"Width and height of the rectangle must be positive, but {size}");
     }
@@ -69,13 +72,13 @@ public class CircularCloudLayouter_Should
     {
         var layouter = layouterByTestId[TestContext.CurrentContext.Test.ID];
         var size = new Size(10, 10);
-        
+
         var act = () =>
         {
             for (var i = 0; i < rectanglesCount; i++)
                 layouter.PutNextRectangle(size);
         };
-        
+
         act.Should().NotThrow<Exception>();
     }
 
@@ -89,7 +92,7 @@ public class CircularCloudLayouter_Should
         var expectedRectangle = new Rectangle(expectedPosition, size);
 
         var rectangle = layouter.PutNextRectangle(size);
-        
+
         rectangle.Should().BeEquivalentTo(expectedRectangle);
     }
 
@@ -106,7 +109,7 @@ public class CircularCloudLayouter_Should
             layouter.PutNextRectangle(size);
 
         foreach (var rect1 in layouter.Rectangles)
-        foreach (var rect2 in layouter.Rectangles.Where(r => r!= rect1))
+        foreach (var rect2 in layouter.Rectangles.Where(r => r != rect1))
             rect1.IntersectsWith(rect2).Should().BeFalse();
     }
 }

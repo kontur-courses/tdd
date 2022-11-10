@@ -1,23 +1,25 @@
 ﻿using System.Drawing;
 using TagCloud;
 
-void DrawTagCloud(string filename, IEnumerable<Size> sizes)
+void DrawTagCloud(IEnumerable<Size> sizes, string filename)
 {
-    var layouter = new CircularCloudLayouter(new Point(400, 300));
+    var layouter = new CircularCloudLayouter(new Point(0, 0));
     foreach (var size in sizes)
         layouter.PutNextRectangle(size);
-    layouter.SaveAsImage(filename, new Size(800, 600));
+    var directory = new DirectoryInfo("./Visualization");
+    if (!directory.Exists) directory.Create();
+    new TagCloudDrawer().DrawTagCloud(layouter, filename, directory);
 }
 
 var squareSizes = Enumerable.Range(1, 200)
-    .Select(n => new Size(-30, 30));
+    .Select(n => new Size(30, 30));
 
-DrawTagCloud("squares.jpg", squareSizes);
+DrawTagCloud(squareSizes, "squares.jpg");
 
 var rnd = new Random();
 var randomSizes = Enumerable.Range(1, 200)
     .Select(n => new Size(rnd.Next(15, 31), rnd.Next(15, 31)))
     .ToArray();
 
-DrawTagCloud("random.jpg", randomSizes);
-DrawTagCloud("sorted-random.jpg", randomSizes.OrderByDescending(s => s.Width * s.Height));
+DrawTagCloud(randomSizes, "random.jpg");
+DrawTagCloud(randomSizes.OrderByDescending(s => s.Width * s.Height), "sorted-random.jpg");
