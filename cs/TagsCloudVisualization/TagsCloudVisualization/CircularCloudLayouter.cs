@@ -7,22 +7,19 @@ namespace TagsCloudVisualization;
 public class CircularCloudLayouter
 {
     private const float alpha = 0.1f;
-    
+
     private Point _center;
     private List<Rectangle> _rectangles;
     private Spiral _spiral;
 
     public List<Rectangle> Rectangles
     {
-        get
-        {
-            return _rectangles;
-        }
+        get => _rectangles;
     }
-    
+
     public Point Center
     {
-        get { return _center; }
+        get => _center;
     }
 
     public CircularCloudLayouter(Point center)
@@ -37,19 +34,19 @@ public class CircularCloudLayouter
         _spiral.SetNewRandomStartAngle();
         Rectangle rect = new(_center, rectangleSize);
         while (IsIntersectedWithExistingRectangles(rect))
-            UpdateCoord(ref rect);
-        
+            rect = UpdateCoord(rect);
+
         UpdateRectangleList(rect);
         return rect;
     }
 
-    public void UpdateCoord(ref Rectangle r)
+    public Rectangle UpdateCoord(Rectangle r)
     {
         _spiral.IncreaseAngle(Math.Min(r.Width, r.Height));
-        r = new Rectangle(
+        return new Rectangle(
             _spiral.ToCartesian(),
             r.Size
-            );
+        );
     }
 
     public bool IsIntersectedWithExistingRectangles(Rectangle rect)
