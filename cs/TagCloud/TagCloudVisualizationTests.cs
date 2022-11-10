@@ -8,7 +8,7 @@ namespace TagCloud
 {
     public class TagCloudVisualizationTests : TagCloudVisualization
     {
-        [Test]
+        /*[Test]
         public void GetRandomBrush_GenerateRandomBrush()
         {
             var brushes = new HashSet<Brush>();
@@ -17,12 +17,12 @@ namespace TagCloud
                 brushes.Add(GetRandomBrush());
 
             brushes.Count.Should().BeGreaterThan(7);
-        }
+        }*/
 
         [Test]
         public void SaveAsBitmap_TagCloudInFile_Success()
         {
-            var tagCloud = new CircularCloudLayouter(new Point(500, 500));
+            var cloudLayouter = new CircularCloudLayouter(new Point(500, 500));
             var tempBmpFile = "temp.bmp";
 
             File.Delete(tempBmpFile);
@@ -30,8 +30,8 @@ namespace TagCloud
             File.Exists(tempBmpFile).Should().BeFalse($"file {tempBmpFile} was deleted");
 
             for (int i = 200; i > 1; i -= 2)
-                tagCloud.PutNextRectangle(new Size(i, i / 2));
-            SaveAsBitmap(tagCloud, tempBmpFile);
+                cloudLayouter.PutNextRectangle(new Size(i, i / 2));
+            SaveAsBitmap(cloudLayouter.GetTagCloud(), tempBmpFile);
 
             File.Exists(tempBmpFile).Should().BeTrue($"file {tempBmpFile} must be generated");
         }

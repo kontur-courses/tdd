@@ -7,11 +7,10 @@ namespace TagCloud
 {
     public class CircularCloudLayouter
     {
-        public Point Center { get; }
+        private readonly TagCloud tagCloud;
 
-        public List<Rectangle> Reactangles { get; }
+        private readonly SpiralPointGenerator spiralGenerator;
 
-        private SpiralPointGenerator spiralGenerator;
 
         public CircularCloudLayouter() : this(new Point())
         {
@@ -19,22 +18,22 @@ namespace TagCloud
 
         public CircularCloudLayouter(Point center)
         {
-            Center = new Point(center.X, center.Y);
-            Reactangles = new List<Rectangle>();
-            spiralGenerator = new SpiralPointGenerator(Center);
+            tagCloud = new TagCloud(center);
+            spiralGenerator = new SpiralPointGenerator(center);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Height < 1 || rectangleSize.Width < 1)
-                throw new ArgumentException("");
+                throw new ArgumentException("width and height of the rectangle must be greater than zero");
+
             Rectangle rectangle;
             do
             {
                 rectangle = GetNextRectangle(rectangleSize);
             }
-            while (Reactangles.Any(r => r.IntersectsWith(rectangle)));
-            Reactangles.Add(rectangle);
+            while (tagCloud.Rectangles.Any(r => r.IntersectsWith(rectangle)));
+            tagCloud.Rectangles.Add(rectangle);
 
             return rectangle;
         }
@@ -45,27 +44,13 @@ namespace TagCloud
         private Point GetNextRectanglePoint(Size rectangleSize)
         {
             var rectangleCenter = GetCenterFor(rectangleSize);
-            Point nextPoint = spiralGenerator.GetNextPoint(rectangleCenter);
+            var nextPoint = spiralGenerator.GetNextPoint().ShiftTo(rectangleCenter);
             return nextPoint;
         }
 
         private Size GetCenterFor(Size rectangleSize) =>
             new Size(-rectangleSize.Width / 2, -rectangleSize.Height / 2);
 
-        public int GetWidth()
-        {
-            if (Reactangles.Count == 0)
-                return 0;
-
-            return Reactangles.Max(r => r.Right) - Reactangles.Min(r => r.Left);
-        }
-
-        public int GetHeight()
-        {
-            if (Reactangles.Count == 0)
-                return 0;
-
-            return Reactangles.Min(r => r.Bottom) - Reactangles.Max(r => r.Top);
-        }
+        public TagCloud GetTagCloud() => tagCloud;
     }
 }

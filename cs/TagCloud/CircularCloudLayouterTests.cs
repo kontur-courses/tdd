@@ -11,12 +11,12 @@ namespace TagCloud
     public class CircularCloudLayouterTests
     {
         private readonly string failedTestsPictureFolder = "FailedTestsPicture";
-        private CircularCloudLayouter testedTagCloud;
+        private CircularCloudLayouter cloudLayouter;
 
         [SetUp]
         public void PrepareCircularCloudLayouter()
         {
-            testedTagCloud = new CircularCloudLayouter();
+            cloudLayouter = new CircularCloudLayouter();
         }
 
         [TearDown]
@@ -32,77 +32,47 @@ namespace TagCloud
 
             File.WriteAllText(filePath + ".txt", $"The test {context.Test.FullName} failed with an error: {context.Result.Message}" + 
                                                  Environment.NewLine + "StackTrace:" + context.Result.StackTrace);
-            TagCloudVisualization.SaveAsBitmap(testedTagCloud, filePath + ".bmp");
+            TagCloudVisualization.SaveAsBitmap(cloudLayouter.GetTagCloud(), filePath + ".bmp");
 
             TestContext.WriteLine($"Tag cloud visualization saved to file {filePath}");
         }
 
 
 
-        [TestCase(0, 0)]
-        [TestCase(5, 10)]
+        [TestCase(0, 0, TestName = "in zero point")]
+        [TestCase(5, 10, TestName = "in point(5, 10)")]
         public void Ctor_SetCenterPoint(int x, int y)
         {
             var planningCenter = new Point(x, y);
 
-            testedTagCloud = new CircularCloudLayouter(planningCenter);
+            var tagCloud = new CircularCloudLayouter(planningCenter).GetTagCloud();
 
-            testedTagCloud.Center.Should().BeEquivalentTo(planningCenter);
-            testedTagCloud.GetWidth().Should().Be(0);
-            testedTagCloud.GetHeight().Should().Be(0);
+            tagCloud.GetWidth().Should().Be(0);
+            tagCloud.GetHeight().Should().Be(0);
         }
 
-        [TestCase(0, 0)]
-        [TestCase(0, 10)]
-        [TestCase(10, 0)]
-        public void PutNextRectangle_ThrowArgumentException(int width, int height)
+        [TestCase(0, 0, TestName = "width and height are equal to zero")]
+        [TestCase(0, 10, TestName = "width is zero")]
+        [TestCase(10, 0, TestName = "height is zero")]
+        public void PutNextRectangle_ThrowArgumentException_When(int width, int height)
         {
-            Action act = () => testedTagCloud.PutNextRectangle(new Size(width, height));
+            Action act = () => cloudLayouter.PutNextRectangle(new Size(width, height));
 
             act.Should().Throw<ArgumentException>();
-        }
-
-        [TestCase(100)]
-        [TestCase(50)]
-        public void GetWidth_EqualsToTheRectangleWidth(int width)
-        {
-            testedTagCloud.PutNextRectangle(new Size(width, 3));
-
-            testedTagCloud.GetWidth().Should().Be(width);
-        }
-
-        [TestCase(100)]
-        [TestCase(50)]
-        public void GetHeight_EqualsToTheRectangleHeight(int height)
-        {
-            testedTagCloud.PutNextRectangle(new Size(3, height));
-
-            testedTagCloud.GetHeight().Should().Be(height);
-        }
-
-        [TestCase(0, 0, 35, 75)]
-        [TestCase(3, 3, 5, 5)]
-        public void PutNextRectangle_FirstRectangleMustBeInCenter(int centerX, int centerY, int reactWidth, int reactHeight)
-        {
-            testedTagCloud = new CircularCloudLayouter(new Point(centerX, centerY));
-
-            var rectangle = testedTagCloud.PutNextRectangle(new Size(reactWidth, reactHeight));
-            var planningReactLocation = new Point(centerX - reactWidth / 2, centerY - reactHeight / 2);
-
-            rectangle.Location.Should().BeEquivalentTo(planningReactLocation);
         }
 
         [TestCase(0, 0, 350, 750)]
         [TestCase(3, 3, 500, 500)]
         public void PutNextRectangle_ReturnedNotIntersectedRectangle(int centerX, int centerY, int firstRectWidth, int firstRectHeight)
         {
-            testedTagCloud = new CircularCloudLayouter(new Point(centerX, centerY));
+            cloudLayouter = new CircularCloudLayouter(new Point(centerX, centerY));
 
             do
             {
-                var newRect = testedTagCloud.PutNextRectangle(new Size(firstRectWidth, firstRectHeight));
-                testedTagCloud.Reactangles.Where(rect => rect != newRect).All(rect => !rect.IntersectsWith(newRect))
-                    .Should().BeTrue();
+                var rectSize = new Size(firstRectWidth, firstRectHeight);
+                var newRect = cloudLayouter.PutNextRectangle(rectSize);
+                cloudLayouter.GetTagCloud().Rectangles.Where(rect => rect != newRect).
+                    All(rect => !rect.IntersectsWith(newRect)).Should().BeTrue();
 
                 firstRectHeight /= 2;
                 firstRectWidth /= 2;
