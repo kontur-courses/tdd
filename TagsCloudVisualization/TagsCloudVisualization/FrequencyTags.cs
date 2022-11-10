@@ -15,11 +15,6 @@ namespace TagsCloudVisualization
         {
             if (splitStrings == null)
                 throw new ArgumentNullException();
-            for (int i = 0; i < 300; i++)
-            {
-                repeatDictionary[i.ToString()] = 1;
-                Count++;
-            }
             foreach (var splitString in splitStrings)
             {
                 if (!repeatDictionary.ContainsKey(splitString))

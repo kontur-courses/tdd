@@ -14,10 +14,10 @@ namespace TagsCloudVisualization
         public Visualizator(TagCloud tagCloud)
         {
             this.tagCloud = tagCloud ?? throw new ArgumentNullException();
-            tagCloud.Run();
+            tagCloud.CreateTagCloud();
         }
 
-        public void Save(string fileName)
+        public void Save(string fileName,TagCloud tagCloud)
         {
             var srcSize = tagCloud.GetScreenSize();
             var graphics = CreateGraphics(out var g, srcSize);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,26 +11,25 @@ namespace TagsCloudVisualization
 
     internal class TagCloud
     {
-        private int heightSize;
+         
         private FrequencyTags tags;
         private List<TextRectangle> rectangles;
         private Size srcSize;
         private List<Point> emptyPoints ;
 
-        public TagCloud(FrequencyTags tags = null, int heightSize = 1000)
+        public TagCloud(FrequencyTags tags = null)
         {
             emptyPoints = new List<Point>();
-            this.heightSize = heightSize;
             this.tags = tags;
-            srcSize = new Size(heightSize * 2, heightSize);
             rectangles = new List<TextRectangle>();
         }
 
         public List<TextRectangle> GetRectangles() => rectangles;
         public Size GetScreenSize() => srcSize;
 
-        public void Run()
+        public void CreateTagCloud(int heightSize=1000)
         {
+            srcSize = new Size(heightSize* 2, heightSize);
             var arithmeticSpiral = new ArithmeticSpiral(new Point(srcSize / 2));
             var sizeDictionary = new DivideTags((srcSize.Height + srcSize.Width) * 2, tags).sizeDictionary;
             var circularCloudLayouter = new CircularCloudLayouter(sizeDictionary, srcSize);
