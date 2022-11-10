@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:TagsCloudVisualization.WPF"
         mc:Ignorable="d"
         Name="MyWindow"
-        Title="TagsCloud" Height="450" Width="800">
+        Title="TagsCloud" Height="450" Width="800" ResizeMode="NoResize">
         <Grid>
                 <Canvas x:Name="MyCanvas" Background="Black" Focusable="True">
                 </Canvas>               
@@ -21,7 +21,7 @@
                                         <Label Content="Step"/>
                                         <Slider x:Name="StepSlider" Minimum="1" Maximum="20" 
                                                 TickPlacement = "BottomRight" ValueChanged="StepSliderChanged"/>
-                                        <TextBox x:Name="TbSteps" TextChanged="Clear"/>
+                                        <TextBox x:Name="TbSteps" Text="1" TextChanged="Clear"/>
                                 </StackPanel>
                                 <StackPanel Width="100">
                                         <Label Content="Speed"/>
@@ -29,6 +29,10 @@
                                                 TickPlacement = "BottomRight"/>
                                         <TextBox x:Name="TbSpeed" Text="{Binding ElementName=SpeedSlider, Path=Value,
                                          UpdateSourceTrigger=PropertyChanged}" TextChanged="UpdateInterval"/>
+                                </StackPanel>
+                                <StackPanel>
+                                        <Label Content="Rectangles Count"></Label>
+                                        <TextBox x:Name="RectanglesCountTb" TextChanged="UpdateRectanglesCount"></TextBox>
                                 </StackPanel>
                                 <CheckBox Name="PrintRectangles" Content="Draw Rectangles?"
                                           IsChecked="True" Click="Clear">

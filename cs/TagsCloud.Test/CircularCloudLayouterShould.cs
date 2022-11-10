@@ -64,6 +64,7 @@ namespace TagsCloud.Test
         }
 
         [Test]
+        [Ignore("Incorrect test for checking TearDown and ErrorHandler")]
         public void PutNextRectangle_IncorrectValues_ErrorPaint()
         {
             for (var index = 0; index < 10; index++)

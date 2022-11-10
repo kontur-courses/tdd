@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -12,7 +13,6 @@ using Brush = System.Windows.Media.Brush;
 using Brushes = System.Windows.Media.Brushes;
 using Color = System.Windows.Media.Color;
 using Point = System.Drawing.Point;
-using Size = System.Drawing.Size;
 
 namespace TagsCloudVisualization.WPF
 {
@@ -20,13 +20,17 @@ namespace TagsCloudVisualization.WPF
     {
         private readonly Random random = new();
         private Brush customColor = Brushes.Beige;
+        private int rectanglesCount = DefaultRectanglesCount;
         private readonly DispatcherTimer timer = new();
+        
         private const double DefaultDpi = 96.0;
+        private const int DefaultRectanglesCount = 100;
 
         private readonly string[] words;
         private const string PathToWords = "../../../Words.txt";
 
         private ICloudLayouter<Rectangle>? circularCloud;
+        private List<UIElement> uiElements = new();
         
         public MainWindow()
         {
@@ -36,13 +40,15 @@ namespace TagsCloudVisualization.WPF
             MyCanvas.Focus();
             timer.Interval = TimeSpan.FromSeconds(0);
             timer.Start();
+
+            RectanglesCountTb.Text = rectanglesCount.ToString();
         }
 
         private static string[] GetWordsFromTxt(string path) => File.ReadAllLines(path);
 
         private void DrawRectangle(object? sender, EventArgs e)
         {
-            if (circularCloud is null)
+            if (circularCloud is null || uiElements.Count >= rectanglesCount)
                 return;
             
             customColor = GetRandomColor();
@@ -64,6 +70,7 @@ namespace TagsCloudVisualization.WPF
             
             Canvas.SetLeft(figure, rectangleFromCloud.X);
             Canvas.SetTop(figure, rectangleFromCloud.Y);
+            uiElements.Add(figure);
             
             MyCanvas.Children.Add(figure);
         }
@@ -112,6 +119,7 @@ namespace TagsCloudVisualization.WPF
         private void Clear(object sender, RoutedEventArgs e)
         {
             UpdateCircularCloudFromTextBox();
+            uiElements = new List<UIElement>();
             MyCanvas.Children.Clear();
         }
 
@@ -133,6 +141,7 @@ namespace TagsCloudVisualization.WPF
                 speed = 0.1;
             
             timer.Interval = TimeSpan.FromSeconds(speed);
+            uiElements = new List<UIElement>();
             MyCanvas.Children.Clear();
         }
 
@@ -184,31 +193,12 @@ namespace TagsCloudVisualization.WPF
             using var stm = File.Create(filename);
             enc.Save(stm);
         }
-    }
 
-    internal static class SizeCreator
-    {
-        private static readonly Random Random = new();
-        private const int BorderLength = 5;
-
-        public static Size GetRandomRectangleSize(int randomFrom, int randomTo) =>
-            new(Random.Next(randomFrom, randomTo), Random.Next(randomFrom, randomTo));
-
-        public static Size GetRectangleSize(TextBox tb)
+        private void UpdateRectanglesCount(object sender, TextChangedEventArgs e)
         {
-#pragma warning disable CS0618
-            var formattedText = new FormattedText(tb.Text, CultureInfo.CurrentUICulture,
-#pragma warning restore CS0618
-                FlowDirection.LeftToRight,
-                new Typeface(tb.FontFamily, 
-                    tb.FontStyle, 
-                    tb.FontWeight, 
-                    tb.FontStretch),
-                tb.FontSize,
-                Brushes.Black, 
-                new NumberSubstitution());
-
-            return new Size((int) formattedText.Width + BorderLength, (int) formattedText.Height + BorderLength);
+            var tryParse = int.TryParse(RectanglesCountTb.Text, out var count);
+            if (tryParse)
+                rectanglesCount = count;
         }
     }
 }
