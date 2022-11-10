@@ -10,9 +10,9 @@ using TagsCloudVisualization;
 namespace TagsCloudVisualizationTests;
 
 [TestFixture]
-public class Tests
+public class CircularCloudLayouter_Test
 {
-    private CircularCloudLayouter? _layouter;
+    private CircularCloudLayouter _layouter;
 
     [SetUp]
     public void Setup()
@@ -35,23 +35,25 @@ public class Tests
     [TestCase(5, -1, TestName = "Negative height")]
     public void PutNextRectangle_NotPositiveOrSingleSideSize_EmptyRectangle(int width, int height)
     {
-        var rectangle = _layouter!.PutNextRectangle(new Size(0, 0));
+        var rectangle = _layouter.PutNextRectangle(new Size(0, 0));
         rectangle.IsEmpty.Should().BeTrue();
     }
 
     [Test]
     public void PutNextRectangle_ZeroSize_EmptyRectangle()
     {
-        var rectangle = _layouter!.PutNextRectangle(new Size(0, 0));
+        var rectangle = _layouter.PutNextRectangle(new Size(0, 0));
         rectangle.IsEmpty.Should().BeTrue();
     }
 
-    [TestCase(4, 4)]
-    [TestCase(5, 7)]
-    [TestCase(11, 1)]
-    public void PutNextRectangle_RightSize_RectangleSizeEqual(int width, int height)
+    [Test]
+    public void PutNextRectangle_RightSize_RectangleSizeEqual()
     {
-        var rectangle = _layouter!.PutNextRectangle(new Size(width, height));
+        var random = new Random();
+        var width = random.Next(1, 100);
+        var height = random.Next(1, 100);
+
+        var rectangle = _layouter.PutNextRectangle(new Size(width, height));
 
         using (new AssertionScope())
         {
@@ -81,8 +83,8 @@ public class Tests
     [TestCase(5, 7)]
     public void PutNextRectangle_TwoRectangles_NotIntersect(int width, int height)
     {
-        var firstRectangle = _layouter!.PutNextRectangle(new Size(width, height));
-        var secondRectangle = _layouter!.PutNextRectangle(new Size(width, height));
+        var firstRectangle = _layouter.PutNextRectangle(new Size(width, height));
+        var secondRectangle = _layouter.PutNextRectangle(new Size(width, height));
 
         firstRectangle
             .IntersectsWith(secondRectangle)
@@ -100,10 +102,9 @@ public class Tests
         {
             var newX = random.Next(40, 100);
             var newY = random.Next(40, 100);
-            rectangles.Add(_layouter!.PutNextRectangle(new Size(newX, newY)));
-            
+            rectangles.Add(_layouter.PutNextRectangle(new Size(newX, newY)));
         }
-        
+
         foreach (var rectangle in rectangles)
         {
             rectangles.Where(rect => rect != rectangle)
