@@ -1,10 +1,10 @@
-using FluentAssertions;
-using NUnit.Framework.Interfaces;
 using System.Drawing.Drawing2D;
+using FluentAssertions;
 using NUnit.Framework;
-using TagCloud;
+using NUnit.Framework.Interfaces;
+using TagsCloudVisualization;
 
-namespace TagCloudTests;
+namespace TagsCloudVisualizationTests;
 
 public class CircularCloudLayouterTests
 {
@@ -56,10 +56,10 @@ public class CircularCloudLayouterTests
     {
         var layouter = new CircularCloudLayouter(this.layouter.Center, int.MaxValue, int.MaxValue);
         var action = () =>
-                {
-                    for (var i = 0; i < 100; i++)
-                        layouter.PutNextRectangle(new Size(int.MaxValue, int.MaxValue));
-                };
+        {
+            for (var i = 0; i < 100; i++)
+                layouter.PutNextRectangle(new Size(int.MaxValue, int.MaxValue));
+        };
         action.Should().Throw<Exception>().WithMessage("There is no place for the rectangle");
     }
 
@@ -130,7 +130,7 @@ public class CircularCloudLayouterTests
 
         var rects = layouter.Rectangles;
         var rectangleArea = rects.Select(x => x.Width * x.Height).Sum();
-        var horizontalRadius = Math.Abs(rects.Max(x => x.Right) - rects.Min(x => x.Left)) / 2 ;
+        var horizontalRadius = Math.Abs(rects.Max(x => x.Right) - rects.Min(x => x.Left)) / 2;
         var verticalRadius = Math.Abs(rects.Max(x => x.Bottom) - rects.Min(x => x.Top)) / 2;
         var boundingElipseArea = Math.PI * horizontalRadius * verticalRadius;
         (Math.Abs(rectangleArea / boundingElipseArea - 1)).Should().BeLessThan(accuracy);
@@ -148,14 +148,15 @@ public class CircularCloudLayouterTests
         var verticalRadius = Math.Abs(rects.Max(x => x.Bottom) - rects.Min(x => x.Top)) / 2;
         var centers = rects.Select(r => new Point(r.X + r.Width / 2, r.Y + r.Height / 2));
 
-        var distance = (Point p) => Math.Sqrt(Math.Pow(p.X - layouter.Center.X, 2) + Math.Pow(p.Y - layouter.Center.Y, 2));
+        var distance = (Point p) =>
+            Math.Sqrt(Math.Pow(p.X - layouter.Center.X, 2) + Math.Pow(p.Y - layouter.Center.Y, 2));
         centers.All(center => distance(center) < Math.Max(horizontalRadius, verticalRadius)).Should().BeTrue();
     }
 
     [Test]
     public void Clear_Empty_AfterClear()
     {
-        for (int i = 0; i < 13; i++)
+        for (var i = 0; i < 5; i++)
             layouter.PutNextRectangle(new Size(50, 50));
 
         layouter.Clear();

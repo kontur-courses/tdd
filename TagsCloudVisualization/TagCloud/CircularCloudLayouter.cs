@@ -1,7 +1,6 @@
 ﻿using System.Drawing;
-using TagsCloudVisualization;
 
-namespace TagCloud;
+namespace TagsCloudVisualization;
 
 public class CircularCloudLayouter
 {
@@ -9,9 +8,9 @@ public class CircularCloudLayouter
     private readonly List<Rectangle> rectangles = new List<Rectangle>();
     public IReadOnlyList<Rectangle> Rectangles => rectangles;
     private PolarPoint CurrentPosition { get; set; }
-    private List<(PolarPoint, PolarPoint)> unusedRanges = new List<ValueTuple<PolarPoint, PolarPoint>> ();
-    public double Density { get; private set; }
-    public double AngleStep { get; private set; }
+    private List<(PolarPoint, PolarPoint)> unusedRanges = new List<ValueTuple<PolarPoint, PolarPoint>>();
+    public double Density { get; }
+    public double AngleStep { get; }
 
     public CircularCloudLayouter(Point center, double density = 0.01, double angleStep = 0.01)
     {
@@ -24,75 +23,82 @@ public class CircularCloudLayouter
     {
         if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
             throw new ArgumentException("Size can't be negative");
-
         foreach (var polarPoint in GetAllFreeRanges())
         {
-            if (TryAddRectangle(polarPoint, rectangleSize))
-                return rectangles.Last();
+            if (TryAddRectangle(polarPoint, rectangleSize, out var rectangle))
+                return rectangle;
         }
-        
+
         throw new Exception("There is no place for the rectangle");
     }
 
-    private bool TryAddRectangle(PolarPoint pointInPolar, Size rectangleSize)
+    private bool TryAddRectangle(PolarPoint pointInPolar, Size rectangleSize, out Rectangle outRectangle)
     {
         var rectangleCenter = (Point)pointInPolar;
-        var position = new Point(Center.X + rectangleCenter.X - rectangleSize.Width / 2, 
+        var position = new Point(Center.X + rectangleCenter.X - rectangleSize.Width / 2,
             Center.Y + rectangleCenter.Y - rectangleSize.Height / 2);
 
         var rectangle = new Rectangle(position, rectangleSize);
         if (HasOverlapWith(rectangle))
+        {
+            outRectangle = new Rectangle();
             return false;
-        
+        }
+
         rectangles.Add(rectangle);
-        CurrentPosition = new PolarPoint(pointInPolar.Radius, pointInPolar.Angle);
-        RemoveOverlapedFromUnused();
+        outRectangle = rectangle;
+        CurrentPosition = pointInPolar;
+        RemoveOverlappedFromUnused();
         return true;
     }
-    
+
     private IEnumerable<PolarPoint> GetAllFreeRanges()
     {
         return new List<IEnumerable<PolarPoint>>
-            { 
-                unusedRanges.SelectMany(range => GenerateArchimedeanSpiralRadius(range.Item1, range.Item2, 0, Density, AngleStep)),
-                GenerateArchimedeanSpiralRadius(CurrentPosition, null, 0, Density, AngleStep)
-            }.SelectMany(x => x);
+        {
+            unusedRanges.SelectMany(range =>
+                GenerateArchimedeanSpiralRadius(range.Item1, range.Item2, 0, Density, AngleStep)),
+            GenerateArchimedeanSpiralRadius(CurrentPosition, null, 0, Density, AngleStep)
+        }.SelectMany(x => x);
     }
 
-    private void RemoveOverlapedFromUnused()
+    private void RemoveOverlappedFromUnused()
     {
-        var newRanges = new List<ValueTuple<PolarPoint, PolarPoint>> ();
-        
-        var isLastOverlaped = true;
-        PolarPoint start = default, end = default;
+        var newRanges = new List<ValueTuple<PolarPoint, PolarPoint>>();
         foreach (var range in unusedRanges)
-        {
-            foreach (var polarPoint in GenerateArchimedeanSpiralRadius(range.Item1, range.Item2, 0, Density, AngleStep))
-            {
-                var point = (Point)polarPoint;
-                if (HasOverlapWith(new Rectangle(point.X - 1, point.Y - 1, 2, 2)))
-                {
-                    if (!isLastOverlaped)
-                        newRanges.Add((start, end));
-                    isLastOverlaped = true;
-                }
-                else
-                {
-                    if (isLastOverlaped)
-                        start = polarPoint;
-                    else
-                        end = polarPoint;
-                    isLastOverlaped = false;
-                }
-            }
-        }
-
+            RemoveOverlappedForRange(range, newRanges);
         unusedRanges = newRanges;
     }
-    
+
+    private void RemoveOverlappedForRange(ValueTuple<PolarPoint, PolarPoint> range,
+        ICollection<ValueTuple<PolarPoint, PolarPoint>> ranges)
+    {
+        var isLastOverlapped = true;
+        PolarPoint start = default, end = default;
+        foreach (var polarPoint in GenerateArchimedeanSpiralRadius(range.Item1, range.Item2, 0, Density, AngleStep))
+        {
+            var point = (Point)polarPoint;
+            var isOverlapped = HasOverlapWith(new Rectangle(point.X - 1, point.Y - 1, 3, 3));
+            if (isOverlapped)
+            {
+                if (!isLastOverlapped)
+                    ranges.Add((start, end));
+            }
+            else
+            {
+                if (isLastOverlapped)
+                    start = polarPoint;
+                else
+                    end = polarPoint;
+            }
+
+            isLastOverlapped = isOverlapped;
+        }
+    }
+
     public bool HasOverlapWith(Rectangle rectangle)
     {
-        foreach(var existingRectangle in rectangles)
+        foreach (var existingRectangle in rectangles)
         {
             if (existingRectangle.IntersectsWith(rectangle))
                 return true;
@@ -101,7 +107,8 @@ public class CircularCloudLayouter
         return false;
     }
 
-    private static IEnumerable<PolarPoint> GenerateArchimedeanSpiralRadius(PolarPoint start, PolarPoint? end, double offset, double density , double angleStep)
+    private static IEnumerable<PolarPoint> GenerateArchimedeanSpiralRadius(PolarPoint start, PolarPoint? end,
+        double offset, double density, double angleStep)
     {
         /** Archimedean Spiral  
          * Formula: r = a + b * θ,
@@ -111,10 +118,10 @@ public class CircularCloudLayouter
          * r – radius in polar system
          */
         end ??= new PolarPoint(int.MaxValue / 2, 0);
-        
+
         var nextAngle = start.Angle;
         var nextRadius = start.Radius;
-        while (nextRadius < end.Value.Radius)
+        while (nextRadius <= end.Value.Radius)
         {
             yield return new PolarPoint(nextRadius, nextAngle);
             nextRadius = offset + density * nextAngle;
