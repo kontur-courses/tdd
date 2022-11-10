@@ -1,8 +1,8 @@
 using System.Drawing;
 
-namespace TagsCloud
+namespace TagsCloud.Creators
 {
-    internal interface IPlacer<out T>
+    internal interface ICreator<out T>
     {
         T Place(Point point, Size size);
     }

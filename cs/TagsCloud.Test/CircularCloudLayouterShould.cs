@@ -1,6 +1,10 @@
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework.Interfaces;
+using TagsCloud.CloudLayouter.Implementation;
+using TagsCloud.Painter;
+using TagsCloud.Test.ImageFromTestSaver;
+using TagsCloud.Test.ImageFromTestSaver.Implementation;
 
 namespace TagsCloud.Test
 {

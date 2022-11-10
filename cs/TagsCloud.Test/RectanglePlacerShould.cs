@@ -1,21 +1,22 @@
 using System.Drawing;
+using TagsCloud.Creators.Implementation;
 
 namespace TagsCloud.Test
 {
     [TestFixture]
     public class RectanglePlacerShould
     {
-        private RectanglePlacer rectanglePlacer;
+        private RectangleCreator rectangleCreator;
 
         [SetUp]
         public void SetUp()
         {
-            rectanglePlacer = new RectanglePlacer();
+            rectangleCreator = new RectangleCreator();
         }
 
         [TestCaseSource(typeof(TestData), nameof(TestData.DefaultPointsAndSizeForPlace))]
         [Parallelizable(scope: ParallelScope.All)] 
         public Rectangle Place_DefaultPointsAndSize_MiddlePlace(int x, int y, int width, int height) =>
-            rectanglePlacer.Place(new Point(x, y), new Size(width, height));
+            rectangleCreator.Place(new Point(x, y), new Size(width, height));
     }
 }

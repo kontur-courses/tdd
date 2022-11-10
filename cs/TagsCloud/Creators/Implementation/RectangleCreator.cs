@@ -1,8 +1,8 @@
 using System.Drawing;
 
-namespace TagsCloud
+namespace TagsCloud.Creators.Implementation
 {
-    public class RectanglePlacer : IPlacer<Rectangle>
+    public class RectangleCreator : ICreator<Rectangle>
     {
         public Rectangle Place(Point point, Size size)
         {

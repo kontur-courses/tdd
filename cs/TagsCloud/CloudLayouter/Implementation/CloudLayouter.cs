@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace TagsCloud
+namespace TagsCloud.CloudLayouter.Implementation
 {
     public abstract class CloudLayouter<T> : ICloudLayouter<T>
     {

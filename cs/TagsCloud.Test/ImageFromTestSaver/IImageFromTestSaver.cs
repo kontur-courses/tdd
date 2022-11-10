@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace TagsCloud
+namespace TagsCloud.Test.ImageFromTestSaver
 {
     public interface IImageFromTestSaver
     {

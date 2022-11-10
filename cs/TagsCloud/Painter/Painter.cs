@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace TagsCloud
+namespace TagsCloud.Painter
 {
     public abstract class Painter<T>
     {

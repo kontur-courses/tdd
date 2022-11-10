@@ -1,8 +1,8 @@
 using System.Drawing;
 
-namespace TagsCloud
+namespace TagsCloud.FigurePatterns
 {
-    internal interface IFigurePattern
+    internal interface IFigurePatternPointProvider
     {
         Point GetNextPoint();
         void Restart();

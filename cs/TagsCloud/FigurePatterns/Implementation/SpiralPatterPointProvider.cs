@@ -1,8 +1,8 @@
 using System.Drawing;
 
-namespace TagsCloud
+namespace TagsCloud.FigurePatterns.Implementation
 {
-    public class SpiralPattern : IFigurePattern
+    public class SpiralPatterPointProvider : IFigurePatternPointProvider
     {
         public double Step
         {
@@ -20,7 +20,7 @@ namespace TagsCloud
         private double angle;
         private readonly IEnumerator<Point> enumerator;
 
-        public SpiralPattern(Point center, double step)
+        public SpiralPatterPointProvider(Point center, double step)
         {
             this.center = center;
             Step = step;

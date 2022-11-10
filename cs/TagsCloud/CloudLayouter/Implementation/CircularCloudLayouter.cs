@@ -1,16 +1,20 @@
 using System.Drawing;
+using TagsCloud.Creators;
+using TagsCloud.Creators.Implementation;
+using TagsCloud.FigurePatterns;
+using TagsCloud.FigurePatterns.Implementation;
 
-namespace TagsCloud
+namespace TagsCloud.CloudLayouter.Implementation
 {
     public sealed class CircularCloudLayouter : CloudLayouter<Rectangle>
     {
-        private readonly IPlacer<Rectangle> placer;
-        private readonly IFigurePattern figurePattern;
+        private readonly ICreator<Rectangle> creator;
+        private readonly IFigurePatternPointProvider figurePatternPointProvider;
 
         public CircularCloudLayouter(Point center, double figureStep = 1)
         {
-            figurePattern = new SpiralPattern(center, figureStep);
-            placer = new RectanglePlacer();
+            figurePatternPointProvider = new SpiralPatterPointProvider(center, figureStep);
+            creator = new RectangleCreator();
         }
 
         public override Rectangle PutNextRectangle(Size rectangleSize)
@@ -27,12 +31,12 @@ namespace TagsCloud
         {
             while (true)
             {
-                var point = figurePattern.GetNextPoint();
-                var figure = placer.Place(point, size);
+                var point = figurePatternPointProvider.GetNextPoint();
+                var figure = creator.Place(point, size);
                 if (Figures.Any(fig => fig.IntersectsWith(figure)))
                     continue;
 
-                figurePattern.Restart();
+                figurePatternPointProvider.Restart();
                 return figure;
             }
         }

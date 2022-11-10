@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Drawing.Imaging;
 
-namespace TagsCloud
+namespace TagsCloud.Test.ImageFromTestSaver.Implementation
 {
     public class ErrorHandler : IImageFromTestSaver
     {
