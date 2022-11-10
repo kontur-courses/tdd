@@ -25,15 +25,14 @@ public class SpiralPointGenerator_Should
 
         var points = generator.Generate(new Point(0, 0)).Take(600).ToArray();
         var intersectXAxe = points
-            .Skip(1)
-            .Select((point, i) => (point, r: i + 2))
-            .Where(t => t.point.Y == 0);
+            .Where(p => p.Y == 0)
+            .Select((p, i) => (x: p.X, r: i * 4));
         var intersectYAxe = points
-            .Skip(2)
-            .Select((point, i) => (point, r: i + 3))
-            .Where(t => t.point.X == 0);
+            .Where(p => p.X == 0)
+            .Select((p, i) => (y: p.Y, r: i * 4 - 2))
+            .Skip(1);
 
-        intersectXAxe.Should().AllSatisfy(t => Math.Abs(t.point.X).Should().Be(t.r));
-        intersectYAxe.Should().AllSatisfy(t => Math.Abs(t.point.Y).Should().Be(t.r));
+        intersectXAxe.Should().AllSatisfy(t => Math.Abs(t.x).Should().Be(t.r));
+        intersectYAxe.Should().AllSatisfy(t => Math.Abs(t.y).Should().Be(t.r));
     }
 }
