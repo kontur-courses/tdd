@@ -12,35 +12,49 @@ public class CircularCloudLayouter_Tests
 {
     private static readonly Size CANVAS_SIZE = new Size(250, 250);
     private static readonly Point CENTER = new Point(CANVAS_SIZE.Width / 2, CANVAS_SIZE.Height / 2);
-    
-    private CircularCloudLayouter layouter;
-    private Random random;
-    
-    [SetUp]
-    public void SetUpTest()
+
+    private static Dictionary<string, CircularCloudLayouter> Layouters = new ();
+    private static Dictionary<string, Func<Size>> SizeSelectors = new ();
+    private static Dictionary<string, List<Rectangle>> RectangleLists = new ();
+
+    private static void CreateLayouter(Func<Size> sizeSelector)
     {
-        layouter = new CircularCloudLayouter(CENTER);
-        random = new Random(123);
-    }
+        var name = TestContext.CurrentContext.Test.FullName;
+        Layouters[name] = new CircularCloudLayouter(CENTER);
+        SizeSelectors[name] = sizeSelector;
+        RectangleLists[name] = new List<Rectangle>();
+    } 
+    
+    private static Rectangle GetNextRectangle()
+    {
+        var name = TestContext.CurrentContext.Test.FullName;
+        var rectangleSize = SizeSelectors[name]();
+        var rectangle = Layouters[name].PutNextRectangle(rectangleSize);
+        RectangleLists[name].Add(rectangle);
+        return rectangle;
+    } 
 
     [TearDown]
     public void TearDownTest()
     {
         if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure)
             return;
-
-        var path = Environment.CurrentDirectory + "\\FailedTests\\";
-        if (!Directory.Exists(path))
-            Directory.CreateDirectory(path);
-
+    
+        var path = Environment.CurrentDirectory;
+        var folderName = "FailedTests";
         var timestamp = DateTime.Now;
         var filename = $"{TestContext.CurrentContext.Test.Name}_{timestamp:yyyy-MM-dd-HH-mm-ss}.png";
-        var fullpath = path + filename;
+    
+        if (!Directory.Exists(path))
+            Directory.CreateDirectory(path);
         
-        var image = TagCloudImageGenerator.GenerateImage(layouter.Rectangles.ToArray(), CANVAS_SIZE);
-        image.Save(fullpath, ImageFormat.Png);
+        var fullFilePath = Path.Combine(path, folderName, filename);
+        var rectangles = RectangleLists[TestContext.CurrentContext.Test.FullName];
         
-        Console.WriteLine($"Image of generated tag cloud saved as {fullpath}");
+        var image = TagCloudImageGenerator.GenerateImage(rectangles.ToArray(), CANVAS_SIZE);
+        image.Save(fullFilePath, ImageFormat.Png);
+        
+        Console.WriteLine($"Image of generated tag cloud saved as {fullFilePath}");
     }
     
     [TestCase(0, 0, Description = "Zero coordinates")]
@@ -56,125 +70,118 @@ public class CircularCloudLayouter_Tests
     [TestCase(-1, -1)]
     public void PutNextRectangle_ShouldThrowArgumentException_OnNegativeSize(int width, int height)
     {
-        Assert.Throws<ArgumentException>(() => layouter.PutNextRectangle(new Size(width, height)));
+        CreateLayouter(() => new Size(width, height));
+        Assert.Throws<ArgumentException>(() => GetNextRectangle());
     }
 
     [Test]
     public void PutNextRectangle_ShouldPlaceFirstRectangleInCenter()
     {
-        Assert.That(layouter.PutNextRectangle(new Size(10, 10)),
-            Is.EqualTo(new Rectangle(new Point(CENTER.X - 5, CENTER.X - 5), new Size(10, 10))));
+        var expectedSize = new Size(10, 10);
+        var expectedLocation = new Point(CENTER.X - expectedSize.Width / 2, CENTER.Y - expectedSize.Height / 2);
+        var expectedRectangle = new Rectangle(expectedLocation, expectedSize);
+
+        CreateLayouter(() => new Size(10, 10));
+        var actualRectangle = GetNextRectangle();
+        
+        Assert.That(actualRectangle, Is.EqualTo(expectedRectangle));
     }
     
-    [TestCase(1, Description = "One rectangle should not intersect")]
-    [TestCase(10, Description = "Ten rectangles should not intersect")]
-    [TestCase(100, Description = "A hundred rectangles should not intersect")]
-    [TestCase(1000, Description = "A thousand rectangles should not intersect")]
-    public void PutNextRectangle_RectanglesShouldNotIntersect_WithSameRectangles(int count)
+    [Test(Description = "A thousand rectangles should not intersect")]
+    public void PutNextRectangle_RectanglesShouldNotIntersect_WithSameRectangles()
     {
-        AssertRectanglesDontIntersect(count, () => new Size(10, 10));
+        var sizeSelector = () => new Size(10, 10);
+        AssertRectanglesDontIntersect(1000, sizeSelector);
     }
     
-    [TestCase(1, Description = "One rectangle should not intersect")]
-    [TestCase(10, Description = "Ten rectangles should not intersect")]
-    [TestCase(100, Description = "A hundred rectangles should not intersect")]
-    [TestCase(1000, Description = "A thousand rectangles should not intersect")]
-    public void PutNextRectangle_RectanglesShouldNotIntersect_WithRandomRectangles(int count)
+    [Test(Description = "A thousand rectangles should not intersect")]
+    public void PutNextRectangle_RectanglesShouldNotIntersect_WithRandomRectangles()
     {
-        AssertRectanglesDontIntersect(count, () => new Size(random.Next(1, 11), random.Next(1, 11)));
+        var random = new Random(123);
+        var sizeSelector = () => new Size(random.Next(1, 11), random.Next(1, 11));
+        AssertRectanglesDontIntersect(1000, sizeSelector);
+    }
+    
+    [TestCase(Description = "A thousand rectangles should create a circle")]
+    public void PutNextRectangle_ShouldCreateATightCircleAroundCenter_WithSameRectangles()
+    {
+        var sizeSelector = () => new Size(10, 10);
+        AssertShapeIsATightCircleAroundCenter(1000, sizeSelector);
+    }
+    
+    [TestCase(Description = "A thousand rectangles should create a circle")]
+    public void PutNextRectangle_ShouldCreateATightCircleAroundCenter_WithRandomRectangles()
+    {
+        var random = new Random(123);
+        var sizeSelector = () => new Size(random.Next(1, 11), random.Next(1, 11));
+
+        AssertShapeIsATightCircleAroundCenter(1000, sizeSelector);
     }
 
-    [TestCase(20, Description = "Twenty rectangles should create a circle")]
-    [TestCase(100, Description = "A hundred rectangles should create a circle")]
-    [TestCase(1000, Description = "A thousand rectangles should create a circle")]
-    public void PutNextRectangle_ShouldCreateLayoutResemblingACircle_WithSameRectangles(int count)
-    {
-        AssertShapeIsACircle(count, () => new Size(10, 10));
-    }
-
-    [TestCase(20, Description = "Twenty rectangles should create a circle")]
-    [TestCase(100, Description = "A hundred rectangles should create a circle")]
-    [TestCase(1000, Description = "A thousand rectangles should create a circle")]
-    public void PutNextRectangle_ShouldCreateLayoutResemblingACircle_WithRandomRectangles(int count)
-    {
-        AssertShapeIsACircle(count, () => new Size(random.Next(1, 11), random.Next(1, 11)));
-    }
-    
-    [TestCase(20, Description = "Twenty rectangles should be packed tightly")]
-    [TestCase(100, Description = "A hundred rectangles should be packed tightly")]
-    [TestCase(1000, Description = "A thousand rectangles should be packed tightly")]
-    public void PutNextRectangle_ShouldPlaceRectanglesTightlyPacked_WithSameRectangles(int count)
-    {
-        AssertRectanglesArePackedTightly(count, () => new Size(10, 10));
-    }
-    
-    [TestCase(20, Description = "Twenty rectangles should be packed tightly")]
-    [TestCase(100, Description = "A hundred rectangles should be packed tightly")]
-    [TestCase(1000, Description = "A thousand rectangles should be packed tightly")]
-    public void PutNextRectangle_ShouldPlaceRectanglesTightlyPacked_WithRandomRectangles(int count)
-    {
-        AssertRectanglesArePackedTightly(count, () => new Size(random.Next(1, 11), random.Next(1, 11)));
-    }
-    
     private void AssertRectanglesDontIntersect(int count, Func<Size> rectangleSizeSelector)
     {
+        CreateLayouter(rectangleSizeSelector);
+        
         var checkedRectangles = new List<Rectangle>();
         for (var i = 0; i < count; i++)
         {
-            var rectangle = layouter.PutNextRectangle(rectangleSizeSelector());
+            var rectangle = GetNextRectangle();
             if (checkedRectangles.Any(r => r.IntersectsWith(rectangle)))
                 Assert.Fail($"Rectangles should not intersect, failed on iteration {i + 1}");
             checkedRectangles.Add(rectangle);
         }
     }
     
-    private void AssertShapeIsACircle(int count, Func<Size> rectangleSizeSelector)
+    private void AssertShapeIsATightCircleAroundCenter(int count, Func<Size> rectangleSizeSelector)
     {
-        var maxX = int.MinValue;
-        var maxY = int.MinValue;
-        var minX = int.MaxValue;
-        var minY = int.MaxValue;
-        var areaCoveredByRectangles = GetAreaCoveredByRectangles(count, rectangleSizeSelector, ref maxY, ref minY, ref maxX, ref minX);
-
-        var boundingBoxArea = maxX - minX > maxY - minY 
-            ? (maxX - minX) * (maxX - minX) 
-            : (maxY - minY) * (maxY - minY);
-
-        Assert.That(areaCoveredByRectangles / (double)boundingBoxArea - Math.PI/4d, Is.LessThanOrEqualTo(0.01));
-    }
-
-    private void AssertRectanglesArePackedTightly(int count, Func<Size> rectangleSizeSelector)
-    {
-        var maxX = int.MinValue;
-        var maxY = int.MinValue;
-        var minX = int.MaxValue;
-        var minY = int.MaxValue;
-        var areaCoveredByRectangles = GetAreaCoveredByRectangles(count, rectangleSizeSelector, ref maxY, ref minY, ref maxX, ref minX);
-
-        var boundingCircleArea = maxX - minX > maxY - minY 
-            ? (maxX - minX) * (maxX - minX) / 4d * Math.PI
-            : (maxY - minY) * (maxY - minY) / 4d * Math.PI;
-
-        Assert.That(1 - areaCoveredByRectangles / boundingCircleArea, Is.LessThanOrEqualTo(0.2));
-    }
-    
-    private int GetAreaCoveredByRectangles(int count, Func<Size> rectangleSizeSelector, 
-        ref int maxY, ref int minY, ref int maxX, ref int minX)
-    {
-        var areaCoveredByRectangles = 0;
-        
+        CreateLayouter(rectangleSizeSelector);
+        var layout = new List<Rectangle>();
         for (var i = 0; i < count; i++)
+            layout.Add(GetNextRectangle());
+
+        var areaCoveredByRectangles = GetAreaCoveredByRectangles(layout);
+        var (upperRadius, lowerRadius, rightRadius, leftRadius) = GetRadii(layout);
+
+        var verticalDiameter = upperRadius + lowerRadius;
+        var horizontalDiameter = rightRadius + leftRadius;
+        
+        var boundingBoxArea = horizontalDiameter > verticalDiameter
+            ? horizontalDiameter * horizontalDiameter
+            : verticalDiameter * verticalDiameter;
+        var boundingCircleArea = boundingBoxArea * Math.PI / 4d;
+        Assert.Multiple(() =>
         {
-            var rectangle = layouter.PutNextRectangle(rectangleSizeSelector());
+            Assert.That(Math.Abs(upperRadius - lowerRadius), Is.LessThanOrEqualTo(10));
+            Assert.That(Math.Abs(rightRadius - leftRadius), Is.LessThanOrEqualTo(10));
+            Assert.That(Math.Abs(verticalDiameter - horizontalDiameter), Is.LessThanOrEqualTo(10));
+            Assert.That(areaCoveredByRectangles / (double)boundingBoxArea - Math.PI / 4d, Is.LessThanOrEqualTo(0.01));
+            Assert.That(areaCoveredByRectangles / boundingCircleArea, Is.GreaterThanOrEqualTo(0.8));
+        });
+    }
 
-            areaCoveredByRectangles += rectangle.Width * rectangle.Height;
+    private int GetAreaCoveredByRectangles(List<Rectangle> layout)
+    {
+        return layout.Sum(rectangle => rectangle.Width * rectangle.Height);
+    }
 
+    private (int upper, int lower, int right, int left) GetRadii(List<Rectangle> layout)
+    {
+        var maxX = int.MinValue;
+        var maxY = int.MinValue;
+        var minX = int.MaxValue;
+        var minY = int.MaxValue;
+        foreach (var rectangle in layout)
+        {
             if (rectangle.Bottom > maxY) maxY = rectangle.Bottom;
             if (rectangle.Top < minY) minY = rectangle.Top;
             if (rectangle.Right > maxX) maxX = rectangle.Right;
             if (rectangle.Bottom < minX) minX = rectangle.Left;
         }
-
-        return areaCoveredByRectangles;
+        var upperRadius = CENTER.Y - minY;
+        var lowerRadius = maxY - CENTER.Y;
+        var rightRadius = maxX - CENTER.X;
+        var leftRadius = CENTER.X - minX;
+        
+        return (upperRadius, lowerRadius, rightRadius, leftRadius);
     }
 }
