@@ -5,8 +5,6 @@ namespace TagsCloudVisualization.Curves
 {
     public class ArchimedeanSpiral : ICurve
     {
-        public double StartRadius { get; }
-        public double ExtendRatio { get; }
         public ArchimedeanSpiral(double startRadius = 0, double extendRatio = 0.25)
         {
             if (startRadius < 0 || extendRatio <= 0)
@@ -14,6 +12,9 @@ namespace TagsCloudVisualization.Curves
             StartRadius = startRadius;
             ExtendRatio = extendRatio;
         }
+
+        public double StartRadius { get; }
+        public double ExtendRatio { get; }
 
         public Point GetPoint(double angle)
         {

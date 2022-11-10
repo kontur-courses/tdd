@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using System.Linq;
 using TagsCloudVisualization.Extensions;
 
@@ -10,15 +8,16 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudDrawer
     {
+        private const int BoundScale = 3;
         private readonly CircularCloudLayouter _layouter;
         private readonly Pen _pen = new Pen(Color.Red, 15);
         private readonly Random _random = new Random(1);
-        private const int BoundScale = 3;
+
         public CircularCloudDrawer(CircularCloudLayouter layouter)
         {
             _layouter = layouter;
         }
-        
+
         public Bitmap CreateImage()
         {
             var image = CreateBitmap();
@@ -32,14 +31,14 @@ namespace TagsCloudVisualization
             var imageSize = FindBounds();
             return new Bitmap(imageSize.Width * BoundScale, imageSize.Height * BoundScale);
         }
-        
+
         private Size FindBounds()
         {
             var leftBound = _layouter.Rectangles.Min(rectangle => rectangle.Left);
             var rightBound = _layouter.Rectangles.Max(rectangle => rectangle.Right);
             var bottomBound = _layouter.Rectangles.Max(rectangle => rectangle.Bottom);
             var topBound = _layouter.Rectangles.Min(rectangle => rectangle.Top);
-            
+
             var width = rightBound - leftBound;
             var height = bottomBound - topBound;
 
@@ -75,11 +74,11 @@ namespace TagsCloudVisualization
 
         private Color GetRandomColor()
         {
-            var R = 25 + _random.Next() % 215;
-            var G = 25 + _random.Next() % 215;
-            var B = 25 + _random.Next() % 215;
+            var r = 25 + _random.Next() % 215;
+            var g = 25 + _random.Next() % 215;
+            var b = 25 + _random.Next() % 215;
 
-            return Color.FromArgb( R, G, B);
+            return Color.FromArgb(r, g, b);
         }
     }
 }
