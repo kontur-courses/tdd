@@ -7,43 +7,58 @@ namespace TagsCloudVisualization.TagsCloudVisualizationTests
     [TestFixture]
     internal class RectanglesRandomizerTests
     {
-        [TestCase(0, 1, 1)]
-        [TestCase(1, 0, 1)]
-        [TestCase(1, 1, 0)]
-        [TestCase(-1, 1, 1)]
-        [TestCase(1, -1, 1)]
-        [TestCase(1, 1, -1)]
-
-        public void GetSortedRectangles_ShouldThrowArgumentException_OnAnyNonPositiveValue(
-            int maxHeight, int maxWidth, int count)
+        [TestCase(0)]
+        [TestCase(-1)]
+        public void GetSortedRectangles_ShouldThrowArgumentException_OnNonPositiveCount(int count)
         {
-            Assert.Throws<ArgumentException>(() => RectanglesRandomizer.GetSortedRectangles(
-                maxHeight, maxWidth, count));
+            var action = () => RectanglesRandomizer.GetSortedRectangles(
+                10, 10, count);
+            action.Should().Throw<ArgumentException>().WithMessage(
+                "Sides of the rectangle and rectangle count should not be non-positive");
         }
 
-        [TestCase(1, 1, 1)]
-        [TestCase(1, 1, 2)]
-        [TestCase(1, 1, 10)]
-        [TestCase(1, 1, 100)]
-
-        public void GetSortedRectangles_ShouldReturnСountRectangles_WhenCountRectanglesWasRequested(
-            int maxWidth, int maxHeight, int count)
+        [TestCase(0)]
+        [TestCase(-1)]
+        public void GetSortedRectangles_ShouldThrowArgumentException_OnNonPositiveMaxHeight(int maxHeight)
         {
-            var rectangles = RectanglesRandomizer.GetSortedRectangles(maxWidth, maxHeight, count);
+            var action = () => RectanglesRandomizer.GetSortedRectangles(
+                10, maxHeight, 10);
+            action.Should().Throw<ArgumentException>().WithMessage(
+                "Sides of the rectangle and rectangle count should not be non-positive");
+        }
+
+        [TestCase(0)]
+        [TestCase(-1)]
+        public void GetSortedRectangles_ShouldThrowArgumentException_OnNonPositiveMaxWidth(int maxWidth)
+        {
+            var action = () => RectanglesRandomizer.GetSortedRectangles(
+                maxWidth, 10, 10);
+            action.Should().Throw<ArgumentException>().WithMessage(
+                "Sides of the rectangle and rectangle count should not be non-positive");
+        }
+
+
+        [TestCase(1)]
+        [TestCase(100)]
+        public void GetSortedRectangles_ShouldReturnСountRectangles_WhenCountRectanglesWasRequested(
+            int count)
+        {
+            var rectangles = RectanglesRandomizer.GetSortedRectangles(8, 9, count);
             rectangles.Should().HaveCount(count);
         }
 
-        [TestCase(100, 100, 1)]
-        [TestCase(100, 100, 2)]
-        [TestCase(100, 100, 10)]
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(10)]
         public void GetSortedRectangles_ShouldReturnRectanglesSortedInDescendingOrder_OnCorrectValues(
-            int maxWidth, int maxHeight, int count)
+            int count)
         {
             var sizeComparer = Comparer<Size>.Create((rect1, rect2) =>
                 rect1.Height * rect1.Width > rect2.Height * rect2.Width ? 1 :
                 rect1.Height * rect1.Width < rect2.Height * rect2.Width ? -1 : 0);
 
-            var rectangles = RectanglesRandomizer.GetSortedRectangles(maxWidth, maxHeight, count);
+            var rectangles = RectanglesRandomizer
+                .GetSortedRectangles(100, 100, count);
 
             rectangles.Should().BeInDescendingOrder(sizeComparer);
         }
