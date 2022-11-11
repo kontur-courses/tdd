@@ -1,22 +1,20 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace TagsCloudVisualization
 {
     internal class Program
     {
-        public static int rectanglesCount = 100;
-        public static int maxRectanglesHeight = 100;
-        public static int maxRectanglesWidth = 100;
-
         static void Main()
         {
             var center = new Point(400, 400);
             var rectangleSizes = RectanglesRandomizer.GetSortedRectangles(
-                maxRectanglesWidth, maxRectanglesHeight, rectanglesCount);
+                100, 100, 100);
 
-            var layouter = new CircularCloudLayouter(center, new Spiral(center));
+            var layouter = new CircularCloudLayouter(new Spiral(center));
             var rectangles = layouter.GetRectangles(rectangleSizes);
+
+            var visualizer = new CloudVisualizer(center, rectangles);
+            visualizer.CreateImage();
         }
     }
 }
