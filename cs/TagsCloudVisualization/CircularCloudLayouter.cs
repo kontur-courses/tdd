@@ -1,25 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter : ICloudLayouter
     {
-        public Point Center { get; }
         private readonly List<Rectangle> rectangles;
         private readonly Spiral spiral;
         private const int NumberOfPoints = 10_000;
 
-        public CircularCloudLayouter(Point center, Spiral spiral)
+        public CircularCloudLayouter(Spiral spiral)
         {
-            if (spiral.Equals(null))
-                throw new NullReferenceException();
+            if (spiral is null)
+                throw new ArgumentException("Spiral should not be null");
 
-            Center = center;
             rectangles = new List<Rectangle>();
             this.spiral = spiral;
         }
@@ -27,18 +20,17 @@ namespace TagsCloudVisualization
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
-                throw new ArgumentException();
+                throw new ArgumentException("Sides of the rectangle should not be non-positive");
 
-            var i = 0;
             var points = spiral.GetPoints(NumberOfPoints);
-            var point = points[i];
+            var point = points[0];
 
-            while (!RectangleCanBePlaced(point, rectangleSize))
+            for (int i = 0; i < points.Count; i++)
             {
-                point = points[++i];
+                if (!RectangleCanBePlaced(point, rectangleSize))
+                    point = points[i];
             }
 
-            point = points[i];
             var rectangle = new Rectangle(point, rectangleSize);
             rectangles.Add(rectangle);
 
@@ -55,8 +47,8 @@ namespace TagsCloudVisualization
 
         public bool RectangleCanBePlaced(Point position, Size rectangleSize)
         {
-            return !rectangles.Any(rectangle =>
-                rectangle.IntersectsWith(new Rectangle(position, rectangleSize)));
+            var rect = new Rectangle(position, rectangleSize);
+            return !rectangles.Any(rectangle => rectangle.IntersectsWith(rect));
         }
     }
 }
