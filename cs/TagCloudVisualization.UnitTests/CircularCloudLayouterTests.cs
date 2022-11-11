@@ -32,18 +32,6 @@ public class CircularCloudLayouterTests
     private CircularCloudLayouterPresentationProxy layouter = null!;
     private readonly Point center = new(250, 250);
 
-    [Test]
-    public void TearDown_Example()
-    {
-        _ = layouter.PutNextRectangle(new Size(50, 50));
-        _ = layouter.PutNextRectangle(new Size(50, 50));
-        _ = layouter.PutNextRectangle(new Size(50, 50));
-        _ = layouter.PutNextRectangle(new Size(50, 50));
-        _ = layouter.PutNextRectangle(new Size(50, 50));
-
-        false.Should().BeTrue();
-    }
-    
     [TestCase(-1, -1)]
     [TestCase(-1, 10)]
     [TestCase(10, -1)]
