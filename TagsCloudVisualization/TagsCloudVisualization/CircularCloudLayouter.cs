@@ -12,42 +12,27 @@ namespace TagsCloudVisualization
 {
     internal class CircularCloudLayouter
     {
-        public Size screensize;
         public IDictionary<string, int> sizeDictionary;
         private Bitmap bitmap;
         private Graphics g;
-        private bool lastRectangle;
-        
-        public CircularCloudLayouter(IDictionary<string, int> sizeDictionary,Size screensize)
+
+        public CircularCloudLayouter(IDictionary<string, int> sizeDictionary)
         {
             this.sizeDictionary = sizeDictionary;
-            this.screensize = screensize;
-            bitmap=new Bitmap(screensize.Width, screensize.Height);
+            bitmap=new Bitmap(1000, 1000);
             g = Graphics.FromImage(bitmap);
-            lastRectangle = false;
         }
 
-        public Tuple<string, Size, Font> GetRectangleOptions()
+        public IEnumerable<Tuple<string, Size, Font>> GetNextRectangleOptions()
         {
-            if (lastRectangle)
-                throw new InvalidOperationException("Have not any tag");
-            if (sizeDictionary.Count == 0)
+            foreach (var pair in sizeDictionary)
             {
-                lastRectangle = true;
-                return new Tuple<string, Size, Font>(null, Size.Empty, null);
+                var font = new Font("Times", pair.Value);
+                var size = g.MeasureString(pair.Key, font).ToSize();
+                yield return new Tuple<string, Size, Font>(pair.Key, size, font);
             }
-            var nextRectangleSize = sizeDictionary.First();
-            sizeDictionary.Remove(nextRectangleSize);
-            var font = new Font("Times", nextRectangleSize.Value);
-            var size = g.MeasureString(nextRectangleSize.Key, font).ToSize();
-            return new Tuple<string, Size, Font>(nextRectangleSize.Key, size, font);
         }
-
-        public Rectangle GetNextRectangle(Point location)
-        {
-            var size = GetRectangleOptions();
-            return new Rectangle(location, size.Item2);
-        }
+ 
     }
      
 }

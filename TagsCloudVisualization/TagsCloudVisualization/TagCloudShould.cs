@@ -49,19 +49,24 @@ namespace TagsCloudVisualization
     [TestFixture]
     public class DivideTagsShould
     {
-        [TestCase(0, TestName = "ZeroSize")]
-        [TestCase(-1, TestName = "NegativeSize")]
-        [TestCase(int.MinValue, TestName = "MinIntSize")]
-        public void ThrowException_WhenSizeTagNullOrNegative(int sizeTag)
+        
+        [TestCase(1,1, TestName = "Equals")]
+        [TestCase(2,1, TestName = "Minimal size upper maximum")]
+        [TestCase(0,1, TestName = "ZeroSize")]
+        [TestCase(1,-1 ,TestName = "NegativeSize")]
+        [TestCase(int.MinValue,1, TestName = "MinIntSize")]
+
+        public void ThrowException_WhenMinSizeUpperOrEqualMaxSie(int minSize,int maxSize)
         {
-            Action action = () => new DivideTags(sizeTag);
-            action.Should().Throw<ArgumentNullException>();
+            var frequencyTags = new FrequencyTags(new[] { "1", "2", "3", "4" });
+            Action createTags = ()=> new DivideTags(maxSize, frequencyTags,minSize);
+            createTags.Should().Throw<ArgumentNullException>();
         }
 
-        [TestCase(5,1,TestName = "Round down")]// 5/4 = 1.25 round to 1  
-        [TestCase(7,2,TestName = "Round up")]// 7/4 = 1.75 round to 2  
-        [TestCase(6,2,TestName = "Round half fractional part of number")]// 6/4 = 1.5 round to 2  
-        public void CheckTagSize_WhenMathRound(int tagSize,int expectedResult)
+        [TestCase(30,10,TestName = "Even number")] 
+        [TestCase(int.MaxValue, 715827882, TestName = "Max int number")] 
+        [TestCase(6,2,TestName = "Odd number")]  
+        public void CheckTagSize_WhenHaveOnlySize(int tagSize,int expectedResult)
         {
             var frequencyTags = new FrequencyTags(new[] { "1", "2", "3", "4" });
             var dividedTags = new DivideTags(tagSize, frequencyTags);
@@ -82,8 +87,8 @@ namespace TagsCloudVisualization
         public void DivideTags_WhenDifferentSizeTags_CheckSize()
         {
             var frequencyTags = new FrequencyTags(new[] { "1", "2", "2" });
-            var dividedTags = new DivideTags(6, frequencyTags);
-            dividedTags.sizeDictionary["2"].Should().Be(dividedTags.sizeDictionary["1"] * 2);
+            var dividedTags = new DivideTags(120, frequencyTags);
+            dividedTags.sizeDictionary["2"].Should().Be(dividedTags.sizeDictionary["1"] * 3);
         }
 
 
@@ -94,35 +99,11 @@ namespace TagsCloudVisualization
             var size = int.MaxValue;
             var dividedTags = new DivideTags(size, frequencyTags);
             foreach (var pair in dividedTags.sizeDictionary)
-                pair.Value.Should().Be((int)Math.Round((double)size / frequencyTags.Count));
+                pair.Value.Should().Be(715827882);
         }
     }
 
-    [TestFixture]
-    public class CircularCloudLayouterShould
-    {
-        [Test]
-        public void CircularCloudLayouter_WhenTagsEmpty()
-        {
-            var frequencyTags = new FrequencyTags(new[] { "1" });
-            var dividedTags = new DivideTags(1, frequencyTags);
-            var circularCloudLayouter = new CircularCloudLayouter(dividedTags.sizeDictionary, new Size(1000, 2000));
-            circularCloudLayouter.GetNextRectangle(new Point(0, 0));
-            circularCloudLayouter.GetNextRectangle(new Point(0, 0)).IsEmpty.Should().BeTrue();
-        }
-
-        [Test]
-        public void CircularCloudLayouterThrowException_WhenTagsEmpty()
-        {
-            var frequencyTags = new FrequencyTags(new[] { "1" });
-            var dividedTags = new DivideTags(1, frequencyTags);
-            var circularCloudLayouter = new CircularCloudLayouter(dividedTags.sizeDictionary, new Size(1000, 2000));
-            for (var i = 0; i < 2; i++)
-                circularCloudLayouter.GetNextRectangle(new Point(0, 0));
-            Action exceptionAction = () => circularCloudLayouter.GetNextRectangle(new Point(0, 0));
-            exceptionAction.Should().Throw<InvalidOperationException>();
-        }
-    }
+    
 
     [TestFixture]
     public class ArithmeticSpiralShould
@@ -174,6 +155,8 @@ namespace TagsCloudVisualization
     {
         private TagCloud tagCloud;
         private Visualizator visualizator;
+        private CircularCloudLayouter circularLayouter;
+        private DivideTags divideTags;
 
         [TearDown]
         public void PrintPathAndSaveIfTestIsDown()
@@ -181,7 +164,10 @@ namespace TagsCloudVisualization
             if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
                 return;
             if (tagCloud.GetRectangles().Count == 0)
-                tagCloud.CreateTagCloud();
+            {
+               
+                tagCloud.CreateTagCloud(circularLayouter);
+            }
             visualizator = new Visualizator(tagCloud);
             var testName = TestContext.CurrentContext.Test.Name + TestContext.CurrentContext.Result.FailCount;
             visualizator.Save(testName, tagCloud);
@@ -193,13 +179,16 @@ namespace TagsCloudVisualization
         public void SetUp()
         {
             tagCloud = new TagCloud();
+            divideTags = new DivideTags();
+            circularLayouter = new CircularCloudLayouter(divideTags.sizeDictionary);
         }
 
         [Test]
         public void NoVisualization_NoIntersections()
         {
             var tagCloud = new TagCloud();
-            tagCloud.CreateTagCloud();
+
+            tagCloud.CreateTagCloud(circularLayouter);
             var rectangles = tagCloud.GetRectangles();
             foreach (var rectangle in rectangles)
             foreach (var thisRectangle in rectangles.Where(rect => rect != rectangle))
@@ -221,9 +210,9 @@ namespace TagsCloudVisualization
 
         public void ArgumentException_WhenHaveEmptySpaceSmall()
         {
-            tagCloud.CreateTagCloud();
+            tagCloud.CreateTagCloud(circularLayouter);
             var srcSize = tagCloud.GetScreenSize();
-            var arithmeticSpiral = new ArithmeticSpiral(new Point(srcSize / 2));
+            var arithmeticSpiral = new ArithmeticSpiral(new Point(0,0));
             var point = arithmeticSpiral.GetPoint();
             var rectangles = tagCloud.GetRectangles();
             var smallRectangle = rectangles.Last().rectangle;
@@ -246,13 +235,13 @@ namespace TagsCloudVisualization
         [Test, Timeout(10000)]
         public void NoVisualization_Timeout()
         {
-            tagCloud.CreateTagCloud();
+            tagCloud.CreateTagCloud(circularLayouter);
         }
 
         [Test, Timeout(10000)]
         public void Visualization_Timeout()
         {
-            tagCloud.CreateTagCloud();
+            tagCloud.CreateTagCloud(circularLayouter);
             visualizator = new Visualizator(tagCloud);
             visualizator.Save(TestContext.CurrentContext.Test.Name, tagCloud);
         }
@@ -264,8 +253,10 @@ namespace TagsCloudVisualization
             var strsplt = new string[400];
             for (var i = 0; i < 400; i++)
                 strsplt[i] = random.Next(1, 100).ToString();
-            tagCloud = new TagCloud(new FrequencyTags(string.Join(", ", strsplt).Split(", ")));
-            tagCloud.CreateTagCloud();
+            tagCloud = new TagCloud();
+            var divide = new DivideTags(770, new FrequencyTags(string.Join(", ", strsplt).Split(", "))) ;
+            var circularLayouterCloud = new CircularCloudLayouter(divide.sizeDictionary);
+            tagCloud.CreateTagCloud(circularLayouterCloud);
             visualizator = new Visualizator(tagCloud);
             visualizator.Save(TestContext.CurrentContext.Test.Name, tagCloud);
 

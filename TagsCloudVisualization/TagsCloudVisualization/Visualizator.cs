@@ -15,25 +15,27 @@ namespace TagsCloudVisualization
         public Visualizator(TagCloud tagCloud)
         {
             this.tagCloud = tagCloud ?? throw new ArgumentNullException();
-            
         }
 
-        public void Save(string fileName,TagCloud tagCloud)
+        public void Save(string fileName, TagCloud tagCloud)
         {
             var srcSize = tagCloud.GetScreenSize();
 
 
             var graphics = CreateGraphics(out var g, srcSize);
-            //var graphics = CreateGraphics(out var g, new Size((int)(srcSize*1.5), (int)(srcSize * 1.5)));
             var rectangles = tagCloud.GetRectangles();
             foreach (var textRectangle in rectangles)
             {
-                g.DrawRectangle(new Pen(Color.Black,1),textRectangle.rectangle);
-                var color = Color.FromArgb((int)textRectangle.font.Size%255, 0, (int)(textRectangle.font.Size*2)%255);
-                g.DrawString(textRectangle.text,textRectangle.font,new SolidBrush(color),textRectangle.rectangle.Location);
+                g.DrawRectangle(new Pen(Color.Black, 1),
+                    new Rectangle(textRectangle.rectangle.Location + srcSize / 2, textRectangle.rectangle.Size));
+                var color = Color.FromArgb((int)textRectangle.font.Size % 255, 0,
+                    (int)(textRectangle.font.Size * 2) % 255);
+                g.DrawString(textRectangle.text, textRectangle.font, new SolidBrush(color),
+                    textRectangle.rectangle.Location + srcSize / 2);
             }
-            graphics.Save(fileName+".png",ImageFormat.Png);
-             
+
+            graphics.Save(fileName + ".png", ImageFormat.Png);
+
         }
 
         private static Bitmap CreateGraphics(out Graphics g, Size srcSize)

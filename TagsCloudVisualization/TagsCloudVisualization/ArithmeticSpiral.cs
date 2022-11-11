@@ -14,15 +14,13 @@ namespace TagsCloudVisualization
         private int x, y;
         private double angle;
         private int constant, density;
-        private Point startPoint;
-       
 
-        public ArithmeticSpiral(Point start, int constant= 1,int density=1 )
+
+        public ArithmeticSpiral(Point start, int constant = 1, int density = 1)
         {
-            startPoint = start;
             x = start.X;
             y = start.Y;
-            this.constant= constant;
+            this.constant = constant;
             this.density = density;
         }
 
@@ -32,6 +30,6 @@ namespace TagsCloudVisualization
                 (int)(y + Math.Sin(angle) * angle));
             angle += Math.PI / (360 * density);
             return nextPoint;
-        }   
+        }
     }
 }
