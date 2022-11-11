@@ -61,10 +61,10 @@ namespace TagsCloudVisualization.Core.Tests
         {  
             var rnd = new Random();
             var center = new Point(width / 2, height / 2);
-            var circularCloud = new CircularCloudLayouter(center);
-            circularCloud.PutNextRectangle(new Size(rnd.Next(10, 20), rnd.Next(15, 30)));
+            _circularCloudLayouter = new CircularCloudLayouter(center);
+            _circularCloudLayouter.PutNextRectangle(new Size(rnd.Next(10, 20), rnd.Next(15, 30)));
 
-            var rect = circularCloud.Rectangles[0];
+            var rect = _circularCloudLayouter.Rectangles[0];
 
             center.X.Should().BeInRange((rect.Left + rect.Right) / 2 - 1, (rect.Left + rect.Right) / 2 + 1);
             center.Y.Should().BeInRange((rect.Bottom + rect.Top) / 2 - 1, (rect.Bottom + rect.Top) / 2 + 1);
