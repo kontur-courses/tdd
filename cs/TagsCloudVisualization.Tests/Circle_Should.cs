@@ -20,13 +20,6 @@ public class Circle_Should
         var circle = new Circle(3, new Point(0, 0));
         circle.ContainsRectangle(new Rectangle(0, 0, 10, 10)).Should().Be(false);
     }
-
-    [Test]
-    public void ContainsMostPartOfRectangle_ShouldReturnTrue_WhenHasSmallPartOfRectangleOutside()
-    {
-        var circle = new Circle(3, new Point(0, 0));
-        circle.ContainsMostPartOfRectangle(new Rectangle(1, 1, 2, 2), 2).Should().Be(true);
-    }
     
     [Test]
     public void ContainsRectangle_ShouldWorkCorrect_WithNegativeLocation()
@@ -48,27 +41,5 @@ public class Circle_Should
     {
         var circle = new Circle(3, new Point(0, 0));
         circle.ContainsRectangle(new Rectangle(-50, -50, 100, 100)).Should().Be(false);
-    }
-    
-    [Test]
-    public void ContainsMostPartOfRectangle_ShouldReturnTrue_WhenRectangleInside()
-    {
-        var circle = new Circle(479, new Point(0, 0));
-        circle.ContainsMostPartOfRectangle(new Rectangle(295, 309, 44, 46), 46).Should().Be(true);
-    }
-    
-    
-    [Test]
-    public void ContainsMostPartOfRectangle_ShouldReturnTrue_WhenSmallPartOfRectangleOutside()
-    {
-        var circle = new Circle(479, new Point(0, 0));
-        circle.ContainsMostPartOfRectangle(new Rectangle(433, 10, 47, 47), 47).Should().Be(true);
-    }
-    
-    [Test]
-    public void ContainsMostPartOfRectangle_ShouldReturnFalse_WhenRectangleOutside()
-    {
-        var circle = new Circle(3, new Point(0, 0));
-        circle.ContainsMostPartOfRectangle(new Rectangle(3, 3, 1, 1), 1).Should().Be(false);
     }
 }

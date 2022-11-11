@@ -23,11 +23,4 @@ public class Circle
         var b = dx * dx + dy * dy;
         return rad >= b;
     }
-
-    public bool ContainsMostPartOfRectangle(Rectangle rectangle, int maxSize)
-    {
-        var dx = Math.Abs(center.X - (rectangle.X + rectangle.Width / 2));
-        var dy = Math.Abs(center.Y - (rectangle.Y + rectangle.Height / 2));
-        return dx < radius + maxSize / 2 && dy < radius + maxSize / 2;
-    }
 }

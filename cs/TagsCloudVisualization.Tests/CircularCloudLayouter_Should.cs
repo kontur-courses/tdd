@@ -59,17 +59,23 @@ public class CircularCloudLayouter_Should
     [Test]
     public void Rectangles_ShouldFormCircularFigure()
     {
-        var rnd = new Random(30);
-        var countOfRectangles = 4000;
+        //комменты удалю после ревью
+        // решил поменять предыдущую реализацию, т.к. этот тест проще для понимания и работает без ошибок
+        // В предыдущей реализации были неточности, и я был неуверен в методе ContainsMostPartOfRectangle
+        var rnd = new Random(106);
+        var countOfRectangles = 400;
+        var maxWidth = 50;
+        var maxHeight = 50;
         for (var i = 0; i < countOfRectangles; i++)
-            layouter.PutNextRectangle(new Size(rnd.Next(20, 50), rnd.Next(20, 50)));
+            layouter.PutNextRectangle(new Size(rnd.Next(20, maxWidth), rnd.Next(20, maxHeight)));
         var rectangles = layouter.GetRectanglesLayout().ToList();
-        var lastAddedRectangle = rectangles.Last();
-        var radius = lastAddedRectangle.GetPoints().Select(p => layouter.Center.GetDistance(p)).Max();
-        var circle = new Circle(radius, layouter.Center);
+        var lastLocation = rectangles.Last().Location;
+        var radius = layouter.Center.GetDistance(lastLocation);
+        //увеличиваю радиус до максимально возмоджного при правильном расположении прямоугольников
+        var extendedRadius = radius + Math.Sqrt(maxHeight * maxHeight + maxWidth * maxWidth);
+        var circle = new Circle(extendedRadius, layouter.Center);
+        //при такой проверке и при правильной укладке коллекция 100% должна быть пустой
         var rectanglesOutside = rectangles.Where(rec => !circle.ContainsRectangle(rec)).ToList();
-        if (rectanglesOutside.Count < countOfRectangles * 0.30)
-            rectanglesOutside = rectanglesOutside.Where(rec => !circle.ContainsMostPartOfRectangle(rec, 50)).ToList();
         rectanglesOutside.Should().BeEmpty();
     }
 
