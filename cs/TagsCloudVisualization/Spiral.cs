@@ -1,45 +1,45 @@
 ﻿using System.Drawing;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace TagsCloudVisualization
 {
     public class Spiral
     {
-        public Point Center { get; }
-        private readonly double step;
-        private readonly double parameter;
+        private readonly Point center;
+        private readonly double angleStep;
+        private readonly List<Point> points;
 
-        public Spiral(Point center, double step = 0.3, double parameter = 2*Math.PI)
+        public Spiral(Point center, double angleStep = 0.3)
         {
-            if (step == 0 || parameter == 0)
-                throw new ArgumentException("step and parameter must not be zero");
+            if (angleStep == 0)
+                throw new ArgumentException("Angle step should not be zero");
 
-            Center = center;
-            this.step = step;
-            this.parameter = parameter / (2 * Math.PI);
+            this.center = center;
+            this.angleStep = angleStep;
+            points = new List<Point>();
         }
 
         public List<Point> GetPoints(int count)
         {
-            var points = new List<Point>();
-            int x;
-            int y;
-            double angle = 0.0;
+            if (points.Count != 0)
+                return points;
 
-            var currentPoint = Center;
+            double angle = 0.0;
+            var currentPoint = center;
 
             for (int i = 0; i < count;)
             {
-                x = Center.X + (int)Math.Round(parameter * angle * Math.Cos(angle));
-                y = Center.Y + (int)Math.Round(parameter * angle * Math.Sin(angle));
-
+                var x = center.X + (int)Math.Round(angle * Math.Cos(angle));
+                var y = center.Y + (int)Math.Round(angle * Math.Sin(angle));
                 var nextPoint = new Point(x, y);
+
                 if (!nextPoint.Equals(currentPoint))
                 {
                     points.Add(new Point(x, y));
                     i++;
                 }
 
-                angle += step;
+                angle += angleStep;
                 currentPoint = nextPoint;
             }
 
