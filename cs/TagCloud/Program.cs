@@ -17,7 +17,7 @@ namespace TagCloud
             _directoryToSaveImage = GetDirectoryToSaveImage();
 
             var rectanglesSizes = RectangleSizeGenerator.GetConstantSizes(600, new Size(25, 10));
-            CreateAndSaveCloudImage(rectanglesSizes, "Equivalent_squares_cloud.png");
+            CreateAndSaveCloudImage(rectanglesSizes, "Equivalent_rectangles_cloud.png");
 
             rectanglesSizes = RectangleSizeGenerator.GetRandomOrderedSizes(300, new Size(20, 10), new Size(80, 40));
             CreateAndSaveCloudImage(rectanglesSizes, "Horizontal_rectangles_cloud.png");

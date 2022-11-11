@@ -19,7 +19,7 @@ namespace TagCloud
             RectangleBorderColor = rectangleBorderColor;
         }
 
-        public Bitmap Generate(IReadOnlyList<Size> rectanglesSizes)
+        public Bitmap Generate(IReadOnlyList<Rectangle> layout)
         {
             var bitmap = new Bitmap(ImageSize.Width, ImageSize.Height);
 
@@ -27,11 +27,16 @@ namespace TagCloud
 
             var pen = new Pen(RectangleBorderColor, 1);
 
-            var layout = GetLayout(rectanglesSizes);
-
-            graphics.DrawRectangles(pen, layout);
+            graphics.DrawRectangles(pen, layout.ToArray());
 
             return bitmap;
+        }
+
+        public Bitmap Generate(IReadOnlyList<Size> rectanglesSizes)
+        {
+            var layout = GetLayout(rectanglesSizes);
+
+            return Generate(layout);
         }
 
         private Rectangle[] GetLayout(IReadOnlyList<Size> rectanglesSizes)

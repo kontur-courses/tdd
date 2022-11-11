@@ -13,7 +13,7 @@ namespace TagCloudUnitTests
 
         [TestCase(-1)]
         [TestCase(0)]
-        public void Constructor_ThrowsArgumentException_WhenScaleFactorIsInvalid(double scaleFactor)
+        public void Constructor_ThrowsArgumentException_WhenScaleFactorHasInvalidValue(double scaleFactor)
         {
             Action action = () => new ArchimedeanSpiral(new Point(0, 0), scaleFactor);
 
@@ -38,7 +38,7 @@ namespace TagCloudUnitTests
                 archimedeanSpiral.GetNextPoint();
         }
 
-        private static object[] _testsParameters =
+        private static readonly object[] _testsParameters =
         {
             new object[] { new Point(0, 0), 1.0, 0, new Point(0, 0) },
             new object[]
