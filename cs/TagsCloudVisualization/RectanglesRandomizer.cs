@@ -7,7 +7,8 @@ namespace TagsCloudVisualization
         public static List<Size> GetSortedRectangles(int maxWidth, int maxHeight, int count)
         {
             if (maxHeight <= 0 || maxWidth <= 0 || count <= 0)
-                throw new ArgumentException();
+                throw new ArgumentException(
+                    "Sides of the rectangle and rectangle count should not be non-positive");
 
             var rectangles = new List<Size>();
             var random = new Random();
