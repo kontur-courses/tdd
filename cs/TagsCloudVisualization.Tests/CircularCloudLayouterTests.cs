@@ -68,7 +68,7 @@ public class CircularCloudLayouterTests
     [Test]
     public void PutNextRectangle_ReturnRectangle_WithDeclaredSize()
     {
-        var size = new Size(random.Next(0, int.MaxValue), random.Next(0, int.MaxValue));
+        var size = GetRandomSize(0, int.MaxValue);
 
         var rectangle = cloudLayouter.PutNextRectangle(size);
 
@@ -84,7 +84,7 @@ public class CircularCloudLayouterTests
         var result = false;
         for (int i = 0; i < count; i++)
         {
-            var rectangle = cloudLayouter.PutNextRectangle(new Size(random.Next(40, 100), random.Next(40, 100)));
+            var rectangle = cloudLayouter.PutNextRectangle(GetRandomSize(40, 100));
 
             result = rectangle.IsIntersectWith(rectangles);
             rectangles.Add(rectangle);
@@ -126,6 +126,11 @@ public class CircularCloudLayouterTests
         var circleArea = (circleDiameter * circleDiameter * Math.PI) / 4d;
         var tightness = rectanglesArea / circleArea;
         tightness.Should().BeGreaterOrEqualTo(0.8);
+    }
+
+    private Size GetRandomSize(int minValue, int maxValue)
+    {
+        return new Size(random.Next(minValue, maxValue), random.Next(minValue, maxValue));
     }
 
     private int GetCircleDiameter()
