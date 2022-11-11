@@ -128,17 +128,17 @@ public class CircularCloudLayouter_Should
         foreach (var size in sizes)
             layouter.PutNextRectangle(size);
 
-        var result = GetRadiusLengthRatioPercent(layouter.Rectangles, layouter.Center);
+        var result = GetRadiusLengthRatioPercent(layouter);
 
         result.Should().BeGreaterOrEqualTo(expectedMinPercent);
     }
 
-    private static int GetRadiusLengthRatioPercent(IEnumerable<Rectangle> rectangles, Point center)
+    private static int GetRadiusLengthRatioPercent(CircularCloudLayouter layouter)
     {
-        var radiusLengths = rectangles
+        var radiusLengths = layouter.Rectangles
             .SelectMany(AllPerimeterPoints)
             .GroupBy(Angle)
-            .Select(g => g.Max(p => Distance(p, center)))
+            .Select(g => g.Max(p => Distance(p, layouter.Center)))
             .ToArray();
         var minLength = radiusLengths.Min();
         var maxLength = radiusLengths.Max();
