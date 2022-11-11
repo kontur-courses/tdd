@@ -20,7 +20,7 @@ namespace TagCloudUnitTests
             action.Should().Throw<ArgumentException>();
         }
 
-        [TestCaseSource(nameof(_testsParameters))]
+        [TestCaseSource(nameof(TestsParameters))]
         public void GetNextPoint_ReturnsCorrectPoint_WhenSpiralTurnedOnAngle(Point centralPoint, double scaleFactor, double angleOnRadians, Point point)
         {
             var archimedeanSpiral = new ArchimedeanSpiral(centralPoint, scaleFactor);
@@ -38,7 +38,7 @@ namespace TagCloudUnitTests
                 archimedeanSpiral.GetNextPoint();
         }
 
-        private static readonly object[] _testsParameters =
+        private static readonly object[] TestsParameters =
         {
             new object[] { new Point(0, 0), 1.0, 0, new Point(0, 0) },
             new object[]
