@@ -32,8 +32,6 @@ namespace TagsCloudVisualization
             }
 
             var rectangle = new Rectangle(point, rectangleSize);
-            rectangles.Add(rectangle);
-
             return rectangle;
         }
 
