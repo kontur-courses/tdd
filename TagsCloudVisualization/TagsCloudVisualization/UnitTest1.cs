@@ -68,26 +68,20 @@ namespace TagsCloudVisualization
             layout.PutNextRectangle(new Size(3, 2));
             layout.PutNextRectangle(new Size(2, 2));
             layout.PutNextRectangle(new Size(8, 2));
-
             layout.PutNextRectangle(new Size(2, 4));
             layout.PutNextRectangle(new Size(2, 1));
             layout.PutNextRectangle(new Size(3, 2));
             layout.PutNextRectangle(new Size(2, 3));
-            layout.PutNextRectangle(new Size(14, 1));
-            layout.PutNextRectangle(new Size(1, 7));
-            layout.PutNextRectangle(new Size(1, 5));
-            layout.PutNextRectangle(new Size(16, 1));
-            layout.PutNextRectangle(new Size(1, 8));
-            
+
         }
 
         [Test]
         public void DrawRandomCloud()
         {
             Random r = new Random();
-            for(int i=0;i<100;i++)
+            for(int i=0;i<500;i++)
             {
-                layout.PutNextRectangle(new Size(r.Next(10, 50), r.Next(1, 10)));
+                layout.PutNextRectangle(new Size(r.Next(10, 80), r.Next(1, 10)));
             }
         }
 
