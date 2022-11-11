@@ -1,5 +1,7 @@
 using System.Drawing;
 using FluentAssertions;
+using NUnit.Framework.Interfaces;
+using TagsCloudVisualization.Core.Helpers;
 
 namespace TagsCloudVisualization.Core.Tests
 {
@@ -20,14 +22,16 @@ namespace TagsCloudVisualization.Core.Tests
         [TestCase(0, 0, TestName = "Constructor. x, y = 0")]
         public void Constructor_WhenCorrectArgs_ShouldNotThrow(int x, int y)
         {
-            Assert.DoesNotThrow(() => new CircularCloudLayouter(new Point(x, y)));
+            Action act = () => new CircularCloudLayouter(new Point(x, y));
+            act.Should().NotThrow<ArgumentException>();
         }
         [TestCase(-5, -5, TestName = "Constructor. x, y < 0")]
         [TestCase(-5, 5, TestName = "Constructor. x < 0 and y > 0")]
         [TestCase(5, -5, TestName = "Constructor. x > 0 and y < 0")]
         public void Constructor_WhenIncorrectArgs_ShouldThrow(int x, int y)
         {
-            Assert.Throws<ArgumentException>(() => new CircularCloudLayouter(new Point(x, y)));
+            Action act = () => new CircularCloudLayouter(new Point(x, y));
+            act.Should().Throw<ArgumentException>();
         }
 
         [TestCase(-5, -5, TestName = "PutNextRectangle. x, y < 0")]
@@ -36,7 +40,8 @@ namespace TagsCloudVisualization.Core.Tests
         [TestCase(0, 0, TestName = "PutNextRectangle. x, y = 0")]
         public void PutNextRectangle_WhenIncorrectArgs_ShouldThrow(int width, int height)
         {
-            Assert.Throws<ArgumentException>(() => _circularCloudLayouter.PutNextRectangle(new Size(width, height)));
+            Action act = () => _circularCloudLayouter.PutNextRectangle(new Size(width, height));
+            act.Should().Throw<ArgumentException>();
         }
 
         [TestCase(5, 5, TestName = "PutNextRectangle. x, y > 0 and x = y")]
@@ -50,24 +55,39 @@ namespace TagsCloudVisualization.Core.Tests
         }
 
         [TestCase(TestName = "PutNextRectangle. Check rect intersection")]
-        public void PutNextRectangle_CheckRectIntersections_ShouldBeFalse()
+        public void PutNextRectangle_RectstIsNotIntersects_ShouldBeTrue()
         {  
             var rnd = new Random();
             var circularCloud = new CircularCloudLayouter(new Point(600, 600));
 
+            var rectangles = new List<Rectangle>();
+
             for (var i = 0; i < 50; i++)
             {
-                var size = new Size(rnd.Next(30, 60), rnd.Next(30, 60));
-                circularCloud.PutNextRectangle(size);
+                var size = new Size(rnd.Next(10, 20), rnd.Next(15, 30));
+                rectangles.Add(circularCloud.PutNextRectangle(size));
             }
 
-            foreach (var rect in circularCloud.Rectangles)
+            foreach (var rect in rectangles)
             {
-                foreach (var rect2 in circularCloud.Rectangles)
-                {
-                    Assert.False(rect.IntersectsWith(rect2));
-                }
+                rectangles.Any(p => !p.IntersectsWith(rect) && p != rect).Should().BeTrue();
             }
+        }
+
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
+                return;
+
+            var path = Path.Combine(TestContext.CurrentContext.TestDirectory, $"{TestContext.CurrentContext.Test.Name}.bmp");
+
+            var bmpSaver = new BitmapSaver(new Size(1200, 1200));
+            bmpSaver.Draw(_circularCloudLayouter.Rectangles);
+            bmpSaver.Save(path);
+
+            Console.WriteLine($"Tag cloud visualization saved to file {path}");
         }
     }
 }

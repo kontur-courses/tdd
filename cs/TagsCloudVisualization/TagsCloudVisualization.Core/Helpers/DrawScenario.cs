@@ -12,18 +12,8 @@ namespace TagsCloudVisualization.Core.Helpers
         public int MinWidth { get; set; }
         public string ImageName { get; set; }
         public string SavePath { get; set; }
+        public CircularCloudLayouter CircularCloud { get; }
 
-        public DrawScenario(int rectanglesCount, int maxHeight, int minHeight, int maxWidth, int minWidth, string imageName, Size imageSize)
-        {
-            ImageSize = imageSize;
-            RectanglesCount = rectanglesCount;
-            MaxHeight = maxHeight;
-            MinHeight = minHeight;
-            MaxWidth = maxWidth;
-            MinWidth = minWidth;
-            ImageName = imageName;
-            SavePath = Path.Combine(Directory.GetCurrentDirectory(), $"{ImageName}.bmp");
-        }
         public DrawScenario(int rectanglesCount, int maxHeight, int minHeight, int maxWidth, int minWidth, string imageName)
         {
             RectanglesCount = rectanglesCount;
@@ -32,20 +22,20 @@ namespace TagsCloudVisualization.Core.Helpers
             MaxWidth = maxWidth;
             MinWidth = minWidth;
             ImageName = imageName;
+            CircularCloud = new CircularCloudLayouter(new Point(ImageSize.Width / 2, ImageSize.Height / 2));
             SavePath = Path.Combine(Directory.GetCurrentDirectory(), $"{ImageName}.bmp");
         }
 
         public void DrawAndSave()
         {
             var visualizer = new BitmapSaver(ImageSize);
-            var circularCloud = new CircularCloudLayouter(new Point(ImageSize.Width / 2, ImageSize.Height / 2));
-            var rectanglesCloud = GenerateRectanglesCloud(circularCloud);
+            var rectanglesCloud = GenerateRectanglesCloud();
 
             visualizer.Draw(rectanglesCloud);
             visualizer.Save(SavePath);
         }
 
-        private IEnumerable<Rectangle> GenerateRectanglesCloud(CircularCloudLayouter circularCloud)
+        private IEnumerable<Rectangle> GenerateRectanglesCloud()
         {
             var rnd = new Random();
 
@@ -53,7 +43,7 @@ namespace TagsCloudVisualization.Core.Helpers
             for (var i = 0; i < RectanglesCount; i++)
             {
                 var size = new Size(rnd.Next(MinWidth, MaxWidth), rnd.Next(MinHeight, MaxHeight));
-                rectangles.Add(circularCloud.PutNextRectangle(size));
+                rectangles.Add(CircularCloud.PutNextRectangle(size));
             }
 
             return rectangles;

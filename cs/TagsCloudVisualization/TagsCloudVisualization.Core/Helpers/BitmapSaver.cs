@@ -1,9 +1,8 @@
 ﻿using System.Drawing;
-using TagsCloudVisualization.Core.Interfaces;
 
 namespace TagsCloudVisualization.Core.Helpers
 {
-    public class BitmapSaver : IImgSaver
+    public class BitmapSaver
     {
         private readonly Bitmap _bitmap;
         private readonly Graphics _graphics;
@@ -15,6 +14,7 @@ namespace TagsCloudVisualization.Core.Helpers
             _graphics = Graphics.FromImage(_bitmap);
             _pen = new Pen(Color.White, 2);
         }
+
         public void Draw(IEnumerable<Rectangle> rectangles)
         {
             foreach (var rect in rectangles)

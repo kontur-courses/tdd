@@ -3,13 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization.Sandbox", "TagsCloudVisualization.Sandbox\TagsCloudVisualization.Sandbox.csproj", "{E350717E-E841-43E2-BDA0-3B57A1919435}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TagsCloudVisualization.Sandbox", "TagsCloudVisualization.Sandbox\TagsCloudVisualization.Sandbox.csproj", "{E350717E-E841-43E2-BDA0-3B57A1919435}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization.Core", "TagsCloudVisualization.Core\TagsCloudVisualization.Core.csproj", "{A63A07B1-F55E-4A42-B50F-87373FB3EFE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TagsCloudVisualization.Core", "TagsCloudVisualization.Core\TagsCloudVisualization.Core.csproj", "{A63A07B1-F55E-4A42-B50F-87373FB3EFE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization.Core.Tests", "TagsCloudVisualization.Core.Tests\TagsCloudVisualization.Core.Tests.csproj", "{D4B8BD99-D3F9-4113-AB15-23D6D089EAE3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TagsCloudVisualization.Core.Tests", "TagsCloudVisualization.Core.Tests\TagsCloudVisualization.Core.Tests.csproj", "{D4B8BD99-D3F9-4113-AB15-23D6D089EAE3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{48D64989-876F-45DF-8FA4-708B6D1B85BD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решения", "Элементы решения", "{7020CE3B-6C70-4144-B0EA-0548C08AF2D3}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

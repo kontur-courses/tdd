@@ -1,10 +1,9 @@
 ﻿using System.Drawing;
 using TagsCloudVisualization.Core.Extensions;
-using TagsCloudVisualization.Core.Interfaces;
 
 namespace TagsCloudVisualization.Core
 {
-    public class CircularCloudLayouter : ICircularCloud
+    public class CircularCloudLayouter
     {
         public readonly Point Center;       
         private readonly ArchimedeanSpiral _spiral;

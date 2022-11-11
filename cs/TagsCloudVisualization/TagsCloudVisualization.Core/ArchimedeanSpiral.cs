@@ -1,9 +1,8 @@
 ﻿using System.Drawing;
-using TagsCloudVisualization.Core.Interfaces;
 
 namespace TagsCloudVisualization.Core
 {
-    public class ArchimedeanSpiral : IArchimedeanSpiral
+    public class ArchimedeanSpiral
     {
         private readonly Point _center;
         private readonly HashSet<Point> _oldPoints = new ();
@@ -12,6 +11,7 @@ namespace TagsCloudVisualization.Core
         {
             _center = center;
         }
+
         public Point GetNextPoint()
         {
             float newAngle = 0;
