@@ -6,32 +6,39 @@ namespace TagsCloudVisualization;
 public class SpiralPointGenerator : IPointGenerator
 {
     private readonly Point center;
-    private readonly double step;
-    private readonly int parameter;
+    private readonly double angleStep;
+    private readonly int distance;
     private double angle;
 
-    public SpiralPointGenerator(Point center, int parameter = 1, double step = 0.02)
+    /// <summary>
+    /// Generates points on the spiral
+    /// </summary>
+    /// <param name="center">Initial point</param>
+    /// <param name="distance">Distance between turns of the spiral</param>
+    /// <param name="angleStep">Step of the angle</param>
+    /// <exception cref="ArgumentException"></exception>
+    public SpiralPointGenerator(Point center, int distance = 1, double angleStep = 0.02)
     {
-        if (parameter == 0)
+        if (distance == 0)
             throw new ArgumentException("Parameter should be not equal zero");
-        if (step == 0.0)
+        if (angleStep == 0.0)
             throw new ArgumentException("Step should be not equal zero");
         this.center = center;
-        this.step = step;
-        this.parameter = parameter;
+        this.angleStep = angleStep;
+        this.distance = distance;
     }
 
     public Point Next()
     {
         if (angle == 0.0)
         {
-            angle += step;
+            angle += angleStep;
             return center;
         }
 
-        int x = Convert.ToInt32(parameter * angle * Math.Cos(angle) + center.X);
-        int y = Convert.ToInt32(parameter * angle * Math.Sin(angle) + center.Y);
-        angle += step;
+        var x = Convert.ToInt32(distance * angle * Math.Cos(angle) + center.X);
+        var y = Convert.ToInt32(distance * angle * Math.Sin(angle) + center.Y);
+        angle += angleStep;
 
         return new Point(x, y);
     }

@@ -1,10 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace TagsCloudVisualization;
 
-[SuppressMessage("Interoperability", "CA1416:Проверка совместимости платформы")]
-public static class ImageGenerator
+public class ImageGenerator
 {
     private static readonly Color[] Colors =
     {
@@ -17,46 +15,46 @@ public static class ImageGenerator
         Color.Purple
     };
 
-    public static Bitmap Generate(Rectangle[] rectangles, Point center)
-    {
-        var canvasSize = GetCanvasSize(rectangles);
-        var canvas = new Bitmap(canvasSize.Width, canvasSize.Height);
-        using var graphics = Graphics.FromImage(canvas);
+    private readonly int widthOffset;
+    private readonly int heightOffset;
 
-        graphics.FillRectangle(new SolidBrush(Color.White), new Rectangle(Point.Empty, canvasSize));
-        rectangles = ToCenterOfImage(rectangles, center, canvas);
-        DrawRectangles(graphics, rectangles);
+    public ImageGenerator(int widthOffset = 200, int heightOffset = 200)
+    {
+        this.widthOffset = widthOffset;
+        this.heightOffset = heightOffset;
+    }
+
+    public Bitmap Generate(ICollection<Rectangle> rectangles)
+    {
+        var canvasParameters = CalculateCanvasParameters(rectangles);
+
+        var canvas = new Bitmap(canvasParameters.Width, canvasParameters.Height);
+        using var graphics = Graphics.FromImage(canvas);
+        var index = 0;
+        foreach (var rectangle in rectangles)
+        {
+            using var pen = new Pen(Colors[index++ % Colors.Length]);
+            rectangle.Offset(canvasParameters.Offset);
+            graphics.DrawRectangle(pen, rectangle);
+        }
+
         return canvas;
     }
 
-    private static Size GetCanvasSize(Rectangle[] rectangles)
+    private CanvasParameters CalculateCanvasParameters(ICollection<Rectangle> rectangles)
     {
-        var offset = 1000;
         var maxX = rectangles.Max(r => r.Right);
         var maxY = rectangles.Max(r => r.Bottom);
         var minX = rectangles.Min(r => r.Left);
         var minY = rectangles.Min(r => r.Top);
-        return new Size(maxX - minX + offset, maxY - minY + offset);
-    }
+        var width = maxX - minX;
+        var height = maxY - minY;
 
-    private static void DrawRectangles(Graphics graphics, IEnumerable<Rectangle> rectangles)
-    {
-        var index = 0;
-        using var pen = new Pen(Colors[index++ % Colors.Length]);
-        foreach (var rectangle in rectangles)
+        return new CanvasParameters
         {
-            pen.Color = Colors[index++ % Colors.Length];
-            graphics.DrawRectangle(pen, rectangle);
-        }
-    }
-
-    private static Rectangle[] ToCenterOfImage(Rectangle[] rectangles, Point center, Bitmap image)
-    {
-        var shiftX = image.Width / 2 - center.X;
-        var shiftY = image.Height / 2 - center.Y;
-
-        return rectangles
-            .Select(rectangle => new Rectangle(new Point(rectangle.X + shiftX, rectangle.Y + shiftY), rectangle.Size))
-            .ToArray();
+            Width = width + widthOffset,
+            Height = height + heightOffset,
+            Offset = new Point((width + widthOffset) / 2, (height + heightOffset) / 2)
+        };
     }
 }

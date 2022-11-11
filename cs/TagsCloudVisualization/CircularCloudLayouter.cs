@@ -25,16 +25,11 @@ public class CircularCloudLayouter : ICloudLayouter
         {
             var point = pointGenerator.Next();
             rectangle = new Rectangle(point, rectangleSize);
-            if (CheckPosition(rectangle))
-                break;
+            if (!rectangle.IsIntersectWith(rectangles))
+            {
+                rectangles.Add(rectangle);
+                return rectangle;
+            }
         }
-
-        rectangles.Add(rectangle);
-        return rectangle;
-    }
-
-    private bool CheckPosition(Rectangle newRectangle)
-    {
-        return !rectangles.Any(x => x.IntersectsWith(newRectangle));
     }
 }
