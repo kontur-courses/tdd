@@ -9,7 +9,7 @@ namespace TagsCloudVisualization
             var minSize = new Size(50, 50);
             var maxSize = new Size(200, 200);
             var center = new Point(1500, 1500);
-            return new CloudGenerator(100, minSize, maxSize, center, 4, 4, 0);
+            return new CloudGenerator(120, minSize, maxSize, center, 0.1, 1, 0);
         }
         
         public static void Main(string[] args)

@@ -23,6 +23,15 @@ namespace TagsCloudVisualization
             }
             bitmap.Save("Ex1.png");
         }
+        
+        public void DrawLayout(List<Rectangle> rectangles, string filename)
+        {
+            foreach (var rectangle in rectangles)
+            {
+                graphics.DrawRectangle(pen, rectangle);
+            }
+            bitmap.Save(filename);
+        }
     }
 }
 
