@@ -7,20 +7,15 @@ namespace TagCloud
 {
     public static class RectangleSizeGenerator
     {
-        private static Random _random;
+        private static readonly Random Random = new Random();
 
-        static RectangleSizeGenerator()
-        {
-            _random = new Random();
-        }
-
-        public static List<Size> GetRandomSizesList(int count, Size minSize, Size maxSize)
+        public static IReadOnlyList<Size> GetRandomSizesList(int count, Size minSize, Size maxSize)
         {
             var result = new List<Size>();
 
             for (int i = 0; i < count; i++)
             {
-                double scaleFactor = _random.NextDouble();
+                double scaleFactor = Random.NextDouble();
 
                 int width = Math.Max(minSize.Width, (int)(scaleFactor * maxSize.Width));
 
@@ -29,22 +24,25 @@ namespace TagCloud
                 result.Add(new Size(width, height));
             }
 
-            return result;
+            return result.AsReadOnly();
         }
 
-        public static List<Size> GetRandomSizesOrderedList(int count, Size minSize, Size maxSize)
+        public static IReadOnlyList<Size> GetRandomOrderedSizes(int count, Size minSize, Size maxSize)
         {
-            return GetRandomSizesList(count, minSize, maxSize).OrderByDescending(s => s.Width * s.Height).ToList();
+            return GetRandomSizesList(count, minSize, maxSize)
+                    .OrderByDescending(s => s.Width * s.Height)
+                    .ToList()
+                    .AsReadOnly();
         }
 
-        public static List<Size> GetConstantSizesList(int count, Size size)
+        public static IReadOnlyList<Size> GetConstantSizes(int count, Size size)
         {
             var result = new List<Size>();
 
             for (int i = 0; i < count; i++)
                 result.Add(size);
 
-            return result;
+            return result.AsReadOnly();
         }
 
     }

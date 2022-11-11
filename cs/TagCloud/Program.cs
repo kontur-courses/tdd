@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -7,56 +8,22 @@ namespace TagCloud
 {
     internal class Program
     {
+        private static readonly Size ImageSize = new Size(750, 750);
+
+        private static DirectoryInfo _directoryToSaveImage;
+
         static void Main(string[] args)
         {
-            var imageSize = new Size(750, 750);
+            _directoryToSaveImage = GetDirectoryToSaveImage();
 
-            var centralPoint = new Point(imageSize.Width / 2, imageSize.Height / 2);
+            var rectanglesSizes = RectangleSizeGenerator.GetConstantSizes(600, new Size(25, 10));
+            CreateAndSaveCloudImage(rectanglesSizes, "Equivalent_squares_cloud.png");
 
-            CircularCloudLayouter layouter = new CircularCloudLayouter(centralPoint);
+            rectanglesSizes = RectangleSizeGenerator.GetRandomOrderedSizes(300, new Size(20, 10), new Size(80, 40));
+            CreateAndSaveCloudImage(rectanglesSizes, "Horizontal_rectangles_cloud.png");
 
-            DirectoryInfo directoryToSaveImage = GetDirectoryToSaveImage();
-
-
-            #region Equivalent squares cloud
-
-            var sizes = RectangleSizeGenerator.GetConstantSizesList(500, new Size(25, 25));
-
-            layouter.PutRectangles(sizes);
-
-            CloudImageHandler imageHandler = new CloudImageHandler(imageSize, layouter);
-
-            imageHandler.SaveImage(Path.Combine(directoryToSaveImage.FullName, "Equivalent_squares_cloud.png"));
-
-            #endregion
-
-            #region Horizontal rectangles cloud
-
-            sizes = RectangleSizeGenerator.GetRandomSizesOrderedList(300, new Size(20, 10), new Size(80, 40));
-
-            layouter = new CircularCloudLayouter(centralPoint);
-
-            layouter.PutRectangles(sizes);
-
-            imageHandler = new CloudImageHandler(imageSize, layouter);
-
-            imageHandler.SaveImage(Path.Combine(directoryToSaveImage.FullName, "Horizontal_rectangles_cloud.png"));
-
-            #endregion
-
-            #region Vertical rectangles cloud
-
-            sizes = RectangleSizeGenerator.GetRandomSizesOrderedList(300, new Size(10, 20), new Size(40, 80));
-
-            layouter = new CircularCloudLayouter(centralPoint);
-
-            layouter.PutRectangles(sizes);
-
-            imageHandler = new CloudImageHandler(imageSize, layouter);
-
-            imageHandler.SaveImage(Path.Combine(directoryToSaveImage.FullName, "Vertical_rectangles_cloud.png"));
-
-            #endregion
+            rectanglesSizes = RectangleSizeGenerator.GetRandomOrderedSizes(300, new Size(10, 20), new Size(40, 80));
+            CreateAndSaveCloudImage(rectanglesSizes, "Vertical_rectangles_cloud.png");
         }
 
         private static DirectoryInfo GetSolutionDirectory()
@@ -79,6 +46,19 @@ namespace TagCloud
                 return solutionDirectory.GetDirectories("TagCloudImages").First();
 
             return solutionDirectory.CreateSubdirectory("TagCloudImages");
+        }
+
+        private static void CreateAndSaveCloudImage(IReadOnlyList<Size> rectanglesSizes, string fileName)
+        {
+            var centralPoint = new Point(ImageSize.Width / 2, ImageSize.Height / 2);
+
+            var layouter = new CircularCloudLayouter(centralPoint);
+
+            var imageCreator = new CloudImageGenerator(layouter, ImageSize, Color.Black);
+
+            var image = imageCreator.Generate(rectanglesSizes);
+
+            image.Save(Path.Combine(_directoryToSaveImage.FullName, fileName));
         }
     }
 }

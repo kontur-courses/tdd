@@ -1,4 +1,7 @@
-﻿namespace TagCloud
+﻿using System.Drawing;
+using System.Security.Principal;
+
+namespace TagCloud
 {
     public class Vector
     {
@@ -12,21 +15,18 @@
             Y = y;
         }
 
-        public bool IsZeroVector()
+        public bool IsPerpendicularTo(Vector other)
         {
-            return X == 0 && Y == 0;
+            return X * other.X == 0 && Y * other.Y == 0;
         }
 
-        public void SetToZeroVector()
+        public static Vector GetVectorBetweenPoints(Point startPoint, Point endPoint)
         {
-            X = 0;
-            Y = 0;
-        }
+            int x = endPoint.X - startPoint.X;
 
-        public Vector GetOppositeVector()
-        {
-            return new Vector(-this.X, -this.Y);
-        }
+            int y = endPoint.Y - startPoint.Y;
 
+            return new Vector(x, y);
+        }
     }
 }

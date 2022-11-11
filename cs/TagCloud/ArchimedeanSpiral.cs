@@ -5,28 +5,42 @@ namespace TagCloud
 {
     public class ArchimedeanSpiral
     {
-        public readonly Point _centralPoint;
+        private const double DeltaAngle = 2 * Math.PI / 360;
 
-        public double Parameter { get; set; }
+        public readonly Point CentralPoint;
 
-        public double Angle { get; set; } = 0;
+        private readonly double scaleFactor;
 
-        private readonly double _deltaAngle = 2 * Math.PI / 360;
+        private double angle;
 
-        public ArchimedeanSpiral(Point centralPoint, double parameter = 1)
+        public ArchimedeanSpiral(Point centralPoint, double scaleFactor = 1)
         {
-            _centralPoint = centralPoint;
-            Parameter = parameter;
+            if (scaleFactor <= 0)
+                throw new ArgumentException("scale factor must be more than zero");
+
+            CentralPoint = centralPoint;
+            this.scaleFactor = scaleFactor;
         }
 
         public Point GetNextPoint()
         {
-            Point nextPoint = new Point((int)(_centralPoint.X + Parameter * Angle * Math.Cos(Angle)),
-                (int)(_centralPoint.Y + Parameter * Angle * Math.Sin(Angle)));
+            var currentAngle = GetAngleAndUpdate();
 
-            Angle += _deltaAngle;
+            var x = CentralPoint.X + (int)(scaleFactor * currentAngle * Math.Cos(currentAngle));
 
-            return nextPoint;
+            var y = CentralPoint.Y + (int)(scaleFactor * currentAngle * Math.Sin(currentAngle));
+
+            return new Point(x, y);
         }
+
+        private double GetAngleAndUpdate()
+        {
+            var result = angle;
+
+            angle += DeltaAngle;
+
+            return result;
+        }
+
     }
 }

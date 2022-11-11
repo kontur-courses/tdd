@@ -5,122 +5,106 @@ using System.Linq;
 
 namespace TagCloud
 {
-    public class CircularCloudLayouter
+    public class CircularCloudLayouter : ICloudLayouter
     {
-        private readonly ArchimedeanSpiral _spiral;
+        public readonly Point CloudCenter;
 
-        public Point CloudCenter { get; }
+        private readonly ArchimedeanSpiral spiral;
 
-        public List<Rectangle> Rectangles { get; }
+        private readonly List<Rectangle> rectangles = new List<Rectangle>();
 
         public CircularCloudLayouter(Point cloudCenter)
         {
             CloudCenter = cloudCenter;
 
-            Rectangles = new List<Rectangle>();
-
-            _spiral = new ArchimedeanSpiral(cloudCenter);
+            spiral = new ArchimedeanSpiral(CloudCenter);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            VerifyRectangleSize(rectangleSize);
+            if (!IsValidRectangleSize(rectangleSize))
+                throw new ArgumentException("width and height of rectangle must be more than zero");
 
             Rectangle rectangle;
 
             do
             {
-                Point point = _spiral.GetNextPoint();
+                Point pointToPutRectangle = spiral.GetNextPoint();
 
-                rectangle = new Rectangle(new Point(point.X - rectangleSize.Width / 2, point.Y - rectangleSize.Height / 2), rectangleSize);
+                rectangle = new Rectangle(pointToPutRectangle, rectangleSize);
 
-            } while (IsIntersectWithAnyRectangle(rectangle));
+            } while (IsIntersectWithAnyExistingRectangle(rectangle));
 
-            Rectangles.Add(ShiftRectangleToCenterPoint(rectangle));
+            rectangle = ShiftRectangleToCenterPoint(rectangle);
+
+            rectangles.Add(rectangle);
 
             return rectangle;
         }
 
-        private static void VerifyRectangleSize(Size rectangleSize)
+        private static bool IsValidRectangleSize(Size rectangleSize)
         {
-            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
-                throw new ArgumentException("width and height of rectangle must be more than zero");
+            return rectangleSize.Width > 0 && rectangleSize.Height > 0;
         }
 
-        private bool IsIntersectWithAnyRectangle(Rectangle rectangle)
+        private bool IsIntersectWithAnyExistingRectangle(Rectangle rectangle)
         {
-            return Rectangles?.Any(r => r.IntersectsWith(rectangle)) ?? false;
+            return rectangles.Any(r => r.IntersectsWith(rectangle));
         }
 
         private Rectangle ShiftRectangleToCenterPoint(Rectangle rectangle)
         {
-            if (IsСoincidesWithCloudCenter(rectangle))
-                return rectangle;
+            var directionsToShift = GetDirectionsToShift(rectangle);
 
-            Vector[] shiftAxialOrts = GetShiftAxialOrts(rectangle);
+            foreach (var direction in directionsToShift)
+                rectangle = ShiftRectangleAlongDirection(rectangle, direction);
 
-            while (!shiftAxialOrts[0].IsZeroVector() || !shiftAxialOrts[1].IsZeroVector())
+            return rectangle;
+        }
+
+        private Vector[] GetDirectionsToShift(Rectangle rectangle)
+        {
+            int deltaX = CloudCenter.X - rectangle.GetCenter().X > 0 ? 1 : -1;
+
+            int deltaY = CloudCenter.Y - rectangle.GetCenter().Y > 0 ? 1 : -1;
+
+            return new[] { new Vector(deltaX, 0), new Vector(0, deltaY) };
+        }
+
+        private Rectangle ShiftRectangleAlongDirection(Rectangle rectangle, Vector direction)
+        {
+            while (TryShiftRectangleAlongDirection(rectangle, direction, out Rectangle shiftedRectangle))
             {
-                for (int i = 0; i < shiftAxialOrts.Length; i++)
-                {
-                    if (shiftAxialOrts[i].IsZeroVector())
-                        continue;
-
-                    if (!TryMoveRectangleAlongVector(rectangle, shiftAxialOrts[i], out Rectangle movedRectangle))
-                    {
-                        shiftAxialOrts[i].SetToZeroVector();
-                        continue;
-                    }
-
-                    rectangle = movedRectangle;
-
-                    int[] axleDistances = GetAxialDistancesBetweenPoints(CloudCenter, rectangle.GetCenter());
-
-                    if (axleDistances[i] == 0)
-                        shiftAxialOrts[i].SetToZeroVector();
-                }
+                rectangle = shiftedRectangle;
             }
 
             return rectangle;
         }
 
-        private int[] GetAxialDistancesBetweenPoints(Point pointA, Point pointB)
+        private bool TryShiftRectangleAlongDirection(Rectangle rectangle, Vector direction, out Rectangle shiftedRectangle)
         {
-            return new int[] { pointA.X - pointB.X, pointA.Y - pointB.Y };
-        }
-
-        private bool IsСoincidesWithCloudCenter(Rectangle rectangle)
-        {
-            int[] axleDistances = GetAxialDistancesBetweenPoints(CloudCenter, rectangle.GetCenter());
-
-            return axleDistances[0] == 0 && axleDistances[1] == 0;
-        }
-
-        private Vector[] GetShiftAxialOrts(Rectangle rectangle)
-        {
-            int[] axleDistances = GetAxialDistancesBetweenPoints(CloudCenter, rectangle.GetCenter());
-
-            return new Vector[]
+            if (IsRectangleAlignedAlongDirection(rectangle, direction))
             {
-                new Vector(axleDistances[0] == 0 ? 0 : axleDistances[0] / Math.Abs(axleDistances[0]), 0),
-                new Vector(0, axleDistances[1] == 0 ? 0 : axleDistances[1] / Math.Abs(axleDistances[1]))
-            };
-        }
+                shiftedRectangle = rectangle;
 
-        private bool TryMoveRectangleAlongVector(Rectangle rectangle, Vector vector, out Rectangle movedRectangle)
-        {
-            movedRectangle = rectangle.MoveAlongVector(vector);
+                return false;
+            }
 
-            if (IsIntersectWithAnyRectangle(movedRectangle))
+            var shiftedLocation = rectangle.Location.MoveOn(direction.X, direction.Y);
+
+            shiftedRectangle = new Rectangle(shiftedLocation, rectangle.Size);
+
+            if (IsIntersectWithAnyExistingRectangle(shiftedRectangle))
                 return false;
 
             return true;
         }
 
-        public void PutRectangles(List<Size> sizes)
+        private bool IsRectangleAlignedAlongDirection(Rectangle rectangle, Vector direction)
         {
-            foreach (var size in sizes)
-                this.PutNextRectangle(size);
+            var vectorBetweenCenters = Vector.GetVectorBetweenPoints(CloudCenter, rectangle.GetCenter());
+
+            return direction.IsPerpendicularTo(vectorBetweenCenters);
         }
     }
 }
