@@ -1,11 +1,12 @@
 ﻿using System.Collections.Immutable;
 using System.Drawing;
+using QuadTrees;
 
 namespace TagCloud;
 
 public class CircularCloudLayouter : ICloudLayouter
 {
-    private readonly List<Rectangle> rectangles = new();
+    private readonly QuadTreeRect<RectWrapper> rectanglesQuadTree;
     private readonly IEnumerator<Point> spiralEnumerator;
 
     public CircularCloudLayouter(Point center, double spiralExpansionStep = 0.01, double spiralTwistStep = 0.01)
@@ -13,10 +14,15 @@ public class CircularCloudLayouter : ICloudLayouter
         Center = center;
         spiralEnumerator = new SpiralPointGenerator(spiralExpansionStep, spiralTwistStep)
             .Generate(center).GetEnumerator();
+        rectanglesQuadTree = new QuadTreeRect<RectWrapper>(
+            int.MinValue / 2, int.MinValue / 2, int.MaxValue, int.MaxValue);
     }
 
     public Point Center { get; }
-    public ImmutableArray<Rectangle> Rectangles => rectangles.ToImmutableArray();
+
+    public ImmutableArray<Rectangle> Rectangles => rectanglesQuadTree
+        .GetAllObjects()
+        .Select(rw => rw.Rect).ToImmutableArray();
 
     public Rectangle PutNextRectangle(Size rectangleSize)
     {
@@ -24,10 +30,10 @@ public class CircularCloudLayouter : ICloudLayouter
             throw new ArgumentException($"Width and height of the rectangle must be positive, but {rectangleSize}");
 
         var rectangle = CreateNewRectangle(rectangleSize);
-        while (rectangles.Any(r => r.IntersectsWith(rectangle)))
+        while (rectanglesQuadTree.GetObjects(rectangle).Any())
             rectangle = CreateNewRectangle(rectangleSize);
 
-        rectangles.Add(rectangle);
+        rectanglesQuadTree.Add(new RectWrapper(rectangle));
 
         return rectangle;
     }
