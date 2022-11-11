@@ -13,10 +13,10 @@ namespace TagsCloudVisualization
     {
         private List<Rectangle> rectangles;
         private Point center;
-        private CircularCloudLayouter circularCloudLayouter;
+        private CircularCloudLayouter sut;
 
         [OneTimeSetUp]
-        public void StartTest()
+        public void StartTests()
         {
             center = new Point(200, 100);
         }
@@ -25,13 +25,13 @@ namespace TagsCloudVisualization
         public void SetupTest()
         {
             rectangles = new List<Rectangle>();
-            circularCloudLayouter = new CircularCloudLayouter(center);
+            sut = new CircularCloudLayouter(center);
         }
         
         [Test]
         public void PutNextRectangle_FirstGotRectangle_ShouldContainsCenter()
         {
-            rectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(10, 5)));
+            rectangles.Add(sut.PutNextRectangle(new Size(10, 5)));
             rectangles.First().Contains(center).Should().Be(true);
         }
         
@@ -43,7 +43,7 @@ namespace TagsCloudVisualization
         {
             var size = new Size(20, 5);
             rectangles = Enumerable.Range(0, count)
-                .Select(item => circularCloudLayouter.PutNextRectangle(size))
+                .Select(item => sut.PutNextRectangle(size))
                 .ToList();
             for (var i = 0; i < count; i++)
             {
