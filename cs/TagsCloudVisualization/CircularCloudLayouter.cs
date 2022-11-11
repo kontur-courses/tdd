@@ -2,53 +2,54 @@
 
 public class CircularCloudLayouter
 {
-    private Point center;
-    private int radius;
-    private List<Rectangle> rectangles = new();
-    public CircularCloudLayouter(Point center)
+    public Rectangle PutNextRectangle(List<Rectangle> rectangles, Size rectangleSize)
     {
-        if (center.X <= 0 || center.Y <= 0)
-            throw new ArgumentException("X and Y much be positive");
-        this.center = center;
-        radius = Math.Min(center.X, center.Y);
-    }
-    public Rectangle PutNextRectangle(Size rectangleSize)
-    {
+        if (rectangles.Count == 0)
+            throw new ArgumentException("Rectangles list should be not empty");
         if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
             throw new ArgumentException("Height and Width much be positive");
-        Rectangle buffer = new(); 
-        if (!TryToPutRectangleInsideSpiral(rectangleSize, out buffer))
+        Rectangle newRectangle; 
+        if (!TryToPutRectangleInsideSpiral(rectangles, rectangleSize, out newRectangle))
             throw new ArgumentException("Rectangle size so much");
-        rectangles.Add(buffer);
-        return buffer;
+        rectangles.Add(newRectangle);
+        return newRectangle;
     }
 
-    private bool TryToPutRectangleInsideSpiral(Size rectangleSize, out Rectangle buffer)
+    private bool TryToPutRectangleInsideSpiral(List<Rectangle> rectangles, Size rectangleSize, out Rectangle newRectangle)
     {
-        int x, y = x = 0;
+        var center = rectangles[0].GetCenter();
+        int radius = Math.Min(center.X, center.Y);
+        int x = 0;
+        int y = 0;
         double angel = 0;
-        buffer = new Rectangle();
-        while (GetDiagonal(x, y) < radius)
+        var rectPos = new Point(x - rectangleSize.Width / 2 + center.X,
+            y - rectangleSize.Height / 2 + center.Y);
+        var rectangle = new Rectangle(rectPos, rectangleSize);
+        newRectangle = rectangle;
+        while (Math.Sqrt(x * x + y * y) < radius)
         {
-            var rectPos = new Point(x - rectangleSize.Width / 2 + center.X,
-                y - rectangleSize.Height / 2 + center.Y);
-            buffer = new Rectangle(rectPos, rectangleSize);
-            var stepLength = GetStepLengthToSpiral(7);
+            var stepLength = (int)(7 / (2 * Math.PI));
+            newRectangle = rectangle;
+            if (rectangleSize.GetDiagonal() > 2 * radius) return false;
+            if (rectangles.Count == 0) return true;
+            var isContain = rectangles.Any(x => x.Contains(rectangle.GetCenter()));
+            var isIntersect = rectangles.Any(x => x.IntersectsWith(rectangle));;
+            if (!isIntersect && !isContain)
+            {
+                CorrectPosition(rectangle, center, rectangles);
+                return true;
+            }
             angel += Math.PI/180;
             x = (int)(angel * Math.Cos(angel) * stepLength);
             y = (int)(angel * Math.Sin(angel) * stepLength);
-            if (rectangleSize.GetDiagonal() > 2 * radius) return false;
-            if (rectangles.Count == 0) return true;
-            if (CheckIntersect(buffer) && CheckInsideRectangles(buffer.GetCenter()))
-            {
-                
-                return true;
-            }
+            rectPos = new Point(x - rectangleSize.Width / 2 + center.X,
+                y - rectangleSize.Height / 2 + center.Y);
+            newRectangle = new Rectangle(rectPos, rectangleSize);
         }
         return false;
     }
 
-    private void CorrectPosition(Rectangle buffer)
+    private void CorrectPosition(Rectangle buffer, Point center, List<Rectangle> rectangles)
     {
         var horizontalOffset = true;
         var verticalOffset = true;
@@ -56,54 +57,23 @@ public class CircularCloudLayouter
         while ((horizontalOffset || verticalOffset) && count < 1000)
         {
             horizontalOffset = buffer.GetCenter().X < center.X
-                ? TryToOffset(1, 0, buffer)
-                : TryToOffset(-1, 0, buffer);
+                ? TryToOffset(1, 0, buffer, rectangles)
+                : TryToOffset(-1, 0, buffer, rectangles);
             verticalOffset = buffer.GetCenter().Y < center.Y
-                ? TryToOffset(0, 1, buffer)
-                : TryToOffset(0, -1, buffer);
+                ? TryToOffset(0, 1, buffer, rectangles)
+                : TryToOffset(0, -1, buffer, rectangles);
             count += 1;
         }
     }
-    private bool TryToOffset(int x, int y, Rectangle buffer)
+    private bool TryToOffset(int x, int y, Rectangle buffer, List<Rectangle> rectangles)
     {
         buffer.Offset(x, y);
         if (rectangles.Any(x => x.IntersectsWith(buffer)))
         {
             buffer.Offset(-x, -y);
+            
             return false;
         }
-        return true;
-    }
-    private int GetStepLengthToSpiral(int stepLength)
-    {
-        return (int)(stepLength / (2 * Math.PI));
-    }
-    private bool CheckInsideRectangles(Point point)
-    {
-        return !rectangles.Any(x => x.Contains(point));
-    }
-    private bool CheckIntersect(Rectangle rect)
-    {
-        return !rectangles.Any(x => x.IntersectsWith(rect));
-    }
-    private double GetDiagonal(int x, int y)
-    {
-        return Math.Sqrt(x * x + y * y);
-    }
-    public bool SaveAsPic(string pathFolder)
-    {
-        Bitmap bitmap = new Bitmap(radius * 2, radius * 2);; 
-        Graphics graph = Graphics.FromImage(bitmap);
-        graph.DrawRectangles(new Pen(Color.Black), rectangles.ToArray());
-        bitmap.Save(pathFolder + "\\pics.btm");
-        return true;
-    }
-    public bool SaveAsPic(string pathFolder, string name)
-    {
-        Bitmap bitmap = new Bitmap(radius * 2, radius * 2);; 
-        Graphics graph = Graphics.FromImage(bitmap);
-        graph.DrawRectangles(new Pen(Color.Black), rectangles.ToArray());
-        bitmap.Save(pathFolder + "\\" + name);
         return true;
     }
 }
