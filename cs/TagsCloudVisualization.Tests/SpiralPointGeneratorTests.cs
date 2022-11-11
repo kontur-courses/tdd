@@ -25,10 +25,10 @@ public class SpiralPointGeneratorTests
         act.Should().NotThrow<ArgumentException>();
     }
 
-    [TestCaseSource(nameof(Cases))]
-    public void Next_ShouldReturnCorrectNextPoint_With(int parameter, double step, Point[] expectedPoints)
+    [TestCaseSource(nameof(NextCases))]
+    public void Next_ShouldReturnCorrectNextPoint_With(Point center, int parameter, double step, Point[] expectedPoints)
     {
-        var spiral = new SpiralPointGenerator(new Point(100, 100), parameter, step);
+        var spiral = new SpiralPointGenerator(center, parameter, step);
 
         var actual = new List<Point>();
         for (int i = 0; i < expectedPoints.Length; i++)
@@ -39,21 +39,24 @@ public class SpiralPointGeneratorTests
         actual.Should().BeEquivalentTo(expectedPoints);
     }
 
-    private static object[] Cases =
+    private static TestCaseData[] NextCases =
     {
-        new TestCaseData(2, 0.4, new Point[]
+        new TestCaseData(new Point(100, 100), 2, 0.4, new Point[]
         {
             new Point(100, 100), new Point(101, 100), new Point(101, 101), new Point(101, 102)
         }).SetName("{m}PositiveArguments"),
-        new TestCaseData(-2, 0.4, new Point[]
+
+        new TestCaseData(new Point(100, 100), -2, 0.4, new Point[]
         {
             new Point(100, 100), new Point(99, 100), new Point(99, 99), new Point(99, 98)
         }).SetName("{m}NegativeParameter"),
-        new TestCaseData(2, -0.4, new Point[]
+
+        new TestCaseData(new Point(100, 100), 2, -0.4, new Point[]
         {
             new Point(100, 100), new Point(99, 100), new Point(99, 101), new Point(99, 102)
         }).SetName("{m}NegativeStep"),
-        new TestCaseData(-2, -0.4, new Point[]
+
+        new TestCaseData(new Point(100, 100), -2, -0.4, new Point[]
         {
             new Point(100, 100), new Point(101, 100), new Point(101, 99), new Point(101, 98)
         }).SetName("{m}NegativeParameters"),
