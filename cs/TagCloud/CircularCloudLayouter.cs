@@ -15,7 +15,8 @@ public class CircularCloudLayouter : ICloudLayouter
         spiralEnumerator = new SpiralPointGenerator(spiralExpansionStep, spiralTwistStep)
             .Generate(center).GetEnumerator();
         rectanglesQuadTree = new QuadTreeRect<RectWrapper>(
-            int.MinValue / 2, int.MinValue / 2, int.MaxValue, int.MaxValue);
+            int.MinValue / 2 + center.X, int.MinValue / 2 + center.Y,
+            int.MaxValue, int.MaxValue);
     }
 
     public Point Center { get; }
