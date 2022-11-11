@@ -13,34 +13,49 @@ namespace TagsCloudVisualization
     {
         private Bitmap bitmap;
         private Graphics graphics;
+        private CircularCloudLayouter layout;
+        public int Scale = 1;
 
         public string SavePath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).ToString(),
             "SavedImages", "img.jpg");
-        public Pen pen;
-        private int scale = 1;
 
-        public TagCloudDrawer(Size bitmapSize, int scale)
+        public Pen pen = new Pen(Color.Red, 1);
+        public TagCloudDrawer(CircularCloudLayouter layout)
         {
-            bitmap = new Bitmap(bitmapSize.Width, bitmapSize.Height);
-            graphics = Graphics.FromImage(bitmap);
-            pen = new Pen(Color.Red, 2);
-            this.scale = scale;
+            this.layout = layout;
         }
 
-        public void DrawRectangle(Rectangle rectangle)
+        private void DrawRectangle(Rectangle rectangle)
         {
-            rectangle.X *= scale;
-            rectangle.X -= bitmap.Width / 2 * (scale - 1);
-            rectangle.Y *= scale;
-            rectangle.Y -= bitmap.Height / 2 * (scale - 1);
-            rectangle.Width *= scale;
-            rectangle.Height *= scale;
             graphics.FillRectangle(Brushes.Blue, rectangle);
             graphics.DrawRectangle(pen, rectangle);
         }
 
+        public void DrawImage()
+        {
+            Rectangle borders = layout.GetBorders();
+            bitmap = new Bitmap(borders.Width * Scale, borders.Height * Scale);
+            graphics = Graphics.FromImage(bitmap);
+
+            var ShiftedRectangles = layout.PlacedRectangles.Select(r => new Rectangle(
+                (r.X - borders.X) * Scale,
+                (r.Y - borders.Y) * Scale,
+                r.Width * Scale,
+                r.Height * Scale));
+
+            foreach (var rectangle in ShiftedRectangles)
+            {
+                DrawRectangle(rectangle);
+            }
+        }
+
+
         public void SaveImage()
         {
+            if (!Directory.Exists(Directory.GetParent(SavePath).ToString()))
+            {
+                Directory.CreateDirectory(Directory.GetParent(SavePath).ToString());
+            }
             bitmap.Save(SavePath, ImageFormat.Jpeg);
         }
         

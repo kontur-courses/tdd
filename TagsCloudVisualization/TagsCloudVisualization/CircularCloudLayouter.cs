@@ -7,6 +7,7 @@ namespace TagsCloudVisualization
     internal class CircularCloudLayouter
     {
         public List<Rectangle> FreeRectangles = new List<Rectangle>();
+        public List<Rectangle> PlacedRectangles = new List<Rectangle>();
 
         private Point leftUpperCorner;
         private Point rightBottomCorner;
@@ -33,11 +34,13 @@ namespace TagsCloudVisualization
                     rectangleSize.Width + leftUpperCorner.X,
                     rectangleSize.Height + leftUpperCorner.Y);
 
-                return new Rectangle(
-                    leftUpperCorner.X + center.X,
-                    leftUpperCorner.Y + center.Y,
-                    rectangleSize.Width,
-                    rectangleSize.Height);
+                PlacedRectangles.Add(
+                    new Rectangle(
+                        leftUpperCorner.X + center.X,
+                        leftUpperCorner.Y + center.Y,
+                        rectangleSize.Width,
+                        rectangleSize.Height));
+                return PlacedRectangles[0];
             }
 
 
@@ -60,6 +63,7 @@ namespace TagsCloudVisualization
                 else currentAddState += 1;
             }
 
+            PlacedRectangles.Add(rect);
             return rect;
         }
 
@@ -274,7 +278,13 @@ namespace TagsCloudVisualization
 
             return initialisedRectangle;
         }
-        
+
+        public Rectangle GetBorders()
+        {
+            return new Rectangle(leftUpperCorner.X + center.X, leftUpperCorner.Y + center.Y,
+                rightBottomCorner.X - leftUpperCorner.X, rightBottomCorner.Y - leftUpperCorner.Y);
+        }
+
         private enum AddRectangleState
         {
             RightUp,
