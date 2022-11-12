@@ -1,4 +1,7 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -10,9 +13,6 @@ namespace TagsCloudVisualization
 
         public CircularCloudLayouter(Spiral spiral)
         {
-            if (spiral is null)
-                throw new ArgumentException("Spiral should not be null");
-
             rectangles = new List<Rectangle>();
             this.spiral = spiral;
         }
@@ -35,7 +35,7 @@ namespace TagsCloudVisualization
             return rectangle;
         }
 
-        public List<Rectangle> GetRectangles(List<Size> rectangleSizes)
+        public List<Rectangle> GetRectangles(IEnumerable<Size> rectangleSizes)
         {
             foreach (var size in rectangleSizes)
                 rectangles.Add(PutNextRectangle(size));
@@ -43,7 +43,7 @@ namespace TagsCloudVisualization
             return rectangles;
         }
 
-        public bool RectangleCanBePlaced(Point position, Size rectangleSize)
+        private bool RectangleCanBePlaced(Point position, Size rectangleSize)
         {
             var rect = new Rectangle(position, rectangleSize);
             return !rectangles.Any(rectangle => rectangle.IntersectsWith(rect));

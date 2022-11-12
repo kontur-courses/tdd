@@ -1,6 +1,11 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using FluentAssertions;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization.TagsCloudVisualizationTests
 {
@@ -24,39 +29,17 @@ namespace TagsCloudVisualization.TagsCloudVisualizationTests
         [TearDown]
         public void TearDown()
         {
-            if (TestContext.CurrentContext.Result.FailCount != 0)
+            if (TestContext.CurrentContext.Result.Outcome == ResultState.Failure)
             {
-                var path = @"..\..\..\TagsCloudVisualizationTests\FallenTests\";
-                var name = "Fallen Test";
-                var visualizer = new CloudVisualizer(center, addedRectangles, path: path, imageName: name);
+                var workingDirectory = Environment.CurrentDirectory;
+                var projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
+                var path = projectDirectory + @"\TagsCloudVisualizationTests\FallenTests\";
+                var imageName = TestContext.CurrentContext.Test.Name;
+                var visualizer = new CloudVisualizer(center, addedRectangles, path: path, imageName: imageName);
                 visualizer.CreateImage();
 
-                Console.WriteLine($"Tag cloud visualization saved to file {path}{name}");
+                Console.WriteLine($"Tag cloud visualization saved to file {path}{imageName}");
             }
-        }
-
-        [Test]
-        public void CloudInitialization_ThrowsNullReferenceException_OnNullSpiral()
-        {
-            var action = () => new CircularCloudLayouter(null);
-            action.Should().Throw<ArgumentException>()
-                .WithMessage("Spiral should not be null");
-        }
-
-        [TestCase(0)]
-        [TestCase(1)]
-        [TestCase(100)]
-        public void PutNextRectangle_ReturnPutRectangles_CorrectCount(int expectedCount)
-        {
-            var size = new Size(100, 100);
-
-            for (int i = 0; i < expectedCount; i++)
-            {
-                var rectangle = layouter.PutNextRectangle(size);
-                addedRectangles.Add(rectangle);
-            }
-
-            addedRectangles.Count().Should().Be(expectedCount);
         }
 
         [TestCase(1, -1, TestName = "Negative height, correct width")]
@@ -79,15 +62,10 @@ namespace TagsCloudVisualization.TagsCloudVisualizationTests
             RectanglesIntersect(addedRectangles).Should().BeFalse();
         }
 
-        private bool RectanglesIntersect(List<Rectangle> rectangles)
+        private static bool RectanglesIntersect(IEnumerable<Rectangle> rectangles)
         {
-            foreach (var rect in rectangles)
-            {
-                if (rectangles.Any(rectangle => rectangle.IntersectsWith(rect) && !rectangle.Equals(rect)))
-                    return true;
-            }
-
-            return false;
+            return rectangles.Any(rectangle1 => rectangles.Any(rectangle2 =>
+                rectangle2.IntersectsWith(rectangle1) && !rectangle1.Equals(rectangle2)));
         }
     }
 }
