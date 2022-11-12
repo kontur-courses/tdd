@@ -22,18 +22,10 @@ namespace TagsCloudVisualization
             return (point.Y - 1 > rect.Center().Y || point.Y + 1 < rect.Center().Y);
         }
 
-        public static bool AreIntersected(this Rectangle r1, Rectangle r2)
-        {
-            return (r1.Left >= r2.Left || r1.Right >= r2.Left)
-                   && (r1.Top >= r2.Top || r1.Top + r1.Height >= r2.Top)
-                   && (r2.Left >= r1.Left || r2.Right >= r1.Left)
-                   && (r2.Top >= r1.Top || r2.Top + r2.Height >= r1.Top);
-        }
-
         public static bool AreIntersected(this Rectangle rectangle, List<Rectangle> rectangles)
         {
             if (rectangles is null) return false;
-            return rectangles.Any(rect => AreIntersected(rectangle, rect));
+            return rectangles.Any(rectangle.IntersectsWith);
         }
 
         public static bool AreIntersected(this List<Rectangle> rectangles)
@@ -42,7 +34,7 @@ namespace TagsCloudVisualization
             {
                 for (var j = i + 1; j < rectangles.Count; j++)
                 {
-                    if (AreIntersected(rectangles[i], rectangles[j]))
+                    if (rectangles[i].IntersectsWith(rectangles[j]))
                         return true;
                 }
             }
