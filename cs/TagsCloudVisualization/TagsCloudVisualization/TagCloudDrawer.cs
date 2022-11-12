@@ -11,9 +11,10 @@ public class TagCloudDrawer
     private Pen _pen;
     private CircularCloudLayouter _layouter;
 
-    public TagCloudDrawer(int windowWidth, int windowHeight, int borderWidth, Color borderColor)
+    public TagCloudDrawer(int windowWidth, int windowHeight, int borderWidth, Color borderColor,
+        CircularCloudLayouter layouter)
     {
-        _layouter = new CircularCloudLayouter(new Point(windowWidth / 2, windowHeight / 2));
+        _layouter = layouter;
         _bitmap = new Bitmap(windowWidth, windowHeight);
         _graphics = Graphics.FromImage(_bitmap);
         _pen = new Pen(borderColor, borderWidth);
