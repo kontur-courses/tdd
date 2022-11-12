@@ -10,10 +10,11 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
-        private Point center;
+        private readonly Point center;
         private LinkedList<Rectangle> rectangles;
         private double angle = 0;
         private double radius = 0;
+
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
@@ -25,19 +26,21 @@ namespace TagsCloudVisualization
             if (rectangleSize.Width == 0 || rectangleSize.Height == 0)
                 throw new ArgumentException();
 
-            var rect = new Rectangle(new Point(center.X + GetX(radius,angle),center.Y+GetY(radius,angle)),rectangleSize);
-            while (IsIntersectsOthersRectangles(rect))
+            var rect = GetAddedRectangle(rectangleSize, center, angle, radius);
+            while (IsIntersectsOthersRectangles(rect,rectangles))
             {
                 angle += Math.PI / 12;
                 radius += 0.25;
-                rect = new Rectangle(new Point(center.X + GetX(radius, angle), center.Y + GetY(radius, angle)), rectangleSize);
+                rect = GetAddedRectangle(rectangleSize, center, angle, radius);
             }
             rectangles.AddLast(rect);
             return rect;
         }
 
-        private bool IsIntersectsOthersRectangles(Rectangle rectangle)
+        public bool IsIntersectsOthersRectangles(Rectangle rectangle,IEnumerable<Rectangle> rectangles)
         {
+            if (rectangles == null)
+                throw new ArgumentNullException();
             foreach (var rect in rectangles)
             {
                 if (rect.IntersectsWith(rectangle)) 
@@ -46,6 +49,11 @@ namespace TagsCloudVisualization
             return false;
         }
 
+        private Rectangle GetAddedRectangle(Size rectangleSize, Point centerPoint, double angle, double radius)
+        {
+            var location = new Point(centerPoint.X + GetX(radius, angle), centerPoint.Y + GetY(radius, angle));
+            return new Rectangle(location, rectangleSize);
+        }
         private int GetX(double r, double a) => (int)(r * Math.Cos(a));
         private int GetY(double r, double a) => (int)(r * Math.Sin(a));
     }
