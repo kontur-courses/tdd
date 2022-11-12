@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -17,12 +18,14 @@ namespace TagsCloudVisualization.TagsCloudVisualizationTests
 
         [TestCase(0.1,
             new[] { 401, 401, 400, 400 },
-            new[] { 400, 401, 401, 402 })]
+            new[] { 400, 401, 401, 402 },
+            TestName = "AngleStep is positive")]
         [TestCase(-0.1,
             new[] { 399, 399, 400, 400 },
-            new[] { 400, 401, 401, 402 })]
-        public void GetPoints_ShouldReturnSpiralPoints_OnCorrectValue(
-            double step, int[] x, int[] y)
+            new[] { 400, 401, 401, 402 },
+            TestName = "AngleStep is negative")]
+        public void GetPoints_ShouldReturnSpiralPoints_OnCorrectAngleStep(
+            double angleStep, int[] x, int[] y)
         {
             var expectedPoints = new Point[x.Length];
 
@@ -31,7 +34,7 @@ namespace TagsCloudVisualization.TagsCloudVisualizationTests
                 expectedPoints[i] = new Point(x[i], y[i]);
             }
 
-            var spiral = new Spiral(new Point(400, 400), step);
+            var spiral = new Spiral(new Point(400, 400), angleStep);
             spiral.GetPoints(x.Length).Should().BeEquivalentTo(expectedPoints);
         }
     }

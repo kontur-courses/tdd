@@ -1,5 +1,6 @@
-﻿using System.Drawing;
-using System.Runtime.InteropServices.ComTypes;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace TagsCloudVisualization
 {
@@ -8,6 +9,7 @@ namespace TagsCloudVisualization
         private readonly Point center;
         private readonly double angleStep;
         private readonly List<Point> points;
+        private double angle;
 
         public Spiral(Point center, double angleStep = 0.3)
         {
@@ -17,17 +19,18 @@ namespace TagsCloudVisualization
             this.center = center;
             this.angleStep = angleStep;
             points = new List<Point>();
+            angle = 0.0;
         }
 
         public List<Point> GetPoints(int count)
         {
-            if (points.Count != 0)
+            if (points.Count >= count)
                 return points;
 
-            double angle = 0.0;
-            var currentPoint = center;
+            var currentPoint = points.Count != 0 ? points[^1] : center;
+            var i = 0;
 
-            for (int i = 0; i < count;)
+            while (i < count)
             {
                 var x = center.X + (int)Math.Round(angle * Math.Cos(angle));
                 var y = center.Y + (int)Math.Round(angle * Math.Sin(angle));
