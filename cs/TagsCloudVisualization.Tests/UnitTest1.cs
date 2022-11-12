@@ -4,11 +4,12 @@ using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
+using TagsCloudVisualization.Extensions;
 using TestResult = Microsoft.VisualStudio.TestPlatform.ObjectModel.TestResult;
 
 namespace TagsCloudVisualization.Tests
 {
-    public class CircularCloudLayouterTest
+    public class UnitTest1
     {
         private CircularCloudLayouter circularCloudLayouter;
         [SetUp]
@@ -37,7 +38,7 @@ namespace TagsCloudVisualization.Tests
                 new Rectangle(1,1,2,2)
             };
 
-            var result = circularCloudLayouter.IsIntersectsOthersRectangles(rectangle, notIntersectRectangles);
+            var result = rectangle.IsIntersectsOthersRectangles(notIntersectRectangles);
 
             return result;
         }
@@ -48,7 +49,7 @@ namespace TagsCloudVisualization.Tests
             var rectangle = new Rectangle(0,0,1,1);
             var rectangles = new List<Rectangle>();
 
-            var result = circularCloudLayouter.IsIntersectsOthersRectangles(rectangle, rectangles);
+            var result = rectangle.IsIntersectsOthersRectangles(rectangles);
 
             result.Should().BeFalse();
         }
@@ -57,7 +58,7 @@ namespace TagsCloudVisualization.Tests
         {
             var rectangle = new Rectangle(0, 0, 1, 1);
 
-            Action action =()=> circularCloudLayouter.IsIntersectsOthersRectangles(rectangle, null);
+            Action action =()=> rectangle.IsIntersectsOthersRectangles(null);
 
             action.Should().Throw<ArgumentNullException>();
         }
