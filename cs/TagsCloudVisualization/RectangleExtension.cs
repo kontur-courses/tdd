@@ -11,8 +11,9 @@ public static class RectangleExtension
     {
         return Math.Sqrt(rect.Width * rect.Width + rect.Height * rect.Height);
     }
-    public static double GetDiagonal(this Rectangle rect)
+
+    public static int GetSquare(this Rectangle rectangle)
     {
-        return Math.Sqrt(rect.Width * rect.Width + rect.Height * rect.Height);
+        return rectangle.Width * rectangle.Height;
     }
 }
