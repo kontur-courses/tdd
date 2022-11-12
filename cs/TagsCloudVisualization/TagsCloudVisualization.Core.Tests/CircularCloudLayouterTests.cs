@@ -2,6 +2,7 @@ using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework.Interfaces;
 using TagsCloudVisualization.Core.Helpers;
+using TagsCloudVisualization.Core.Extensions;
 
 namespace TagsCloudVisualization.Core.Tests
 {
@@ -84,7 +85,67 @@ namespace TagsCloudVisualization.Core.Tests
                return circularCloudLayouter.Rectangles.Any(p => !p.IntersectsWith(rect) && p != rect);
             }
         }
-        
+        [TestCase(50, TestName = "PutNextRectangle. Cloud must be like circle")]
+        public void PutNextRectangle_WhenCorrectArgs_ShouldCloudAsCircle(int rectsCount)
+        {
+            circularCloudLayouter = new CircularCloudLayouter(new Point(500, 500));
+            var rnd = new Random(0);
+
+            var area = 0;
+            double radius = 0;
+
+            for (var i = 0; i < rectsCount; i++)
+            {
+                var size = new Size(rnd.Next(10, 15), rnd.Next(15, 30));
+                var rect = circularCloudLayouter.PutNextRectangle(size);
+
+                area += rect.Height * rect.Width;
+
+                var currentRadius = GetDistance(circularCloudLayouter.Center, rect.GetCenter());
+
+                if (currentRadius > radius)
+                    radius = currentRadius;
+            }
+
+            var expectedRadius = Math.Sqrt(area / Math.PI) * 1.2;
+            radius.Should().BeLessThan(expectedRadius);
+        }
+
+
+        [TestCase(50, TestName = "PutNextRectangle. Cloud must be dense")]
+        public void PutNextRectangle_WhenCorrectArgs_RectsShouldBeDense(int rectsCount)
+        {
+            var center = new Point(600, 600);
+
+            circularCloudLayouter = new CircularCloudLayouter(center);
+            var random = new Random(0);
+
+            for (var i = 0; i < rectsCount; i++)
+            {
+                var size = new Size(random.Next(10, 15), random.Next(10, 30));
+                var rect = circularCloudLayouter.PutNextRectangle(size);
+
+                var direction = center - (Size)rect.GetCenter();
+
+                var toCenterByX = new Rectangle(rect.Location, rect.Size);
+                var toCenterByY = new Rectangle(rect.Location, rect.Size);
+
+                toCenterByX.Offset(new Point(Math.Sign(direction.X), 0));
+                toCenterByY.Offset(new Point(0, Math.Sign(direction.Y)));
+
+                toCenterByX.IntersectsWith(circularCloudLayouter.Rectangles)
+                    .Should().BeTrue();
+                toCenterByY.IntersectsWith(circularCloudLayouter.Rectangles)
+                    .Should().BeTrue();
+            }
+        }
+
+
+        private static double GetDistance(Point a, Point b)
+        {
+            return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
+        }
+
         [TearDown]
         public void TearDown()
         {

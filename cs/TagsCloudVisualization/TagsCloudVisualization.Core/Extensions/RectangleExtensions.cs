@@ -2,7 +2,7 @@
 
 namespace TagsCloudVisualization.Core.Extensions
 {
-    static class RectangleExtension
+    public static class RectangleExtension
     {   
         public static bool IntersectsWith(this Rectangle sourceRectangle, IEnumerable<Rectangle> destRectangles) 
             => destRectangles.Any(p => p.IntersectsWith(sourceRectangle));
