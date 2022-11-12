@@ -1,20 +1,21 @@
 ﻿using System.Collections.Immutable;
 using System.Drawing;
 using QuadTrees;
+using QuadTrees.Wrappers;
 
 namespace TagCloud;
 
 public class CircularCloudLayouter : ICloudLayouter
 {
-    private readonly QuadTreeRect<RectWrapper> rectanglesQuadTree;
+    private readonly QuadTreeRect<QuadTreeRectWrapper> rectanglesQuadTree;
     private readonly IEnumerator<Point> spiralEnumerator;
 
-    public CircularCloudLayouter(Point center, double spiralExpansionStep = 0.01, double spiralTwistStep = 0.01)
+    public CircularCloudLayouter(Point center)
     {
         Center = center;
-        spiralEnumerator = new SpiralPointGenerator(spiralExpansionStep, spiralTwistStep)
+        spiralEnumerator = new SpiralPointGenerator(0.01, 0.01)
             .Generate(center).GetEnumerator();
-        rectanglesQuadTree = new QuadTreeRect<RectWrapper>(
+        rectanglesQuadTree = new QuadTreeRect<QuadTreeRectWrapper>(
             int.MinValue / 2 + center.X, int.MinValue / 2 + center.Y,
             int.MaxValue, int.MaxValue);
     }
@@ -34,7 +35,7 @@ public class CircularCloudLayouter : ICloudLayouter
         while (rectanglesQuadTree.GetObjects(rectangle).Any())
             rectangle = CreateNewRectangle(rectangleSize);
 
-        rectanglesQuadTree.Add(new RectWrapper(rectangle));
+        rectanglesQuadTree.Add(new QuadTreeRectWrapper(rectangle));
 
         return rectangle;
     }

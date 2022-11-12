@@ -5,6 +5,8 @@ using TagCloud;
 
 namespace TagCloudTests;
 
+[TestFixture]
+[Parallelizable(ParallelScope.All)]
 public class SpiralPointGenerator_Should
 {
     [Test]

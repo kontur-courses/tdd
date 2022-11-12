@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Drawing;
 using System.Numerics;
 using FluentAssertions;
@@ -7,9 +8,11 @@ using TagCloud;
 
 namespace TagCloudTests;
 
+[TestFixture]
+[Parallelizable(ParallelScope.All)]
 public class CircularCloudLayouter_Should
 {
-    private readonly Dictionary<string, CircularCloudLayouter> layouterByTestId = new();
+    private readonly ConcurrentDictionary<string, CircularCloudLayouter> layouterByTestId = new();
 
     [SetUp]
     public void SetUp()
@@ -116,7 +119,7 @@ public class CircularCloudLayouter_Should
 
     [TestCase(1, 20)]
     [TestCase(100, 50)]
-    [TestCase(250, 70)]
+    [TestCase(250, 65)]
     [TestCase(500, 75)]
     [TestCase(1000, 80)]
     public void ResultRectanglesSet_LooksLikeCircle(int rectanglesCount, int expectedMinPercent)

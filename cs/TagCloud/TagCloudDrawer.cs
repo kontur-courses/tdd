@@ -29,6 +29,6 @@ public class TagCloudDrawer
         foreach (var rectangle in layouter.Rectangles)
             graphics.DrawRectangle(RectanglesPen, rectangle);
 
-        bitmap.Save($"{directory.FullName}\\{filename}");
+        bitmap.Save(Path.Join(directory.FullName, filename));
     }
 }
