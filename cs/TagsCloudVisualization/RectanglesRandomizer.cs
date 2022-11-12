@@ -1,4 +1,7 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -13,7 +16,7 @@ namespace TagsCloudVisualization
             var rectangles = new List<Size>();
             var random = new Random();
 
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 rectangles.Add(new Size(random.Next(1, maxWidth), random.Next(1, maxHeight)));
             }
