@@ -19,9 +19,9 @@ public class TagCloudDrawer
     public Color BackgroundColor { get; set; } = Color.White;
     public Pen RectanglesPen { get; set; } = new(Color.Black, 1);
 
-    public void DrawTagCloud(ICloudLayouter layouter, string filename, DirectoryInfo directory)
+    public Bitmap DrawTagCloud(ICloudLayouter layouter)
     {
-        using var bitmap = new Bitmap(ImageSize.Width, ImageSize.Height);
+        var bitmap = new Bitmap(ImageSize.Width, ImageSize.Height);
         using var graphics = Graphics.FromImage(bitmap);
 
         graphics.Clear(BackgroundColor);
@@ -29,6 +29,6 @@ public class TagCloudDrawer
         foreach (var rectangle in layouter.Rectangles)
             graphics.DrawRectangle(RectanglesPen, rectangle);
 
-        bitmap.Save(Path.Join(directory.FullName, filename));
+        return bitmap;
     }
 }

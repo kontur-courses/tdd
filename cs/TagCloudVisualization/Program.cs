@@ -8,7 +8,8 @@ void DrawTagCloud(IEnumerable<Size> sizes, string filename)
         layouter.PutNextRectangle(size);
     var directory = new DirectoryInfo("./Visualization");
     if (!directory.Exists) directory.Create();
-    new TagCloudDrawer().DrawTagCloud(layouter, filename, directory);
+    new TagCloudDrawer().DrawTagCloud(layouter)
+        .Save(Path.Join(directory.FullName, filename));
 }
 
 var squareSizes = Enumerable.Range(1, 200)
