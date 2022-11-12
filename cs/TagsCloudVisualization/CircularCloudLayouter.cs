@@ -20,11 +20,10 @@ public class CircularCloudLayouter : ICloudLayouter
         if (rectangleSize.Width <= 0)
             throw new ArgumentException("Width should be positive");
 
-        Rectangle rectangle;
         while (true)
         {
             var point = pointGenerator.Next();
-            rectangle = new Rectangle(point, rectangleSize);
+            var rectangle = new Rectangle(point, rectangleSize);
             if (!rectangle.IsIntersectWith(rectangles))
             {
                 rectangles.Add(rectangle);

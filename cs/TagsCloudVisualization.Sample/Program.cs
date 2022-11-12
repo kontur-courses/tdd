@@ -6,7 +6,7 @@ var center = Point.Empty;
 var circleLayouter = new CircularCloudLayouter(center);
 var rectangles = new List<Rectangle>();
 var random = new Random();
-for (int i = 0; i < 100; i++)
+for (var i = 0; i < 100; i++)
 {
     var rectangle = circleLayouter.PutNextRectangle(new Size(random.Next(10, 100), random.Next(10, 100)));
     rectangles.Add(rectangle);

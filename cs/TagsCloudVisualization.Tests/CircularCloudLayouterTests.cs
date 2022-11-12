@@ -11,16 +11,18 @@ using TagsCloudVisualization.Abstractions;
 
 namespace TagsCloudVisualization.Tests;
 
+[FixtureLifeCycle(LifeCycle.InstancePerTestCase)]
+[Parallelizable(ParallelScope.All)]
 public class CircularCloudLayouterTests
 {
     private ICloudLayouter cloudLayouter;
     private List<Rectangle> rectangles;
-    private readonly Point center = new Point(100, 100);
-    private static Random random = Random.Shared;
+    private Point center;
 
     [SetUp]
     public void Setup()
     {
+        center = new Point(100, 100);
         cloudLayouter = new CircularCloudLayouter(center);
         rectangles = new List<Rectangle>();
     }
@@ -75,85 +77,71 @@ public class CircularCloudLayouterTests
         rectangle.Size.Should().Be(size);
     }
 
-    [TestCase(5)]
-    [TestCase(10)]
-    [TestCase(100)]
-    [TestCase(1000)]
+    [TestCaseSource(nameof(RectanglesCountDataSource))]
     public void PutNextRectangle_RandomRectangleDoesNotIntersect_WithOthers(int count)
     {
-        var result = false;
-        for (int i = 0; i < count; i++)
+        for (var i = 0; i < count; i++)
         {
             var rectangle = cloudLayouter.PutNextRectangle(GetRandomSize(40, 100));
-
-            result = rectangle.IsIntersectWith(rectangles);
             rectangles.Add(rectangle);
         }
 
-        result.Should().BeFalse();
+        var intersectRectangles =
+            rectangles.Where(current => rectangles.Any(rect => rect != current && rect.IntersectsWith(current)));
+
+        intersectRectangles.Should().BeEmpty();
     }
 
-    [TestCase(50)]
-    [TestCase(100)]
-    [TestCase(1000)]
+    [TestCaseSource(nameof(RectanglesCountDataSource))]
     public void PutNextRectangle_ShouldCreateCloudLikeCircle(int count)
     {
-        for (int i = 0; i < count; i++)
+        var greatestDistance = 0d;
+        for (var i = 0; i < count; i++)
         {
             var rectangle = cloudLayouter.PutNextRectangle(new Size(50, 50));
+            var distance = GetMaxDistanceToCorner(rectangle, center);
+            if (distance > greatestDistance)
+                greatestDistance = distance;
             rectangles.Add(rectangle);
         }
 
         var rectanglesArea = rectangles.Sum(r => r.Width * r.Height);
-        var circleDiameter = GetCircleDiameter();
+        var circleArea = Math.PI * greatestDistance * greatestDistance;
+        var areaRatio = rectanglesArea / circleArea;
 
-        ((double)rectanglesArea / (circleDiameter * circleDiameter) - Math.PI / 4d).Should().BeLessOrEqualTo(0.01);
-    }
-
-    [TestCase(50)]
-    [TestCase(100)]
-    [TestCase(1000)]
-    public void PutNextRectangle_ShouldPlaceRectanglesTightlyPacked_WithSameRectangles(int count)
-    {
-        for (int i = 0; i < count; i++)
-        {
-            var rectangle = cloudLayouter.PutNextRectangle(new Size(50, 50));
-            rectangles.Add(rectangle);
-        }
-
-        var rectanglesArea = rectangles.Sum(r => r.Width * r.Height);
-        var circleDiameter = GetCircleDiameter();
-        var circleArea = (circleDiameter * circleDiameter * Math.PI) / 4d;
-        var tightness = rectanglesArea / circleArea;
-        tightness.Should().BeGreaterOrEqualTo(0.8);
+        areaRatio.Should().BeGreaterOrEqualTo(0.5);
     }
 
     private Size GetRandomSize(int minValue, int maxValue)
     {
+        var random = new Random();
         return new Size(random.Next(minValue, maxValue), random.Next(minValue, maxValue));
     }
 
-    private int GetCircleDiameter()
+    private double GetMaxDistanceToCorner(Rectangle rectangle, Point from)
     {
-        var maxX = int.MinValue;
-        var minX = int.MaxValue;
-        var maxY = int.MinValue;
-        var minY = int.MaxValue;
-
-        foreach (var rectangle in rectangles)
-        {
-            if (rectangle.Bottom > maxY)
-                maxY = rectangle.Bottom;
-            if (rectangle.Top < minY)
-                minY = rectangle.Top;
-            if (rectangle.Right > maxX)
-                maxX = rectangle.Right;
-            if (rectangle.Bottom < minX)
-                minX = rectangle.Left;
-        }
-
-        return maxX - minX > maxY - minY
-            ? (maxX - minX)
-            : (maxY - minY);
+        return GetCorners(rectangle).Select(to => DistanceBetween(from, to)).Max();
     }
+
+    private IEnumerable<Point> GetCorners(Rectangle rectangle)
+    {
+        yield return new Point(rectangle.Left, rectangle.Top);
+        yield return new Point(rectangle.Right, rectangle.Top);
+        yield return new Point(rectangle.Right, rectangle.Bottom);
+        yield return new Point(rectangle.Left, rectangle.Bottom);
+    }
+
+    private double DistanceBetween(Point from, Point to)
+    {
+        var x = from.X - to.X;
+        var y = from.Y - to.Y;
+        return Math.Sqrt(x * x + y * y);
+    }
+
+    private static TestCaseData[] RectanglesCountDataSource =
+    {
+        new TestCaseData(50),
+        new TestCaseData(100),
+        new TestCaseData(1000)
+    };
 }

@@ -25,40 +25,49 @@ public class SpiralPointGeneratorTests
         act.Should().NotThrow<ArgumentException>();
     }
 
-    [TestCaseSource(nameof(NextCases))]
-    public void Next_ShouldReturnCorrectNextPoint_With(Point center, int parameter, double step, Point[] expectedPoints)
+    [TestCaseSource(nameof(SpiralPointGeneratorDataSource))]
+    public IEnumerable<Point> Next_ShouldReturnCorrectNextPoint_With(Point center, int distance, double angleStep,
+        int count)
     {
-        var spiral = new SpiralPointGenerator(center, parameter, step);
+        var spiral = new SpiralPointGenerator(center, distance, angleStep);
 
         var actual = new List<Point>();
-        for (int i = 0; i < expectedPoints.Length; i++)
+        for (var i = 0; i < count; i++)
         {
             actual.Add(spiral.Next());
         }
 
-        actual.Should().BeEquivalentTo(expectedPoints);
+        return actual;
     }
 
-    private static TestCaseData[] NextCases =
+    private static TestCaseData[] SpiralPointGeneratorDataSource =
     {
-        new TestCaseData(new Point(100, 100), 2, 0.4, new Point[]
-        {
-            new Point(100, 100), new Point(101, 100), new Point(101, 101), new Point(101, 102)
-        }).SetName("{m}PositiveArguments"),
+        new TestCaseData(new Point(100, 100), 2, 0.4, 4)
+            .SetName("{m}PositiveArguments")
+            .Returns(new Point[]
+            {
+                new Point(100, 100), new Point(101, 100), new Point(101, 101), new Point(101, 102)
+            }),
 
-        new TestCaseData(new Point(100, 100), -2, 0.4, new Point[]
-        {
-            new Point(100, 100), new Point(99, 100), new Point(99, 99), new Point(99, 98)
-        }).SetName("{m}NegativeParameter"),
+        new TestCaseData(new Point(100, 100), -2, 0.4, 4)
+            .SetName("{m}NegativeParameter")
+            .Returns(new Point[]
+            {
+                new Point(100, 100), new Point(99, 100), new Point(99, 99), new Point(99, 98)
+            }),
 
-        new TestCaseData(new Point(100, 100), 2, -0.4, new Point[]
-        {
-            new Point(100, 100), new Point(99, 100), new Point(99, 101), new Point(99, 102)
-        }).SetName("{m}NegativeStep"),
+        new TestCaseData(new Point(100, 100), 2, -0.4, 4)
+            .SetName("{m}NegativeStep")
+            .Returns(new Point[]
+            {
+                new Point(100, 100), new Point(99, 100), new Point(99, 101), new Point(99, 102)
+            }),
 
-        new TestCaseData(new Point(100, 100), -2, -0.4, new Point[]
-        {
-            new Point(100, 100), new Point(101, 100), new Point(101, 99), new Point(101, 98)
-        }).SetName("{m}NegativeParameters"),
+        new TestCaseData(new Point(100, 100), -2, -0.4, 4)
+            .SetName("{m}NegativeParameters")
+            .Returns(new Point[]
+            {
+                new Point(100, 100), new Point(101, 100), new Point(101, 99), new Point(101, 98)
+            }),
     };
 }

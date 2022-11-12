@@ -15,33 +15,25 @@ public class ImageGenerator
         Color.Purple
     };
 
-    private readonly int widthOffset;
-    private readonly int heightOffset;
-
-    public ImageGenerator(int widthOffset = 200, int heightOffset = 200)
+    public Bitmap Generate(ICollection<Rectangle> rectangles, int widthOffset = 200, int heightOffset = 200)
     {
-        this.widthOffset = widthOffset;
-        this.heightOffset = heightOffset;
-    }
-
-    public Bitmap Generate(ICollection<Rectangle> rectangles)
-    {
-        var canvasParameters = CalculateCanvasParameters(rectangles);
-
+        var canvasParameters = CalculateCanvasParameters(rectangles, widthOffset, heightOffset);
         var canvas = new Bitmap(canvasParameters.Width, canvasParameters.Height);
         using var graphics = Graphics.FromImage(canvas);
+        graphics.TranslateTransform(canvasParameters.Offset.X, canvasParameters.Offset.Y);
+
         var index = 0;
         foreach (var rectangle in rectangles)
         {
             using var pen = new Pen(Colors[index++ % Colors.Length]);
-            rectangle.Offset(canvasParameters.Offset);
             graphics.DrawRectangle(pen, rectangle);
         }
 
         return canvas;
     }
 
-    private CanvasParameters CalculateCanvasParameters(ICollection<Rectangle> rectangles)
+    private CanvasParameters CalculateCanvasParameters(ICollection<Rectangle> rectangles, int widthOffset,
+        int heightOffset)
     {
         var maxX = rectangles.Max(r => r.Right);
         var maxY = rectangles.Max(r => r.Bottom);
