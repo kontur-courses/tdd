@@ -19,7 +19,7 @@ namespace TagsCloudVisualization
         [SetUp]
         public void SetUp()
         {
-            cloudLayouter = new CircularCloudLayouter(new Point(400, 250));
+            cloudLayouter = new CircularCloudLayouter(new PointF(400, 250));
         }
 
         [Test]
@@ -36,11 +36,11 @@ namespace TagsCloudVisualization
         public void PutNextRectangle_ShouldReturnRectangleInCenter_WhenOneRectangle()
         {
             var center = cloudLayouter.Center;
-            var rectangleSize = new Size(200, 30);
-            var point = new Point(center.X - rectangleSize.Width / 2, center.Y - rectangleSize.Height / 2);
-            var expectedRect = new Rectangle(point, rectangleSize);
+            var rectangleSizeF = new SizeF(200, 30);
+            var point = new PointF(center.X - rectangleSizeF.Width / 2, center.Y - rectangleSizeF.Height / 2);
+            var expectedRect = new RectangleF(point, rectangleSizeF);
 
-            var rect = cloudLayouter.PutNextRectangle(rectangleSize);
+            var rect = cloudLayouter.PutNextRectangle(rectangleSizeF);
 
             rect.Should().BeEquivalentTo(expectedRect);
         }
@@ -49,16 +49,16 @@ namespace TagsCloudVisualization
         [TestCase(false)]
         public void PutNextRectangle_ShouldReturnIntersectedRectangles(bool input)
         {
-            if (input) 
+            if (input)
                 cloudLayouter.IsOffsetToCenter = true;
-            cloudLayouter.PutNextRectangle(new Size(300, 100));
-            cloudLayouter.PutNextRectangle(new Size(100, 31));
-            cloudLayouter.PutNextRectangle(new Size(50, 52));
-            cloudLayouter.PutNextRectangle(new Size(100, 31));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(50, 21));
+            cloudLayouter.PutNextRectangle(new SizeF(300, 100));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 31));
+            cloudLayouter.PutNextRectangle(new SizeF(50, 52));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 31));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(50, 21));
 
             cloudLayouter.Rectangles.AreIntersected().Should().BeFalse();
         }
@@ -70,16 +70,16 @@ namespace TagsCloudVisualization
             if (input)
                 cloudLayouter.IsOffsetToCenter = true;
             var center = cloudLayouter.Center;
-            cloudLayouter.PutNextRectangle(new Size(300, 100));
-            cloudLayouter.PutNextRectangle(new Size(100, 31));
-            cloudLayouter.PutNextRectangle(new Size(50, 52));
-            cloudLayouter.PutNextRectangle(new Size(100, 31));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(50, 21));
+            cloudLayouter.PutNextRectangle(new SizeF(300, 100));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 31));
+            cloudLayouter.PutNextRectangle(new SizeF(50, 52));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 31));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(50, 21));
 
-            var distanceToExtremePoints = new List<int>();
+            var distanceToExtremePoints = new List<float>();
             distanceToExtremePoints.Add(center.X - cloudLayouter.Rectangles.Min(x => x.Left));
             distanceToExtremePoints.Add(cloudLayouter.Rectangles.Max(x => x.Right) - center.X);
             distanceToExtremePoints.Add(center.Y - cloudLayouter.Rectangles.Min(x => x.Top));
@@ -102,48 +102,48 @@ namespace TagsCloudVisualization
         {
             if (input)
                 cloudLayouter.IsOffsetToCenter = true;
-            cloudLayouter.PutNextRectangle(new Size(300, 100));
-            cloudLayouter.PutNextRectangle(new Size(100, 31));
-            cloudLayouter.PutNextRectangle(new Size(50, 52));
-            cloudLayouter.PutNextRectangle(new Size(100, 31));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(50, 21));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(50, 100));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(50, 20));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(50, 20));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(50, 20));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(50, 20));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(50, 20));
-            cloudLayouter.PutNextRectangle(new Size(100, 31));
-            cloudLayouter.PutNextRectangle(new Size(100, 30));
-            cloudLayouter.PutNextRectangle(new Size(50, 20));
-            cloudLayouter.PutNextRectangle(new Size(50, 20));
-            cloudLayouter.PutNextRectangle(new Size(50, 20));
-            cloudLayouter.PutNextRectangle(new Size(50, 20));
-            cloudLayouter.PutNextRectangle(new Size(50, 20));
+            cloudLayouter.PutNextRectangle(new SizeF(300, 100));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 31));
+            cloudLayouter.PutNextRectangle(new SizeF(50, 52));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 31));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(50, 21));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(50, 100));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(50, 20));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(50, 20));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(50, 20));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(50, 20));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(50, 20));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 31));
+            cloudLayouter.PutNextRectangle(new SizeF(100, 30));
+            cloudLayouter.PutNextRectangle(new SizeF(50, 20));
+            cloudLayouter.PutNextRectangle(new SizeF(50, 20));
+            cloudLayouter.PutNextRectangle(new SizeF(50, 20));
+            cloudLayouter.PutNextRectangle(new SizeF(50, 20));
+            cloudLayouter.PutNextRectangle(new SizeF(50, 20));
 
             cloudLayouter.SaveBitmap(TestContext.CurrentContext.Test.Name);
         }
