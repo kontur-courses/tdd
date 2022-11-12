@@ -4,7 +4,8 @@ namespace TagCloud;
 
 public class TagCloudDrawer
 {
-    private Size imageSize = new (800, 600);
+    private Size imageSize = new(800, 600);
+
     public Size ImageSize
     {
         get => imageSize;
