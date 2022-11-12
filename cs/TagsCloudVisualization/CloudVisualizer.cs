@@ -1,78 +1,83 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Imaging;
-using System.Runtime.InteropServices.ComTypes;
+using System.Linq;
 
-namespace TagsCloudVisualization;
-
-public class CloudVisualizer
+namespace TagsCloudVisualization
 {
-    private readonly Point center;
-    private readonly string path;
-    private readonly string imageName;
-    private readonly List<Rectangle> rectangles;
-    private readonly int indent;
-
-    public CloudVisualizer(
-        Point center, List<Rectangle> rectangles, int indent = 200,
-        string path = @"..\..\..\Images\", string imageName = "Cloud")
+    public class CloudVisualizer
     {
-        this.center = center;
-        this.path = path;
-        this.imageName = $"{imageName} {rectangles.Count}";
-        this.rectangles = rectangles;
-        this.indent = indent;
-    }
+        private readonly Point center;
+        private readonly string path;
+        private readonly string imageName;
+        private readonly List<Rectangle> rectangles;
+        private readonly Size imageSize;
+        private readonly Bitmap image;
+        private readonly List<Rectangle> centeredRectangles;
 
-    private Size GetImageSize()
-    {
-        var maxY = rectangles.Max(rectangle => rectangle.Bottom);
-        var minY = rectangles.Min(rectangle => rectangle.Top);
-        var maxX = rectangles.Max(rectangle => rectangle.Right);
-        var minX = rectangles.Min(rectangle => rectangle.Left);
-
-        return new Size(maxX + indent - minX, maxY + indent  - minY);
-    }
-
-    private List<Rectangle> CenterRectangles(Size imageSize)
-    {
-        return rectangles.Select(rectangle =>
-            new Rectangle(new Point(
-                imageSize.Height / 2 + rectangle.X - center.X,
-                imageSize.Width / 2 + rectangle.Y - center.Y), rectangle.Size)).ToList();
-    }
-
-    public List<Color> GetColors()
-    {
-        return new List<Color>()
+        public CloudVisualizer(
+            Point center,
+            List<Rectangle> rectangles,
+            string path,
+            string imageName)
         {
-            Color.CornflowerBlue,
-            Color.Blue,
-            Color.White,
-            Color.DarkSlateBlue,
-            Color.DeepSkyBlue,
-            Color.DarkBlue,
-            Color.Red
-        };
-    }
-
-    public void CreateImage()
-    {
-        var imageSize = GetImageSize();
-        var image = new Bitmap(imageSize.Width, imageSize.Height);
-        var gr = Graphics.FromImage(image);
-        var brush = new SolidBrush(Color.Black);
-        var pen = new Pen(Color.Black);
-        var colors = GetColors();
-        var centerReactangles = CenterRectangles(imageSize);
-
-        gr.FillRectangle(brush, new Rectangle(0, 0, image.Width, image.Height));
-
-        for (int i = 0; i < centerReactangles.Count; i++)
+            this.center = center;
+            this.path = path;
+            this.imageName = imageName;
+            this.rectangles = rectangles;
+            imageSize = GetImageSize();
+            image = new Bitmap(imageSize.Width, imageSize.Height);
+            centeredRectangles = CenterRectangles();
+        }
+        public Color GetRandomColor()
         {
-            pen.Color = colors[i % colors.Count];
-            gr.DrawRectangle(pen, centerReactangles[i]);
+            var random = new Random();
+            return Color.FromArgb(
+                (byte)random.Next(0, 255),
+                (byte)random.Next(0, 255),
+                (byte)random.Next(0, 255));
+        }
+        public void CreateImage()
+        {
+            var gr = Graphics.FromImage(image);
+            var brush = new SolidBrush(Color.Black);
+            var pen = new Pen(Color.Black);
+
+            gr.FillRectangle(brush, new Rectangle(0, 0, image.Width, image.Height));
+
+            for (var i = 0; i < centeredRectangles.Count; i++)
+            {
+                pen.Color = GetRandomColor();
+                gr.DrawRectangle(pen, centeredRectangles[i]);
+            }
+
+            image.Save($"{path}{imageName}.png", ImageFormat.Png);
         }
 
-        image.Save($"{path}{imageName}.png", ImageFormat.Png);
+        private Size GetImageSize()
+        {
+            if (rectangles.Count == 0)
+                return new Size(800, 800);
+
+            var maxY = rectangles.Max(rectangle => rectangle.Bottom);
+            var minY = rectangles.Min(rectangle => rectangle.Top);
+            var maxX = rectangles.Max(rectangle => rectangle.Right);
+            var minX = rectangles.Min(rectangle => rectangle.Left);
+
+            return new Size(maxX - minX + 100, maxY - minY + 100);
+        }
+
+        private Point GetCenteredRectangleCoordinates(Rectangle rectangle)
+        {
+            return new Point(imageSize.Width / 2 + rectangle.X - center.X,
+                imageSize.Height / 2 + rectangle.Y - center.Y);
+        }
+
+        private List<Rectangle> CenterRectangles()
+        {
+            return rectangles.Select(rectangle => new Rectangle(
+                GetCenteredRectangleCoordinates(rectangle), rectangle.Size)).ToList();
+        }
     }
 }
