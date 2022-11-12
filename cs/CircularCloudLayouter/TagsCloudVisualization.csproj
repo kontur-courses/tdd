@@ -55,22 +55,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CircularCloudLayouterShould.cs" />
-    <Compile Include="CircularCloudLayouter.cs" />
+    <Compile Include="CloudLayouter\CloudLayouter.cs" />
     <Compile Include="CloudLayouterForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DrawerCloudLayouter.cs" />
-    <Compile Include="DrawerCloudLayouterForTests.cs" />
+    <Compile Include="CloudLayouterDrawer\CloudLayouterDrawer.cs" />
+    <Compile Include="CloudLayouterDrawer\ICloudLayouterDrawer.cs" />
+    <Compile Include="Curve\ICurve.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RectangleExtesions.cs" />
-    <Compile Include="Spiral.cs" />
+    <Compile Include="Curve\Spiral.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
