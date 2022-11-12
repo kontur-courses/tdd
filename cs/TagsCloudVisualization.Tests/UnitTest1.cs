@@ -70,5 +70,33 @@ namespace TagsCloudVisualization.Tests
 
             firstRectangle.IntersectsWith(secondRectangle).Should().BeFalse();
         }
+
+        [TestCase(5,10,5,ExpectedResult = false, TestName = "{m}_5_AddedRectangles")]
+        [TestCase(500,10,5, ExpectedResult = false, TestName = "{m}_500_AddedRectangles")]
+        public bool PutNextRectangle_Should_Return_RectangleNotIntersectsPast(int n,int width, int height)
+        {
+            var rectangles = new List<Rectangle>();
+            for (int i = 0; i < n; i++)
+                rectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(10, 5)));
+
+            var rectangle = circularCloudLayouter.PutNextRectangle(new Size(10, 2));
+
+            var result = rectangle.IsIntersectsOthersRectangles(rectangles);
+
+
+            return result;
+        }
+        [Test]
+        public void PutNextRectangle_Should_Return_RectangleNotIntersectsPastAddedRectanglesWithDifferentSizes()
+        {
+            var rectangles = new List<Rectangle>();
+            for (int i = 1; i <= 10; i++)
+                rectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(i, i)));
+            var rectangle = circularCloudLayouter.PutNextRectangle(new Size(10, 2));
+
+            var result = rectangle.IsIntersectsOthersRectangles(rectangles);
+
+            result.Should().BeFalse();
+        }
     }
 }
