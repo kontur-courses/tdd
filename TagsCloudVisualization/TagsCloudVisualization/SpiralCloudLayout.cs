@@ -16,21 +16,33 @@ namespace TagsCloudVisualization
         private double LastAngle = 0;
         private double AngleStep = 0.2d;
 
+        private Point center;
+
         public Rectangle GetBorders()
         {
-            throw new NotImplementedException();
+            return new Rectangle(-100, -100, 200, 200);
+        }
+
+        public SpiralCloudLayout(Point center)
+        {
+            this.center = center;
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
+            Rectangle rect;
             if (PlacedRectangles.Count == 0)
             {
-                Rectangle rect = CreateRectangleByCenter(rectangleSize, new Point(0, 0));
+                rect = CreateRectangleByCenter(rectangleSize, center);
                 PlacedRectangles.Add(rect);
+                return rect;
             }
 
-            PlacedRectangles.Add(FindPlaceForRectangle(rectangleSize));
-            return PlacedRectangles.Last();
+            rect = FindPlaceForRectangle(rectangleSize);
+            rect.X += center.X;
+            rect.Y += center.Y;
+            PlacedRectangles.Add(rect);
+            return rect;
 
         }
 
