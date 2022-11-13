@@ -28,16 +28,6 @@ public class CircularCloudLayouter
 		return shiftedRectangle;
 	}
 
-	//public Rectangle PutNextRectangle(Size rectangleSize)
-	//{
-	//	var rectangleOnSpiral = GetRectangleOnSpiral(rectangleSize);
-	//	//var shiftedRectangle = BinaryShiftToCenter(rectangleOnSpiral);
-
-	//	placedRectangles.Add(rectangleOnSpiral);
-
-	//	return rectangleOnSpiral;
-	//}
-
 	private Rectangle GetRectangleOnSpiral(Size rectangleSize)
 	{
 		Rectangle newRectangle;
