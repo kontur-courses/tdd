@@ -12,7 +12,7 @@ namespace TagsCloudVisualization
     {
         private CircularCloudLayouter layouter;
         private Point center;
-        private CircularCloudVisualizator visualizator;
+        private Drawer visualizator;
         private List<Rectangle> rectangles;
         private Spiral spiral;
         private double angleOffset;
@@ -26,7 +26,7 @@ namespace TagsCloudVisualization
             center = new Point(0, 0);
             spiral = new Spiral(center, angleOffset, radiusOffset);
             layouter = new CircularCloudLayouter(center, new Spiral(center, angleOffset, radiusOffset));
-            visualizator = new CircularCloudVisualizator(new Size(800, 800));
+            visualizator = new Drawer(new Size(800, 800));
             rectangles = new List<Rectangle>();
         }
 
@@ -106,7 +106,7 @@ namespace TagsCloudVisualization
                 expectedRectangles.Add(expectedLocation);
             }
 
-            for (int i = 0; i < 5; i++)
+            for (var i = 0; i < 5; i++)
             {
                 rectangles[i].Location.Should().BeEquivalentTo(expectedRectangles[i].Location);
             }
@@ -117,13 +117,8 @@ namespace TagsCloudVisualization
         {
             var testResult = TestContext.CurrentContext.Result.Outcome;
             var testMethodName = TestContext.CurrentContext.Test.MethodName;
-            var testName = TestContext.CurrentContext.Test.Name == testMethodName
-                ? ""
-                : TestContext.CurrentContext.Test.Name;
-            var splitter = testName == "" ? "" : "_";
-            var path = $"../mistake_{testMethodName}{splitter}{testName}.jpg";
-
-
+            var testName = TestContext.CurrentContext.Test.FullName;
+            var path = $"../mistake_{testName}.jpg";
             if (testResult.Status == TestStatus.Failed)
             {
                 visualizator.DrawRectangles(rectangles);
