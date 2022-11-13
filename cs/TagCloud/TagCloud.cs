@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 
 namespace TagCloud
 {
@@ -40,5 +39,21 @@ namespace TagCloud
         public int GetLeftBound() => Rectangles.Min(r => r.Left);
 
         public int GetTopBound() => Rectangles.Min(r => r.Top);
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Equals(object obj) => Equals(obj as TagCloud);
+
+        public bool Equals(TagCloud other)
+        {
+            return other != null &&
+                   other.Center == Center &&
+                   other.Rectangles.Count == Rectangles.Count &&
+                   other.Rectangles.TrueForAll(rectangle => 
+                       this.Rectangles.Contains(rectangle));
+        }
     }
 }
