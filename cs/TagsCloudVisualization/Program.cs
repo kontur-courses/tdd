@@ -17,7 +17,8 @@ namespace TagsCloudVisualization
 
             foreach (var (count, minSize, maxSize, filename) in Utilities.GetTestData())
             {
-                var cloud = new CircularCloudLayouter(center);
+                var spiral = new ArchimedeanSpiral(center);
+                var cloud = new CircularCloudLayouter(spiral);
                 Utilities.GenerateRectangleSize(count, minSize, maxSize)
                     .Select(rectSize => cloud.PutNextRectangle(rectSize))
                     .ToArray();

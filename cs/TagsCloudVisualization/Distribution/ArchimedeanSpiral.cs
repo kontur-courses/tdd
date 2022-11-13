@@ -26,20 +26,20 @@ namespace TagsCloudVisualization
         {
             while (true)
             {
-                var x = Center.X + OffsetFromCenterOnX();
-                var y = Center.Y + OffsetFromCenterOnY();
+                var x = Center.X + GetOffsetFromCenterOnX();
+                var y = Center.Y + GetOffsetFromCenterOnY();
                 yield return new Point((int)x, (int)y);
 
                 AngleInRadians += AngleStep;
             }
         }
 
-        private double OffsetFromCenterOnX()
+        private double GetOffsetFromCenterOnX()
         {
             return (Step / FullRotation) * AngleInRadians * Math.Sin(AngleInRadians);
         }
 
-        private double OffsetFromCenterOnY()
+        private double GetOffsetFromCenterOnY()
         {
             return (Step / FullRotation) * AngleInRadians * Math.Cos(AngleInRadians);
         }

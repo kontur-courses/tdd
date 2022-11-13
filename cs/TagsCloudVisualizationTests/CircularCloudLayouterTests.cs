@@ -19,11 +19,15 @@ namespace TagsCloudVisualizationTests
         private Point center;
         private CircularCloudLayouter cloud;
 
+        private Size minSize = new Size(30, 30);
+        private Size maxSize = new Size(50, 50);
+
         [SetUp]
         public void SetUp()
         {
             center = new Point(Width / 2, Height / 2);
-            cloud = new CircularCloudLayouter(center);
+            var spiral = new ArchimedeanSpiral(center);
+            cloud = new CircularCloudLayouter(spiral);
         }
 
         [TearDown]
@@ -45,23 +49,14 @@ namespace TagsCloudVisualizationTests
             }
         }
 
-        [TestCase(1, 1, TestName = "Positive coordinates")]
-        [TestCase(0, 0, TestName = "Zero coordinates")]
-        [TestCase(-1, -1, TestName = "Negative coordinates")]
-        [TestCase(1, -1, TestName = "Mixed coordinates")]
-        public void CircularCloudLayouter_DoesNotThrowException_On(int x, int y)
+        [Test]
+        public void CircularCloudLayouter_DoesNotThrowException()
         {
-            Action action = () => new CircularCloudLayouter(new Point(x, y));
-            action.Should().NotThrow();
-        }
+            var center = new Point(0, 0);
+            var spiral = new ArchimedeanSpiral(center);
 
-        [TestCase(1, 1, TestName = "Positive size")]
-        [TestCase(0, 0, TestName = "Zero size")]
-        [TestCase(1, 0, TestName = "Zero height")]
-        [TestCase(0, 1, TestName = "Zero width")]
-        public void PutNextRectangle_DoesNotThrowException_On(int width, int height)
-        {
-            Action action = () => cloud.PutNextRectangle(new Size(width, height));
+            Action action = () => new CircularCloudLayouter(spiral);
+
             action.Should().NotThrow();
         }
 
@@ -77,7 +72,7 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void PutNextRectangle_ReturnsRectangleWithGivenSize()
         {
-            var rectangleSize = new Size(30, 50);
+            var rectangleSize = new Size(minSize.Width, maxSize.Height);
             var rectangle = cloud.PutNextRectangle(rectangleSize);
             rectangle.Size.Should().Be(rectangleSize);
         }
@@ -85,7 +80,7 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void PutNextRectangle_ShouldAddRectangleWithGivenSize()
         {
-            var rectangleSize = new Size(30, 50);
+            var rectangleSize = new Size(minSize.Width, maxSize.Height);
             cloud.PutNextRectangle(rectangleSize);
             cloud.Rectangles.Last().Size.Should().Be(rectangleSize);
         }
@@ -97,12 +92,12 @@ namespace TagsCloudVisualizationTests
         public void PutNextRectangle_ShouldAddRectangle(
             int count, int alreadyExist, int expectedExist)
         {
-            Utilities.GenerateRectangleSize(alreadyExist, new Size(30, 30), new Size(50, 50))
+            Utilities.GenerateRectangleSize(alreadyExist, minSize, maxSize)
                 .Select(rectSize => cloud.PutNextRectangle(rectSize))
                 .ToArray();
             cloud.Rectangles.Should().HaveCount(alreadyExist);
 
-            Utilities.GenerateRectangleSize(count, new Size(30, 30), new Size(50, 50))
+            Utilities.GenerateRectangleSize(count, minSize, maxSize)
                 .Select(rectSize => cloud.PutNextRectangle(rectSize))
                 .ToArray();
             cloud.Rectangles.Should().HaveCount(expectedExist);
@@ -113,11 +108,11 @@ namespace TagsCloudVisualizationTests
         [TestCase(100, TestName = "Cloud exist many rectangles")]
         public void PutNextRectangle_ShouldNotIntersectWithOtherRectangles(int alreadyExist)
         {
-            Utilities.GenerateRectangleSize(alreadyExist, new Size(30, 30), new Size(50, 50))
+            Utilities.GenerateRectangleSize(alreadyExist, minSize, maxSize)
                 .Select(rectSize => cloud.PutNextRectangle(rectSize))
                 .ToArray();
 
-            var rectangle = cloud.PutNextRectangle(new Size(30, 50));
+            var rectangle = cloud.PutNextRectangle(new Size(minSize.Width, maxSize.Height));
             cloud.Rectangles.Take(alreadyExist)
                 .Any(rect => rect.IntersectsWith(rectangle))
                 .Should().BeFalse();

@@ -7,15 +7,13 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter : ICloudLayouter
     {
-        public Point Center { get; }
         public List<Rectangle> Rectangles { get; }
         public IDistribution Distribution { get; }
 
-        public CircularCloudLayouter(Point center)
+        public CircularCloudLayouter(IDistribution distribution)
         {
-            Center = center;
             Rectangles = new List<Rectangle>();
-            Distribution = new ArchimedeanSpiral(center);
+            Distribution = distribution;
         }
         
         public Rectangle PutNextRectangle(Size rectangleSize)
