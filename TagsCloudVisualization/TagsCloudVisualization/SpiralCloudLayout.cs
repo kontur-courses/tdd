@@ -57,11 +57,27 @@ namespace TagsCloudVisualization
 
         private Rectangle FindPlaceForRectangle(Size rectangleSize)
         {
-            LastAngle += AngleStep;
-            Point center = new Point(
-                (int) ((1 + LastAngle) * Math.Cos(LastAngle)),
-                (int) ((1 + LastAngle) * Math.Sin(LastAngle)));
-            return CreateRectangleByCenter(rectangleSize, center);
+            Rectangle place;
+            do
+            {
+                LastAngle += AngleStep;
+                Point center = new Point(
+                    (int) ((1 + LastAngle) * Math.Cos(LastAngle)),
+                    (int) ((1 + LastAngle) * Math.Sin(LastAngle)));
+                place = CreateRectangleByCenter(rectangleSize, center);
+            } while (IntersectsWithOtherRectangles(place));
+
+            return place;
+        }
+
+        private bool IntersectsWithOtherRectangles(Rectangle rect)
+        {
+            foreach (var other in PlacedRectangles)
+            {
+                if (other.IntersectsWith(rect)) return true;
+            }
+
+            return false;
         }
     }
 }
