@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.CodeDom;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -6,47 +8,74 @@ namespace TagCloud
 {
     public class CloudImageGenerator
     {
-        public readonly Size ImageSize;
+        private readonly ICloudLayouter layouter;
 
-        public readonly ICloudLayouter Layouter;
+        private readonly Color rectangleBorderColor;
 
-        public Color RectangleBorderColor { get; set; }
-
-        public CloudImageGenerator(ICloudLayouter layouter, Size imageSize, Color rectangleBorderColor)
+        public CloudImageGenerator(ICloudLayouter layouter, Color rectangleBorderColor)
         {
-            Layouter = layouter;
-            ImageSize = imageSize;
-            RectangleBorderColor = rectangleBorderColor;
+            this.layouter = layouter;
+            this.rectangleBorderColor = rectangleBorderColor;
         }
 
-        public Bitmap Generate(IReadOnlyList<Rectangle> layout)
+        public Bitmap GenerateBitmap(IReadOnlyList<Rectangle> layout)
         {
-            var bitmap = new Bitmap(ImageSize.Width, ImageSize.Height);
+            var imageSize = GetImageSize(layout);
+
+            var bitmap = new Bitmap(imageSize.Width, imageSize.Height);
 
             var graphics = Graphics.FromImage(bitmap);
 
-            var pen = new Pen(RectangleBorderColor, 1);
+            graphics.TranslateTransform(imageSize.Width / 2f - layouter.CloudCenter.X, imageSize.Height / 2f - layouter.CloudCenter.Y);
+
+            var pen = new Pen(rectangleBorderColor, 1);
 
             graphics.DrawRectangles(pen, layout.ToArray());
 
             return bitmap;
         }
 
-        public Bitmap Generate(IReadOnlyList<Size> rectanglesSizes)
+        public Bitmap GenerateBitmap(IEnumerable<Size> rectanglesSizes)
         {
             var layout = GetLayout(rectanglesSizes);
 
-            return Generate(layout);
+            return GenerateBitmap(layout);
         }
 
-        private Rectangle[] GetLayout(IReadOnlyList<Size> rectanglesSizes)
+        private IReadOnlyList<Rectangle> GetLayout(IEnumerable<Size> rectanglesSizes)
         {
-            var rectangles = new List<Rectangle>();
+            var layout = rectanglesSizes.Select(size => layouter.PutNextRectangle(size)).ToList();
 
-            foreach (var size in rectanglesSizes)
-                rectangles.Add(Layouter.PutNextRectangle(size));
+            return layout.AsReadOnly();
+        }
 
-            return rectangles.ToArray();
+        private Size GetImageSize(IEnumerable<Rectangle> layout)
+        {
+            var minTop = int.MaxValue;
+            var maxBottom = int.MinValue + 1;
+            var minLeft = int.MaxValue;
+            var maxRight = int.MinValue + 1;
+
+            foreach (var rectangle in layout)
+            {
+                if (rectangle.Top < minTop)
+                    minTop = rectangle.Top;
+
+                if (rectangle.Bottom > maxBottom)
+                    maxBottom = rectangle.Bottom;
+
+                if (rectangle.Left < minLeft)
+                    minLeft = rectangle.Left;
+
+                if (rectangle.Right > maxRight)
+                    maxRight = rectangle.Right;
+            }
+
+            var width = 2 * Math.Max(Math.Abs(minLeft), Math.Abs(maxRight)) + 5;
+
+            var height = 2 * Math.Max(Math.Abs(maxBottom), Math.Abs(minTop)) + 5;
+
+            return new Size(width, height);
         }
     }
 }

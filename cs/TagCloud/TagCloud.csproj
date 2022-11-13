@@ -47,6 +47,7 @@
     <Compile Include="ArchimedeanSpiral.cs" />
     <Compile Include="CircularCloudLayouter.cs" />
     <Compile Include="CloudImageGenerator.cs" />
+    <Compile Include="ImageSaver.cs" />
     <Compile Include="ICloudLayouter.cs" />
     <Compile Include="PointExtensions.cs" />
     <Compile Include="Program.cs" />

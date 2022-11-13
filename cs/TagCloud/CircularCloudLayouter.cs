@@ -7,7 +7,7 @@ namespace TagCloud
 {
     public class CircularCloudLayouter : ICloudLayouter
     {
-        public readonly Point CloudCenter;
+        public Point CloudCenter { get; }
 
         private readonly ArchimedeanSpiral spiral;
 
@@ -29,17 +29,17 @@ namespace TagCloud
 
             do
             {
-                Point pointToPutRectangle = spiral.GetNextPoint();
+                var pointToPutRectangle = spiral.GetNextPoint();
 
                 rectangle = new Rectangle(pointToPutRectangle, rectangleSize);
 
             } while (IsIntersectWithAnyExistingRectangle(rectangle));
 
-            rectangle = ShiftRectangleToCenterPoint(rectangle);
+            var shiftedRectangle = ShiftRectangleToCenterPoint(rectangle);
 
-            rectangles.Add(rectangle);
+            rectangles.Add(shiftedRectangle);
 
-            return rectangle;
+            return shiftedRectangle;
         }
 
         private static bool IsValidRectangleSize(Size rectangleSize)
@@ -56,24 +56,21 @@ namespace TagCloud
         {
             var directionsToShift = GetDirectionsToShift(rectangle);
 
-            foreach (var direction in directionsToShift)
-                rectangle = ShiftRectangleAlongDirection(rectangle, direction);
-
-            return rectangle;
+            return directionsToShift.Aggregate(rectangle, ShiftRectangleAlongDirection);
         }
 
-        private Vector[] GetDirectionsToShift(Rectangle rectangle)
+        private IEnumerable<Vector> GetDirectionsToShift(Rectangle rectangle)
         {
-            int deltaX = CloudCenter.X - rectangle.GetCenter().X > 0 ? 1 : -1;
+            var deltaX = CloudCenter.X - rectangle.GetCenter().X > 0 ? 1 : -1;
 
-            int deltaY = CloudCenter.Y - rectangle.GetCenter().Y > 0 ? 1 : -1;
+            var deltaY = CloudCenter.Y - rectangle.GetCenter().Y > 0 ? 1 : -1;
 
             return new[] { new Vector(deltaX, 0), new Vector(0, deltaY) };
         }
 
         private Rectangle ShiftRectangleAlongDirection(Rectangle rectangle, Vector direction)
         {
-            while (TryShiftRectangleAlongDirection(rectangle, direction, out Rectangle shiftedRectangle))
+            while (TryShiftRectangleAlongDirection(rectangle, direction, out var shiftedRectangle))
             {
                 rectangle = shiftedRectangle;
             }
@@ -94,15 +91,12 @@ namespace TagCloud
 
             shiftedRectangle = new Rectangle(shiftedLocation, rectangle.Size);
 
-            if (IsIntersectWithAnyExistingRectangle(shiftedRectangle))
-                return false;
-
-            return true;
+            return !IsIntersectWithAnyExistingRectangle(shiftedRectangle);
         }
 
         private bool IsRectangleAlignedAlongDirection(Rectangle rectangle, Vector direction)
         {
-            var vectorBetweenCenters = Vector.GetVectorBetweenPoints(CloudCenter, rectangle.GetCenter());
+            var vectorBetweenCenters = new Vector(CloudCenter, rectangle.GetCenter());
 
             return direction.IsPerpendicularTo(vectorBetweenCenters);
         }

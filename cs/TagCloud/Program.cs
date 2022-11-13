@@ -8,8 +8,6 @@ namespace TagCloud
 {
     internal class Program
     {
-        private static readonly Size ImageSize = new Size(750, 750);
-
         private static DirectoryInfo _directoryToSaveImage;
 
         static void Main(string[] args)
@@ -17,48 +15,37 @@ namespace TagCloud
             _directoryToSaveImage = GetDirectoryToSaveImage();
 
             var rectanglesSizes = RectangleSizeGenerator.GetConstantSizes(600, new Size(25, 10));
-            CreateAndSaveCloudImage(rectanglesSizes, "Equivalent_rectangles_cloud.png");
+            GenerateAndSaveCloudImage(rectanglesSizes, "Equivalent_rectangles_cloud.png");
 
             rectanglesSizes = RectangleSizeGenerator.GetRandomOrderedSizes(300, new Size(20, 10), new Size(80, 40));
-            CreateAndSaveCloudImage(rectanglesSizes, "Horizontal_rectangles_cloud.png");
+            GenerateAndSaveCloudImage(rectanglesSizes, "Horizontal_rectangles_cloud.png");
 
             rectanglesSizes = RectangleSizeGenerator.GetRandomOrderedSizes(300, new Size(10, 20), new Size(40, 80));
-            CreateAndSaveCloudImage(rectanglesSizes, "Vertical_rectangles_cloud.png");
+            GenerateAndSaveCloudImage(rectanglesSizes, "Vertical_rectangles_cloud.png");
         }
 
-        private static DirectoryInfo GetSolutionDirectory()
-        {
-            var currentDirectory = new DirectoryInfo(Environment.CurrentDirectory);
-
-            while (currentDirectory != null && !currentDirectory.GetFiles("*.sln").Any())
-            {
-                currentDirectory = currentDirectory.Parent;
-            }
-
-            return currentDirectory;
-        }
 
         private static DirectoryInfo GetDirectoryToSaveImage()
         {
-            DirectoryInfo solutionDirectory = GetSolutionDirectory();
+            var currentDirectory = Environment.CurrentDirectory;
 
-            if (solutionDirectory.GetDirectories("TagCloudImages").Any())
-                return solutionDirectory.GetDirectories("TagCloudImages").First();
+            var directoryToSaveImage = Path.Combine(currentDirectory, "TagCloudImages");
 
-            return solutionDirectory.CreateSubdirectory("TagCloudImages");
+            if (!Directory.Exists(directoryToSaveImage))
+                return Directory.CreateDirectory(directoryToSaveImage);
+
+            return new DirectoryInfo(directoryToSaveImage);
         }
 
-        private static void CreateAndSaveCloudImage(IReadOnlyList<Size> rectanglesSizes, string fileName)
+        private static void GenerateAndSaveCloudImage(IEnumerable<Size> rectanglesSizes, string fileName)
         {
-            var centralPoint = new Point(ImageSize.Width / 2, ImageSize.Height / 2);
+            var layouter = new CircularCloudLayouter(new Point(0, 0));
 
-            var layouter = new CircularCloudLayouter(centralPoint);
+            var imageGenerator = new CloudImageGenerator(layouter, Color.Black);
 
-            var imageCreator = new CloudImageGenerator(layouter, ImageSize, Color.Black);
+            var bitmap = imageGenerator.GenerateBitmap(rectanglesSizes);
 
-            var image = imageCreator.Generate(rectanglesSizes);
-
-            image.Save(Path.Combine(_directoryToSaveImage.FullName, fileName));
+            ImageSaver.SaveBitmap(bitmap, _directoryToSaveImage, fileName);
         }
     }
 }

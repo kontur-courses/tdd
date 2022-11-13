@@ -13,24 +13,14 @@ namespace TagCloudUnitTests
     [TestFixture]
     internal class CircularCloudLayouterTests
     {
-        private readonly Size cloudImageSize = new Size(750, 750);
-
         private CircularCloudLayouter layouter;
 
         private IReadOnlyList<Rectangle> layout;
 
-        private DirectoryInfo testsLogDirectory;
-
-        [OneTimeSetUp]
-        public void OneTimeSetup()
-        {
-            testsLogDirectory = GetTestsLogDirectory();
-        }
-
         [SetUp]
         public void Setup()
         {
-            layouter = new CircularCloudLayouter(new Point(cloudImageSize.Width / 2, cloudImageSize.Height / 2));
+            layouter = new CircularCloudLayouter(new Point(0, 0));
 
             layout = new List<Rectangle>();
         }
@@ -38,13 +28,13 @@ namespace TagCloudUnitTests
         [TearDown]
         public void TearDown()
         {
-            if (IsTestInCategory("Layout") && IsTestResultStateFailureOrError())
+            if (layout.Count > 0 && IsTestResultStateFailureOrError())
             {
                 GenerateAndSaveCloudImage();
             }
         }
 
-        [Test, Category("Layout")]
+        [Test]
         public void PutNextRectangle_PutsRectangleInTheCenter_WhenFirstRectangleAdded()
         {
             layout = GetLayout(new[] { new Size(100, 50) });
@@ -65,7 +55,7 @@ namespace TagCloudUnitTests
             action.Should().Throw<ArgumentException>().WithMessage("width and height of rectangle must be more than zero");
         }
 
-        [Test, Category("Layout")]
+        [Test]
         public void PutNextRectangle_PutsTwoAlignedHorizontallyRectangles_WhenTwoAdded()
         {
             var sizes = new[]
@@ -82,7 +72,7 @@ namespace TagCloudUnitTests
             Math.Abs(firstRectangle.Y).Should().Be(Math.Abs(secondRectangle.Y));
         }
 
-        [Test, Category("Layout")]
+        [Test]
         public void PutNextRectangle_PutsTwoAlignedVerticallyRectangles_WhenTwoAdded()
         {
             var sizes = new[]
@@ -99,10 +89,10 @@ namespace TagCloudUnitTests
             Math.Abs(firstRectangle.X).Should().Be(Math.Abs(secondRectangle.X));
         }
         
-        [TestCase(2, Category = "Layout")]
-        [TestCase(10, Category = "Layout")]
-        [TestCase(100, Category = "Layout")]
-        [TestCase(1000, Category = "Layout")]
+        [TestCase(2)]
+        [TestCase(10)]
+        [TestCase(100)]
+        [TestCase(1000)]
         public void PutNextRectangle_PutsNonIntersectingRectangles_WhenSeveralRectanglesAdded(int rectanglesCount)
         {
             var sizes = RectangleSizeGenerator.GetConstantSizes(rectanglesCount, new Size(100, 50));
@@ -121,19 +111,11 @@ namespace TagCloudUnitTests
             return false;
         }
 
-        private IReadOnlyList<Rectangle> GetLayout(IReadOnlyList<Size> rectanglesSizes)
+        private IReadOnlyList<Rectangle> GetLayout(IEnumerable<Size> rectanglesSizes)
         {
-            var rectangles = new List<Rectangle>();
-
-            foreach (var size in rectanglesSizes)
-                rectangles.Add(layouter.PutNextRectangle(size));
+            var rectangles = rectanglesSizes.Select(size => layouter.PutNextRectangle(size)).ToList();
 
             return rectangles.AsReadOnly();
-        }
-
-        public bool IsTestInCategory(string categoryName)
-        {
-            return TestContext.CurrentContext.Test.Properties["Category"].Contains(categoryName);
         }
 
         public bool IsTestResultStateFailureOrError()
@@ -145,42 +127,15 @@ namespace TagCloudUnitTests
 
         private void GenerateAndSaveCloudImage()
         {
-            var imageCreator = new CloudImageGenerator(layouter, cloudImageSize, Color.Black);
+            var imageCreator = new CloudImageGenerator(layouter, Color.Black);
 
-            var image = imageCreator.Generate(layout);
+            var image = imageCreator.GenerateBitmap(layout);
 
-            var subTestDirectoryInfo = GetSubTestDirectory();
+            ErrorTestImageSaver.SaveBitmap(image, out var fullPath);
 
-            image.Save(Path.Combine(subTestDirectoryInfo.FullName, "CloudImage.png"));
+            TestContext.Out.WriteLine("Tag cloud visualization saved to file " + fullPath);
         }
 
-        private DirectoryInfo GetSubTestDirectory()
-        {
-            var currentTestName = TestContext.CurrentContext.Test.Name;
 
-            return testsLogDirectory.CreateSubdirectory(currentTestName);
-        }
-
-        private static DirectoryInfo GetSolutionDirectory()
-        {
-            var currentDirectory = new DirectoryInfo(Environment.CurrentDirectory);
-
-            while (currentDirectory != null && !currentDirectory.GetFiles("*.sln").Any())
-            {
-                currentDirectory = currentDirectory.Parent;
-            }
-
-            return currentDirectory;
-        }
-
-        private static DirectoryInfo GetTestsLogDirectory()
-        {
-            DirectoryInfo solutionDirectory = GetSolutionDirectory();
-
-            if (solutionDirectory.GetDirectories("TestsLog").Any())
-                return solutionDirectory.GetDirectories("TestsLog").First();
-
-            return solutionDirectory.CreateSubdirectory("TestsLog");
-        }
     }
 }

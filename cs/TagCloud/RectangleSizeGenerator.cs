@@ -13,13 +13,13 @@ namespace TagCloud
         {
             var result = new List<Size>();
 
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
-                double scaleFactor = Random.NextDouble();
+                var scaleFactor = Random.NextDouble();
 
-                int width = Math.Max(minSize.Width, (int)(scaleFactor * maxSize.Width));
+                var width = Math.Max(minSize.Width, (int)(scaleFactor * maxSize.Width));
 
-                int height = Math.Max(minSize.Height, (int)(scaleFactor * maxSize.Height));
+                var height = Math.Max(minSize.Height, (int)(scaleFactor * maxSize.Height));
 
                 result.Add(new Size(width, height));
             }
@@ -39,7 +39,7 @@ namespace TagCloud
         {
             var result = new List<Size>();
 
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
                 result.Add(size);
 
             return result.AsReadOnly();

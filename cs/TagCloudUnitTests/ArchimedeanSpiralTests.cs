@@ -20,14 +20,57 @@ namespace TagCloudUnitTests
             action.Should().Throw<ArgumentException>();
         }
 
-        [TestCaseSource(nameof(TestsParameters))]
-        public void GetNextPoint_ReturnsCorrectPoint_WhenSpiralTurnedOnAngle(Point centralPoint, double scaleFactor, double angleOnRadians, Point point)
+        [TestCase(0, 0, 0, TestName = "Angle is zero")]
+        [TestCase(Math.PI / 4, 0, 0, TestName = "Angle is PI/4")]
+        [TestCase(Math.PI / 2, 0, 1, TestName = "Angle is PI/2")]
+        [TestCase(Math.PI, -3, 0, TestName = "Angle is PI")]
+        public void GetNextPoint_ReturnsCorrectPoint_WhenCenterIsZeroAndScaleFactorIsOneAndAngleIsDifferent(double angleOnRadians, int correctX, int correctY)
         {
-            var archimedeanSpiral = new ArchimedeanSpiral(centralPoint, scaleFactor);
+            var archimedeanSpiral = new ArchimedeanSpiral(new Point(0, 0));
 
             TurnSpiralOnAngle(archimedeanSpiral, angleOnRadians);
 
-            archimedeanSpiral.GetNextPoint().Should().BeEquivalentTo(point);
+            archimedeanSpiral.GetNextPoint().Should().BeEquivalentTo(new Point(correctX, correctY));
+        }
+
+        [TestCase(0, 0, 0, TestName = "Angle is zero")]
+        [TestCase(Math.PI / 4, 1, 1, TestName = "Angle is PI/4")]
+        [TestCase(Math.PI / 2, 0, 3, TestName = "Angle is PI/2")]
+        [TestCase(Math.PI, -6, 0, TestName = "Angle is PI")]
+        public void GetNextPoint_ReturnsCorrectPoint_WhenCenterIsZeroAndScaleFactorIsTwoAndAngleIsDifferent(double angleOnRadians, int correctX, int correctY)
+        {
+            var archimedeanSpiral = new ArchimedeanSpiral(new Point(0, 0), 2);
+
+            TurnSpiralOnAngle(archimedeanSpiral, angleOnRadians);
+
+            archimedeanSpiral.GetNextPoint().Should().BeEquivalentTo(new Point(correctX, correctY));
+        }
+
+
+        [TestCase(0, 1, 1, TestName = "Angle is zero")]
+        [TestCase(Math.PI / 4, 1, 1, TestName = "Angle is PI/4")]
+        [TestCase(Math.PI / 2, 1, 2, TestName = "Angle is PI/2")]
+        [TestCase(Math.PI, -2, 1, TestName = "Angle is PI")]
+        public void GetNextPoint_ReturnsCorrectPoint_WhenCenterIsNonZeroAndScaleFactorIsOneAndAngleIsDifferent(double angleOnRadians, int correctX, int correctY)
+        {
+            var archimedeanSpiral = new ArchimedeanSpiral(new Point(1, 1));
+
+            TurnSpiralOnAngle(archimedeanSpiral, angleOnRadians);
+
+            archimedeanSpiral.GetNextPoint().Should().BeEquivalentTo(new Point(correctX, correctY));
+        }
+
+        [TestCase(0, 1, 1, TestName = "Angle is zero")]
+        [TestCase(Math.PI / 4, 2, 2, TestName = "Angle is PI/4")]
+        [TestCase(Math.PI / 2, 1, 4, TestName = "Angle is PI/2")]
+        [TestCase(Math.PI, -5, 1, TestName = "Angle is PI")]
+        public void GetNextPoint_ReturnsCorrectPoint_WhenCenterIsNonZeroAndScaleFactorIsTwoAndAngleIsDifferent(double angleOnRadians, int correctX, int correctY)
+        {
+            var archimedeanSpiral = new ArchimedeanSpiral(new Point(1, 1), 2);
+
+            TurnSpiralOnAngle(archimedeanSpiral, angleOnRadians);
+
+            archimedeanSpiral.GetNextPoint().Should().BeEquivalentTo(new Point(correctX, correctY));
         }
 
         private void TurnSpiralOnAngle(ArchimedeanSpiral archimedeanSpiral, double angleOnRadians)
@@ -37,37 +80,5 @@ namespace TagCloudUnitTests
             for (int i = 0; i < stepsCount; i++)
                 archimedeanSpiral.GetNextPoint();
         }
-
-        private static readonly object[] TestsParameters =
-        {
-            new object[] { new Point(0, 0), 1.0, 0, new Point(0, 0) },
-            new object[]
-            {
-                new Point(0, 0), 1.0, Math.PI / 4, new Point((int)(Math.PI / 4 * Math.Sqrt(2) / 2), (int)(Math.PI / 4 * Math.Sqrt(2) / 2))
-            },
-            new object[] { new Point(0, 0), 1.0, Math.PI / 2, new Point(0, (int)(Math.PI / 2)) },
-            new object[] { new Point(0, 0), 1.0, Math.PI, new Point((int)(-Math.PI), 0) },
-            new object[] { new Point(0, 0), 2.0, 0, new Point(0, 0) },
-            new object[]
-            {
-                new Point(0, 0), 2.0, Math.PI / 4, new Point((int)(2 * Math.PI / 4 * Math.Sqrt(2) / 2), (int)(2 * Math.PI / 4 * Math.Sqrt(2) / 2))
-            },
-            new object[] { new Point(0, 0), 2.0, Math.PI / 2, new Point(0, (int)(2 * Math.PI / 2)) },
-            new object[] { new Point(0, 0), 2.0, Math.PI, new Point((int)(-2 * Math.PI), 0) },
-            new object[] { new Point(1, 1), 1.0, 0, new Point(1, 1) },
-            new object[]
-            {
-                new Point(1, 1), 1.0, Math.PI / 4, new Point(1 + (int)(Math.PI / 4 * Math.Sqrt(2) / 2),1 +  (int)(Math.PI / 4 * Math.Sqrt(2) / 2))
-            },
-            new object[] { new Point(1, 1), 1.0, Math.PI / 2, new Point(1, 1 + (int)(Math.PI / 2)) },
-            new object[] { new Point(1, 1), 1.0, Math.PI, new Point(1+(int)( - Math.PI), 1) },
-            new object[] { new Point(1, 1), 2.0, 0, new Point(1, 1) },
-            new object[]
-            {
-                new Point(1, 1), 2.0, Math.PI / 4, new Point(1 + (int)(2 * Math.PI / 4 * Math.Sqrt(2) / 2), 1 + (int)(2 * Math.PI / 4 * Math.Sqrt(2) / 2))
-            },
-            new object[] { new Point(1, 1), 2.0, Math.PI / 2, new Point(1, 1 + (int)(2 * Math.PI / 2)) },
-            new object[] { new Point(1, 1), 2.0, Math.PI, new Point(1 + (int)( - 2 * Math.PI), 1) },
-        };
     }
 }

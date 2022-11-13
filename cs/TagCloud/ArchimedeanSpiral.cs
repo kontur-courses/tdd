@@ -7,11 +7,11 @@ namespace TagCloud
     {
         private const double DeltaAngle = 2 * Math.PI / 360;
 
-        public readonly Point CentralPoint;
+        public Point CentralPoint { get; }
 
         private readonly double scaleFactor;
 
-        private double angle;
+        private double angle = -DeltaAngle;
 
         public ArchimedeanSpiral(Point centralPoint, double scaleFactor = 1)
         {
@@ -24,23 +24,13 @@ namespace TagCloud
 
         public Point GetNextPoint()
         {
-            var currentAngle = GetAngleAndUpdate();
+            angle += DeltaAngle;
 
-            var x = CentralPoint.X + (int)(scaleFactor * currentAngle * Math.Cos(currentAngle));
+            var x = CentralPoint.X + (int)(scaleFactor * angle * Math.Cos(angle));
 
-            var y = CentralPoint.Y + (int)(scaleFactor * currentAngle * Math.Sin(currentAngle));
+            var y = CentralPoint.Y + (int)(scaleFactor * angle * Math.Sin(angle));
 
             return new Point(x, y);
         }
-
-        private double GetAngleAndUpdate()
-        {
-            var result = angle;
-
-            angle += DeltaAngle;
-
-            return result;
-        }
-
     }
 }
