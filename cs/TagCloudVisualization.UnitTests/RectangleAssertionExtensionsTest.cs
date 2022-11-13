@@ -7,30 +7,19 @@ namespace TagCloudVisualization.UnitTests;
 [TestFixture]
 public class RectangleAssertionExtensionsTest
 {
-    [Test]
-    public void TouchesWith_True_TouchesRectangles()
+    public static IEnumerable<TestCaseData> Rectangles()
     {
-        var a = new Rectangle(0, 0, 10, 10);
-        var b = new Rectangle(10, 0, 10, 10);
-
-        a.TouchesWith(b).Should().BeTrue();
+        yield return new(new Rectangle(0, 0, 10, 10), 
+            new Rectangle(10, 0, 10, 10), true);
+        yield return new(new Rectangle(0, 0, 10, 10), 
+            new Rectangle(20, 0, 10, 10), false);
+        yield return new(new Rectangle(0, 0, 10, 10), 
+            new Rectangle(9, 0, 10, 10), false);
     }
 
-    [Test]
-    public void TouchesWith_False_NotTouchesRectangles()
+    [TestCaseSource(nameof(Rectangles))]
+    public void TouchesWith_True_Parameters(Rectangle a, Rectangle b, bool touches)
     {
-        var a = new Rectangle(0, 0, 10, 10);
-        var b = new Rectangle(20, 0, 10, 10);
-
-        a.TouchesWith(b).Should().BeFalse();
-    }
-
-    [Test]
-    public void TouchesWith_False_IntersectsRectangles()
-    {
-        var a = new Rectangle(0, 0, 10, 10);
-        var b = new Rectangle(9, 0, 10, 10);
-
-        a.TouchesWith(b).Should().BeFalse();
+        a.TouchesWith(b).Should().Be(touches);
     }
 }
