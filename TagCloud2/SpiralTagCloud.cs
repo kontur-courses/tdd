@@ -14,7 +14,7 @@ namespace TagCloud2
         private double _minFrequancyFraction, _maxFrequancyFraction;
         private readonly int _maxFontSize;
         private readonly int _minFontSize;
-        
+
         private List<Tuple<string, int>> _tagWithSize = new();
         public List<Tuple<string, int>> TagWithSize { get => _tagWithSize; }
 
@@ -22,7 +22,7 @@ namespace TagCloud2
             ITagCloudEngine engine,
             ITagCloudBitmapDrawer drawer,
             IDataParser parser,
-            int minFontSize, 
+            int minFontSize,
             int maxFontSize)
         {
             Engine = engine;
@@ -31,7 +31,7 @@ namespace TagCloud2
             _minFontSize = minFontSize;
             _maxFontSize = maxFontSize;
         }
-        
+
         public void CreateTagCloud()
         {
             var wordsWithDict = Parser.GetWordsWithFrequency();
@@ -45,12 +45,12 @@ namespace TagCloud2
                            (_maxFrequancyFraction - _minFrequancyFraction);
                 else
                     coef = 1;
-                
+
                 var fontSize = (int)Math.Round(_minFontSize + ((_maxFontSize - _minFontSize) * coef));
                 var stringSize = Drawer.GetStringInRectangleSize(tuple.tag, fontSize);
-                
+
                 _tagWithSize.Add(Tuple.Create(tuple.tag, fontSize));
-                
+
                 Engine.PutNextRectangle(stringSize.ToSize());
             }
         }

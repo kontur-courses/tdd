@@ -19,23 +19,23 @@ namespace TagCloud2
         {
             if (string.IsNullOrEmpty(text))
                 throw new ArgumentException("text is null or empty");
-            
+
             var separator = new char[]
             {
                 ' ', '\n', '.', ','
             };
-            
+
             var words = text
                 .Split(
                     separator,
                     StringSplitOptions.RemoveEmptyEntries)
                 .Where(s => !string.IsNullOrWhiteSpace(s))
                 .Select(w => w.ToLower());
-                
+
             foreach (var word in words)
             {
                 _totalWords++;
-                
+
                 if (_frequencyDict!.ContainsKey(word))
                     _frequencyDict[word]++;
                 else

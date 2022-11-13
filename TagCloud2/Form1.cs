@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 
 namespace TagCloud2
@@ -15,7 +16,7 @@ namespace TagCloud2
             this.Height = 768;
             Paint += new PaintEventHandler(Form1_Paint!);
         }
-        
+
         //https://stackoverflow.com/a/13103960
         private void Print(Bitmap BM, PaintEventArgs e)
         {
@@ -26,27 +27,48 @@ namespace TagCloud2
             using (Graphics graphicsObj = e.Graphics)
                 graphicsObj.DrawImage(BM, 0, 0);
         }
-        
+
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            var maxFontSize = 80;
+
+            // Color.FromArgb(171, 207, 126),
+            // Color.FromArgb(60, 90, 57),
+            // Color.FromArgb(40, 63, 59)
+
+            var maxFontSize = 50;
             var minFontSize = 20;
 
             var cloud = new SpiralTagCloud(
                 new SpiralTagCloudEngine(new Point(Size / 2)),
-                new SpiralTagCloudBitmapDrawer(Size, "Consolas"),
+                new SpiralTagCloudBitmapDrawer(
+                    Size,
+                    "Consolas",
+                    maxFontSize,
+                    minFontSize,
+                    Color.FromArgb(252, 161, 125),
+                    Color.FromArgb(186, 75, 134),
+                    Color.FromArgb(13, 6, 40)
+                    ),
                 new DataParser(),
                 minFontSize,
                 maxFontSize
             );
-            
-            cloud.Parser.ParseFile("2.txt");
+
+            // cloud.Parser.ParseFile("2.txt");
+
+            var sb = new StringBuilder();
+
+            for (var i = 0; i < 101; i++)
+                for (var j = 0; j < i; j++)
+                    sb.AppendLine(i.ToString());
+
+            cloud.Parser.ParseText(sb.ToString());
             cloud.CreateTagCloud();
 
 
             //cloud.Drawer.DrawRectangles(cloud.Engine.Rectangles.ToArray());
-            cloud.Drawer.DrawRectanglesWithTags(
-                cloud.Engine.Rectangles.ToArray(), 
+            cloud.Drawer.DrawTags(
+                cloud.Engine.Rectangles.ToArray(),
                 cloud.TagWithSize.ToArray());
             Print(cloud.Drawer.Bitmap, e);
         }
