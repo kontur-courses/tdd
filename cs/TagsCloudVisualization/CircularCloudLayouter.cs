@@ -7,9 +7,9 @@ using TagsCloudVisualization;
 public class CircularCloudLayouter
 {
     public List<Rectangle> Rectangles { get; }
-    public Spiral Spiral { get; }
+    private Spiral Spiral { get; }
 
-    public CircularCloudLayouter(Point center, Spiral spiral)
+    public CircularCloudLayouter(Spiral spiral)
     {
         Rectangles = new List<Rectangle>();
         Spiral = spiral;
