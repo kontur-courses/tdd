@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using TagsCloudVisualization.Extensions;
 using TestResult = Microsoft.VisualStudio.TestPlatform.ObjectModel.TestResult;
@@ -15,7 +17,7 @@ namespace TagsCloudVisualization.Tests
         [SetUp]
         public void SetUp()
         {
-            circularCloudLayouter = new CircularCloudLayouter(new Point(0, 0));
+            circularCloudLayouter = new CircularCloudLayouter(new Point(50, 50));
         }
 
         [TestCase(0,1, TestName = "{m}_zero_width")]
@@ -62,7 +64,7 @@ namespace TagsCloudVisualization.Tests
 
             action.Should().Throw<ArgumentNullException>();
         }
-        [Test]
+        [Test, Category("LayoutTest")]
         public void PutNextRectangle_Should_ReturnTwoNotIntersectsRectangles()
         {
             var firstRectangle = circularCloudLayouter.PutNextRectangle(new Size(10, 1));
@@ -71,8 +73,8 @@ namespace TagsCloudVisualization.Tests
             firstRectangle.IntersectsWith(secondRectangle).Should().BeFalse();
         }
 
-        [TestCase(5,10,5,ExpectedResult = false, TestName = "{m}_5_AddedRectangles")]
-        [TestCase(500,10,5, ExpectedResult = false, TestName = "{m}_500_AddedRectangles")]
+        [TestCase(5,10,5,ExpectedResult = false, TestName = "{m}_5_AddedRectangles"), Category("LayoutTest")]
+        [TestCase(500,10,5, ExpectedResult = false, TestName = "{m}_500_AddedRectangles"), Category("LayoutTest")]
         public bool PutNextRectangle_Should_Return_RectangleNotIntersectsPast(int n,int width, int height)
         {
             var rectangles = new List<Rectangle>();
@@ -97,6 +99,61 @@ namespace TagsCloudVisualization.Tests
             var result = rectangle.IsIntersectsOthersRectangles(rectangles);
 
             result.Should().BeFalse();
+        }
+
+        [TearDown]
+        public void AfterTests()
+        {
+            if(TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
+                return;
+            var list = new List<Rectangle>();
+            switch (TestContext.CurrentContext.Test.Name)
+            {
+                case "PutNextRectangle_Should_Return_RectangleNotIntersectsPastAddedRectanglesWithDifferentSizes":
+                    for (int i = 1; i <= 10; i++)
+                    {
+                        var rectangle = circularCloudLayouter.PutNextRectangle(new Size(i, i));
+                        list.Add(rectangle);
+                    }
+                    list.Add(circularCloudLayouter.PutNextRectangle(new Size(10, 2)));
+                    SaveFailedLayoutImage("PutNextRectangle_Should_Return_RectangleNotIntersectsPastAddedRectanglesWithDifferentSizes",list);
+                    break;
+
+                case "PutNextRectangle_Should_Return_RectangleNotIntersectsPast_5_AddedRectangles":
+                    for (int i = 0; i < 5; i++)
+                        list.Add(circularCloudLayouter.PutNextRectangle(new Size(10, 5)));
+
+                    list.Add(circularCloudLayouter.PutNextRectangle(new Size(10, 2)));
+                    SaveFailedLayoutImage("PutNextRectangle_Should_Return_RectangleNotIntersectsPast_5_AddedRectangles", list);
+                    break;
+
+                case "PutNextRectangle_Should_Return_RectangleNotIntersectsPast_100_AddedRectangles":
+                    for (int i = 0; i < 100; i++)
+                        list.Add(circularCloudLayouter.PutNextRectangle(new Size(10, 5)));
+
+                    list.Add(circularCloudLayouter.PutNextRectangle(new Size(10, 2)));
+                    SaveFailedLayoutImage("PutNextRectangle_Should_Return_RectangleNotIntersectsPast_100_AddedRectangles",list);
+                    break;
+
+                case "PutNextRectangle_Should_ReturnTwoNotIntersectsRectangles":
+                    list.Add(circularCloudLayouter.PutNextRectangle(new Size(10, 1)));
+                    list.Add(circularCloudLayouter.PutNextRectangle(new Size(10, 1)));
+                    SaveFailedLayoutImage("PutNextRectangle_Should_ReturnTwoNotIntersectsRectangles",list);
+                    break;
+            }
+        }
+
+        private void SaveFailedLayoutImage(string name, IEnumerable<Rectangle> rectangles)
+        {
+            var path = @"C:\Users\harle\source\repos\tdd\cs\TagsCloudVisualization\FailedImages\";
+            var btm = new Bitmap(100, 100);
+            var g = Graphics.FromImage(btm);
+
+            foreach (Rectangle R in rectangles)
+                g.DrawRectangle(new Pen(Color.Brown), R);
+
+            btm.Save(path + name +".jpg", ImageFormat.Jpeg);
+            TestContext.WriteLine("Tag cloud visualization saved to file <{0}>","FailedImage/"+name+".jpg");
         }
     }
 }
