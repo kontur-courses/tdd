@@ -15,14 +15,13 @@ namespace TagCloudVisualization
         private readonly Rectangle[] rectangles;
 
         public CloudLayouterForm(Size formSize, Rectangle[] rectangles,
-        ICloudLayouterDrawer cloudLayouterDrawer)
+            ICloudLayouterDrawer cloudLayouterDrawer)
         {
             Size = formSize;
             MaximizeBox = false;
             FormBorderStyle = FormBorderStyle.FixedSingle;
             this.rectangles = rectangles;
             this.cloudLayouterDrawer = cloudLayouterDrawer;
-
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -32,7 +31,6 @@ namespace TagCloudVisualization
                 var g = Graphics.FromImage(bitmap);
 
                 cloudLayouterDrawer.Draw(g, rectangles);
-
 
                 Directory.CreateDirectory("result");
                 bitmap.Save(path, ImageFormat.Png);
