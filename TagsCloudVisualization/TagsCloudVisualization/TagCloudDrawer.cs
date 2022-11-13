@@ -13,14 +13,14 @@ namespace TagsCloudVisualization
     {
         private Bitmap bitmap;
         private Graphics graphics;
-        private CircularCloudLayouter layout;
+        private ICloudLayout layout;
         public int Scale = 1;
 
         public string SavePath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).ToString(),
             "SavedImages", "img.jpg");
 
         public Pen pen = new Pen(Color.Red, 1);
-        public TagCloudDrawer(CircularCloudLayouter layout)
+        public TagCloudDrawer(ICloudLayout layout)
         {
             this.layout = layout;
         }

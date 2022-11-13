@@ -4,10 +4,10 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    internal class CircularCloudLayouter
+    internal class CircularCloudLayouter : ICloudLayout
     {
         public List<Rectangle> FreeRectangles = new List<Rectangle>();
-        public List<Rectangle> PlacedRectangles = new List<Rectangle>();
+        public List<Rectangle> PlacedRectangles { get;} = new List<Rectangle>();
 
         private Point leftUpperCorner;
         private Point rightBottomCorner;
