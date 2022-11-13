@@ -1,9 +1,8 @@
 ﻿using System.Drawing;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.Spirals;
+
+internal interface ISpiral
 {
-	internal interface ISpiral
-	{
-		public Point GetNextPoint();
-	}
+	public Point GetNextPoint();
 }
