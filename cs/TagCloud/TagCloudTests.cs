@@ -33,9 +33,8 @@ namespace TagCloud
 
             var tagCloud = cloudLayouter.GetTagCloud();
 
-            var lastFramePixel = 1;
-            tagCloud.GetHeight().Should().Be(reactHeight + lastFramePixel);
-            tagCloud.GetWidth().Should().Be(reactWidth + lastFramePixel);
+            tagCloud.GetHeight().Should().Be(reactHeight);
+            tagCloud.GetWidth().Should().Be(reactWidth);
             tagCloud.GetLeftBound().Should().Be(planningReactLocation.X);
             tagCloud.GetTopBound().Should().Be(planningReactLocation.Y);
         }

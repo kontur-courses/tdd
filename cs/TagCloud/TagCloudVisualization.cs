@@ -9,7 +9,11 @@ namespace TagCloud
 
         public static void SaveAsBitmap(TagCloud tagCloud, string file)
         {
-            var bitmap = new Bitmap(tagCloud.GetWidth(), tagCloud.GetHeight());
+            var rectangleOutline = 1;
+
+            var bitmap = new Bitmap(
+                tagCloud.GetWidth() + rectangleOutline, 
+                tagCloud.GetHeight() + rectangleOutline);
 
             Size frameShift = new Size(-tagCloud.GetLeftBound(), -tagCloud.GetTopBound());
 

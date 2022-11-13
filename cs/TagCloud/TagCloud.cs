@@ -12,8 +12,6 @@ namespace TagCloud
 
         public List<Rectangle> Rectangles { get; private set; }
 
-        private readonly int lastFramePixel = 1;
-
         public TagCloud(Point center)
         {
             Center = center;
@@ -27,8 +25,7 @@ namespace TagCloud
                 return 0;
 
             return Rectangles.Max(r => r.Right) - 
-                Rectangles.Min(r => r.Left) +
-                lastFramePixel;
+                Rectangles.Min(r => r.Left);
         }
 
         public int GetHeight()
@@ -37,8 +34,7 @@ namespace TagCloud
                 return 0;
 
             return Rectangles.Max(r => r.Bottom) - 
-                Rectangles.Min(r => r.Top) +
-                lastFramePixel;
+                Rectangles.Min(r => r.Top);
         }
 
         public int GetLeftBound() => Rectangles.Min(r => r.Left);
