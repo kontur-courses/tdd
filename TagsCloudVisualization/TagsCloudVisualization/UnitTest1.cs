@@ -29,17 +29,21 @@ namespace TagsCloudVisualization
             layout.PutNextRectangle(new Size(10, 10)).Should().Be(new Rectangle(0, 0, 0, 0));
         }
 
-        //Draws failed tests
         [TearDown]
         public void TearDown()
         {
             if (TestContext.CurrentContext.Result.Outcome != ResultState.Success)
             {
-                TagCloudDrawer drawer = new TagCloudDrawer(layout);
-                drawer.Scale = 10;
-                drawer.DrawImage();
-                drawer.SaveImage();
+                DrawLayoutOnFailedTests();
             }
+        }
+
+        private void DrawLayoutOnFailedTests()
+        {
+            TagCloudDrawer drawer = new TagCloudDrawer(layout);
+            drawer.Scale = 10;
+            drawer.DrawImage();
+            drawer.SaveImage();
         }
     }
 
