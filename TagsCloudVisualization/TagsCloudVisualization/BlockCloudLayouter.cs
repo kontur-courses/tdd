@@ -24,6 +24,8 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
+            Rectangle rect = new Rectangle(0, 0, 0, 0);
+
             if (rectangleCount == 0)
             {
                 rectangleCount++;
@@ -34,33 +36,31 @@ namespace TagsCloudVisualization
                     rectangleSize.Width + leftUpperCorner.X,
                     rectangleSize.Height + leftUpperCorner.Y);
 
-                PlacedRectangles.Add(
-                    new Rectangle(
-                        leftUpperCorner.X + center.X,
-                        leftUpperCorner.Y + center.Y,
-                        rectangleSize.Width,
-                        rectangleSize.Height));
-                return PlacedRectangles[0];
-            }
-
-
-            Rectangle rect = new Rectangle(0, 0, 0, 0);
-            int suitableRectIndex = SmallestSuitableFreeRectangleIndex(rectangleSize);
-            if (suitableRectIndex != -1)
-            {
-                rect = CutOutFromFreeRectangleByIndex(suitableRectIndex, rectangleSize);
-                rect.X += center.X;
-                rect.Y += center.Y;
+                rect = new Rectangle(
+                    leftUpperCorner.X + center.X,
+                    leftUpperCorner.Y + center.Y,
+                    rectangleSize.Width,
+                    rectangleSize.Height);
             }
             else
             {
-                rect = InitNextRectangle(rectangleSize);
-                AddFreeRectangle(rectangleSize);
-                ResizeBorders(rectangleSize);
+                int suitableRectIndex = SmallestSuitableFreeRectangleIndex(rectangleSize);
+                if (suitableRectIndex != -1)
+                {
+                    rect = CutOutFromFreeRectangleByIndex(suitableRectIndex, rectangleSize);
+                    rect.X += center.X;
+                    rect.Y += center.Y;
+                }
+                else
+                {
+                    rect = InitNextRectangle(rectangleSize);
+                    AddFreeRectangle(rectangleSize);
+                    ResizeBorders(rectangleSize);
 
-                rectangleCount++;
-                if (currentAddState == AddRectangleState.UpLeft) currentAddState = AddRectangleState.RightUp;
-                else currentAddState += 1;
+                    rectangleCount++;
+                    if (currentAddState == AddRectangleState.UpLeft) currentAddState = AddRectangleState.RightUp;
+                    else currentAddState += 1;
+                }
             }
 
             PlacedRectangles.Add(rect);
