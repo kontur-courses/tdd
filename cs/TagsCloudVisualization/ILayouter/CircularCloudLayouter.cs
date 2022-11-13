@@ -3,25 +3,24 @@
 namespace TagsCloudVisualization
 {
     //Позиции для прямоугольников выбираем по спирали, которая задаётся формулой: r = a + (b * angle)
-    public class CircularCloudLayouter
+    public class CircularCloudLayouter:ILayouter
     {
         private readonly Point _center;
-        private readonly ArchimedeanSpiral _archimedeanSpiral;
+        private readonly ICurve _curve;
         private List<Rectangle> _rectangles = new();
-        public CircularCloudLayouter(Point center, double step, double density, double start)
+        
+        public CircularCloudLayouter(Point center, ICurve curve)
         {
-            _center = center;
-            _archimedeanSpiral = new ArchimedeanSpiral(step, density, start);
+            _center = center; 
+            _curve = curve;
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
-            {
                 throw new ArgumentException("Width and Height must be positive!");
-            }
-
-            foreach (var rectangleCenter in _archimedeanSpiral.GetNextSpiralPoint())
+            
+            foreach (var rectangleCenter in _curve.GetNextPoint())
             {
                 var applicantLocation = CalculateRectanglePosition(rectangleCenter, rectangleSize);
                 var applicantRectangle = new Rectangle(applicantLocation, rectangleSize);
@@ -42,8 +41,6 @@ namespace TagsCloudVisualization
 
             return new Point(X, Y);
         }
-
-        
     }
 }
 

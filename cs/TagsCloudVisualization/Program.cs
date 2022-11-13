@@ -4,20 +4,27 @@ namespace TagsCloudVisualization
 {
     public class Program
     {
+        public static void Main(string[] args)
+        {
+            var cloudGenerator = GetCloudGenerator();
+            var generatedCloud = cloudGenerator.GetGeneratedCloud();
+            
+            var pen = new Pen(Color.Black, 2);
+            var layoutDrawer = new LayoutDrawer(pen);
+            
+            layoutDrawer.Draw(generatedCloud, filename: "Ex122255.png");
+        }
+
         private static CloudGenerator GetCloudGenerator()
         {
             var minSize = new Size(50, 50);
             var maxSize = new Size(200, 200);
-            var center = new Point(1500, 1500);
-            return new CloudGenerator(120, minSize, maxSize, center, 0.1, 1, 0);
-        }
-        
-        public static void Main(string[] args)
-        {
-            var cg = GetCloudGenerator();
-            LayoutDrawer layoutDrawer = new LayoutDrawer(3000, 3000, Color.Black, 2);
-            layoutDrawer.DrawLayout(cg);
-            
+            var center = new Point(0, 0);
+
+            ICurve archSpiral = new ArchimedeanSpiral(1, density: 1, start: 0);
+            ILayouter layouter = new CircularCloudLayouter(center, archSpiral);
+
+            return new CloudGenerator(count: 120, minSize, maxSize, layouter);
         }
     }
 }
