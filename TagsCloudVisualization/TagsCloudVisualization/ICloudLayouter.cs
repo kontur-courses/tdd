@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    internal interface ICloudLayout
+    internal interface ICloudLayouter
     {
         List<Rectangle> PlacedRectangles { get; }
         Rectangle GetBorders();

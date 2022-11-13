@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    internal class CircularCloudLayouter : ICloudLayout
+    internal class BlockCloudLayouter : ICloudLayouter
     {
         public List<Rectangle> FreeRectangles = new List<Rectangle>();
         public List<Rectangle> PlacedRectangles { get; } = new List<Rectangle>();
@@ -17,7 +17,7 @@ namespace TagsCloudVisualization
 
         private int rectangleCount = 0;
 
-        public CircularCloudLayouter(Point center)
+        public BlockCloudLayouter(Point center)
         {
             this.center = center;
         }

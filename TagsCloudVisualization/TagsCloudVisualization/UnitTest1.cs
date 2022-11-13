@@ -9,12 +9,12 @@ namespace TagsCloudVisualization
     [TestFixture]
     public class PlacementTests
     {
-        private CircularCloudLayouter layout;
+        private BlockCloudLayouter layout;
 
         [SetUp]
         public void SetUp()
         {
-            layout = new CircularCloudLayouter(new Point(1500, 1500));
+            layout = new BlockCloudLayouter(new Point(1500, 1500));
         }
 
         [Test]
@@ -29,7 +29,7 @@ namespace TagsCloudVisualization
             layout.PutNextRectangle(new Size(10, 10)).Should().Be(new Rectangle(0, 0, 0, 0));
         }
 
-
+        //Draws failed tests
         [TearDown]
         public void TearDown()
         {
@@ -46,12 +46,12 @@ namespace TagsCloudVisualization
     public class DrawingTests
     {
         private TagCloudDrawer drawer;
-        private CircularCloudLayouter layout;
+        private BlockCloudLayouter layout;
 
         [SetUp]
         public void SetUp()
         {
-            layout = new CircularCloudLayouter(new Point(1000, 1000));
+            layout = new BlockCloudLayouter(new Point(1000, 1000));
             drawer = new TagCloudDrawer(layout);
             drawer.Scale = 10;
         }
@@ -92,6 +92,15 @@ namespace TagsCloudVisualization
             }
         }
 
+        [Test]
+        public void DrawSimpleCloud()
+        {
+            for (int i = 0; i < 2000; i++)
+            {
+                layout.PutNextRectangle(new Size(4, 4));
+            }
+        }
+
         [TearDown]
         public void TearDown()
         {
@@ -106,13 +115,13 @@ namespace TagsCloudVisualization
     public class SpiralLayoutDrawingTests
     {
         private TagCloudDrawer drawer;
-        private SpiralCloudLayout layout;
+        private SpiralCloudLayouter _layouter;
 
         [SetUp]
         public void SetUp()
         {
-            layout = new SpiralCloudLayout(new Point(400, 150));
-            drawer = new TagCloudDrawer(layout);
+            _layouter = new SpiralCloudLayouter(new Point(1000, 1000));
+            drawer = new TagCloudDrawer(_layouter);
             drawer.Scale = 10;
         }
 
@@ -121,7 +130,7 @@ namespace TagsCloudVisualization
         {
             for (int i = 0; i < 2000; i++)
             {
-                layout.PutNextRectangle(new Size(4, 4));
+                _layouter.PutNextRectangle(new Size(4, 4));
             }
         }
 
@@ -131,15 +140,15 @@ namespace TagsCloudVisualization
             Random r = new Random();
             for (int i = 0; i < 100; i++)
             {
-                layout.PutNextRectangle(new Size(i, 2));
+                _layouter.PutNextRectangle(new Size(i, 2));
             }
         }
 
         [Test]
         public void Draw2Rectangles()
         {
-            layout.PutNextRectangle(new Size(1, 1));
-            layout.PutNextRectangle(new Size(5, 5));
+            _layouter.PutNextRectangle(new Size(1, 1));
+            _layouter.PutNextRectangle(new Size(5, 5));
         }
 
         [Test]
@@ -148,7 +157,7 @@ namespace TagsCloudVisualization
             Random r = new Random();
             for (int i = 0; i < 500; i++)
             {
-                layout.PutNextRectangle(new Size(r.Next(10, 80), r.Next(1, 10)));
+                _layouter.PutNextRectangle(new Size(r.Next(10, 80), r.Next(1, 10)));
             }
         }
 

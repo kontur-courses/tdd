@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    internal class SpiralCloudLayout : ICloudLayout
+    internal class SpiralCloudLayouter : ICloudLayouter
     {
         public List<Rectangle> PlacedRectangles { get; } = new List<Rectangle>();
 
@@ -16,7 +16,7 @@ namespace TagsCloudVisualization
         private Point rightBottomCorner;
 
 
-        public SpiralCloudLayout(Point center)
+        public SpiralCloudLayouter(Point center)
         {
             this.center = center;
         }
