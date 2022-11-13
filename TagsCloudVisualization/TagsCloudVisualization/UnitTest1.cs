@@ -1,10 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using System;
+using System.Drawing;
 
 namespace TagsCloudVisualization
 {
@@ -72,14 +70,13 @@ namespace TagsCloudVisualization
             layout.PutNextRectangle(new Size(2, 1));
             layout.PutNextRectangle(new Size(3, 2));
             layout.PutNextRectangle(new Size(2, 3));
-
         }
 
         [Test]
         public void DrawRandomCloud()
         {
             Random r = new Random();
-            for(int i=0;i<500;i++)
+            for (int i = 0; i < 500; i++)
             {
                 layout.PutNextRectangle(new Size(r.Next(10, 80), r.Next(1, 10)));
             }
@@ -104,7 +101,6 @@ namespace TagsCloudVisualization
                 drawer.SaveImage();
             }
         }
-
     }
 
     public class SpiralLayoutDrawingTests
@@ -123,7 +119,7 @@ namespace TagsCloudVisualization
         [Test]
         public void DrawSimpleCloud()
         {
-            for (int i = 0; i < 500; i++)
+            for (int i = 0; i < 2000; i++)
             {
                 layout.PutNextRectangle(new Size(4, 4));
             }
@@ -165,6 +161,5 @@ namespace TagsCloudVisualization
                 drawer.SaveImage();
             }
         }
-
     }
 }

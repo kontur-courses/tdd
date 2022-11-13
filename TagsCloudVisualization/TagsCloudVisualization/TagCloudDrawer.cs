@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
@@ -20,6 +16,7 @@ namespace TagsCloudVisualization
             "SavedImages", "img.jpg");
 
         public Pen pen = new Pen(Color.Red, 1);
+
         public TagCloudDrawer(ICloudLayout layout)
         {
             this.layout = layout;
@@ -56,8 +53,8 @@ namespace TagsCloudVisualization
             {
                 Directory.CreateDirectory(Directory.GetParent(SavePath).ToString());
             }
+
             bitmap.Save(SavePath, ImageFormat.Jpeg);
         }
-        
     }
 }

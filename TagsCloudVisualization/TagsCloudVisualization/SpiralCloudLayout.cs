@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Net;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework.Constraints;
 
 namespace TagsCloudVisualization
 {
     internal class SpiralCloudLayout : ICloudLayout
     {
         public List<Rectangle> PlacedRectangles { get; } = new List<Rectangle>();
-        
+
         private double LastAngle = 0;
         private double AngleStep = 0.2d;
 
@@ -40,12 +34,11 @@ namespace TagsCloudVisualization
                 rect = FindPlaceForRectangle(rectangleSize);
                 rect = ShiftToCenter(rect);
                 ResizeBorders(rect);
-
             }
+
             rect.Offset(center);
             PlacedRectangles.Add(rect);
             return rect;
-
         }
 
         private void ResizeBorders(Rectangle rectangle)
@@ -55,6 +48,7 @@ namespace TagsCloudVisualization
             rightBottomCorner.X = Math.Max(rectangle.Right, rightBottomCorner.X);
             rightBottomCorner.Y = Math.Max(rectangle.Bottom, rightBottomCorner.Y);
         }
+
         public Rectangle GetBorders()
         {
             return new Rectangle(leftUpperCorner.X + center.X, leftUpperCorner.Y + center.Y,
@@ -105,7 +99,7 @@ namespace TagsCloudVisualization
                     newPlace.Location = mid.Location;
                 }
             }
-            
+
             return rect;
         }
 

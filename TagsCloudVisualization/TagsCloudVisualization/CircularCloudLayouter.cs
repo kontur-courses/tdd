@@ -7,7 +7,7 @@ namespace TagsCloudVisualization
     internal class CircularCloudLayouter : ICloudLayout
     {
         public List<Rectangle> FreeRectangles = new List<Rectangle>();
-        public List<Rectangle> PlacedRectangles { get;} = new List<Rectangle>();
+        public List<Rectangle> PlacedRectangles { get; } = new List<Rectangle>();
 
         private Point leftUpperCorner;
         private Point rightBottomCorner;
@@ -250,7 +250,6 @@ namespace TagsCloudVisualization
                         rightBottomCorner.Y + center.Y,
                         rectangleSize.Width,
                         rectangleSize.Height);
-
                 }
                     break;
 
@@ -273,7 +272,6 @@ namespace TagsCloudVisualization
                         rectangleSize.Height);
                 }
                     break;
-
             }
 
             return initialisedRectangle;
