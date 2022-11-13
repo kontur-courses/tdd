@@ -6,37 +6,33 @@ using TagsCloudVisualization;
 
 public class CircularCloudLayouter
 {
-    public readonly List<Rectangle> rectangles;
-    private Spiral spiral;
+    //Попало много лишних файлов, давай их уберем путем добавления в gitignore!!!!!!!
+    public List<Rectangle> Rectangles { get; }
+    public Spiral Spiral { get; }
 
-    public CircularCloudLayouter(Point center)
+    public CircularCloudLayouter(Point center, Spiral spiral)
     {
-        rectangles = new List<Rectangle>();
-        spiral = new Spiral(center);
+        Rectangles = new List<Rectangle>();
+        Spiral = spiral;
     }
 
     public Rectangle PutNextRectangle(Size rectangleSize)
     {
         if (rectangleSize.Height < 0 || rectangleSize.Width < 0)
             throw new ArgumentException("Wrong size of rectangle");
-        var rect = spiral.GetPoints()
+        var rect = Spiral.GetPoints()
             .Select(point =>
             {
-                var coordinatesOfRectangle = CalculateRectangleCoordinates(point, rectangleSize);
+                var coordinatesOfRectangle = RectangleCoordinatesCalculator.CalculateRectangleCoordinates(point, rectangleSize);
                 return new Rectangle(coordinatesOfRectangle, rectangleSize);
             })
             .First(rectangle => !IntersectsWithOtherRectangles(rectangle));
-        rectangles.Add(rect);
+        Rectangles.Add(rect);
         return rect;
-    }
-
-    private Point CalculateRectangleCoordinates(Point rectangleCenter, Size rectangleSize)
-    {
-        return new Point(rectangleCenter.X - rectangleSize.Width / 2, rectangleCenter.Y - rectangleSize.Height / 2);
     }
 
     private bool IntersectsWithOtherRectangles(Rectangle rectangle)
     {
-        return rectangles.Any(r => r.IntersectsWith(rectangle));
+        return Rectangles.Any(r => r.IntersectsWith(rectangle));
     }
 }

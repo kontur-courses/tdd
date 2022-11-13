@@ -14,24 +14,20 @@ namespace TagsCloudVisualization
         private Point center;
         private CircularCloudVisualizator visualizator;
         private List<Rectangle> rectangles;
+        private Spiral spiral;
+        private double angleOffset;
+        private double radiusOffset;
 
         [SetUp]
         public void SetUp()
         {
-            center = new Point(400, 400);
-            layouter = new CircularCloudLayouter(center);
+            angleOffset = 1;
+            radiusOffset = 1;
+            center = new Point(0, 0);
+            spiral = new Spiral(center, angleOffset, radiusOffset);
+            layouter = new CircularCloudLayouter(center, new Spiral(center, angleOffset, radiusOffset));
             visualizator = new CircularCloudVisualizator(new Size(800, 800));
             rectangles = new List<Rectangle>();
-        }
-
-        [TestCase(0, 0, TestName = "Zero coordinates")]
-        [TestCase(-10, -10, TestName = "Negative coordinates")]
-        [TestCase(100500, 100500, TestName = "Big positive coordinates")]
-        public void Constructor_ShouldNotThrowArgumentException_OnCorrectInput(int x, int y)
-        {
-            var centralPoint = new Point(x, y);
-            Action act = () => new CircularCloudLayouter(centralPoint);
-            act.Should().NotThrow();
         }
 
         [Test]
@@ -65,11 +61,12 @@ namespace TagsCloudVisualization
         [TestCase(3, 0, TestName = "X > 0, Y = 0")]
         [TestCase(0, 0, TestName = "X = 0, Y = 0")]
         [TestCase(10000, 10000, TestName = "Big rectangle")]
-        public void PutNextRectangle_ShouldNotThrowException_OnCorrectInput(int x, int y)
+        public void PutNextRectangle_ShouldReturnCorrectRectangle_OnCorrectInput(int x, int y)
         {
             var size = new Size(x, y);
-            Action act = () => layouter.PutNextRectangle(size);
-            act.Should().NotThrow();
+            var coordinatesCorrectRectangle = new Point(center.X - x / 2, center.Y - y / 2);
+            var rectangle = layouter.PutNextRectangle(size);
+            rectangle.Should().BeEquivalentTo(new Rectangle(coordinatesCorrectRectangle, size));
         }
 
         [Test]
@@ -86,14 +83,46 @@ namespace TagsCloudVisualization
                 rectangles.Any(rect => rect.IntersectsWith(rectangle) && rect != rectangle).Should().BeFalse();
         }
 
+        [Test]
+        public void PutNextRectangle_ShouldCorrectPlaceRectangles()
+        {
+            var expectedRectangles = new List<Rectangle>();
+            var rectangleSize = new Size(10, 10);
+            for (var i = 0; i < 5; i++)
+            {
+                var rectangle = layouter.PutNextRectangle(rectangleSize);
+                rectangles.Add(rectangle);
+
+                var expectedRectangle = i == 0
+                    ? new Rectangle(new Point(-5, -5), rectangleSize)
+                    : spiral
+                        .GetPoints()
+                        .Select(point =>
+                            new Rectangle(
+                                RectangleCoordinatesCalculator.CalculateRectangleCoordinates(point, rectangleSize),
+                                rectangleSize))
+                        .First(rect =>
+                            !expectedRectangles.Any(r => r.IntersectsWith(rect)));
+                expectedRectangles.Add(expectedRectangle);
+            }
+
+            for (int i = 0; i < 5; i++)
+                rectangles[i].Should().BeEquivalentTo(expectedRectangles[i]);
+        }
+
         [TearDown]
         public void TearDown()
         {
             var testResult = TestContext.CurrentContext.Result.Outcome;
-            var path = "../mistake.jpg";
+            var testMethodName = TestContext.CurrentContext.Test.MethodName;
+            var testName = TestContext.CurrentContext.Test.Name == testMethodName
+                ? ""
+                : TestContext.CurrentContext.Test.Name;
+            var splitter = testName == "" ? "" : "_";
+            var path = $"../mistake_{testMethodName}{splitter}{testName}.jpg";
 
-            if (Equals(testResult, ResultState.Failure) ||
-                Equals(testResult == ResultState.Error))
+
+            if (testResult.Status == TestStatus.Failed)
             {
                 visualizator.DrawRectangles(rectangles);
                 visualizator.SaveCanvas(path);
