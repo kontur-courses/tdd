@@ -11,7 +11,7 @@ namespace TagCloudVisualization
         private readonly float distanceBetweenLoops;
         private readonly float angleIncrement;
 
-        public Point Center { get; private set; }
+        public Point Center { get; }
 
         public Spiral(float distanceBetweenLoops, Point center, float angleIncrement = 0.02f)
         {
@@ -32,13 +32,6 @@ namespace TagCloudVisualization
             this.Center = center;
         }
 
-        private Point GetArchimedeanSpiralPoint(float angle)
-        {
-            var x = (int)Math.Round(Center.X + distanceBetweenLoops * angle * Math.Cos(angle));
-            var y = (int)Math.Round(Center.Y - distanceBetweenLoops * angle * Math.Sin(angle));
-            return new Point(x, y);
-        }
-
         public IEnumerator<Point> GetEnumerator()
         {
             for (var angle = 0f;; angle += angleIncrement)
@@ -52,9 +45,11 @@ namespace TagCloudVisualization
             return GetEnumerator();
         }
 
-        public void ChangeCenterPoint(Point newCenter)
+        private Point GetArchimedeanSpiralPoint(float angle)
         {
-            Center = newCenter;
+            var x = (int)Math.Round(Center.X + distanceBetweenLoops * angle * Math.Cos(angle));
+            var y = (int)Math.Round(Center.Y - distanceBetweenLoops * angle * Math.Sin(angle));
+            return new Point(x, y);
         }
     }
 }

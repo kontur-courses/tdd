@@ -9,17 +9,11 @@ namespace TagCloudVisualization
     public class CloudLayouterDrawerForTests : ICloudLayouterDrawer
     {
         private int numberIntersectingRectangles;
-        public CloudLayouter CloudLayouter { get; }
 
-        public CloudLayouterDrawerForTests(CloudLayouter cloudLayouter)
-        {
-            CloudLayouter = cloudLayouter;
-        }
-
-        public void Draw(Graphics graphics)
+        public void Draw(Graphics graphics, Rectangle[] rectangles)
         {
             graphics.Clear(Color.White);
-            var colorRectangles = GetColorRectangles(CloudLayouter.Rectangles);
+            var colorRectangles = GetColorRectangles(rectangles);
 
             graphics.DrawString(
                 $"number of intersecting rectangles: {numberIntersectingRectangles}",

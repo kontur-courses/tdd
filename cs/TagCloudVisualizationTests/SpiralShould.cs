@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Linq;
-using NUnit;
 using FluentAssertions;
 using NUnit.Framework;
 using TagCloudVisualization;
@@ -10,14 +9,13 @@ namespace TagCloudVisualizationTests
 {
     public class SpiralShould
     {
-
         [Test]
         public void ThrowException_IncorrectDistanceBetweenLoops()
         {
             Action action = () => new Spiral(0, Point.Empty);
             action.Should().Throw<ArgumentException>();
         }
-        
+
         [Test]
         public void ThrowException_IncorrectIncrement()
         {
@@ -33,16 +31,6 @@ namespace TagCloudVisualizationTests
         {
             var expectedCenter = new Point(expectedCenterX, expectedCenterY);
             var spiral = new Spiral(1, expectedCenter);
-
-            spiral.Center.Should().Be(expectedCenter);
-        }
-
-        [Test]
-        public void ChangeCenter()
-        {
-            var expectedCenter = new Point(100, 100);
-            var spiral = new Spiral(1, new Point(0, 0));
-            spiral.ChangeCenterPoint(expectedCenter);
 
             spiral.Center.Should().Be(expectedCenter);
         }

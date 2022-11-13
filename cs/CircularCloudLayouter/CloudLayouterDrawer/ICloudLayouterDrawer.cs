@@ -6,8 +6,6 @@ namespace TagCloudVisualization
 {
     public interface ICloudLayouterDrawer
     {
-        void Draw(Graphics graphics);
-
-        CloudLayouter CloudLayouter { get; }
+        void Draw(Graphics graphics, Rectangle[] rectangles);
     }
 }

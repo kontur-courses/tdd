@@ -71,108 +71,6 @@ namespace TagCloudVisualizationTests
 
 
         [Test]
-        public void ChangeCenter()
-        {
-            var expectedCenter = new Point(10000, 10000);
-            cloud.ChangeCenterPoint(expectedCenter);
-            cloud.Center.Should().Be(expectedCenter);
-        }
-
-
-        [Test]
-        public void WhenCenterChangesInCloud_CenterAlsoChangesInCurve()
-        {
-            var expectedCenter = new Point(10000, 10000);
-
-            cloud.ChangeCenterPoint(expectedCenter);
-
-            spiral.Center.Should().Be(expectedCenter);
-        }
-
-
-        [Test]
-        public void WhenCenterChangesInCurve_CenterAlsoChangesInCloud()
-        {
-            var expectedCenter = new Point(10000, 10000);
-
-            spiral.ChangeCenterPoint(expectedCenter);
-
-            cloud.Center.Should().Be(expectedCenter);
-        }
-
-
-        [Test]
-        public void WhenCenterChanges_ChangingLocationRectangles()
-        {
-            var newCenter = new Point(10000, 10000);
-            var size = new Size(10, 10);
-            var countRectangles = 10;
-            var directionVector = new Point(
-                newCenter.X - cloud.Center.X,
-                newCenter.Y - cloud.Center.Y);
-
-            for (var i = 0; i < countRectangles; i++)
-            {
-                cloud.PutNextRectangle(size);
-            }
-
-            var rectanglesBefore = cloud.Rectangles;
-            cloud.ChangeCenterPoint(newCenter);
-            var rectanglesAfter = cloud.Rectangles;
-
-            for (var i = 0; i < countRectangles; i++)
-            {
-                rectanglesBefore[i].X.Should().Be(rectanglesAfter[i].X - directionVector.X);
-                rectanglesBefore[i].Y.Should().Be(rectanglesAfter[i].Y - directionVector.Y);
-            }
-        }
-
-
-        [Test]
-        public void WhenPuttingRectangles_CenterChangesInCurve_RectanglesShouldBeClose()
-        {
-            var newCenter = new Point(10000 + center.X, 10000 + center.Y);
-            var size = new Size(10, 10);
-            cloud.PutNextRectangle(size);
-            spiral.ChangeCenterPoint(newCenter);
-            cloud.PutNextRectangle(size);
-
-            var rectangles = cloud.Rectangles;
-
-            Math.Abs(rectangles[0].X - rectangles[1].X).Should().BeLessOrEqualTo(size.Width * 2);
-            Math.Abs(rectangles[0].Y - rectangles[1].Y).Should().BeLessOrEqualTo(size.Height * 2);
-        }
-
-
-
-        [Test]
-        public void WhenCenterChangesInCurve_ChangingLocationRectangles()
-        {
-            var expectedCenter = new Point(10000, 10000);
-            var size = new Size(10, 10);
-            var countRectangles = 10;
-            var directionVector = new Point(
-                expectedCenter.X - cloud.Center.X,
-                expectedCenter.Y - cloud.Center.Y);
-
-            for (var i = 0; i < countRectangles; i++)
-            {
-                cloud.PutNextRectangle(size);
-            }
-
-            var rectanglesBefore = cloud.Rectangles;
-            spiral.ChangeCenterPoint(expectedCenter);
-            var rectanglesAfter = cloud.Rectangles;
-
-            for (var i = 0; i < countRectangles; i++)
-            {
-                rectanglesBefore[i].X.Should().Be(rectanglesAfter[i].X - directionVector.X);
-                rectanglesBefore[i].Y.Should().Be(rectanglesAfter[i].Y - directionVector.Y);
-            }
-        }
-
-
-        [Test]
         public void ReturnTwoLocationRectangles_AreNotEqual()
         {
             var sizeRectangle = new Size(1000, 1000);
@@ -279,9 +177,9 @@ namespace TagCloudVisualizationTests
 
             using (var bitMap = new Bitmap(ScreenSize.Width, ScreenSize.Height))
             {
-                var drawer = new CloudLayouterDrawerForTests(cloud);
+                var drawer = new CloudLayouterDrawerForTests();
 
-                drawer.Draw(Graphics.FromImage(bitMap));
+                drawer.Draw(Graphics.FromImage(bitMap), cloud.Rectangles);
                 Console.WriteLine($"Tag cloud visualization saved to file {path}");
                 bitMap.Save(path, ImageFormat.Png);
             }

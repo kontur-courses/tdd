@@ -12,56 +12,36 @@ namespace TagCloudVisualization
     {
         private readonly ICloudLayouterDrawer cloudLayouterDrawer;
         private readonly string path = "result//result.png";
+        private readonly Rectangle[] rectangles;
 
-        public CloudLayouterForm(ICloudLayouterDrawer cloudLayouterDrawer, int numberRectangles)
+        public CloudLayouterForm(Size formSize, Rectangle[] rectangles,
+        ICloudLayouterDrawer cloudLayouterDrawer)
         {
+            Size = formSize;
+            MaximizeBox = false;
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.rectangles = rectangles;
             this.cloudLayouterDrawer = cloudLayouterDrawer;
-            this.cloudLayouterDrawer
-                .CloudLayouter
-                .ChangeCenterPoint(new Point(Size.Width / 2, Size.Height / 2));
-            AddRectangles(numberRectangles);
-        }
 
+        }
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            using (var bitmap = new Bitmap(1920, 1080))
+            using (var bitmap = new Bitmap(Size.Width, Size.Height))
             {
                 var g = Graphics.FromImage(bitmap);
 
-                cloudLayouterDrawer
-                    .CloudLayouter
-                    .ChangeCenterPoint(new Point(bitmap.Width / 2, bitmap.Height / 2));
+                cloudLayouterDrawer.Draw(g, rectangles);
 
-                cloudLayouterDrawer.Draw(g);
 
-                if (!Directory.Exists("result"))
-                    Directory.CreateDirectory("result");
-
+                Directory.CreateDirectory("result");
                 bitmap.Save(path, ImageFormat.Png);
             }
         }
 
-        protected override void OnResize(EventArgs e)
-        {
-            cloudLayouterDrawer.CloudLayouter.ChangeCenterPoint(new Point(Size.Width / 2, Size.Height / 2));
-            Invalidate();
-        }
-
         protected override void OnPaint(PaintEventArgs e)
         {
-            cloudLayouterDrawer.Draw(e.Graphics);
-        }
-
-        private void AddRectangles(int count)
-        {
-            var random = new Random();
-            for (var i = 0; i < count; i++)
-            {
-                cloudLayouterDrawer
-                    .CloudLayouter
-                    .PutNextRectangle(new Size(random.Next(30, 30), random.Next(30, 100)));
-            }
+            cloudLayouterDrawer.Draw(e.Graphics, rectangles);
         }
     }
 }
