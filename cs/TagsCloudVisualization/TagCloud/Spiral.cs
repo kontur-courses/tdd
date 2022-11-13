@@ -6,21 +6,17 @@ namespace TagsCloudVisualization.TagCloud
     /// <summary>  Арифметическая спираль </summary>
     public class Spiral
     {
-        private const double defaultDelta = 0.1;
-        private const double defaultDensity = 1.1;
-        private const double defaultAngle = 0;
-
         private readonly Point center;
         private double angle;
-        private double delta;
-        private double density;
+        private readonly double delta;
+        private readonly double density;
 
-        public Spiral(Point center, double delta = defaultDelta, double density = defaultDensity)
+        public Spiral(Point center, double delta = 0.1, double density = 1.1)
         {
             this.center = center;
             this.delta = delta;
             this.density = density;
-            this.angle = defaultAngle;
+            this.angle = 0;
         }
 
         public Point GetNextPoint()

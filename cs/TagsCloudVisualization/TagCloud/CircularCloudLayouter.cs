@@ -19,8 +19,7 @@ namespace TagsCloudVisualization.TagCloud
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            if (rectangleSize == null
-                || rectangleSize.Width <= 0
+            if (rectangleSize.Width <= 0
                 || rectangleSize.Height <= 0)
             {
                 throw new ArgumentException("Передан некорректный размер прямоугольника.");

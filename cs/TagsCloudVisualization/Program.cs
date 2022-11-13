@@ -14,19 +14,19 @@ namespace TagsCloudVisualization
             var size = new Size(Width, Height);
             var centerPoint = new Point(size.Width / 2, size.Height / 2);
 
-            var ccl = new CircularCloudLayouter(centerPoint);
+            var layouter = new CircularCloudLayouter(centerPoint);
 
             var random = new Random();
 
             for (int i = 0; i < 157; i++)
             {
-                ccl.PutNextRectangle(new Size(random.Next(20, 100), random.Next(20, 100)));
+                layouter.PutNextRectangle(new Size(random.Next(20, 100), random.Next(20, 100)));
             }
 
             using (var bitmap = new Bitmap(Width, Height))
             using (var graphic = Graphics.FromImage(bitmap))
             {
-                foreach (var rectangle in ccl.rectangles)
+                foreach (var rectangle in layouter.rectangles)
                 {
                     var red = random.Next(256);
                     var green = random.Next(256);
