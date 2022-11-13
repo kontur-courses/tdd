@@ -23,15 +23,15 @@ namespace TagsCloudVisualization
                 throw new ArgumentException("Sides of the rectangle should not be non-positive");
 
             var points = spiral.GetPoints(NumberOfPoints);
-            var point = points[0];
+            var rectanglePosition = points[0];
 
-            for (int i = 0; i < points.Count; i++)
+            foreach (var point in points)
             {
-                if (!RectangleCanBePlaced(point, rectangleSize))
-                    point = points[i];
+                if (!RectangleCanBePlaced(rectanglePosition, rectangleSize))
+                    rectanglePosition = point;
             }
 
-            var rectangle = new Rectangle(point, rectangleSize);
+            var rectangle = new Rectangle(rectanglePosition, rectangleSize);
             return rectangle;
         }
 

@@ -17,19 +17,19 @@ namespace TagsCloudVisualization.TagsCloudVisualizationTests
         }
 
         [TestCase(0.1,
-            new[] { 401, 401, 400, 400 },
-            new[] { 400, 401, 401, 402 },
+            new[] { 400, 401, 401, 400, 400 },
+            new[] { 400, 400, 401, 401, 402 },
             TestName = "AngleStep is positive")]
         [TestCase(-0.1,
-            new[] { 399, 399, 400, 400 },
-            new[] { 400, 401, 401, 402 },
+            new[] { 400, 399, 399, 400, 400 },
+            new[] { 400, 400, 401, 401, 402 },
             TestName = "AngleStep is negative")]
         public void GetPoints_ShouldReturnSpiralPoints_OnCorrectAngleStep(
             double angleStep, int[] x, int[] y)
         {
             var expectedPoints = new Point[x.Length];
 
-            for (int i = 0; i < x.Length; i++)
+            for (var i = 0; i < x.Length; i++)
             {
                 expectedPoints[i] = new Point(x[i], y[i]);
             }

@@ -54,6 +54,14 @@ namespace TagsCloudVisualization.TagsCloudVisualizationTests
         }
 
         [Test]
+        public void PutNextRectangle_TopLeftCornerShouldBeInCenter_WhenOneRectangleSizeWasGiven()
+        {
+            var rectangle = layouter.PutNextRectangle(new Size(20, 10));
+            var topLeftCorner = new Point(rectangle.Left, rectangle.Top);
+            topLeftCorner.Should().Be(center);
+        }
+
+        [Test]
         public void GetRectangles_RectanglesShouldNotIntersect_InCorrectValue()
         {
             var rectangleSizes = RectanglesRandomizer

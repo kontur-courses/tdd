@@ -18,7 +18,7 @@ namespace TagsCloudVisualization
 
             this.center = center;
             this.angleStep = angleStep;
-            points = new List<Point>();
+            points = new List<Point> { center };
             angle = 0.0;
         }
 
@@ -27,8 +27,8 @@ namespace TagsCloudVisualization
             if (points.Count >= count)
                 return points;
 
-            var currentPoint = points.Count != 0 ? points[^1] : center;
-            var i = 0;
+            var currentPoint = points[^1];
+            var i = points.Count;
 
             while (i < count)
             {

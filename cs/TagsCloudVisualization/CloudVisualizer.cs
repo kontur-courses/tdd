@@ -30,14 +30,7 @@ namespace TagsCloudVisualization
             image = new Bitmap(imageSize.Width, imageSize.Height);
             centeredRectangles = CenterRectangles();
         }
-        public Color GetRandomColor()
-        {
-            var random = new Random();
-            return Color.FromArgb(
-                (byte)random.Next(0, 255),
-                (byte)random.Next(0, 255),
-                (byte)random.Next(0, 255));
-        }
+
         public void CreateImage()
         {
             var gr = Graphics.FromImage(image);
@@ -46,10 +39,10 @@ namespace TagsCloudVisualization
 
             gr.FillRectangle(brush, new Rectangle(0, 0, image.Width, image.Height));
 
-            for (var i = 0; i < centeredRectangles.Count; i++)
+            foreach (var rectangle in centeredRectangles)
             {
                 pen.Color = GetRandomColor();
-                gr.DrawRectangle(pen, centeredRectangles[i]);
+                gr.DrawRectangle(pen, rectangle);
             }
 
             image.Save($"{path}{imageName}.png", ImageFormat.Png);
@@ -78,6 +71,15 @@ namespace TagsCloudVisualization
         {
             return rectangles.Select(rectangle => new Rectangle(
                 GetCenteredRectangleCoordinates(rectangle), rectangle.Size)).ToList();
+        }
+
+        private static Color GetRandomColor()
+        {
+            var random = new Random();
+            return Color.FromArgb(
+                (byte)random.Next(0, 255),
+                (byte)random.Next(0, 255),
+                (byte)random.Next(0, 255));
         }
     }
 }
