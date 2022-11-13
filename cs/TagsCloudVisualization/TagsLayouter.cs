@@ -10,14 +10,14 @@ namespace TagsCloudVisualization
         private CircularCloudLayouter cloudLayouter;
         private readonly string[] tags;
         private readonly Font font;
-        public Dictionary<string, RectangleF> Tags { get; set; }
+        public Dictionary<string, Rectangle> Tags { get; set; }
 
         public TagsLayouter(CircularCloudLayouter cloudLayouter, string[] tags, Font font)
         {
             this.cloudLayouter = cloudLayouter;
             this.tags = tags;
             this.font = font;
-            Tags = new Dictionary<string, RectangleF>();
+            Tags = new Dictionary<string, Rectangle>();
         }
 
         public void PutAllTags()
@@ -28,7 +28,8 @@ namespace TagsCloudVisualization
 
         private void PutNextTags(string tag)
         {
-            var size = CalculateSizeWord(tag);
+            var sizeF = CalculateSizeWord(tag);
+            var size = new Size((int)Math.Ceiling(sizeF.Width), (int)Math.Ceiling(sizeF.Height));
             var rect = cloudLayouter.PutNextRectangle(size);
             Tags[tag] = rect;
         }
