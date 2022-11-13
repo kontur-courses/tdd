@@ -11,26 +11,37 @@ public class CircularCloudLayouterTests
     [SetUp]
     public void SetUp()
     {
-        layouter = new(center);
+        center = new(CloudCenterX, CloudCenterY);
+        drawingTracer = new(CloudWidth, CloudHeight, center);
+        layouter = new(center, drawingTracer);
     }
 
     [TearDown]
     public void TearDown()
     {
+        var fileName = $"test-{TestContext.CurrentContext.Test.MethodName}-{TestContext.CurrentContext.Test.ID}.jpg";
+        var fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
+
         if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
         {
-            var fileName = $"test-{TestContext.CurrentContext.Test.FullName}-{TestContext.CurrentContext.Test.ID}.png";
-            var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            var fullPath = Path.Combine(baseDirectory, fileName);
-            layouter.SaveToFile(fullPath);
+            fileName =
+                $"error-test-{TestContext.CurrentContext.Test.MethodName}-{TestContext.CurrentContext.Test.ID}.jpg";
+            fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
             TestContext.Out.WriteLine($"Tag cloud visualization saved to file {fullPath}");
         }
 
-        layouter.Dispose();
+        drawingTracer.SaveToFile(fullPath);
+        drawingTracer.Dispose();
     }
 
-    private CircularCloudLayouterPresentationProxy layouter = null!;
-    private readonly Point center = new(250, 250);
+    private const int CloudWidth = 1000;
+    private const int CloudHeight = 1000;
+    private const int CloudCenterX = 500;
+    private const int CloudCenterY = 500;
+
+    private DrawingCircularCloudLayoutTracer drawingTracer = null!;
+    private CircularCloudLayouter layouter = null!;
+    private Point center = Point.Empty;
 
     [TestCase(-1, -1)]
     [TestCase(-1, 10)]
@@ -44,29 +55,11 @@ public class CircularCloudLayouterTests
     }
 
     [Test]
-    public void PutNextRectangle_InvalidOperationException_OverflowedByRectangles()
-    {
-        var rectangleSize = new Size(500, 500);
-        var action = () => { _ = layouter.PutNextRectangle(rectangleSize); };
-
-        action.Should().NotThrow();
-        action.Should().Throw<InvalidOperationException>();
-    }
-
-    [Test]
-    public void PutNextRectangle_ArgumentException_HugeSize()
-    {
-        var rectangleSize = new Size(501, 501);
-        var action = () => { _ = layouter.PutNextRectangle(rectangleSize); };
-
-        action.Should().Throw<ArgumentException>();
-    }
-
-    [Test]
     public void PutNextRectangle_RectangleAtCenter_ValidSize()
     {
-        var rectangleSize = new Size(250, 250);
-        var expectedRectangle = new Rectangle(125, 125, 250, 250);
+        var rectangleSize = new Size(CloudCenterX / 2, CloudCenterY / 2);
+        var expectedRectangle = new Rectangle(CloudCenterX - rectangleSize.Width / 2,
+            CloudCenterY - rectangleSize.Height / 2, rectangleSize.Width, rectangleSize.Height);
 
         var actualRectangle = layouter.PutNextRectangle(rectangleSize);
 
@@ -85,60 +78,68 @@ public class CircularCloudLayouterTests
         actualFirstRectangle.TouchesWith(actualSecondRectangle).Should().BeTrue();
     }
 
-
-    [Test]
-    public void PutNextRectangle_SeveralRectangleThatAreTouchesButAreNotIntersects_SeveralValidSizes()
+    private static IEnumerable<TestCaseData>
+        RectangleSizes_Source()
     {
-        var sizes = new[]
-        {
-            new Size(10, 10),
-            new Size(20, 20),
-            new Size(30, 30),
-            new Size(10, 10),
-            new Size(20, 20),
-            new Size(30, 30),
-            new Size(10, 10),
-            new Size(20, 20),
-            new Size(30, 30)
-        };
+        yield return new(GenerateSizes(0, 80, new(100, 25), new(50, 20)), 0.4d);
+        yield return new(GenerateSizes(20021011, 80, new(100, 25), new(50, 20)), 0.4d);
+        yield return new(GenerateSizes(20221109, 80, new(100, 25), new(50, 20)), 0.3d);
+        yield return new(GenerateSizes(1, 1000, new(10, 10), new(10, 10)), 0.1d);
+    }
 
-        var rectangles = sizes.Select(layouter.PutNextRectangle).ToArray();
+    private static Size[] GenerateSizes(int randomSeed, int count, Size maxSize, Size minSize)
+    {
+        var random = new Random(randomSeed);
+        return Enumerable.Range(0, count)
+            .Select(_ => new Size(random.Next(minSize.Width, maxSize.Width + 1),
+                random.Next(minSize.Height, maxSize.Height + 1)))
+            .ToArray();
+    }
 
-        rectangles.Distinct().Should().HaveSameCount(rectangles);
+    [TestCaseSource(nameof(RectangleSizes_Source))]
+    public void
+        PutNextRectangle_SeveralRectangleThatAreNotIntersects_SeveralValidSizes(
+            Size[] sizes, double expectedAreaErrorRate)
+    {
+        var rectangles = _ = sizes.Select(layouter.PutNextRectangle).ToArray();
+
         foreach (var rectangle in rectangles)
-        {
             rectangles
                 .Where(other => other != rectangle)
                 .Should()
                 .Match(otherRectangles => otherRectangles.All(other => !other.IntersectsWith(rectangle)));
-
-            rectangles
-                .Where(other => other != rectangle)
-                .Should()
-                .Match(otherRectangles => otherRectangles.Any(other => other.TouchesWith(rectangle)));
-        }
     }
 
-    private static IEnumerable<TestCaseData> PutNextRectangle_PrintImage_PresentationProxy_Source()
+
+    [TestCaseSource(nameof(RectangleSizes_Source))]
+    public void
+        PutNextRectangle_SeveralRectangleThatAreTouches_SeveralValidSizes(
+            Size[] sizes, double expectedAreaErrorRate)
     {
-        yield return new(0, 80, new Size(100, 25), new Size(50, 20));
-        yield return new(20021011, 80, new Size(100, 25), new Size(50, 20));
-        yield return new(20221109, 80, new Size(100, 25), new Size(50, 20));
-        yield return new(1, 1000, new Size(10, 10), new Size(10, 10));
+        var rectangles = _ = sizes.Select(layouter.PutNextRectangle).ToArray();
+
+        rectangles.Should().Match(enumerable => enumerable.All(rectangle => rectangles
+            .Where(other => other != rectangle)
+            .Any(other => other.TouchesWith(rectangle))));
     }
 
-    [TestCaseSource(nameof(PutNextRectangle_PrintImage_PresentationProxy_Source))]
-    public void PutNextRectangle_PrintImage_PresentationProxy(int randomSeed, int count, Size maxSize, Size minSize)
+
+    [TestCaseSource(nameof(RectangleSizes_Source))]
+    public void
+        PutNextRectangle_SeveralRectangleThatAreLocatedQuiteTightlyInsideCircle_SeveralValidSizes(
+            Size[] sizes, double expectedAreaErrorRate)
     {
-        var random = new Random(randomSeed);
-        var sizes = Enumerable.Range(0, count)
-            .Select(_ =>
-                new Size(random.Next(minSize.Width, maxSize.Width + 1),
-                    random.Next(minSize.Height, maxSize.Height + 1)))
-            .ToArray();
-
-        var action = () => { return _ = sizes.Select(layouter.PutNextRectangle).ToArray(); };
-
-        action.Should().NotThrow();
+        var rectangles = _ = sizes.Select(layouter.PutNextRectangle).ToArray();
+        var rectanglesArea = (double)rectangles
+            .Select(x => x.Width * x.Height)
+            .Sum();
+        var maxDistanceFromCenter = rectangles
+            .Select(rectangle => rectangle.GetFarthestPointFromTarget(center))
+            .Select(point => point.DistanceTo(Point.Empty))
+            .Max();
+        var expectedCircleArea = maxDistanceFromCenter * maxDistanceFromCenter * Math.PI;
+        
+        rectanglesArea.Should()
+            .BeApproximately(expectedCircleArea, expectedCircleArea * expectedAreaErrorRate);
     }
 }

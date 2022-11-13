@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using FluentAssertions;
+using TagsCloudVisualization;
 
 namespace TagCloudVisualization.UnitTests;
 
