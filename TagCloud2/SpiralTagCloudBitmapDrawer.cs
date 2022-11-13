@@ -5,7 +5,7 @@ using TagCloud2.Interfaces;
 
 namespace TagCloud2
 {
-    public class SpiralTagCloudBitmapDrawer : ITagCloduBitmapDrawer
+    public class SpiralTagCloudBitmapDrawer : ITagCloudBitmapDrawer
     {
         public Bitmap Bitmap { get; }
         private readonly Graphics _graphics;
@@ -24,11 +24,11 @@ namespace TagCloud2
             _graphics.DrawRectangles(Pens.Black, rectangles);
         }
         
-        public void DrawTags(Rectangle[] rectangles, Tuple<string, int>[] tags)
+        public void DrawRectanglesWithTags(Rectangle[] rectangles, Tuple<string, int>[] tags)
         {
             for (var i = 0; i < rectangles.Length; i++)
             {
-                //_graphics.DrawRectangle(Pens.Black, rectangles[i]);
+                _graphics.DrawRectangle(Pens.Black, rectangles[i]);
                 _graphics.DrawString(tags[i].Item1, new Font("Consolas", tags[i].Item2), Brushes.Blue, rectangles[i]);
             }
         }

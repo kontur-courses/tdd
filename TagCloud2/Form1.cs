@@ -11,24 +11,24 @@ namespace TagCloud2
         public Form1()
         {
             InitializeComponent();
+            this.Width = 1280;
+            this.Height = 768;
             Paint += new PaintEventHandler(Form1_Paint!);
         }
         
         //https://stackoverflow.com/a/13103960
-        private void print(Bitmap BM, PaintEventArgs e)
+        private void Print(Bitmap BM, PaintEventArgs e)
         {
             if (_alreadyDone)
                 return;
             _alreadyDone = true;
-            Graphics graphicsObj = e.Graphics; //Get graphics from the event
-            graphicsObj.DrawImage(BM, 0, 0); // or "e.Graphics.DrawImage(bitmap, 60, 10);"
-            graphicsObj.Dispose();
+
+            using (Graphics graphicsObj = e.Graphics)
+                graphicsObj.DrawImage(BM, 0, 0);
         }
         
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            this.Width = 1280;
-            this.Height = 768;
             var maxFontSize = 80;
             var minFontSize = 20;
 
@@ -45,10 +45,10 @@ namespace TagCloud2
 
 
             //cloud.Drawer.DrawRectangles(cloud.Engine.Rectangles.ToArray());
-            cloud.Drawer.DrawTags(
+            cloud.Drawer.DrawRectanglesWithTags(
                 cloud.Engine.Rectangles.ToArray(), 
                 cloud.TagWithSize.ToArray());
-            print(cloud.Drawer.Bitmap, e);
+            Print(cloud.Drawer.Bitmap, e);
         }
     }
 }

@@ -14,7 +14,6 @@ namespace TagCloud2
         public double MinValue => _minValue;
 
         private Dictionary<string, int> _frequencyDict = new();
-        //public Dictionary<string, int> FrequencyDict { get => _frequencyDict; }
         private int _totalWords;
         public void ParseText(string text)
         {
@@ -36,6 +35,7 @@ namespace TagCloud2
             foreach (var word in words)
             {
                 _totalWords++;
+                
                 if (_frequencyDict!.ContainsKey(word))
                     _frequencyDict[word]++;
                 else
