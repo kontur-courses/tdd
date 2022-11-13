@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using System.Drawing;
 
 
@@ -13,26 +12,52 @@ namespace TagCloudVisualization
         private readonly IEnumerator<Point> pointEnumerator;
         private readonly ICurve curve;
 
-        public Rectangle[] Rectangles => rectangles.ToArray();
+        public Rectangle[] Rectangles
+        {
+            get
+            {
+                if(center != curve.Center)
+                    ChangeCenterPoint(curve.Center);
+                return rectangles.ToArray();
+            }
+        }
 
-        public Point Center { get; private set; }
+    private Point center;
+
+        public Point Center
+        {
+            get
+            {
+                if (center != curve.Center)
+                {
+                    ChangeCenterPoint(curve.Center);
+                }
+                return center;
+            }
+
+        }
 
         public CloudLayouter(ICurve curve)
         {
             this.curve = curve;
             pointEnumerator = curve.GetEnumerator();
             rectangles = new List<Rectangle>();
-            Center = curve.Center;
+            center = curve.Center;
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
+            {
                 throw new ArgumentException("size cannot be less than or equal to zero");
-            if (Center != curve.Center)
-                ChangeCenterPoint(curve.Center);
+            }
 
-            var nextRectangle = new Rectangle(GetCenterPointRectangle(Center, rectangleSize),
+            if (center != curve.Center)
+            {
+                ChangeCenterPoint(curve.Center);
+            }
+
+            var nextRectangle = new Rectangle(GetCenterPointRectangle(center, rectangleSize),
                 rectangleSize);
             while (true)
             {
@@ -48,7 +73,7 @@ namespace TagCloudVisualization
             return nextRectangle;
         }
 
-        private Point GetCenterPointRectangle(Point location, Size size)
+        private static Point GetCenterPointRectangle(Point location, Size size)
         {
             return new Point(
                 location.X - size.Width / 2,
@@ -58,9 +83,9 @@ namespace TagCloudVisualization
         public void ChangeCenterPoint(Point newCenter)
         {
             curve.ChangeCenterPoint(newCenter);
-            var directionVector = new Point(newCenter.X - Center.X,
-                newCenter.Y - Center.Y);
-            Center = new Point(newCenter.X, newCenter.Y);
+            var directionVector = new Point(newCenter.X - center.X,
+                newCenter.Y - center.Y);
+            center = new Point(newCenter.X, newCenter.Y);
 
             for (var i = 0; i < rectangles.Count; i++)
             {

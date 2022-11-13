@@ -34,8 +34,9 @@ namespace TagCloudVisualization
 
         private Point GetArchimedeanSpiralPoint(float angle)
         {
-            return new Point((int)(Center.X + distanceBetweenLoops * angle * Math.Cos(angle)),
-                (int)(Center.Y - distanceBetweenLoops * angle * Math.Sin(angle)));
+            var x = (int)Math.Round(Center.X + distanceBetweenLoops * angle * Math.Cos(angle));
+            var y = (int)Math.Round(Center.Y - distanceBetweenLoops * angle * Math.Sin(angle));
+            return new Point(x, y);
         }
 
         public IEnumerator<Point> GetEnumerator()
