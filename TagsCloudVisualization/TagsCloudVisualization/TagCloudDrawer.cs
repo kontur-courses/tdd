@@ -9,7 +9,7 @@ namespace TagsCloudVisualization
     {
         private Bitmap bitmap;
         private Graphics graphics;
-        private ICloudLayouter _layouter;
+        private ICloudLayouter layouter;
         public int Scale = 1;
 
         public string SavePath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).ToString(),
@@ -19,7 +19,7 @@ namespace TagsCloudVisualization
 
         public TagCloudDrawer(ICloudLayouter layouter)
         {
-            this._layouter = layouter;
+            this.layouter = layouter;
         }
 
         private void DrawRectangle(Rectangle rectangle)
@@ -30,17 +30,17 @@ namespace TagsCloudVisualization
 
         public void DrawImage()
         {
-            Rectangle borders = _layouter.GetBorders();
+            Rectangle borders = layouter.GetBorders();
             bitmap = new Bitmap(borders.Width * Scale, borders.Height * Scale);
             graphics = Graphics.FromImage(bitmap);
 
-            var ShiftedRectangles = _layouter.PlacedRectangles.Select(r => new Rectangle(
+            var ShiftedRectangles = layouter.PlacedRectangles.Select(r => new Rectangle(
                 (r.X - borders.X) * Scale,
                 (r.Y - borders.Y) * Scale,
                 r.Width * Scale,
                 r.Height * Scale));
 
-            foreach (var rectangle in ShiftedRectangles)
+            foreach (Rectangle rectangle in ShiftedRectangles)
             {
                 DrawRectangle(rectangle);
             }

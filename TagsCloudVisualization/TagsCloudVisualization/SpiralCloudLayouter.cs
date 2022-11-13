@@ -105,7 +105,7 @@ namespace TagsCloudVisualization
 
         private bool IntersectsWithOtherRectangles(Rectangle rect)
         {
-            foreach (var other in PlacedRectangles)
+            foreach (Rectangle other in PlacedRectangles)
             {
                 other.Offset(new Point(-center.X, -center.Y));
                 if (other.IntersectsWith(rect)) return true;

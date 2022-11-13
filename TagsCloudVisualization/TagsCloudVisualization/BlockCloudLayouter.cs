@@ -73,7 +73,7 @@ namespace TagsCloudVisualization
             int minSquare = -1;
             for (int i = 0; i < FreeRectangles.Count; i++)
             {
-                var rect = FreeRectangles[i];
+                Rectangle rect = FreeRectangles[i];
                 if (rect.Width >= rectangleSize.Width && rect.Height >= rectangleSize.Height)
                 {
                     if (index == -1 || minSquare > rect.Width * rect.Height)
