@@ -115,7 +115,7 @@ namespace TagsCloudVisualization
         [SetUp]
         public void SetUp()
         {
-            layout = new SpiralCloudLayout(new Point(0, 0));
+            layout = new SpiralCloudLayout(new Point(400, 150));
             drawer = new TagCloudDrawer(layout);
             drawer.Scale = 10;
         }
@@ -125,7 +125,34 @@ namespace TagsCloudVisualization
         {
             for (int i = 0; i < 500; i++)
             {
-                layout.PutNextRectangle(new Size(1, 1));
+                layout.PutNextRectangle(new Size(4, 4));
+            }
+        }
+
+        [Test]
+        public void DrawGrowingSizeRectanglesCloud()
+        {
+            Random r = new Random();
+            for (int i = 0; i < 100; i++)
+            {
+                layout.PutNextRectangle(new Size(i, 2));
+            }
+        }
+
+        [Test]
+        public void Draw2Rectangles()
+        {
+            layout.PutNextRectangle(new Size(1, 1));
+            layout.PutNextRectangle(new Size(5, 5));
+        }
+
+        [Test]
+        public void DrawRandomCloud()
+        {
+            Random r = new Random();
+            for (int i = 0; i < 500; i++)
+            {
+                layout.PutNextRectangle(new Size(r.Next(10, 80), r.Next(1, 10)));
             }
         }
 
