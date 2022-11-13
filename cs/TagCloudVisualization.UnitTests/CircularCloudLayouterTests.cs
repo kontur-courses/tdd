@@ -47,7 +47,7 @@ public class CircularCloudLayouterTests
     [TestCase(-1, 10)]
     [TestCase(10, -1)]
     [TestCase(0, 0)]
-    public void Constructor_Throws(int centerX, int centerY)
+    public void Constructor_Throws_Parameters(int centerX, int centerY)
     {
         var action = () => { _ = new CircularCloudLayouter(new(centerX, centerY)); };
 
