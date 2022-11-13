@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Security;
 using System.Text;
 using System.Threading.Tasks;
+using NUnit.Framework.Constraints;
 
 namespace TagsCloudVisualization
 {
@@ -36,6 +38,7 @@ namespace TagsCloudVisualization
             else
             {
                 rect = FindPlaceForRectangle(rectangleSize);
+                rect = ShiftToCenter(rect);
                 ResizeBorders(rect);
 
             }
@@ -82,11 +85,35 @@ namespace TagsCloudVisualization
             return place;
         }
 
+        private Rectangle ShiftToCenter(Rectangle rect)
+        {
+            Rectangle newPlace = new Rectangle(0, 0, rect.Width, rect.Height);
+            Rectangle mid = new Rectangle(0, 0, rect.Width, rect.Height);
+            while (Math.Abs(rect.Location.X - newPlace.Location.X) > 2 ||
+                   Math.Abs(rect.Location.Y - newPlace.Location.Y) > 2)
+            {
+                mid.Location = new Point(
+                    (newPlace.X + rect.Location.X) / 2,
+                    (newPlace.Y + rect.Location.Y) / 2);
+
+                if (!IntersectsWithOtherRectangles(mid))
+                {
+                    rect.Location = mid.Location;
+                }
+                else
+                {
+                    newPlace.Location = mid.Location;
+                }
+            }
+            
+            return rect;
+        }
+
         private bool IntersectsWithOtherRectangles(Rectangle rect)
         {
-            rect.Offset(center);
             foreach (var other in PlacedRectangles)
             {
+                other.Offset(new Point(-center.X, -center.Y));
                 if (other.IntersectsWith(rect)) return true;
             }
 
