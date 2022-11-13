@@ -11,17 +11,14 @@ namespace TagsCloudVisualization
     internal class SpiralCloudLayout : ICloudLayout
     {
         public List<Rectangle> PlacedRectangles { get; } = new List<Rectangle>();
-
-        private Point LastRectanglePoint = new Point(0, 0);
+        
         private double LastAngle = 0;
         private double AngleStep = 0.2d;
 
         private Point center;
+        private Point leftUpperCorner;
+        private Point rightBottomCorner;
 
-        public Rectangle GetBorders()
-        {
-            return new Rectangle(-100, -100, 200, 200);
-        }
 
         public SpiralCloudLayout(Point center)
         {
@@ -33,17 +30,32 @@ namespace TagsCloudVisualization
             Rectangle rect;
             if (PlacedRectangles.Count == 0)
             {
-                rect = CreateRectangleByCenter(rectangleSize, center);
-                PlacedRectangles.Add(rect);
-                return rect;
+                rect = CreateRectangleByCenter(rectangleSize, new Point(0, 0));
+                ResizeBorders(rect);
             }
+            else
+            {
+                rect = FindPlaceForRectangle(rectangleSize);
+                ResizeBorders(rect);
 
-            rect = FindPlaceForRectangle(rectangleSize);
-            rect.X += center.X;
-            rect.Y += center.Y;
+            }
+            rect.Offset(center);
             PlacedRectangles.Add(rect);
             return rect;
 
+        }
+
+        private void ResizeBorders(Rectangle rectangle)
+        {
+            leftUpperCorner.X = Math.Min(rectangle.Left, leftUpperCorner.X);
+            leftUpperCorner.Y = Math.Min(rectangle.Top, leftUpperCorner.Y);
+            rightBottomCorner.X = Math.Max(rectangle.Right, rightBottomCorner.X);
+            rightBottomCorner.Y = Math.Max(rectangle.Bottom, rightBottomCorner.Y);
+        }
+        public Rectangle GetBorders()
+        {
+            return new Rectangle(leftUpperCorner.X + center.X, leftUpperCorner.Y + center.Y,
+                rightBottomCorner.X - leftUpperCorner.X, rightBottomCorner.Y - leftUpperCorner.Y);
         }
 
         private Rectangle CreateRectangleByCenter(Size rectangleSize, Point center)
@@ -72,6 +84,7 @@ namespace TagsCloudVisualization
 
         private bool IntersectsWithOtherRectangles(Rectangle rect)
         {
+            rect.Offset(center);
             foreach (var other in PlacedRectangles)
             {
                 if (other.IntersectsWith(rect)) return true;
