@@ -1,30 +1,29 @@
 ﻿using System.Drawing;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization;
+
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            var cloudGenerator = GetCloudGenerator();
-            var generatedCloud = cloudGenerator.GetGeneratedCloud();
-            
-            var pen = new Pen(Color.Black, 2);
-            var layoutDrawer = new LayoutDrawer(pen);
-            
-            layoutDrawer.Draw(generatedCloud, filename: "Ex122255.png");
-        }
+        var cloudGenerator = GetCloudGenerator();
+        var generatedCloud = cloudGenerator.GetGeneratedCloud();
 
-        private static CloudGenerator GetCloudGenerator()
-        {
-            var minSize = new Size(50, 50);
-            var maxSize = new Size(200, 200);
-            var center = new Point(0, 0);
+        var pen = new Pen(Color.Black, 2);
+        var layoutDrawer = new LayoutDrawer(pen);
 
-            ICurve archSpiral = new ArchimedeanSpiral(1, density: 1, start: 0);
-            ILayouter layouter = new CircularCloudLayouter(center, archSpiral);
+        layoutDrawer.Draw(generatedCloud, "Ex122255.png");
+    }
 
-            return new CloudGenerator(count: 120, minSize, maxSize, layouter);
-        }
+    private static CloudGenerator GetCloudGenerator()
+    {
+        var minSize = new Size(50, 50);
+        var maxSize = new Size(200, 200);
+        var center = new Point(0, 0);
+
+        ICurve archSpiral = new ArchimedeanSpiral(1, 1, 0);
+        ILayouter layouter = new CircularCloudLayouter(center, archSpiral);
+
+        return new CloudGenerator(120, minSize, maxSize, layouter);
     }
 }

@@ -6,13 +6,13 @@ namespace Samples
     [TestFixture]
     public class StringCalculator_should
     {
-        private StringCalculator? calc;
-
         [SetUp]
         public void SetUp()
         {
             calc = new StringCalculator();
         }
+
+        private StringCalculator? calc;
 
         [Test]
         public void returnZero_onEmptyInput()

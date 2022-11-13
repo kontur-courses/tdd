@@ -4,8 +4,8 @@ namespace TagsCloudVisualization;
 
 public class PolarPoint
 {
-    private readonly double _radius;
     private readonly double _angle;
+    private readonly double _radius;
 
     public PolarPoint(double radius, double angle)
     {

@@ -2,16 +2,14 @@
 using FluentAssertions;
 using TagsCloudVisualization;
 
-namespace TagsCloudVisualizationTests
+namespace TagsCloudVisualizationTests;
+
+public class PolarPoint_Should
 {
-    public class PolarPoint_Should
+    [Test]
+    public void CastsToPointCorrectly()
     {
-        [Test]
-        public void CastsToPointCorrectly()
-        {
-            var polarPoint = new PolarPoint(radius:2.5, angle:1.2);
-            ((Point)polarPoint).Should().Be(new Point(1, 2));
-        }
+        var polarPoint = new PolarPoint(2.5, 1.2);
+        ((Point)polarPoint).Should().Be(new Point(1, 2));
     }
 }
-
