@@ -14,7 +14,6 @@ namespace TagsCloudVisualization
         private Point center;
         private Drawer visualizator;
         private List<Rectangle> rectangles;
-        private Spiral spiral;
         private double angleOffset;
         private double radiusOffset;
 
@@ -24,8 +23,7 @@ namespace TagsCloudVisualization
             angleOffset = 1;
             radiusOffset = 1;
             center = new Point(0, 0);
-            spiral = new Spiral(center, angleOffset, radiusOffset);
-            layouter = new CircularCloudLayouter(center, new Spiral(center, angleOffset, radiusOffset));
+            layouter = new CircularCloudLayouter(new Spiral(center, angleOffset, radiusOffset));
             visualizator = new Drawer(new Size(800, 800));
             rectangles = new List<Rectangle>();
         }
@@ -83,42 +81,37 @@ namespace TagsCloudVisualization
                 rectangles.Any(rect => rect.IntersectsWith(rectangle) && rect != rectangle).Should().BeFalse();
         }
 
-        [Test]
-        public void PutNextRectangle_ShouldCorrectPlaceRectangles()
+        [TestCaseSource(nameof(_putNextRectangleShouldCorrectPlaceRectanglesCases))]
+        public void PutNextRectangle_ShouldCorrectPlaceRectangles(List<Rectangle> expectedRectangles)
         {
-            var expectedRectangles = new List<Rectangle>();
             var rectangleSize = new Size(10, 10);
             for (var i = 0; i < 5; i++)
             {
                 var rectangle = layouter.PutNextRectangle(rectangleSize);
                 rectangles.Add(rectangle);
-
-                var expectedLocation = i == 0
-                    ? new Rectangle(new Point(-5, -5), rectangleSize)
-                    : spiral
-                        .GetPoints()
-                        .Select(point =>
-                            new Rectangle(
-                                RectangleCoordinatesCalculator.CalculateRectangleCoordinates(point, rectangleSize),
-                                rectangleSize))
-                        .First(rect =>
-                            !expectedRectangles.Any(r => r.IntersectsWith(rect)));
-                expectedRectangles.Add(expectedLocation);
             }
 
             for (var i = 0; i < 5; i++)
-            {
                 rectangles[i].Location.Should().BeEquivalentTo(expectedRectangles[i].Location);
-            }
         }
+
+        private static object[] _putNextRectangleShouldCorrectPlaceRectanglesCases =
+        {
+            new List<Rectangle>
+            {
+                new Rectangle(-5, -5, 10, 10), new Rectangle(-5, -16, 10, 10),
+                new Rectangle(5, -11, 10, 10), new Rectangle(7, 0, 10, 10),
+                new Rectangle(-3, 9, 10, 10)
+            }
+        };
 
         [TearDown]
         public void TearDown()
         {
             var testResult = TestContext.CurrentContext.Result.Outcome;
-            var testMethodName = TestContext.CurrentContext.Test.MethodName;
             var testName = TestContext.CurrentContext.Test.FullName;
             var path = $"../mistake_{testName}.jpg";
+
             if (testResult.Status == TestStatus.Failed)
             {
                 visualizator.DrawRectangles(rectangles);

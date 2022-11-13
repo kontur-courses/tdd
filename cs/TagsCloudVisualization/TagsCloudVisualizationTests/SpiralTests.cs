@@ -29,21 +29,36 @@ namespace TagsCloudVisualization
             points.First().Should().BeEquivalentTo(center);
         }
 
-        [TestCase(1, 1, TestName = "Positive angleOffset and radiusOffset")]
-        [TestCase(-1, -1, TestName = "Negative angleOffset and radiusOffset")]
-        public void GetPoints_ShouldReturnCorrectPoints(double radiusOffset, double angleOffset)
+        [TestCaseSource(nameof(_getPointsShouldReturnCorrectPointsCases))]
+        public void GetPoints_ShouldReturnCorrectPoints(double radiusOffset, double angleOffset,
+            List<Point> expectedPoints)
         {
             var spiral = new Spiral(center, angleOffset, radiusOffset);
-            var points = spiral.GetPoints().Skip(1).Take(10).ToList();
-            foreach (var point in points)
-            {
-                angle += angleOffset;
-                radius += radiusOffset;
-                var x = center.X + (int) Math.Round(radius * Math.Cos(angle));
-                var y = center.Y + (int) Math.Round(radius * Math.Sin(angle));
-                var correctPoint = new Point(x, y);
-                point.Should().BeEquivalentTo(correctPoint);
-            }
+            var points = spiral.GetPoints().Take(10).ToList();
+            for (var i = 0; i < 10; i++)
+                points[i].Should().BeEquivalentTo(expectedPoints[i]);
         }
+
+        private static object[] _getPointsShouldReturnCorrectPointsCases =
+        {
+            new object[]
+            {
+                1, 1, new List<Point>
+                {
+                    new Point(0, 0), new Point(1, 1), new Point(-1, 2), new Point(-3, 0),
+                    new Point(-3, -3), new Point(1, -5), new Point(6, -2), new Point(5, 5),
+                    new Point(-1, 8), new Point(-8, 4), new Point(-8, -5)
+                }
+            },
+            new object[]
+            {
+                -1, -1, new List<Point>
+                {
+                    new Point(0, 0), new Point(-1, 1), new Point(1, 2),
+                    new Point(3, 0), new Point(3, -3), new Point(-1, -5), new Point(-6, -2),
+                    new Point(-5, 5), new Point(1, 8), new Point(8, 4), new Point(8, -5)
+                }
+            }
+        };
     }
 }
