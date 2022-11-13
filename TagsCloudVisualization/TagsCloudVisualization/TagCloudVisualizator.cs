@@ -1,44 +1,52 @@
 ﻿using System.Drawing;
+using TagsCloudVisualization.Helpers;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization;
+
+public class TagCloudVisualizator
 {
-	public class TagCloudVisualizator
+	private static readonly Color defaultBackgroundColor = Color.Cornsilk;
+	private static readonly Color defaultRectangleColor = Color.Chartreuse;
+	private static readonly Color defaultRectangleBorderColor = Color.DarkRed;
+
+	public static Image GetRandomColorTagCloudImage(List<Rectangle> rectangles, Size imageSize, Point shift)
 	{
-		public static Image GetSpiralImage()
+		var rnd = new Random();
+
+		var colors = rectangles
+			.Select(_ => Color.FromArgb(rnd.Next(100, 255), rnd.Next(100, 255), rnd.Next(100, 255)))
+			.ToList();
+
+		return GetTagCloudImage(rectangles, colors, imageSize, shift);
+	}
+
+	public static Image GetTagCloudImage(List<Rectangle> rectangles, Size imageSize, Point cloudPosition)
+		=> GetTagCloudImage(rectangles, new List<Color>(), imageSize, cloudPosition);
+
+	public static Image GetTagCloudImage(List<Rectangle> rectangles, List<Color> colors, Size imageSize,
+		Point cloudPosition)
+	{
+		var result = new Bitmap(imageSize.Width, imageSize.Height);
+
+		var shiftedRectangles = rectangles
+			.Select(r => new Rectangle(r.Location.Plus(cloudPosition), r.Size)).ToArray();
+
+		var borderPen = new Pen(defaultRectangleBorderColor);
+		var rectangleBrush = new SolidBrush(defaultRectangleColor);
+		var background = new Rectangle(0, 0, imageSize.Width, imageSize.Height);
+
+		using var graphics = Graphics.FromImage(result);
+		graphics.FillRectangle(new SolidBrush(defaultBackgroundColor), background);
+
+		for (var i = 0; i < rectangles.Count; i++)
 		{
-			var width = 500;
-			var height = 500;
+			var rectangle = shiftedRectangles[i];
+			rectangleBrush.Color = i < colors.Count ? colors[i] : defaultRectangleColor;
 
-			var picture = new Bitmap(width, height);
-			var pen = new SolidBrush(Color.DarkRed);
-
-			var spiral = new ArchimedeanSpiral(new Point(width / 2, height / 2), 10, 5);
-
-			using var graphics = Graphics.FromImage(picture);
-			graphics.FillRectangle(new SolidBrush(Color.Cornsilk), new Rectangle(0, 0, width, height));
-
-			for (var i = 0; i < 500; i++)
-			{
-				var point = spiral.GetNextPoint();
-				if (point.X >= width || point.Y >= height) break;
-
-				graphics.FillEllipse(pen, new Rectangle(point, new Size(5, 5)));
-			}
-
-			return picture;
+			graphics.FillRectangle(rectangleBrush, rectangle);
+			graphics.DrawRectangle(borderPen, rectangle);
 		}
 
-		public static Image GetTagCloudImage(List<Rectangle> rectangles, Size imageSize)
-		{
-			var image = new Bitmap(imageSize.Width, imageSize.Height);
-
-			using var graphics = Graphics.FromImage(image);
-			graphics.FillRectangle(new SolidBrush(Color.Cornsilk), new Rectangle(0, 0, imageSize.Width, imageSize.Height));
-
-			graphics.FillRectangles(new SolidBrush(Color.Chartreuse), rectangles.ToArray());
-			graphics.DrawRectangles(new Pen(Color.DarkRed), rectangles.ToArray());
-
-			return image;
-		}
+		return result;
 	}
 }

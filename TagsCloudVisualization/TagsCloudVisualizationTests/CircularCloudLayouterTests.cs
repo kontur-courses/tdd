@@ -1,119 +1,218 @@
-﻿using FluentAssertions;
+﻿using System.Drawing;
+using System.Drawing.Imaging;
+using FluentAssertions;
 using NUnit.Framework;
-using System.Drawing;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
+using TagsCloudVisualization.Helpers;
 
-namespace TagsCloudVisualizationTests
+namespace TagsCloudVisualizationTests;
+
+[TestFixture]
+public class CircularCloudLayouterTests
 {
-	[TestFixture]
-	public class CircularCloudLayouterTests
+	[SetUp]
+	public void SetUp()
 	{
-		private CircularCloudLayouter layouter;
+		layouter = new CircularCloudLayouter(Point.Empty);
+		placedRectangles = new List<Rectangle>();
+		imageSaver = new ImageSaver($"{Environment.CurrentDirectory}\\FailedTestsLayouts", ImageFormat.Png);
+	}
 
-		[SetUp]
-		public void SetUp()
-		{
-			layouter = new CircularCloudLayouter(Point.Empty);
-		}
+	[TearDown]
+	public void SaveLayoutAfterTestFail()
+	{
+		if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
+		if (placedRectangles.Count == 0) return;
 
-		[TestCaseSource(nameof(CentersSource))]
-		public void Constructor_WithCorrectCenter_ShouldNotTrow(Point center)
-		{
-			var action = () => new CircularCloudLayouter(center);
+		var occupiedSpace = GetOccupiedSpace(placedRectangles);
 
-			action.Should().NotThrow();
-		}
+		var width = (int)Math.Ceiling(occupiedSpace.Width * 1.3);
+		var height = (int)Math.Ceiling(occupiedSpace.Height * 1.3);
+
+		var image = TagCloudVisualizator.GetTagCloudImage(
+			placedRectangles
+			, new Size(width, height)
+			, new Point(width / 2, height / 2));
+
+		var failedTestName = TestContext.CurrentContext.Test.Name;
+		var failedTestMethodName = TestContext.CurrentContext.Test.MethodName;
+
+		var path = imageSaver.Save(image, $"{failedTestMethodName} with {failedTestName}");
+		var message = $"Tag cloud visualization saved to file {path}";
+
+		Console.WriteLine(message);
+	}
+
+	private CircularCloudLayouter layouter;
+	private List<Rectangle> placedRectangles;
+	private ImageSaver imageSaver;
+
+	[TestCaseSource(nameof(CentersSource))]
+	public void Constructor_WithCorrectCenter_ShouldNotThrow(Point center)
+	{
+		var action = () => new CircularCloudLayouter(center);
+
+		action.Should().NotThrow();
+	}
+
+	[TestCase(10, 10, TestName = "Square")]
+	[TestCase(100, 10, TestName = "Horizontal oriented rectangle")]
+	[TestCase(10, 100, TestName = "Vertical oriented rectangle")]
+	public void PutNextRectangle_FirstRectangle_ShouldBeInCenter(int width, int height)
+	{
+		var rectangleSize = new Size(width, height);
+		var actual = layouter.PutNextRectangle(rectangleSize);
+		placedRectangles.Add(actual);
+		var expected = RectangleCreator.GetRectangle(Point.Empty, rectangleSize);
+
+		actual.Should().BeEquivalentTo(expected);
+	}
+
+	[TestCase(0, 0, TestName = "Zero size")]
+	[TestCase(0, 10, TestName = "Zero width")]
+	[TestCase(10, 0, TestName = "Zero height")]
+	[TestCase(-10, -10, TestName = "Negative size")]
+	[TestCase(-10, 10, TestName = "Negative width")]
+	[TestCase(10, -10, TestName = "Negative height")]
+	public void PutNextRectangle_IncorrectRectangleSize_ShouldThrowArgumentException(int width, int height)
+	{
+		var rectangleSize = new Size(width, height);
+		var action = () => layouter.PutNextRectangle(rectangleSize);
+
+		action.Should().NotThrow<ArgumentException>();
+	}
+
+	[TestCaseSource(nameof(SameRectangleSizesSource))]
+	[TestCaseSource(nameof(RandomRectangleSizesSource))]
+	public void PutNextRectangle_ShouldNotContainIntersection(List<Size> sizes)
+	{
+		placedRectangles = sizes.Select(size => layouter.PutNextRectangle(size)).ToList();
 		
+		var intersectionsCount = placedRectangles
+			.Select((rectangle, i) =>
+				placedRectangles
+					.Where((_, j) => i != j)
+					.Count(rectangle.IntersectsWith))
+			.Sum();
 
-		[TestCase(10, 10, TestName = "Square")]
-		[TestCase(100, 10, TestName = "Horizontal oriented rectangle")]
-		[TestCase(10, 100, TestName = "Vertical oriented rectangle")]
-		public void PutNextRectangle_FirstRectangle_ShouldBeInCenter(int width, int height)
-		{
-			var rectangleSize = new Size(width, height);
-			var actual = layouter.PutNextRectangle(rectangleSize);
-			var expected = RectangleCreator.GetRectangle(Point.Empty, rectangleSize);
+		intersectionsCount.Should().Be(0);
+	}
 
-			actual.Should().BeEquivalentTo(expected);
-		}
+	[TestCaseSource(nameof(SameRectangleSizesSource))]
+	[TestCaseSource(nameof(RandomRectangleSizesSource))]
+	public void PutNextRectangle_CloudShouldBeDense(IEnumerable<Size> sizes)
+	{
+		placedRectangles = sizes.Select(size => layouter.PutNextRectangle(size)).ToList();
 
-		[TestCase(0, 0, TestName = "Zero size")]
-		[TestCase(0, 10, TestName = "Zero width")]
-		[TestCase(10, 0, TestName = "Zero height")]
-		[TestCase(-10, -10, TestName = "Negative size")]
-		[TestCase(-10, 10, TestName = "Negative width")]
-		[TestCase(10, -10, TestName = "Negative height")]
-		
-		public void PutNextRectangle_IncorrectRectangleSize_ShouldThrowArgumentException(int width, int height)
-		{
-			var rectangleSize = new Size(width, height);
-			var action = () => layouter.PutNextRectangle(rectangleSize);
-			
-			action.Should().NotThrow<ArgumentException>();
-		}
+		var occupiedSpace = GetOccupiedSpace(placedRectangles);
 
-		[TestCaseSource(nameof(RectangleSizesSource))]
-		public void PutNextRectangle_ShouldNotContainIntersection(List<Size> sizes)
-		{
-			var placedRectangles = sizes.Select(size => layouter.PutNextRectangle(size)).ToList();
+		var rectanglesAreaSum = placedRectangles.Select(r => r.Width * r.Height).Sum();
+		var occupiedArea = occupiedSpace.Width * occupiedSpace.Height;
 
-			//Изначально тут были for, но решарпер предложил заменить на linq, не уверен что это легче читается
-			var intersectionsCount = placedRectangles
-				.Select((rectangle, i) =>
-					placedRectangles
-						.Where((_, j) => i != j)
-						.Count(rectangle.IntersectsWith))
-				.Sum();
+		var freeAreaPercent = GetFreeAreaPercent(occupiedArea, rectanglesAreaSum);
 
-			intersectionsCount.Should().Be(0);
-		}
+		freeAreaPercent.Should().BeLessOrEqualTo(40);
+	}
 
-		public static IEnumerable<Point> CentersSource()
-		{
-			yield return Point.Empty;
-			yield return new Point(1, 1);
-			yield return new Point(-1, 1);
-			yield return new Point(1, -1);
-			yield return new Point(-1, -1);
-		}
+	[TestCaseSource(nameof(SameRectangleSizesSource))]
+	[TestCaseSource(nameof(RandomRectangleSizesSource))]
+	public void PutNextRectangle_CloudShouldBeLikeACircle(IEnumerable<Size> sizes)
+	{
+		placedRectangles = sizes.Select(size => layouter.PutNextRectangle(size)).ToList();
 
-		public static IEnumerable<List<Size>> RectangleSizesSource()
-		{
-			var smallRectangleSize = new Size(15, 5);
-			var mediumRectangleSize = new Size(50, 20);
-			var bigRectangleSize = new Size(200, 70);
+		var occupiedSpace = GetOccupiedSpace(placedRectangles);
 
-			yield return new List<Size>()
-			{
-				smallRectangleSize,
-				mediumRectangleSize,
-				bigRectangleSize,
-			};
+		var inscribedCircleRadius = Math.Min(occupiedSpace.Width, occupiedSpace.Height) / 2;
+		var inscribedCircleArea = Math.Pow(inscribedCircleRadius, 2) * Math.PI;
+		var occupiedArea = occupiedSpace.Width * occupiedSpace.Height;
 
-			yield return new List<Size>()
-			{
-				bigRectangleSize,
-				bigRectangleSize,
-				mediumRectangleSize,
-				mediumRectangleSize,
-				smallRectangleSize,
-				smallRectangleSize,
-				mediumRectangleSize,
-				mediumRectangleSize,
-				bigRectangleSize,
-				bigRectangleSize
-			};
+		var freeAreaPercent = GetFreeAreaPercent(occupiedArea, inscribedCircleArea);
 
-			yield return new List<Size>()
-			{
-				smallRectangleSize,
-				mediumRectangleSize,
-				bigRectangleSize,
-				mediumRectangleSize,
-				bigRectangleSize,
-				smallRectangleSize,
-				bigRectangleSize
-			};
-		}
+		freeAreaPercent.Should().BeLessOrEqualTo(35);
+	}
+
+	private static double GetFreeAreaPercent(double occupiedArea, double effectiveArea)
+	{
+		return Math.Abs(occupiedArea - effectiveArea) * 100 / occupiedArea;
+	}
+
+	private static Rectangle GetOccupiedSpace(IEnumerable<Rectangle> rectangles)
+	{
+		var rectanglesList = rectangles.ToList();
+		var minX = rectanglesList.Min(r => r.Left);
+		var maxX = rectanglesList.Max(r => r.Right);
+		var minY = rectanglesList.Min(r => r.Top);
+		var maxY = rectanglesList.Max(r => r.Bottom);
+		var width = maxX - minX;
+		var height = maxY - minY;
+
+		return new Rectangle(minX, minY, width, height);
+	}
+	
+	//[Test] //Uncomment this for check image creation when test failed
+	//public void AlwaysFallsTest_ShouldCreateImage()
+	//{
+	//	var rnd = new Random();
+
+	//	for (var i = 0; i < 1_000; i++)
+	//	{
+	//		var scale = rnd.Next(1, 5);
+	//		placedRectangles.Add(layouter.PutNextRectangle(new Size(30 * scale, 10 * scale)));
+	//	}
+
+	//	false.Should().Be(true);
+	//}
+
+	public static IEnumerable<TestCaseData> CentersSource()
+	{
+		yield return new TestCaseData(Point.Empty).SetName("Center at origin");
+		yield return new TestCaseData(new Point(1, 1)).SetName("Center in the first quadrant");
+		yield return new TestCaseData(new Point(-1, 1)).SetName("Center in the second quadrant");
+		yield return new TestCaseData(new Point(-1, -1)).SetName("Center in the third quadrant");
+		yield return new TestCaseData(new Point(1, -1)).SetName("Center in the fourth coordinate quadrant");
+	}
+
+	public static IEnumerable<TestCaseData> SameRectangleSizesSource()
+	{
+		var squareSize = new Size(30, 30);
+		var verticalOrientedRectangleSize = new Size(10, 50);
+		var horizontalOrientedRectangleSize = new Size(50, 10);
+
+		yield return new TestCaseData(
+				Enumerable.Repeat(squareSize, 100).ToList())
+			.SetName("100 squares");
+
+		yield return new TestCaseData(
+				Enumerable.Repeat(verticalOrientedRectangleSize, 100).ToList())
+			.SetName("100 vertical oriented rectangles");
+
+		yield return new TestCaseData(
+				Enumerable.Repeat(horizontalOrientedRectangleSize, 100).ToList())
+			.SetName("100 horizontal oriented rectangles");
+	}
+
+	public static IEnumerable<TestCaseData> RandomRectangleSizesSource()
+	{
+		var rnd = new Random();
+
+		yield return new TestCaseData(GetRandomRectangles(100, 1, 1))
+			.SetName("100 squares");
+
+		yield return new TestCaseData(GetRandomRectangles(100, 1, 3))
+			.SetName("100 vertical oriented rectangles");
+
+		yield return new TestCaseData(GetRandomRectangles(100, 3, 1))
+			.SetName("100 horizontal oriented rectangles");
+	}
+
+	private static IEnumerable<Size> GetRandomRectangles(int count, int widthRate, int heightRate)
+	{
+		var rnd = new Random();
+
+		return Enumerable.Repeat(0, count)
+			.Select(_ => rnd.Next(10, 50))
+			.Select(scale => new Size(widthRate * scale, heightRate * scale))
+			.ToList();
 	}
 }

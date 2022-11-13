@@ -1,28 +1,61 @@
-﻿using FluentAssertions;
+﻿using System.Drawing;
+using FluentAssertions;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using NUnit.Framework;
-using System.Drawing;
-using TagsCloudVisualization;
+using TagsCloudVisualization.Helpers;
 
-namespace TagsCloudVisualizationTests
+namespace TagsCloudVisualizationTests;
+
+[TestFixture]
+public class CoordinatesConverterTests
 {
-	[TestFixture]
-	public class CoordinatesConverterTests
+	[TestCaseSource(nameof(PointsSource))]
+	public void ToPolar_Then_ToCartesian_ShouldReturn_SameCoordinates(int x, int y)
 	{
-		[TestCase(100, 100)]
-		[TestCase(0, 0)]
-		[TestCase(1, 1)]
-		[TestCase(256, 512)]
-		[TestCase(654, 321)]
-		[TestCase(-123, -456)]
-		[TestCase(-12, 34)]
-		[TestCase(12, -34)]
-		public void ToPolar_Then_ToCartesian_ShouldReturn_SameCoordinates(int x, int y)
-		{
-			var point = new Point(x, y);
-			var (radius, angle) = CoordinatesConverter.ToPolar(point);
-			var point2 = CoordinatesConverter.ToCartesian(radius, angle);
+		var point = new Point(x, y);
+		var (radius, angle) = CoordinatesConverter.ToPolar(point);
+		var point2 = CoordinatesConverter.ToCartesian(radius, angle);
 
-			point2.Should().BeEquivalentTo(point);
-		}
+		point2.Should().Be(point);
+	}
+
+	[TestCaseSource(nameof(PolarPointsSource))]
+	public Point ToCartesian_ShouldReturnCorrectCartesianCoordinates(double radius, double angle)
+	{
+		return CoordinatesConverter.ToCartesian(radius, angle);
+	}
+
+	[TestCaseSource(nameof(CartesianPointsSource))]
+	public (double radius, double angle) ToPolar_ShouldReturnCorrectPolarCoordinates(Point cartesian)
+	{
+		var (radius, angle) = CoordinatesConverter.ToPolar(cartesian);
+		return (Math.Round(radius, 2), angle);
+	}
+
+	public static IEnumerable<TestCaseData> PointsSource()
+	{
+		yield return new TestCaseData(0, 0);
+		yield return new TestCaseData(1, 1);
+		yield return new TestCaseData(-1, -1);
+		yield return new TestCaseData(1, -1);
+		yield return new TestCaseData(-1, 1);
+		yield return new TestCaseData(5, 2);
+		yield return new TestCaseData(3, 5);
+	}
+
+	public static IEnumerable<TestCaseData> PolarPointsSource()
+	{
+		yield return new TestCaseData(5.6, 45 * Math.PI / 180).Returns(new Point(4, 4));
+		yield return new TestCaseData(5.66, 3 * 45 * Math.PI / 180).Returns(new Point(-4, 4));
+		yield return new TestCaseData(5.66, -3 * 45 * Math.PI / 180).Returns(new Point(-4, -4));
+		yield return new TestCaseData(5.66, -45 * Math.PI / 180).Returns(new Point(4, -4));
+	}
+
+	public static IEnumerable<TestCaseData> CartesianPointsSource()
+	{
+		yield return new TestCaseData(new Point(4, 4)).Returns((5.66, 45 * Math.PI / 180));
+		yield return new TestCaseData(new Point(-4, 4)).Returns((5.66, 3 * 45 * Math.PI / 180));
+		yield return new TestCaseData(new Point(-4, -4)).Returns((5.66, -3 * 45 * Math.PI / 180));
+		yield return new TestCaseData(new Point(4, -4)).Returns((5.66, -45 * Math.PI / 180));
 	}
 }
