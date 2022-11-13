@@ -71,10 +71,11 @@ public class CircularCloudLayouterTests
     public void PutNextRectangle_ReturnRectangle_WithDeclaredSize()
     {
         var size = GetRandomSize(0, int.MaxValue);
+        var expected = new Rectangle(center, size);
 
         var rectangle = cloudLayouter.PutNextRectangle(size);
 
-        rectangle.Size.Should().Be(size);
+        rectangle.Should().Be(expected);
     }
 
     [TestCaseSource(nameof(RectanglesCountDataSource))]
