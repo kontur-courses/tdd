@@ -1,11 +1,8 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 
 namespace TagsCloudVisualization;
 
-[SuppressMessage("Interoperability", "CA1416:Проверка совместимости платформы")]
 public class DrawingCircularCloudLayoutTracer : ICircularCloudLayoutTracer, IDisposable
 {
     private readonly Bitmap bitmap;
@@ -36,8 +33,6 @@ public class DrawingCircularCloudLayoutTracer : ICircularCloudLayoutTracer, IDis
         Brush backgroundColor,
         Pen shiftingPen)
     {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            throw new NotImplementedException("implemented only for windows");
         bitmap =
             bitmap = new(width, height);
         graphics = Graphics.FromImage(bitmap);
