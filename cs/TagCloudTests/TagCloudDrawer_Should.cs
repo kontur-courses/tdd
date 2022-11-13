@@ -20,4 +20,41 @@ public class TagCloudDrawer_Should
         act.Should().Throw<ArgumentException>()
             .WithMessage($"Width and height of the image must be positive, but {size}");
     }
+
+    [Test]
+    public void DrawTagCloud_Bitmap_FilledWithBackgroundColor()
+    {
+        var layouter = new CircularCloudLayouter(new Point(0, 0));
+        var backgroundColor = Color.FromArgb(255, 255, 255);
+        var drawer = new TagCloudDrawer { BackgroundColor = backgroundColor };
+
+        var bitmap = drawer.DrawTagCloud(layouter);
+
+        AllPixels(bitmap).Should().OnlyContain(c => c == backgroundColor);
+    }
+
+    [Test]
+    public void DrawTagCloud_DrawSomeRectangles()
+    {
+        var layouter = new CircularCloudLayouter(new Point(0, 0));
+        layouter.PutNextRectangle(new Size(10, 10));
+        var backgroundColor = Color.FromArgb(255, 255, 255);
+        var penColor = Color.FromArgb(255, 255, 255);
+        var drawer = new TagCloudDrawer
+        {
+            BackgroundColor = backgroundColor,
+            RectanglesPen = new Pen(penColor, 1)
+        };
+
+        var bitmap = drawer.DrawTagCloud(layouter);
+
+        AllPixels(bitmap).Should().Contain(penColor);
+    }
+
+    private static IEnumerable<Color> AllPixels(Bitmap bitmap)
+    {
+        for (var x = 0; x < bitmap.Width; x++)
+        for (var y = 0; y < bitmap.Height; y++)
+            yield return bitmap.GetPixel(x, y);
+    }
 }

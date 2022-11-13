@@ -29,6 +29,7 @@ public class TagCloudDrawer
         graphics.TranslateTransform((float)ImageSize.Width / 2, (float)ImageSize.Height / 2);
         foreach (var rectangle in layouter.Rectangles)
             graphics.DrawRectangle(RectanglesPen, rectangle);
+        bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
         return bitmap;
     }
