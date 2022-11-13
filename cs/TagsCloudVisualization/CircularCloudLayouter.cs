@@ -30,17 +30,25 @@ public class CircularCloudLayouter
             return new Rectangle(0, 0, 0, 0);
 
         var currentLength = 0d;
-
         Rectangle rectangle;
 
         do
         {
             var nextPoint = _arithmeticSpiral.GetPoint(currentLength);
-            rectangle = new Rectangle(nextPoint, rectangleSize);
+            var centeredPoint = ShiftPointToRectangleCenter(nextPoint, rectangleSize);
+            rectangle = new Rectangle(centeredPoint, rectangleSize);
             currentLength += _spiralStep;
         } while (_rectangles.Any(rect => rect.IntersectsWith(rectangle)));
 
         _rectangles.Add(rectangle);
         return rectangle;
+    }
+
+    private Point ShiftPointToRectangleCenter(Point sourcePoint, Size rectSize)
+    {
+        var newX = sourcePoint.X - rectSize.Width / 2;
+        var newY = sourcePoint.Y - rectSize.Height / 2;
+
+        return new Point(newX, newY);
     }
 }

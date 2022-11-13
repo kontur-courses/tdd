@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using FluentAssertions;
 using FluentAssertions.Execution;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTests;
@@ -17,7 +20,7 @@ public class CircularCloudLayouter_Test
     [SetUp]
     public void Setup()
     {
-        _layouter = new CircularCloudLayouter(new Point(0, 0), 0.1);
+        _layouter = new CircularCloudLayouter(new Point(0, 0), 0.01);
     }
 
     [Test]
@@ -63,17 +66,24 @@ public class CircularCloudLayouter_Test
     }
 
 
-    [TestCase(4, 4, 4, 4)]
-    [TestCase(5, 5, 5, 7)]
-    public void PutNextRectangle_FirstRectangle_CenterOfLayouter(int x, int y, int width, int height)
+    [Test]
+    public void PutNextRectangle_FirstRectangle_ShiftToCenterOfRectangle()
     {
-        var layouter = new CircularCloudLayouter(new Point(x, y));
-        var rectangle = layouter.PutNextRectangle(new Size(width, height));
+        var x = 4;
+        var y = 6;
+        var width = 9;
+        var height = 12;
+
+        _layouter = new CircularCloudLayouter(new Point(x, y));
+        var rectangle = _layouter.PutNextRectangle(new Size(width, height));
+
+        var expectedX = x - width / 2;
+        var expectedY = y - height / 2;
 
         using (new AssertionScope())
         {
-            rectangle.X.Should().Be(x);
-            rectangle.Y.Should().Be(y);
+            rectangle.X.Should().Be(expectedX);
+            rectangle.Y.Should().Be(expectedY);
         }
     }
 
@@ -110,5 +120,56 @@ public class CircularCloudLayouter_Test
             rectangles.Where(rect => rect != rectangle)
                 .Should().AllSatisfy(x => rectangle.IntersectsWith(x).Should().BeFalse());
         }
+    }
+
+
+    [Test]
+    public void PutNextRectangle_ManyRectangles_AllPutInLayout()
+    {
+        var random = new Random();
+        var rectangles = new List<Rectangle>();
+
+        for (int i = 0; i < 100; i++)
+        {
+            var newX = random.Next(40, 100);
+            var newY = random.Next(40, 100);
+            rectangles.Add(_layouter.PutNextRectangle(new Size(newX, newY)));
+        }
+
+        _layouter.Rectangles.Should().BeEquivalentTo(rectangles);
+    }
+
+    [Test, Description("Тест специально провальный для того, чтобы показать работу сохранения облака при падении")]
+    public void PutNextRectangle_ManyRectangles_FailTest()
+    {
+        var random = new Random();
+        var rectangles = new List<Rectangle>();
+
+        for (int i = 0; i < 100; i++)
+        {
+            var newY = random.Next(40, 70);
+            var newX = random.Next(newY, 100);
+            rectangles.Add(_layouter.PutNextRectangle(new Size(newX, newY)));
+        }
+
+        _layouter.Rectangles.Should().NotBeEquivalentTo(rectangles);
+    }
+
+
+    [TearDown]
+    public void TearDown()
+    {
+        if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure)
+            return;
+
+        var filename = $"{TestContext.CurrentContext.Test.Name}_{DateTime.Now:yy.MM.dd_HH.mm.ss}.bmp";
+        var projectDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ("FailedTests"));
+        if (!Directory.Exists(projectDirectory))
+            Directory.CreateDirectory(projectDirectory);
+
+        var fullPath = Path.Join(projectDirectory, filename);
+        new BitmapTagsCloudVisualization().SaveTagsCloud(_layouter, fullPath);
+
+        Console.WriteLine($"Tag cloud visualization saved to file {fullPath}");
     }
 }
