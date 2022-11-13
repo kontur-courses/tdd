@@ -134,7 +134,7 @@ public class CircularCloudLayouterTests
             .Select(x => x.Width * x.Height)
             .Sum();
         var maxDistanceFromCenter = rectangles
-            .Select(rectangle => rectangle.GetFarthestPointFromTarget(center))
+            .Select(rectangle => rectangle.GetFarthestDeltaFromTarget(center))
             .Select(point => point.DistanceTo(Point.Empty))
             .Max();
         var expectedCircleArea = maxDistanceFromCenter * maxDistanceFromCenter * Math.PI;

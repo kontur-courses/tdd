@@ -34,19 +34,11 @@ public static class RectangleExtensions
         return rectangle;
     }
 
-    public static Point GetFarthestPointFromTarget(this Rectangle rectangle, Point target)
+    public static Point GetFarthestDeltaFromTarget(this Rectangle rectangle, Point target)
     {
         return new(Math.Max(Math.Abs(target.X - rectangle.Left),
                 Math.Abs(target.X - rectangle.Right)),
             Math.Max(Math.Abs(target.Y - rectangle.Top),
                 Math.Abs(target.Y - rectangle.Bottom)));
-    }
-}
-
-public static class PointExtensions
-{
-    public static double DistanceTo(this Point source, Point destination)
-    {
-        return Math.Sqrt(Math.Pow(destination.X - source.X, 2) + Math.Pow(destination.Y - source.Y, 2));
     }
 }

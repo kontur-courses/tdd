@@ -21,8 +21,8 @@ public class DrawingCircularCloudLayoutTracer : ICircularCloudLayoutTracer, IDis
     private readonly Pen shiftingPen;
     private int counter;
     private Point previousRectangleCenter;
-    private double radius;
-
+    private double spiralRadius;
+    private double rectangleAngleRadius;
 
     public DrawingCircularCloudLayoutTracer(
         int width,
@@ -69,13 +69,18 @@ public class DrawingCircularCloudLayoutTracer : ICircularCloudLayoutTracer, IDis
     public void TraceRectangle(Rectangle rectangle)
     {
         if (imageRectangle.Contains(rectangle))
+        {
             rectangles.Add(rectangle);
+            rectangleAngleRadius = Math.Max(rectangleAngleRadius,
+                rectangle.GetFarthestDeltaFromTarget(center)
+                    .DistanceTo(Point.Empty));
+        }
     }
 
     public void TraceCirclePoint(Point point)
     {
         if (imageRectangle.Contains(point))
-            radius = Math.Max(radius, point.DistanceTo(center));
+            spiralRadius = Math.Max(spiralRadius, point.DistanceTo(center));
     }
 
     public void TraceShifting(Point from, Point to)
@@ -96,6 +101,28 @@ public class DrawingCircularCloudLayoutTracer : ICircularCloudLayoutTracer, IDis
 
     public void SaveToFile(string fileName)
     {
+        DrawRectangles();
+
+        DrawCircles();
+
+        graphics.Save();
+        using var ms = new MemoryStream();
+        bitmap.Save(ms, ImageFormat.Jpeg);
+        File.WriteAllBytes(fileName, ms.ToArray());
+    }
+
+    private void DrawCircles()
+    {
+        graphics.DrawEllipse(circlePen,
+            (int)(center.X - spiralRadius), (int)(center.Y - spiralRadius), (int)(spiralRadius * 2),
+            (int)(spiralRadius * 2));
+        graphics.DrawEllipse(circlePen,
+            (int)(center.X - rectangleAngleRadius), (int)(center.Y - rectangleAngleRadius),
+            (int)(rectangleAngleRadius * 2), (int)(rectangleAngleRadius * 2));
+    }
+
+    private void DrawRectangles()
+    {
         foreach (var rectangle in rectangles)
         {
             var rectangleCenter = new Point(rectangle.X + rectangle.Width / 2, rectangle.Y + rectangle.Height / 2);
@@ -105,10 +132,5 @@ public class DrawingCircularCloudLayoutTracer : ICircularCloudLayoutTracer, IDis
             graphics.DrawString((counter++).ToString(), numbersFont, numbersColor, rectangle);
             graphics.DrawRectangle(rectanglePen, rectangle);
         }
-
-        graphics.Save();
-        using var ms = new MemoryStream();
-        bitmap.Save(ms, ImageFormat.Jpeg);
-        File.WriteAllBytes(fileName, ms.ToArray());
     }
 }
