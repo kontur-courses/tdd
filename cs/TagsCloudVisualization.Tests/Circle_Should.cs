@@ -11,21 +11,21 @@ public class Circle_Should
     public void ContainsRectangle_ShouldReturnFalse_WhenRectangleOutside()
     {
         var circle = new Circle(3, new Point(0, 0));
-        circle.ContainsRectangle(new Rectangle(3, 3, 1, 1)).Should().Be(false);
+        circle.ContainsRectangle(new Rectangle(3, 3, 1, 1)).Should().BeFalse();
     }
 
     [Test]
     public void ContainsRectangle_ShouldReturnFalse_WhenHasBigPartOfRectangleOutside()
     {
         var circle = new Circle(3, new Point(0, 0));
-        circle.ContainsRectangle(new Rectangle(0, 0, 10, 10)).Should().Be(false);
+        circle.ContainsRectangle(new Rectangle(0, 0, 10, 10)).Should().BeFalse();
     }
     
     [Test]
     public void ContainsRectangle_ShouldWorkCorrect_WithNegativeLocation()
     {
         var circle = new Circle(9, new Point(-54, -54));
-        circle.ContainsRectangle(new Rectangle(-50, -50, 1, 1)).Should().Be(true);
+        circle.ContainsRectangle(new Rectangle(-50, -50, 1, 1)).Should().BeTrue();
     }
 
     [TestCase(0, TestName = "zero radius")]
@@ -40,6 +40,6 @@ public class Circle_Should
     public void ContainsRectangle_ShouldReturnFalse_WhenBigRectangleOverlapsCircle()
     {
         var circle = new Circle(3, new Point(0, 0));
-        circle.ContainsRectangle(new Rectangle(-50, -50, 100, 100)).Should().Be(false);
+        circle.ContainsRectangle(new Rectangle(-50, -50, 100, 100)).Should().BeFalse();
     }
 }

@@ -40,7 +40,7 @@ public class CircularCloudLayouter_Should
     }
 
     [Test]
-    public void PutNextRectangle_ShouldAddFirstTag_ToCenterOfTagCloud()
+    public void PutNextRectangle_ShouldAddFirstRectangle_ToCenterOfCloud()
     {
         var rectangle = layouter.PutNextRectangle(new Size(1, 2));
         rectangle.Location.Should().BeEquivalentTo(layouter.Center);
@@ -59,9 +59,6 @@ public class CircularCloudLayouter_Should
     [Test]
     public void Rectangles_ShouldFormCircularFigure()
     {
-        //комменты удалю после ревью
-        // решил поменять предыдущую реализацию, т.к. этот тест проще для понимания и работает без ошибок
-        // В предыдущей реализации были неточности, и я был неуверен в методе ContainsMostPartOfRectangle
         var rnd = new Random(106);
         var countOfRectangles = 400;
         var maxWidth = 50;
@@ -71,10 +68,8 @@ public class CircularCloudLayouter_Should
         var rectangles = layouter.GetRectanglesLayout().ToList();
         var lastLocation = rectangles.Last().Location;
         var radius = layouter.Center.GetDistance(lastLocation);
-        //увеличиваю радиус до максимально возмоджного при правильном расположении прямоугольников
         var extendedRadius = radius + Math.Sqrt(maxHeight * maxHeight + maxWidth * maxWidth);
         var circle = new Circle(extendedRadius, layouter.Center);
-        //при такой проверке и при правильной укладке коллекция 100% должна быть пустой
         var rectanglesOutside = rectangles.Where(rec => !circle.ContainsRectangle(rec)).ToList();
         rectanglesOutside.Should().BeEmpty();
     }
@@ -101,13 +96,13 @@ public class CircularCloudLayouter_Should
     }
 
     [Test]
-    public void Layout_ManyTags_WithoutIntersect()
+    public void Layout_ManyRectangles_WithoutIntersect()
     {
         var rnd = new Random(30);
         var rectangles = new List<Rectangle>();
         for (var i = 0; i < 400; i++)
             rectangles.Add(layouter.PutNextRectangle(new Size(rnd.Next(20, 50), rnd.Next(20, 50))));
-        var intersectRectangles = rectangles.Where(tag => rectangles.Any(t => t != tag && t.IntersectsWith(tag)));
+        var intersectRectangles = rectangles.Where(rect => rectangles.Any(t => t != rect && t.IntersectsWith(rect)));
         intersectRectangles.Should().BeEmpty();
     }
 

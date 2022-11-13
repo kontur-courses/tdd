@@ -19,8 +19,6 @@ public class Circle
     {
         var dx = Math.Max(Math.Abs(center.X - rectangle.Left), Math.Abs(rectangle.Right - center.X));
         var dy = Math.Max(Math.Abs(center.Y - rectangle.Top), Math.Abs(rectangle.Bottom - center.Y));
-        var rad = radius * radius;
-        var b = dx * dx + dy * dy;
-        return rad >= b;
+        return radius * radius >= dx * dx + dy * dy;
     }
 }
