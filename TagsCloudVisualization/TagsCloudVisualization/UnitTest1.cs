@@ -106,4 +106,38 @@ namespace TagsCloudVisualization
         }
 
     }
+
+    public class SpiralLayoutDrawingTests
+    {
+        private TagCloudDrawer drawer;
+        private SpiralCloudLayout layout;
+
+        [SetUp]
+        public void SetUp()
+        {
+            layout = new SpiralCloudLayout(new Point(0, 0));
+            drawer = new TagCloudDrawer(layout);
+            drawer.Scale = 10;
+        }
+
+        [Test]
+        public void DrawSimpleCloud()
+        {
+            for (int i = 0; i < 500; i++)
+            {
+                layout.PutNextRectangle(new Size(1, 1));
+            }
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome == ResultState.Success)
+            {
+                drawer.DrawImage();
+                drawer.SaveImage();
+            }
+        }
+
+    }
 }
