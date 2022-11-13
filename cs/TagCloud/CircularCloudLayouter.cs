@@ -28,7 +28,7 @@ public class CircularCloudLayouter : ICloudLayouter
 
     public Rectangle PutNextRectangle(Size rectangleSize)
     {
-        if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+        if (!rectangleSize.IsPositive())
             throw new ArgumentException($"Width and height of the rectangle must be positive, but {rectangleSize}");
 
         var rectangle = CreateNewRectangle(rectangleSize);

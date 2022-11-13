@@ -11,7 +11,7 @@ public class TagCloudDrawer
         get => imageSize;
         set
         {
-            if (value.Width <= 0 || value.Height <= 0)
+            if (!value.IsPositive())
                 throw new ArgumentException($"Width and height of the image must be positive, but {value}");
             imageSize = value;
         }
