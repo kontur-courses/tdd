@@ -6,8 +6,8 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudVisualizator
     {
-        private Bitmap canvas;
-        private Graphics graphics;
+        private readonly Bitmap canvas;
+        private readonly Graphics graphics;
 
         public CircularCloudVisualizator(Size canvasSize)
         {
@@ -16,13 +16,13 @@ namespace TagsCloudVisualization
             graphics.Clear(Color.White);
         }
 
-        public void DrawRectangles(List<Rectangle> rectangles)
+        public void DrawRectangles(IEnumerable<Rectangle> rectangles)
         {
             foreach (var rectangle in rectangles)
                 graphics.DrawRectangle(Pens.Black, rectangle);
         }
 
-        public void SaveCanvas(String path)
+        public void SaveCanvas(string path)
         {
             canvas.Save(path);
         }
