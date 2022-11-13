@@ -93,7 +93,7 @@ namespace TagsCloudVisualization
                 var rectangle = layouter.PutNextRectangle(rectangleSize);
                 rectangles.Add(rectangle);
 
-                var expectedRectangle = i == 0
+                var expectedLocation = i == 0
                     ? new Rectangle(new Point(-5, -5), rectangleSize)
                     : spiral
                         .GetPoints()
@@ -103,11 +103,13 @@ namespace TagsCloudVisualization
                                 rectangleSize))
                         .First(rect =>
                             !expectedRectangles.Any(r => r.IntersectsWith(rect)));
-                expectedRectangles.Add(expectedRectangle);
+                expectedRectangles.Add(expectedLocation);
             }
 
             for (int i = 0; i < 5; i++)
-                rectangles[i].Should().BeEquivalentTo(expectedRectangles[i]);
+            {
+                rectangles[i].Location.Should().BeEquivalentTo(expectedRectangles[i].Location);
+            }
         }
 
         [TearDown]

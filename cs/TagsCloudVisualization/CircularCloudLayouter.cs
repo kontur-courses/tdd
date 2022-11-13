@@ -6,7 +6,6 @@ using TagsCloudVisualization;
 
 public class CircularCloudLayouter
 {
-    //Попало много лишних файлов, давай их уберем путем добавления в gitignore!!!!!!!
     public List<Rectangle> Rectangles { get; }
     public Spiral Spiral { get; }
 
@@ -23,7 +22,8 @@ public class CircularCloudLayouter
         var rect = Spiral.GetPoints()
             .Select(point =>
             {
-                var coordinatesOfRectangle = RectangleCoordinatesCalculator.CalculateRectangleCoordinates(point, rectangleSize);
+                var coordinatesOfRectangle =
+                    RectangleCoordinatesCalculator.CalculateRectangleCoordinates(point, rectangleSize);
                 return new Rectangle(coordinatesOfRectangle, rectangleSize);
             })
             .First(rectangle => !IntersectsWithOtherRectangles(rectangle));
