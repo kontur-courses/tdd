@@ -117,5 +117,23 @@ namespace TagsCloudVisualizationTests
                 .Any(rect => rect.IntersectsWith(rectangle))
                 .Should().BeFalse();
         }
+
+        [TestCase(0, TestName = "Zero rectangles", ExpectedResult = false)]
+        [TestCase(2, TestName = "Two rectangles", ExpectedResult = false)]
+        [TestCase(100, TestName = "Many rectangles", ExpectedResult = false)]
+        public bool CircularCloudLayouter_WithSomeAmountRectangles_ShouldNotIntersectWithEachOther(
+            int alreadyExist)
+        {
+            Utilities.GenerateRectangleSize(alreadyExist, minSize, maxSize)
+                .Select(rectSize => cloud.PutNextRectangle(rectSize))
+                .ToArray();
+
+            for (var i = 0; i < cloud.Rectangles.Count; i++)
+            for (var j = i + 1; j < cloud.Rectangles.Count; j++)
+                if (cloud.Rectangles[i].IntersectsWith(cloud.Rectangles[j]))
+                    return true;
+
+            return false;
+        }
     }
 }
