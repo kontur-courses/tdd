@@ -50,6 +50,20 @@ public class TagCloudDrawer_Should
 
         AllPixels(bitmap).Should().Contain(penColor);
     }
+    
+    [Test]
+    public void DrawTagCloud_DifferentCloudsBitmaps_AreDifferent()
+    {
+        var layouter = new CircularCloudLayouter(new Point(0, 0));
+        layouter.PutNextRectangle(new Size(10, 10));
+        var drawer = new TagCloudDrawer();
+
+        var bitmap1 = drawer.DrawTagCloud(layouter);
+        layouter.PutNextRectangle(new Size(10, 10));
+        var bitmap2 = drawer.DrawTagCloud(layouter);
+
+        AllPixels(bitmap1).Should().NotEqual(AllPixels(bitmap2));
+    }
 
     private static IEnumerable<Color> AllPixels(Bitmap bitmap)
     {
