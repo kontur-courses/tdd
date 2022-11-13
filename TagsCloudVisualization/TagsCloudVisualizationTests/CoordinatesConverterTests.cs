@@ -45,7 +45,7 @@ public class CoordinatesConverterTests
 
 	public static IEnumerable<TestCaseData> PolarPointsSource()
 	{
-		yield return new TestCaseData(5.6, 45 * Math.PI / 180).Returns(new Point(4, 4));
+		yield return new TestCaseData(5.66, 45 * Math.PI / 180).Returns(new Point(4, 4));
 		yield return new TestCaseData(5.66, 3 * 45 * Math.PI / 180).Returns(new Point(-4, 4));
 		yield return new TestCaseData(5.66, -3 * 45 * Math.PI / 180).Returns(new Point(-4, -4));
 		yield return new TestCaseData(5.66, -45 * Math.PI / 180).Returns(new Point(4, -4));
