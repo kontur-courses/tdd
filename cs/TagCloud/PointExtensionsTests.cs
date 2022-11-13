@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
+﻿using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -9,8 +6,7 @@ namespace TagCloud
 {
     public class PointExtensionsTests
     {
-        [TestCase(3, 5, 4, 8, TestName = "non-zero point and non-zero direction")]
-        [TestCase(0, 0, 1, 2, TestName = "zero point and non-zero direction")]
+        [TestCase(0, 0, 1, 2, TestName = "any point and non-zero direction")]
         [TestCase(0, 0, 1, 0, TestName = "any point and non-zero X direction")]
         [TestCase(3, 5, 0, 5, TestName = "any point and non-zero Y direction")]
         public void PointShiftTo_ReturnedMovedPoint_WhenSet(int pointX, int pointY, int shiftX, int shiftY)

@@ -9,21 +9,28 @@ namespace TagCloud
 
         public static void SaveAsBitmap(TagCloud tagCloud, string file)
         {
-            var bitmap = new Bitmap(1000, 1000);//tagCloud.GetWidth(), tagCloud.GetHeight());
+            var bitmap = new Bitmap(tagCloud.GetWidth(), tagCloud.GetHeight());
+
+            Size frameShift = new Size(-tagCloud.GetLeftBound(), -tagCloud.GetTopBound());
+
             using (var graphics = Graphics.FromImage(bitmap))
             {
                 foreach (var rectangle in tagCloud.Rectangles)
                 {
-                    graphics.DrawRectangle(new Pen(GetRandomBrush()), rectangle);
+                    var rectangleInFrame = MoveRectangleToImageFrame(rectangle, frameShift);
+                    graphics.DrawRectangle(new Pen(GetRandomBrush()), rectangleInFrame);
                 }
             }
             bitmap.Save(file);
         }
 
-        private static Brush GetRandomBrush()
-        {
-            return new SolidBrush(GetRandomColor());
-        }
+        private static Rectangle MoveRectangleToImageFrame(Rectangle rectangle, Size imageCenter) =>
+            new Rectangle(rectangle.Location.ShiftTo(imageCenter), rectangle.Size);
+        
+
+        private static Brush GetRandomBrush() =>
+            new SolidBrush(GetRandomColor());
+        
 
         private static Color GetRandomColor()
         {

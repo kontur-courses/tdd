@@ -12,6 +12,8 @@ namespace TagCloud
 
         public List<Rectangle> Rectangles { get; private set; }
 
+        private readonly int lastFramePixel = 1;
+
         public TagCloud(Point center)
         {
             Center = center;
@@ -24,7 +26,9 @@ namespace TagCloud
             if (Rectangles.Count == 0)
                 return 0;
 
-            return Rectangles.Max(r => r.Right) - Rectangles.Min(r => r.Left);
+            return Rectangles.Max(r => r.Right) - 
+                Rectangles.Min(r => r.Left) +
+                lastFramePixel;
         }
 
         public int GetHeight()
@@ -32,7 +36,13 @@ namespace TagCloud
             if (Rectangles.Count == 0)
                 return 0;
 
-            return Rectangles.Min(r => r.Bottom) - Rectangles.Max(r => r.Top);
+            return Rectangles.Max(r => r.Bottom) - 
+                Rectangles.Min(r => r.Top) +
+                lastFramePixel;
         }
+
+        public int GetLeftBound() => Rectangles.Min(r => r.Left);
+
+        public int GetTopBound() => Rectangles.Min(r => r.Top);
     }
 }

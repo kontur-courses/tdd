@@ -18,7 +18,10 @@ namespace TagCloud
         }
 
         [TestCase(0, 0, 35, 75, TestName = "center in zero point")]
-        [TestCase(3, 3, 5, 5, TestName = "center in non-zero point")]
+        [TestCase(300, 300, 5, 5, TestName = "center in positive point")]
+        [TestCase(-300, 300, 5, 5, TestName = "center in X negative point")]
+        [TestCase(300, -300, 5, 5, TestName = "center in Y negative point")]
+        [TestCase(-300, -300, 5, 5, TestName = "center in XY negative point")]
         public void PutNextRectangle_FirstRectangleMustBeInCenterOfCloud_When(int centerX, int centerY, int reactWidth, int reactHeight)
         {
             cloudLayouter = new CircularCloudLayouter(new Point(centerX, centerY));
@@ -30,8 +33,11 @@ namespace TagCloud
 
             var tagCloud = cloudLayouter.GetTagCloud();
 
-            tagCloud.GetHeight().Should().Be(reactHeight);
-            tagCloud.GetWidth().Should().Be(reactWidth);
+            var lastFramePixel = 1;
+            tagCloud.GetHeight().Should().Be(reactHeight + lastFramePixel);
+            tagCloud.GetWidth().Should().Be(reactWidth + lastFramePixel);
+            tagCloud.GetLeftBound().Should().Be(planningReactLocation.X);
+            tagCloud.GetTopBound().Should().Be(planningReactLocation.Y);
         }
     }
 }
