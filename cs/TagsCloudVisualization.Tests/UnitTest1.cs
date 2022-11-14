@@ -8,7 +8,7 @@ using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization.Tests
 {
-    public class UnitTest1
+    public class CircularCloudLayouterTest
     {
         private CircularCloudLayouter? circularCloudLayouter;
         [SetUp]
