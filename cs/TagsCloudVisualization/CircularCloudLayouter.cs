@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Numerics;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization
@@ -13,14 +6,18 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         private readonly Point center;
-        private readonly LinkedList<Rectangle> rectangles;
-        private double angle = 0;
-        private double radius = 0;
+        private readonly List<Rectangle> rectangles;
+        public List<Rectangle> Rectangles => rectangles.ToList();
+
+        private double angle;
+        private double radius;
+        private const double AngleStep = Math.PI / 12;
+        private const double RadiusStep = 0.25;
 
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
-            rectangles = new LinkedList<Rectangle>();
+            rectangles = new List<Rectangle>();
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -31,51 +28,59 @@ namespace TagsCloudVisualization
             var rectangle = GetAddedRectangle(rectangleSize, center, angle, radius);
             while (rectangle.IsIntersectsOthersRectangles(rectangles))
             {
-                angle += Math.PI / 12;
-                radius += 0.25;
+                angle += AngleStep;
+                radius += RadiusStep;
                 rectangle = GetAddedRectangle(rectangleSize, center, angle, radius);
             }
 
-            var movingPoint = GetMovingToCenterVector(rectangle,center);
-            ShiftRectangleToCenter(ref rectangle, movingPoint);
-            ShiftRectangleToCenter(ref rectangle, new Point(movingPoint.X,0));
-            ShiftRectangleToCenter(ref rectangle, new Point(0,movingPoint.Y));
+            var movingPoint = GetMovingToPointVector(rectangle, center);
 
-            rectangles.AddLast(rectangle);
+            ShiftRectangleToCenter(ref rectangle, movingPoint);
+
+            rectangles.Add(rectangle);
             return rectangle;
         }
+
 
         private void ShiftRectangleToCenter(ref Rectangle rectangle, Point shiftPoint)
         {
             if (shiftPoint.X == 0 && shiftPoint.Y == 0)
                 return;
 
-            var nextRectangle = rectangle;
             var resultRectangle = rectangle;
-            for (int x = rectangle.X, y = rectangle.Y;
-                 !nextRectangle.IsIntersectsOthersRectangles(rectangles) && x != center.X && y != center.Y;
-                 x += shiftPoint.X, y += shiftPoint.Y)
+            var stepX = new Point(shiftPoint.X, 0);
+            var stepY = new Point(0, shiftPoint.Y);
+            while ((IsCanMove(resultRectangle, stepX) || IsCanMove(resultRectangle, stepY)) && resultRectangle.X != center.X && resultRectangle.Y != center.Y)
             {
-                resultRectangle = nextRectangle;
-                nextRectangle = new Rectangle(x, y, rectangle.Width, rectangle.Height);
+                if (IsCanMove(resultRectangle, stepX))
+                    resultRectangle = GetMovedRectangle(resultRectangle, stepX);
+                if (IsCanMove(resultRectangle, stepY))
+                    resultRectangle = GetMovedRectangle(resultRectangle, stepY);
             }
             rectangle = resultRectangle;
         }
 
-        private Rectangle GetAddedRectangle(Size rectangleSize, Point centerPoint, double angle, double radius)
+        private bool IsCanMove(Rectangle rectangle, Point movePoint)
         {
-            var location = new Point(centerPoint.X + GetX(radius, angle), centerPoint.Y + GetY(radius, angle));
+            var r = GetMovedRectangle(rectangle, movePoint);
+            return !r.IsIntersectsOthersRectangles(rectangles);
+        }
+
+        private Rectangle GetMovedRectangle(Rectangle rectangle, Point point)
+        {
+            return new Rectangle(new Point(rectangle.X + point.X, rectangle.Y+point.Y), rectangle.Size);
+        }
+
+        private Rectangle GetAddedRectangle(Size rectangleSize, Point centerPoint, double spiralAngle, double spiralRadius)
+        {
+            var location = new Point(centerPoint.X + GetX(spiralRadius, spiralAngle), centerPoint.Y + GetY(spiralRadius, spiralAngle));
             return new Rectangle(location, rectangleSize);
         }
 
-        private Point GetMovingToCenterVector(Rectangle rectangle, Point center)
+        private Point GetMovingToPointVector(Rectangle rectangle, Point point)
         {
-            var x = (center.X - rectangle.X);
-            var y = (center.Y - rectangle.Y);
-            if (x != 0)
-                x /= Math.Abs(x);
-            if (y != 0)
-                y /= Math.Abs(y);
+            var x = (point.X - rectangle.X) == 0 ? 0 : (point.X - rectangle.X) / Math.Abs(point.X - rectangle.X);
+            var y = (point.Y - rectangle.Y) == 0 ? 0 : (point.Y - rectangle.Y) / Math.Abs(point.Y - rectangle.Y);
             return new Point(x, y);
         }
 

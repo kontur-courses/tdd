@@ -1,19 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using NUnit.Framework.Internal;
 using TagsCloudVisualization.Extensions;
-using TestResult = Microsoft.VisualStudio.TestPlatform.ObjectModel.TestResult;
 
 namespace TagsCloudVisualization.Tests
 {
     public class UnitTest1
     {
-        private CircularCloudLayouter circularCloudLayouter;
+        private CircularCloudLayouter? circularCloudLayouter;
         [SetUp]
         public void SetUp()
         {
@@ -24,14 +21,15 @@ namespace TagsCloudVisualization.Tests
         [TestCase(1, 0, TestName = "{m}_zero_height")]
         public void PutNextRectangle_Should_Fail_On(int width,int height)
         {
-            Size size = new Size(width, height);
-            Action putNextRectangle = () => circularCloudLayouter.PutNextRectangle(size);
+            var size = new Size(width, height);
+            Action putNextRectangle = () => circularCloudLayouter?.PutNextRectangle(size);
 
             putNextRectangle.Should().Throw<ArgumentException>();
         }
-        [TestCase(0,3,2,2, TestName = "{m}ReturnTrue_WhenRectangleIntersectsOtherRectangles",ExpectedResult = true)]
-        [TestCase(-2, 0, 2, 2, TestName = "{m}ReturnFalse_WhenRectangleIntersectsOtherRectangles", ExpectedResult = false)]
-        public bool IsIntersectsOthersRectangles_Should_(int x, int y, int width,int height)
+
+        [TestCase(0,3,2,2, TestName = "{m}_ReturnTrue_When_Rectangle_Intersects_Other_Rectangles",ExpectedResult = true)]
+        [TestCase(-2, 0, 2, 2, TestName = "{m}_ReturnFalse_When_Rectangle_Intersects_Other_Rectangles", ExpectedResult = false)]
+        public bool IsIntersectsOthersRectangles_Should(int x, int y, int width,int height)
         {
             var rectangle = new Rectangle(x, y, width, height);
             var notIntersectRectangles = new List<Rectangle>()
@@ -46,7 +44,7 @@ namespace TagsCloudVisualization.Tests
         }
 
         [Test]
-        public void IsIntersectsOthersRectangles_Should_Return_False_OnEmptyEnumerable()
+        public void IsIntersectsOthersRectangles_Should_Return_False_On_EmptyEnumerable()
         {
             var rectangle = new Rectangle(0,0,1,1);
             var rectangles = new List<Rectangle>();
@@ -55,8 +53,9 @@ namespace TagsCloudVisualization.Tests
 
             result.Should().BeFalse();
         }
+
         [Test]
-        public void IsIntersectsOthersRectangles_Should_Return_False_OnNullEnumerable()
+        public void IsIntersectsOthersRectangles_Should_Return_False_On_NullEnumerable()
         {
             var rectangle = new Rectangle(0, 0, 1, 1);
 
@@ -64,10 +63,11 @@ namespace TagsCloudVisualization.Tests
 
             action.Should().Throw<ArgumentNullException>();
         }
+
         [Test, Category("LayoutTest")]
-        public void PutNextRectangle_Should_ReturnTwoNotIntersectsRectangles()
+        public void PutNextRectangle_Should_Return_Two_Not_Intersects_Rectangles()
         {
-            var firstRectangle = circularCloudLayouter.PutNextRectangle(new Size(10, 1));
+            var firstRectangle = circularCloudLayouter!.PutNextRectangle(new Size(10, 1));
             var secondRectangle = circularCloudLayouter.PutNextRectangle(new Size(10,1));
 
             firstRectangle.IntersectsWith(secondRectangle).Should().BeFalse();
@@ -75,26 +75,27 @@ namespace TagsCloudVisualization.Tests
 
         [TestCase(5,10,5,ExpectedResult = false, TestName = "{m}_5_AddedRectangles"), Category("LayoutTest")]
         [TestCase(500,10,5, ExpectedResult = false, TestName = "{m}_500_AddedRectangles"), Category("LayoutTest")]
-        public bool PutNextRectangle_Should_Return_RectangleNotIntersectsPast(int n,int width, int height)
+        public bool PutNextRectangle_Should_Return_Rectangle_Not_Intersects_Past(int n,int width, int height)
         {
             var rectangles = new List<Rectangle>();
             for (int i = 0; i < n; i++)
-                rectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(10, 5)));
+                rectangles.Add(circularCloudLayouter!.PutNextRectangle(new Size(10, 5)));
 
-            var rectangle = circularCloudLayouter.PutNextRectangle(new Size(10, 2));
+            var rectangle = circularCloudLayouter!.PutNextRectangle(new Size(10, 2));
 
             var result = rectangle.IsIntersectsOthersRectangles(rectangles);
 
 
             return result;
         }
+
         [Test]
-        public void PutNextRectangle_Should_Return_RectangleNotIntersectsPastAddedRectanglesWithDifferentSizes()
+        public void PutNextRectangle_Should_Return_Rectangle_Not_Intersects_Past_Added_Rectangles_With_Different_Sizes()
         {
             var rectangles = new List<Rectangle>();
             for (int i = 1; i <= 10; i++)
-                rectangles.Add(circularCloudLayouter.PutNextRectangle(new Size(i, i)));
-            var rectangle = circularCloudLayouter.PutNextRectangle(new Size(10, 2));
+                rectangles.Add(circularCloudLayouter!.PutNextRectangle(new Size(i, i)));
+            var rectangle = circularCloudLayouter!.PutNextRectangle(new Size(10, 2));
 
             var result = rectangle.IsIntersectsOthersRectangles(rectangles);
 
@@ -104,56 +105,13 @@ namespace TagsCloudVisualization.Tests
         [TearDown]
         public void AfterTests()
         {
-            if(TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
-                return;
-            var list = new List<Rectangle>();
-            switch (TestContext.CurrentContext.Test.Name)
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                case "PutNextRectangle_Should_Return_RectangleNotIntersectsPastAddedRectanglesWithDifferentSizes":
-                    for (int i = 1; i <= 10; i++)
-                    {
-                        var rectangle = circularCloudLayouter.PutNextRectangle(new Size(i, i));
-                        list.Add(rectangle);
-                    }
-                    list.Add(circularCloudLayouter.PutNextRectangle(new Size(10, 2)));
-                    SaveFailedLayoutImage("PutNextRectangle_Should_Return_RectangleNotIntersectsPastAddedRectanglesWithDifferentSizes",list);
-                    break;
-
-                case "PutNextRectangle_Should_Return_RectangleNotIntersectsPast_5_AddedRectangles":
-                    for (int i = 0; i < 5; i++)
-                        list.Add(circularCloudLayouter.PutNextRectangle(new Size(10, 5)));
-
-                    list.Add(circularCloudLayouter.PutNextRectangle(new Size(10, 2)));
-                    SaveFailedLayoutImage("PutNextRectangle_Should_Return_RectangleNotIntersectsPast_5_AddedRectangles", list);
-                    break;
-
-                case "PutNextRectangle_Should_Return_RectangleNotIntersectsPast_100_AddedRectangles":
-                    for (int i = 0; i < 100; i++)
-                        list.Add(circularCloudLayouter.PutNextRectangle(new Size(10, 5)));
-
-                    list.Add(circularCloudLayouter.PutNextRectangle(new Size(10, 2)));
-                    SaveFailedLayoutImage("PutNextRectangle_Should_Return_RectangleNotIntersectsPast_100_AddedRectangles",list);
-                    break;
-
-                case "PutNextRectangle_Should_ReturnTwoNotIntersectsRectangles":
-                    list.Add(circularCloudLayouter.PutNextRectangle(new Size(10, 1)));
-                    list.Add(circularCloudLayouter.PutNextRectangle(new Size(10, 1)));
-                    SaveFailedLayoutImage("PutNextRectangle_Should_ReturnTwoNotIntersectsRectangles",list);
-                    break;
+                var path = @"C:\Users\harle\source\repos\tdd\cs\TagsCloudVisualization\FailedImages\" +
+                           TestContext.CurrentContext.Test.Name + ".jpg";
+                LayoutSaver.SaveFailedLayoutImageAsJpeg(path,new Size(100,100), circularCloudLayouter.Rectangles);
+                TestContext.WriteLine("Tag cloud visualization saved to file <{0}>", path);
             }
-        }
-
-        private void SaveFailedLayoutImage(string name, IEnumerable<Rectangle> rectangles)
-        {
-            var path = @"C:\Users\harle\source\repos\tdd\cs\TagsCloudVisualization\FailedImages\";
-            var btm = new Bitmap(100, 100);
-            var g = Graphics.FromImage(btm);
-
-            foreach (Rectangle R in rectangles)
-                g.DrawRectangle(new Pen(Color.Brown), R);
-
-            btm.Save(path + name +".jpg", ImageFormat.Jpeg);
-            TestContext.WriteLine("Tag cloud visualization saved to file <{0}>","FailedImage/"+name+".jpg");
         }
     }
 }
