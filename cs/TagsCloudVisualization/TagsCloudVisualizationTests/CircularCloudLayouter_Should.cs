@@ -8,22 +8,20 @@ using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTests
 {
-    public class CircularCloudLayouter_Should
+    public class CircularCloudLayouterTests
     {
-        private static IEnumerable<TestCaseData> DensityTestData
-        {
-            get
+        private static IEnumerable<TestCaseData> DensityTestData =>
+            new[]
             {
-                yield return new TestCaseData(0.5, GetRandomSizes(1000, 1000, 1000))
-                    .SetName("1000 different sizes");
+                new TestCaseData(0.5, GetRandomSizes(1000, 1000, 1000))
+                    .SetName("1000 different sizes"),
 
-                yield return new TestCaseData(0.9, Enumerable.Repeat(new Size(4, 4), 1000))
-                    .SetName("1000 identical squares");
-            }
-        }
+                new TestCaseData(0.9, Enumerable.Repeat(new Size(4, 4), 1000))
+                    .SetName("1000 identical squares")
+            };
 
         [Test]
-        public void ReturnRectangleWithSpecifiedSize()
+        public void PutNextRectangle_ReturnsRectangleWithSpecifiedSize()
         {
             var size = new Size(123, 456);
 
@@ -34,7 +32,7 @@ namespace TagsCloudVisualizationTests
         }
 
         [Test]
-        public void NotOverlapAnyRectangles()
+        public void Layouter_DoesntOverlapAnyRectangles()
         {
             var rectanglesCount = 1000;
             var sizes = GetRandomSizes(1000, rectanglesCount, 1000);
@@ -45,11 +43,11 @@ namespace TagsCloudVisualizationTests
 
             for (var i = 0; i < rectanglesCount; i++)
             for (var j = i + 1; j < rectanglesCount; j++)
-                Assert.IsFalse(layouter.Rectangles[i].IntersectsWith(layouter.Rectangles[j]));
+                layouter.Rectangles[i].IntersectsWith(layouter.Rectangles[j]).Should().Be(false);
         }
 
         [TestCaseSource(nameof(DensityTestData))]
-        public void LayOutDenserThanThreshold(double density, IEnumerable<Size> sizes)
+        public void Layouter_LaysOutDenserThanThreshold(double density, IEnumerable<Size> sizes)
         {
             var desiredDensity = 0.5;
             var center = new Point(0, 0);
