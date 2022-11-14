@@ -71,30 +71,4 @@ namespace TagsCloudVisualizationTests
             return sizes;
         }
     }
-
-
-    internal static class Extensions
-    {
-        public static IEnumerable<Point> GetVertices(this Rectangle rectangle)
-        {
-            var upperLeft = rectangle.Location;
-            return Enumerable.Empty<Point>()
-                .Append(upperLeft)
-                .Append(upperLeft + new Size(0, rectangle.Height))
-                .Append(upperLeft + new Size(rectangle.Width, 0))
-                .Append(upperLeft + new Size(rectangle.Width, rectangle.Height));
-        }
-
-        public static double GetDistanceTo(this Point thisPoint, Point other)
-        {
-            return Math.Sqrt((thisPoint.X - other.X) * (thisPoint.X - other.X) -
-                             (thisPoint.Y - other.Y) * (thisPoint.Y - other.Y));
-        }
-
-        public static double GetRadius(this CircularCloudLayouter layouter)
-        {
-            return layouter.Rectangles.SelectMany(r => r.GetVertices()).Select(p => layouter.Center.GetDistanceTo(p))
-                .Max();
-        }
-    }
 }

@@ -42,6 +42,12 @@ namespace TagsCloudVisualization
                 $"Could not find a place for a rectangle with width {rectangleSize.Width} and height {rectangleSize.Height}");
         }
 
+        public double GetRadius()
+        {
+            return Rectangles.SelectMany(r => r.GetVertices()).Select(p => Center.GetDistanceTo(p))
+                .Max();
+        }
+
         private IEnumerable<Point> ScatterPointsEvenlyBySpiralLazy(double step, double startAngle = 0)
         {
             var arg = startAngle;
