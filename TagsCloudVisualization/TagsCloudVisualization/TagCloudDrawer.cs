@@ -12,8 +12,13 @@ namespace TagsCloudVisualization
         private ICloudLayouter layouter;
         public int Scale = 1;
 
-        public string SavePath = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).ToString(),
-            "SavedImages", "img.jpg");
+        public string SaveDir = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).ToString(),
+            "SavedImages");
+
+        public string SaveName = "img.jpg";
+
+        public string SavePath => Path.Combine(SaveDir, SaveName);
+
 
         public Pen pen = new Pen(Color.Red, 1);
 
@@ -54,7 +59,7 @@ namespace TagsCloudVisualization
                 Directory.CreateDirectory(Directory.GetParent(SavePath).ToString());
             }
 
-            bitmap.Save(SavePath, ImageFormat.Jpeg);
+            bitmap.Save(Path.Combine(SavePath), ImageFormat.Jpeg);
         }
     }
 }
