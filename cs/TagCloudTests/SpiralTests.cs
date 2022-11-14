@@ -22,8 +22,8 @@ namespace TagCloudTests
         [TestCase(1.1, 0, TestName = "{m}_Zero density")]
         public void Spiral_Constructor_ShouldThrowArgumentException(double delta, double density)
         {
-           Action act = () => new SpiralBeta(Center, delta, density);
-           act.Should().Throw<ArgumentException>();
+            Action act = () => new Spiral(Center, delta, density);
+            act.Should().Throw<ArgumentException>();
         }
 
         [TestCase(-5, 7, TestName = "{m}_withNegativeDelta")]
@@ -32,7 +32,7 @@ namespace TagCloudTests
         [TestCase(6, 9, TestName = "{m}_withPositiveParams")]
         public void Spiral_Constructor_ShouldNotThrowArgumentException(double delta, double density)
         {
-            Action act = () => new SpiralBeta(Center, delta, density);
+            Action act = () => new Spiral(Center, delta, density);
             act.Should().NotThrow();
         }
 
@@ -43,28 +43,15 @@ namespace TagCloudTests
             var expectedPoint2 = new Point(961, 542);
             var expectedPoint3 = new Point(958, 544);
             var expectedPoint4 = new Point(954, 541);
-            var expectedPoint5 = new Point(955, 543);
+            var expectedPoint5 = new Point(955, 534);
 
-            spiral = new SpiralBeta(Center, 1, 2);
+            spiral = new Spiral(Center, 1, 2);
 
             spiral.GetNextPoint().Should().BeEquivalentTo(expectedPoint1);
             spiral.GetNextPoint().Should().BeEquivalentTo(expectedPoint2);
             spiral.GetNextPoint().Should().BeEquivalentTo(expectedPoint3);
             spiral.GetNextPoint().Should().BeEquivalentTo(expectedPoint4);
             spiral.GetNextPoint().Should().BeEquivalentTo(expectedPoint5);
-        }
-    }
-
-    public class SpiralBeta : ISpiral
-    {
-        public SpiralBeta(Point center, double delta, double density)
-        {
-            throw  new NotImplementedException();
-        }
-
-        public Point GetNextPoint()
-        {
-            throw new NotImplementedException();
         }
     }
 }
