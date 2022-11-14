@@ -175,6 +175,8 @@ namespace TagsCloudVisualization
             {
                 layouter.PutNextRectangle(new Size(r.Next(10, 80), r.Next(1, 10)));
             }
+
+            helper.Approve();
         }
 
         [TearDown]
