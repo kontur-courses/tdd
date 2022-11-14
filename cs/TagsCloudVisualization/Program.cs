@@ -14,7 +14,7 @@ for (int i = 0; i < 150; i++)
 var thridLayouter = new CircularCloudLayouter(new Point(250, 250));
 for (int i = 0; i < 500; i++)
 {
-    thridLayouter.PutNextRectangle(new Size(10, 5));
+    thridLayouter.PutNextRectangle(new Size(20, 5));
 }
 
 LayoutSaver.SaveFailedLayoutImageAsJpeg(@"C:\Users\harle\source\repos\tdd\cs\TagsCloudVisualization\Images\LayoutImage1.jpg",new Size(500,500),firstLayouter.Rectangles);
