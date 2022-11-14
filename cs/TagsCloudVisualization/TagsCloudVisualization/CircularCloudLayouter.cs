@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter
+    public class CircularCloudLayouter : IRectangleLayouter
     {
         public CircularCloudLayouter(Point center)
         {
@@ -63,4 +63,5 @@ namespace TagsCloudVisualization
             return Rectangles.Any(r => r.IntersectsWith(newRectangle));
         }
     }
+
 }
