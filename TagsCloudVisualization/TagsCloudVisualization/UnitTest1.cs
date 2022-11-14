@@ -1,12 +1,11 @@
+using ApprovalTests;
+using ApprovalTests.Namers;
+using ApprovalTests.Reporters;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using System;
-using System.Diagnostics;
 using System.Drawing;
-using ApprovalTests;
-using ApprovalTests.Namers;
-using ApprovalTests.Reporters;
 
 namespace TagsCloudVisualization
 {
