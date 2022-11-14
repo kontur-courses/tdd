@@ -9,6 +9,7 @@ using FluentAssertions.Execution;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
+using TagsCloudVisualization.Interfaces;
 
 namespace TagsCloudVisualizationTests;
 
@@ -162,13 +163,15 @@ public class CircularCloudLayouter_Test
         if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure)
             return;
 
+        ITagsCloudVisualization tagsCloudVisualization = new BitmapTagsCloudVisualization();
+
         var filename = $"{TestContext.CurrentContext.Test.Name}_{DateTime.Now:yy.MM.dd_HH.mm.ss}.bmp";
         var projectDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ("FailedTests"));
         if (!Directory.Exists(projectDirectory))
             Directory.CreateDirectory(projectDirectory);
 
         var fullPath = Path.Join(projectDirectory, filename);
-        new BitmapTagsCloudVisualization().SaveTagsCloud(_layouter, fullPath);
+        tagsCloudVisualization.SaveTagsCloud(_layouter, fullPath);
 
         Console.WriteLine($"Tag cloud visualization saved to file {fullPath}");
     }
