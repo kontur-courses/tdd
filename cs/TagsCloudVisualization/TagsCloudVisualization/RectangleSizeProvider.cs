@@ -15,5 +15,28 @@ namespace TagsCloudVisualization
                 sizes.Add(new Size(sizesGenerator.Next(maxDimensionSize), sizesGenerator.Next(maxDimensionSize)));
             return sizes;
         }
+        
+        public static List<Size> GetRandomWordLikeSizes(int seed, int rectanglesCount, 
+            int minHeight, 
+            int maxHeight, 
+            int minWidthToHeightRatio = 2, 
+            int maxWidthToHeightRatio = 8,
+            bool canBeVertical = true)
+        {
+            var sizesGenerator = new Random(seed);
+            var sizes = new List<Size>();
+            for (var i = 0; i < rectanglesCount; i++)
+            {
+                var height = sizesGenerator.Next(minHeight, maxHeight);
+                var width = height * sizesGenerator.Next(minWidthToHeightRatio, maxWidthToHeightRatio);
+                
+                if (canBeVertical && sizesGenerator.Next() % 2 == 0)
+                    (width, height) = (height, width);
+                
+                sizes.Add(new Size(width, height));
+            }
+
+            return sizes;
+        }
     }
 }

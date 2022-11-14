@@ -22,11 +22,20 @@ namespace TagsCloudVisualizationTests
         private static IEnumerable<TestCaseData> DensityTestData =>
             new[]
             {
-                new TestCaseData(0.5, RectangleSizeProvider.GetRandomSizes(1000, 1000, 1000))
-                    .SetName("1000 different sizes"),
+                new TestCaseData(0.5, RectangleSizeProvider.GetRandomSizes(1000, 1000, 100))
+                    .SetName("100 different sizes"),
 
-                new TestCaseData(0.9, Enumerable.Repeat(new Size(4, 4), 1000))
-                    .SetName("1000 identical squares")
+                new TestCaseData(0.8, Enumerable.Repeat(new Size(4, 4), 1000))
+                    .SetName("1000 identical squares"),
+                
+                new TestCaseData(0.4, RectangleSizeProvider.GetRandomWordLikeSizes(999, 100, 10,
+                    50))
+                    .SetName("1000 word-like rectangles"),
+                
+                new TestCaseData(0.4, RectangleSizeProvider.GetRandomWordLikeSizes(999, 100, 10,
+                        50, canBeVertical:false))
+                    .SetName("1000 horizontal word-like rectangles")
+                
             };
 
         [Test]
@@ -58,9 +67,8 @@ namespace TagsCloudVisualizationTests
         }
 
         [TestCaseSource(nameof(DensityTestData))]
-        public void Layouter_LaysOutDenserThanThreshold(double density, IEnumerable<Size> sizes)
+        public void Layouter_LaysOutDenserThanThreshold(double desiredDensity, IEnumerable<Size> sizes)
         {
-            var desiredDensity = 0.5;
             var center = new Point(0, 0);
 
             layouterUnderTesting = new CircularCloudLayouter(center);
@@ -78,10 +86,8 @@ namespace TagsCloudVisualizationTests
         public void TearDown()
         {
             var currentContext = TestContext.CurrentContext;
-            var testNotPassed = currentContext.Result.Assertions
-                .Any(a => a.Status is AssertionStatus.Error or AssertionStatus.Failed);
 
-            if (testNotPassed)
+            if (currentContext.Result.Outcome.Status is TestStatus.Failed)
             {
                 var visualizer = LayoutVisualizer.FromCircularCloudLayouter(layouterUnderTesting);
                 var fileName = Path.ChangeExtension(currentContext.Test.Name, "png");
