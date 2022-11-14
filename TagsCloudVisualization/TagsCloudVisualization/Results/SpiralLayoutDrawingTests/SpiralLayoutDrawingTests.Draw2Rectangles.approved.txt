@@ -1,0 +1,4 @@
+﻿TagsCloudVisualization.SpiralLayoutDrawingTests.Draw2Rectangles
+
+PlacedRectangles[0] = {X=1000,Y=1000,Width=1,Height=1}
+PlacedRectangles[1] = {X=995,Y=999,Width=5,Height=5}
