@@ -97,6 +97,27 @@ namespace TagsCloudVisualization
 
             actual.Should().Match<Rectangle>(r => r == expectedRectangle1 || r == expectedRectangle2);
         }
+
+        [Test]
+        public void PutNextRectangle_Should_PutBigRectanglesAroundSmallOneInCenter()
+        {
+            var smallRectangleSize = new Size(100, 100);
+            var bigHorizontalRectangleSize = new Size(200, 100);
+            var bigVerticalRectangleSize = new Size(100, 200);
+            var expectedRectangleSize = new Size(50, 100);
+
+            var expectedRectangle = new Rectangle(new Point(50, -50), expectedRectangleSize);
+
+            layouter = CircularCloudLayouterFactory.Get(Point.Empty);
+
+            layouter.PutNextRectangle(smallRectangleSize);
+            layouter.PutNextRectangle(bigHorizontalRectangleSize);
+            layouter.PutNextRectangle(bigVerticalRectangleSize);
+            layouter.PutNextRectangle(bigHorizontalRectangleSize);
+            var actualRectangle = layouter.PutNextRectangle(expectedRectangleSize);
+
+            actualRectangle.Should().Be(expectedRectangle);
+        }
     }
 
     internal static class CircularCloudLayouterFactory
