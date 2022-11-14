@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace TagCloud
 {
-    public class TagCloudVisualizationTests : TagCloudVisualization
+    public class TagCloudVisualizationTests
     {
         [Test]
         public void SaveAsBitmap_TagCloudInFile_Success()
@@ -19,7 +19,7 @@ namespace TagCloud
 
             for (int i = 400; i > 1; i -= 2)
                 cloudLayouter.PutNextRectangle(new Size(i, i / 2));
-            SaveAsBitmap(cloudLayouter.GetTagCloud(), tempBmpFile);
+            TagCloudVisualization.SaveAsBitmap(cloudLayouter.GetTagCloud(), tempBmpFile);
 
             File.Exists(tempBmpFile).Should().BeTrue($"file {tempBmpFile} must be generated");
         }
