@@ -42,8 +42,7 @@ namespace TagsCloudVisualization
                 var rectangle = RectangleExtensions.NewRectangle(rectangleCenter, rectangleSize);
                 if (IntersectsWithExistingRectangles(rectangle)) 
                     continue;
-               
-                rectangles.Add(rectangle);
+                
                 return rectangle;
             }
 
