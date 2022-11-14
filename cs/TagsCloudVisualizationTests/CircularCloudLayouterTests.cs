@@ -126,7 +126,7 @@ namespace TagsCloudVisualizationTests
                 TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
 
             var path = "../../../errors/" + TestContext.CurrentContext.Test.MethodName + ".png";
-            Painter.DrawRectanglesToFile(new Size(1500, 1500), rectangles, path);
+            Painter.DrawRectanglesToFile(CanvasCenter, rectangles, path);
             Console.WriteLine($"Tag cloud visualization saved to file {path}");
         }
     }

@@ -47,16 +47,7 @@ namespace TagsCloudVisualization
         {
             var layouter = new CircularCloudLayouter(center);
             var rectangles = MakeRectangles(layouter, rectanglesCount);
-            var size = GetNewCanvasSize(rectangles, center);
-            rectangles = TransformRectangles(rectangles, size);
-            var b = new Bitmap(size.Width, size.Height);
-            using (var g = Graphics.FromImage(b))
-            {
-                DrawAxes(g, size);
-                DrawRectangles(g, rectangles);
-            }
-
-            b.Save(path);
+            DrawRectanglesToFile(center, rectangles, path);
         }
 
         private static Point CalcPositionForCanvas(Point position, Size imageSize)
@@ -66,14 +57,17 @@ namespace TagsCloudVisualization
             return new Point(x, y);
         }
 
-        public static void DrawRectanglesToFile(Size size, List<Rectangle> rectangles, string path)
+        public static void DrawRectanglesToFile(Point center, List<Rectangle> rectangles, string path)
         {
+            var size = GetNewCanvasSize(rectangles, center);
+            rectangles = TransformRectangles(rectangles, size);
             var b = new Bitmap(size.Width, size.Height);
+
             using (var g = Graphics.FromImage(b))
             {
-                rectangles.ForEach(t => g.DrawRectangle(rectanglePen, t));
+                DrawAxes(g, size);
+                DrawRectangles(g, rectangles);
             }
-
             b.Save(path);
         }
 
