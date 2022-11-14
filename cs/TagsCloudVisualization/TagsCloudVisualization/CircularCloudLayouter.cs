@@ -13,61 +13,54 @@ namespace TagsCloudVisualization
             rectangles = new List<Rectangle>();
         }
 
-        public IReadOnlyList<Rectangle> Rectangles => rectangles.AsReadOnly();
+        public IReadOnlyList<Rectangle> Rectangles => rectangles;
         public Point Center { get; }
-        private List<Rectangle> rectangles { get; }
+        private readonly List<Rectangle> rectangles;
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
+            Rectangle newRectangle;
+
             if (rectangles.Count == 0)
+                newRectangle = new Rectangle(Center - rectangleSize / 2, rectangleSize);
+            else
+                newRectangle = FindPlaceForRectangle(rectangleSize);
+
+            rectangles.Add(newRectangle);
+            return newRectangle;
+        }
+
+        private Rectangle FindPlaceForRectangle(Size rectangleSize)
+        {
+            var rectangleScale = Math.Max(rectangleSize.Height, rectangleSize.Width);
+
+            // So that angles never recur and are distributed evenly:
+            var startAngleOfSpiral = rectangles.Count;
+            
+            foreach (var rectangleCenter in Center.ScatterPointsBySpiralAround(rectangleScale, startAngleOfSpiral))
             {
-                var rectangle = new Rectangle(Center - rectangleSize / 2, rectangleSize);
+                var rectangle = RectangleExtensions.NewRectangle(rectangleCenter, rectangleSize);
+                if (IntersectsWithExistingRectangles(rectangle)) 
+                    continue;
+               
                 rectangles.Add(rectangle);
                 return rectangle;
             }
 
-            var step = Math.Max(rectangleSize.Height, rectangleSize.Width);
-            var startAngle = rectangles.Count;
-            foreach (var rectangleCenter in ScatterPointsEvenlyBySpiralLazy(step, startAngle))
-            {
-                var rectangle = new Rectangle(rectangleCenter - rectangleSize / 2, rectangleSize);
-                if (!IntersectsWithExistingRectangles(rectangle))
-                {
-                    rectangles.Add(rectangle);
-                    return rectangle;
-                }
-            }
-
             throw new InvalidOperationException(
-                $"Could not find a place for a rectangle with width {rectangleSize.Width} and height {rectangleSize.Height}");
+                $"Could not find a place for a rectangle of width {rectangleSize.Width} and height {rectangleSize.Height}");
         }
 
-        public double GetRadius()
+        public double GetCircumcircleRadius()
         {
             return Rectangles.SelectMany(r => r.GetVertices()).Select(p => Center.GetDistanceTo(p))
                 .Max();
         }
 
-        private IEnumerable<Point> ScatterPointsEvenlyBySpiralLazy(double step, double startAngle = 0)
-        {
-            var arg = startAngle;
-            var r = step;
-            yield return new Point(Center.X + (int)Math.Round(r * Math.Cos(arg)),
-                Center.Y + (int)Math.Round(r * Math.Sin(arg)));
-
-            while (true)
-            {
-                arg += Math.Atan(step / r);
-                r = ((arg - startAngle) / 2 / Math.PI - +1) * step;
-                yield return new Point(Center.X + (int)Math.Round(r * Math.Cos(arg)),
-                    Center.Y + (int)Math.Round(r * Math.Sin(arg)));
-            }
-        }
 
         private bool IntersectsWithExistingRectangles(Rectangle newRectangle)
         {
             return Rectangles.Any(r => r.IntersectsWith(newRectangle));
         }
     }
-
 }

@@ -55,7 +55,7 @@ namespace TagsCloudVisualizationTests
             var layouter = new CircularCloudLayouter(center);
             foreach (var size in sizes)
                 layouter.PutNextRectangle(size);
-            var radius = layouter.GetRadius();
+            var radius = layouter.GetCircumcircleRadius();
             var circleSquare = Math.PI * radius * radius;
             var rectanglesSquare = layouter.Rectangles.Sum(r => r.Height * r.Width);
 
