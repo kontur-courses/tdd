@@ -21,7 +21,9 @@ public class TagCloudVisualizator
 	}
 
 	public static Image GetTagCloudImage(List<Rectangle> rectangles, Size imageSize, Point cloudPosition)
-		=> GetTagCloudImage(rectangles, new List<Color>(), imageSize, cloudPosition);
+	{
+		return GetTagCloudImage(rectangles, new List<Color>(), imageSize, cloudPosition);
+	}
 
 	public static Image GetTagCloudImage(List<Rectangle> rectangles, List<Color> colors, Size imageSize,
 		Point cloudPosition)
