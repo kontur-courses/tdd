@@ -60,9 +60,9 @@ namespace TagsCloudVisualizationTests
             action.Should().NotThrow();
         }
 
-        [TestCase(-1, -1, TestName = "Negatvie size")]
-        [TestCase(-1, 0, TestName = "Negatvie width")]
-        [TestCase(0, -1, TestName = "Negatvie height")]
+        [TestCase(-1, -1, TestName = "Negative size")]
+        [TestCase(-1, 0, TestName = "Negative width")]
+        [TestCase(0, -1, TestName = "Negative height")]
         public void PutNextRectangle_ThrowException_On(int width, int height)
         {
             Action action = () => cloud.PutNextRectangle(new Size(width, height));
@@ -103,10 +103,10 @@ namespace TagsCloudVisualizationTests
             cloud.Rectangles.Should().HaveCount(expectedExist);
         }
 
-        [TestCase(0, TestName = "Empty cloud")]
-        [TestCase(1, TestName = "Cloud exist one rectangles")]
-        [TestCase(100, TestName = "Cloud exist many rectangles")]
-        public void PutNextRectangle_ShouldNotIntersectWithOtherRectangles(int alreadyExist)
+        [TestCase(0, TestName = "Cloud does not contain rectangles yet")]
+        [TestCase(1, TestName = "Cloud already contains one rectangle")]
+        [TestCase(100, TestName = "Cloud already contains many rectangles")]
+        public void PutNextRectangle_ShouldNotIntersectWithOtherRectangles_On(int alreadyExist)
         {
             Utilities.GenerateRectangleSize(alreadyExist, minSize, maxSize)
                 .Select(rectSize => cloud.PutNextRectangle(rectSize))
@@ -118,10 +118,10 @@ namespace TagsCloudVisualizationTests
                 .Should().BeFalse();
         }
 
-        [TestCase(0, TestName = "Zero rectangles", ExpectedResult = false)]
-        [TestCase(2, TestName = "Two rectangles", ExpectedResult = false)]
-        [TestCase(100, TestName = "Many rectangles", ExpectedResult = false)]
-        public bool CircularCloudLayouter_WithSomeAmountRectangles_ShouldNotIntersectWithEachOther(
+        [TestCase(0, TestName = "Cloud does not contain rectangles", ExpectedResult = false)]
+        [TestCase(2, TestName = "Cloud contains two rectangles", ExpectedResult = false)]
+        [TestCase(100, TestName = "Cloud contains many rectangles", ExpectedResult = false)]
+        public bool CircularCloudLayouter_RectanglesShouldNotIntersectWithEachOther_On(
             int alreadyExist)
         {
             Utilities.GenerateRectangleSize(alreadyExist, minSize, maxSize)
