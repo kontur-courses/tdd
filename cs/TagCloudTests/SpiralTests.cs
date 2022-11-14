@@ -9,39 +9,49 @@ namespace TagCloudTests
     [TestFixture]
     internal class SpiralTests
     {
-        public static Point _center;
+        public static Point Center { get; private set; }
         private static ISpiral spiral;
 
         [SetUp]
         public void SetUP()
         {
-            _center = new(1920 / 2, 1080 / 2);
+            Center = new(1920 / 2, 1080 / 2);
         }
 
-        [TestCase(0, 1.1, TestName = "{m}_Zero delta")]
+        [TestCase(0, 1.1, TestName = "{m}_withZeroDelta")]
         [TestCase(1.1, 0, TestName = "{m}_Zero density")]
         public void Spiral_Constructor_ShouldThrowArgumentException(double delta, double density)
         {
-           Action act = () => new SpiralBeta(_center, delta, density);
+           Action act = () => new SpiralBeta(Center, delta, density);
            act.Should().Throw<ArgumentException>();
         }
 
-        [TestCase(-1, 1, TestName = "{m}_")]
-        [TestCase(1, -1, TestName = "{m}_")]
-        [TestCase(-1, -1, TestName = "{m}_")]
-        [TestCase(1, 1, TestName = "{m}_")]
+        [TestCase(-5, 7, TestName = "{m}_withNegativeDelta")]
+        [TestCase(4, -3, TestName = "{m}_withNegativeDensity")]
+        [TestCase(-8, -2, TestName = "{m}_withNegativeParams")]
+        [TestCase(6, 9, TestName = "{m}_withPositiveParams")]
         public void Spiral_Constructor_ShouldNotThrowArgumentException(double delta, double density)
         {
-            Action act = () => new SpiralBeta(_center, delta, density);
+            Action act = () => new SpiralBeta(Center, delta, density);
             act.Should().NotThrow();
         }
 
         [Test]
         public void Spiral_GetNextPoint_OnCorrectInput()
         {
-            spiral.GetNextPoint().Should().BeEquivalentTo(_center);
-            spiral.GetNextPoint().Should().BeEquivalentTo(new Point(961, 541));
-            spiral.GetNextPoint().Should().BeEquivalentTo(new Point(959, 543));
+            var expectedPoint1 = new Point(960, 540);
+            var expectedPoint2 = new Point(961, 542);
+            var expectedPoint3 = new Point(958, 544);
+            var expectedPoint4 = new Point(954, 541);
+            var expectedPoint5 = new Point(955, 543);
+
+            spiral = new SpiralBeta(Center, 1, 2);
+
+            spiral.GetNextPoint().Should().BeEquivalentTo(expectedPoint1);
+            spiral.GetNextPoint().Should().BeEquivalentTo(expectedPoint2);
+            spiral.GetNextPoint().Should().BeEquivalentTo(expectedPoint3);
+            spiral.GetNextPoint().Should().BeEquivalentTo(expectedPoint4);
+            spiral.GetNextPoint().Should().BeEquivalentTo(expectedPoint5);
         }
     }
 
