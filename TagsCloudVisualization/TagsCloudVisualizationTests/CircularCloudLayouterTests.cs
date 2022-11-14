@@ -88,7 +88,7 @@ public class CircularCloudLayouterTests
 	public void PutNextRectangle_ShouldNotContainIntersection(List<Size> sizes)
 	{
 		placedRectangles = sizes.Select(size => layouter.PutNextRectangle(size)).ToList();
-		
+
 		var intersectionsCount = placedRectangles
 			.Select((rectangle, i) =>
 				placedRectangles
@@ -149,7 +149,7 @@ public class CircularCloudLayouterTests
 
 		return new Rectangle(minX, minY, width, height);
 	}
-	
+
 	//[Test] //Uncomment this for check image creation when test failed
 	//public void AlwaysFallsTest_ShouldCreateImage()
 	//{
@@ -181,15 +181,15 @@ public class CircularCloudLayouterTests
 
 		yield return new TestCaseData(
 				Enumerable.Repeat(squareSize, 100).ToList())
-			.SetName("100 squares");
+			.SetName("100 squares with same size");
 
 		yield return new TestCaseData(
 				Enumerable.Repeat(verticalOrientedRectangleSize, 100).ToList())
-			.SetName("100 vertical oriented rectangles");
+			.SetName("100 vertical oriented rectangles with same size");
 
 		yield return new TestCaseData(
 				Enumerable.Repeat(horizontalOrientedRectangleSize, 100).ToList())
-			.SetName("100 horizontal oriented rectangles");
+			.SetName("100 horizontal oriented rectangles with same size");
 	}
 
 	public static IEnumerable<TestCaseData> RandomRectangleSizesSource()
@@ -197,13 +197,13 @@ public class CircularCloudLayouterTests
 		var rnd = new Random();
 
 		yield return new TestCaseData(GetRandomRectangles(100, 1, 1))
-			.SetName("100 squares");
+			.SetName("100 squares with random size");
 
 		yield return new TestCaseData(GetRandomRectangles(100, 1, 3))
-			.SetName("100 vertical oriented rectangles");
+			.SetName("100 vertical oriented rectangles with random size");
 
 		yield return new TestCaseData(GetRandomRectangles(100, 3, 1))
-			.SetName("100 horizontal oriented rectangles");
+			.SetName("100 horizontal oriented rectangles with random size");
 	}
 
 	private static IEnumerable<Size> GetRandomRectangles(int count, int widthRate, int heightRate)
