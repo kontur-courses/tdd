@@ -26,8 +26,11 @@ namespace TagsCloudVisualization.Core
                 throw new ArgumentException("X or Y is negative!");
 
             var rectangle = GetCorrectRectangle();
+            rectangle.Inflate(1, 1);
 
             rectangle = ShiftRectangleToCenter(rectangle);
+            rectangle.Inflate(-1, -1);
+
             Rectangles.Add(rectangle);
 
             return rectangle;
