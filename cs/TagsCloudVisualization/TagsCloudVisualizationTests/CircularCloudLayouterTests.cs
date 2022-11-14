@@ -1,15 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTests
 {
     public class CircularCloudLayouterTests
     {
+        private static CircularCloudLayouter layouterUnderTesting;
+
+        [SetUp]
+        public void SetUp()
+        {
+            layouterUnderTesting = null;
+        }
         private static IEnumerable<TestCaseData> DensityTestData =>
             new[]
             {
@@ -25,8 +34,8 @@ namespace TagsCloudVisualizationTests
         {
             var size = new Size(123, 456);
 
-            var layouter = new CircularCloudLayouter(new Point(0, 0));
-            var rectangle = layouter.PutNextRectangle(size);
+            layouterUnderTesting = new CircularCloudLayouter(new Point(0, 0));
+            var rectangle = layouterUnderTesting.PutNextRectangle(size);
 
             rectangle.Size.Should().BeEquivalentTo(size);
         }
@@ -37,13 +46,15 @@ namespace TagsCloudVisualizationTests
             var rectanglesCount = 1000;
             var sizes = RectangleSizeProvider.GetRandomSizes(1000, rectanglesCount, 1000);
 
-            var layouter = new CircularCloudLayouter(new Point(0, 0));
+            layouterUnderTesting = new CircularCloudLayouter(new Point(0, 0));
             foreach (var size in sizes)
-                layouter.PutNextRectangle(size);
+                layouterUnderTesting.PutNextRectangle(size);
 
             for (var i = 0; i < rectanglesCount; i++)
             for (var j = i + 1; j < rectanglesCount; j++)
-                layouter.Rectangles[i].IntersectsWith(layouter.Rectangles[j]).Should().Be(false);
+                layouterUnderTesting.Rectangles[i]
+                    .IntersectsWith(layouterUnderTesting.Rectangles[j])
+                    .Should().Be(false);
         }
 
         [TestCaseSource(nameof(DensityTestData))]
@@ -52,14 +63,32 @@ namespace TagsCloudVisualizationTests
             var desiredDensity = 0.5;
             var center = new Point(0, 0);
 
-            var layouter = new CircularCloudLayouter(center);
+            layouterUnderTesting = new CircularCloudLayouter(center);
             foreach (var size in sizes)
-                layouter.PutNextRectangle(size);
-            var radius = layouter.GetCoveringCircleRadius();
+                layouterUnderTesting.PutNextRectangle(size);
+            var radius = layouterUnderTesting.GetCoveringCircleRadius();
             var circleSquare = Math.PI * radius * radius;
-            var rectanglesSquare = layouter.Rectangles.Sum(r => r.Height * r.Width);
+            var rectanglesSquare = layouterUnderTesting.Rectangles.Sum(r => r.Height * r.Width);
 
             (rectanglesSquare / circleSquare).Should().BeGreaterThan(desiredDensity);
+        }
+        
+
+        [TearDown]
+        public void TearDown()
+        {
+            var currentContext = TestContext.CurrentContext;
+            var testNotPassed = currentContext.Result.Assertions
+                .Any(a => a.Status is AssertionStatus.Error or AssertionStatus.Failed);
+
+            if (testNotPassed)
+            {
+                var visualizer = LayoutVisualizer.FromCircularCloudLayouter(layouterUnderTesting);
+                var fileName = Path.ChangeExtension(currentContext.Test.Name, "png");
+                var visualizationPath = Path.Join(currentContext.WorkDirectory, fileName) ;
+                visualizer.SaveAs(visualizationPath);
+                Console.WriteLine($"Tag cloud visualization saved to file \"{visualizationPath}\"");
+            }
         }
     }
 }
