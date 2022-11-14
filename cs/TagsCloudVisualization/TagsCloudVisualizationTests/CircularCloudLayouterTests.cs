@@ -23,18 +23,18 @@ namespace TagsCloudVisualizationTests
             new[]
             {
                 new TestCaseData(0.5, RectangleSizeProvider.GetRandomSizes(1000, 1000, 100))
-                    .SetName("100 different sizes"),
+                    .SetName("1000 different sizes"),
 
                 new TestCaseData(0.8, Enumerable.Repeat(new Size(4, 4), 1000))
                     .SetName("1000 identical squares"),
                 
                 new TestCaseData(0.4, RectangleSizeProvider.GetRandomWordLikeSizes(999, 100, 10,
                     50))
-                    .SetName("1000 word-like rectangles"),
+                    .SetName("100 word-like rectangles"),
                 
                 new TestCaseData(0.4, RectangleSizeProvider.GetRandomWordLikeSizes(999, 100, 10,
                         50, canBeVertical:false))
-                    .SetName("1000 horizontal word-like rectangles")
+                    .SetName("100 horizontal word-like rectangles")
                 
             };
 
