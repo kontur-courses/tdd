@@ -18,6 +18,9 @@ namespace TagsCloudVisualization
         private Point _center;
         private Func _distanceFunction;
 
+        public Point Center => _center;
+        public IReadOnlyList<Rectangle> Rectangles => _rectangles.AsReadOnly();
+
         public CircularCloudLayouter(Point center)
         {
             _center = center;
