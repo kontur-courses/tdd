@@ -2,8 +2,9 @@
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
+using TagsCloudVisualization;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisuallizationTests
 {
     [TestFixture]
     public class SpiralTest
@@ -15,7 +16,6 @@ namespace TagsCloudVisualization
             Action action = () => new Spiral(new Point(x, y), step);
             action.Should().Throw<ArgumentException>().WithMessage("Step must not be less than or equal to 0");
         }
-
         
         [TestCase(0, 0, 1)]
         [TestCase(5, 5, 10)]
@@ -33,6 +33,5 @@ namespace TagsCloudVisualization
             Point point = spiral.NextPoint();
             spiral.NextPoint().Should().NotBe(point);
         }
-        
     }
 }

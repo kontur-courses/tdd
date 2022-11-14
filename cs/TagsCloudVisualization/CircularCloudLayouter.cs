@@ -1,59 +1,41 @@
 ﻿using System;
 using System.Drawing;
 using System.Collections.Generic;
-using NUnit.Framework;
 
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
         private Spiral _spiral;
-        private List<Rectangle> _rectangles;
-        private Random _random;
-
-        public IReadOnlyList<Rectangle> Rectangles => _rectangles;
         
         public CircularCloudLayouter(Point center, double step = 10)
         {
-            _rectangles = new List<Rectangle>();
             _spiral = new Spiral(center, step);
-            _random = new Random();
         }
 
-        public Rectangle PutNextRectangle(Size rectangleSize)
+        public Rectangle PutNextRectangle(Size rectangleSize, IReadOnlyList<Rectangle> rectangles)
         {
-            if (rectangleSize == Size.Empty)
+            if (rectangleSize == Size.Empty || rectangleSize.Height < 0 || rectangleSize.Width < 0)
                 throw new ArgumentException("Size must not be equal to 0");
             
             Rectangle rectangle;
             do
-            { 
+            {
                 rectangle = new Rectangle(_spiral.NextPoint(), rectangleSize);
-            } while (IsIntersects(rectangle)); 
+            } while (IsIntersects(rectangle, rectangles)); 
             
-            _rectangles.Add(rectangle);
             return rectangle;
         }
-        
-        private bool IsIntersects(Rectangle newRectangle)
+
+        private bool IsIntersects(Rectangle newRectangle, IReadOnlyList<Rectangle> rectangles)
         {
-            foreach (var rectangle in Rectangles)
+            foreach (var rectangle in rectangles)
             {
                 if (rectangle.IntersectsWith(newRectangle))
                     return true;
             }
+
             return false;
         }
-
-        public void AddRandomRectangles(int amount)
-        {
-            if (amount <= 0)
-                throw new ArgumentException();
-            for (int i = 0; i < amount; i++)
-            {
-                PutNextRectangle(new Size(_random.Next() % 50, _random.Next() % 50));
-            }
-        }
-
     }
 }

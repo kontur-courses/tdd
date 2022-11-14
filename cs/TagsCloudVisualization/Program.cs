@@ -6,8 +6,9 @@ namespace TagsCloudVisualization
     {
         public static void Main(string[] args)
         {
-            Bitmap bitmap = new Bitmap(600, 600);
-            RectangleVisualisator visualisator = new RectangleVisualisator(new Point(bitmap.Width / 2, bitmap.Height / 2), bitmap);
+            var bitmap = new Bitmap(600, 600);
+            var layouter = new CircularCloudLayouter(new Point(bitmap.Width / 2, bitmap.Height / 2));
+            RectangleVisualisator visualisator = new RectangleVisualisator(layouter, bitmap);
             visualisator.CreateImage();
         }
     }
