@@ -16,7 +16,6 @@ public class CircularCloudLayouterTests
 	{
 		layouter = new CircularCloudLayouter(Point.Empty);
 		placedRectangles = new List<Rectangle>();
-		imageSaver = new ImageSaver($"{Environment.CurrentDirectory}\\FailedTestsLayouts", ImageFormat.Png);
 	}
 
 	[TearDown]
@@ -46,7 +45,7 @@ public class CircularCloudLayouterTests
 
 	private CircularCloudLayouter layouter;
 	private List<Rectangle> placedRectangles;
-	private ImageSaver imageSaver;
+	private readonly ImageSaver imageSaver = new($"{Environment.CurrentDirectory}\\FailedTestsLayouts", ImageFormat.Png);
 
 	[TestCaseSource(nameof(CentersSource))]
 	public void Constructor_WithCorrectCenter_ShouldNotThrow(Point center)
