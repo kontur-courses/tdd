@@ -19,9 +19,8 @@ namespace TagsCloudVisualization
             {
                 var spiral = new ArchimedeanSpiral(center);
                 var cloud = new CircularCloudLayouter(spiral);
-                Utilities.GenerateRectangleSize(count, minSize, maxSize)
-                    .Select(rectSize => cloud.PutNextRectangle(rectSize))
-                    .ToArray();
+                Utilities.GenerateRectangleSize(count, minSize, maxSize).ToList()
+                    .ForEach(rectSize => cloud.PutNextRectangle(rectSize));
 
                 var imageCreator = new ImageCreator(Width, Height);
                 imageCreator.Graphics.DrawRectangles(Pens.Black, cloud.Rectangles.ToArray());

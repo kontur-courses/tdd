@@ -92,14 +92,12 @@ namespace TagsCloudVisualizationTests
         public void PutNextRectangle_ShouldAddRectangle(
             int count, int alreadyExist, int expectedExist)
         {
-            Utilities.GenerateRectangleSize(alreadyExist, minSize, maxSize)
-                .Select(rectSize => cloud.PutNextRectangle(rectSize))
-                .ToArray();
+            Utilities.GenerateRectangleSize(alreadyExist, minSize, maxSize).ToList()
+                .ForEach(rectSize => cloud.PutNextRectangle(rectSize));
             cloud.Rectangles.Should().HaveCount(alreadyExist);
 
-            Utilities.GenerateRectangleSize(count, minSize, maxSize)
-                .Select(rectSize => cloud.PutNextRectangle(rectSize))
-                .ToArray();
+            Utilities.GenerateRectangleSize(count, minSize, maxSize).ToList()
+                .ForEach(rectSize => cloud.PutNextRectangle(rectSize));
             cloud.Rectangles.Should().HaveCount(expectedExist);
         }
 
@@ -108,9 +106,8 @@ namespace TagsCloudVisualizationTests
         [TestCase(100, TestName = "Cloud already contains many rectangles")]
         public void PutNextRectangle_ShouldNotIntersectWithOtherRectangles_On(int alreadyExist)
         {
-            Utilities.GenerateRectangleSize(alreadyExist, minSize, maxSize)
-                .Select(rectSize => cloud.PutNextRectangle(rectSize))
-                .ToArray();
+            Utilities.GenerateRectangleSize(alreadyExist, minSize, maxSize).ToList()
+                .ForEach(rectSize => cloud.PutNextRectangle(rectSize));
 
             var rectangle = cloud.PutNextRectangle(new Size(minSize.Width, maxSize.Height));
             cloud.Rectangles.Take(alreadyExist)
@@ -124,9 +121,8 @@ namespace TagsCloudVisualizationTests
         public bool CircularCloudLayouter_RectanglesShouldNotIntersectWithEachOther_On(
             int alreadyExist)
         {
-            Utilities.GenerateRectangleSize(alreadyExist, minSize, maxSize)
-                .Select(rectSize => cloud.PutNextRectangle(rectSize))
-                .ToArray();
+            Utilities.GenerateRectangleSize(alreadyExist, minSize, maxSize).ToList()
+                .ForEach(rectSize => cloud.PutNextRectangle(rectSize));
 
             for (var i = 0; i < cloud.Rectangles.Count; i++)
             for (var j = i + 1; j < cloud.Rectangles.Count; j++)
