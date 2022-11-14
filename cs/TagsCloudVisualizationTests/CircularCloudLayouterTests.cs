@@ -17,6 +17,7 @@ namespace TagsCloudVisualizationTests
         const string FailureDirectoryName = "Failure";
 
         private Point center;
+        private IDistribution spiral;
         private CircularCloudLayouter cloud;
 
         private Size minSize = new Size(30, 30);
@@ -26,7 +27,7 @@ namespace TagsCloudVisualizationTests
         public void SetUp()
         {
             center = new Point(Width / 2, Height / 2);
-            var spiral = new ArchimedeanSpiral(center);
+            spiral = new ArchimedeanSpiral(center);
             cloud = new CircularCloudLayouter(spiral);
         }
 
@@ -52,11 +53,7 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void CircularCloudLayouter_DoesNotThrowException()
         {
-            var center = new Point(0, 0);
-            var spiral = new ArchimedeanSpiral(center);
-
             Action action = () => new CircularCloudLayouter(spiral);
-
             action.Should().NotThrow();
         }
 

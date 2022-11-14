@@ -16,10 +16,7 @@ namespace TagsCloudVisualizationTests
         public void ArchimedeanSpiral_DoesNotThrowException_On(int x, int y)
         {
             var center = new Point(x, y);
-            var spiral = new ArchimedeanSpiral(center);
-
-            Action action = () => new CircularCloudLayouter(spiral);
-
+            Action action = () => new ArchimedeanSpiral(center);
             action.Should().NotThrow();
         }
     }
