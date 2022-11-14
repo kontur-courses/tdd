@@ -90,14 +90,14 @@ public class CircularCloudLayouter : ICircularCloudLayouter
     {
         var rectangleCenter = rectangle.Center();
         var horizontalShiftedRectangle = rectangle.GetShiftedRectangle(new(
-            Math.Clamp(center.X - rectangleCenter.X, -1, 1),
+            Math.Sign(center.X - rectangleCenter.X),
             0));
         if (!contiguousRectangles.Any(x => x.IntersectsWith(horizontalShiftedRectangle)))
             return horizontalShiftedRectangle;
 
         var verticalShiftedRectangle = rectangle.GetShiftedRectangle(new(
             0,
-            Math.Clamp(center.Y - rectangleCenter.Y, -1, 1)));
+            Math.Sign(center.Y - rectangleCenter.Y)));
         if (!contiguousRectangles.Any(x => x.IntersectsWith(verticalShiftedRectangle)))
             return verticalShiftedRectangle;
 
@@ -121,7 +121,7 @@ public class CircularCloudLayouter : ICircularCloudLayouter
     private Point GetShiftOffset(Point rectangleCenter)
     {
         return new(
-            Math.Clamp(center.X - rectangleCenter.X, -1, 1),
-            Math.Clamp(center.Y - rectangleCenter.Y, -1, 1));
+            Math.Sign(center.X - rectangleCenter.X),
+            Math.Sign(center.Y - rectangleCenter.Y));
     }
 }
