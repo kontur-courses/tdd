@@ -50,7 +50,7 @@ namespace TagsCloudVisualization
                 $"Could not find a place for a rectangle of width {rectangleSize.Width} and height {rectangleSize.Height}");
         }
 
-        public double GetCircumcircleRadius()
+        public double GetCoveringCircleRadius()
         {
             return Rectangles.SelectMany(r => r.GetVertices()).Select(p => Center.GetDistanceTo(p))
                 .Max();
