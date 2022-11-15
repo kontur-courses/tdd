@@ -7,7 +7,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        var cloudLayouter = new CircularCloudLayouter(new Point(500, 200));
+        var cloudLayouter = CreateCloudLayouter();
         var random = new Random();
         for (var i = 0; i < 100; i++)
         {
@@ -18,8 +18,8 @@ public class Program
         CloudImageSaver.Save(bitmap, "Images", "tag-cloud-100-first-quarter.bmp");
     }
 
-        var directory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
-        var path = Path.Combine(directory, "Images", "tag-cloud-100-first-quarter.bmp");
-        bitmap.Save(path, ImageFormat.Bmp);
+    private static ICloudLayouter CreateCloudLayouter()
+    {
+        return new CircularCloudLayouter(new Point(500, 200));
     }
 }
