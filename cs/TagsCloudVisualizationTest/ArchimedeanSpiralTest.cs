@@ -1,52 +1,53 @@
 using System.Drawing;
 using FluentAssertions;
+using NUnit.Framework;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTest;
 
 public class ArchimedeanSpiralTest
 {
-    private Point _center;
+    private Point center;
 
     [SetUp]
     public void SetUp()
     {
-        _center = new Point(0, 0);
+        center = new Point(0, 0);
     }
 
     [TestCase(2, TestName = "positive integer coefficient")]
     [TestCase(1.5, TestName = "positive fractional coefficient")]
     public void Constructor_DoesNotThrowException_OnValidCoefficient(double coefficient)
     {
-        var creation = () => new ArchimedeanSpiral(_center, coefficient);
+        var action = () => new ArchimedeanSpiral(center, coefficient);
 
-        creation.Should().NotThrow();
+        action.Should().NotThrow();
     }
 
     [TestCase(-1, TestName = "negative coefficient")]
     [TestCase(0, TestName = "zero coefficient")]
     public void Constructor_ThrowsArgumentException_OnInvalidCoefficient(double coefficient)
     {
-        var creation = () => new ArchimedeanSpiral(_center, coefficient);
+        var action = () => new ArchimedeanSpiral(center, coefficient);
 
-        creation.Should().Throw<ArgumentException>();
+        action.Should().Throw<ArgumentException>();
     }
 
     [Test]
     public void Constructor_DoesNotThrowException_OnDefaultValues()
     {
-        var creation = () => new ArchimedeanSpiral();
+        var action = () => new ArchimedeanSpiral();
 
-        creation.Should().NotThrow();
+        action.Should().NotThrow();
     }
 
     [Test]
-    public void GetCartesianPointTest_ShouldReturnSpiralCenter_OnZeroDegrees()
+    public void GetCartesianPoint_ShouldReturnSpiralCenter_OnZeroDegrees()
     {
-        var spiral = new ArchimedeanSpiral(_center);
+        var spiral = new ArchimedeanSpiral(center);
 
         var point = spiral.GetCartesianPoint(0);
 
-        point.Should().BeEquivalentTo(_center);
+        point.Should().BeEquivalentTo(center);
     }
 }

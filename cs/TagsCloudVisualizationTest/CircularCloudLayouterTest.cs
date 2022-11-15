@@ -1,17 +1,19 @@
 ﻿using System.Drawing;
 using FluentAssertions;
+using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTest;
 
 public class CircularCloudLayouterTest
 {
-    private CircularCloudLayouter _cloudLayouter;
+    private CircularCloudLayouter cloudLayouter;
 
     [SetUp]
     public void Setup()
     {
-        _cloudLayouter = new CircularCloudLayouter(new Point(0, 0));
+        cloudLayouter = new CircularCloudLayouter(new Point(0, 0));
     }
 
     [TestCase(0, 5, TestName = "zero width")]
@@ -22,7 +24,7 @@ public class CircularCloudLayouterTest
     {
         var rectangleSize = new Size(width, height);
 
-        var action = () => _cloudLayouter.PutNextRectangle(rectangleSize);
+        var action = () => cloudLayouter.PutNextRectangle(rectangleSize);
 
         action.Should().Throw<ArgumentException>();
     }
@@ -44,7 +46,7 @@ public class CircularCloudLayouterTest
 
         var radius = CalculateRadius(rectangles);
         var inCircle = rectangles.ToList().FindAll(rectangle =>
-            CalculateDistance(_cloudLayouter.Center(), rectangle.Location) < radius);
+            CalculateDistance(cloudLayouter.Center(), rectangle.Location) < radius);
 
         ((double)inCircle.Count / rectangles.Count).Should().BeGreaterThan(0.8);
     }
@@ -82,9 +84,9 @@ public class CircularCloudLayouterTest
         for (var i = 0; i < amount; i++)
         {
             var rectangleSize = new Size(random.Next(10, 50), random.Next(10, 50));
-            _cloudLayouter.PutNextRectangle(rectangleSize);
+            cloudLayouter.PutNextRectangle(rectangleSize);
         }
 
-        return _cloudLayouter.Rectangles();
+        return cloudLayouter.Rectangles();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using FluentAssertions;
+using NUnit.Framework;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTest;
@@ -19,25 +20,25 @@ public class ArchimedeanSpiralIteratorTest
     [TestCase(0, -1, TestName = "negative step")]
     public void Constructor_ShouldThrowArgumentException_OnInvalidParameters(int phy, int step)
     {
-        var creation = () => new ArchimedeanSpiralIterator(_spiral, phy, step);
+        var action = () => new ArchimedeanSpiralIterator(_spiral, phy, step);
 
-        creation.Should().Throw<ArgumentException>();
+        action.Should().Throw<ArgumentException>();
     }
 
     [Test]
     public void Constructor_ShouldNotThrowException_OnDefaultParameters()
     {
-        var creation = () => new ArchimedeanSpiralIterator(_spiral);
+        var action = () => new ArchimedeanSpiralIterator(_spiral);
 
-        creation.Should().NotThrow();
+        action.Should().NotThrow();
     }
 
     [Test]
     public void Constructor_ShouldNotThrowException_OnValidParameters()
     {
-        var creation = () => new ArchimedeanSpiralIterator(_spiral, 90, 2);
+        var action = () => new ArchimedeanSpiralIterator(_spiral, 90, 2);
 
-        creation.Should().NotThrow();
+        action.Should().NotThrow();
     }
 
     [Test]

@@ -1,12 +1,13 @@
 ﻿using System.Drawing;
+using TagsCloudVisualization.Interfaces;
 
 namespace TagsCloudVisualization;
 
 public class ArchimedeanSpiralIterator : ISpiralIterator
 {
-    private int _currentAngle;
-    private int _step;
-    private readonly ISpiral _spiral;
+    private int currentAngle;
+    private readonly int step;
+    private readonly ISpiral spiral;
 
     public ArchimedeanSpiralIterator(ISpiral spiral, int startAngle = 0, int step = 1)
     {
@@ -20,15 +21,15 @@ public class ArchimedeanSpiralIterator : ISpiralIterator
             throw new ArgumentException("Step should be positive", nameof(step));
         }
 
-        _spiral = spiral;
-        _currentAngle = startAngle;
-        _step = step;
+        this.spiral = spiral;
+        currentAngle = startAngle;
+        this.step = step;
     }
 
     public Point Next()
     {
-        var nextPoint = _spiral.GetCartesianPoint(_currentAngle);
-        _currentAngle += _step;
+        var nextPoint = spiral.GetCartesianPoint(currentAngle);
+        currentAngle += step;
         return nextPoint;
     }
 }

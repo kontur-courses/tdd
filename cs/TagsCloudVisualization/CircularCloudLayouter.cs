@@ -1,21 +1,22 @@
 ﻿using System.Drawing;
+using TagsCloudVisualization.Interfaces;
 
 namespace TagsCloudVisualization;
 
 public class CircularCloudLayouter : ICloudLayouter
 {
-    private readonly Point _center;
-    private readonly List<Rectangle> _rectangles = new();
-    private readonly ISpiralIterator _iterator;
+    private readonly Point center;
+    private readonly List<Rectangle> rectangles = new();
+    private readonly ISpiralIterator iterator;
 
-    public ICollection<Rectangle> Rectangles() => _rectangles;
+    public IReadOnlyCollection<Rectangle> Rectangles() => rectangles;
 
-    public Point Center() => _center;
+    public Point Center() => center;
 
     public CircularCloudLayouter(Point center)
     {
-        _center = center;
-        _iterator = new ArchimedeanSpiralIterator(new ArchimedeanSpiral(center));
+        this.center = center;
+        iterator = new ArchimedeanSpiralIterator(new ArchimedeanSpiral(center));
     }
 
     public Rectangle PutNextRectangle(Size rectangleSize)
@@ -25,16 +26,16 @@ public class CircularCloudLayouter : ICloudLayouter
             throw new ArgumentException("Rectangle sizes should be positive", nameof(rectangleSize));
         }
 
-        var rectangleLocation = CalculateRectangleLocation(_iterator.Next(), rectangleSize);
+        var rectangleLocation = CalculateRectangleLocation(iterator.Next(), rectangleSize);
         var rectangle = new Rectangle(rectangleLocation, rectangleSize);
 
         while (IntersectsWithAny(rectangle))
         {
-            var rectangleCenter = _iterator.Next();
+            var rectangleCenter = iterator.Next();
             rectangle.Location = CalculateRectangleLocation(rectangleCenter, rectangleSize);
         }
 
-        _rectangles.Add(rectangle);
+        rectangles.Add(rectangle);
         return rectangle;
     }
 
@@ -47,6 +48,6 @@ public class CircularCloudLayouter : ICloudLayouter
 
     private bool IntersectsWithAny(Rectangle rectangle)
     {
-        return _rectangles.Any(curr => curr.IntersectsWith(rectangle));
+        return rectangles.Any(curr => curr.IntersectsWith(rectangle));
     }
 }
