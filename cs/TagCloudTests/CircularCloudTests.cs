@@ -1,7 +1,10 @@
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using System;
 using System.Drawing;
+using System.IO;
+using TagsCloudVisualization;
 using TagsCloudVisualization.TagCloud;
 
 namespace TagCloudTests
@@ -17,6 +20,23 @@ namespace TagCloudTests
         {
             _center = new(1920 / 2, 1080 / 2);
             layouter = new CircularCloudLayouter(_center);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome == ResultState.Failure)
+            {
+                var random = new Random();
+                var directory = Path.Join(Environment.CurrentDirectory, "TestFailures");
+                var fileName = TestContext.CurrentContext.Test.Name;
+                var path = Program.GenerateImage(layouter, directory, fileName);
+
+                if (path != null)
+                {
+                    TestContext.Error.WriteLine($"Tag cloud visualization saved to file {path}");
+                }
+            }
         }
 
         [Test]
@@ -41,6 +61,18 @@ namespace TagCloudTests
         {
             layouter.PutNextRectangle(new Size(20, 10));
             layouter.rectangles.Count.Should().Be(1);
+        }
+
+        [Test]
+        public void CircularCloudLayouter_HaveTenRectangle_whenPutTenRectangles()
+        {
+            var size = new Size(50, 80);
+            for (var i = 0; i < 10; i++)
+            {
+                layouter.PutNextRectangle(size);
+            }
+
+            layouter.rectangles.Count.Should().Be(10);
         }
 
         [TestCase(1920 / 2, 1080 / 2, TestName = "{m}_when(X,Y)IsPositive")]
