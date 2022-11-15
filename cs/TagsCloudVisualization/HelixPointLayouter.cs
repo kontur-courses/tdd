@@ -29,13 +29,7 @@ public class HelixPointLayouter
         return location;
     }
 
-    private static int GetX(double r, double a)
-    {
-        return (int)(r * Math.Cos(a));
-    }
+    private static int GetX(double r, double a) => (int)(r * Math.Cos(a));
 
-    private static int GetY(double r, double a)
-    {
-        return (int)(r * Math.Sin(a));
-    }
+    private static int GetY(double r, double a) => (int)(r * Math.Sin(a));
 }

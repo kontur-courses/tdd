@@ -70,7 +70,6 @@ public class CircularCloudLayouter
         return new Rectangle(new Point(rectangle.X + point.X, rectangle.Y + point.Y), rectangle.Size);
     }
 
-
     private Point GetMovingToPointVector(Rectangle rectangle, Point point)
     {
         var x = point.X - rectangle.X == 0 ? 0 : (point.X - rectangle.X) / Math.Abs(point.X - rectangle.X);
