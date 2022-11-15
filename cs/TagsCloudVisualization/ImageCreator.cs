@@ -22,7 +22,7 @@ namespace TagsCloudVisualization
             gp.FillRectangle(new SolidBrush(Color.FromArgb(255, 0, 34, 43)), new Rectangle(0,0, imageWidth, imageHeight));
         }
 
-        public void DrawSpiral(List<Point> points)
+        public void DrawLines(List<Point> points)
         {
             gp.DrawLines(Pens.Black, points.ToArray());
         }

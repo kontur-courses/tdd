@@ -45,7 +45,7 @@ namespace TagsCloudVisualization
             var imageCreator = new ImageCreator(imageWidth, imageHeight);
 
             if (needDrawDistribution)
-                imageCreator.DrawSpiral(distributionPoints);
+                imageCreator.DrawLines(distributionPoints);
             imageCreator.DrawRectangles(Rectangles);
             imageCreator.SaveImage(path);
         }
