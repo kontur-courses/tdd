@@ -8,8 +8,7 @@ namespace TagsCloudVisualization
     {
         public static double GetDistanceTo(this Point thisPoint, Point other)
         {
-            return Math.Sqrt((thisPoint.X - other.X) * (thisPoint.X - other.X) +
-                             (thisPoint.Y - other.Y) * (thisPoint.Y - other.Y));
+            return thisPoint.AsPointF().GetDistanceTo(other.AsPointF());
         }
 
         public static double GetDistanceTo(this PointF thisPoint, PointF other)
@@ -23,7 +22,7 @@ namespace TagsCloudVisualization
             return new((int) Math.Round(pointF.X), (int) Math.Round(pointF.Y));
         }
 
-        public static PointF AsPoint(this Point point)
+        public static PointF AsPointF(this Point point)
         {
             return new(point.X, point.Y);
         }
@@ -33,7 +32,7 @@ namespace TagsCloudVisualization
             double approximatePointSpacing,
             double startAngle = 0)
         {
-            return ScatterPointsBySpiralAround(center.AsPoint(), approximatePointSpacing, startAngle);
+            return ScatterPointsBySpiralAround(center.AsPointF(), approximatePointSpacing, startAngle);
         }
 
         public static IEnumerable<PointF> ScatterPointsBySpiralAround(

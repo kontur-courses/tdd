@@ -10,15 +10,6 @@ namespace TagsCloudVisualizationTests
 {
     public class PointExtensionsTests
     {
-        private static IEnumerable<TestCaseData> Point_GetDistanceTo_TestData => new[]
-        {
-            new TestCaseData(new Point(0, 0), new Point(0, 0), 0),
-            new TestCaseData(new Point(0, 0), new Point(5, 0), 5),
-            new TestCaseData(new Point(0, 0), new Point(3, 4), 5),
-            new TestCaseData(new Point(0, 0), new Point(10, 10), Math.Sqrt(10 * 10 + 10 * 10)),
-            new TestCaseData(new Point(1, 1), new Point(6, 1), 5)
-        };
-
         private static IEnumerable<TestCaseData> PointF_GetDistanceTo_TestData => new[]
         {
             new TestCaseData(new PointF(0, 0), new PointF(0, 0), 0),
@@ -72,14 +63,6 @@ namespace TagsCloudVisualizationTests
             for (var j = i + 1; j < spiral.Count; j++)
                 spiral[i].GetDistanceTo(spiral[j]).Should().BeGreaterThan(
                     approximatePointSpacing * (1 - maxRelativeError));
-        }
-
-        [TestCaseSource(nameof(Point_GetDistanceTo_TestData))]
-        public void Point_GetDistanceTo_WorksCorrectly(Point a, Point b, double expectedDistance)
-        {
-            var distance = a.GetDistanceTo(b);
-
-            distance.Should().BeApproximately(expectedDistance, expectedDistance * .001);
         }
 
         [TestCaseSource(nameof(PointF_GetDistanceTo_TestData))]
