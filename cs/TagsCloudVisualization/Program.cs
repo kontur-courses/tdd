@@ -7,7 +7,7 @@ namespace TagsCloudVisualization
     {
         public static void Main(string[] args)
         {
-            var layouter = new CircularCloudLayouter(new Point(0, 0));
+            var layouter = new CircularCloudLayouter();
             GenerateRectangles(50, layouter);
             
             RectangleVisualisator visualisator = new RectangleVisualisator(layouter);

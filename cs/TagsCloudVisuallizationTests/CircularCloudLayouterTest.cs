@@ -15,7 +15,7 @@ namespace TagsCloudVisuallizationTests
         [SetUp]
         public void SetUp()
         {
-            _layouter = new CircularCloudLayouter(new Point(0, 0));
+            _layouter = new CircularCloudLayouter();
         }
         
         [TearDown]
