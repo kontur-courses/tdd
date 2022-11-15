@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Net;
 
 namespace TagsCloudVisualization
 {
@@ -19,7 +18,7 @@ namespace TagsCloudVisualization
 
         public static Rectangle NewRectangle(Point center, Size size)
         {
-            return new Rectangle(center - size / 2, size);
+            return new(center - size / 2, size);
         }
     }
 }

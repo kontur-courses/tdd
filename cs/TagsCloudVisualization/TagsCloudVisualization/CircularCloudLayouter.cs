@@ -7,6 +7,8 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter : IRectangleLayouter
     {
+        private readonly List<Rectangle> rectangles;
+
         public CircularCloudLayouter(Point center)
         {
             Center = center;
@@ -15,7 +17,6 @@ namespace TagsCloudVisualization
 
         public IReadOnlyList<Rectangle> Rectangles => rectangles;
         public Point Center { get; }
-        private readonly List<Rectangle> rectangles;
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
@@ -36,13 +37,14 @@ namespace TagsCloudVisualization
 
             // So that angles never recur and are distributed evenly:
             var startAngleOfSpiral = rectangles.Count;
-            
-            foreach (var rectangleCenter in Center.ScatterPointsBySpiralAround(rectangleScale, startAngleOfSpiral))
+
+            foreach (var rectangleCenter in
+                Center.ScatterPointsBySpiralAround(rectangleScale, startAngleOfSpiral))
             {
-                var rectangle = RectangleExtensions.NewRectangle(rectangleCenter, rectangleSize);
-                if (IntersectsWithExistingRectangles(rectangle)) 
+                var rectangle = RectangleExtensions.NewRectangle(rectangleCenter.ToPoint(), rectangleSize);
+                if (IntersectsWithExistingRectangles(rectangle))
                     continue;
-                
+
                 return rectangle;
             }
 
@@ -52,7 +54,9 @@ namespace TagsCloudVisualization
 
         public double GetCoveringCircleRadius()
         {
-            return Rectangles.SelectMany(r => r.GetVertices()).Select(p => Center.GetDistanceTo(p))
+            return Rectangles
+                .SelectMany(r => r.GetVertices())
+                .Select(p => Center.GetDistanceTo(p))
                 .Max();
         }
 

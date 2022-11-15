@@ -7,9 +7,10 @@ namespace TagsCloudVisualization
 {
     public class LayoutVisualizer
     {
-        private Bitmap canvas;
+        private readonly Bitmap canvas;
         public Color Color = Color.Black;
         public int MarginSize;
+
         public LayoutVisualizer(List<Rectangle> layout, Size canvasSize, Point topLeftCorner, int marginSize = 50)
         {
             MarginSize = marginSize;
@@ -24,7 +25,7 @@ namespace TagsCloudVisualization
         {
             var coveringCircleRadius = (int) Math.Ceiling(layouter.GetCoveringCircleRadius());
             var sideLength = coveringCircleRadius * 2;
-            return new LayoutVisualizer(layouter.Rectangles.ToList(), 
+            return new LayoutVisualizer(layouter.Rectangles.ToList(),
                 new Size(sideLength, sideLength),
                 new Point(coveringCircleRadius, coveringCircleRadius));
         }

@@ -6,7 +6,6 @@ namespace TagsCloudVisualization
 {
     public class RectangleSizeProvider
     {
-
         public static List<Size> GetRandomSizes(int seed, int rectanglesCount, int maxDimensionSize)
         {
             var sizesGenerator = new Random(seed);
@@ -15,11 +14,11 @@ namespace TagsCloudVisualization
                 sizes.Add(new Size(sizesGenerator.Next(maxDimensionSize), sizesGenerator.Next(maxDimensionSize)));
             return sizes;
         }
-        
-        public static List<Size> GetRandomWordLikeSizes(int seed, int rectanglesCount, 
-            int minHeight, 
-            int maxHeight, 
-            int minWidthToHeightRatio = 2, 
+
+        public static List<Size> GetRandomWordLikeSizes(int seed, int rectanglesCount,
+            int minHeight,
+            int maxHeight,
+            int minWidthToHeightRatio = 2,
             int maxWidthToHeightRatio = 8,
             bool canBeVertical = true)
         {
@@ -29,10 +28,10 @@ namespace TagsCloudVisualization
             {
                 var height = sizesGenerator.Next(minHeight, maxHeight);
                 var width = height * sizesGenerator.Next(minWidthToHeightRatio, maxWidthToHeightRatio);
-                
+
                 if (canBeVertical && sizesGenerator.Next() % 2 == 0)
                     (width, height) = (height, width);
-                
+
                 sizes.Add(new Size(width, height));
             }
 
