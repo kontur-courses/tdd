@@ -32,6 +32,8 @@ namespace TagCloud
 
             graphics.DrawRectangles(pen, layout.ToArray());
 
+            graphics.Dispose();
+
             return bitmap;
         }
 
