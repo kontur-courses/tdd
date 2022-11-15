@@ -14,29 +14,29 @@ namespace TagsCloudVisualizationTests
     {
         private static CircularCloudLayouter layouterUnderTesting;
 
-        [SetUp]
-        public void SetUp()
-        {
-            layouterUnderTesting = null;
-        }
         private static IEnumerable<TestCaseData> DensityTestData =>
             new[]
             {
                 new TestCaseData(0.5, RectangleSizeProvider.GetRandomSizes(1000, 1000, 100))
                     .SetName("1000 different sizes"),
 
-                new TestCaseData(0.8, Enumerable.Repeat(new Size(4, 4), 1000))
+                new TestCaseData(0.7, Enumerable.Repeat(new Size(4, 4), 1000))
                     .SetName("1000 identical squares"),
-                
-                new TestCaseData(0.4, RectangleSizeProvider.GetRandomWordLikeSizes(999, 100, 10,
-                    50))
+
+                new TestCaseData(0.25, RectangleSizeProvider.GetRandomWordLikeSizes(999, 100, 10,
+                        50))
                     .SetName("100 word-like rectangles"),
-                
-                new TestCaseData(0.4, RectangleSizeProvider.GetRandomWordLikeSizes(999, 100, 10,
-                        50, canBeVertical:false))
+
+                new TestCaseData(0.3, RectangleSizeProvider.GetRandomWordLikeSizes(999, 100, 10,
+                        50, canBeVertical: false))
                     .SetName("100 horizontal word-like rectangles")
-                
             };
+
+        [SetUp]
+        public void SetUp()
+        {
+            layouterUnderTesting = null;
+        }
 
         [Test]
         public void PutNextRectangle_ReturnsRectangleWithSpecifiedSize()
@@ -77,10 +77,10 @@ namespace TagsCloudVisualizationTests
             var radius = layouterUnderTesting.GetCoveringCircleRadius();
             var circleSquare = Math.PI * radius * radius;
             var rectanglesSquare = layouterUnderTesting.Rectangles.Sum(r => r.Height * r.Width);
-
+            
             (rectanglesSquare / circleSquare).Should().BeGreaterThan(desiredDensity);
         }
-        
+
 
         [TearDown]
         public void TearDown()
@@ -91,7 +91,7 @@ namespace TagsCloudVisualizationTests
             {
                 var visualizer = LayoutVisualizer.FromCircularCloudLayouter(layouterUnderTesting);
                 var fileName = Path.ChangeExtension(currentContext.Test.Name, "png");
-                var visualizationPath = Path.Join(currentContext.WorkDirectory, fileName) ;
+                var visualizationPath = Path.Join(currentContext.WorkDirectory, fileName);
                 visualizer.SaveAs(visualizationPath);
                 Console.WriteLine($"Tag cloud visualization saved to file \"{visualizationPath}\"");
             }
