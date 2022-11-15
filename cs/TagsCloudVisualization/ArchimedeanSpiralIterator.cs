@@ -6,6 +6,7 @@ namespace TagsCloudVisualization;
 public class ArchimedeanSpiralIterator : ISpiralIterator
 {
     private int currentAngle;
+    private Point lastPoint;
     private readonly int step;
     private readonly ISpiral spiral;
 
@@ -29,7 +30,12 @@ public class ArchimedeanSpiralIterator : ISpiralIterator
     public Point Next()
     {
         var nextPoint = spiral.GetCartesianPoint(currentAngle);
-        currentAngle += step;
+        while (nextPoint.Equals(lastPoint))
+        {
+            currentAngle += step;
+            nextPoint = spiral.GetCartesianPoint(currentAngle);
+        }
+        lastPoint = nextPoint;
         return nextPoint;
     }
 }
