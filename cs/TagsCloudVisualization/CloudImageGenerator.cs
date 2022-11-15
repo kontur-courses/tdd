@@ -24,11 +24,12 @@ public class CloudImageGenerator
 
     private static void DrawRectangles(Graphics graphics, IEnumerable<Rectangle> rectangles, Size imageSize)
     {
-        rectangles.ToList().ForEach(rectangle =>
+        foreach (var rectangle in rectangles)
         {
-            rectangle.Location = CalculateImageLocation(rectangle, imageSize);
-            graphics.FillRectangle(new SolidBrush(GetRandomColor()), rectangle);
-        });
+            var offsetRectangle = rectangle;
+            offsetRectangle.Location = CalculateImageLocation(offsetRectangle, imageSize);
+            graphics.FillRectangle(new SolidBrush(GetRandomColor()), offsetRectangle);
+        }
     }
 
     private static Point CalculateImageLocation(Rectangle rectangle, Size imageSize)
