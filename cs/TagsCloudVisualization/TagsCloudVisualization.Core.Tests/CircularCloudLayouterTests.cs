@@ -88,7 +88,7 @@ namespace TagsCloudVisualization.Core.Tests
         [TestCase(50, TestName = "PutNextRectangle. Cloud must be like circle")]
         public void PutNextRectangle_WhenCorrectArgs_ShouldCloudAsCircle(int rectsCount)
         {
-            const double deviationCoef = 0.03;
+            const double deviationCoef = 0.16;
 
             circularCloudLayouter = new CircularCloudLayouter(new Point(500, 500));
             var rnd = new Random();
@@ -99,11 +99,11 @@ namespace TagsCloudVisualization.Core.Tests
                 circularCloudLayouter.PutNextRectangle(size);
             }
 
-            var top = circularCloudLayouter.Rectangles.Max(p => p.Top);
-            var left = circularCloudLayouter.Rectangles.Max(p => p.Left);
-            var right = circularCloudLayouter.Rectangles.Max(p => p.Right);
-            var bottom = circularCloudLayouter.Rectangles.Max(p => p.Bottom);
-
+            var top = Math.Abs(circularCloudLayouter.Rectangles.Max(p => p.Y));
+            var left = Math.Abs(circularCloudLayouter.Rectangles.Min(p => p.X));
+            var right = Math.Abs(circularCloudLayouter.Rectangles.Max(p => p.X));
+            var bottom = Math.Abs(circularCloudLayouter.Rectangles.Min(p => p.Y));
+            
             var avg = (int)((top + bottom + left + right) / (double) 4);
             var deviation = (int)(avg * deviationCoef);
 
@@ -120,7 +120,7 @@ namespace TagsCloudVisualization.Core.Tests
         [TestCase(100, TestName = "PutNextRectangle. Cloud must be dense")]
         public void PutNextRectangle_WhenCorrectArgs_RectsShouldBeDense(int rectsCount)
         {
-            const double dense = 0.75;
+            const double dense = 0.65;
             var center = new Point(600, 600);
             circularCloudLayouter = new CircularCloudLayouter(center);
             var random = new Random(0);
@@ -135,9 +135,9 @@ namespace TagsCloudVisualization.Core.Tests
             var left = Math.Abs(circularCloudLayouter.Rectangles.Min(p => p.X) - 600);
             var right = Math.Abs(circularCloudLayouter.Rectangles.Max(p => p.X) - 600);
             var bottom = Math.Abs(circularCloudLayouter.Rectangles.Min(p => p.Y) - 600);
-            
-            var avgRadius = (int)((top + bottom + left + right) / (double)4);
-            var circleSquare = Math.PI * Math.Pow(avgRadius, 2);
+
+            var maxRadius = Math.Max(top, Math.Max(bottom, Math.Max(left, right)));
+            var circleSquare = Math.PI * Math.Pow(maxRadius, 2);
 
             var sumRectsSquares = 0;
             foreach (var rect in circularCloudLayouter.Rectangles)
