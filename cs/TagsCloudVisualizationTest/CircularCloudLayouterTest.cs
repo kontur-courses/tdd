@@ -34,9 +34,11 @@ public class CircularCloudLayouterTest
     {
         var rectangles = PutRandomRectangles(50);
 
-        rectangles.Any(rectangle => rectangles
+        var intersect = rectangles.Any(rectangle => rectangles
             .Where(otherRectangle => otherRectangle != rectangle)
-            .Any(rectangle.IntersectsWith)).Should().BeFalse();
+            .Any(rectangle.IntersectsWith));
+        
+        intersect.Should().BeFalse();
     }
 
     [Test]
