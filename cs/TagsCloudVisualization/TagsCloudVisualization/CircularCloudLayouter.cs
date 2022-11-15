@@ -24,7 +24,7 @@ namespace TagsCloudVisualization
                 throw new ArgumentOutOfRangeException($"Height ({rectangleSize.Height}) must be positive");
             if (rectangleSize.Width <= 0)
                 throw new ArgumentOutOfRangeException($"Width ({rectangleSize.Width}) must be positive");
-            
+
             Rectangle newRectangle;
 
             if (rectangles.Count == 0)

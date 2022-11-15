@@ -91,7 +91,7 @@ namespace TagsCloudVisualizationTests
             var radius = layouterUnderTesting.GetCoveringCircleRadius();
             var circleSquare = Math.PI * radius * radius;
             var rectanglesSquare = layouterUnderTesting.Rectangles.Sum(r => r.Height * r.Width);
-            
+
             (rectanglesSquare / circleSquare).Should().BeGreaterThan(desiredDensity);
         }
 
