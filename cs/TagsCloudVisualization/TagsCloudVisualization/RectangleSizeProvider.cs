@@ -11,7 +11,9 @@ namespace TagsCloudVisualization
             var sizesGenerator = new Random(seed);
             var sizes = new List<Size>();
             for (var i = 0; i < rectanglesCount; i++)
-                sizes.Add(new Size(sizesGenerator.Next(maxDimensionSize), sizesGenerator.Next(maxDimensionSize)));
+                sizes.Add(new Size(
+                    sizesGenerator.Next(1, maxDimensionSize), 
+                    sizesGenerator.Next(1, maxDimensionSize)));
             return sizes;
         }
 
