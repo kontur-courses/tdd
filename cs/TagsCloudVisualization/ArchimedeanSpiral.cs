@@ -5,12 +5,12 @@ namespace TagsCloudVisualization;
 
 public class ArchimedeanSpiral : ISpiral
 {
-    private const double DefaultCoefficient = 1d;
+    private const double EqualStepsCoefficient = 1d;
 
     private readonly Point center;
     private readonly double coefficient;
 
-    public ArchimedeanSpiral(Point center = default, double coefficient = DefaultCoefficient)
+    public ArchimedeanSpiral(Point center = default, double coefficient = EqualStepsCoefficient)
     {
         if (coefficient <= 0)
             throw new ArgumentException("coefficient should be positive", nameof(coefficient));
