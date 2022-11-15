@@ -63,7 +63,7 @@ public class CircularCloudLayouterTest
         (sumSizes / circleSquare).Should().BeGreaterThan(0.6);
     }
 
-    private static int CalculateRadius(ICollection<Rectangle> rectangles)
+    private static int CalculateRadius(IReadOnlyCollection<Rectangle> rectangles)
     {
         var minX = rectangles.Min(r => r.Left);
         var maxX = rectangles.Max(r => r.Right);
@@ -78,7 +78,7 @@ public class CircularCloudLayouterTest
         return Math.Sqrt(Math.Pow(secondPoint.X - firstPoint.X, 2) + Math.Pow(secondPoint.Y - firstPoint.Y, 2));
     }
 
-    private ICollection<Rectangle> PutRandomRectangles(int amount)
+    private IReadOnlyCollection<Rectangle> PutRandomRectangles(int amount)
     {
         var random = new Random();
         for (var i = 0; i < amount; i++)

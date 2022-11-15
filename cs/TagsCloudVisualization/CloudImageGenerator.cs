@@ -58,7 +58,7 @@ public class CloudImageGenerator
         graphics.DrawLine(Pens.Black, left, right);
     }
 
-    private static Size GetImageSize(ICollection<Rectangle> rectangles, Point center)
+    private static Size GetImageSize(IReadOnlyCollection<Rectangle> rectangles, Point center)
     {
         var minX = rectangles.Min(r => r.Left);
         var maxX = rectangles.Max(r => r.Right);

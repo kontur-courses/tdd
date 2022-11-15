@@ -5,6 +5,6 @@ namespace TagsCloudVisualization.Interfaces;
 public interface ICloudLayouter
 {
     Rectangle PutNextRectangle(Size rectangleSize);
-    ICollection<Rectangle> Rectangles();
+    IReadOnlyCollection<Rectangle> Rectangles();
     Point Center();
 }
