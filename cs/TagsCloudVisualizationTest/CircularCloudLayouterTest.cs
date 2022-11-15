@@ -30,7 +30,7 @@ public class CircularCloudLayouterTest
     }
 
     [Test]
-    public void PutNextRectangle_RectanglesDoNotIntersect()
+    public void PutNextRectangle_RectangleDoesNotIntersect()
     {
         var rectangles = PutRandomRectangles(50);
 
@@ -49,8 +49,9 @@ public class CircularCloudLayouterTest
         var radius = CalculateRadius(rectangles);
         var inCircle = rectangles.ToList().FindAll(rectangle =>
             CalculateDistance(cloudLayouter.Center(), rectangle.Location) < radius);
+        var entryFactor = (double)inCircle.Count / rectangles.Count;
 
-        ((double)inCircle.Count / rectangles.Count).Should().BeGreaterThan(0.8);
+        entryFactor.Should().BeGreaterThan(0.8);
     }
 
     [Test]
@@ -61,8 +62,9 @@ public class CircularCloudLayouterTest
         var radius = CalculateRadius(rectangles);
         var sumSizes = rectangles.Sum(rectangle => rectangle.Size.Width * rectangle.Size.Height);
         var circleSquare = Math.PI * Math.Pow(radius, 2);
+        var density = sumSizes / circleSquare;
 
-        (sumSizes / circleSquare).Should().BeGreaterThan(0.6);
+        density.Should().BeGreaterThan(0.6);
     }
 
     private static int CalculateRadius(IReadOnlyCollection<Rectangle> rectangles)
