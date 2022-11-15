@@ -33,7 +33,7 @@ namespace TagsCloudVisualization.TagCloud
                 var coordinate = new Point(point.X - rectangleSize.Width / 2, point.Y - rectangleSize.Height / 2);
                 var rectangle = new Rectangle(coordinate, rectangleSize);
 
-                if (TryPlaceRectangle(rectangle))
+                if (CanPlaceRectangle(rectangle))
                 {
                     rectangles.Add(rectangle);
                     return rectangle;
@@ -41,7 +41,7 @@ namespace TagsCloudVisualization.TagCloud
             }
         }
 
-        private bool TryPlaceRectangle(Rectangle rectangle)
+        private bool CanPlaceRectangle(Rectangle rectangle)
         {
             return !rectangles.Any(x => x.IntersectsWith(rectangle));
         }
