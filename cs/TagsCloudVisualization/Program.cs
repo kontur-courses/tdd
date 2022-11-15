@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace TagsCloudVisualization
 {
@@ -6,10 +7,22 @@ namespace TagsCloudVisualization
     {
         public static void Main(string[] args)
         {
-            var bitmap = new Bitmap(600, 600);
-            var layouter = new CircularCloudLayouter(new Point(bitmap.Width / 2, bitmap.Height / 2));
-            RectangleVisualisator visualisator = new RectangleVisualisator(layouter, bitmap);
-            visualisator.CreateImage();
+            var layouter = new CircularCloudLayouter(new Point(0, 0));
+            GenerateRectangles(50, layouter);
+            
+            RectangleVisualisator visualisator = new RectangleVisualisator(layouter);
+            visualisator.Paint();
+            visualisator.Save("Rectangles.png");
+        }
+
+        public static void GenerateRectangles(int amount, CircularCloudLayouter layouter)
+        {
+            if (amount <= 0)
+                throw new ArgumentException();
+            for (int i = 0; i < amount; i++)
+            {
+                layouter.PutNextRectangle(new Size(amount - i, amount - i));
+            }
         }
     }
 }

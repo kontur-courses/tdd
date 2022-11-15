@@ -2,56 +2,64 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
     public class RectangleVisualisator
     {
-        private CircularCloudLayouter _layouter;
+        private readonly CircularCloudLayouter _layouter;
+        private readonly Random _random;
         private Bitmap _bitmap;
-        private Random _random;
-        private List<Rectangle> _rectangles;
-
-        public IReadOnlyList<Rectangle> Rectangles => _rectangles;
+        private Size shiftToBitmapCenter;
         
-        public RectangleVisualisator(CircularCloudLayouter layouter, Bitmap bitmap)
+        public IReadOnlyList<Rectangle> Rectangles;
+
+        public RectangleVisualisator(CircularCloudLayouter layouter)
         {
             _layouter = layouter;
-            _bitmap = bitmap;
-            _rectangles = new List<Rectangle>();
+            Rectangles = layouter.Rectangles;
             _random = new Random();
-            AddRandomRectangles(50);
+            _bitmap = GenerateBitmap();
+            shiftToBitmapCenter = new Size(_bitmap.Width / 2, _bitmap.Height / 2);
         }
-        
-        public void AddRandomRectangles(int amount)
+
+        public Bitmap GenerateBitmap()
         {
-            if (amount <= 0)
-                throw new ArgumentException();
-            for (int i = 0; i < amount; i++)
-            {
-                _layouter.PutNextRectangle(new Size(_random.Next() % 50, _random.Next() % 50), Rectangles);
-            }
-        }
-        
-        public void CreateImage()
-        {
-            Paint();
-            Save();
+            var width = _layouter.Rectangles.Max(rectangle => rectangle.Right) - 
+                        _layouter.Rectangles.Min(rectangle => rectangle.Left);
+            
+            var height = _layouter.Rectangles.Max(rectangle => rectangle.Bottom) - 
+                         _layouter.Rectangles.Min(rectangle => rectangle.Top);
+
+            return new Bitmap(width * 2, height * 2);
         }
 
         public void Paint()
         {
             Graphics graphics = Graphics.FromImage(_bitmap);
-            graphics.Clear(Color.White);
+            graphics.Clear(Color.DimGray);
             Pen pen = new Pen(Color.Red);
 
             foreach (var rectangle in Rectangles)
-                graphics.DrawRectangle(pen, rectangle);
+            {
+                var rectangleOnMap = CreateRectangleOnMap(rectangle);
+                graphics.DrawRectangle(pen, rectangleOnMap);
+                pen = new Pen(Color.FromArgb(_random.Next() % 255, _random.Next() % 255, _random.Next() % 255));
+            }
+            
+            pen.Dispose();
+            graphics.Dispose();
+        }
+
+        private Rectangle CreateRectangleOnMap(Rectangle rectangle)
+        {
+            return new Rectangle(rectangle.Location + shiftToBitmapCenter, rectangle.Size);
         }
         
-        private void Save()
+        public void Save(string filename)
         {
-            _bitmap.Save("Rectangles.png", ImageFormat.Png);
+            _bitmap.Save(filename, ImageFormat.Png);
         }
     }
 }

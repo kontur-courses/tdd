@@ -7,29 +7,59 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter
     {
         private Spiral _spiral;
-        
+        private List<Rectangle> _rectangles;
+        private Point _center;
+
+        public IReadOnlyList<Rectangle> Rectangles => _rectangles;
+
         public CircularCloudLayouter(Point center, double step = 10)
         {
+            _center = center;
             _spiral = new Spiral(center, step);
+            _rectangles = new List<Rectangle>();
         }
 
-        public Rectangle PutNextRectangle(Size rectangleSize, IReadOnlyList<Rectangle> rectangles)
+        public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize == Size.Empty || rectangleSize.Height < 0 || rectangleSize.Width < 0)
-                throw new ArgumentException("Size must not be equal to 0");
+                throw new ArgumentException("The size must not be equal to or less than 0");
             
             Rectangle rectangle;
             do
             {
                 rectangle = new Rectangle(_spiral.NextPoint(), rectangleSize);
-            } while (IsIntersects(rectangle, rectangles)); 
+            } while (IsIntersects(rectangle));
+
+            rectangle = MoveRectangleToCenter(rectangle);
             
+            _rectangles.Add(rectangle);
             return rectangle;
         }
-
-        private bool IsIntersects(Rectangle newRectangle, IReadOnlyList<Rectangle> rectangles)
+        
+        private Rectangle MoveRectangleToCenter(Rectangle newRectangle)
         {
-            foreach (var rectangle in rectangles)
+            var shiftX = newRectangle.GetCenter().X < _center.X ? 1 : -1;
+            newRectangle = MoveRectangle(newRectangle, shiftX, 0);
+            var shiftY = newRectangle.GetCenter().Y < _center.Y ? 1 : -1;
+            newRectangle = MoveRectangle(newRectangle, 0, shiftY);
+            return newRectangle;
+        }
+        
+        private Rectangle MoveRectangle(Rectangle newRectangle, int x, int y)
+        {
+            var shift = new Size(x, y);
+            while (!IsIntersects(newRectangle)&&
+                   newRectangle.GetCenter().X != _center.X &&
+                   newRectangle.GetCenter().Y != _center.Y)
+                newRectangle.Location += shift;
+
+            newRectangle.Location -= new Size(shift.Width * 2, shift.Height * 2);
+            return newRectangle;
+        }
+
+        private bool IsIntersects(Rectangle newRectangle)
+        {
+            foreach (var rectangle in Rectangles)
             {
                 if (rectangle.IntersectsWith(newRectangle))
                     return true;

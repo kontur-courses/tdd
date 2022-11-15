@@ -20,9 +20,9 @@ namespace TagsCloudVisualization
         public Point NextPoint()
         {
             _angle += Math.PI / 10;
-            double rho = _angle * _step / (2 * Math.PI);
-            double x = rho * Math.Cos(_angle) + _prevPoint.X;
-            double y = rho * Math.Sin(_angle) + _prevPoint.Y;
+            var rho = _angle * _step / (2 * Math.PI);
+            var x = rho * Math.Cos(_angle) + _prevPoint.X;
+            var y = rho * Math.Sin(_angle) + _prevPoint.Y;
             _prevPoint = new Point(Convert.ToInt32(x), Convert.ToInt32(y)); 
             return _prevPoint;
         }
