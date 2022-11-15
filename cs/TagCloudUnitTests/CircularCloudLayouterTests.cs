@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
@@ -15,7 +14,7 @@ namespace TagCloudUnitTests
     {
         private CircularCloudLayouter layouter;
 
-        private IReadOnlyList<Rectangle> layout;
+        private IList<Rectangle> layout;
 
         [SetUp]
         public void Setup()
@@ -42,17 +41,17 @@ namespace TagCloudUnitTests
             layout.First().GetCenter().Should().BeEquivalentTo(layouter.CloudCenter);
         }
 
-        [TestCase(-1, 1, TestName = "negative width")]
-        [TestCase(1, -1, TestName = "negative height")]
-        [TestCase(-1, -1, TestName = "negative width and height")]
-        [TestCase(0, 1, TestName = "zero width")]
-        [TestCase(1, 0, TestName = "zero height")]
-        [TestCase(0, 0, TestName = "zero width and height")]
+        [TestCase(-1, 1, TestName = "Negative width")]
+        [TestCase(1, -1, TestName = "Negative height")]
+        [TestCase(-1, -1, TestName = "Negative width and height")]
+        [TestCase(0, 1, TestName = "Zero width")]
+        [TestCase(1, 0, TestName = "Zero height")]
+        [TestCase(0, 0, TestName = "Zero width and height")]
         public void PutNextRectangle_ThrowsArgumentException_WhenSizeIsInvalid(int width, int height)
         {
             Action action = () => layouter.PutNextRectangle(new Size(width, height));
 
-            action.Should().Throw<ArgumentException>().WithMessage("width and height of rectangle must be more than zero");
+            action.Should().Throw<ArgumentException>();
         }
 
         [Test]
@@ -89,10 +88,10 @@ namespace TagCloudUnitTests
             Math.Abs(firstRectangle.X).Should().Be(Math.Abs(secondRectangle.X));
         }
         
-        [TestCase(2)]
-        [TestCase(10)]
-        [TestCase(100)]
-        [TestCase(1000)]
+        [TestCase(2, TestName ="Two rectangles")]
+        [TestCase(10, TestName = "Ten rectangles")]
+        [TestCase(100, TestName = "One hundred rectangles")]
+        [TestCase(1000, TestName = "One thousand rectangles")]
         public void PutNextRectangle_PutsNonIntersectingRectangles_WhenSeveralRectanglesAdded(int rectanglesCount)
         {
             var sizes = RectangleSizeGenerator.GetConstantSizes(rectanglesCount, new Size(100, 50));
@@ -102,7 +101,7 @@ namespace TagCloudUnitTests
             IsAnyIntersection(layout).Should().Be(false);
         }
 
-        private bool IsAnyIntersection(IReadOnlyList<Rectangle> cloudLayout)
+        private bool IsAnyIntersection(IList<Rectangle> cloudLayout)
         {
             foreach (var rectangle in cloudLayout)
                 if (cloudLayout.Where(r => !r.Equals(rectangle)).Any(r => r.IntersectsWith(rectangle)))
@@ -111,14 +110,14 @@ namespace TagCloudUnitTests
             return false;
         }
 
-        private IReadOnlyList<Rectangle> GetLayout(IEnumerable<Size> rectanglesSizes)
+        private IList<Rectangle> GetLayout(IEnumerable<Size> rectanglesSizes)
         {
             var rectangles = rectanglesSizes.Select(size => layouter.PutNextRectangle(size)).ToList();
 
-            return rectangles.AsReadOnly();
+            return rectangles;
         }
 
-        public bool IsTestResultStateFailureOrError()
+        private bool IsTestResultStateFailureOrError()
         {
             var resultState = TestContext.CurrentContext.Result.Outcome;
 
@@ -131,11 +130,9 @@ namespace TagCloudUnitTests
 
             var image = imageCreator.GenerateBitmap(layout);
 
-            ErrorTestImageSaver.SaveBitmap(image, out var fullPath);
+            ErrorTestImageSaver.SaveBitmap(image, out var fullFilePath);
 
-            TestContext.Out.WriteLine("Tag cloud visualization saved to file " + fullPath);
+            TestContext.Out.WriteLine($"Tag cloud visualization saved to file {fullFilePath}");
         }
-
-
     }
 }

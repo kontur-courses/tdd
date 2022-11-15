@@ -24,7 +24,7 @@ namespace TagCloudUnitTests
         [TestCase(Math.PI / 4, 0, 0, TestName = "Angle is PI/4")]
         [TestCase(Math.PI / 2, 0, 1, TestName = "Angle is PI/2")]
         [TestCase(Math.PI, -3, 0, TestName = "Angle is PI")]
-        public void GetNextPoint_ReturnsCorrectPoint_WhenCenterIsZeroAndScaleFactorIsOneAndAngleIsDifferent(double angleOnRadians, int correctX, int correctY)
+        public void GetNextPoint_ReturnsCorrectPoint_WhenCenterIsZeroAndScaleFactorIsOne(double angleOnRadians, int correctX, int correctY)
         {
             var archimedeanSpiral = new ArchimedeanSpiral(new Point(0, 0));
 
@@ -37,7 +37,7 @@ namespace TagCloudUnitTests
         [TestCase(Math.PI / 4, 1, 1, TestName = "Angle is PI/4")]
         [TestCase(Math.PI / 2, 0, 3, TestName = "Angle is PI/2")]
         [TestCase(Math.PI, -6, 0, TestName = "Angle is PI")]
-        public void GetNextPoint_ReturnsCorrectPoint_WhenCenterIsZeroAndScaleFactorIsTwoAndAngleIsDifferent(double angleOnRadians, int correctX, int correctY)
+        public void GetNextPoint_ReturnsCorrectPoint_WhenCenterIsZeroAndScaleFactorIsTwo(double angleOnRadians, int correctX, int correctY)
         {
             var archimedeanSpiral = new ArchimedeanSpiral(new Point(0, 0), 2);
 
@@ -51,7 +51,7 @@ namespace TagCloudUnitTests
         [TestCase(Math.PI / 4, 1, 1, TestName = "Angle is PI/4")]
         [TestCase(Math.PI / 2, 1, 2, TestName = "Angle is PI/2")]
         [TestCase(Math.PI, -2, 1, TestName = "Angle is PI")]
-        public void GetNextPoint_ReturnsCorrectPoint_WhenCenterIsNonZeroAndScaleFactorIsOneAndAngleIsDifferent(double angleOnRadians, int correctX, int correctY)
+        public void GetNextPoint_ReturnsCorrectPoint_WhenCenterIsNonZeroAndScaleFactorIsOne(double angleOnRadians, int correctX, int correctY)
         {
             var archimedeanSpiral = new ArchimedeanSpiral(new Point(1, 1));
 
@@ -64,7 +64,7 @@ namespace TagCloudUnitTests
         [TestCase(Math.PI / 4, 2, 2, TestName = "Angle is PI/4")]
         [TestCase(Math.PI / 2, 1, 4, TestName = "Angle is PI/2")]
         [TestCase(Math.PI, -5, 1, TestName = "Angle is PI")]
-        public void GetNextPoint_ReturnsCorrectPoint_WhenCenterIsNonZeroAndScaleFactorIsTwoAndAngleIsDifferent(double angleOnRadians, int correctX, int correctY)
+        public void GetNextPoint_ReturnsCorrectPoint_WhenCenterIsNonZeroAndScaleFactorIsTwo(double angleOnRadians, int correctX, int correctY)
         {
             var archimedeanSpiral = new ArchimedeanSpiral(new Point(1, 1), 2);
 

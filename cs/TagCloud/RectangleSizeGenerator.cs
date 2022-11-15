@@ -24,15 +24,14 @@ namespace TagCloud
                 result.Add(new Size(width, height));
             }
 
-            return result.AsReadOnly();
+            return result;
         }
 
         public static IReadOnlyList<Size> GetRandomOrderedSizes(int count, Size minSize, Size maxSize)
         {
             return GetRandomSizesList(count, minSize, maxSize)
-                    .OrderByDescending(s => s.Width * s.Height)
-                    .ToList()
-                    .AsReadOnly();
+                .OrderByDescending(s => s.Width * s.Height)
+                .ToList();
         }
 
         public static IReadOnlyList<Size> GetConstantSizes(int count, Size size)
@@ -42,7 +41,7 @@ namespace TagCloud
             for (var i = 0; i < count; i++)
                 result.Add(size);
 
-            return result.AsReadOnly();
+            return result;
         }
 
     }

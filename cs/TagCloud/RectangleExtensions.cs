@@ -10,5 +10,12 @@ namespace TagCloud
 
             return centerPoint;
         }
+
+        public static Rectangle MoveOn(this Rectangle rectangle, int deltaX, int deltaY)
+        {
+            var movedLocation = rectangle.Location.MoveOn(deltaX, deltaY);
+
+            return new Rectangle(movedLocation, rectangle.Size);
+        }
     }
 }

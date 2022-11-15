@@ -18,7 +18,7 @@ namespace TagCloud
             this.rectangleBorderColor = rectangleBorderColor;
         }
 
-        public Bitmap GenerateBitmap(IReadOnlyList<Rectangle> layout)
+        public Bitmap GenerateBitmap(IList<Rectangle> layout)
         {
             var imageSize = GetImageSize(layout);
 
@@ -35,6 +35,7 @@ namespace TagCloud
             return bitmap;
         }
 
+
         public Bitmap GenerateBitmap(IEnumerable<Size> rectanglesSizes)
         {
             var layout = GetLayout(rectanglesSizes);
@@ -42,19 +43,17 @@ namespace TagCloud
             return GenerateBitmap(layout);
         }
 
-        private IReadOnlyList<Rectangle> GetLayout(IEnumerable<Size> rectanglesSizes)
+        private IList<Rectangle> GetLayout(IEnumerable<Size> rectanglesSizes)
         {
-            var layout = rectanglesSizes.Select(size => layouter.PutNextRectangle(size)).ToList();
-
-            return layout.AsReadOnly();
+            return rectanglesSizes.Select(size => layouter.PutNextRectangle(size)).ToList();
         }
 
-        private Size GetImageSize(IEnumerable<Rectangle> layout)
+        private Size GetImageSize(IList<Rectangle> layout)
         {
             var minTop = int.MaxValue;
-            var maxBottom = int.MinValue + 1;
+            var maxBottom = -int.MaxValue;
             var minLeft = int.MaxValue;
-            var maxRight = int.MinValue + 1;
+            var maxRight = -int.MaxValue;
 
             foreach (var rectangle in layout)
             {

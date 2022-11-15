@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using TagCloud;
 
@@ -12,43 +9,51 @@ namespace TagCloudUnitTests
 {
     public static class ErrorTestImageSaver
     {
-        private const string FileNameDateFormat = "yy-MM-dd hh-mm-ss";
+        private const string DateFormat = "yyyy-MM-dd";
 
-        private static readonly DirectoryInfo TestsLogDirectory;
+        private const string TimeFormat = "hh-mm-ss";
 
-        static ErrorTestImageSaver()
+        private const string TestLogDirectoryName = "TestsLog";
+
+        public static void SaveBitmap(Bitmap bitmap, out string fileFullPath)
         {
-            TestsLogDirectory = GetTestsLogDirectory();
+            fileFullPath = GetFileFullPath();
+
+            ImageSaver.SaveBitmap(bitmap, fileFullPath);
         }
 
-        public static void SaveBitmap(Bitmap bitmap, out string fullPath)
+        private static string GetFileFullPath()
         {
-            var subTestDirectory = GetSubTestDirectory();
+            var testLogDirectory = ImageSaver.GetSolutionSubDirectory(TestLogDirectoryName);
 
-            var fileName = DateTime.Now.ToString(FileNameDateFormat) + ".png";
+            var testMethodDirectoryName = ImageSaver.GetSubDirectory(testLogDirectory,TestContext.CurrentContext.Test.MethodName);
 
-            fullPath = Path.Combine(subTestDirectory.FullName, fileName);
+            var fileName = GetFileName();
 
-            ImageSaver.SaveBitmap(bitmap, fullPath);
+            return Path.Combine(testMethodDirectoryName.FullName, fileName);
         }
 
-        private static DirectoryInfo GetTestsLogDirectory()
+        private static string GetFileName()
         {
-            var currentDirectory = Environment.CurrentDirectory;
+            var fileName = new StringBuilder();
 
-            var directoryToSaveImage = Path.Combine(currentDirectory, "TestsLog");
+            if (IsTestParameterized())
+            {
+                var subTestName = TestContext.CurrentContext.Test.Name;
 
-            if (!Directory.Exists(directoryToSaveImage))
-                return Directory.CreateDirectory(directoryToSaveImage);
+                fileName.Append($"{subTestName}. ");
+            }
 
-            return new DirectoryInfo(directoryToSaveImage);
+            fileName.Append($"Date {DateTime.Now.ToString(DateFormat)}. Time {DateTime.Now.ToString(TimeFormat)}");
+
+            fileName.Append(".png");
+
+            return fileName.ToString();
         }
 
-        private static DirectoryInfo GetSubTestDirectory()
+        private static bool IsTestParameterized()
         {
-            var currentTestName = TestContext.CurrentContext.Test.Name;
-
-            return TestsLogDirectory.CreateSubdirectory(currentTestName);
+            return TestContext.CurrentContext.Test.Arguments.Length > 0;
         }
     }
 }

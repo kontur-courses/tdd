@@ -8,13 +8,9 @@ namespace TagCloud
 {
     internal class Program
     {
-        private static DirectoryInfo _directoryToSaveImage;
-
         static void Main(string[] args)
         {
-            _directoryToSaveImage = GetDirectoryToSaveImage();
-
-            var rectanglesSizes = RectangleSizeGenerator.GetConstantSizes(600, new Size(25, 10));
+            var rectanglesSizes = RectangleSizeGenerator.GetConstantSizes(1000, new Size(25, 10));
             GenerateAndSaveCloudImage(rectanglesSizes, "Equivalent_rectangles_cloud.png");
 
             rectanglesSizes = RectangleSizeGenerator.GetRandomOrderedSizes(300, new Size(20, 10), new Size(80, 40));
@@ -25,18 +21,6 @@ namespace TagCloud
         }
 
 
-        private static DirectoryInfo GetDirectoryToSaveImage()
-        {
-            var currentDirectory = Environment.CurrentDirectory;
-
-            var directoryToSaveImage = Path.Combine(currentDirectory, "TagCloudImages");
-
-            if (!Directory.Exists(directoryToSaveImage))
-                return Directory.CreateDirectory(directoryToSaveImage);
-
-            return new DirectoryInfo(directoryToSaveImage);
-        }
-
         private static void GenerateAndSaveCloudImage(IEnumerable<Size> rectanglesSizes, string fileName)
         {
             var layouter = new CircularCloudLayouter(new Point(0, 0));
@@ -45,7 +29,7 @@ namespace TagCloud
 
             var bitmap = imageGenerator.GenerateBitmap(rectanglesSizes);
 
-            ImageSaver.SaveBitmap(bitmap, _directoryToSaveImage, fileName);
+            ImageSaver.SaveBitmapInSolutionSubDirectory(bitmap, "TagCloudImages", fileName);
         }
     }
 }

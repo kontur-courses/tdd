@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace TagCloud
 {
@@ -56,16 +57,20 @@ namespace TagCloud
         {
             var directionsToShift = GetDirectionsToShift(rectangle);
 
-            return directionsToShift.Aggregate(rectangle, ShiftRectangleAlongDirection);
+            var shiftedRectangleAlongX = ShiftRectangleAlongDirection(rectangle, directionsToShift.axisX);
+
+            var shiftedRectangleAlongXAndY = ShiftRectangleAlongDirection(shiftedRectangleAlongX, directionsToShift.axisY);
+
+            return shiftedRectangleAlongXAndY;
         }
 
-        private IEnumerable<Vector> GetDirectionsToShift(Rectangle rectangle)
+        private (Vector axisX, Vector axisY) GetDirectionsToShift(Rectangle rectangle)
         {
             var deltaX = CloudCenter.X - rectangle.GetCenter().X > 0 ? 1 : -1;
 
             var deltaY = CloudCenter.Y - rectangle.GetCenter().Y > 0 ? 1 : -1;
 
-            return new[] { new Vector(deltaX, 0), new Vector(0, deltaY) };
+            return (new Vector(deltaX, 0), new Vector(0, deltaY));
         }
 
         private Rectangle ShiftRectangleAlongDirection(Rectangle rectangle, Vector direction)
@@ -87,9 +92,7 @@ namespace TagCloud
                 return false;
             }
 
-            var shiftedLocation = rectangle.Location.MoveOn(direction.X, direction.Y);
-
-            shiftedRectangle = new Rectangle(shiftedLocation, rectangle.Size);
+            shiftedRectangle = rectangle.MoveOn(direction.X, direction.Y);
 
             return !IsIntersectWithAnyExistingRectangle(shiftedRectangle);
         }
