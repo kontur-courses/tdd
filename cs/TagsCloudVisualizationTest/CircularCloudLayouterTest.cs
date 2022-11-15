@@ -89,4 +89,12 @@ public class CircularCloudLayouterTest
 
         return cloudLayouter.Rectangles();
     }
+
+    [TearDown]
+    public void TearDown()
+    {
+        if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
+        using var bitmap = CloudImageGenerator.Generate(cloudLayouter);
+        CloudImageSaver.SaveFailedTest(bitmap, TestContext.CurrentContext.Test.Name);
+    }
 }

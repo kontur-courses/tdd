@@ -15,6 +15,8 @@ public class Program
         }
 
         using var bitmap = CloudImageGenerator.Generate(cloudLayouter);
+        CloudImageSaver.Save(bitmap, "Images", "tag-cloud-100-first-quarter.bmp");
+    }
 
         var directory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
         var path = Path.Combine(directory, "Images", "tag-cloud-100-first-quarter.bmp");
