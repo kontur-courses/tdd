@@ -1,6 +1,6 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Linq;
+using TagsCloudVisualization.Distributions;
 
 namespace TagsCloudVisualization
 {
@@ -11,13 +11,13 @@ namespace TagsCloudVisualization
             var shiftX = -rectangleSize.Width / 2;
             var shiftY = -rectangleSize.Height / 2;
             
-            if (rectangles.Count == 0)
+            if (Rectangles.Count == 0)
                 return new Point(center.X + shiftX, center.Y + shiftY);
 
             var potentialPoint = GetPotentialPoint();
 
-            while (rectangles.Any(rectangle =>
-                       IsRectanglesIntersect(new Rectangle(potentialPoint, rectangleSize), rectangle)))
+            while (Rectangles.Any(rectangle =>
+                       RectangleAddons.IsRectanglesIntersect(new Rectangle(potentialPoint, rectangleSize), rectangle)))
                 potentialPoint = GetPotentialPoint();
 
             return potentialPoint;
@@ -25,26 +25,18 @@ namespace TagsCloudVisualization
         
         private Point GetPotentialPoint()
         {
-            angle += 0.1f;
-            var x = center.X + 5.0f * angle * Math.Cos(angle);
-            var y = center.Y + 2.5f * angle * Math.Sin(angle);
-
-            var point = new Point((int)x, (int)y);
-            spiralPoints.Add(point);
+            var point = distribution.GetNextPoint();
+            
+            distributionPoints.Add(point);
                 
             return point;
         }
 
-        public static bool IsRectanglesIntersect(Rectangle firstRect, Rectangle secondRect)
-        {
-            return !Rectangle.Intersect(firstRect, secondRect).IsEmpty;
-        }
-
         public void Clear()
         {
-            rectangles.Clear();
-            spiralPoints.Clear();
-            angle = 0;
+            Rectangles.Clear();
+            distributionPoints.Clear();
+            distribution = new Spiral(center);
         }
     }
 }

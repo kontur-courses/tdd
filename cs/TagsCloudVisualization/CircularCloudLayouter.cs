@@ -1,29 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using TagsCloudVisualization.Distributions;
 
 namespace TagsCloudVisualization
 {
     public partial class CircularCloudLayouter
     {
-        public int RectangleCount => rectangles.Count;
-        public List<Rectangle> Rectangles => rectangles;
+        public int RectangleCount => Rectangles.Count;
+        public List<Rectangle> Rectangles { get; }
 
-        private double angle = 0;
         private readonly Point center;
-        private readonly List<Point> spiralPoints;
-        private readonly List<Rectangle> rectangles;
+        private readonly List<Point> distributionPoints;
+        private IDistribution distribution;
 
-        public CircularCloudLayouter(Point center)
+        public CircularCloudLayouter(Point center, IDistribution distribution)
         {
             this.center = center;
-            rectangles = new List<Rectangle>();
-            spiralPoints = new List<Point>();
+            this.distribution = distribution;
+            
+            Rectangles = new List<Rectangle>();
+            distributionPoints = new List<Point>();
         }
 
-        public void PutNextRectangle(Size rectangleSize)
+        public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            rectangles.Add(new Rectangle(GetNextRectanglePosition(rectangleSize), rectangleSize));
+            var rectangle = new Rectangle(GetNextRectanglePosition(rectangleSize), rectangleSize);
+            
+            Rectangles.Add(rectangle);
+
+            return rectangle;
         }
 
         public void GenerateRandomCloud(int amountRectangles)
@@ -33,13 +39,14 @@ namespace TagsCloudVisualization
                 PutNextRectangle(new Size(rnd.Next(60, 120), rnd.Next(25, 60)));
         }
         
-        public void DrawCircularCloud(int imageWidth, int imageHeight, bool needDrawSpiral = false ,string path = null)
+        public void DrawCircularCloud(int imageWidth, int imageHeight, bool needDrawDistribution = false, 
+            string path = null)
         {
             var imageCreator = new ImageCreator(imageWidth, imageHeight);
 
-            if (needDrawSpiral)
-                imageCreator.DrawSpiral(spiralPoints);
-            imageCreator.DrawRectangles(rectangles);
+            if (needDrawDistribution)
+                imageCreator.DrawSpiral(distributionPoints);
+            imageCreator.DrawRectangles(Rectangles);
             imageCreator.SaveImage(path);
         }
     }

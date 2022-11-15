@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using TagsCloudVisualization.Distributions;
 
 namespace TagsCloudVisualization
 {
@@ -6,7 +7,9 @@ namespace TagsCloudVisualization
     {
         public static void Main()
         {
-            var cloudLayouter = new CircularCloudLayouter(new Point(750, 750));
+            var center = new Point(750, 750);
+            var distribution = new Spiral(center);
+            var cloudLayouter = new CircularCloudLayouter(center, distribution);
             cloudLayouter.GenerateRandomCloud(100);
             cloudLayouter.DrawCircularCloud(1500, 1500, false);
         }

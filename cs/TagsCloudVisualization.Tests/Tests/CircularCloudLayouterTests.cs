@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using TagsCloudVisualization.Distributions;
 
 namespace TagsCloudVisualization.Tests.Tests
 {
@@ -14,12 +15,14 @@ namespace TagsCloudVisualization.Tests.Tests
         
         private CircularCloudLayouter cloudLayouter;
         private Point center;
+        private IDistribution distribution;
         
         [SetUp]
         public void Init()
         {
             center = new Point(500, 500);
-            cloudLayouter = new CircularCloudLayouter(center);
+            distribution = new Spiral(center);
+            cloudLayouter = new CircularCloudLayouter(center, distribution);
         }
         
         [Test]
@@ -60,7 +63,7 @@ namespace TagsCloudVisualization.Tests.Tests
             var firstRectangle = new Rectangle(new Point(100, 100), size);
             var secondRectangle = new Rectangle(new Point(150, 150), size);
 
-            var result = CircularCloudLayouter.IsRectanglesIntersect(firstRectangle, secondRectangle);
+            var result = RectangleAddons.IsRectanglesIntersect(firstRectangle, secondRectangle);
             
             Assert.AreEqual(true, result);
         }
@@ -70,7 +73,7 @@ namespace TagsCloudVisualization.Tests.Tests
         {
             var rectangle = new Rectangle(new Point(100, 100), new Size(100, 100));
 
-            var result = CircularCloudLayouter.IsRectanglesIntersect(rectangle, rectangle);
+            var result = RectangleAddons.IsRectanglesIntersect(rectangle, rectangle);
             
             Assert.AreEqual(true, result);
         }
@@ -82,7 +85,7 @@ namespace TagsCloudVisualization.Tests.Tests
             var firstRectangle = new Rectangle(new Point(100, 100), size);
             var secondRectangle = new Rectangle(new Point(300, 150), size);
 
-            var result = CircularCloudLayouter.IsRectanglesIntersect(firstRectangle, secondRectangle);
+            var result = RectangleAddons.IsRectanglesIntersect(firstRectangle, secondRectangle);
             
             Assert.AreEqual(false, result);
         }
@@ -95,7 +98,7 @@ namespace TagsCloudVisualization.Tests.Tests
             for (var i = 0; i < cloudLayouter.RectangleCount; i++)
                 for (var j = 0; j < i; j++)
                 {
-                    Assert.AreEqual(true, !CircularCloudLayouter
+                    Assert.AreEqual(true, !RectangleAddons
                         .IsRectanglesIntersect(cloudLayouter.Rectangles[i], cloudLayouter.Rectangles[j]));
                 }
         }
