@@ -31,7 +31,7 @@ namespace TagsCloudVisuallizationTests
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                var visualisator = new RectangleVisualisator(_rectangles, _center);
+                var visualisator = new RectangleVisualisator(_rectangles);
                 
                 visualisator.Paint();
                 visualisator.Save($"{TestContext.CurrentContext.Test.Name}.png");

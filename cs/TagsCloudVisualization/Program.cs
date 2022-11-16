@@ -8,11 +8,11 @@ namespace TagsCloudVisualization
     {
         public static void Main(string[] args)
         {
-            var center = new Point(200, 200);
+            var center = new Point(0, 0);
             var layouter = new CircularCloudLayouter(center);
             var rectangles = GenerateRectangles(50, layouter);
             
-            RectangleVisualisator visualisator = new RectangleVisualisator(rectangles, center);
+            RectangleVisualisator visualisator = new RectangleVisualisator(rectangles);
             visualisator.Paint();
             visualisator.Save("Rectangles.png");
         }

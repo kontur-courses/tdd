@@ -12,11 +12,9 @@ namespace TagsCloudVisualization
         private readonly Bitmap _bitmap;
         private readonly Size shiftToBitmapCenter;
         private readonly List<Rectangle> _rectangles;
-        private Point _center;
-        public RectangleVisualisator(List<Rectangle> rectangles, Point center)
+        public RectangleVisualisator(List<Rectangle> rectangles)
         {
             _rectangles = rectangles;
-            _center = center;
             _random = new Random();
             _bitmap = GenerateBitmap();
             shiftToBitmapCenter = new Size(_bitmap.Width / 2, _bitmap.Height / 2);
@@ -52,7 +50,7 @@ namespace TagsCloudVisualization
 
         private Rectangle CreateRectangleOnMap(Rectangle rectangle)
         {
-            return new Rectangle(rectangle.Location + shiftToBitmapCenter - (Size)_center, rectangle.Size);
+            return new Rectangle(rectangle.Location + shiftToBitmapCenter, rectangle.Size);
         }
         
         public void Save(string filename)
