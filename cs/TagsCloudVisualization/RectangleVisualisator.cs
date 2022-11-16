@@ -60,6 +60,7 @@ namespace TagsCloudVisualization
         public void Save(string filename)
         {
             _bitmap.Save(filename, ImageFormat.Png);
+            _bitmap.Dispose();
         }
     }
 }
