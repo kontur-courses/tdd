@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
-using TagsCloudVisualization.Distributions;
 
 namespace TagsCloudVisualization.Tests.Tests
 {
@@ -12,27 +12,27 @@ namespace TagsCloudVisualization.Tests.Tests
     {
         private readonly string projectDirectory 
             = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
-        
+
+        private List<Rectangle> rectangles;
         private CircularCloudLayouter cloudLayouter;
         private Point center;
-        private IDistribution distribution;
-        
+
         [SetUp]
-        public void Init()
+        public void SetUp()
         {
             center = new Point(500, 500);
-            distribution = new Spiral(center);
-            cloudLayouter = new CircularCloudLayouter(center, distribution);
+            rectangles = new List<Rectangle>();
+            cloudLayouter = new CircularCloudLayouter();
         }
         
         [Test]
-        public void PutNextRectangle_SuccessPath_ShouldAddRectangle()
+        public void GenerateCloud_SuccessPath_ShouldAddRectangle()
         {
             var rectangleSize = new Size(100, 100);
 
-            cloudLayouter.PutNextRectangle(rectangleSize);
+            cloudLayouter.PutNextRectangle(center, rectangles, rectangleSize);
             
-            Assert.AreEqual(1, cloudLayouter.RectangleCount);
+            Assert.AreEqual(1, rectangles.Count);
         }
         
         [Test]
@@ -40,76 +40,44 @@ namespace TagsCloudVisualization.Tests.Tests
         {
             var rectangleSize = new Size(100, 100);
 
-            cloudLayouter.PutNextRectangle(rectangleSize);
+            cloudLayouter.PutNextRectangle(center, rectangles, rectangleSize);
             
-            Assert.AreEqual(center.X - rectangleSize.Width / 2, cloudLayouter.Rectangles[^1].X);
-            Assert.AreEqual(center.Y - rectangleSize.Height / 2, cloudLayouter.Rectangles[^1].Y);
+            Assert.AreEqual(center.X - rectangleSize.Width / 2, rectangles[^1].X);
+            Assert.AreEqual(center.Y - rectangleSize.Height / 2, rectangles[^1].Y);
         }
         
         [Test]
-        public void GenerateRandomCloud_SuccessPath_ShouldReturnAmountRectanglesAdded()
+        public void GenerateCloud_SuccessPath_ShouldReturnRectangles()
         {
             var amount = 100;
+            var listSize = TagCloudHelper.GenerateRandomListSize(amount);
             
-            cloudLayouter.GenerateRandomCloud(amount);
+            rectangles = cloudLayouter.GenerateCloud(center, listSize);
             
-            Assert.AreEqual(amount, cloudLayouter.RectangleCount);
-        }
-
-        [Test]
-        public void IsRectanglesIntersect_WithIntersectingRectangles_ShouldReturnTrue()
-        {
-            var size = new Size(100, 100);
-            var firstRectangle = new Rectangle(new Point(100, 100), size);
-            var secondRectangle = new Rectangle(new Point(150, 150), size);
-
-            var result = RectangleAddons.IsRectanglesIntersect(firstRectangle, secondRectangle);
-            
-            Assert.AreEqual(true, result);
-        }
-        
-        [Test]
-        public void IsRectanglesIntersect_WithSameRectanglePosition_ShouldReturnTrue()
-        {
-            var rectangle = new Rectangle(new Point(100, 100), new Size(100, 100));
-
-            var result = RectangleAddons.IsRectanglesIntersect(rectangle, rectangle);
-            
-            Assert.AreEqual(true, result);
-        }
-        
-        [Test]
-        public void IsRectanglesIntersect_WithNotIntersectingRectangles_ShouldReturnFalse()
-        {
-            var size = new Size(100, 100);
-            var firstRectangle = new Rectangle(new Point(100, 100), size);
-            var secondRectangle = new Rectangle(new Point(300, 150), size);
-
-            var result = RectangleAddons.IsRectanglesIntersect(firstRectangle, secondRectangle);
-            
-            Assert.AreEqual(false, result);
+            Assert.AreEqual(amount, rectangles.Count);
         }
 
         [Test]
         public void IsRectanglesIntersect_AllRectanglesNotIntersect_ShouldReturnTrue()
         {
-            cloudLayouter.GenerateRandomCloud(50);
+            rectangles = cloudLayouter
+                .GenerateCloud(center, TagCloudHelper.GenerateRandomListSize(50));
 
-            for (var i = 0; i < cloudLayouter.RectangleCount; i++)
+            for (var i = 1; i < rectangles.Count; i++)
                 for (var j = 0; j < i; j++)
-                {
-                    Assert.AreEqual(true, !RectangleAddons
-                        .IsRectanglesIntersect(cloudLayouter.Rectangles[i], cloudLayouter.Rectangles[j]));
-                }
+                    Assert.AreEqual(true, !rectangles[i].IntersectsWith(rectangles[j]));
         }
 
         [TearDown]
-        public void CleanUp()
+        public void TearDown()
         {
-            if (TestContext.CurrentContext.Result.Outcome == ResultState.Failure && cloudLayouter.RectangleCount != 0)
+            if (TestContext.CurrentContext.Result.Outcome == ResultState.Failure)
             {
                 var path = string.Concat(projectDirectory, $"\\FailureImages\\{TestContext.CurrentContext.Test.Name}.png");
-                cloudLayouter.DrawCircularCloud(1000, 1000, false, path);
+                var bitmap = TagCloudHelper.DrawTagCloud(rectangles, 1000, 1000);
+                
+                bitmap.Save(path);
+                
                 Console.Error.WriteLine($"Tag cloud visualization saved to file {path}");
             }
         }

@@ -1,53 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using TagsCloudVisualization.Distributions;
+using System.Linq;
 
 namespace TagsCloudVisualization
 {
-    public partial class CircularCloudLayouter
+    public class CircularCloudLayouter : ICloudLayouter
     {
-        public int RectangleCount => Rectangles.Count;
-        public List<Rectangle> Rectangles { get; }
-
-        private readonly Point center;
-        private readonly List<Point> distributionPoints;
-        private IDistribution distribution;
-
-        public CircularCloudLayouter(Point center, IDistribution distribution)
+        public Rectangle PutNextRectangle(Point center, List<Rectangle> rectangles, Size nextRectangleSize)
         {
-            this.center = center;
-            this.distribution = distribution;
+            Rectangle nextRectangle = default;
+            var shiftX = -nextRectangleSize.Width / 2;
+            var shiftY = -nextRectangleSize.Height / 2;
+
+            if (rectangles.Count == 0)
+                nextRectangle = new Rectangle(new Point(center.X + shiftX, center.Y + shiftY), nextRectangleSize);
+            else
+            {
+                foreach (var nextRectanglePosition in GetNextRectanglePosition(center))
+                {
+                    if (rectangles.Any(rectangle =>
+                            rectangle.IntersectsWith(new Rectangle(nextRectanglePosition, nextRectangleSize)))) 
+                        continue;
+                
+                    nextRectangle = new Rectangle(nextRectanglePosition, nextRectangleSize);
+                    break;
+                }
+            }
             
-            Rectangles = new List<Rectangle>();
-            distributionPoints = new List<Point>();
+            rectangles.Add(nextRectangle);
+
+            return nextRectangle;
         }
 
-        public Rectangle PutNextRectangle(Size rectangleSize)
+        public List<Rectangle> GenerateCloud(Point center, List<Size> rectangleSizes)
         {
-            var rectangle = new Rectangle(GetNextRectanglePosition(rectangleSize), rectangleSize);
+            var rectangles = new List<Rectangle>();
             
-            Rectangles.Add(rectangle);
+            foreach (var rectangleSize in rectangleSizes)
+                PutNextRectangle(center, rectangles, rectangleSize);
 
-            return rectangle;
+            return rectangles;
         }
 
-        public void GenerateRandomCloud(int amountRectangles)
+        private static IEnumerable<Point> GetNextRectanglePosition(
+            Point startPoint, float shiftAngle = 0.1f, float shiftX = 5.0f, float shiftY = 2.5f)
         {
-            var rnd = new Random();
-            for (var i = 0; i < amountRectangles; i++)
-                PutNextRectangle(new Size(rnd.Next(60, 120), rnd.Next(25, 60)));
-        }
-        
-        public void DrawCircularCloud(int imageWidth, int imageHeight, bool needDrawDistribution = false, 
-            string path = null)
-        {
-            var imageCreator = new ImageCreator(imageWidth, imageHeight);
+            var angle = 0.0f;
+            
+            while (true)
+            {
+                angle += shiftAngle;
+                var x = startPoint.X + shiftX * angle * Math.Cos(angle);
+                var y = startPoint.Y + shiftY * angle * Math.Sin(angle);
 
-            if (needDrawDistribution)
-                imageCreator.DrawLines(distributionPoints);
-            imageCreator.DrawRectangles(Rectangles);
-            imageCreator.SaveImage(path);
+                yield return new Point((int)x, (int)y);
+            }
         }
     }
 }
