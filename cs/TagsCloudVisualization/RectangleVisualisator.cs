@@ -24,7 +24,7 @@ namespace TagsCloudVisualization
             shiftToBitmapCenter = new Size(_bitmap.Width / 2, _bitmap.Height / 2);
         }
 
-        public Bitmap GenerateBitmap()
+        private Bitmap GenerateBitmap()
         {
             var width = _layouter.Rectangles.Max(rectangle => rectangle.Right) - 
                         _layouter.Rectangles.Min(rectangle => rectangle.Left);
