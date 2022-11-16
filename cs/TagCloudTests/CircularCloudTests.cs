@@ -16,7 +16,7 @@ namespace TagCloudTests
         private CircularCloudLayouter layouter;
 
         [SetUp]
-        public void SetUP()
+        public void SetUp()
         {
             _center = new(1920 / 2, 1080 / 2);
             layouter = new CircularCloudLayouter(_center);
@@ -27,7 +27,6 @@ namespace TagCloudTests
         {
             if (TestContext.CurrentContext.Result.Outcome == ResultState.Failure)
             {
-                var random = new Random();
                 var directory = Path.Join(Environment.CurrentDirectory, "TestFailures");
                 var fileName = TestContext.CurrentContext.Test.Name;
                 var path = Program.GenerateImage(layouter, directory, fileName);
@@ -42,7 +41,7 @@ namespace TagCloudTests
         [Test]
         public void CircularCloudLayouter_HaveNoOneRectangle_whenLayouterCreate()
         {
-            layouter.rectangles.Count.Should().Be(0);
+            layouter.Rectagles.Count.Should().Be(0);
         }
 
         [Test]
@@ -60,7 +59,7 @@ namespace TagCloudTests
         public void CircularCloudLayouter_HaveOneRectangle_whenPutSingleRectangle()
         {
             layouter.PutNextRectangle(new Size(20, 10));
-            layouter.rectangles.Count.Should().Be(1);
+            layouter.Rectagles.Count.Should().Be(1);
         }
 
         [Test]
@@ -72,12 +71,12 @@ namespace TagCloudTests
                 layouter.PutNextRectangle(size);
             }
 
-            layouter.rectangles.Count.Should().Be(10);
+            layouter.Rectagles.Count.Should().Be(10);
         }
 
-        [TestCase(1920 / 2, 1080 / 2, TestName = "{m}_when(X,Y)IsPositive")]
-        [TestCase(0, 0, TestName = "{m}_(X,Y)IsZero")]
-        [TestCase(-1920 / 2, -1080 / 2, TestName = "{m}_when(X,Y)IsNegative")]
+        [TestCase(1920 / 2, 1080 / 2, TestName = "{m}_when(X=960,Y=540)")]
+        [TestCase(0, 0, TestName = "{m}_(X=0,Y=0)")]
+        [TestCase(-1920 / 2, -1080 / 2, TestName = "{m}_when(X=-960,Y=-540)")]
         public void CircularCloudLayouter_Constructor_ShouldNotThrow(int x, int y)
         {
             var point = new Point(x, y);

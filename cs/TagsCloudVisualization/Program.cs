@@ -41,7 +41,7 @@ namespace TagsCloudVisualization
             {
                 graphic.Clear(Color.DimGray);
 
-                foreach (var rectangle in layouter.rectangles)
+                foreach (var rectangle in layouter.Rectagles)
                 {
                     var red = random.Next(256);
                     var green = random.Next(256);

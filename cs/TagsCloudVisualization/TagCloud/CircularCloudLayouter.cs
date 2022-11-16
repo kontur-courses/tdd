@@ -9,7 +9,8 @@ namespace TagsCloudVisualization.TagCloud
     public class CircularCloudLayouter
     {
         private readonly Point center;
-        public List<Rectangle> rectangles { get; private set; }
+        private readonly List<Rectangle> rectangles;
+        public IReadOnlyList<Rectangle> Rectagles => rectangles.AsReadOnly();
 
         public CircularCloudLayouter(Point center)
         {

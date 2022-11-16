@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using TagsCloudVisualization.TagCloud;
 
@@ -39,19 +40,21 @@ namespace TagCloudTests
         [Test]
         public void Spiral_GetNextPoint_OnCorrectInput()
         {
-            var expectedPoint1 = new Point(960, 540);
-            var expectedPoint2 = new Point(961, 542);
-            var expectedPoint3 = new Point(958, 544);
-            var expectedPoint4 = new Point(954, 541);
-            var expectedPoint5 = new Point(955, 534);
+            var expectedPoints = new List<Point>
+            {
+                new Point(960, 540),
+                new Point(961, 542),
+                new Point(958, 544),
+                new Point(954, 541),
+                new Point(955, 534)
+            };
 
             spiral = new Spiral(Center, 1, 2);
 
-            spiral.GetNextPoint().Should().BeEquivalentTo(expectedPoint1);
-            spiral.GetNextPoint().Should().BeEquivalentTo(expectedPoint2);
-            spiral.GetNextPoint().Should().BeEquivalentTo(expectedPoint3);
-            spiral.GetNextPoint().Should().BeEquivalentTo(expectedPoint4);
-            spiral.GetNextPoint().Should().BeEquivalentTo(expectedPoint5);
+            foreach (var expectedPoint in expectedPoints)
+            {
+                spiral.GetNextPoint().Should().Be(expectedPoint);
+            }
         }
     }
 }
