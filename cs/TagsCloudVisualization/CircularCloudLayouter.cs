@@ -28,7 +28,7 @@ namespace TagsCloudVisualization
             do
             {
                 rectangle = new Rectangle(_spiral.NextPoint(), rectangleSize);
-            } while (IsIntersects(rectangle));
+            } while (rectangle.IsIntersects(_rectangles));
 
             rectangle = MoveRectangleToCenter(rectangle);
             
@@ -48,7 +48,7 @@ namespace TagsCloudVisualization
         private Rectangle MoveRectangle(Rectangle newRectangle, int x, int y)
         {
             var shift = new Size(x, y);
-            while (!IsIntersects(newRectangle)&&
+            while (!newRectangle.IsIntersects(_rectangles)&&
                    newRectangle.GetCenter().X != _center.X &&
                    newRectangle.GetCenter().Y != _center.Y)
                 newRectangle.Location += shift;
@@ -57,15 +57,5 @@ namespace TagsCloudVisualization
             return newRectangle;
         }
 
-        private bool IsIntersects(Rectangle newRectangle)
-        {
-            foreach (var rectangle in Rectangles)
-            {
-                if (rectangle.IntersectsWith(newRectangle))
-                    return true;
-            }
-
-            return false;
-        }
     }
 }

@@ -41,6 +41,26 @@ namespace TagsCloudVisuallizationTests
              Action action = () => _layouter.PutNextRectangle(new Size(sizeX, sizeY));
              action.Should().Throw<ArgumentException>().WithMessage("The size must not be equal to or less than 0");
         }
+        
+        [TestCase(10)]
+        [TestCase(20)]
+        [TestCase(50)]
+        [TestCase(100)]
+        public void PutNextRectangle_ShouldNotIntersects(int amount)
+        {
+            var isIntersects = false;
+            
+            var rectangles = new List<Rectangle>();
+            for (int i = 0; i < amount; i++)
+            {
+                var size = new Size(_random.Next() % 255 + 1, _random.Next() % 255 + 1);
+                var rectangle = _layouter.PutNextRectangle(size);
+                if (rectangle.IsIntersects(rectangles))
+                    isIntersects = true;
+                rectangles.Add(rectangle);
+            }
+            isIntersects.Should().BeFalse();
+        }
 
         [TestCase(10)]
         [TestCase(20)]

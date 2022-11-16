@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 
 namespace TagsCloudVisualization
 {
@@ -13,6 +14,17 @@ namespace TagsCloudVisualization
         public static int GetArea(this Rectangle rectangle)
         {
             return rectangle.Width * rectangle.Height;
+        }
+        
+        public static bool IsIntersects(this Rectangle newRectangle, List<Rectangle> rectangles)
+        {
+            foreach (var rectangle in rectangles)
+            {
+                if (rectangle.IntersectsWith(newRectangle))
+                    return true;
+            }
+
+            return false;
         }
     }
 }
