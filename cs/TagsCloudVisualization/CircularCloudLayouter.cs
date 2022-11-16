@@ -7,30 +7,20 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter : ICloudLayouter
     {
-        public Rectangle PutNextRectangle(Point center, List<Rectangle> rectangles, Size nextRectangleSize)
+        public Rectangle GetNextRectangle(Point center, List<Rectangle> rectangles, Size nextRectangleSize)
         {
-            Rectangle nextRectangle = default;
             var shiftX = -nextRectangleSize.Width / 2;
             var shiftY = -nextRectangleSize.Height / 2;
 
             if (rectangles.Count == 0)
-                nextRectangle = new Rectangle(new Point(center.X + shiftX, center.Y + shiftY), nextRectangleSize);
-            else
-            {
-                foreach (var nextRectanglePosition in GetNextRectanglePosition(center))
-                {
-                    if (rectangles.Any(rectangle =>
-                            rectangle.IntersectsWith(new Rectangle(nextRectanglePosition, nextRectangleSize)))) 
-                        continue;
-                
-                    nextRectangle = new Rectangle(nextRectanglePosition, nextRectangleSize);
-                    break;
-                }
-            }
-            
-            rectangles.Add(nextRectangle);
+                return new Rectangle(new Point(center.X + shiftX, center.Y + shiftY), nextRectangleSize);
 
-            return nextRectangle;
+            return new Rectangle(GetNextRectanglePosition(center)
+                .First(position =>
+                {
+                    return rectangles.All(rectangle =>
+                        !rectangle.IntersectsWith(new Rectangle(position, nextRectangleSize)));
+                }), nextRectangleSize);
         }
 
         public List<Rectangle> GenerateCloud(Point center, List<Size> rectangleSizes)
@@ -38,7 +28,7 @@ namespace TagsCloudVisualization
             var rectangles = new List<Rectangle>();
             
             foreach (var rectangleSize in rectangleSizes)
-                PutNextRectangle(center, rectangles, rectangleSize);
+                rectangles.Add(GetNextRectangle(center, rectangles, rectangleSize));
 
             return rectangles;
         }

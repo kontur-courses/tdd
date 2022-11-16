@@ -17,7 +17,7 @@ namespace TagsCloudVisualization
             var rectangles = cloudLayouter.GenerateCloud(center, listSize);
             var bitmap = TagCloudHelper.DrawTagCloud(rectangles, 1500, 1500);
             
-            bitmap.Save(string.Concat(ProjectDirectory, @"\Images\img.png"));
+            bitmap.Save(string.Concat(ProjectDirectory, @"\Images\cloud.png"));
         }
     }
 }

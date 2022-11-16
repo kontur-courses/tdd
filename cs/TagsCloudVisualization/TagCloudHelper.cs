@@ -17,13 +17,14 @@ namespace TagsCloudVisualization
             return bitmap;
         }
 
-        public static List<Size> GenerateRandomListSize(int amount)
+        public static List<Size> GenerateRandomListSize(
+            int amount, int minWidth = 20, int maxWidth = 150, int minHeight = 20, int maxHeight = 100)
         {
             var rnd = new Random();
             var listSize = new List<Size>();
             
             for (var i = 0; i < amount; i++)
-                listSize.Add(new Size(rnd.Next(60, 100), rnd.Next(30, 85)));
+                listSize.Add(new Size(rnd.Next(minWidth, maxWidth), rnd.Next(minHeight, maxHeight)));
 
             return listSize;
         }
