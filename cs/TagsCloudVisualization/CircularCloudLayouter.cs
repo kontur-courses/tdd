@@ -9,13 +9,11 @@ namespace TagsCloudVisualization
         private Spiral _spiral;
         private List<Rectangle> _rectangles;
         private Point _center;
-
-        public IReadOnlyList<Rectangle> Rectangles => _rectangles;
-
-        public CircularCloudLayouter(double step = 10)
+        
+        public CircularCloudLayouter(Point center)
         {
-            _center = new Point(0, 0);
-            _spiral = new Spiral(_center, step);
+            _center = center;
+            _spiral = new Spiral(center, 2);
             _rectangles = new List<Rectangle>();
         }
 

@@ -12,14 +12,18 @@ namespace TagsCloudVisuallizationTests
     [TestFixture]
     public class CircularCloudLayouterTest
     {
+        private Point _center;
         private CircularCloudLayouter _layouter;
         private Random _random;
-
+        private List<Rectangle> _rectangles;
+        
         [SetUp]
         public void SetUp()
         {
-            _layouter = new CircularCloudLayouter(2);
+            _center = new Point(200, 200);
+            _layouter = new CircularCloudLayouter(_center);
             _random = new Random();
+            _rectangles = new List<Rectangle>();
         }
         
         [TearDown]
@@ -27,7 +31,7 @@ namespace TagsCloudVisuallizationTests
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                var visualisator = new RectangleVisualisator(_layouter);
+                var visualisator = new RectangleVisualisator(_rectangles, _center);
                 
                 visualisator.Paint();
                 visualisator.Save($"{TestContext.CurrentContext.Test.Name}.png");
@@ -69,17 +73,12 @@ namespace TagsCloudVisuallizationTests
         public void PlacedRectangles_ShouldFillEllipseBy70Percent(int amount)
         {
             var center = new Point(200, 200);
-            var rectangles = new List<Rectangle>();
-            for (int i = 0; i < amount; i++)
-            {
-                var size = new Size(_random.Next() % 255 + 1, _random.Next() % 255 + 1);
-                rectangles.Add(_layouter.PutNextRectangle(size));
-            }
+            GenerateRectangles(amount);
 
-            var yDiameter = rectangles.Max(x => x.Bottom) - rectangles.Min(x => x.Top);
-            var xDiameter = rectangles.Max(x => x.Right) - rectangles.Min(x => x.Left);
+            var yDiameter = _rectangles.Max(x => x.Bottom) - _rectangles.Min(x => x.Top);
+            var xDiameter = _rectangles.Max(x => x.Right) - _rectangles.Min(x => x.Left);
             
-            var filledArea = rectangles.Sum(x => x.GetArea());
+            var filledArea = _rectangles.Sum(x => x.GetArea());
 
             var ellipseArea = Math.PI * yDiameter * xDiameter / 4;
 
@@ -87,6 +86,18 @@ namespace TagsCloudVisuallizationTests
             
             //Чаще всего значения в районе 65 - 70
             (filledPercent).Should().BeGreaterThanOrEqualTo(70);
+        }
+        
+        private void GenerateRectangles(int amount)
+        {
+            if (amount <= 0)
+                throw new ArgumentException();
+
+            for (int i = 0; i < amount; i++)
+            {
+                var size = new Size(_random.Next() % 255 + 1, _random.Next() % 255 + 1);
+                _rectangles.Add(_layouter.PutNextRectangle(size));
+            }
         }
     }
 }

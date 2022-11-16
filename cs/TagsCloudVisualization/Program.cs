@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace TagsCloudVisualization
@@ -7,22 +8,29 @@ namespace TagsCloudVisualization
     {
         public static void Main(string[] args)
         {
-            var layouter = new CircularCloudLayouter();
-            GenerateRectangles(50, layouter);
+            var center = new Point(200, 200);
+            var layouter = new CircularCloudLayouter(center);
+            var rectangles = GenerateRectangles(50, layouter);
             
-            RectangleVisualisator visualisator = new RectangleVisualisator(layouter);
+            RectangleVisualisator visualisator = new RectangleVisualisator(rectangles, center);
             visualisator.Paint();
             visualisator.Save("Rectangles.png");
         }
 
-        public static void GenerateRectangles(int amount, CircularCloudLayouter layouter)
+        public static List<Rectangle> GenerateRectangles(int amount, CircularCloudLayouter layouter)
         {
             if (amount <= 0)
                 throw new ArgumentException();
+
+            var random = new Random(1);
+            List<Rectangle> rectangles = new List<Rectangle>(); 
             for (int i = 0; i < amount; i++)
             {
-                layouter.PutNextRectangle(new Size(amount - i, amount - i));
+                var size = new Size(random.Next() % 255 + 1, random.Next() % 255 + 1);
+                rectangles.Add(layouter.PutNextRectangle(size));
             }
+
+            return rectangles;
         }
     }
 }
