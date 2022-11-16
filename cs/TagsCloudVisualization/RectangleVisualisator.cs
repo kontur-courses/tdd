@@ -9,7 +9,7 @@ namespace TagsCloudVisualization
     public class RectangleVisualisator
     {
         private readonly Random _random;
-        private readonly Bitmap _bitmap;
+        private Bitmap _bitmap;
         private readonly Size shiftToBitmapCenter;
         private readonly List<Rectangle> _rectangles;
         public RectangleVisualisator(List<Rectangle> rectangles)
@@ -33,19 +33,15 @@ namespace TagsCloudVisualization
 
         public void Paint()
         {
-            Graphics graphics = Graphics.FromImage(_bitmap);
+            using var graphics = Graphics.FromImage(_bitmap);
             graphics.Clear(Color.DimGray);
-            Pen pen = new Pen(Color.Red);
 
             foreach (var rectangle in _rectangles)
             {
+                using var pen = new Pen(Color.FromArgb(_random.Next() % 255, _random.Next() % 255, _random.Next() % 255));
                 var rectangleOnMap = CreateRectangleOnMap(rectangle);
                 graphics.DrawRectangle(pen, rectangleOnMap);
-                pen = new Pen(Color.FromArgb(_random.Next() % 255, _random.Next() % 255, _random.Next() % 255));
             }
-            
-            pen.Dispose();
-            graphics.Dispose();
         }
 
         private Rectangle CreateRectangleOnMap(Rectangle rectangle)
@@ -53,10 +49,9 @@ namespace TagsCloudVisualization
             return new Rectangle(rectangle.Location + shiftToBitmapCenter, rectangle.Size);
         }
         
-        public void Save(string filename)
+        public void Save(string filename, ImageFormat format)
         {
-            _bitmap.Save(filename, ImageFormat.Png);
-            _bitmap.Dispose();
+            _bitmap.Save($"{filename}.{format.ToString()}", format);
         }
     }
 }

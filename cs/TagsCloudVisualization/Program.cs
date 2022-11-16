@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace TagsCloudVisualization
 {
@@ -14,7 +15,7 @@ namespace TagsCloudVisualization
             
             RectangleVisualisator visualisator = new RectangleVisualisator(rectangles);
             visualisator.Paint();
-            visualisator.Save("Rectangles.png");
+            visualisator.Save("Rectangles", ImageFormat.Png);
         }
 
         public static List<Rectangle> GenerateRectangles(int amount, CircularCloudLayouter layouter)
@@ -26,7 +27,7 @@ namespace TagsCloudVisualization
             List<Rectangle> rectangles = new List<Rectangle>(); 
             for (int i = 0; i < amount; i++)
             {
-                var size = new Size(random.Next() % 255 + 1, random.Next() % 255 + 1);
+                var size = new Size(random.Next() % 80 + 40, random.Next() % 20 + 20);
                 rectangles.Add(layouter.PutNextRectangle(size));
             }
 

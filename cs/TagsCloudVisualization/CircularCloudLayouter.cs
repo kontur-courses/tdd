@@ -39,19 +39,41 @@ namespace TagsCloudVisualization
         {
             var shiftX = newRectangle.GetCenter().X < _center.X ? 1 : -1;
             var shiftY = newRectangle.GetCenter().Y < _center.Y ? 1 : -1;
-            newRectangle = MoveRectangle(newRectangle, shiftX, shiftY);
-            return newRectangle;
-        }
-        
-        private Rectangle MoveRectangle(Rectangle newRectangle, int x, int y)
-        {
-            var shift = new Size(x, y);
-            while (!newRectangle.IsIntersects(_rectangles))
-                newRectangle.Location += shift;
+            var isIntersectsByX = false;
+            var isIntersectsByY = false;
+            while (!isIntersectsByX && !isIntersectsByY)
+            {
+                shiftX = newRectangle.GetCenter().X < _center.X ? 1 : -1;
+                newRectangle = TryMoveRectangleX(newRectangle, shiftX, ref isIntersectsByX);
+                shiftY = newRectangle.GetCenter().Y < _center.Y ? 1 : -1;
+                newRectangle = TryMoveRectangleY(newRectangle, shiftY, ref isIntersectsByY);
+            };
             
-            newRectangle.Location -= new Size(shift.Width, shift.Height);
             return newRectangle;
         }
 
+        private Rectangle TryMoveRectangleX(Rectangle newRectangle, int x, ref bool isIntersectsByX)
+        {
+            var shift = new Size(x, 0);
+            newRectangle.Location += shift;
+            if (newRectangle.IsIntersects(_rectangles))
+            {
+                isIntersectsByX = true;
+                newRectangle.Location -= shift;
+            }
+            return newRectangle;
+        }
+        
+        private Rectangle TryMoveRectangleY(Rectangle newRectangle, int y, ref bool isIntersectsByY)
+        {
+            var shift = new Size(0, y);
+            newRectangle.Location += shift;
+            if (newRectangle.IsIntersects(_rectangles))
+            {
+                isIntersectsByY = true;
+                newRectangle.Location -= shift;
+            }
+            return newRectangle;
+        }
     }
 }
