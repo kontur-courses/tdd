@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
+using System.Linq;
 
 namespace TagsCloudVisuallizationTests
 {
@@ -11,11 +13,13 @@ namespace TagsCloudVisuallizationTests
     public class CircularCloudLayouterTest
     {
         private CircularCloudLayouter _layouter;
-        
+        private Random _random;
+
         [SetUp]
         public void SetUp()
         {
-            _layouter = new CircularCloudLayouter();
+            _layouter = new CircularCloudLayouter(2);
+            _random = new Random();
         }
         
         [TearDown]
@@ -38,26 +42,31 @@ namespace TagsCloudVisuallizationTests
              action.Should().Throw<ArgumentException>().WithMessage("The size must not be equal to or less than 0");
         }
 
-        [TestCase(1, 1)]
-        [TestCase(5, 5)]
-        [TestCase(10, 10)]
-        [TestCase(50, 50)]
-        [TestCase(25, 25)]
-        public void PutNextRectangle_ShouldNotIntersects(int sizeX, int sizeY)
+        [TestCase(10)]
+        [TestCase(20)]
+        [TestCase(50)]
+        [TestCase(100)]
+        public void PlacedRectangles_ShouldFillEllipseBy70Percent(int amount)
         {
-            for (int i = 0; i < 10; i++)
-                _layouter.PutNextRectangle(new Size(sizeX, sizeY));
-
-            Rectangle exampleRectangle = _layouter.PutNextRectangle(new Size(sizeX, sizeY));
-            var isIntersects = false;
-            foreach (var rectangle in _layouter.Rectangles)
+            var center = new Point(200, 200);
+            var rectangles = new List<Rectangle>();
+            for (int i = 0; i < amount; i++)
             {
-                if(exampleRectangle == rectangle)
-                    continue;
-                if (rectangle.IntersectsWith(exampleRectangle))
-                    isIntersects = true;
+                var size = new Size(_random.Next() % 255 + 1, _random.Next() % 255 + 1);
+                rectangles.Add(_layouter.PutNextRectangle(size));
             }
-            isIntersects.Should().BeFalse();
+
+            var yDiameter = rectangles.Max(x => x.Bottom) - rectangles.Min(x => x.Top);
+            var xDiameter = rectangles.Max(x => x.Right) - rectangles.Min(x => x.Left);
+            
+            var filledArea = rectangles.Sum(x => x.GetArea());
+
+            var ellipseArea = Math.PI * yDiameter * xDiameter / 4;
+
+            var filledPercent = Convert.ToInt32((filledArea / ellipseArea) * 100);
+            
+            //Чаще всего значения в районе 65 - 70
+            (filledPercent).Should().BeGreaterThanOrEqualTo(70);
         }
     }
 }

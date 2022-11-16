@@ -9,5 +9,10 @@ namespace TagsCloudVisualization
             var startPoint = rectangle.Location;
             return new Point(startPoint.X + rectangle.Width / 2, startPoint.Y + rectangle.Height / 2);
         }
+
+        public static int GetArea(this Rectangle rectangle)
+        {
+            return rectangle.Width * rectangle.Height;
+        }
     }
 }
