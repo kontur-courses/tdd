@@ -12,7 +12,7 @@ namespace TagsCloudVisualization
             foreach (var size in rectangleSizes)
                 layouter.PutNextRectangle(size);
 
-            var visualizer = LayoutVisualizer.FromCircularCloudLayouter(layouter);
+            var visualizer = new LayoutVisualizer(layouter.Rectangles);
             var visualizationPath = args[0];
             visualizer.SaveAs(visualizationPath);
         }
