@@ -44,7 +44,7 @@ namespace TagsCloudVisualization
             var startAngleOfSpiral = rectangles.Count;
 
             foreach (var rectangleCenter in
-                Center.ScatterPointsBySpiralAround(rectangleScale, startAngleOfSpiral))
+                SpiralPointScatterer.Scatter(Center, rectangleScale, startAngleOfSpiral))
             {
                 var rectangle = RectangleExtensions.NewRectangle(rectangleCenter.ToPoint(), rectangleSize);
                 if (IntersectsWithExistingRectangles(rectangle))
