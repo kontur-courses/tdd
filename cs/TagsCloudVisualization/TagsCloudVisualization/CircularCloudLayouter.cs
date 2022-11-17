@@ -15,8 +15,9 @@ namespace TagsCloudVisualization
             rectangles = new List<Rectangle>();
         }
 
-        public IReadOnlyList<Rectangle> Rectangles => rectangles;
         public Point Center { get; }
+
+        public IReadOnlyList<Rectangle> Rectangles => rectangles;
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {

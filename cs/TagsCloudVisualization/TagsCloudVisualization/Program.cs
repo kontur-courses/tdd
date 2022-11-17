@@ -8,7 +8,7 @@ namespace TagsCloudVisualization
         {
             var rectangleSizes = RectangleSizeProvider.GetRandomSizes(888, 500, 100);
 
-            var layouter = new CircularCloudLayouter(new Point(0, 0));
+            IRectangleLayouter layouter = new CircularCloudLayouter(new Point(0, 0));
             foreach (var size in rectangleSizes)
                 layouter.PutNextRectangle(size);
 
