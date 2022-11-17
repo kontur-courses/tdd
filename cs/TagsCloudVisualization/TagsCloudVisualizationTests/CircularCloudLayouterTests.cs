@@ -14,6 +14,8 @@ namespace TagsCloudVisualizationTests
     {
         private static CircularCloudLayouter layouterUnderTesting;
 
+        private static readonly Point Center = new(0, 0);
+
         private static IEnumerable<TestCaseData> DensityTestData =>
             new[]
             {
@@ -46,7 +48,7 @@ namespace TagsCloudVisualizationTests
         {
             var size = new Size(width, height);
 
-            var layouter = new CircularCloudLayouter(new Point(0, 0));
+            var layouter = new CircularCloudLayouter(Center);
             Action act = () => layouter.PutNextRectangle(size);
 
             act.Should().Throw<ArgumentOutOfRangeException>();
@@ -57,7 +59,7 @@ namespace TagsCloudVisualizationTests
         {
             var size = new Size(123, 456);
 
-            layouterUnderTesting = new CircularCloudLayouter(new Point(0, 0));
+            layouterUnderTesting = new CircularCloudLayouter(Center);
             var rectangle = layouterUnderTesting.PutNextRectangle(size);
 
             rectangle.Size.Should().BeEquivalentTo(size);
@@ -69,7 +71,7 @@ namespace TagsCloudVisualizationTests
             var rectanglesCount = 1000;
             var sizes = RectangleSizeProvider.GetRandomSizes(1000, rectanglesCount, 1000);
 
-            layouterUnderTesting = new CircularCloudLayouter(new Point(0, 0));
+            layouterUnderTesting = new CircularCloudLayouter(Center);
             foreach (var size in sizes)
                 layouterUnderTesting.PutNextRectangle(size);
 
@@ -83,9 +85,7 @@ namespace TagsCloudVisualizationTests
         [TestCaseSource(nameof(DensityTestData))]
         public void Layouter_LaysOutDenserThanThreshold(double desiredDensity, IEnumerable<Size> sizes)
         {
-            var center = new Point(0, 0);
-
-            layouterUnderTesting = new CircularCloudLayouter(center);
+            layouterUnderTesting = new CircularCloudLayouter(Center);
             foreach (var size in sizes)
                 layouterUnderTesting.PutNextRectangle(size);
             var radius = layouterUnderTesting.GetCoveringCircleRadius();
