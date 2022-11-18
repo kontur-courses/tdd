@@ -102,13 +102,19 @@ namespace TagsCloudVisualizationTests
             var currentContext = TestContext.CurrentContext;
 
             if (currentContext.Result.Outcome.Status is TestStatus.Failed)
-            {
-                var visualizer = new LayoutVisualizer(layouterUnderTesting.Rectangles);
-                var fileName = Path.ChangeExtension(currentContext.Test.Name, "png");
-                var visualizationPath = Path.Join(currentContext.WorkDirectory, fileName);
-                visualizer.SaveAs(visualizationPath);
-                Console.WriteLine($"Tag cloud visualization saved to file \"{visualizationPath}\"");
-            }
+                try
+                {
+                    var visualizer = new LayoutVisualizer(layouterUnderTesting.Rectangles);
+                    var fileName = Path.ChangeExtension(currentContext.Test.Name, "png");
+                    var visualizationPath = Path.Join(currentContext.WorkDirectory, fileName);
+                    visualizer.SaveAs(visualizationPath);
+                    Console.WriteLine($"Tag cloud visualization saved to file \"{visualizationPath}\"");
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Could not visualize the layout because an exception occured.");
+                    throw;
+                }
         }
     }
 }
