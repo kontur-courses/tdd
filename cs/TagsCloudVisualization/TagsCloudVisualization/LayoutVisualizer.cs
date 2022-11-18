@@ -22,7 +22,7 @@ namespace TagsCloudVisualization
                 coveringRectangle.Width + 2 * this.marginSize,
                 coveringRectangle.Height + 2 * this.marginSize);
             graphics = Graphics.FromImage(canvas);
-            graphics.TranslateTransform(topLeftCorner.X + this.marginSize, topLeftCorner.Y + this.marginSize);
+            graphics.TranslateTransform(this.marginSize - topLeftCorner.X, this.marginSize - topLeftCorner.Y);
             pen = new Pen(color);
             graphics.DrawRectangles(pen, layout.ToArray());
         }
@@ -39,7 +39,7 @@ namespace TagsCloudVisualization
                 minX = Math.Min(minX, rectangle.Left);
                 minY = Math.Min(minY, rectangle.Top);
                 maxX = Math.Max(maxX, rectangle.Right);
-                maxY = Math.Min(maxY, rectangle.Bottom);
+                maxY = Math.Max(maxY, rectangle.Bottom);
             }
 
             return new Rectangle(minX, minY, maxX - minX, maxY - minY);
