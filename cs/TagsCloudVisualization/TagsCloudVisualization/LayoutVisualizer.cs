@@ -15,6 +15,9 @@ namespace TagsCloudVisualization
 
         public LayoutVisualizer(IReadOnlyCollection<Rectangle> layout, int marginSize = 50)
         {
+            if (layout.Count == 0)
+                throw new ArgumentException("Layout must not be empty");
+
             this.marginSize = marginSize;
             var coveringRectangle = GetCoveringRectangle(layout);
             var topLeftCorner = coveringRectangle.Location;
