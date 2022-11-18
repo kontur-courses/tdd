@@ -1,8 +1,12 @@
 ﻿using System.Drawing;
+using TagsCloudVisualization;
+using TagsCloudVisualization.Interfaces;
+using TagsCloudVisualization.Visualization;
+using TagsCloudVisualizationTests;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualizationUsageExample
 {
-    internal class Program
+    public class Program
     {
         public static void Main(string[] args)
         {
