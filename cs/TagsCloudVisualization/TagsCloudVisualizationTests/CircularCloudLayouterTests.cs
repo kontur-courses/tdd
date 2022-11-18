@@ -44,12 +44,12 @@ namespace TagsCloudVisualizationTests
         [TestCase(10, 0)]
         [TestCase(-10, 10)]
         [TestCase(10, -10)]
-        public void PutNextRectange_ThrowsArgOutOfRangeException_WhenInvalidDimension(int width, int height)
+        public void PutNextRectangle_ThrowsArgOutOfRangeException_WhenInvalidDimension(int width, int height)
         {
             var size = new Size(width, height);
 
-            var layouter = new CircularCloudLayouter(Center);
-            Action act = () => layouter.PutNextRectangle(size);
+            layouterUnderTesting = new CircularCloudLayouter(Center);
+            Action act = () => layouterUnderTesting.PutNextRectangle(size);
 
             act.Should().Throw<ArgumentOutOfRangeException>();
         }
