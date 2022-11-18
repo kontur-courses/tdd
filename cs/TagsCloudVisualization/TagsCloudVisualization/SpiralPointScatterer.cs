@@ -22,20 +22,15 @@ namespace TagsCloudVisualization
             var polarArgument = startAngle;
             var polarRadius = approximatePointSpacing;
 
-            yield return new PointF(
-                (float) (center.X + polarRadius * Math.Cos(polarArgument)),
-                (float) (center.Y + polarRadius * Math.Sin(polarArgument))
-            );
-
             while (true)
             {
-                polarArgument += Math.Atan(approximatePointSpacing / polarRadius);
-                polarRadius = ((polarArgument - startAngle) / 2 / Math.PI + 1) * approximatePointSpacing;
-
                 yield return new PointF(
                     (float) (center.X + polarRadius * Math.Cos(polarArgument)),
                     (float) (center.Y + polarRadius * Math.Sin(polarArgument))
                 );
+
+                polarArgument += Math.Atan(approximatePointSpacing / polarRadius);
+                polarRadius = ((polarArgument - startAngle) / 2 / Math.PI + 1) * approximatePointSpacing;
             }
         }
     }
