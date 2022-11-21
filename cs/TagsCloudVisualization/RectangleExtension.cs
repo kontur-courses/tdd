@@ -16,4 +16,10 @@ public static class RectangleExtension
     {
         return rectangle.Width * rectangle.Height;
     }
+
+    public static void MoveTo(this Rectangle rectangle, int x, int y)
+    {
+        rectangle.X = x;
+        rectangle.Y = y;
+    }
 }

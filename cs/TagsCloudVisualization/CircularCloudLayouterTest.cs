@@ -1,10 +1,12 @@
-﻿namespace TagsCloudVisualization;
+﻿using NUnit.Framework.Interfaces;
 
+namespace TagsCloudVisualization;
+[TestFixture]
 public class CircularCloudLayouterTest
 {
     private CircularCloudLayouter ccl;
     private List<Rectangle> rectangles;
-
+    
     [SetUp]
     public void SetUpTests()
     {
@@ -27,14 +29,14 @@ public class CircularCloudLayouterTest
     public void CorrectSecondRectangle_PutNextRectangle()
     {
         var rect = ccl.PutNextRectangle(rectangles, new Size(100, 100));
-        rect.X.Should().Be(450);
-        rect.Y.Should().Be(450);
+        rect.X.Should().Be(469);
+        rect.Y.Should().Be(550);
     }
 
     [Test]
     public void PrintOccupiedSquare()
     {
-        for (int i = 0; i < 10; i++)
+        for (int i = 1; i <= 10; i++)
             rectangles.Add(ccl.PutNextRectangle(rectangles, new Size(15 * i, 10 * i)));
         int radius = Math.Min(rectangles[0].GetCenter().X, rectangles[0].GetCenter().Y);
         double circleSquare = radius * radius * Math.PI;
@@ -46,7 +48,7 @@ public class CircularCloudLayouterTest
     [Test]
     public void CheckIntersectWithCircle()
     {
-        for (int i = 0; i < 10; i++)
+        for (int i = 1; i <= 10; i++)
             rectangles.Add(ccl.PutNextRectangle(rectangles, new Size(15 * i, 10 * i)));
         var center = rectangles[0].GetCenter();
         int radius = Math.Min(center.X, center.Y);
@@ -70,5 +72,10 @@ public class CircularCloudLayouterTest
             rectangles.Add(ccl.PutNextRectangle(rectangles,
                 new Size(rand.Next(10, 100), rand.Next(10, 100))));
         PictureSaver.SaveRectanglesAsPicture(rectangles, "D:");
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
     }
 }

@@ -19,8 +19,8 @@ public class CircularCloudLayouter
         out Rectangle newRectangle)
     {
         var center = rectangles[0].GetCenter();
-        int x = 0;
-        int y = 0;
+        var x = 0;
+        var y = 0;
         double angel = 0;
         var rectPos = new Point(x - rectangleSize.Width / 2 + center.X,
             y - rectangleSize.Height / 2 + center.Y);
@@ -33,10 +33,9 @@ public class CircularCloudLayouter
             if (rectangles.Count == 0) return true;
             var isContain = rectangles.Any(x => x.Contains(rectangle.GetCenter()));
             var isIntersect = rectangles.Any(x => x.IntersectsWith(rectangle));
-            ;
             if (!isIntersect && !isContain)
             {
-                CorrectPosition(rectangle, center, rectangles);
+                newRectangle = CorrectPosition(rectangle, center, rectangles);
                 return true;
             }
 
@@ -51,34 +50,68 @@ public class CircularCloudLayouter
         return false;
     }
 
-    private void CorrectPosition(Rectangle buffer, Point center, List<Rectangle> rectangles)
+    private Rectangle CorrectPosition(Rectangle rectangle, Point center, List<Rectangle> rectangles)
     {
-        var horizontalOffset = true;
-        var verticalOffset = true;
-        int count = 0;
-        while ((horizontalOffset || verticalOffset) && count < 1000)
-        {
-            horizontalOffset = buffer.GetCenter().X < center.X
-                ? TryToOffset(1, 0, buffer, rectangles)
-                : TryToOffset(-1, 0, buffer, rectangles);
-            verticalOffset = buffer.GetCenter().Y < center.Y
-                ? TryToOffset(0, 1, buffer, rectangles)
-                : TryToOffset(0, -1, buffer, rectangles);
-            count += 1;
-        }
+        var rect = rectangle;
+        rect = BinSearchHorizontal(rect, center, rectangles);
+        rect = BinSearchVertical(rect, center, rectangles);
+        return rect;
     }
 
-    private bool TryToOffset(int x, int y, Rectangle buffer, List<Rectangle> rectangles)
+    private Rectangle BinSearchHorizontal(Rectangle rectangle, Point center, List<Rectangle> rectangles)
     {
-        buffer.Offset(x, y);
-        if (rectangles.Any(x => x.IntersectsWith(buffer)))
+        var requestedRect = rectangle;
+        var maxHorizontal = Math.Max(center.X, rectangle.GetCenter().X);
+        var minHorizontal = Math.Min(center.X, rectangle.GetCenter().X);
+        while (maxHorizontal >= minHorizontal)
         {
-            buffer.Offset(-x, -y);
-
-            return false;
+            var mid = (maxHorizontal + minHorizontal) / 2;
+            var left = mid - (rectangle.Width / 2);
+            if (CheckIntersectAfterMove(left, rectangle.X, rectangle, rectangles))
+            {
+                requestedRect.MoveTo(left, rectangle.Y);
+                if (maxHorizontal > center.X) maxHorizontal = mid - 1;
+                else minHorizontal = mid + 1;
+            }
+            else
+            {
+                if (maxHorizontal < center.X) maxHorizontal = mid - 1;
+                else minHorizontal = mid + 1;
+            }
         }
 
-        return true;
+        return requestedRect;
+    }
+    private Rectangle BinSearchVertical(Rectangle rectangle, Point center, List<Rectangle> rectangles)
+    {
+        var requestedRect = rectangle;
+        var maxVertical = Math.Max(center.Y, rectangle.GetCenter().Y);
+        var minVertical = Math.Min(center.Y, rectangle.GetCenter().Y);
+        while (maxVertical >= minVertical)
+        {
+            var mid = (maxVertical + minVertical) / 2;
+            var top = mid - (rectangle.Height / 2);
+            if (CheckIntersectAfterMove(rectangle.X, top, requestedRect, rectangles))
+            {
+                requestedRect.MoveTo(rectangle.X, top);
+                if (maxVertical > center.Y) maxVertical = mid - 1;
+                else minVertical = mid + 1;
+            }
+            else
+            {
+                if (maxVertical < center.Y) maxVertical = mid - 1;
+                else minVertical = mid + 1;
+            }
+        }
+
+        return requestedRect;
+    }
+
+    private bool CheckIntersectAfterMove(int x, int y, Rectangle buffer, List<Rectangle> rectangles)
+    {
+        var rect = buffer;
+        rect.MoveTo(x, y);
+        return !rectangles.Any(r => r.IntersectsWith(rect));
     }
 
     private bool CheckIntersectsWithCircle(Point center, Rectangle rect)
@@ -93,6 +126,7 @@ public class CircularCloudLayouter
             if (Math.Sqrt(x * x + y * y) >= radius)
                 return false;
         }
+
         return true;
     }
 }
