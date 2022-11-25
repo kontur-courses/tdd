@@ -1,43 +1,44 @@
 ﻿using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization;
+
 [TestFixture]
 public class CircularCloudLayouterTest
 {
     private CircularCloudLayouter ccl;
     private List<Rectangle> rectangles;
-    
+    private Point center;
+
     [SetUp]
     public void SetUpTests()
     {
         ccl = new CircularCloudLayouter();
         rectangles = new List<Rectangle>();
-        rectangles.Add(new Rectangle(400,450,200,100));
+        center = new(500, 500);
     }
+
     [TestCase(0, 0)]
     [TestCase(1, -1)]
     [TestCase(-1, 1)]
     public void UncorrectInitialTest_Initial_Exception(int x, int y)
     {
-        Rectangle rect = new Rectangle(x, y, 100, 100);
-        rectangles.Clear();
-        rectangles.Add(rect);
         Assert.Throws<ArgumentException>(
-            () => ccl.PutNextRectangle(rectangles, new Size(100,100)));
+            () => ccl.GetNextRectangle(new Point(x, y), rectangles, new Size(100, 100)));
     }
+
     [Test]
     public void CorrectSecondRectangle_PutNextRectangle()
     {
-        var rect = ccl.PutNextRectangle(rectangles, new Size(100, 100));
-        rect.X.Should().Be(469);
-        rect.Y.Should().Be(550);
+        var rect = ccl.GetNextRectangle(center, rectangles, new Size(100, 100));
+        rect.X.Should().Be(450);
+        rect.Y.Should().Be(450);
     }
 
     [Test]
     public void PrintOccupiedSquare()
     {
         for (int i = 1; i <= 10; i++)
-            rectangles.Add(ccl.PutNextRectangle(rectangles, new Size(15 * i, 10 * i)));
+            rectangles.Add(ccl.GetNextRectangle(center, rectangles, new Size(15 * i, 10 * i)));
         int radius = Math.Min(rectangles[0].GetCenter().X, rectangles[0].GetCenter().Y);
         double circleSquare = radius * radius * Math.PI;
         double rectanglesSquare = 0;
@@ -45,11 +46,12 @@ public class CircularCloudLayouterTest
             rectanglesSquare += rect.GetSquare();
         Console.Write("Occupied area: {0}%", (rectanglesSquare / circleSquare) * 100);
     }
+
     [Test]
     public void CheckIntersectWithCircle()
     {
         for (int i = 1; i <= 10; i++)
-            rectangles.Add(ccl.PutNextRectangle(rectangles, new Size(15 * i, 10 * i)));
+            rectangles.Add(ccl.GetNextRectangle(this.center, rectangles, new Size(15 * i, 10 * i)));
         var center = rectangles[0].GetCenter();
         int radius = Math.Min(center.X, center.Y);
         foreach (var rect in rectangles)
@@ -64,12 +66,13 @@ public class CircularCloudLayouterTest
             }
         }
     }
+
     [Test]
-    public void Add40RandomRectangleAndSaveAsPic_SaveAsPic() // Тест ничего не проверяет
+    public void Add20RandomRectangleAndSaveAsPic_SaveAsPic() // Тест ничего не проверяет
     {
         Random rand = new Random();
         for (int i = 0; i < 20; i++)
-            rectangles.Add(ccl.PutNextRectangle(rectangles,
+            rectangles.Add(ccl.GetNextRectangle(center, rectangles,
                 new Size(rand.Next(10, 100), rand.Next(10, 100))));
         PictureSaver.SaveRectanglesAsPicture(rectangles, "D:");
     }
@@ -77,5 +80,10 @@ public class CircularCloudLayouterTest
     [TearDown]
     public void TearDown()
     {
+        if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+        {
+            PictureSaver.SaveRectanglesAsPicture(rectangles, "D:", "testFallen.jpg");
+            Console.WriteLine("Упавший тест сохранен: D:testFallen.jpg");
+        }
     }
 }

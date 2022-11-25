@@ -2,26 +2,33 @@
 
 public class CircularCloudLayouter
 {
-    public Rectangle PutNextRectangle(List<Rectangle> rectangles, Size rectangleSize)
+    public List<Rectangle> GenerateCloud(Point center, List<Size> rectangleSizes)
     {
-        if (rectangles.Count == 0)
-            throw new ArgumentException("Rectangles list should be not empty");
+        var requestedList = new List<Rectangle>();
+        foreach (var rectangleSize in rectangleSizes)
+        {
+            requestedList.Add(GetNextRectangle(center, requestedList, rectangleSize));
+        }
+
+        return requestedList;
+    }
+    public Rectangle GetNextRectangle(Point center, List<Rectangle> rectangles, Size rectangleSize)
+    {
         if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
             throw new ArgumentException("Height and Width much be positive");
         Rectangle newRectangle;
-        if (!TryToPutRectangleInsideSpiral(rectangles, rectangleSize, out newRectangle))
+        if (!TryToPutRectangleInsideSpiral(center, rectangles, rectangleSize, out newRectangle))
             throw new ArgumentException("Rectangle size so much");
         rectangles.Add(newRectangle);
         return newRectangle;
     }
 
-    private bool TryToPutRectangleInsideSpiral(List<Rectangle> rectangles, Size rectangleSize,
+    private bool TryToPutRectangleInsideSpiral(Point center, List<Rectangle> rectangles, Size rectangleSize,
         out Rectangle newRectangle)
     {
-        var center = rectangles[0].GetCenter();
         var x = 0;
         var y = 0;
-        double angel = 0;
+        double angle = 0;
         var rectPos = new Point(x - rectangleSize.Width / 2 + center.X,
             y - rectangleSize.Height / 2 + center.Y);
         var rectangle = new Rectangle(rectPos, rectangleSize);
@@ -39,9 +46,9 @@ public class CircularCloudLayouter
                 return true;
             }
 
-            angel += Math.PI / 180;
-            x = (int)(angel * Math.Cos(angel) * stepLength);
-            y = (int)(angel * Math.Sin(angel) * stepLength);
+            angle += Math.PI / 180;
+            x = (int)(angle * Math.Cos(angle) * stepLength);
+            y = (int)(angle * Math.Sin(angle) * stepLength);
             rectPos = new Point(x - rectangleSize.Width / 2 + center.X,
                 y - rectangleSize.Height / 2 + center.Y);
             rectangle = new Rectangle(rectPos, rectangleSize);
@@ -107,9 +114,9 @@ public class CircularCloudLayouter
         return requestedRect;
     }
 
-    private bool CheckIntersectAfterMove(int x, int y, Rectangle buffer, List<Rectangle> rectangles)
+    private bool CheckIntersectAfterMove(int x, int y, Rectangle rectangle, List<Rectangle> rectangles)
     {
-        var rect = buffer;
+        var rect = rectangle;
         rect.MoveTo(x, y);
         return !rectangles.Any(r => r.IntersectsWith(rect));
     }
