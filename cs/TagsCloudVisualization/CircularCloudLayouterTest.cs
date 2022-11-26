@@ -77,6 +77,28 @@ public class CircularCloudLayouterTest
         PictureSaver.SaveRectanglesAsPicture(rectangles, "D:");
     }
 
+    [Test]
+    public void AssertRectangleSizesDoNotChange()
+    {
+        List<Size> rectSizes = new();
+        for (int i = 1; i <= 10; i++)
+            rectSizes.Add(new Size(i * 10, i * 10));
+        var rectangles = ccl.GenerateCloud(new(500, 500), rectSizes);
+        for(int i = 0; i < 10; i++)
+        {
+            rectSizes[i].Width.Should().Be(rectangles[i].Width);
+            rectSizes[i].Height.Should().Be(rectangles[i].Height);
+        }
+    }
+    [Test]
+    public void AssertRectangleListSizeDoNotChange()
+    {
+        List<Size> rectSizes = new();
+        for (int i = 10; i < 100; i += 10)
+            rectSizes.Add(new Size(i, i));
+        var rectangles = ccl.GenerateCloud(new(500, 500), rectSizes);
+        rectangles.Count.Should().Be(rectSizes.Count);
+    }
     [TearDown]
     public void TearDown()
     {
