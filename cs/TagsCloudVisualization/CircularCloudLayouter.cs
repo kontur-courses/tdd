@@ -20,12 +20,12 @@ public class CircularCloudLayouter
         if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
             throw new ArgumentException("Height and Width much be positive");
         Rectangle newRectangle;
-        if (!TryToPutRectangleInsideSpiral(center, rectangles, rectangleSize, out newRectangle))
+        if (!GetNewRectanglePostition(center, rectangles, rectangleSize, out newRectangle))
             throw new ArgumentException("Rectangle size so much");
         return newRectangle;
     }
 
-    private bool TryToPutRectangleInsideSpiral(Point center, List<Rectangle> rectangles, Size rectangleSize,
+    private bool GetNewRectanglePostition(Point center, List<Rectangle> rectangles, Size rectangleSize,
         out Rectangle newRectangle)
     {
         var x = 0;
@@ -35,9 +35,8 @@ public class CircularCloudLayouter
             y - rectangleSize.Height / 2 + center.Y);
         var rectangle = new Rectangle(rectPos, rectangleSize);
         newRectangle = rectangle;
-        var stepLength = (int)(7 / (2 * Math.PI));
-        int count = 0;
-        while (count < 100000)
+        var stepLength = (int)(Math.Min(rectangleSize.Height, rectangleSize.Width) / (4 * Math.PI));
+        while (true)
         {
             newRectangle = rectangle;
             if (rectangles.Count == 0) return true;
@@ -49,13 +48,12 @@ public class CircularCloudLayouter
                 return true;
             }
 
-            angle += Math.PI / 180 * (Math.Min(rectangleSize.Height, rectangleSize.Width) / 3);
+            angle += Math.PI / 180;
             x = (int)(angle * Math.Cos(angle) * stepLength);
             y = (int)(angle * Math.Sin(angle) * stepLength);
             rectPos = new Point(x - rectangleSize.Width / 2 + center.X,
                 y - rectangleSize.Height / 2 + center.Y);
             rectangle = new Rectangle(rectPos, rectangleSize);
-            count++;
         }
 
         return false;
