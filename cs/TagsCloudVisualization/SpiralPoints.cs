@@ -9,31 +9,28 @@ namespace TagsCloudVisualization
     {
         private Point spiralCenter;
         private RadiusVector lastRadiusVector;
-        private int distanceBetweenPoints = 300;
+        private int distanceBetweenPoints = 25;
         private int spiralStep = 500;
+        private int startAngle;
+        private int fullAngle = 360;
 
-        public SpiralPoints(Point spiralCenter)
+        public SpiralPoints(Point spiralCenter, int startAngle)
         {
             this.spiralCenter = spiralCenter;
+            this.startAngle = startAngle;
         }
-
-        // public IEnumerable<Point> NextPointGetter()
-        // {
-        //     GetNextRadiusVector();
-        //     yield return GetPointFromRadiusVector();
-        // }
-
+        
         private void GetNextRadiusVector()
         {
             if (lastRadiusVector == null)
             {
-                lastRadiusVector = new RadiusVector(15,20);
+                lastRadiusVector = new RadiusVector(5,startAngle);
                 return;
             }
 
             var tangensOfRotationAngle = distanceBetweenPoints / lastRadiusVector.Length;
             var rotationAngel = Math.Atan(tangensOfRotationAngle);
-            var lengthAddition = spiralStep / 360 * rotationAngel;
+            var lengthAddition = spiralStep / fullAngle * rotationAngel;
             var newRadiusVector = new RadiusVector(lengthAddition + lastRadiusVector.Length,
                 rotationAngel + lastRadiusVector.Angle);
             lastRadiusVector = newRadiusVector;

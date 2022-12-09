@@ -17,7 +17,7 @@ namespace TagsCloudVisualization
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            var spiralPoints = new SpiralPoints(center);
+            var spiralPoints = new SpiralPoints(center, rectangleSize.Height);
             while (true)
             {
                 spiralPoints.MoveNext();
