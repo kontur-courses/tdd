@@ -32,7 +32,7 @@ namespace TagsCloudVisualization
         [TestCase(5, 4, 3, 6)]
         public void CreatesFirstRectangle_InTheCenter(int centerX, int centerY, int rectWidth, int rectHeight)
         {
-            var cloudLayouter = new CircularCloudLayouter(new Point(0, 0));
+            var cloudLayouter = new CircularCloudLayouter(new Point(centerX, centerY));
             var rectangle = cloudLayouter.PutNextRectangle(new Size(rectWidth, rectHeight));
             var halfWidth = (int)Math.Floor(rectWidth / 2.0);
             var halfHeight = (int)Math.Floor(rectHeight / 2.0);
