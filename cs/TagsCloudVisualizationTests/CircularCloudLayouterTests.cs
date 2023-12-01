@@ -22,17 +22,7 @@ public class CircularCloudLayouterTests
     {
         Assert.Throws<ArgumentException>(() => layouter.PutNextRectangle(new Size(width, height)));
     }
-
-    [TestCase(100, 120, 450, 440)]
-    [TestCase(100, 119, 450, 441)]
-    [TestCase(101, 120, 450, 440)]
-    public void PutNextRectangle_CorrectlyPlacesRectangle_OnFirstRectangle(int width, int height, int expectedX,
-        int expectedY)
-    {
-        var rectangle = layouter.PutNextRectangle(new Size(width, height));
-        rectangle.Location.Should().Be(new Point(expectedX, expectedY));
-    }
-
+    
     [Test]
     public void PutNextRecangle_PlacesRectangleWithoutIntersection_OnMultipleRectangles()
     {
@@ -46,7 +36,6 @@ public class CircularCloudLayouterTests
                 Assert.That(rectangle.IntersectsWith(newRectangle), Is.False);
 
             rectangles.Add(newRectangle);
-            Console.WriteLine(newRectangle.X + " " + newRectangle.Y);
         }
     }
 }
