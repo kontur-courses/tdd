@@ -31,10 +31,6 @@ public class HasIntersectedRectangleTests_Should
             .SetName("WhenFirstRightBorder_СoincidesWithSecondLeftBorder"),
         new TestCaseData(new Rectangle(0,0, 1, 1), new Rectangle(0, 1, 1, 1))
             .SetName("WhenFirstTopBorder_СoincidesWithSecondBottomBorder"),
-        new TestCaseData(new Rectangle(0, 0, 1, 1), new Rectangle(1, 0, 1, 1))
-            .SetName("WhenFirst_LeftSecondLeftBorder"),
-        new TestCaseData(new Rectangle(0,0, 1, 1), new Rectangle(0, 1, 1, 1))
-            .SetName("WhenFirstTopBorder_СoincidesWithSecondBottomBorder")
     };
         
     [TestCaseSource(nameof(intersectedRectanglesTestCases))]
