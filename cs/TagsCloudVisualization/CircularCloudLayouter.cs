@@ -6,18 +6,15 @@ public class CircularCloudLayouter
 {
     private Point center;
     private Dictionary<string, int> frequencyDict;
-        
-    public CircularCloudLayouter(Point center, Dictionary<string, int> frequencyDict)
+    private Size displayResolution;
+    
+    public CircularCloudLayouter(Point center, Dictionary<string, int> frequencyDict, Size displayResolution)
     {
         this.center = center;
         this.frequencyDict = frequencyDict;
+        this.displayResolution = displayResolution;
     }
 
-    public Rectangle PutNextRectangle(int width = 10, int height = 10)
-    {
-        return PutNextRectangle(new Size(width, height));
-    }
-    
     public Rectangle PutNextRectangle(Size rectangleSize)
     {
         return new Rectangle();
