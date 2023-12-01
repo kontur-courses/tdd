@@ -5,13 +5,12 @@ namespace TagsCloudVisualization;
 public class CircularCloudLayouter
 {
     private Point center;
-
-    public int Quantity
-    { private set; get; }
+    private Dictionary<string, int> frequencyDict;
         
-    public CircularCloudLayouter(Point center)
+    public CircularCloudLayouter(Point center, Dictionary<string, int> frequencyDict)
     {
         this.center = center;
+        this.frequencyDict = frequencyDict;
     }
 
     public Rectangle PutNextRectangle(int width = 10, int height = 10)
@@ -21,8 +20,6 @@ public class CircularCloudLayouter
     
     public Rectangle PutNextRectangle(Size rectangleSize)
     {
-        Quantity++;
-        
         return new Rectangle();
     }
 }

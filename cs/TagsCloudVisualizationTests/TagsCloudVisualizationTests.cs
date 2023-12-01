@@ -13,23 +13,18 @@ public class CircularCloudLayouterTests
     public void CircularCloudLayouterSetUp()
     {
         var point = new Point(0, 0); 
+        
+        // TODO fix absolute path
+        var dict = WordsDataSet.CreateFrequencyDict(
+            "/Users/draginsky/RiderProjects/tdd/cs/TagsCloudVisualizationTests/testNumberWords.txt"
+        );
             
-        circularCloudLayouter = new CircularCloudLayouter(point);
+        circularCloudLayouter = new CircularCloudLayouter(point, dict);
     }
         
     [Test]
     public void PutNextRectangle_Return_Rectangle()
     {
         circularCloudLayouter.PutNextRectangle().GetType().Should().Be(typeof(Rectangle));
-    }
-    
-    [Test]
-    public void PutNextRectangle_Should_Add_Rectangle()
-    {
-        circularCloudLayouter.PutNextRectangle();
-        circularCloudLayouter.PutNextRectangle();
-        circularCloudLayouter.PutNextRectangle();
-
-        circularCloudLayouter.Quantity.Should().Be(3);
     }
 }
