@@ -3,9 +3,9 @@
 using TagsCloudVisualization;
 
 var dict = WordsDataSet.CreateFrequencyDict(
-    "../../../../TagsCloudVisualizationTests/bigAmountOfWords.txt"
+    "../../../../TagsCloudVisualization/src/words.txt"
 );
 
 var circularCloudLayouter = new CircularCloudLayouter(dict);
 
-circularCloudLayouter.GenerateTagCloud("rectangles");
+circularCloudLayouter.GenerateTagCloud("out/rectangles");

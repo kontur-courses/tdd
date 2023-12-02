@@ -7,13 +7,14 @@ namespace TagsCloudVisualizationTests;
 public class CircularCloudLayouterTests
 {
     private CircularCloudLayouter circularCloudLayouter = null!;
-    private const string FilePath = "testFile";
+    private const string OutputPath = "out/testFile";
+    private const string FilePath = "src/words";
 
     [SetUp]
     public void CircularCloudLayouterSetUp()
     {
         var dict = WordsDataSet.CreateFrequencyDict(
-            "../../../../TagsCloudVisualization/words.txt"
+            $"../../../../TagsCloudVisualization/{FilePath}.txt"
         );
 
         circularCloudLayouter = new CircularCloudLayouter(dict);
@@ -35,7 +36,7 @@ public class CircularCloudLayouterTests
 
         (circularCloudLayouter.PlacedWords.Count != size).Should().BeTrue();
     }
-    
+
     [Test]
     public void PutNextRectangle_Should_NotPlaceWord_When_SpaceOccupied()
     {
@@ -49,20 +50,20 @@ public class CircularCloudLayouterTests
     [Test]
     public void GenerateTagCloudShouldCreateFile()
     {
-        circularCloudLayouter.GenerateTagCloud(FilePath);
+        circularCloudLayouter.GenerateTagCloud(OutputPath);
 
-        File.Exists($"../../../../TagsCloudVisualization/{FilePath}.jpg").Should().BeTrue();
+        File.Exists($"../../../../TagsCloudVisualization/{OutputPath}.jpg").Should().BeTrue();
     }
 
     [Test]
     public void GenerateTagCloudShould_PlaceAllWords()
     {
         var dict = WordsDataSet.CreateFrequencyDict(
-            "../../../../TagsCloudVisualization/words.txt"
+            $"../../../../TagsCloudVisualization/{FilePath}.txt"
         );
 
         var cloudLayouter = new CircularCloudLayouter(dict);
-        cloudLayouter.GenerateTagCloud(FilePath);
+        cloudLayouter.GenerateTagCloud(OutputPath);
 
         (cloudLayouter.PlacedWords.Count == dict.Count).Should().BeTrue();
     }

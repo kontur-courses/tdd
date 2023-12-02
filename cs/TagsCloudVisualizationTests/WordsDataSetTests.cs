@@ -17,7 +17,7 @@ public class WordsDataSetTests
         };
 
         var actual = WordsDataSet.CreateFrequencyDict(
-            "../../../../TagsCloudVisualizationTests/testNumberWords.txt"
+            "../../../../TagsCloudVisualization/src/testNumberWords.txt"
         );
         
         actual.Should().Equal(expected);

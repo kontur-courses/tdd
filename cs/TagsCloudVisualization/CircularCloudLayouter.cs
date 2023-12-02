@@ -15,16 +15,26 @@ public class CircularCloudLayouter(Dictionary<string, int> frequencyDict)
 {
     private readonly Point center = new(960, 540);
     public Dictionary<string, Rectangle> PlacedWords { get; } = new();
+    private readonly Dictionary<string, int> frequencyDict = new(frequencyDict);
     private readonly Image<Rgba32> image = new(1920, 1080);
+
+    private const int FontSize = 30;
+    private const string FontPath = "src/JosefinSans-Regular";
 
     public void GenerateTagCloud(string outputName)
     {
+        // Задаём фон изображения
+        image.Mutate(x => x.Fill(Color.FromRgb(7, 42, 22)));
+
+        var rnd = new Random();
         for (var radius = 0;
-             radius < 0.8 * Math.Min(image.Width / 2, image.Height / 2)
+             radius < 0.9 * Math.Min(image.Width / 2, image.Height / 2)
              && frequencyDict.Count != 0;
-             radius++)
+             radius += FontSize)
         {
-            for (var angle = 0; angle < 360 && frequencyDict.Count != 0; angle++)
+            // Угол рандомизирую для менее детерминированного распределения, i - счётчик для поворота только на 360
+            var i = 0;
+            for (var angle = rnd.Next(360); i < 360 && frequencyDict.Count != 0; angle++, i++)
             {
                 var coordinate = PolarMath.PolarToCartesian(radius, angle, center);
 
@@ -44,7 +54,8 @@ public class CircularCloudLayouter(Dictionary<string, int> frequencyDict)
         {
             var size = GetSizeFromWordWithFrequency(kvp.Key, kvp.Value);
 
-            var target = new Rectangle(coordinate, size);
+            var centeredCoordinate = new Point(coordinate.X - size.Width / 2, coordinate.Y - size.Height / 2);
+            var target = new Rectangle(centeredCoordinate, size);
 
             if (!IntersectWithPlaced(target))
             {
@@ -53,20 +64,22 @@ public class CircularCloudLayouter(Dictionary<string, int> frequencyDict)
 
                 if (!isTest)
                 {
-                    var rectangle = new RectangleF(target.X, target.Y, target.Width, target.Height);
-
-                    const string fontName = "JosefinSans-Regular";
-
                     FontCollection collection = new();
-                    var family = collection.Add($"../../../../TagsCloudVisualization/{fontName}.ttf");
-                    var font = family.CreateFont(14 + kvp.Value, FontStyle.Italic);
+                    var family = collection.Add($"../../../../TagsCloudVisualization/{FontPath}.ttf");
+                    var font = family.CreateFont(FontSize + kvp.Value, FontStyle.Italic);
 
-                    // image.Mutate(x => x.Draw(Color.White, 2f, rectangle));
+                    // Рисование прямоугольников
+                    // var rectangle = new RectangleF(target.X, target.Y, target.Width, target.Height);
+                    // image.Mutate(x => x.Draw(Color.Black, 2f, rectangle));
 
                     image.Mutate(x => x.DrawText(
-                        kvp.Key, font, Color.FromRgba(64,224,208, (byte)Math.Min(255, 200 + kvp.Value)), new PointF(target.X, target.Y))
+                        kvp.Key, font,
+                        Color.FromRgba(211, 226, 157, (byte)Math.Min(255, 100 + kvp.Value * 10)),
+                        new PointF(target.X, target.Y))
                     );
                 }
+
+                return;
             }
         }
     }
@@ -80,8 +93,8 @@ public class CircularCloudLayouter(Dictionary<string, int> frequencyDict)
     private static Size GetSizeFromWordWithFrequency(string word, int frequency)
     {
         return new Size(
-            (10 + frequency) * word.Length,
-            15 + frequency
+            (int)((FontSize + frequency) * word.Length / 1.5),
+            FontSize + frequency
         );
     }
 }
