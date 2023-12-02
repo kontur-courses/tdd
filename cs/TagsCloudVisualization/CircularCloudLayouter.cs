@@ -6,36 +6,60 @@ public class CircularCloudLayouter : ICloudLayouter
 {
     public List<Rectangle> PlacedRectangles { get; } = new();
     private readonly Point center;
-    private static readonly Random Random = new();
 
     public CircularCloudLayouter(Point center)
     {
         this.center = center;
     }
 
-    private Point CalculateRectangleLocation(Size rectangleSize)
+    private Rectangle CalculateRectanglePosition(Size rectangleSize, int radiusIncrement, double angleIncrement)
     {
-        var distanceFromCenter = NextNormalDistribution(10, Math.Max(rectangleSize.Height, rectangleSize.Width) * 2);
-        var angle = NextNormalDistribution(0, 360);
+        var rectangle = new Rectangle(Point.Empty, rectangleSize);
+        
+        var radius = 0d;
+        var angle = 0d;
+        
+        do
+        {
+            var x = center.X + radius * Math.Cos(angle);
+            var y = center.Y + radius * Math.Sin(angle);
+            rectangle.Location = new Point((int) x, (int) y);
+            
+            angle += angleIncrement;
+            
+            if (!(angle >= 2 * Math.PI))
+                continue;
+            
+            angle = 0;
+            radius += radiusIncrement;
+        } while (IntersectsWithAny(rectangle));
 
-        var x = center.X + (int) (distanceFromCenter * Math.Cos(angle));
-        var y = center.Y + (int) (distanceFromCenter * Math.Sin(angle));
-
-        return new Point(x, y);
+        return rectangle;
     }
     
+    private Rectangle PlaceRectangle(Size rectangleSize)
+    {
+        var newRectangle = new Rectangle(Point.Empty, rectangleSize);
+
+        if (PlacedRectangles.Count == 0)
+        {
+            newRectangle.Location = new Point(center.X - newRectangle.Width / 2, center.Y - newRectangle.Height / 2);
+            return newRectangle;
+        }
+
+        
+        const int radiusIncrement = 15;
+        const double angleIncrement = 0.2d;
+
+        return CalculateRectanglePosition(rectangleSize, radiusIncrement, angleIncrement);
+    }
+
     public Rectangle PutNextRectangle(Size rectangleSize)
     {
         if (rectangleSize.Height < 0 || rectangleSize.Width < 0)
             throw new ArgumentException("Height and width must be positive");
 
-        Rectangle newRectangle;
-        do
-        {
-            var location = CalculateRectangleLocation(rectangleSize);
-            newRectangle = new Rectangle(location, rectangleSize);
-        } while (IntersectsWithAny(newRectangle));
-
+        var newRectangle = PlaceRectangle(rectangleSize);
         PlacedRectangles.Add(newRectangle);
         return newRectangle;
     }
@@ -45,13 +69,5 @@ public class CircularCloudLayouter : ICloudLayouter
         return PlacedRectangles
             .Any(rectangle => rectangle
                 .IntersectsWith(newRectangle));
-    }
-
-    private static double NextNormalDistribution(double mean, double stdDev)
-    {
-        var u1 = 1.0 - Random.NextDouble();
-        var u2 = 1.0 - Random.NextDouble();
-        var randomNumber = Math.Sqrt(-2 * Math.Log(u1)) * Math.Sin(2 * Math.PI * u2);
-        return mean + (int) (stdDev * randomNumber);
     }
 }
