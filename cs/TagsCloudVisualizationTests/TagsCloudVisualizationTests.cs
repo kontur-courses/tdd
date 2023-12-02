@@ -32,7 +32,7 @@ public class CircularCloudLayouterTests
     public void PutNextRectangle_Should_PlaceWord_When_Free()
     {
         var size = circularCloudLayouter.PlacedWords.Count;
-        circularCloudLayouter.PutNextRectangle(new Point(0, 0), true);
+        circularCloudLayouter.PutNextRectangle(new Point(0, 0));
 
         (circularCloudLayouter.PlacedWords.Count != size).Should().BeTrue();
     }
@@ -40,9 +40,9 @@ public class CircularCloudLayouterTests
     [Test]
     public void PutNextRectangle_Should_NotPlaceWord_When_SpaceOccupied()
     {
-        circularCloudLayouter.PutNextRectangle(new Point(0, 0), true);
+        circularCloudLayouter.PutNextRectangle(new Point(0, 0));
         var size = circularCloudLayouter.PlacedWords.Count;
-        circularCloudLayouter.PutNextRectangle(new Point(0, 0), true);
+        circularCloudLayouter.PutNextRectangle(new Point(0, 0));
 
         (circularCloudLayouter.PlacedWords.Count != size).Should().BeFalse();
     }

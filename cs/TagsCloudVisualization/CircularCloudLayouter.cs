@@ -1,13 +1,5 @@
-using SixLabors.Fonts;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Drawing.Processing;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
+using System.Drawing;
 using Utility;
-using Point = System.Drawing.Point;
-using Rectangle = System.Drawing.Rectangle;
-using Size = System.Drawing.Size;
 
 namespace TagsCloudVisualization;
 
@@ -16,19 +8,15 @@ public class CircularCloudLayouter(Dictionary<string, int> frequencyDict)
     private readonly Point center = new(960, 540);
     public Dictionary<string, Rectangle> PlacedWords { get; } = new();
     private readonly Dictionary<string, int> frequencyDict = new(frequencyDict);
-    private readonly Image<Rgba32> image = new(1920, 1080);
+    private readonly Size resolution = new(1920, 1080);
 
     private const int FontSize = 30;
-    private const string FontPath = "src/JosefinSans-Regular";
 
     public void GenerateTagCloud(string outputName)
     {
-        // Задаём фон изображения
-        image.Mutate(x => x.Fill(Color.FromRgb(7, 42, 22)));
-
         var rnd = new Random();
         for (var radius = 0;
-             radius < 0.9 * Math.Min(image.Width / 2, image.Height / 2)
+             radius < 0.9 * Math.Min(resolution.Width / 2, resolution.Height / 2)
              && frequencyDict.Count != 0;
              radius += FontSize)
         {
@@ -42,13 +30,10 @@ public class CircularCloudLayouter(Dictionary<string, int> frequencyDict)
             }
         }
 
-        var encoder = new JpegEncoder { Quality = 100 };
-
-        image.Save($"../../../../TagsCloudVisualization/{outputName}.jpg", encoder);
-        image.Dispose();
+        ImageGenerator.GenerateImage(PlacedWords, outputName, FontSize);
     }
 
-    public void PutNextRectangle(Point coordinate, bool isTest = false)
+    public void PutNextRectangle(Point coordinate)
     {
         foreach (var kvp in frequencyDict.OrderByDescending(kvp => kvp.Value))
         {
@@ -61,23 +46,6 @@ public class CircularCloudLayouter(Dictionary<string, int> frequencyDict)
             {
                 PlacedWords.Add(kvp.Key, target);
                 frequencyDict.Remove(kvp.Key);
-
-                if (!isTest)
-                {
-                    FontCollection collection = new();
-                    var family = collection.Add($"../../../../TagsCloudVisualization/{FontPath}.ttf");
-                    var font = family.CreateFont(FontSize + kvp.Value, FontStyle.Italic);
-
-                    // Рисование прямоугольников
-                    // var rectangle = new RectangleF(target.X, target.Y, target.Width, target.Height);
-                    // image.Mutate(x => x.Draw(Color.Black, 2f, rectangle));
-
-                    image.Mutate(x => x.DrawText(
-                        kvp.Key, font,
-                        Color.FromRgba(211, 226, 157, (byte)Math.Min(255, 100 + kvp.Value * 10)),
-                        new PointF(target.X, target.Y))
-                    );
-                }
 
                 return;
             }
