@@ -54,11 +54,11 @@ public class CircularCloudLayouter(Dictionary<string, int> frequencyDict)
         return rectangles.Any(target.IntersectsWith);
     }
 
-    public static Size GetSizeFromWordWithFrequency(string word, int frequency)
+    private static Size GetSizeFromWordWithFrequency(string word, int frequency)
     {
         return new Size(
-            (20 + frequency) * word.Length,
-            20 + frequency
+            (10 + frequency) * word.Length,
+            15 + frequency
         );
     }
 }

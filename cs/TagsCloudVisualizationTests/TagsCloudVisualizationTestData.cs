@@ -43,7 +43,7 @@ public class TagsCloudVisualizationTestData
                 {
                     true
                 }
-            ).SetName("True_When_OneRectangle");
+            ).SetName("True_When_CanPutRectangle");
 
             yield return new TestCaseData(
                 new List<Point>
@@ -56,7 +56,7 @@ public class TagsCloudVisualizationTestData
                     true,
                     false
                 }
-            ).SetName("False_When_TwoRectanglesInOnePlace");
+            ).SetName("False_When_CanNotPutRectanglesInOnePlace");
         }
     }
 
@@ -67,12 +67,12 @@ public class TagsCloudVisualizationTestData
             yield return new TestCaseData(
                 "../../../../TagsCloudVisualization/words.txt",
                 true
-            ).SetName("PlaceAllWords");
+            ).SetName("PlaceAllWordsInScreen");
 
             yield return new TestCaseData(
                 "../../../../TagsCloudVisualizationTests/bigAmountOfWords.txt",
                 false
-            ).SetName("NotPlaceAllWords");
+            ).SetName("NotPlaceWordsOffScreen");
         }
     }
 }

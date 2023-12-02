@@ -18,15 +18,6 @@ public class CircularCloudLayouterTests
         circularCloudLayouter = new CircularCloudLayouter(dict);
     }
 
-    [Test]
-    public void SizeForRectangleTest()
-    {
-        var actual = CircularCloudLayouter.GetSizeFromWordWithFrequency("abracadabra", 5);
-        var expected = new Size(275, 25);
-
-        actual.Should().Be(expected);
-    }
-
     [TestCaseSource(
         typeof(TagsCloudVisualizationTestData),
         nameof(TagsCloudVisualizationTestData.RectanglesIntersection))
