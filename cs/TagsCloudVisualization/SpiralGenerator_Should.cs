@@ -14,7 +14,7 @@ namespace TagsCloudVisualization
         [Test]
         public void ThrowArgumentException_WhenNegativeRadiusLambda()
         {
-            var spiralGenCreation = () => new SpiralGenerator(radiusLambda: -1);
+            var spiralGenCreation = () => new SpiralGenerator(radiusDelta: -1);
             spiralGenCreation.Should().Throw<ArgumentException>();
         }
 

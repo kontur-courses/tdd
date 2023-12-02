@@ -8,27 +8,27 @@ using System.Threading.Tasks;
 
 namespace TagsCloudVisualization
 {
-    public class SpiralGenerator : IEnumerable<Point>
+    public class SpiralGenerator
     {
         private readonly Point center;
-        public readonly int RadiusLambda;
-        public readonly double AngleLambda;
+        public readonly int RadiusDelta;
+        public readonly double AngleDelta;
 
         public Point Center => new(center.X, center.Y);
         public int Radius { get; private set; }
         public double Angle { get; private set; }
 
-        public SpiralGenerator(int radiusLambda = 0, double angleLambda = Math.PI / 60)
+        public SpiralGenerator(int radiusDelta = 1, double angleDelta = Math.PI / 60)
         {
             this.center = new Point(0, 0);
-            this.RadiusLambda = radiusLambda < 0 ? throw new ArgumentException("radiusLambda cant be negative") : radiusLambda;
-            this.AngleLambda = angleLambda;
+            this.RadiusDelta = radiusDelta < 0 ? throw new ArgumentException("radiusDelta cant be negative") : radiusDelta;
+            this.AngleDelta = angleDelta;
         }
-        public SpiralGenerator(Point center, int radiusLambda = 0, double angleLambda = Math.PI / 60)
+        public SpiralGenerator(Point center, int radiusDelta = 1, double angleDelta = Math.PI / 60)
         {
             this.center = center;
-            this.RadiusLambda = radiusLambda < 0 ? throw new ArgumentException("radiusLambda cant be negative") : radiusLambda;
-            this.AngleLambda = angleLambda;
+            this.RadiusDelta = radiusDelta < 0 ? throw new ArgumentException("radiusDelta cant be negative") : radiusDelta;
+            this.AngleDelta = angleDelta;
         }
 
         public Point GetNextPoint()
@@ -36,23 +36,13 @@ namespace TagsCloudVisualization
             var x = (int)Math.Round(center.X + Radius * Math.Cos(Angle));
             var y = (int)Math.Round(center.Y + Radius * Math.Sin(Angle));
 
-            var nextAngle = Angle + AngleLambda;
+            var nextAngle = Angle + AngleDelta;
             var angleMoreThan2Pi = Math.Abs(nextAngle) >= Math.PI * 2;
 
-            Radius = angleMoreThan2Pi ? Radius + RadiusLambda : Radius;
+            Radius = angleMoreThan2Pi ? Radius + RadiusDelta : Radius;
             Angle = angleMoreThan2Pi ? 0 : nextAngle;
 
             return new Point(x, y);
-        }
-
-        public IEnumerator<Point> GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
         }
     }
 }
