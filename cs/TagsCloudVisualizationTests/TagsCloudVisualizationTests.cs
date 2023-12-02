@@ -4,22 +4,59 @@ using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTests;
 
-[TestFixture]
 public class CircularCloudLayouterTests
 {
     private CircularCloudLayouter circularCloudLayouter;
-        
-    [OneTimeSetUp]
+
+    [SetUp]
     public void CircularCloudLayouterSetUp()
     {
-        var point = new Point(0, 0); 
-        var displayResolution = new Size(1920, 1080); 
-        
         // TODO fix absolute path
         var dict = WordsDataSet.CreateFrequencyDict(
-            "/Users/draginsky/RiderProjects/tdd/cs/TagsCloudVisualizationTests/testNumberWords.txt"
+            "/Users/draginsky/RiderProjects/tdd/cs/TagsCloudVisualization/words.txt"
         );
-            
-        circularCloudLayouter = new CircularCloudLayouter(point, dict, displayResolution);
+
+        circularCloudLayouter = new CircularCloudLayouter(dict);
+    }
+
+    [Test]
+    public void SizeForRectangleTest()
+    {
+        var actual = CircularCloudLayouter.GetSizeFromWordWithFrequency("abracadabra", 5);
+        var expected = new Size(275, 25);
+
+        actual.Should().Be(expected);
+    }
+
+    [TestCaseSource(
+        typeof(TagsCloudVisualizationTestData),
+        nameof(TagsCloudVisualizationTestData.RectanglesIntersection))
+    ]
+    public void IntersectWithPlaced_ShouldReturn(List<Rectangle> rectangles, Rectangle target, bool result)
+    {
+        CircularCloudLayouter.IntersectWithPlaced(rectangles, target).Should().Be(result);
+    }
+
+    [TestCaseSource(typeof(TagsCloudVisualizationTestData), nameof(TagsCloudVisualizationTestData.PutRectangle))]
+    public void PutNextRectangle_ShouldReturn(List<Point> coordinates, bool[] results)
+    {
+        for (var i = 0; i < coordinates.Count; i++)
+            circularCloudLayouter.PutNextRectangle(coordinates[i]).Should().Be(results[i]);
+    }
+
+    [TestCaseSource(typeof(TagsCloudVisualizationTestData), nameof(TagsCloudVisualizationTestData.Algorithm))]
+    public void AlgorithmShould(string filePath, bool result)
+    {
+        var dict = WordsDataSet.CreateFrequencyDict(filePath);
+
+        var algorithmData = new CircularCloudLayouter(dict).Algorithm();
+
+        (algorithmData.Count == dict.Count).Should().Be(result);
+    }
+
+    [Test]
+    public void AlgorithmComplexity_LessOrEqualQuadratic()
+    {
+        // TODO
     }
 }

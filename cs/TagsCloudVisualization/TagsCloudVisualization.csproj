@@ -11,4 +11,8 @@
       <PackageReference Include="System.Management" Version="8.0.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Utility\Utility.csproj" />
+    </ItemGroup>
+
 </Project>
