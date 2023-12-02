@@ -8,5 +8,4 @@ var dict = WordsDataSet.CreateFrequencyDict(
 
 var circularCloudLayouter = new CircularCloudLayouter(dict);
 
-circularCloudLayouter.Algorithm();
-circularCloudLayouter.CreatePicture();
+circularCloudLayouter.GenerateTagCloud("rectangles");

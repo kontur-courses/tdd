@@ -12,16 +12,17 @@ namespace TagsCloudVisualization;
 public class CircularCloudLayouter(Dictionary<string, int> frequencyDict)
 {
     private readonly Point center = new(960, 540);
-    private readonly Size resolution = new(1920, 1080);
 
     private readonly SortedDictionary<string, int> frequencyDict = new(frequencyDict);
 
-    private readonly Dictionary<string, Rectangle> placedWords = new();
+    public Dictionary<string, Rectangle> PlacedWords { get; } = new();
 
-    public Dictionary<string, Rectangle> Algorithm()
+    private readonly Image<Rgba32> image = new(1920, 1080);
+
+    public void GenerateTagCloud(string outputName)
     {
         for (var radius = 0;
-             radius < 0.8 * Math.Min(resolution.Width / 2, resolution.Height / 2)
+             radius < 0.8 * Math.Min(image.Width / 2, image.Height / 2)
              && frequencyDict.Count != 0;
              radius++)
         {
@@ -32,11 +33,12 @@ public class CircularCloudLayouter(Dictionary<string, int> frequencyDict)
                 PutNextRectangle(coordinate);
             }
         }
-
-        return placedWords;
+        
+        image.Save($"../../../../TagsCloudVisualization/{outputName}.jpg");
+        image.Dispose();
     }
 
-    public bool PutNextRectangle(Point coordinate)
+    public bool PutNextRectangle(Point coordinate, bool isTest = false)
     {
         foreach (var pair in frequencyDict.Reverse())
         {
@@ -44,10 +46,17 @@ public class CircularCloudLayouter(Dictionary<string, int> frequencyDict)
 
             var target = new Rectangle(coordinate, size);
 
-            if (!IntersectWithPlaced(placedWords, target))
+            if (!IntersectWithPlaced(target))
             {
-                placedWords.Add(pair.Key, target);
+                PlacedWords.Add(pair.Key, target);
                 frequencyDict.Remove(pair.Key);
+                
+                if (!isTest)
+                {
+                    var rectangle = new RectangleF(target.X, target.Y, target.Width, target.Height);
+                    image.Mutate( x=> x.Fill(Color.White, rectangle));
+                }
+
                 return true;
             }
         }
@@ -55,9 +64,9 @@ public class CircularCloudLayouter(Dictionary<string, int> frequencyDict)
         return false;
     }
 
-    public static bool IntersectWithPlaced(Dictionary<string, Rectangle> rectanglesWithWords, Rectangle target)
+    public bool IntersectWithPlaced(Rectangle target)
     {
-        return rectanglesWithWords.Values.ToList().Any(target.IntersectsWith);
+        return PlacedWords.Values.ToList().Any(target.IntersectsWith);
     }
 
     private static Size GetSizeFromWordWithFrequency(string word, int frequency)
@@ -66,19 +75,5 @@ public class CircularCloudLayouter(Dictionary<string, int> frequencyDict)
             (10 + frequency) * word.Length,
             15 + frequency
         );
-    }
-
-    public void CreatePicture()
-    {
-        using Image<Rgba32> image = new(resolution.Width, resolution.Height);
-
-        foreach (var placed in placedWords.Values)
-        {
-            var rectangle = new RectangleF(placed.X, placed.Y, placed.Width, placed.Height);
-            
-            image.Mutate( x=> x.Fill(Color.White, rectangle));
-        }
-        
-        image.Save("../../../../TagsCloudVisualization/rectangles.jpg");
     }
 }

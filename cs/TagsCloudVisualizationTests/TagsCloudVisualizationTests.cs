@@ -6,7 +6,8 @@ namespace TagsCloudVisualizationTests;
 
 public class CircularCloudLayouterTests
 {
-    private CircularCloudLayouter circularCloudLayouter;
+    private CircularCloudLayouter circularCloudLayouter = null!;
+    private const string FilePath = "testFile";
 
     [SetUp]
     public void CircularCloudLayouterSetUp()
@@ -18,29 +19,40 @@ public class CircularCloudLayouterTests
         circularCloudLayouter = new CircularCloudLayouter(dict);
     }
 
-    [TestCaseSource(typeof(TagsCloudVisualizationTestData),
-        nameof(TagsCloudVisualizationTestData.RectanglesIntersection))]
-    public void IntersectWithPlaced_ShouldReturn(
-        Dictionary<string, Rectangle> rectanglesWithWords, Rectangle target, bool result)
+    [TestCaseSource(typeof(TagsCloudVisualizationTestData), nameof(TagsCloudVisualizationTestData.IntersectionData))]
+    public void IntersectWithPlaced_ShouldReturn(Point coordinate, Rectangle target, bool result)
     {
-        CircularCloudLayouter.IntersectWithPlaced(rectanglesWithWords, target).Should().Be(result);
+        circularCloudLayouter.PutNextRectangle(coordinate);
+
+        circularCloudLayouter.IntersectWithPlaced(target).Should().Be(result);
     }
 
-    [TestCaseSource(typeof(TagsCloudVisualizationTestData), nameof(TagsCloudVisualizationTestData.PutRectangle))]
+    [TestCaseSource(typeof(TagsCloudVisualizationTestData), nameof(TagsCloudVisualizationTestData.PutRectanglesData))]
     public void PutNextRectangle_ShouldReturn(List<Point> coordinates, bool[] results)
     {
         for (var i = 0; i < coordinates.Count; i++)
-            circularCloudLayouter.PutNextRectangle(coordinates[i]).Should().Be(results[i]);
+            circularCloudLayouter.PutNextRectangle(coordinates[i], true).Should().Be(results[i]);
     }
 
-    [TestCaseSource(typeof(TagsCloudVisualizationTestData), nameof(TagsCloudVisualizationTestData.Algorithm))]
-    public void AlgorithmShould(string filePath, bool result)
+    [Test]
+    public void GenerateTagCloudShouldCreateFile()
     {
-        var dict = WordsDataSet.CreateFrequencyDict(filePath);
+        circularCloudLayouter.GenerateTagCloud(FilePath);
 
-        var algorithmData = new CircularCloudLayouter(dict).Algorithm();
+        File.Exists($"../../../../TagsCloudVisualization/{FilePath}.jpg").Should().BeTrue();
+    }
 
-        (algorithmData.Count == dict.Count).Should().Be(result);
+    [Test]
+    public void GenerateTagCloudShould_PlaceAllWords()
+    {
+        var dict = WordsDataSet.CreateFrequencyDict(
+            "../../../../TagsCloudVisualization/words.txt"
+        );
+
+        var cloudLayouter = new CircularCloudLayouter(dict);
+        cloudLayouter.GenerateTagCloud(FilePath);
+
+        (cloudLayouter.PlacedWords.Count == dict.Count).Should().BeTrue();
     }
 
     [Test]
