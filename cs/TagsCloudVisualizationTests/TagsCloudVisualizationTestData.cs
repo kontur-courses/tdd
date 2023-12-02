@@ -10,31 +10,15 @@ public class TagsCloudVisualizationTestData
         {
             yield return new TestCaseData(
                 new Point(0, 0),
-                new Rectangle(100, 100, 15, 15),
+                new Rectangle(500, 500, 1, 1),
                 false
             ).SetName("False_When_NotIntersect");
 
             yield return new TestCaseData(
-                new Point(0, 0),
-                new Rectangle(1, 1, 15, 15),
+                new Point(1, 1),
+                new Rectangle(0, 0, 2, 2),
                 true
             ).SetName("True_When_Intersect");
-        }
-    }
-
-    public static IEnumerable<TestCaseData> PutRectanglesData
-    {
-        get
-        {
-            yield return new TestCaseData(
-                new List<Point> { new(0, 0) },
-                new[] { true }
-            ).SetName("True_When_CanPutRectangle");
-
-            yield return new TestCaseData(
-                new List<Point> { new(0, 0), new(0, 0) },
-                new[] { true, false }
-            ).SetName("False_When_CanNotPutRectanglesInOnePlace");
         }
     }
 }

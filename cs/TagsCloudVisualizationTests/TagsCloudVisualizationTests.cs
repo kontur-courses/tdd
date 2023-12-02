@@ -27,11 +27,23 @@ public class CircularCloudLayouterTests
         circularCloudLayouter.IntersectWithPlaced(target).Should().Be(result);
     }
 
-    [TestCaseSource(typeof(TagsCloudVisualizationTestData), nameof(TagsCloudVisualizationTestData.PutRectanglesData))]
-    public void PutNextRectangle_ShouldReturn(List<Point> coordinates, bool[] results)
+    [Test]
+    public void PutNextRectangle_Should_PlaceWord_When_Free()
     {
-        for (var i = 0; i < coordinates.Count; i++)
-            circularCloudLayouter.PutNextRectangle(coordinates[i], true).Should().Be(results[i]);
+        var size = circularCloudLayouter.PlacedWords.Count;
+        circularCloudLayouter.PutNextRectangle(new Point(0, 0), true);
+
+        (circularCloudLayouter.PlacedWords.Count != size).Should().BeTrue();
+    }
+    
+    [Test]
+    public void PutNextRectangle_Should_NotPlaceWord_When_SpaceOccupied()
+    {
+        circularCloudLayouter.PutNextRectangle(new Point(0, 0), true);
+        var size = circularCloudLayouter.PlacedWords.Count;
+        circularCloudLayouter.PutNextRectangle(new Point(0, 0), true);
+
+        (circularCloudLayouter.PlacedWords.Count != size).Should().BeFalse();
     }
 
     [Test]
