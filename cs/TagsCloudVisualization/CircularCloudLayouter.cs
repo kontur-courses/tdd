@@ -1,5 +1,11 @@
-using System.Drawing;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing.Processing;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using Utility;
+using Point = System.Drawing.Point;
+using Rectangle = System.Drawing.Rectangle;
+using Size = System.Drawing.Size;
 
 namespace TagsCloudVisualization;
 
@@ -10,9 +16,9 @@ public class CircularCloudLayouter(Dictionary<string, int> frequencyDict)
 
     private readonly SortedDictionary<string, int> frequencyDict = new(frequencyDict);
 
-    private readonly List<Rectangle> rectangles = new();
+    private readonly Dictionary<string, Rectangle> placedWords = new();
 
-    public List<Rectangle> Algorithm()
+    public Dictionary<string, Rectangle> Algorithm()
     {
         for (var radius = 0;
              radius < 0.8 * Math.Min(resolution.Width / 2, resolution.Height / 2)
@@ -27,7 +33,7 @@ public class CircularCloudLayouter(Dictionary<string, int> frequencyDict)
             }
         }
 
-        return rectangles;
+        return placedWords;
     }
 
     public bool PutNextRectangle(Point coordinate)
@@ -38,9 +44,9 @@ public class CircularCloudLayouter(Dictionary<string, int> frequencyDict)
 
             var target = new Rectangle(coordinate, size);
 
-            if (!IntersectWithPlaced(rectangles, target))
+            if (!IntersectWithPlaced(placedWords, target))
             {
-                rectangles.Add(target);
+                placedWords.Add(pair.Key, target);
                 frequencyDict.Remove(pair.Key);
                 return true;
             }
@@ -49,9 +55,9 @@ public class CircularCloudLayouter(Dictionary<string, int> frequencyDict)
         return false;
     }
 
-    public static bool IntersectWithPlaced(List<Rectangle> rectangles, Rectangle target)
+    public static bool IntersectWithPlaced(Dictionary<string, Rectangle> rectanglesWithWords, Rectangle target)
     {
-        return rectangles.Any(target.IntersectsWith);
+        return rectanglesWithWords.Values.ToList().Any(target.IntersectsWith);
     }
 
     private static Size GetSizeFromWordWithFrequency(string word, int frequency)
@@ -60,5 +66,19 @@ public class CircularCloudLayouter(Dictionary<string, int> frequencyDict)
             (10 + frequency) * word.Length,
             15 + frequency
         );
+    }
+
+    public void CreatePicture()
+    {
+        using Image<Rgba32> image = new(resolution.Width, resolution.Height);
+
+        foreach (var placed in placedWords.Values)
+        {
+            var rectangle = new RectangleF(placed.X, placed.Y, placed.Width, placed.Height);
+            
+            image.Mutate( x=> x.Fill(Color.White, rectangle));
+        }
+        
+        image.Save("../../../../TagsCloudVisualization/rectangles.jpg");
     }
 }

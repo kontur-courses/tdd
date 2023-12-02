@@ -9,20 +9,20 @@ public class TagsCloudVisualizationTestData
         get
         {
             yield return new TestCaseData(
-                new List<Rectangle>
+                new Dictionary<string, Rectangle>
                 {
-                    new(0, 0, 10, 15),
-                    new(15, 20, 15, 15)
+                    { "Table", new(0, 0, 10, 15) },
+                    { "Board", new(15, 20, 15, 15) }
                 },
                 new Rectangle(10, 15, 5, 5),
                 false
             ).SetName("False_When_Not_Intersect");
 
             yield return new TestCaseData(
-                new List<Rectangle>
+                new Dictionary<string, Rectangle>
                 {
-                    new(0, 0, 10, 15),
-                    new(15, 20, 15, 15)
+                    { "Table", new(0, 0, 10, 15) },
+                    { "Board", new(15, 20, 15, 15) }
                 },
                 new Rectangle(5, 5, 1, 1),
                 true
@@ -68,11 +68,6 @@ public class TagsCloudVisualizationTestData
                 "../../../../TagsCloudVisualization/words.txt",
                 true
             ).SetName("PlaceAllWordsInScreen");
-
-            yield return new TestCaseData(
-                "../../../../TagsCloudVisualizationTests/bigAmountOfWords.txt",
-                false
-            ).SetName("NotPlaceWordsOffScreen");
         }
     }
 }

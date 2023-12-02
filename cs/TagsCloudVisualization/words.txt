@@ -1,1 +1,1 @@
-building, building, model, building, sketch, architect, model, model, construction, blueprint, sketch, plans, drawing, model, construction, blueprint, blueprint, blueprint, model, model
+gui, gui, model, gui, sketch, architect, model, model, const, blue, sketch, plans, drawing, model, const, blue, blue, blue, model, model, keyboard, cup, sun, telephone

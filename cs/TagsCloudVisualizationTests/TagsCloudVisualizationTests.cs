@@ -18,13 +18,12 @@ public class CircularCloudLayouterTests
         circularCloudLayouter = new CircularCloudLayouter(dict);
     }
 
-    [TestCaseSource(
-        typeof(TagsCloudVisualizationTestData),
-        nameof(TagsCloudVisualizationTestData.RectanglesIntersection))
-    ]
-    public void IntersectWithPlaced_ShouldReturn(List<Rectangle> rectangles, Rectangle target, bool result)
+    [TestCaseSource(typeof(TagsCloudVisualizationTestData),
+        nameof(TagsCloudVisualizationTestData.RectanglesIntersection))]
+    public void IntersectWithPlaced_ShouldReturn(
+        Dictionary<string, Rectangle> rectanglesWithWords, Rectangle target, bool result)
     {
-        CircularCloudLayouter.IntersectWithPlaced(rectangles, target).Should().Be(result);
+        CircularCloudLayouter.IntersectWithPlaced(rectanglesWithWords, target).Should().Be(result);
     }
 
     [TestCaseSource(typeof(TagsCloudVisualizationTestData), nameof(TagsCloudVisualizationTestData.PutRectangle))]
