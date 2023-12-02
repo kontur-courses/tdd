@@ -65,12 +65,12 @@ public class TagsCloudVisualizationTestData
         get
         {
             yield return new TestCaseData(
-                "/Users/draginsky/RiderProjects/tdd/cs/TagsCloudVisualization/words.txt",
+                "../../../../TagsCloudVisualization/words.txt",
                 true
             ).SetName("PlaceAllWords");
 
             yield return new TestCaseData(
-                "/Users/draginsky/RiderProjects/tdd/cs/TagsCloudVisualizationTests/bigAmountOfWords.txt",
+                "../../../../TagsCloudVisualizationTests/bigAmountOfWords.txt",
                 false
             ).SetName("NotPlaceAllWords");
         }

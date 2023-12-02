@@ -11,9 +11,8 @@ public class CircularCloudLayouterTests
     [SetUp]
     public void CircularCloudLayouterSetUp()
     {
-        // TODO fix absolute path
         var dict = WordsDataSet.CreateFrequencyDict(
-            "/Users/draginsky/RiderProjects/tdd/cs/TagsCloudVisualization/words.txt"
+            "../../../../TagsCloudVisualization/words.txt"
         );
 
         circularCloudLayouter = new CircularCloudLayouter(dict);
