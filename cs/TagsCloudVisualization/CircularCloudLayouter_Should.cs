@@ -6,6 +6,30 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter_Should
     {
+        // Не придумал как по-другому в TearDown создавать картинку
+        // Но есть ощущение, что это костыль
+        private CircularCloudLayouter _circularCloudLayouter;
+
+        // Из-за костыля приходится делать такую штуку, чтобы лучше уж выкинуло рантайм ошибку из-за null
+        // Чем начало тестировать уже протестированный экземпляр класса
+        [SetUp]
+        public void SetCircularCloudFieldToNull()
+        {
+            _circularCloudLayouter = null;
+        }
+
+        [TearDown]
+        public void CreateLayoutImage_IfTestFailed()
+        {
+            if (TestContext.CurrentContext.Result.FailCount < 1) return;
+            _circularCloudLayouter.CreateImageOfLayout(TestContext.CurrentContext.Test.Name, TestContext.CurrentContext.WorkDirectory);
+            var filePath = TestContext.CurrentContext.WorkDirectory + @"\" + TestContext.CurrentContext.Test.Name + @".png";
+            TestContext.WriteLine($"Tag cloud visualization saved to file {filePath}");
+            // Вычитал новую клевую фичу, но решарперовские тесты к сожалению не видят этот аттачмент
+            // Только через визуаловские тесты смог увидеть
+            TestContext.AddTestAttachment(TestContext.CurrentContext.Test.Name + @".png");
+        }
+
         [Test]
         public void CreatesClassInstance_WithoutException()
         {
@@ -18,9 +42,9 @@ namespace TagsCloudVisualization
         [TestCase(-5, -5, TestName = "Negative width and height")]
         public void PutNextRectangle_ThrowsArgumentException_WhenNegativeParameters(int rectWidth, int rectHeight)
         {
-            var cloudLayouter = new CircularCloudLayouter(new Point(0, 0));
+            _circularCloudLayouter = new CircularCloudLayouter(new Point(0, 0));
             var rectSize = new Size(rectWidth, rectHeight);
-            var rectangleCreation = () => cloudLayouter.PutNextRectangle(rectSize);
+            var rectangleCreation = () => _circularCloudLayouter.PutNextRectangle(rectSize);
             rectangleCreation.Should().Throw<ArgumentException>();
         }
 
@@ -32,15 +56,15 @@ namespace TagsCloudVisualization
         [TestCase(5, 4, 3, 6)]
         public void PutsFirstRectangle_InTheCenter(int centerX, int centerY, int rectWidth, int rectHeight)
         {
-            var cloudLayouter = new CircularCloudLayouter(new Point(centerX, centerY));
-            var rectangle = cloudLayouter.PutNextRectangle(new Size(rectWidth, rectHeight));
+            _circularCloudLayouter = new CircularCloudLayouter(new Point(centerX, centerY));
+            var rectangle = _circularCloudLayouter.PutNextRectangle(new Size(rectWidth, rectHeight));
             var halfWidth = (int)Math.Floor(rectWidth / 2.0);
             var halfHeight = (int)Math.Floor(rectHeight / 2.0);
 
-            var expectedRectLeft = cloudLayouter.CenterPoint.X - halfWidth;
-            var expectedRectRight = cloudLayouter.CenterPoint.X + halfWidth + (rectWidth % 2);
-            var expectedRectTop = cloudLayouter.CenterPoint.Y - halfHeight;
-            var expectedRectBottom = cloudLayouter.CenterPoint.Y + halfHeight + (rectHeight % 2);
+            var expectedRectLeft = _circularCloudLayouter.CenterPoint.X - halfWidth;
+            var expectedRectRight = _circularCloudLayouter.CenterPoint.X + halfWidth + (rectWidth % 2);
+            var expectedRectTop = _circularCloudLayouter.CenterPoint.Y - halfHeight;
+            var expectedRectBottom = _circularCloudLayouter.CenterPoint.Y + halfHeight + (rectHeight % 2);
 
             rectangle.Left.Should().Be(expectedRectLeft);
             rectangle.Right.Should().Be(expectedRectRight);
@@ -52,12 +76,12 @@ namespace TagsCloudVisualization
         [Timeout(1000)]
         public void Puts5SameSquares_InPlusShape_WhenAngleDeltaIsHalfPi()
         {
-            var cloudLayouter = new CircularCloudLayouter(new Point(), 1, Math.PI / 2);
-            var firstRect = cloudLayouter.PutNextRectangle(new Size(10, 10));
-            var secondRect = cloudLayouter.PutNextRectangle(new Size(10, 10));
-            var thirdRect = cloudLayouter.PutNextRectangle(new Size(10, 10));
-            var fourthRect = cloudLayouter.PutNextRectangle(new Size(10, 10));
-            var fifthRect = cloudLayouter.PutNextRectangle(new Size(10, 10));
+            _circularCloudLayouter = new CircularCloudLayouter(new Point(), 1, Math.PI / 2);
+            var firstRect = _circularCloudLayouter.PutNextRectangle(new Size(10, 10));
+            var secondRect = _circularCloudLayouter.PutNextRectangle(new Size(10, 10));
+            var thirdRect = _circularCloudLayouter.PutNextRectangle(new Size(10, 10));
+            var fourthRect = _circularCloudLayouter.PutNextRectangle(new Size(10, 10));
+            var fifthRect = _circularCloudLayouter.PutNextRectangle(new Size(10, 10));
 
             firstRect.GetRectangleCenterPoint().Should().Be(new Point(0, 0));
             secondRect.GetRectangleCenterPoint().Should().Be(new Point(10, 0));
@@ -68,9 +92,9 @@ namespace TagsCloudVisualization
 
         [Test]
         [Timeout(1000)]
-        public void Puts11SameSquaresCloseToEachOther_WithDefaultDeltaAngle()
+        public void Puts11SameSquaresCloseToEachOther_WhenAngleDeltaIsPiOver60()
         {
-            var cloudLayouter = new CircularCloudLayouter(new Point());
+            _circularCloudLayouter = new CircularCloudLayouter(new Point());
             var expectedRectCenters = new List<Point>()
             {
                 new (0, 0),
@@ -88,9 +112,10 @@ namespace TagsCloudVisualization
             var rectNumber = 0;
             foreach (var expectedRectCenter in expectedRectCenters)
             {
-                var currentRectangle = cloudLayouter.PutNextRectangle(new Size(4,4));
+                var currentRectangle = _circularCloudLayouter.PutNextRectangle(new Size(4, 4));
                 // Вот это бы хотелось зарефакторить так, чтобы fluentassertions явно говорил
-                // На каком номере прямоугольника он свалился, пока что это выглядит так
+                // На каком номере прямоугольника он свалился, но я не знаю как это сделать
+                // Пока что это выглядит так
                 //  Expected actualTuple to be equal to
                 //  {
                 //      Item1 = 7, 
@@ -105,7 +130,6 @@ namespace TagsCloudVisualization
                 actualTuple.Should().Be(expectedTuple);
                 rectNumber++;
             }
-            
         }
     }
 }
