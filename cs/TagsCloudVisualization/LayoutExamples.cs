@@ -28,7 +28,7 @@ namespace TagsCloudVisualization
                 circularCloudLayouter.PutNextRectangle(new Size(rectWidth, rectHeight));
             }
 
-            circularCloudLayouter.CreateImageOfLayout("RandomRectangles");
+            circularCloudLayouter.CreateImageOfLayout("Random rectangles");
         }
 
         public static void GenerateManySmallSameSizedRectangles()
