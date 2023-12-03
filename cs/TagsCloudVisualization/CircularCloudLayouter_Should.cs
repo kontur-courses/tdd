@@ -6,12 +6,12 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter_Should
     {
-        // Не придумал как по-другому в TearDown создавать картинку
-        // Но есть ощущение, что это костыль
+        // РќРµ РїСЂРёРґСѓРјР°Р», РєР°Рє РїРѕ-РґСЂСѓРіРѕРјСѓ СЃРѕР·РґР°РІР°С‚СЊ РєР°СЂС‚РёРЅРєСѓ РІ TearDown
+        // Р•СЃР»Рё С‡РµСЃС‚РЅРѕ, РІС‹РіР»СЏРґРёС‚ РєР°Рє РєРѕСЃС‚С‹Р»СЊ
         private CircularCloudLayouter _circularCloudLayouter;
 
-        // Из-за костыля приходится делать такую штуку, чтобы лучше уж выкинуло рантайм ошибку из-за null
-        // Чем начало тестировать уже протестированный экземпляр класса
+        // РР·-Р·Р° РєРѕСЃС‚С‹Р»СЏ РїСЂРёС…РѕРґРёС‚СЃСЏ СЃРѕР·РґР°РІР°С‚СЊ РІРѕС‚ С‚Р°РєСѓСЋ Р·Р°С‚С‹С‡РєСѓ, С‡С‚РѕР±С‹ Р»СѓС‡С€Рµ РѕРЅ РїР°РґР°Р» РІ СЂР°РЅС‚Р°Р№РјРµ РІ null
+        // Р§РµРј С‚РµСЃС‚РёСЂРѕРІР°Р» СѓР¶Рµ РїСЂРѕС‚РµСЃС‚РёСЂРѕРІР°РЅРЅС‹Р№ СЌРєР·РµРјРїР»СЏСЂ CircularCloudLayouter
         [SetUp]
         public void SetCircularCloudFieldToNull()
         {
@@ -25,8 +25,8 @@ namespace TagsCloudVisualization
             _circularCloudLayouter.CreateImageOfLayout(TestContext.CurrentContext.Test.Name, TestContext.CurrentContext.WorkDirectory);
             var filePath = TestContext.CurrentContext.WorkDirectory + @"\" + TestContext.CurrentContext.Test.Name + @".png";
             TestContext.WriteLine($"Tag cloud visualization saved to file {filePath}");
-            // Вычитал новую клевую фичу, но решарперовские тесты к сожалению не видят этот аттачмент
-            // Только через визуаловские тесты смог увидеть
+            // РџРѕРєР° С‡РёС‚Р°Р» РґРѕРєСѓ РЅР°С€РµР» РІРѕС‚ С‚Р°РєСѓСЋ РїСЂРёРєРѕР»СЊРЅСѓСЋ С„РёС‡Сѓ
+            // Р–Р°Р»РєРѕ СЌС‚РѕС‚ Р°С‚С‚Р°С‡РјРµРЅС‚ С‚РµСЃС‚С‹ СЂРµС€Р°СЂРїРµСЂР° РЅРµ РІРёРґСЏС‚, Р·Р°С‚Рѕ РІРёР·СѓР°Р»РѕРІСЃРєРёРµ РІРёРґСЏС‚!
             TestContext.AddTestAttachment(TestContext.CurrentContext.Test.Name + @".png");
         }
 
@@ -113,9 +113,10 @@ namespace TagsCloudVisualization
             foreach (var expectedRectCenter in expectedRectCenters)
             {
                 var currentRectangle = _circularCloudLayouter.PutNextRectangle(new Size(4, 4));
-                // Вот это бы хотелось зарефакторить так, чтобы fluentassertions явно говорил
-                // На каком номере прямоугольника он свалился, но я не знаю как это сделать
-                // Пока что это выглядит так
+                // РҐРѕС‡РµС‚СЃСЏ РєР°Рє-С‚Рѕ СЌС‚Рѕ Р·Р°СЂРµС„Р°РєС‚РѕСЂРёС‚СЊ, С‡С‚РѕР±С‹ fluentassetions РµС‰Рµ Рё РЅР°Р·РІР°РЅРёСЏ РїРѕР»РµР№ РїРѕРґС‚СЏРіРёРІР°Р»
+                // Рђ С‚Рѕ Сѓ РЅР°СЃ Item1 Рё Item2 РІРѕС‚ Рё СЃРёРґРё РґРѕРіР°РґС‹РІР°Р№СЃСЏ...
+                // Р”Р»СЏ С‚РѕРіРѕ С‡С‚РѕР±С‹ Р±С‹Р»Рѕ РїРѕРЅСЏС‚РЅРµРµ, РЅР° РєР°РєРѕРј РѕРЅ РЅРѕРјРµСЂРµ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР° РїР°РґР°РµС‚
+                // РќРѕ РґРµР»Р°С‚СЊ РїРѕРґ СЌС‚Рѕ РµС‰Рµ 1 РєР»Р°СЃСЃ Р±СѓРґС‚Рѕ СЃР»РёС€РєРѕРј
                 //  Expected actualTuple to be equal to
                 //  {
                 //      Item1 = 7, 
