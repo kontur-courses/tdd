@@ -17,7 +17,7 @@ public class Program
 
         for (int i = 0; i < CountRectangles; i++)
         {
-            layouter.PutNextRectangle(new Size(random.Next(10, 20), random.Next(10, 20)));
+            layouter.PutNextRectangle(new Size(random.Next(5, 20), random.Next(5, 20)));
         }
         var image = Visualizer.Visualize(layouter.Rectangles, ImageWidth, ImageHeight);
 

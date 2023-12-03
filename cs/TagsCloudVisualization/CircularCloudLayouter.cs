@@ -2,12 +2,12 @@
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter: ICircularCloudLayouter
+    public class CircularCloudLayouter : ICircularCloudLayouter
     {
         private readonly Point center;
         private readonly List<Rectangle> rectanglesInLayout;
         private readonly Spiral spiral;
-        
+
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
@@ -26,7 +26,7 @@ namespace TagsCloudVisualization
             }
 
             var currentRectangle = CreateNewRectangle(rectangleSize);
-            
+
             rectanglesInLayout.Add(currentRectangle);
 
             return currentRectangle;
