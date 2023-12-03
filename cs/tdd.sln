@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BowlingGame", "BowlingGame\BowlingGame.csproj", "{AD0F018A-732E-4074-8527-AB2EEC8D0BF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BowlingGame", "BowlingGame\BowlingGame.csproj", "{AD0F018A-732E-4074-8527-AB2EEC8D0BF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.csproj", "{B5108E20-2ACF-4ED9-84FE-2A718050FC94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples", "Samples\Samples.csproj", "{B5108E20-2ACF-4ED9-84FE-2A718050FC94}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{54AF2EE6-B382-4DCE-9906-CF49935B8684}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualizationTests", "TagsCloudVisualizationTests\TagsCloudVisualizationTests.csproj", "{5DF30E2A-D20E-4D90-8347-9895A2DEB955}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,8 +25,19 @@ Global
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54AF2EE6-B382-4DCE-9906-CF49935B8684}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54AF2EE6-B382-4DCE-9906-CF49935B8684}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54AF2EE6-B382-4DCE-9906-CF49935B8684}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54AF2EE6-B382-4DCE-9906-CF49935B8684}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DF30E2A-D20E-4D90-8347-9895A2DEB955}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DF30E2A-D20E-4D90-8347-9895A2DEB955}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DF30E2A-D20E-4D90-8347-9895A2DEB955}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DF30E2A-D20E-4D90-8347-9895A2DEB955}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {76B5AFCE-843B-4BC8-AC47-F24803E7000D}
 	EndGlobalSection
 EndGlobal
