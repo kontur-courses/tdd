@@ -6,4 +6,5 @@ public interface ICloudLayouter
 {
     List<Rectangle> PlacedRectangles { get; }
     Rectangle PutNextRectangle(Size rectangleSize);
+    Rectangle GetCloudBorders();
 }

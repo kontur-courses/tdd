@@ -46,14 +46,25 @@ public class CircularCloudLayouter : ICloudLayouter
             newRectangle.Location = new Point(center.X - newRectangle.Width / 2, center.Y - newRectangle.Height / 2);
             return newRectangle;
         }
-
         
-        const int radiusIncrement = 15;
-        const double angleIncrement = 0.2d;
+        const int radiusIncrement = 1;
+        const double angleIncrement = 0.1d;
 
         return CalculateRectanglePosition(rectangleSize, radiusIncrement, angleIncrement);
     }
 
+    public Rectangle GetCloudBorders()
+    {
+        var left = PlacedRectangles.Min(r => r.Left);
+        var right = PlacedRectangles.Max(r => r.Right);
+        var top = PlacedRectangles.Min(r => r.Top);
+        var bottom = PlacedRectangles.Max(r => r.Bottom);
+
+        var width = right - left;
+        var height = bottom - top;
+        return new Rectangle(left, top, width, height);
+    }
+    
     public Rectangle PutNextRectangle(Size rectangleSize)
     {
         if (rectangleSize.Height < 0 || rectangleSize.Width < 0)
