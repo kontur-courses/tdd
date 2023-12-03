@@ -34,10 +34,12 @@
             spiralPoints.Count.Should().BeGreaterThan(1);
         }
 
-        [Test]
-        public void SpiralGenerator_ThrowsException_WhenAnyCoordinateNegative()
+        [TestCase(-1, 1, TestName = "X is negative")]
+        [TestCase(1, -1, TestName = "Y is negative")]
+        [TestCase(-1, -1, TestName = "X and Y are negative")]
+        public void SpiralGenerator_ThrowsExceptionOnInvalidCenterPoint(int x, int y)
         {
-            Action action = () => { new SpiralGenerator(new Point(-1, 0)); };
+            Action action = () => { new SpiralGenerator(new Point(x, y)); };
 
             action.Should().Throw<ArgumentException>();
         }

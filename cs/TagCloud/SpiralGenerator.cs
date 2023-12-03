@@ -9,7 +9,7 @@ public class SpiralGenerator
     private readonly double angleShift;
     private double currentAngle;
 
-    public SpiralGenerator(Point startPoint, int spiralDensity = 1, double angleShift = 0.01)
+    public SpiralGenerator(Point startPoint, int spiralDensity = 1, double angleShift = 0.1)
     {
         if (startPoint.X < 0 || startPoint.Y < 0)
             throw new ArgumentException();
