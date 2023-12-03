@@ -12,7 +12,7 @@ namespace TagsCloudVisualization
         {
             this.center = center;
             rectanglesInLayout = new();
-            spiral = new(center, 0.05);
+            spiral = new(center, 0.05, 0.01);
         }
 
         public Point CloudCenter { get => center; }

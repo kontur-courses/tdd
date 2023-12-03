@@ -5,25 +5,29 @@ namespace TagsCloudVisualization
     public class Spiral
     {
         private readonly Point center;
-        private readonly double offsetAngle;
+        private readonly double deltaAngle;
+        private readonly double deltaRadius;
+        private double radius;
         private double angle;
 
-        public Spiral(Point center, double offsetAngle) 
+        public Spiral(Point center, double deltaAngle, double deltaRadius)
         {
             this.center = center;
-            this.offsetAngle = offsetAngle;
+            this.deltaAngle = deltaAngle;
+            this.deltaRadius = deltaRadius;
         }
 
         public Point GetNextPointOnSpiral()
         {
-            angle += offsetAngle;
+            angle += deltaAngle;
+            radius += deltaRadius;
             return ConvertFromPolarCoordinates();
         }
 
         private Point ConvertFromPolarCoordinates()
         {
-            var x = (int)Math.Ceiling(center.X + Math.Cos(angle) * angle);
-            var y = (int)Math.Ceiling(center.Y + Math.Sin(angle) * angle);
+            var x = (int)Math.Ceiling(center.X + Math.Cos(angle) * radius);
+            var y = (int)Math.Ceiling(center.Y + Math.Sin(angle) * radius);
             return new Point(x, y);
         }
     }

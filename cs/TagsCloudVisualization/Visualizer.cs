@@ -16,5 +16,15 @@ namespace TagsCloudVisualization
 
             return bitmap;
         }
+
+        public static void SaveBitmap(Bitmap bitmap, string fileName, string pathToDirectory)
+        {
+            if (!Directory.Exists(pathToDirectory))
+            {
+                Directory.CreateDirectory(pathToDirectory);
+            }
+
+            bitmap.Save(Path.Combine(pathToDirectory, fileName), System.Drawing.Imaging.ImageFormat.Png);
+        }
     }
 }

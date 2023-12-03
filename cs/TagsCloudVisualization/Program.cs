@@ -5,8 +5,8 @@ namespace TagsCloudVisualization;
 
 public class Program
 {
-    public const int ImageWidth = 500;
-    public const int ImageHeight = 500;
+    public const int ImageWidth = 1000;
+    public const int ImageHeight = 1000;
     public const int CountRectangles = 500;
     public const string PathToImages = @"..\..\..\Images";
 
@@ -19,13 +19,8 @@ public class Program
         {
             layouter.PutNextRectangle(new Size(random.Next(10, 20), random.Next(10, 20)));
         }
-
         var image = Visualizer.Visualize(layouter.Rectangles, ImageWidth, ImageHeight);
-        if (!Directory.Exists(PathToImages))
-        {
-            Directory.CreateDirectory(PathToImages);
-        }
 
-        image.Save(Path.Combine(PathToImages, $"result{CountRectangles}.png"), System.Drawing.Imaging.ImageFormat.Png);
+        Visualizer.SaveBitmap(image, $"Result{CountRectangles}Rectangles.png", PathToImages);
     }
 }
