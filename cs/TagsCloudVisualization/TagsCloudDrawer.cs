@@ -14,10 +14,15 @@ public class TagsCloudDrawer
 
     public Bitmap DrawRectangles(Pen pen, int scale)
     {
+        if (scale <= 0)
+            throw new ArgumentException("Scale must be a positive number.");
+        if (pen is null)
+            throw new ArgumentException("Pen must not be null.");
+        
         var borders = layouter.GetCloudBorders();
         var bitmap = new Bitmap(borders.Width * scale, borders.Height * scale);
         var graphics = Graphics.FromImage(bitmap);
-
+        
         var rectanglesWithShift = layouter.PlacedRectangles
             .Select(r =>
                 new Rectangle(
@@ -31,12 +36,14 @@ public class TagsCloudDrawer
 
         return bitmap;
     }
-
-    public static void SaveImage(Bitmap bitmap, string dirPath, string filename)
+    
+    public static void SaveImage(Bitmap bitmap, string filename)
     {
-        if (!Directory.Exists(dirPath))
-            Directory.CreateDirectory(dirPath);
-
-        bitmap.Save(Path.Combine(dirPath, filename), ImageFormat.Jpeg);
+        if (string.IsNullOrWhiteSpace(filename) || filename.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+            throw new ArgumentException("The provided filename is not valid.");
+        
+        var currentDir = Directory.GetCurrentDirectory();
+        
+        bitmap.Save(Path.Combine(currentDir, filename), ImageFormat.Jpeg);
     }
 }
