@@ -77,5 +77,67 @@ namespace Tests
 
             distanceBetweenRectangles.Should().BeLessThan(1);
         }
+
+
+        static IEnumerable<TestCaseData> PutRectanglesArgumnetNullException = new[]
+        {
+            new TestCaseData(new List<Size>()).SetName("WhenGivenEmptyList"),
+            new TestCaseData(null).SetName("WhenGivenNull")
+        };
+
+        [TestCaseSource(nameof(PutRectanglesArgumnetNullException))]
+        public void PutRectangles_ThrowsArgumnetNullException(List<Size> sizes) =>
+            Assert.Throws<ArgumentNullException>(() => circularLayouter.PutRectangles(sizes));
+
+
+        [Test]
+        public void GetLayout_ReturnsAsMuchRectanglesAsWasPut()
+        {
+            circularLayouter.PutNextRectangle(new Size(10, 10));
+            circularLayouter.PutNextRectangle(new Size(5, 5));
+            var rectanglesAmount = circularLayouter.GetLayout().Count;
+
+            rectanglesAmount.Should().Be(2);
+        }
+
+        [Test]
+        public void Layout_ShouldContainRectanglesWhichDoNotIntersectWithEachOther()
+        {
+            var rectanglesAmount = 20;
+            var sizes = Utils.GenerateSizes(rectanglesAmount);
+
+            circularLayouter.PutRectangles(sizes);
+            var rectanglesLayout = circularLayouter.GetLayout();
+
+            for (var i = 0; i < rectanglesAmount; i++)
+            {
+                for (var j = 0; j < rectanglesAmount; j++)
+                {
+                    if (i == j) continue;
+                    var doesRectanglesIntersect = rectanglesLayout[i].IntersectsWith(rectanglesLayout[j]);
+                    doesRectanglesIntersect.Should().BeFalse();
+                }
+            }
+        }
+
+        [Test]
+        public void Layout_ShouldContainTightPlacedRectangles()
+        {
+            var rectanglesAmount = 100;
+            var sizes = Utils.GenerateSizes(rectanglesAmount);
+
+            circularLayouter.PutRectangles(sizes);
+            var rectanglesLayout = circularLayouter.GetLayout();
+            var rectanglesSpace = rectanglesLayout.Sum(rect => rect.Width * rect.Height);
+            var circleRadiusOfHorizontalAxe =
+                (rectanglesLayout.Max(rect => rect.X) - rectanglesLayout.Min(rect => rect.X)) / 2;
+            var circleRadiusOfVerticleAxe =
+                (rectanglesLayout.Max(rect => rect.Y) - rectanglesLayout.Min(rect => rect.Y)) / 2;
+            var circleOccupiedSpace = Math.PI * circleRadiusOfHorizontalAxe * circleRadiusOfVerticleAxe;
+            var freeSpace = circleOccupiedSpace - rectanglesSpace;
+            var freeSpaceProportionInPercentage = freeSpace / circleOccupiedSpace * 100;
+
+            freeSpaceProportionInPercentage.Should().BeLessThan(30);
+        }
     }
 }

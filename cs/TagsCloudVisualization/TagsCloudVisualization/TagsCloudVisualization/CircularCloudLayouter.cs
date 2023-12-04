@@ -29,5 +29,13 @@ public class CircularCloudLayouter : ICloudLayouter
         return nextRectangle;
     }
 
+    public void PutRectangles(List<Size> sizes)
+    {
+        if (sizes == null || sizes.Count == 0)
+            throw new ArgumentNullException(nameof(sizes));
+        foreach (var size in sizes)
+            PutNextRectangle(size);
+    }
+
     public List<Rectangle> GetLayout() => Rectangles;
 }
