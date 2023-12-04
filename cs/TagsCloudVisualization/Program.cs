@@ -8,7 +8,7 @@ var center = new PointF((float)1920 / 2, (float)1080 / 2);
 var random = new Random();
 
 var sizes = Enumerable
-    .Range(0, 200)
+    .Range(0, 120)
     .Select(rect => new Size(random.Next(50, 120), random.Next(50, 120)))
     .ToArray();
 
@@ -20,7 +20,7 @@ using var image = new Image<Rgba32>(1920, 1080);
 image.Mutate(ctx =>
 {
     ctx.Clear(Color.White);
-    rectangles.ForEach(rect => ctx.Draw(Color.Black, 1f, rect));
+    rectangles.ForEach(rect => { ctx.Draw(Color.Black, 1f, rect); });
 });
 
 image.SaveAsJpeg("spiral");

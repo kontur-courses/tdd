@@ -6,13 +6,13 @@ public class Spiral
 {
     private readonly float distanceDelta, angleDelta;
     private float currentAngle;
-    
+
     public Spiral(float distanceDelta, float angleDelta)
     {
         this.distanceDelta = distanceDelta;
         this.angleDelta = angleDelta;
     }
-    
+
     public PointF GetNextPoint()
     {
         var radius = distanceDelta * currentAngle;
@@ -20,7 +20,7 @@ public class Spiral
 
         currentAngle += angleDelta;
         point.ConvertToCartesian();
-        
+
         return point;
     }
 }

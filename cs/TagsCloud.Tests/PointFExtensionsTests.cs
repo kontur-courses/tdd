@@ -9,7 +9,7 @@ namespace TagsCloud.Tests;
 public class PointFExtensionsTests
 {
     [OneTimeSetUp]
-    public void SetUp()
+    public void OneTimeSetUp()
     {
         random = new Random();
     }

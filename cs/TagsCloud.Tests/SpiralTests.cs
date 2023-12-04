@@ -8,16 +8,24 @@ namespace TagsCloud.Tests;
 [TestFixture]
 public class SpiralTests
 {
+    [OneTimeSetUp]
+    public void OneTimeSetUp()
+    {
+        random = new Random();
+    }
+
     [SetUp]
     public void SetUp()
     {
+        distanceDelta = random.Next(1, 25);
+        angleDelta = random.NextSingle();
         spiral = new Spiral(distanceDelta, angleDelta);
     }
 
-    private const float distanceDelta = 0.5f;
-    private const float angleDelta = (float)Math.PI / 4;
-
     private Spiral spiral;
+    private Random random;
+
+    private float distanceDelta, angleDelta;
 
     [Test]
     public void Spiral_Should_SaveStateBetweenCalls()
@@ -34,7 +42,7 @@ public class SpiralTests
         // Skip first point, because it is (0, 0)
         _ = spiral.GetNextPoint();
 
-        const float radius = distanceDelta * angleDelta;
+        var radius = distanceDelta * angleDelta;
         var expected = new PointF(radius, angleDelta);
         expected.ConvertToCartesian();
 
