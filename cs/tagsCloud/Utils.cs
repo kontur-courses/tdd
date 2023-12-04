@@ -22,4 +22,8 @@ public class Utils
 
     public static readonly Func<Point> GetRandomLocation =
         () => new Point(Random.Next(MinCoordinate, MaxCoordinate), Random.Next(MinCoordinate, MaxCoordinate));
+
+    public static readonly Func<Rectangle, Rectangle, bool> IsInside = (rect1, rect2) =>
+        rect1.Left <= rect2.Left && rect1.Top <= rect2.Top
+                                 && rect1.Right >= rect2.Right && rect1.Bottom >= rect2.Bottom;
 }
