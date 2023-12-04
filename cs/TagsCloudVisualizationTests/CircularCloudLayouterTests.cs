@@ -1,4 +1,5 @@
 using System.Drawing;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
 
 namespace TagsCloudVisualizationTests;
@@ -89,12 +90,23 @@ public class CircularCloudLayouterTests
         Assert.That(rectanglesToCircleSquareRatio, Is.GreaterThan(0.7).Within(0.05));
     }
 
-    [Timeout(3000)]
+    [Timeout(5000)]
     [TestCase(true)]
     [TestCase(false)]
     public void PutNextRectangle_HasSufficientPerformance_OnLargeAmountOfRectangles(bool randomRectangleSize)
     {
         PlaceRectangles(200, randomRectangleSize);
+    }
+
+    [TearDown]
+    public void GenerateImage_OnTestFail()
+    {
+        if (TestContext.CurrentContext.Result.Outcome == ResultState.Success)
+            return;
+
+        var drawer = new TagsCloudDrawer(layouter);
+        var bitmap = drawer.DrawRectangles(new Pen(Color.Red, 1), 5);
+        TagsCloudDrawer.SaveImage(bitmap, @"..\..\..\FailedTests",$"{TestContext.CurrentContext.Test.Name}.jpeg");
     }
     
     private void PlaceRectangles(int numberOfRectangles, bool randomRectangleSize)

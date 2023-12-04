@@ -37,13 +37,20 @@ public class TagsCloudDrawer
         return bitmap;
     }
     
-    public static void SaveImage(Bitmap bitmap, string filename)
+    public static void SaveImage(Bitmap bitmap, string dirPath, string filename)
     {
         if (string.IsNullOrWhiteSpace(filename) || filename.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
             throw new ArgumentException("The provided filename is not valid.");
-        
-        var currentDir = Directory.GetCurrentDirectory();
-        
-        bitmap.Save(Path.Combine(currentDir, filename), ImageFormat.Jpeg);
+
+        try
+        {
+            Directory.CreateDirectory(dirPath);
+        }
+        catch (Exception)
+        {
+            throw new ArgumentException("The provided directory path is not valid.");
+        }
+
+        bitmap.Save(Path.Combine(dirPath, filename), ImageFormat.Jpeg);
     }
 }

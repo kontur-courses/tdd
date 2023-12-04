@@ -15,6 +15,6 @@ public static class Program
         var drawer = new TagsCloudDrawer(layouter);
         
         var bitmap = drawer.DrawRectangles(new Pen(Color.Red, 3), 3);
-        TagsCloudDrawer.SaveImage(bitmap, "");
+        TagsCloudDrawer.SaveImage(bitmap, Directory.GetCurrentDirectory(), "image.jpeg");
     }
 }

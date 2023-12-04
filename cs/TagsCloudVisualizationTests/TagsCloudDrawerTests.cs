@@ -25,13 +25,16 @@ public class TagsCloudDrawerTests
         Assert.Throws<ArgumentException>(() => drawer.DrawRectangles((penIsNull ? null : pen)!, scale));
     }
 
-    [TestCase("<>\\")]
-    [TestCase("name|123")]
-    [TestCase(null)]
-    [TestCase("")]
-    public void SaveImage_ThrowsArgumentException_OnInvalidFilename(string filename)
+    [TestCase("test", "<>\\")]
+    [TestCase("test", "name|123")]
+    [TestCase("test", null)]
+    [TestCase("test", "")]
+    [TestCase(null, "filename")]
+    [TestCase("","filename")]
+    [TestCase("  ","filename")]
+    [TestCase(@"\:\","filename")]
+    public void SaveImage_ThrowsArgumentException_OnInvalidParameters(string dirPath, string filename)
     {
-        Assert.Throws<ArgumentException>(() => TagsCloudDrawer.SaveImage(new Bitmap(1, 1), filename));
+        Assert.Throws<ArgumentException>(() => TagsCloudDrawer.SaveImage(new Bitmap(1, 1), dirPath, filename));
     }
-    
 }
