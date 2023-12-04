@@ -28,4 +28,6 @@ public class CircularCloudLayouter : ICloudLayouter
         Rectangles.Add(nextRectangle);
         return nextRectangle;
     }
+
+    public List<Rectangle> GetLayout() => Rectangles;
 }

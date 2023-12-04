@@ -2,6 +2,7 @@
 using System.Drawing;
 using TagsCloudVisualization;
 using FluentAssertions;
+using NUnit.Framework.Interfaces;
 
 namespace Tests
 {
@@ -13,6 +14,24 @@ namespace Tests
         public void Setup()
         {
             circularLayouter = new CircularCloudLayouter(new Point(500, 500));
+        }
+
+        [TearDown]
+        public void SaveLayoutImage_WhenFailed()
+        {
+            var testResult = TestContext.CurrentContext.Result.Outcome;
+            var testName = TestContext.CurrentContext.Test.FullName;
+
+            if (Equals(testResult, ResultState.Failure) ||
+                Equals(testResult == ResultState.Error))
+            {
+                var rectanglesLayout = circularLayouter.GetLayout();
+                if (rectanglesLayout == null) return;
+                var bitmap = CloudLayoutDrawer.Draw(rectanglesLayout.ToArray(), 1000, 1000);
+                var path = @$"{Environment.CurrentDirectory}..\..\..\..\FailedTestsLayouts\{testName}.jpg";
+                bitmap.Save(path);
+                Console.WriteLine($"Tag cloud visualization saved to file {path}");
+            }
         }
 
 
