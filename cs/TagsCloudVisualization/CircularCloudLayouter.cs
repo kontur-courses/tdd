@@ -4,17 +4,17 @@ namespace TagsCloudVisualization;
 
 public class CircularCloudLayouter
 {
-    private readonly HashSet<Point> occupiedPixels = new();
     private readonly List<Rectangle> rectangles = new();
+    private readonly Layout layout;
     private bool isNameSet;
-    
-    public Point Center { get; }
+
+    public Point Center => layout.Center;
     
     public Rectangle[] GetRectangles => rectangles.ToArray();
 
     public CircularCloudLayouter(Point center)
     {
-        Center = center;
+        layout = new Layout(center);
     }
     
     public Rectangle SetName(Size rectangleSize)
@@ -42,55 +42,18 @@ public class CircularCloudLayouter
         var leftOffset = size.Width / 2 + (size.Width % 2 == 0 ? 0 : 1);
         var topOffset = size.Height / 2 + (size.Height % 2 == 0 ? 0 : 1);
 
-        foreach (var coord in GetNextCoord())
+        foreach (var coord in layout.GetNextCoord())
         {
             var rectangle = new Rectangle(coord.X - leftOffset, coord.Y - topOffset, size.Width, size.Height);
             
-            if (!CanPutInCoords(rectangle))
+            if (!layout.CanPutInCoords(rectangle))
                 continue;
 
-            OccupyCoords(rectangle);
+            layout.OccupyCoords(rectangle);
             
             return rectangle;
         }
 
         return default;
-    }
-
-    private IEnumerable<Point> GetNextCoord()
-    {
-        yield return Center + new Size(0, 0);
-        var offset = 1;
-
-        while (true)
-        {
-            for (var dx = -offset; dx <= offset; dx++)
-            for (var dy = -offset; dy <= offset; dy++)
-            {
-                if (!(Math.Abs(dx) != offset || Math.Abs(dy) != offset))
-                    continue;
-
-                yield return Center + new Size(dx, dy);
-            }
-
-            offset++;
-        }
-    }
-
-    private bool CanPutInCoords(Rectangle rectangle)
-    {
-        for (var i = rectangle.Left; i <= rectangle.Right; i++)
-        for (var j = rectangle.Top; j <= rectangle.Bottom; j++)
-            if (occupiedPixels.Contains(new Point(i, j)))
-                return false;
-
-        return true;
-    }
-
-    private void OccupyCoords(Rectangle rectangle)
-    {
-        for (var i = rectangle.Left; i <= rectangle.Right; i++)
-        for (var j = rectangle.Top; j <= rectangle.Bottom; j++)
-            occupiedPixels.Add(new Point(i, j));
     }
 }
