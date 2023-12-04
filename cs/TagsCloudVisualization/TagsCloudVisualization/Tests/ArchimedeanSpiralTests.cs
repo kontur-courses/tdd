@@ -11,7 +11,7 @@ namespace Tests
         [SetUp]
         public void SetUp()
         {
-            archimedeanSpiralPlacer = new ArchimedeanSpiralPlacer(new Point(1, 1), 1, 1, 1);
+            archimedeanSpiralPlacer = new ArchimedeanSpiralPlacer(new Point(1, 1), 0.1, 0.5, 1);
         }
 
         static IEnumerable<TestCaseData> ConstructorArgumentException => new[]
