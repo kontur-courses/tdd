@@ -2,7 +2,7 @@
 
 namespace TagsCloudVisualization
 {
-    class CircularCloudLayouter(Point centerPoint)
+    public class CircularCloudLayouter(Point centerPoint)
     {
         private readonly List<Rectangle> rectangles = new();
         private readonly ArchimedeanSpiral spiral = new(centerPoint);
