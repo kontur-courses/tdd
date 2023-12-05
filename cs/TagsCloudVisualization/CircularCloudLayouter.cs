@@ -11,18 +11,14 @@ namespace TagsCloudVisualization;
 public class CircularCloudLayouter
 {
     public readonly Point CenterPoint;
-    private readonly SpiralGenerator spiralGenerator;
+    private readonly IPointGenerator pointsGenerator;
     private readonly List<Rectangle> createdRectangles = new();
-    public CircularCloudLayouter(Point center)
-    {
-        CenterPoint = center;
-        spiralGenerator = new SpiralGenerator(center);
-    }
 
-    public CircularCloudLayouter(Point center, int radiusDelta, double angleDelta)
+    public CircularCloudLayouter(Point center, IPointGenerator pointGenerator)
     {
         CenterPoint = center;
-        spiralGenerator = new SpiralGenerator(center, radiusDelta, angleDelta);
+        pointsGenerator = pointGenerator;
+        pointGenerator.Initialise(center);
     }
 
     public Rectangle PutNextRectangle(Size rectangleSize)
@@ -30,11 +26,9 @@ public class CircularCloudLayouter
         if (rectangleSize.Width < 0 || rectangleSize.Height < 0)
             throw new ArgumentException("Rectangle can't have negative width or height");
 
-        // spiralGenerator.ResetSpiral();
-
         while (true)
         {
-            var nextPoint = spiralGenerator.GetNextPoint();
+            var nextPoint = pointsGenerator.GetNextPoint();
 
             var rectangleLocation = new Point(nextPoint.X - rectangleSize.Width / 2,
                 nextPoint.Y - rectangleSize.Height / 2);

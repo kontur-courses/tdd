@@ -10,25 +10,20 @@ namespace TagsCloudVisualization;
 
 public class SpiralGenerator : IPointGenerator
 {
-    private readonly Point center;
-
+    private Point center;
     public Point Center => new(center.X, center.Y);
     public int Radius { get; private set; }
-    public int RadiusDelta { get; }
+    public int RadiusDelta { get; private set; }
     public double Angle { get; private set; }
-    public double AngleDelta { get; }
+    public double AngleDelta { get; private set; }
 
-    public SpiralGenerator(Point center, int radiusDelta = 1, double angleDelta = Math.PI / 60)
+    public void Initialise(Point initCenter)
     {
-        this.center = center;
-        this.RadiusDelta = radiusDelta < 0 ? throw new ArgumentException("radiusDelta cant be negative") : radiusDelta;
-        this.AngleDelta = angleDelta;
-    }
-
-    public SpiralGenerator(int radiusDelta = 1, double angleDelta = Math.PI / 60) 
-        : this(new Point(0, 0), radiusDelta, angleDelta)
-    {
-
+        center = initCenter;
+        Radius = 0;
+        RadiusDelta = 1;
+        Angle = 0;
+        AngleDelta = Math.PI / 60;
     }
 
     public Point GetNextPoint()
@@ -43,11 +38,5 @@ public class SpiralGenerator : IPointGenerator
         Angle = angleMoreThan2Pi ? 0 : nextAngle;
 
         return new Point(x, y);
-    }
-
-    public void ResetSpiral()
-    {
-        Radius = 0;
-        Angle = 0;
     }
 }
