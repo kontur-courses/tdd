@@ -6,12 +6,8 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter_Should
     {
-        // Не придумал, как по-другому создавать картинку в TearDown
-        // Если честно, выглядит как костыль
         private CircularCloudLayouter _circularCloudLayouter;
 
-        // Из-за костыля приходится создавать вот такую затычку, чтобы лучше он падал в рантайме в null
-        // Чем тестировал уже протестированный экземпляр CircularCloudLayouter
         [SetUp]
         public void SetCircularCloudFieldToNull()
         {
@@ -25,8 +21,6 @@ namespace TagsCloudVisualization
             _circularCloudLayouter.CreateImageOfLayout(TestContext.CurrentContext.Test.Name, TestContext.CurrentContext.WorkDirectory);
             var filePath = TestContext.CurrentContext.WorkDirectory + @"\" + TestContext.CurrentContext.Test.Name + @".png";
             TestContext.WriteLine($"Tag cloud visualization saved to file {filePath}");
-            // Пока читал доку нашел вот такую прикольную фичу
-            // Жалко этот аттачмент тесты решарпера не видят, зато визуаловские видят!
             TestContext.AddTestAttachment(TestContext.CurrentContext.Test.Name + @".png");
         }
 
@@ -113,19 +107,6 @@ namespace TagsCloudVisualization
             foreach (var expectedRectCenter in expectedRectCenters)
             {
                 var currentRectangle = _circularCloudLayouter.PutNextRectangle(new Size(4, 4));
-                // Хочется как-то это зарефакторить, чтобы fluentassetions еще и названия полей подтягивал
-                // А то у нас Item1 и Item2 вот и сиди догадывайся...
-                // Для того чтобы было понятнее, на каком он номере прямоугольника падает
-                // Но делать под это еще 1 класс будто слишком
-                //  Expected actualTuple to be equal to
-                //  {
-                //      Item1 = 7, 
-                //      Item2 = { X = 6,Y = -4}
-                //  }, but found
-                //  {
-                //      Item1 = 7, 
-                //      Item2 = { X = 6,Y = 4}
-                //  }
                 (int rectNumber, Point centerPoint) expectedTuple = (rectNumber, expectedRectCenter);
                 (int rectNumber, Point centerPoint) actualTuple = (rectNumber, currentRectangle.GetRectangleCenterPoint());
                 actualTuple.Should().Be(expectedTuple);

@@ -42,7 +42,6 @@ namespace TagsCloudVisualization
             circularCloudLayouter.CreateImageOfLayout("Many small rectangles");
         }
 
-        // Worst scenario
         public static void GenerateVerybigThenSmallRectangles()
         {
             var circularCloudLayouter = new CircularCloudLayouter(new Point());

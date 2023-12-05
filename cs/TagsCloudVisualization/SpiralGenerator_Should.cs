@@ -49,6 +49,7 @@ namespace TagsCloudVisualization
         {
             var centerPoint = new Point(5, 6);
             var spiral = new SpiralGenerator(centerPoint, 4, Math.PI / 4);
+
             //Skips first circle
             for (var i = 0; i < 8; i++)
             {

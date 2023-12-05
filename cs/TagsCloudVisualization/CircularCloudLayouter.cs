@@ -30,7 +30,6 @@ namespace TagsCloudVisualization
             if (rectangleSize.Width < 0 || rectangleSize.Height < 0)
                 throw new ArgumentException("Rectangle can't have negative width or height");
 
-            // Необходимо чтобы значительно увеличить плотность, очень сильно жертвуем производительностью
             // spiralGenerator.ResetSpiral();
 
             while (true)
@@ -72,7 +71,6 @@ namespace TagsCloudVisualization
             graphics.DrawRectangles(blackPen, offsettedRectangles);
             bitmap.Save(filePath + @$"\{fileName}.png", ImageFormat.Png);
 
-            // Оставил это под комментом, использовал для удобства при запуске Main в LayoutExamples, но вдруг пригодится ;)
             //Console.WriteLine($"Image is saved to {filePath}" + @$"\{fileName}.png");
         }
     }

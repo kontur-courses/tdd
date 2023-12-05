@@ -45,8 +45,6 @@ namespace TagsCloudVisualization
             return new Point(x, y);
         }
 
-        // Необходимо чтобы значительно увеличить плотность, очень сильно жертвуем производительностью
-        // Используется в CircularCloudLayouter.PutNextRectangle()
         public void ResetSpiral()
         {
             Radius = 0;
