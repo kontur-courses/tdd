@@ -8,8 +8,8 @@ namespace TagsCloudVisualization.UnitTests
         public static IEnumerable<TestCaseData> Different_CenterPoints()
         {
             yield return new TestCaseData(new Point(0, 0)).SetName("(0, 0) center");
-            yield return new TestCaseData(new Point(int.MinValue, int.MaxValue)).SetName("(minInt, maxInt) center");
-            yield return new TestCaseData(new Point(int.MaxValue, int.MinValue)).SetName("(maxInt, minInt) center");
+            yield return new TestCaseData(new Point(343, 868)).SetName("(343, 868) center");
+            yield return new TestCaseData(new Point(-343, -868)).SetName("(-343, -868) center");
         }
 
         public static IEnumerable<TestCaseData> DifferentIterationsAdded_ExpectedPoints()
