@@ -18,7 +18,7 @@ public static class LayoutExamples
 
     public static void GenerateRectanglesWithRandomSizes(int amountRectangles, int minSizeParam, int maxSizeParam)
     {
-        var circularCloudLayouter = new CircularCloudLayouter(new Point());
+        var circularCloudLayouter = new CloudLayouter(new SpiralGenerator());
         var random = new Random();
 
         for (var i = 0; i < amountRectangles; i++)
@@ -33,7 +33,7 @@ public static class LayoutExamples
 
     public static void GenerateManySmallSameSizedRectangles()
     {
-        var circularCloudLayouter = new CircularCloudLayouter(new Point());
+        var circularCloudLayouter = new CloudLayouter(new SpiralGenerator());
 
         for (var i = 0; i < 200; i++)
         {
@@ -44,7 +44,7 @@ public static class LayoutExamples
 
     public static void GenerateVerybigThenSmallRectangles()
     {
-        var circularCloudLayouter = new CircularCloudLayouter(new Point());
+        var circularCloudLayouter = new CloudLayouter(new SpiralGenerator());
 
         for (var i = 0; i < 5; i++)
         {

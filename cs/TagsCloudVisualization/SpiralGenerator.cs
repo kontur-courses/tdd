@@ -10,32 +10,22 @@ namespace TagsCloudVisualization;
 
 public class SpiralGenerator : IPointGenerator
 {
-    private Point center;
-    public Point Center => new(center.X, center.Y);
-    public int Radius { get; private set; }
-    public int RadiusDelta { get; private set; }
-    public double Angle { get; private set; }
-    public double AngleDelta { get; private set; }
-
-    public void Initialise(Point initCenter)
-    {
-        center = initCenter;
-        Radius = 0;
-        RadiusDelta = 1;
-        Angle = 0;
-        AngleDelta = Math.PI / 60;
-    }
+    private readonly Point center = new(0, 0);
+    private int radius;
+    private double angle;
+    private const int RadiusDelta = 1;
+    private const double AngleDelta = Math.PI / 60;
 
     public Point GetNextPoint()
     {
-        var x = (int)Math.Round(center.X + Radius * Math.Cos(Angle));
-        var y = (int)Math.Round(center.Y + Radius * Math.Sin(Angle));
+        var x = (int)Math.Round(center.X + radius * Math.Cos(angle));
+        var y = (int)Math.Round(center.Y + radius * Math.Sin(angle));
 
-        var nextAngle = Angle + AngleDelta;
+        var nextAngle = angle + AngleDelta;
         var angleMoreThan2Pi = Math.Abs(nextAngle) >= Math.PI * 2;
 
-        Radius = angleMoreThan2Pi ? Radius + RadiusDelta : Radius;
-        Angle = angleMoreThan2Pi ? 0 : nextAngle;
+        radius = angleMoreThan2Pi ? radius + RadiusDelta : radius;
+        angle = angleMoreThan2Pi ? 0 : nextAngle;
 
         return new Point(x, y);
     }

@@ -8,17 +8,14 @@ using System.Threading.Tasks;
 
 namespace TagsCloudVisualization;
 
-public class CircularCloudLayouter
+public class CloudLayouter
 {
-    public readonly Point CenterPoint;
     private readonly IPointGenerator pointsGenerator;
     private readonly List<Rectangle> createdRectangles = new();
 
-    public CircularCloudLayouter(Point center, IPointGenerator pointGenerator)
+    public CloudLayouter(IPointGenerator pointGenerator)
     {
-        CenterPoint = center;
         pointsGenerator = pointGenerator;
-        pointGenerator.Initialise(center);
     }
 
     public Rectangle PutNextRectangle(Size rectangleSize)
