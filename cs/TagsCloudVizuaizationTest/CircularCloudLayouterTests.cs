@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Drawing;
 using NUnit.Framework;
@@ -37,7 +38,7 @@ namespace TagsCloudVizualizationTest
         public void WhenPutNewRectangle_ShouldBeAddedToList()
         {
             layouter.PutNextRectangle(new Size(4, 2));
-
+            
             layouter.Rectangles.Count.Should().Be(1);
         }
 
@@ -71,23 +72,29 @@ namespace TagsCloudVizualizationTest
         [Test]
         public void WhenPutNewRectangles_TheyShouldBeTightlyPositioned()
         {
-            var positions = new List<Point>() //Arrange
+            for (var i = 0; i < 15; i++)
+                layouter.PutNextRectangle(new Size(4, 2));
+
+            var rectanglesSquare = 0;
+            var radius = 0.0;
+
+            foreach (var rectangle in layouter.Rectangles)
             {
-                new Point(400, 400),
-                new Point(400, 402),
-                new Point(399, 398),
-                new Point(403, 398),
-                new Point(404, 400),
-                new Point(401, 404),
-                new Point(396, 401),
-                new Point(398, 396)
-            };
+                var center = layouter.Center;
 
-            for (var i = 0; i < 8; i++)
-                layouter.PutNextRectangle(new Size(4, 2)); //Act
+                rectanglesSquare += rectangle.Size.Height * rectangle.Size.Width;
 
-            for (var i = 0; i < positions.Count; i++)
-                layouter.Rectangles[i].Location.Should().Be(positions[i]); //Assert
+                var biggestDistance= Math.Abs(Math.Sqrt(Math.Pow(rectangle.X - center.X, 2)
+                                                         + Math.Pow(rectangle.Y - center.Y, 2)));
+                if (biggestDistance > radius)
+                    radius = biggestDistance;
+            }
+
+            var circleSquare = Math.PI * radius * radius;
+
+            var percentOfRatio = (rectanglesSquare / circleSquare) * 100;
+
+            percentOfRatio.Should().BeGreaterThan(80);
         }
     }
 }
