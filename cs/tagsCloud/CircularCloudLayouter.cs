@@ -2,13 +2,22 @@ using System.Drawing;
 
 namespace tagsCloud;
 
-public class CircularCloudLayouter(Point center) : ICircularCloudLayouter
+public class CircularCloudLayouter : ICircularCloudLayouter
 {
-    public List<Rectangle> Rectangles { get; } = new();
-    private readonly Spiral _spiral = new(center);
-    private readonly Size _sizeZone = new(500, 500);
+    public List<Rectangle> Rectangles { get; }
+
+    private readonly Spiral _spiral;
+    private readonly Size _sizeZone;
     private Rectangle _zonePossibleIntersections;
     private List<Rectangle> _nearestRectangles;
+
+    public CircularCloudLayouter(Point center)
+    {
+        _nearestRectangles = new List<Rectangle>();
+        _spiral = new Spiral(center);
+        _sizeZone = new Size(500, 500);
+        Rectangles = new List<Rectangle>();
+    }
 
     public Rectangle PutNextRectangle(Size rectangleSize)
     {
