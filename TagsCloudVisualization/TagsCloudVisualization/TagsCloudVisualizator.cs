@@ -16,9 +16,16 @@ public class TagsCloudVisualizator
         graphics = Graphics.FromImage(image);
     }
 
+    public void FillBackground()
+    {
+        graphics.Clear(Color.White);
+        graphics.Save();
+    }
+
     public void DrawRectangles()
     {
-        graphics.DrawRectangles(Pens.Aqua, layouter.Rectangles.ToArray());
+        graphics.FillRectangles(Brushes.Aqua, layouter.Rectangles.ToArray());
+        graphics.DrawRectangles(Pens.Black, layouter.Rectangles.ToArray());
         graphics.Save();
     }
 

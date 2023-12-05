@@ -5,22 +5,30 @@ namespace TagsCloudVisualization;
 
 public class CircularCloudLayouter : BaseCloudLayouter
 {
-    public CircularCloudLayouter(Point center) : base(center) {}
+    private readonly double spiralDeltaAngle;
+    private readonly double spiralDistance;
+
+    public CircularCloudLayouter(Point center, double spiralDeltaAngle = 5 * Math.PI / 180, double spiralDistance = 2)
+        : base(center)
+    {
+        this.spiralDeltaAngle = spiralDeltaAngle;
+        this.spiralDistance = spiralDistance;
+    }
     
     public override Point FindPositionForRectangle(Size rectangleSize)
     {
         var centerWithOffset = new Point(center.X - rectangleSize.Width / 2, center.Y - rectangleSize.Height / 2);
 
-        return GetSpiralPoints(centerWithOffset, 5 * Math.PI / 180, 2)
+        return GetSpiralPoints(centerWithOffset, spiralDeltaAngle, spiralDistance)
             .FirstOrDefault(x => IsPlaceSuitableForRectangle(new Rectangle(x, rectangleSize)));;
     }
     
-    private static IEnumerable<Point> GetSpiralPoints(Point center, double dtheta, double a)
+    private static IEnumerable<Point> GetSpiralPoints(Point center, double deltaAngle, double distance)
     {
-        for (var theta = 0d; ; theta += dtheta)
+        for (var angle = 0d; ; angle += deltaAngle)
         {
             var point = center;
-            point.Offset(PolarToCartesian(a * theta, theta));
+            point.Offset(PolarToCartesian(distance * angle, angle));
 
             yield return point;
         }
