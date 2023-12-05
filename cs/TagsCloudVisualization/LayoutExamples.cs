@@ -28,7 +28,7 @@ public static class LayoutExamples
             circularCloudLayouter.PutNextRectangle(new Size(rectangleWidth, rectangleHeight));
         }
 
-        circularCloudLayouter.CreateLayoutImage("Random rectangles");
+        LayoutDrawer.CreateLayoutImage(circularCloudLayouter.CreatedRectangles, "Random rectangles");
     }
 
     public static void GenerateManySmallSameSizedRectangles()
@@ -39,7 +39,7 @@ public static class LayoutExamples
         {
             circularCloudLayouter.PutNextRectangle(new Size(30, 30));
         }
-        circularCloudLayouter.CreateLayoutImage("Many small rectangles");
+        LayoutDrawer.CreateLayoutImage(circularCloudLayouter.CreatedRectangles, "Many small rectangles");
     }
 
     public static void GenerateVerybigThenSmallRectangles()
@@ -52,6 +52,6 @@ public static class LayoutExamples
             for (var j = 0; j < 5; j++)
                 circularCloudLayouter.PutNextRectangle(new Size(20, 20));
         }
-        circularCloudLayouter.CreateLayoutImage("Small rectangles after very big");
+        LayoutDrawer.CreateLayoutImage(circularCloudLayouter.CreatedRectangles, "Small rectangles after very big");
     }
 }

@@ -22,7 +22,7 @@ public class CloudLayouter_Should
         var testName = TestContext.CurrentContext.Test.Name;
         var workDirectory = TestContext.CurrentContext.WorkDirectory;
 
-        circularCloudLayouter?.CreateLayoutImage(testName, workDirectory);
+        LayoutDrawer.CreateLayoutImage(circularCloudLayouter?.CreatedRectangles!, testName, workDirectory);
 
         var filePath = $@"{workDirectory}\{testName}.png";
 

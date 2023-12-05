@@ -13,6 +13,8 @@ public class CloudLayouter
     private readonly IPointGenerator pointsGenerator;
     private readonly List<Rectangle> createdRectangles = new();
 
+    public List<Rectangle> CreatedRectangles => createdRectangles.ToList();
+
     public CloudLayouter(IPointGenerator pointGenerator)
     {
         pointsGenerator = pointGenerator;
@@ -36,50 +38,5 @@ public class CloudLayouter
             createdRectangles.Add(newRectangle);
             return newRectangle;
         }
-    }
-
-    public void CreateLayoutImage(string fileName, string? filePath = null)
-    {
-        var (imageWidth, imageHeight) = DetermineImageWidthAndImageHeight();
-
-        var bitmap = new Bitmap(imageWidth, imageHeight);
-
-        var graphics = Graphics.FromImage(bitmap);
-        graphics.Clear(Color.Wheat);
-
-        var blackPen = new Pen(Color.Black);
-
-        var offsettedRectangles = createdRectangles.ToArray();
-
-        for (var i = 0; i < offsettedRectangles.Length; i++)
-        {
-            offsettedRectangles[i].Offset(imageWidth / 2, imageHeight / 2);
-        }
-
-        filePath ??= AppDomain.CurrentDomain.BaseDirectory + @"\Images";
-
-        Directory.CreateDirectory(filePath);
-
-        graphics.DrawRectangles(blackPen, offsettedRectangles);
-        bitmap.Save(filePath + @$"\{fileName}.png", ImageFormat.Png);
-            
-        //Console.WriteLine($"Image is saved to {filePath}" + @$"\{fileName}.png");
-    }
-
-    private (int imageWidth, int imageHeight) DetermineImageWidthAndImageHeight()
-    {
-        var imageWidth = 0;
-        var imageHeight = 0;
-
-        foreach (var rectangle in createdRectangles)
-        {
-            imageWidth = Math.Max(Math.Abs(rectangle.Right), Math.Abs(rectangle.Left));
-            imageHeight = Math.Max(Math.Abs(rectangle.Top), Math.Abs(rectangle.Bottom));
-        }
-
-        imageWidth = 2 * imageWidth + 100;
-        imageHeight = 2 * imageHeight + 100;
-
-        return (imageWidth, imageHeight);
     }
 }
