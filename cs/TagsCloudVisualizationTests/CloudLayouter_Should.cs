@@ -40,4 +40,39 @@ public class CloudLayouter_Should
         var rectangleCreation = () => circularCloudLayouter.PutNextRectangle(rectangleSize);
         rectangleCreation.Should().Throw<ArgumentException>();
     }
+
+    private static IPointGenerator[] Generators =
+    {
+        new SpiralGenerator()
+    };
+
+    [TestCaseSource(nameof(Generators))]
+    public void PutNextRectanglePlacesSquaresNear_WithDifferentRealisations(IPointGenerator pointGenerator)
+    {
+        circularCloudLayouter = new CloudLayouter(pointGenerator);
+        var squareSide = 20;
+        var rectangleSize = new Size(squareSide, squareSide);
+        var rectanglesWithoutCurrent = new List<Rectangle>();
+
+        var firstRectangle = circularCloudLayouter.PutNextRectangle(rectangleSize);
+        rectanglesWithoutCurrent.Add(firstRectangle);
+
+        for (var i = 1; i < 15; i++)
+        {
+            var currentRectangle = circularCloudLayouter.PutNextRectangle(rectangleSize);
+
+            var minimalDistanceToClosestRectangle = rectanglesWithoutCurrent
+                .Min(existingRectangle => CalculateDistanceBetweenRectangles(currentRectangle, existingRectangle));
+
+            minimalDistanceToClosestRectangle.Should().BeLessThan(2 * squareSide);
+            rectanglesWithoutCurrent.Add(currentRectangle);
+        }
+    }
+
+    private double CalculateDistanceBetweenRectangles(Rectangle firstRectangle, Rectangle secondRectangle)
+    {
+        var xSquare = (firstRectangle.X - secondRectangle.X) * (firstRectangle.X - secondRectangle.X);
+        var ySquare = (firstRectangle.Y - secondRectangle.Y) * (firstRectangle.Y - secondRectangle.Y);
+        return Math.Sqrt(xSquare + ySquare);
+    }
 }
