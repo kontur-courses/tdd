@@ -3,33 +3,31 @@ using System.Drawing;
 
 namespace TagsCloudVisualization;
 
-public class CircularCloudLayouter
+public class CircularCloudLayouter : BaseCloudLayouter
 {
-    private readonly Point center;
-    private readonly List<Rectangle> rectangles;
-    public IEnumerable<Rectangle> Rectangles => rectangles;
-
-    public CircularCloudLayouter(Point center)
+    public CircularCloudLayouter(Point center) : base(center) {}
+    
+    public override Point FindPositionForRectangle(Size rectangleSize)
     {
-        this.center = center;
-        rectangles = new List<Rectangle>();
+        var centerWithOffset = new Point(center.X - rectangleSize.Width / 2, center.Y - rectangleSize.Height / 2);
+
+        return GetSpiralPoints(centerWithOffset, 5 * Math.PI / 180, 2)
+            .FirstOrDefault(x => IsPlaceSuitableForRectangle(new Rectangle(x, rectangleSize)));;
     }
-
-    public Rectangle PutNextRectangle(Size rectangleSize)
+    
+    private static IEnumerable<Point> GetSpiralPoints(Point center, double dtheta, double a)
     {
-        var rectPosition = new Point(center.X - rectangleSize.Width / 2, center.Y - rectangleSize.Height / 2);
-
-        while (!IsPlaceSuitableForRectangle(new Rectangle(rectPosition, rectangleSize)))
+        for (var theta = 0d; ; theta += dtheta)
         {
-            rectPosition.Y += 1;
-        }
-        var rectangle = new Rectangle(rectPosition, rectangleSize);
-        rectangles.Add(rectangle);
-        return rectangle;
-    }
+            var point = center;
+            point.Offset(PolarToCartesian(a * theta, theta));
 
-    private bool IsPlaceSuitableForRectangle(Rectangle rectangle)
+            yield return point;
+        }
+    }
+    
+    private static Point PolarToCartesian(double distance, double angle)
     {
-        return rectangles.All(x => !x.IntersectsWith(rectangle));
+        return new Point((int)(distance * Math.Cos(angle)), (int)(distance * Math.Sin(angle)));
     }
 }

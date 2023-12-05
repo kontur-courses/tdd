@@ -67,4 +67,10 @@ public class CircularCloudLayouterTests
 
         layouter.Rectangles.All(rect => layouter.Rectangles.Except(new []{rect}).All(y => !y.IntersectsWith(rect))).Should().BeTrue();
     }
+
+    [Test]
+    public void PutNextRectangle_CreatesTagCloud_WithCircleShape()
+    {
+        
+    }
 }
