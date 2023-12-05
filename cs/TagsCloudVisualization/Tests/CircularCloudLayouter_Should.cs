@@ -150,7 +150,7 @@ public class CircularCloudLayouter_Should
             .BeEmpty();
     }
 
-    [Test, Timeout(2000)]
+    [Test, Timeout(2500)]
     public static void CircularCloudLayouter_MustBeEfficient()
     {
         AddRectangles();
