@@ -30,9 +30,9 @@ public class CircularCloudLayouterTests
         var center = Point.Empty;
         var layouter = new CircularCloudLayouter(center);
         var rectSize = new Size(2, 2);
+        var centerWithOffset = new Point(center.X - rectSize.Width / 2, center.Y - rectSize.Height / 2);
 
-        layouter.PutNextRectangle(rectSize).Location.Should()
-            .Be(new Point(center.X - rectSize.Width / 2, center.Y - rectSize.Height / 2));
+        layouter.PutNextRectangle(rectSize).Location.Should().Be(centerWithOffset);
     }
 
     [Test]
@@ -42,15 +42,11 @@ public class CircularCloudLayouterTests
         var layouter = new CircularCloudLayouter(center);
         var rectSize = new Size(2, 2);
         var iterations = 100;
-        var rectangles = new List<Rectangle>();
 
-        var f = () => layouter.PutNextRectangle(rectSize);
         for (var i = 0; i < iterations; i++)
-        {
-            rectangles.Add(f.Invoke());
-        }
-
-        rectangles.ForEach(rect => rectangles.Count(x => x == rect).Should().Be(1));
+            layouter.PutNextRectangle(rectSize);
+        
+        layouter.Rectangles.Should().OnlyHaveUniqueItems();
     }
     
     [Test]
@@ -60,10 +56,9 @@ public class CircularCloudLayouterTests
         var layouter = new CircularCloudLayouter(center);
         var rectSize = new Size(2, 2);
         var iterations = 100;
-        var f = () => layouter.PutNextRectangle(rectSize);
-        
+
         for (var i = 0; i < iterations; i++)
-            f.Invoke();
+            layouter.PutNextRectangle(rectSize);
 
         layouter.Rectangles.All(rect => layouter.Rectangles.Except(new []{rect}).All(y => !y.IntersectsWith(rect))).Should().BeTrue();
     }
