@@ -8,27 +8,27 @@ using System.Threading.Tasks;
 
 namespace TagsCloudVisualization;
 
-public class SpiralGenerator
+public class SpiralGenerator : IPointGenerator
 {
     private readonly Point center;
-    public readonly int RadiusDelta;
-    public readonly double AngleDelta;
 
     public Point Center => new(center.X, center.Y);
     public int Radius { get; private set; }
+    public int RadiusDelta { get; }
     public double Angle { get; private set; }
+    public double AngleDelta { get; }
 
-    public SpiralGenerator(int radiusDelta = 1, double angleDelta = Math.PI / 60)
-    {
-        this.center = new Point(0, 0);
-        this.RadiusDelta = radiusDelta < 0 ? throw new ArgumentException("radiusDelta cant be negative") : radiusDelta;
-        this.AngleDelta = angleDelta;
-    }
     public SpiralGenerator(Point center, int radiusDelta = 1, double angleDelta = Math.PI / 60)
     {
         this.center = center;
         this.RadiusDelta = radiusDelta < 0 ? throw new ArgumentException("radiusDelta cant be negative") : radiusDelta;
         this.AngleDelta = angleDelta;
+    }
+
+    public SpiralGenerator(int radiusDelta = 1, double angleDelta = Math.PI / 60) 
+        : this(new Point(0, 0), radiusDelta, angleDelta)
+    {
+
     }
 
     public Point GetNextPoint()
