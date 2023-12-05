@@ -1,8 +1,9 @@
 ﻿using System.Drawing;
+using TagsCloudVisualization.Interfaces;
 
 namespace TagsCloudVisualization
 {
-    public class Spiral
+    public class Spiral : ISpiral
     {
         private readonly Point center;
         private readonly double deltaAngle;
