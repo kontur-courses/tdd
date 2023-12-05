@@ -9,12 +9,12 @@ namespace TagsCloudVisualizationTests
     public class CircularCloudLayouterTests
     {
         private Point center = new(250, 250);
-        private CircularCloudLayouter layouter;
+        private CircularCloudLayouter sut;
 
         [SetUp]
         public void SetUp()
         {
-            layouter = new CircularCloudLayouter(center);
+            sut = new CircularCloudLayouter(center);
         }
 
         [Test]
@@ -28,21 +28,21 @@ namespace TagsCloudVisualizationTests
         [TestCase(1, -1, TestName = "PutNextRectangle_HeightNotPositive_ThrowsArgumentException")]
         public void PutNextRectangle_IncorrectSize_ThrowsArgumentException(int rectangleWidth, int rectangleHeight)
         {
-            var action = () => layouter.PutNextRectangle(new Size(rectangleWidth, rectangleHeight));
+            var action = () => sut.PutNextRectangle(new Size(rectangleWidth, rectangleHeight));
             action.Should().Throw<ArgumentException>();
         }
 
         [Test]
         public void PutNextRectangle_WithCorrectSize_ReturnsCorrectRectangle()
         {
-            var rectangle = layouter.PutNextRectangle(new Size(15, 15));
+            var rectangle = sut.PutNextRectangle(new Size(15, 15));
             rectangle.Size.Should().BeEquivalentTo(new Size(15, 15));
         }
 
         [Test]
         public void PutNextRectangle_FirstRectangle_ReturnsRectangleWithCenterInLayoutCenter()
         {
-            var rectangle = layouter.PutNextRectangle(new Size(15, 15));
+            var rectangle = sut.PutNextRectangle(new Size(15, 15));
             var expectedRectangleCenter = new Point(rectangle.Left + rectangle.Width / 2, rectangle.Top + rectangle.Height / 2);
 
             expectedRectangleCenter.Should().BeEquivalentTo(center);
@@ -51,8 +51,8 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void PutNextRectangle_TwoRectangles_ReturnsSecondRectangleWithCenterNotInLayoutCenter()
         {
-            layouter.PutNextRectangle(new Size(15, 15));
-            var secondRectangle = layouter.PutNextRectangle(new Size(10, 10));
+            sut.PutNextRectangle(new Size(15, 15));
+            var secondRectangle = sut.PutNextRectangle(new Size(10, 10));
             var expectedRectangleCenter = new Point(secondRectangle.Left + secondRectangle.Width / 2,
                 secondRectangle.Top + secondRectangle.Height / 2);
 
@@ -62,17 +62,17 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void PutNextRectangle_TwoRectangles_ReturnsTwoRectangles()
         {
-            layouter.PutNextRectangle(new Size(15, 15));
-            layouter.PutNextRectangle(new Size(10, 10));
+            sut.PutNextRectangle(new Size(15, 15));
+            sut.PutNextRectangle(new Size(10, 10));
 
-            layouter.Rectangles.Count.Should().Be(2);
+            sut.Rectangles.Count.Should().Be(2);
         }
 
         [Test]
         public void PutNextRectangle_TwoRectangles_ReturnsTwoNotIntersectedRectangles()
         {
-            var firstRectangle = layouter.PutNextRectangle(new Size(15, 15));
-            var secondRectangle = layouter.PutNextRectangle(new Size(10, 10));
+            var firstRectangle = sut.PutNextRectangle(new Size(15, 15));
+            var secondRectangle = sut.PutNextRectangle(new Size(10, 10));
             var isIntersected = firstRectangle.IntersectsWith(secondRectangle);
 
             isIntersected.Should().BeFalse();
@@ -85,10 +85,10 @@ namespace TagsCloudVisualizationTests
         {
             for (var i = 0; i < rectanglesCount; i++)
             {
-                layouter.PutNextRectangle(new Size(10, 10));
+                sut.PutNextRectangle(new Size(10, 10));
             }
 
-            HasIntersectedRectangles(layouter.Rectangles).Should().BeFalse();
+            HasIntersectedRectangles(sut.Rectangles).Should().BeFalse();
         }
 
         [TearDown]
@@ -101,7 +101,7 @@ namespace TagsCloudVisualizationTests
                 {
                     Directory.CreateDirectory(pathToTestsFailsImages);
                 }
-                var image = Visualizer.Visualize(layouter.Rectangles, 500, 500);
+                var image = Visualizer.Visualize(sut.Rectangles, 500, 500);
                 var fileName = $"{TestContext.CurrentContext.Test.Name}.png";
                 Visualizer.SaveBitmap(image, fileName, pathToTestsFailsImages);
             }

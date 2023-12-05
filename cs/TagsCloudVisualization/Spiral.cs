@@ -7,8 +7,6 @@ namespace TagsCloudVisualization
         private readonly Point center;
         private readonly double deltaAngle;
         private readonly double deltaRadius;
-        private double radius;
-        private double angle;
 
         public Spiral(Point center, double deltaAngle, double deltaRadius)
         {
@@ -17,14 +15,19 @@ namespace TagsCloudVisualization
             this.deltaRadius = deltaRadius;
         }
 
-        public Point GetNextPointOnSpiral()
+        public IEnumerable<Point> GetPointsOnSpiral()
         {
-            angle += deltaAngle;
-            radius += deltaRadius;
-            return ConvertFromPolarCoordinates();
+            var angle = 0.0;
+            var radius = 0.0;
+            while (true)
+            {
+                angle += deltaAngle;
+                radius += deltaRadius;
+                yield return ConvertFromPolarCoordinates(angle, radius);
+            }
         }
 
-        private Point ConvertFromPolarCoordinates()
+        public Point ConvertFromPolarCoordinates(double angle, double radius)
         {
             var x = (int)Math.Ceiling(center.X + Math.Cos(angle) * radius);
             var y = (int)Math.Ceiling(center.Y + Math.Sin(angle) * radius);
