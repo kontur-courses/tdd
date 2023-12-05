@@ -13,7 +13,9 @@ namespace TagsCloudVisualization
                 throw new ArgumentException("rectangleSize with zero or negative height or width is prohibited!");
             while (true)
             {
-                var rectangle = new Rectangle(spiral.GetNextPoint(), rectangleSize);
+                var nextPoint = spiral.GetNextPoint();
+                var rectangle = new Rectangle(new Point(nextPoint.X - rectangleSize.Width / 2, nextPoint.Y - 
+                    rectangleSize.Height / 2), rectangleSize);
                 if (rectangles.Any(x => x.IntersectsWith(rectangle))) continue;
                 rectangles.Add(rectangle);
                 break;

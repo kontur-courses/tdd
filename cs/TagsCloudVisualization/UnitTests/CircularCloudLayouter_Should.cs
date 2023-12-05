@@ -28,7 +28,8 @@ namespace TagsCloudVisualization.UnitTests
             var layouter = new CircularCloudLayouter(center);
             layouter.PutNextRectangle(new Size(10, 2));
             layouter.GetRectangles().Should().HaveCount(1)
-                .And.BeEquivalentTo(new Rectangle(center, new Size(10, 2)));
+                .And.BeEquivalentTo(new Rectangle(
+                    new Point(center.X - 10 / 2, center.Y - 2 / 2), new Size(10, 2)));
         }
 
         [Test]
