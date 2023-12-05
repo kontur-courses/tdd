@@ -1,8 +1,8 @@
 using System.Drawing;
 using FluentAssertions;
-using NUnit.Framework;
+using TagsCloudVisualization;
 
-namespace TagsCloudVisualization;
+namespace TagsCloudVisualizationTests;
 
 public class CloudLayouter_Should
 {

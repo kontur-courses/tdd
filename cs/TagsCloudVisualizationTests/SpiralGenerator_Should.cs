@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 using FluentAssertions;
-using NUnit.Framework;
+using TagsCloudVisualization;
 
-namespace TagsCloudVisualization;
+namespace TagsCloudVisualizationTests;
 
 public class SpiralGenerator_Should
 {
