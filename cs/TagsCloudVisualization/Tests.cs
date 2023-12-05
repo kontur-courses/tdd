@@ -98,7 +98,7 @@ public class Tests
     [Test]
     public void PutNextRectangle_ShouldCreateLayoutCloseToCircle()
     {
-        var sizes = GetRandomSizes(25);
+        var sizes = GetRandomSizes(50);
 
         var rectangles = sizes.Select(size => cloudLayouter.PutNextRectangle(size)).ToList();
         var rectanglesSquare = rectangles
