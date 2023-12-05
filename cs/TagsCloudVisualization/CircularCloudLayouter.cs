@@ -36,26 +36,30 @@ namespace TagsCloudVisualization
             {
                 var nextPoint = spiralGenerator.GetNextPoint();
 
-                var locationForRect = new Point(nextPoint.X - rectangleSize.Width / 2,
+                var rectangleLocation = new Point(nextPoint.X - rectangleSize.Width / 2,
                     nextPoint.Y - rectangleSize.Height / 2);
 
-                var newRect = new Rectangle(locationForRect, rectangleSize);
-                if (createdRectangles.Any(rectangle => rectangle.IntersectsWith(newRect))) continue;
+                var newRectangle = new Rectangle(rectangleLocation, rectangleSize);
+                if (createdRectangles.Any(rectangle => rectangle.IntersectsWith(newRectangle))) continue;
 
-                createdRectangles.Add(newRect);
-                return newRect;
+                createdRectangles.Add(newRectangle);
+                return newRectangle;
             }
         }
 
-        public void CreateImageOfLayout(string fileName, string? filePath = null)
+        public void CreateLayoutImage(string fileName, string? filePath = null)
         {
-            var imageWidth = 2 * createdRectangles.Max(rect => Math.Max(Math.Abs(rect.Right), Math.Abs(rect.Left))) + 100;
-            var imageHeight = 2 * createdRectangles.Max(rect => Math.Max(Math.Abs(rect.Top), Math.Abs(rect.Bottom))) + 100;
+            var (imageWidth, imageHeight) = DetermineImageWidthAndImageHeight();
+
             var bitmap = new Bitmap(imageWidth, imageHeight);
+
             var graphics = Graphics.FromImage(bitmap);
             graphics.Clear(Color.Wheat);
+
             var blackPen = new Pen(Color.Black);
+
             var offsettedRectangles = createdRectangles.ToArray();
+
             for (var i = 0; i < offsettedRectangles.Length; i++)
             {
                 offsettedRectangles[i].Offset(imageWidth / 2, imageHeight / 2);
@@ -63,15 +67,29 @@ namespace TagsCloudVisualization
 
             filePath ??= AppDomain.CurrentDomain.BaseDirectory + @"\Images";
 
-            if (!Directory.Exists(filePath))
-            {
-                Directory.CreateDirectory(filePath);
-            }
+            Directory.CreateDirectory(filePath);
 
             graphics.DrawRectangles(blackPen, offsettedRectangles);
             bitmap.Save(filePath + @$"\{fileName}.png", ImageFormat.Png);
-
+            
             //Console.WriteLine($"Image is saved to {filePath}" + @$"\{fileName}.png");
+        }
+
+        private (int imageWidth, int imageHeight) DetermineImageWidthAndImageHeight()
+        {
+            var imageWidth = 0;
+            var imageHeight = 0;
+
+            foreach (var rectangle in createdRectangles)
+            {
+                imageWidth = Math.Max(Math.Abs(rectangle.Right), Math.Abs(rectangle.Left));
+                imageHeight = Math.Max(Math.Abs(rectangle.Top), Math.Abs(rectangle.Bottom));
+            }
+
+            imageWidth = 2 * imageWidth + 100;
+            imageHeight = 2 * imageHeight + 100;
+
+            return (imageWidth, imageHeight);
         }
     }
 }

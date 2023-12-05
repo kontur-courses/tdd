@@ -9,9 +9,9 @@ namespace TagsCloudVisualization
 {
     public static class RectangleExtensions
     {
-        public static Point GetRectangleCenterPoint(this Rectangle rect)
+        public static Point GetRectangleCenterPoint(this Rectangle rectangle)
         {
-            return new Point((rect.Left + rect.Right) / 2, (rect.Top + rect.Bottom) / 2);
+            return new Point((rectangle.Left + rectangle.Right) / 2, (rectangle.Top + rectangle.Bottom) / 2);
         }
     }
 }

@@ -23,12 +23,12 @@ namespace TagsCloudVisualization
 
             for (var i = 0; i < amountRectangles; i++)
             {
-                var rectWidth = random.Next(minSizeParam, maxSizeParam);
-                var rectHeight = random.Next(minSizeParam, maxSizeParam);
-                circularCloudLayouter.PutNextRectangle(new Size(rectWidth, rectHeight));
+                var rectangleWidth = random.Next(minSizeParam, maxSizeParam);
+                var rectangleHeight = random.Next(minSizeParam, maxSizeParam);
+                circularCloudLayouter.PutNextRectangle(new Size(rectangleWidth, rectangleHeight));
             }
 
-            circularCloudLayouter.CreateImageOfLayout("Random rectangles");
+            circularCloudLayouter.CreateLayoutImage("Random rectangles");
         }
 
         public static void GenerateManySmallSameSizedRectangles()
@@ -39,7 +39,7 @@ namespace TagsCloudVisualization
             {
                 circularCloudLayouter.PutNextRectangle(new Size(30, 30));
             }
-            circularCloudLayouter.CreateImageOfLayout("Many small rectangles");
+            circularCloudLayouter.CreateLayoutImage("Many small rectangles");
         }
 
         public static void GenerateVerybigThenSmallRectangles()
@@ -52,7 +52,7 @@ namespace TagsCloudVisualization
                 for (var j = 0; j < 5; j++)
                     circularCloudLayouter.PutNextRectangle(new Size(20, 20));
             }
-            circularCloudLayouter.CreateImageOfLayout("Small rectangles after very big");
+            circularCloudLayouter.CreateLayoutImage("Small rectangles after very big");
         }
     }
 }

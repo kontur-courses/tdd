@@ -6,22 +6,28 @@ namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter_Should
     {
-        private CircularCloudLayouter _circularCloudLayouter;
+        private CircularCloudLayouter? circularCloudLayouter;
 
         [SetUp]
         public void SetCircularCloudFieldToNull()
         {
-            _circularCloudLayouter = null;
+            circularCloudLayouter = null;
         }
 
         [TearDown]
         public void CreateLayoutImage_IfTestFailed()
         {
             if (TestContext.CurrentContext.Result.FailCount < 1) return;
-            _circularCloudLayouter.CreateImageOfLayout(TestContext.CurrentContext.Test.Name, TestContext.CurrentContext.WorkDirectory);
-            var filePath = TestContext.CurrentContext.WorkDirectory + @"\" + TestContext.CurrentContext.Test.Name + @".png";
+
+            var testName = TestContext.CurrentContext.Test.Name;
+            var workDirectory = TestContext.CurrentContext.WorkDirectory;
+
+            circularCloudLayouter?.CreateLayoutImage(testName, workDirectory);
+
+            var filePath = $@"{workDirectory}\{testName}.png";
+
             TestContext.WriteLine($"Tag cloud visualization saved to file {filePath}");
-            TestContext.AddTestAttachment(TestContext.CurrentContext.Test.Name + @".png");
+            TestContext.AddTestAttachment($"{testName}.png");
         }
 
         [Test]
@@ -34,11 +40,11 @@ namespace TagsCloudVisualization
         [TestCase(-1, 0, TestName = "Negative width")]
         [TestCase(0, -1, TestName = "Negative height")]
         [TestCase(-5, -5, TestName = "Negative width and height")]
-        public void PutNextRectangle_ThrowsArgumentException_WhenNegativeParameters(int rectWidth, int rectHeight)
+        public void PutNextRectangleThrowsArgumentException_WhenNegativeParameters(int rectWidth, int rectHeight)
         {
-            _circularCloudLayouter = new CircularCloudLayouter(new Point(0, 0));
-            var rectSize = new Size(rectWidth, rectHeight);
-            var rectangleCreation = () => _circularCloudLayouter.PutNextRectangle(rectSize);
+            circularCloudLayouter = new CircularCloudLayouter(new Point(0, 0));
+            var rectangleSize = new Size(rectWidth, rectHeight);
+            var rectangleCreation = () => circularCloudLayouter.PutNextRectangle(rectangleSize);
             rectangleCreation.Should().Throw<ArgumentException>();
         }
 
@@ -50,46 +56,49 @@ namespace TagsCloudVisualization
         [TestCase(5, 4, 3, 6)]
         public void PutsFirstRectangle_InTheCenter(int centerX, int centerY, int rectWidth, int rectHeight)
         {
-            _circularCloudLayouter = new CircularCloudLayouter(new Point(centerX, centerY));
-            var rectangle = _circularCloudLayouter.PutNextRectangle(new Size(rectWidth, rectHeight));
+            circularCloudLayouter = new CircularCloudLayouter(new Point(centerX, centerY));
+            var rectangle = circularCloudLayouter.PutNextRectangle(new Size(rectWidth, rectHeight));
             var halfWidth = (int)Math.Floor(rectWidth / 2.0);
             var halfHeight = (int)Math.Floor(rectHeight / 2.0);
 
-            var expectedRectLeft = _circularCloudLayouter.CenterPoint.X - halfWidth;
-            var expectedRectRight = _circularCloudLayouter.CenterPoint.X + halfWidth + (rectWidth % 2);
-            var expectedRectTop = _circularCloudLayouter.CenterPoint.Y - halfHeight;
-            var expectedRectBottom = _circularCloudLayouter.CenterPoint.Y + halfHeight + (rectHeight % 2);
+            var expectedRectangleLeft = circularCloudLayouter.CenterPoint.X - halfWidth;
+            var expectedRectagnleRight = circularCloudLayouter.CenterPoint.X + halfWidth + (rectWidth % 2);
+            var expectedRectangleTop = circularCloudLayouter.CenterPoint.Y - halfHeight;
+            var expectedRectangleBottom = circularCloudLayouter.CenterPoint.Y + halfHeight + (rectHeight % 2);
 
-            rectangle.Left.Should().Be(expectedRectLeft);
-            rectangle.Right.Should().Be(expectedRectRight);
-            rectangle.Top.Should().Be(expectedRectTop);
-            rectangle.Bottom.Should().Be(expectedRectBottom);
+            rectangle.Left.Should().Be(expectedRectangleLeft);
+            rectangle.Right.Should().Be(expectedRectagnleRight);
+            rectangle.Top.Should().Be(expectedRectangleTop);
+            rectangle.Bottom.Should().Be(expectedRectangleBottom);
         }
 
         [Test]
         [Timeout(1000)]
         public void Puts5SameSquares_InPlusShape_WhenAngleDeltaIsHalfPi()
         {
-            _circularCloudLayouter = new CircularCloudLayouter(new Point(), 1, Math.PI / 2);
-            var firstRect = _circularCloudLayouter.PutNextRectangle(new Size(10, 10));
-            var secondRect = _circularCloudLayouter.PutNextRectangle(new Size(10, 10));
-            var thirdRect = _circularCloudLayouter.PutNextRectangle(new Size(10, 10));
-            var fourthRect = _circularCloudLayouter.PutNextRectangle(new Size(10, 10));
-            var fifthRect = _circularCloudLayouter.PutNextRectangle(new Size(10, 10));
+            const int radiusDelta = 1;
+            const double angleDelta = Math.PI / 2;
+            circularCloudLayouter = new CircularCloudLayouter(new Point(), radiusDelta, angleDelta);
+            var rectangleSize = new Size(10, 10);
+            var firstRectangle = circularCloudLayouter.PutNextRectangle(rectangleSize);
+            var secondRectangle = circularCloudLayouter.PutNextRectangle(rectangleSize);
+            var thirdRectangle = circularCloudLayouter.PutNextRectangle(rectangleSize);
+            var fourthRectangle = circularCloudLayouter.PutNextRectangle(rectangleSize);
+            var fifthRectangle = circularCloudLayouter.PutNextRectangle(rectangleSize);
 
-            firstRect.GetRectangleCenterPoint().Should().Be(new Point(0, 0));
-            secondRect.GetRectangleCenterPoint().Should().Be(new Point(10, 0));
-            thirdRect.GetRectangleCenterPoint().Should().Be(new Point(0, 10));
-            fourthRect.GetRectangleCenterPoint().Should().Be(new Point(-10, 0));
-            fifthRect.GetRectangleCenterPoint().Should().Be(new Point(0, -10));
+            firstRectangle.GetRectangleCenterPoint().Should().Be(new Point(0, 0));
+            secondRectangle.GetRectangleCenterPoint().Should().Be(new Point(10, 0));
+            thirdRectangle.GetRectangleCenterPoint().Should().Be(new Point(0, 10));
+            fourthRectangle.GetRectangleCenterPoint().Should().Be(new Point(-10, 0));
+            fifthRectangle.GetRectangleCenterPoint().Should().Be(new Point(0, -10));
         }
 
         [Test]
         [Timeout(1000)]
         public void Puts11SameSquaresCloseToEachOther_WhenAngleDeltaIsPiOver60()
         {
-            _circularCloudLayouter = new CircularCloudLayouter(new Point());
-            var expectedRectCenters = new List<Point>()
+            circularCloudLayouter = new CircularCloudLayouter(new Point());
+            var expectedRectangleCenters = new List<Point>()
             {
                 new (0, 0),
                 new (4, 0),
@@ -103,14 +112,10 @@ namespace TagsCloudVisualization
                 new (-6, -4),
                 new (6, -4),
             };
-            var rectNumber = 0;
-            foreach (var expectedRectCenter in expectedRectCenters)
+            foreach (var expectedRectangleCenter in expectedRectangleCenters)
             {
-                var currentRectangle = _circularCloudLayouter.PutNextRectangle(new Size(4, 4));
-                (int rectNumber, Point centerPoint) expectedTuple = (rectNumber, expectedRectCenter);
-                (int rectNumber, Point centerPoint) actualTuple = (rectNumber, currentRectangle.GetRectangleCenterPoint());
-                actualTuple.Should().Be(expectedTuple);
-                rectNumber++;
+                var currentRectangle = circularCloudLayouter.PutNextRectangle(new Size(4, 4));
+                currentRectangle.GetRectangleCenterPoint().Should().Be(expectedRectangleCenter);
             }
         }
     }
