@@ -6,35 +6,19 @@ namespace TagsCloudVisualization;
 public class TagsCloudDrawer
 {
     private readonly ICloudLayouter layouter;
+    private readonly IRectangleDrawer drawer;
 
-    public TagsCloudDrawer(ICloudLayouter layouter)
+    public TagsCloudDrawer(ICloudLayouter layouter, IRectangleDrawer drawer)
     {
         this.layouter = layouter;
+        this.drawer = drawer;
     }
 
-    public Bitmap DrawRectangles(Pen pen, int scale)
+    public Bitmap DrawTagCloud()
     {
-        if (scale <= 0)
-            throw new ArgumentException("Scale must be a positive number.");
-        if (pen is null)
-            throw new ArgumentException("Pen must not be null.");
-        
         var borders = layouter.GetCloudBorders();
-        var bitmap = new Bitmap(borders.Width * scale, borders.Height * scale);
-        var graphics = Graphics.FromImage(bitmap);
-        
-        var rectanglesWithShift = layouter.PlacedRectangles
-            .Select(r =>
-                new Rectangle(
-                    (r.X - borders.X) * scale,
-                    (r.Y - borders.Y) * scale, 
-                    r.Width * scale,
-                    r.Height * scale));
-        
-        foreach (var rectangle in rectanglesWithShift)
-            graphics.DrawRectangle(pen, rectangle);
 
-        return bitmap;
+        return drawer.DrawRectangles(layouter.PlacedRectangles, borders);
     }
     
     public static void SaveImage(Bitmap bitmap, string dirPath, string filename)

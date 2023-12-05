@@ -8,13 +8,14 @@ public static class Program
     {
         var random = new Random();
 
-        var layouter = new CircularCloudLayouter(new Point(500, 500));
+        var layouter = new CircularCloudLayouter(new CircularCloudBuilder(new Point(500, 500), 1, 0.1d));
         for (var i = 1; i <= 100; i++)
             layouter.PutNextRectangle(new Size(random.Next(201), random.Next(201)));
 
-        var drawer = new TagsCloudDrawer(layouter);
+        var rectangleDrawer = new RectangleDrawer(new Pen(Color.Red, 3), 3);
+        var drawer = new TagsCloudDrawer(layouter, rectangleDrawer);
         
-        var bitmap = drawer.DrawRectangles(new Pen(Color.Red, 3), 3);
+        var bitmap = drawer.DrawTagCloud();
         TagsCloudDrawer.SaveImage(bitmap, Directory.GetCurrentDirectory(), "image.jpeg");
     }
 }
