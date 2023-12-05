@@ -32,7 +32,7 @@ namespace TagsCloudVisualizationTests
         [TestCase(-5, -5, -1, -4, TestName = "ConvertFromPolarCoordinates_AngleAndRadiusNegative_ReturnsCorrectPoint")]
         [TestCase(-5, 4, 2, 4, TestName = "ConvertFromPolarCoordinates_AngleNegativeRadiusPositive_ReturnsCorrectPoint")]
         [TestCase(4, -5, 4, 4, TestName = "ConvertFromPolarCoordinates_AnglePoisitiveRadiusNegative_ReturnsCorrectPoint")]
-        public void ConvertFromPolarCoordinates_SomeCorrectValues_ReturnsCorrectPoint(double angle, double radius, 
+        public void ConvertFromPolarCoordinates_SomeCorrectValues_ReturnsCorrectPoint(double angle, double radius,
             int expectedX, int expectedY)
         {
             var result = Spiral.ConvertFromPolarCoordinates(angle, radius);

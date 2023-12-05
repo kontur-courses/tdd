@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.IO;
 
 namespace TagsCloudVisualization;
 
@@ -20,7 +19,6 @@ public class Program
             layouter.PutNextRectangle(new Size(random.Next(5, 20), random.Next(5, 20)));
         }
         var image = Visualizer.Visualize(layouter.Rectangles, ImageWidth, ImageHeight);
-
         Visualizer.SaveBitmap(image, $"Result{CountRectangles}Rectangles.png", PathToImages);
     }
 }
