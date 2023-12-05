@@ -71,10 +71,12 @@ namespace TagsCloudVisualization
                 .SetName(
                     "CheckIntersection_Return_True_When_Rectangle_Intersection_With_Any_Rectangle_In_CircularCloudLayouter")
                 .Returns(true);
+
             yield return new TestCaseData(new Size(1, 1), new Rectangle(new Point(1, 0), new Size(1, 1)))
                 .SetName(
                     "CheckIntersection_Return_False_When_Rectangle_Have_Common_Side_With_Another_Rectangle")
                 .Returns(false);
+
             yield return new TestCaseData(new Size(4, 2), new Rectangle(new Point(4, 4), new Size(2, 2)))
                 .SetName(
                     "CheckIntersection_Return_True_When_Rectangle_Intersection_With_Any_Rectangle_In_CircularCloudLayouter")
@@ -91,6 +93,7 @@ namespace TagsCloudVisualization
             yield return new TestCaseData(cloudEmpty, rectangle)
                 .SetName("RectangleCompression_When_Cloud_Is_Empty_Set_Rectangle_Position_On_Center")
                 .Returns(cloudEmpty.Center);
+
             yield return new TestCaseData(cloudWithElements, rectangle)
                 .SetName("RectangleCompression_When_Cloud_Has_Rectangles_Set_Rectangle_Position_Closer_To_Center")
                 .Returns(new Point(0, 1));
