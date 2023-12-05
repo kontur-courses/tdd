@@ -37,15 +37,15 @@ namespace TagsCloudVisualization
 
         private Rectangle CreateNewRectangle(Size rectangleSize)
         {
-            var rectangleLocation = GetLeftUpperCornerFromRectangleCenter(CloudCenter, rectangleSize);
-            var rectangle = new Rectangle(rectangleLocation, rectangleSize);
+            Rectangle rectangle;
 
-            while (rectanglesInLayout.Any(rect => rect.IntersectsWith(rectangle)))
+            do
             {
                 pointsOnSpiral.MoveNext();
-                rectangleLocation = GetLeftUpperCornerFromRectangleCenter(pointsOnSpiral.Current, rectangleSize);
+                var rectangleLocation = GetLeftUpperCornerFromRectangleCenter(pointsOnSpiral.Current, rectangleSize);
                 rectangle = new Rectangle(rectangleLocation, rectangleSize);
             }
+            while (rectanglesInLayout.Any(rect => rect.IntersectsWith(rectangle)));
 
             return rectangle;
         }

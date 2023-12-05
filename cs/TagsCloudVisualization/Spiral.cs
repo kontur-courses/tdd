@@ -22,9 +22,9 @@ namespace TagsCloudVisualization
             var radius = 0.0;
             while (true)
             {
+                yield return ConvertFromPolarCoordinates(angle, radius);
                 angle += deltaAngle;
                 radius += deltaRadius;
-                yield return ConvertFromPolarCoordinates(angle, radius);
             }
         }
 
