@@ -7,7 +7,7 @@ public class Program
 {
     public const int ImageWidth = 1000;
     public const int ImageHeight = 1000;
-    public const int CountRectangles = 500;
+    public const int CountRectangles = 100;
     public const string PathToImages = @"..\..\..\Images";
 
     public static void Main(string[] args)

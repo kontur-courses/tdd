@@ -11,6 +11,11 @@ namespace TagsCloudVisualization
 
         public Spiral(Point center, double deltaAngle, double deltaRadius)
         {
+            if (deltaRadius <= 0 || deltaAngle <= 0)
+            {
+                throw new ArgumentException("deltaRadius and deltaAngle must be positive");
+            }
+
             this.center = center;
             this.deltaAngle = deltaAngle;
             this.deltaRadius = deltaRadius;
@@ -22,16 +27,18 @@ namespace TagsCloudVisualization
             var radius = 0.0;
             while (true)
             {
-                yield return ConvertFromPolarCoordinates(angle, radius);
+                var point = ConvertFromPolarCoordinates(angle, radius);
+                point.Offset(center);
+                yield return point;
                 angle += deltaAngle;
                 radius += deltaRadius;
             }
         }
 
-        public Point ConvertFromPolarCoordinates(double angle, double radius)
+        public static Point ConvertFromPolarCoordinates(double angle, double radius)
         {
-            var x = (int)Math.Ceiling(center.X + Math.Cos(angle) * radius);
-            var y = (int)Math.Ceiling(center.Y + Math.Sin(angle) * radius);
+            var x = (int)Math.Ceiling(Math.Cos(angle) * radius);
+            var y = (int)Math.Ceiling(Math.Sin(angle) * radius);
             return new Point(x, y);
         }
     }
