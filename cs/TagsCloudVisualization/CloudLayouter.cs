@@ -7,7 +7,7 @@ public class CloudLayouter
     private readonly IPointGenerator pointsGenerator;
     private readonly List<Rectangle> createdRectangles = new();
 
-    public List<Rectangle> CreatedRectangles => createdRectangles.ToList();
+    public IEnumerable<Rectangle> CreatedRectangles => createdRectangles.AsReadOnly();
 
     public CloudLayouter(IPointGenerator pointGenerator)
     {

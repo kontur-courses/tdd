@@ -30,7 +30,7 @@ namespace TagsCloudVisualization
             graphics.DrawRectangles(blackPen, offsettedRectangles);
             bitmap.Save(filePath + @$"\{fileName}.png", ImageFormat.Png);
 
-            Console.WriteLine($"Image is saved to {filePath}" + @$"\{fileName}.png");
+            //Console.WriteLine($"Image is saved to {filePath}" + @$"\{fileName}.png");
         }
 
         private static (int imageWidth, int imageHeight) DetermineImageWidthAndImageHeight(IEnumerable<Rectangle> createdRectangles)
@@ -40,8 +40,8 @@ namespace TagsCloudVisualization
 
             foreach (var rectangle in createdRectangles)
             {
-                imageWidth = new[] {imageWidth, Math.Abs(rectangle.Right), Math.Abs(rectangle.Left)}.Max();
-                imageHeight = new[] {imageHeight, Math.Max(Math.Abs(rectangle.Top), Math.Abs(rectangle.Bottom))}.Max();
+                imageWidth = new[] { imageWidth, Math.Abs(rectangle.Right), Math.Abs(rectangle.Left) }.Max();
+                imageHeight = new[] { imageHeight, Math.Max(Math.Abs(rectangle.Top), Math.Abs(rectangle.Bottom)) }.Max();
             }
 
             imageWidth = 2 * imageWidth + 100;
