@@ -1,12 +1,9 @@
 ﻿using System.Drawing;
 using TagsCloudVisualization;
 
-class CircularCloudLayouter
+class CircularCloudLayouter(Point centerPoint)
 {
-    public CircularCloudLayouter(Point center)
-    {
-            
-    }
+    private ArchimedeanSpiral spiral = new(centerPoint);
 
     public Rectangle PutNextRectangle(Size rectangleSize)
     {

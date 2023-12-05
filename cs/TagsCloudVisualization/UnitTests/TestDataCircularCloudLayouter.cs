@@ -1,9 +1,9 @@
 ﻿using System.Drawing;
 using NUnit.Framework;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.UnitTests
 {
-    public class TestData
+    public class TestDataCircularCloudLayouter
     {
         public static IEnumerable<TestCaseData> ZeroOrLessHeightOrWidth_Size()
         {

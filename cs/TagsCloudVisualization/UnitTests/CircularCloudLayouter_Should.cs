@@ -2,7 +2,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization.UnitTests
 {
     class CircularCloudLayouter_Should
     {
@@ -13,7 +13,7 @@ namespace TagsCloudVisualization
             action.Should().NotThrow();
         }
 
-        [TestCaseSource(typeof(TestData), nameof(TestData.ZeroOrLessHeightOrWidth_Size))]
+        [TestCaseSource(typeof(TestDataCircularCloudLayouter), nameof(TestDataCircularCloudLayouter.ZeroOrLessHeightOrWidth_Size))]
         public void Throw_WhenPutNewRectangle_WidthOrHeightLessEqualsZero(Size size)
         {
             var action = new Action(() => new CircularCloudLayouter(new Point()).PutNextRectangle(size));
