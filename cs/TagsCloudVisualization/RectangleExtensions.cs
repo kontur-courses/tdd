@@ -5,13 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 
-namespace TagsCloudVisualization
+namespace TagsCloudVisualization;
+
+public static class RectangleExtensions
 {
-    public static class RectangleExtensions
+    public static Point GetRectangleCenterPoint(this Rectangle rectangle)
     {
-        public static Point GetRectangleCenterPoint(this Rectangle rectangle)
-        {
-            return new Point((rectangle.Left + rectangle.Right) / 2, (rectangle.Top + rectangle.Bottom) / 2);
-        }
+        return new Point((rectangle.Left + rectangle.Right) / 2, (rectangle.Top + rectangle.Bottom) / 2);
     }
 }
