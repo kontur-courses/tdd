@@ -1,26 +1,34 @@
 ﻿using System.Drawing;
 
-namespace TagCloud;
-
-public class CloudDrawer
+namespace TagCloud
 {
-    static void Main(string[] args)
+    public class Program
     {
-        var layouter = new CircularCloudLayouter(new Point(1920 / 2, 1080 / 2));
+        private const int Width = 1920;
+        private const int Height = 1080;
 
-        var random = new Random();
-
-        for (var i = 0; i < 150; i++)
+        static void Main(string[] args)
         {
-            layouter.PutNextRectangle(new Size(50 + random.Next(0, 100), 50 + random.Next(0, 100)));
-        }
+            var layouter = new CircularCloudLayouter(new Point(Width / 2, Height / 2));
 
-        var bitmap = new Bitmap(1920, 1080);
-        var graphics = Graphics.FromImage(bitmap);
-        graphics.DrawRectangles(new Pen(Color.Red, 1),
-            layouter.Rectangles.Select(rect => rect).ToArray());
-        var path = @$"{Environment.CurrentDirectory}\..\..\..\Sample.jpg";
-        var absolutePath = Path.GetFullPath(path);
-        bitmap.Save(absolutePath);
+            var random = new Random();
+
+            for (var i = 0; i < 150; i++)
+            {
+                layouter.PutNextRectangle(new Size(50 + random.Next(0, 100), 50 + random.Next(0, 100)));
+            }
+
+            var filename = "Sample";
+            var bitmap = CloudDrawer.DrawTagCloud(layouter);
+            var path = @$"{Environment.CurrentDirectory}\..\..\..\Samples";
+            
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            path += @$"\{filename}.png";
+            bitmap.Save(path);
+        }
     }
 }
