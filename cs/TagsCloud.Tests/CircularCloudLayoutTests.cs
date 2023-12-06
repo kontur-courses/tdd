@@ -32,31 +32,34 @@ public class CircularCloudLayoutTests
     [Test]
     public void PutNextRectangle_ShouldNot_SkipRectangles()
     {
-        var sizes = GetRandomLengthSizesArray().ToArray();
-        _ = sizes.Select(size => layout.PutNextRectangle(size)).ToList();
+        var rectCount = random.Next(1, 250);
+        PutNRectanglesInLayout(rectCount);
 
-        layout.PlacedRectangles.Should().HaveCount(sizes.Length);
+        layout.PlacedRectangles.Should().HaveCount(rectCount);
     }
 
     [Test]
     public void PlacedRectangles_ShouldNot_HaveIntersections()
     {
-        var sizes = GetRandomLengthSizesArray();
-        _ = sizes.Select(size => layout.PutNextRectangle(size)).ToList();
+        var rectCount = random.Next(1, 250);
+        PutNRectanglesInLayout(rectCount);
 
-        HasIntersections(layout.PlacedRectangles).Should().Be(false);
+        PlacedRectanglesHasIntersections().Should().Be(false);
     }
 
-    private IEnumerable<Size> GetRandomLengthSizesArray()
+    private void PutNRectanglesInLayout(int amount)
     {
-        return Enumerable
-            .Range(0, random.Next(1, 500))
-            .Select(rect => new Size(random.Next(1, 150), random.Next(1, 150)))
-            .ToArray();
+        for (var i = 0; i < amount; i++)
+        {
+            var currentSize = new SizeF(random.Next(1, 250), random.Next(1, 250));
+            layout.PutNextRectangle(currentSize);
+        }
     }
 
-    private static bool HasIntersections(IList<RectangleF> rects)
+    private bool PlacedRectanglesHasIntersections()
     {
+        var rects = layout.PlacedRectangles;
+        
         return (from current in rects
             from another in rects
             where current != another
