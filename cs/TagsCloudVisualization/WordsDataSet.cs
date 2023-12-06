@@ -1,12 +1,17 @@
+using System.Text.RegularExpressions;
+
 namespace TagsCloudVisualization;
 
-public abstract class WordsDataSet
+public class WordsDataSet
 {
-    public static Dictionary<string, int> CreateFrequencyDict(string filePath)
+    public Dictionary<string, int> CreateFrequencyDict(string fileName)
     {
-        // TODO fix separator
-        var words = File.ReadAllText(filePath)
-            .Split(new[] { " ", ",", "\n", ", " }, StringSplitOptions.RemoveEmptyEntries);
+        var words = Regex
+            .Matches(File.ReadAllText(
+                    $"../../../../TagsCloudVisualization/src/{fileName}.txt"), @"[\w\d]+"
+            )
+            .Select(m => m.Value)
+            .ToArray();
 
         var dict = new Dictionary<string, int>();
 
