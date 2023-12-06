@@ -3,18 +3,18 @@ using System.Numerics;
 
 namespace TagsCloudVisualization;
 
-public class CircularCloudLayout : ILayout
+public class Layout : ILayout
 {
     // Public to enable Unit testing
     public readonly List<RectangleF> PlacedRectangles = new();
 
-    private readonly Spiral spiral;
-    private PointF center;
+    private readonly PointF center;
+    private readonly ILayoutFunction layoutFunction;
 
-    public CircularCloudLayout(PointF center, float distanceDelta, float angleDelta)
+    public Layout(ILayoutFunction layoutFunction, PointF center)
     {
         this.center = center;
-        spiral = new Spiral(distanceDelta, angleDelta);
+        this.layoutFunction = layoutFunction;
     }
 
     public RectangleF PutNextRectangle(SizeF rectSize)
@@ -23,6 +23,7 @@ public class CircularCloudLayout : ILayout
         var moved = GetMovedToCenterRectangle(rectangle);
 
         PlacedRectangles.Add(moved);
+        
         return moved;
     }
 
@@ -54,20 +55,21 @@ public class CircularCloudLayout : ILayout
 
     private RectangleF GetCorrectlyPlacedRectangle(SizeF rectSize)
     {
-        var point = spiral.GetNextPoint();
+        var point = layoutFunction.GetNextPoint();
         var rectangle = new RectangleF(point, rectSize);
 
         while (true)
         {
-            point = point.Center(center);
-            point = point.ApplyOffset(-rectSize.Width / 2, -rectSize.Height / 2);
+            point = point
+                .Center(center)
+                .ApplyOffset(-rectSize.Width / 2, -rectSize.Height / 2);
 
             (rectangle.X, rectangle.Y) = point;
 
             if (PlacedRectangles.All(rect => !rect.IntersectsWith(rectangle)))
                 break;
 
-            point = spiral.GetNextPoint();
+            point = layoutFunction.GetNextPoint();
         }
 
         return rectangle;

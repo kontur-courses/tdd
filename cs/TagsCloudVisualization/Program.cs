@@ -12,7 +12,8 @@ var sizes = Enumerable
     .Select(rect => new Size(35, 35))
     .ToArray();
 
-var layout = new CircularCloudLayout(center, 0.1f, (float)Math.PI / 180);
+var layoutFunction = new Spiral(0.1f, (float)Math.PI / 180);
+var layout = new Layout(layoutFunction, center);
 var rectangles = sizes.Select(size => layout.PutNextRectangle(size)).ToList();
 
 using var image = new Image<Rgba32>(1920, 1080);

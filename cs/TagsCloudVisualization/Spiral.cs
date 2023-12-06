@@ -2,7 +2,7 @@ using SixLabors.ImageSharp;
 
 namespace TagsCloudVisualization;
 
-public class Spiral
+public class Spiral : ILayoutFunction
 {
     private readonly float distanceDelta, angleDelta;
     private float currentAngle;

@@ -18,17 +18,14 @@ public class CircularCloudLayoutTests
     [SetUp]
     public void SetUp()
     {
-        distanceDelta = random.Next(1, 25);
-        angleDelta = random.NextSingle();
-        layout = new CircularCloudLayout(new PointF(WindowWidth, WindowHeight),
-            distanceDelta, angleDelta);
+        var layoutFunction = new Spiral(random.Next(1, 25), random.NextSingle());
+        var screenCenter = new PointF(WindowWidth / 2, WindowHeight / 2);
+        layout = new Layout(layoutFunction, screenCenter);
     }
 
-    private CircularCloudLayout layout;
+    private Layout layout;
     private Random random;
-
-    private float distanceDelta, angleDelta;
-
+    
     [Test]
     public void PutNextRectangle_ShouldNot_SkipRectangles()
     {
@@ -44,19 +41,19 @@ public class CircularCloudLayoutTests
         var rectCount = random.Next(1, 250);
         PutNRectanglesInLayout(rectCount);
 
-        PlacedRectanglesHasIntersections().Should().Be(false);
+        PlacedRectanglesHaveIntersections().Should().Be(false);
     }
 
     private void PutNRectanglesInLayout(int amount)
     {
         for (var i = 0; i < amount; i++)
         {
-            var currentSize = new SizeF(random.Next(1, 250), random.Next(1, 250));
+            var currentSize = new Size(random.Next(1, 250), random.Next(1, 250));
             layout.PutNextRectangle(currentSize);
         }
     }
 
-    private bool PlacedRectanglesHasIntersections()
+    private bool PlacedRectanglesHaveIntersections()
     {
         var rects = layout.PlacedRectangles;
         

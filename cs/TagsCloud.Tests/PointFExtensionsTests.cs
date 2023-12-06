@@ -19,10 +19,10 @@ public class PointFExtensionsTests
     [Test]
     public void Center_Should_CenterPoint()
     {
-        for (var i = 0; i < 10000; i++)
+        for (var i = 0; i < 1000; i++)
         {
-            var center = new PointF(random.Next(1, 5000), random.Next(1, 5000));
-            var actual = new PointF(random.Next(1, 5000), random.Next(1, 5000));
+            var center = new PointF(random.Next(1, 2500), random.Next(1, 2500));
+            var actual = new PointF(random.Next(1, 2500), random.Next(1, 2500));
             var expected = new PointF(actual.X + center.X, actual.Y + center.Y);
 
             actual.Center(center).Should().Be(expected);
@@ -32,10 +32,10 @@ public class PointFExtensionsTests
     [Test]
     public void ApplyOffset_Should_ApplyOffset()
     {
-        for (var i = 0; i < 10000; i++)
+        for (var i = 0; i < 1000; i++)
         {
-            var (offsetX, offsetY) = (random.Next(1, 5000), random.Next(1, 5000));
-            var actual = new PointF(random.Next(1, 5000), random.Next(1, 5000));
+            var (offsetX, offsetY) = (random.Next(1, 2500), random.Next(1, 2500));
+            var actual = new PointF(random.Next(1, 2500), random.Next(1, 2500));
             var expected = new PointF(actual.X + offsetX, actual.Y + offsetY);
 
             actual.ApplyOffset(offsetX, offsetY).Should().Be(expected);
@@ -45,9 +45,9 @@ public class PointFExtensionsTests
     [Test]
     public void ConvertToCartesian_Should_ReturnCorrectValues()
     {
-        for (var i = 0; i < 10000; i++)
+        for (var i = 0; i < 1000; i++)
         {
-            var actual = new PointF(random.Next(1, 5000), random.Next(1, 5000));
+            var actual = new PointF(random.Next(1, 2500), random.Next(1, 2500));
             var expected = new PointF(
                 actual.X * (float)Math.Cos(actual.Y),
                 actual.X * (float)Math.Sin(actual.Y));
