@@ -4,7 +4,7 @@ namespace TagsCloudVisualization;
 
 public static class PointFExtensions
 {
-    public static void ConvertToCartesian(this ref PointF point)
+    public static PointF ConvertToCartesian(this PointF point)
     {
         var (radius, angle) = point;
 
@@ -12,17 +12,23 @@ public static class PointFExtensions
         var y = radius * (float)Math.Sin(angle);
 
         (point.X, point.Y) = (x, y);
+        
+        return point;
     }
 
-    public static void Center(this ref PointF point, ref PointF center)
+    public static PointF Center(this PointF point, PointF center)
     {
         point.X += center.X;
         point.Y += center.Y;
+        
+        return point;
     }
 
-    public static void ApplyOffset(this ref PointF point, float offsetX, float offsetY)
+    public static PointF ApplyOffset(this PointF point, float offsetX, float offsetY)
     {
         point.X += offsetX;
         point.Y += offsetY;
+
+        return point;
     }
 }

@@ -19,7 +19,7 @@ public class Spiral
         var point = new PointF(radius, currentAngle);
 
         currentAngle += angleDelta;
-        point.ConvertToCartesian();
+        point = point.ConvertToCartesian();
 
         return point;
     }

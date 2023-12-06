@@ -25,7 +25,7 @@ public class PointFExtensionsTests
             var center = new PointF(random.Next(1, 5000), random.Next(1, 5000));
             var expected = new PointF(actual.X + center.X, actual.Y + center.Y);
 
-            actual.Center(ref center);
+            actual = actual.Center(center);
             actual.Should().Be(expected);
         }
     }
@@ -39,7 +39,7 @@ public class PointFExtensionsTests
             var (offsetX, offsetY) = (random.Next(1, 5000), random.Next(1, 5000));
 
             var expected = new PointF(actual.X + offsetX, actual.Y + offsetY);
-            actual.ApplyOffset(offsetX, offsetY);
+            actual = actual.ApplyOffset(offsetX, offsetY);
 
             actual.Should().Be(expected);
         }
@@ -56,7 +56,7 @@ public class PointFExtensionsTests
                 actual.X * (float)Math.Sin(actual.Y));
             var expected = new PointF(x, y);
 
-            actual.ConvertToCartesian();
+            actual = actual.ConvertToCartesian();
             actual.Should().Be(expected);
         }
     }

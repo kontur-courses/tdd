@@ -8,11 +8,11 @@ var center = new PointF((float)1920 / 2, (float)1080 / 2);
 var random = new Random();
 
 var sizes = Enumerable
-    .Range(0, 120)
-    .Select(rect => new Size(random.Next(50, 120), random.Next(50, 120)))
+    .Range(0, 100)
+    .Select(rect => new Size(35, 35))
     .ToArray();
 
-var layout = new CircularCloudLayout(center, 1f, (float)Math.PI / 180);
+var layout = new CircularCloudLayout(center, 0.1f, (float)Math.PI / 180);
 var rectangles = sizes.Select(size => layout.PutNextRectangle(size)).ToList();
 
 using var image = new Image<Rgba32>(1920, 1080);

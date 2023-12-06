@@ -60,8 +60,8 @@ public class CircularCloudLayout : ILayout
 
         while (true)
         {
-            point.Center(ref center);
-            point.ApplyOffset(-rectSize.Width / 2, -rectSize.Height / 2);
+            point = point.Center(center);
+            point = point.ApplyOffset(-rectSize.Width / 2, -rectSize.Height / 2);
 
             (rectangle.X, rectangle.Y) = point;
 
