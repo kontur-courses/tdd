@@ -9,7 +9,12 @@ namespace TagsCloudVisualization
             var image = new Bitmap(centerPoint.X * 2, centerPoint.Y * 2);
             var gr = Graphics.FromImage(image);
             gr.Clear(Color.Black);
-            gr.DrawRectangles(new Pen(Color.White), rectangles.ToArray());
+            using (var brush = new SolidBrush(Color.White))
+            {
+                foreach (var rectangle in rectangles)
+                    gr.FillRectangle(brush, rectangle);
+            }
+
 
             return image;
         }
