@@ -1,10 +1,6 @@
-using System.Drawing;
-using FluentAssertions;
-using NUnit.Framework;
+namespace TagsCloudVisualizationTests;
 
-namespace TagsCloudVisualization.Tests;
-
-public class Layout_Should
+public static class Layout_Should
 {
     #region Center
 
@@ -33,9 +29,9 @@ public class Layout_Should
     }
 
     #endregion
-
+    
     #region CanPutRectangle
-
+    
     private static IEnumerable<TestCaseData> CanPutRectangleSource()
     {
         yield return new TestCaseData((Layout layout) => { }, new Rectangle(0, 0, 1, 1), true)

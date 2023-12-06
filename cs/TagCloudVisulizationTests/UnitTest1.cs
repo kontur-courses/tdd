@@ -1,8 +1,7 @@
-using System.Drawing;
-using FluentAssertions;
-using NUnit.Framework;
 
-namespace TagsCloudVisualization.Tests;
+using TagsCloudVisualization;
+
+namespace TagCloudVisulizationTests;
 
 public class CircularCloudLayouter_Should
 {
