@@ -1,8 +1,10 @@
 ﻿using System.Drawing;
 
+namespace TagsCloudVisualization.Interfaces;
+
 public interface ICloudLayouter
 {
     Rectangle PutNextRectangle(Size rectangleSize);
-    List<Rectangle> GetLayout();
+    Cloud GetCloud();
     void PutRectangles(List<Size> sizes);
 }

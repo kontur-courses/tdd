@@ -5,14 +5,12 @@ namespace TagsCloudVisualization;
 
 public class CircularCloudLayouter : ICloudLayouter
 {
-    public Point Center { get; private set; }
-    public List<Rectangle> Rectangles { get; private set; }
-    public IRectanglesPlacer CircularPlacer { get; private set; }
+    private Cloud Cloud { get; set; }
+    private IRectanglesPlacer CircularPlacer { get; set; }
 
     public CircularCloudLayouter(Point center)
     {
-        Center = center;
-        Rectangles = new List<Rectangle>();
+        Cloud = new Cloud(center, new List<Rectangle>());
         CircularPlacer = new ArchimedeanSpiralPlacer(center, 0.1, 0.5, 1);
     }
 
@@ -21,21 +19,21 @@ public class CircularCloudLayouter : ICloudLayouter
         if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
             throw new ArgumentException("either width or height of rectangle size is not possitive");
 
-        var nextRectangle = CircularPlacer.GetNextRectangle(rectangleSize);
-        while (Rectangles.Any(rectangle => rectangle.IntersectsWith(nextRectangle)))
-            nextRectangle = CircularPlacer.GetNextRectangle(rectangleSize);
+        var nextRectangle = new Rectangle(CircularPlacer.GetNextPoint(), rectangleSize);
+        while (Cloud.Rectangles.Any(rectangle => rectangle.IntersectsWith(nextRectangle)))
+            nextRectangle = new Rectangle(CircularPlacer.GetNextPoint(), rectangleSize);
 
-        Rectangles.Add(nextRectangle);
+        Cloud.AddRectangle(nextRectangle);
         return nextRectangle;
     }
 
     public void PutRectangles(List<Size> sizes)
     {
-        if (sizes == null || sizes.Count == 0)
-            throw new ArgumentNullException(nameof(sizes));
+        if (sizes.Count == 0)
+            throw new ArgumentException("пустые размеры");
         foreach (var size in sizes)
             PutNextRectangle(size);
     }
 
-    public List<Rectangle> GetLayout() => Rectangles;
+    public Cloud GetCloud() => Cloud;
 }

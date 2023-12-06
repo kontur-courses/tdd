@@ -5,11 +5,11 @@ namespace TagsCloudVisualization;
 
 public class ArchimedeanSpiralPlacer : IRectanglesPlacer
 {
-    public double CurrentDifference { get; private set; }
-    public double Step { get; private set; }
+    private double CurrentDifference { get; set; }
+    private double Step { get; set; }
     public Point Center { get; private set; }
-    public double RadiusConst { get; private set; }
-    public double AngleConst { get; private set; }
+    private double RadiusConst { get; set; }
+    private double AngleConst { get; set; }
     public double Angle => CurrentDifference * AngleConst;
     public double Radius => CurrentDifference * RadiusConst;
 
@@ -25,15 +25,12 @@ public class ArchimedeanSpiralPlacer : IRectanglesPlacer
         AngleConst = angleConst;
     }
 
-    public Rectangle GetNextRectangle(Size rectangleSize)
+    public Point GetNextPoint()
     {
-        if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
-            throw new ArgumentException("either width or height of rectangle size is not possitive");
-
         CurrentDifference += Step;
         var x = Center.X + (int)(Radius * Math.Cos(Angle));
         var y = Center.Y + (int)(Radius * Math.Sin(Angle));
-        return new Rectangle(new Point(x, y), rectangleSize);
+        return new Point(x, y);
     }
 }
 
