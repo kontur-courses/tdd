@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples", "Samples\Samples.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{4F909C58-0835-4F9F-BA74-9530C220D676}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualizationTest", "TagsCloudVizuaizationTest\TagsCloudVisualizationTest.csproj", "{09F90167-009F-4E35-94DD-DBD7A4B6A814}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualizationTest", "TagsCloudVisualizationTest\TagsCloudVisualizationTest.csproj", "{09F90167-009F-4E35-94DD-DBD7A4B6A814}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4F909C58-0835-4F9F-BA74-9530C220D676} = {4F909C58-0835-4F9F-BA74-9530C220D676}
 	EndProjectSection
