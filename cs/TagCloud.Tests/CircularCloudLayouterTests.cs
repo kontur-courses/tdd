@@ -4,8 +4,10 @@ namespace TagCloud.Tests
 {
     public class CircularCloudLayouterTests
     {
-        private readonly string projectDirectory
+        private readonly static string projectDirectory
             = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+        private readonly static string pathToFailureImagesFolder 
+            = Path.Combine(projectDirectory, "FailureImages");
 
         private Point center;
         private Size imageSize;
@@ -16,13 +18,19 @@ namespace TagCloud.Tests
         [OneTimeSetUp]
         public void OneTimeSetup()
         {
-            var path = Path.Combine(projectDirectory, "FailureImages");
+            EnsureFolderCreated(pathToFailureImagesFolder);
 
-            var dir = new DirectoryInfo(path);
+            var dir = new DirectoryInfo(pathToFailureImagesFolder);
 
             foreach(var file in dir.EnumerateFiles()) file.Delete();
         }
-        
+
+        public static void EnsureFolderCreated(string folderPath)
+        {
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
+        }
+
         [SetUp]
         public void Setup()
         {
@@ -30,7 +38,7 @@ namespace TagCloud.Tests
 
             center = new Point(imageSize.Width / 2, imageSize.Height / 2);
             layouter = new CircularCloudLayouter(center);
-            GenerateSizes();
+            sizes = GenerateSizes();
         }
 
         [Test]
@@ -44,7 +52,7 @@ namespace TagCloud.Tests
         {
             var rect = layouter.PutNextRectangle(sizes[0]);
 
-            Assert.True(rect.Width == sizes[0].Width && rect.Height == sizes[0].Height);
+            Assert.True(rect.Size == sizes[0]);
         }
 
         [Test]
@@ -58,21 +66,19 @@ namespace TagCloud.Tests
                 foreach(var rect2 in rectangles)
                 {
                     if (rect1 != rect2)
-                        if (rect1.IntersectsWith(rect2))
-                            Assert.False(rect1.IntersectsWith(rect2));
-                            Console.WriteLine(" ");
+                        Assert.False(rect1.IntersectsWith(rect2));
                 }
             }
         }
 
         [Test]
-        public void PutNextRectangle_PlaceManyRectangles_ShouldFitInCircle()
+        public void PutNextRectangle_PlaceManyRectangles_ShouldFitInCircleAroundCenter()
         {
             var rectangles = sizes.Select(x => layouter.PutNextRectangle(x)).ToArray();
 
 
             var totalArea = rectangles.Select(x => x.Width * x.Height).Sum();
-            var radius = Math.Sqrt(totalArea / Math.PI) * 1.5;
+            var radius = Math.Sqrt(totalArea / Math.PI) * 1.2;
 
             foreach (var rect in rectangles)
             {
@@ -80,7 +86,7 @@ namespace TagCloud.Tests
             }
         }
 
-        private void GenerateSizes()
+        public static Size[] GenerateSizes()
         {
             var sizes = new List<Size>();
 
@@ -92,7 +98,7 @@ namespace TagCloud.Tests
                 }
             }
 
-            this.sizes = sizes.ToArray();
+            return sizes.ToArray();
         }
 
         [TearDown]
@@ -100,7 +106,7 @@ namespace TagCloud.Tests
         {
             var context = TestContext.CurrentContext;
             var fileName = $"{context.Test.Name}.jpg";
-            var pathToSave = Path.Combine(projectDirectory, "FailureImages", fileName);
+            var pathToSave = Path.Combine(pathToFailureImagesFolder, fileName);
 
             if (context.Result.FailCount != 0)
             {
