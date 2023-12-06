@@ -5,7 +5,7 @@ namespace TagsCloudVisualization;
 
 public class CircularCloudLayout : ILayout
 {
-    // Public to enable unit testing
+    // Public to enable Unit testing
     public readonly List<RectangleF> PlacedRectangles = new();
 
     private readonly Spiral spiral;
@@ -30,9 +30,8 @@ public class CircularCloudLayout : ILayout
     {
         var currentRect = rectangle;
 
-        // We need to skip first rectangle, because it is already in (0, 0)
-        if (Math.Abs(currentRect.X + currentRect.Width / 2 - center.X) < 1e-3
-            && Math.Abs(currentRect.Y + currentRect.Height / 2 - center.Y) < 1e-3)
+        // Skip 1-st rectangle, because it's already in (0, 0) point.
+        if (PlacedRectangles.Count == 0)
             return currentRect;
 
         var toCenter = new Vector2(center.X - currentRect.X, center.Y - currentRect.Y);

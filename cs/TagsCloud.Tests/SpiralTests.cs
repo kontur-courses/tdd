@@ -31,7 +31,7 @@ public class SpiralTests
     public void Spiral_Should_SaveStateBetweenCalls()
     {
         var another = new Spiral(distanceDelta, angleDelta);
-        _ = spiral.GetNextPoint();
+        spiral.GetNextPoint();
 
         spiral.GetNextPoint().Should().NotBe(another.GetNextPoint());
     }
@@ -39,13 +39,13 @@ public class SpiralTests
     [Test]
     public void GetNextPoint_Should_ReturnCartesianCoordinates()
     {
-        // Skip first point, because it is (0, 0)
-        _ = spiral.GetNextPoint();
+        // Skip 1-st point, because it's (0, 0).
+        spiral.GetNextPoint();
 
         var radius = distanceDelta * angleDelta;
-        var expected = new PointF(radius, angleDelta);
-        expected.ConvertToCartesian();
-
+        var expected = new PointF(radius, angleDelta)
+            .ConvertToCartesian();
+        
         spiral.GetNextPoint().Should().Be(expected);
     }
 
@@ -54,14 +54,12 @@ public class SpiralTests
     {
         var angle = 0f;
 
-        for (var i = 0; i < 1000; i++)
+        for (var i = 0; i < 1000; i++, angle += angleDelta)
         {
-            var expected = new PointF(distanceDelta * angle, angle);
-            expected.ConvertToCartesian();
-
-            angle += angleDelta;
-
             var actual = spiral.GetNextPoint();
+            var expected = new PointF(distanceDelta * angle, angle)
+                .ConvertToCartesian();
+            
             actual.Should().Be(expected);
         }
     }
