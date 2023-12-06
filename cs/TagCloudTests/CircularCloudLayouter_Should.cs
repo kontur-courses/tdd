@@ -1,3 +1,6 @@
+using System.Collections;
+using NUnit.Framework.Interfaces;
+
 [TestFixture]
 public class CircularCloudLayouter_Should
 {
@@ -10,6 +13,29 @@ public class CircularCloudLayouter_Should
     public void Setup()
     {
         sut = new CircularCloudLayouter(new Point(Width / 2, Height / 2));
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        if (TestContext.CurrentContext.Result.Outcome == ResultState.Failure)
+        {
+            var bitmap = CloudDrawer.DrawTagCloud(sut);
+
+            var path = @$"{Environment.CurrentDirectory}\..\..\..\FailedTests\{this.GetType()}";
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            var fileName = TestContext.CurrentContext.Test.Name;
+            path += @$"\{fileName}.png";
+
+            bitmap.Save(path);
+            
+            TestContext.Out.WriteLine($"Tag cloud visualization saved to file <{Path.GetFullPath(path)}>");
+        }
     }
 
     [Test]
@@ -39,5 +65,32 @@ public class CircularCloudLayouter_Should
         Action action = () => { sut.PutNextRectangle(new Size(0, 0)); };
 
         action.Should().Throw<ArgumentException>();
+    }
+
+    [Test]
+    public void ContainNonIntersectingRectangles()
+    {
+        var random = new Random();
+
+        for (var i = 0; i < 50; i++)
+        {
+            sut.PutNextRectangle(new Size(50 + random.Next(0, 100), 50 + random.Next(0, 100)));
+        }
+
+        HasIntersectedRectangles(sut.Rectangles).Should().Be(false);
+    }
+
+    private bool HasIntersectedRectangles(IList<Rectangle> rectangles)
+    {
+        for (var i = 0; i < rectangles.Count - 1; i++)
+        {
+            for (var j = i + 1; j < rectangles.Count; j++)
+            {
+                if (rectangles[i].IntersectsWith(rectangles[j]))
+                    return true;
+            }
+        }
+
+        return false;
     }
 }
