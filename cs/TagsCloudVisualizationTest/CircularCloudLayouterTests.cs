@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using NUnit.Framework;
 using TagsCloudVisualization;
 using FluentAssertions;
@@ -30,7 +31,7 @@ namespace TagsCloudVisualizationTest
             new TestCaseData(0, 0).SetName("PassOnlyZero")
         };
 
-        [TestOf(nameof(CircularCloudLayouter.HaveIntersection))]
+        [TestOf(nameof(CircularCloudLayouter.PutNextRectangle))]
         [TestCaseSource(nameof(InvalidArguments))]
         public void WhenPassInvalidArguments_ShouldThrowArgumentException(int width, int height) =>
             Assert.Throws<ArgumentException>(() => layouter.PutNextRectangle(new Size(width, height)));
@@ -38,50 +39,50 @@ namespace TagsCloudVisualizationTest
         [Test]
         public void WhenPutNewRectangle_ShouldBeAddedToList()
         {
-            layouter.PutNextRectangle(new Size(4, 2));
+            var currentRectangles = new List<Rectangle>
+            {
+                layouter.PutNextRectangle(new Size(4, 2))
+            };
 
-            layouter.Rectangles.Count.Should().Be(1);
+            currentRectangles.Count.Should().Be(1);
         }
-
-        private static readonly List<Rectangle> Rectangles = new List<Rectangle>
-        {
-            new Rectangle(new Point(400, 400), new Size(4, 2))
-        };
 
         public static TestCaseData[] RectanglesPosition =
         {
-            new TestCaseData(new Rectangle(new Point(400, 402), new Size(4, 2)))
-                .Returns(false).SetName("NotIntersectedRectangles2"),
-            new TestCaseData(new Rectangle(new Point(400, 402), new Size(6, 2)))
-                .Returns(false).SetName("NotIntersectedRectanglesOfDifferentSizes"),
-
-            new TestCaseData(new Rectangle(new Point(400, 400), new Size(4, 2)))
-                .Returns(true).SetName("IntersectedRectanglesInOnePoint"),
-            new TestCaseData(new Rectangle(new Point(402, 400), new Size(4, 2)))
-                .Returns(true).SetName("IntersectedRectangles")
+            new TestCaseData(new Size(4, 2), new Size(4, 2))
+                .Returns(false).SetName("WhenPassIdenticalRectangles"),
+            new TestCaseData(new Size(6, 2), new Size(4, 2))
+                .Returns(false).SetName("WhenPassRectanglesOfDifferentSizes")
         };
 
-        [TestOf(nameof(CircularCloudLayouter.HaveIntersection))]
+        [TestOf(nameof(CircularCloudLayouter.PutNextRectangle))]
         [TestCaseSource(nameof(RectanglesPosition))]
-        public bool WhenPassSeveralRectangles_ShouldReturnCorrectIntersectionResult(Rectangle newRectangle)
+        public bool WhenPassSeveralRectangles_ShouldReturnCorrectIntersectionResult(Size rectangleSize,
+            Size newRectangleSize)
         {
-            layouter.Rectangles = Rectangles;
+            var currentRectangles = new List<Rectangle>
+            {
+                layouter.PutNextRectangle(rectangleSize),
+                layouter.PutNextRectangle(newRectangleSize)
+            };
 
-            return layouter.HaveIntersection(newRectangle);
+            return currentRectangles.First().IntersectsWith(currentRectangles.Last());
         }
 
         [Test]
         public void WhenPutNewRectangles_TheyShouldBeTightlyPositioned()
         {
+            var currentRectangles = new List<Rectangle>();
+
             for (var i = 0; i < 15; i++)
-                layouter.PutNextRectangle(new Size(4, 2));
+                currentRectangles.Add(layouter.PutNextRectangle(new Size(4, 2)));
 
             var rectanglesSquare = 0;
             var radius = 0.0;
 
-            foreach (var rectangle in layouter.Rectangles)
+            foreach (var rectangle in currentRectangles)
             {
-                var center = layouter.Center;
+                var center = new Point(400, 400);
 
                 rectanglesSquare += rectangle.Size.Height * rectangle.Size.Width;
 
