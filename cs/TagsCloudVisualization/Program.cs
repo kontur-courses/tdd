@@ -10,8 +10,8 @@ var center = new PointF((float)1920 / 2, (float)1080 / 2);
 
 // Create random set of sizes:
 var sizes = Enumerable
-    .Range(0, 75)
-    .Select(rect => new SizeF(random.Next(50, 100), random.Next(50, 150)))
+    .Range(0, 50)
+    .Select(rect => new SizeF(random.Next(25, 150), random.Next(25, 150)))
     .ToArray();
 
 // Try sorting for better distribution
@@ -29,7 +29,7 @@ foreach (var size in sizes) layout.PutNextRectangle(size);
 // Save image of created layout:
 layout.SaveVisualization(
     new Size(1920, 1080),
-    Color.Yellow,
+    Color.White,
     1.2f,
-    Color.Red,
-    "best_layout");
+    Color.Blue,
+    "best_layout.png");

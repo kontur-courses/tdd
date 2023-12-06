@@ -53,23 +53,26 @@ public class Layout : ILayout
 
     private RectangleF GetCorrectlyPlacedRectangle(SizeF rectSize)
     {
-        var point = layoutFunction.GetNextPoint();
-        var rectangle = new RectangleF(point, rectSize);
-
         while (true)
         {
-            point = point
-                .Center(center)
-                .ApplyOffset(-rectSize.Width / 2, -rectSize.Height / 2);
+            var tempPoint = layoutFunction.GetNextPoint().Center(center);
 
-            (rectangle.X, rectangle.Y) = point;
+            var common = new RectangleF(tempPoint, rectSize);
+            var rotated = common with { Width = common.Height, Height = common.Width };
 
-            if (PlacedFigures.All(rect => !rect.IntersectsWith(rectangle)))
-                break;
+            var commonPoint = tempPoint.ApplyOffset(-common.Width / 2, -common.Height / 2);
+            var rotatedPoint = tempPoint.ApplyOffset(-rotated.Width / 2, -rotated.Height / 2);
 
-            point = layoutFunction.GetNextPoint();
+            (common.X, common.Y) = (commonPoint.X, commonPoint.Y);
+            (rotated.X, rotated.Y) = (rotatedPoint.X, rotatedPoint.Y);
+
+            if (PlacedFigures.All(figure => !figure.IntersectsWith(common)))
+                return common;
+
+            // Don't check for collisions if rotated is square.
+            if (Math.Abs(rotated.Width - rotated.Height) < 1e-3 &&
+                PlacedFigures.All(figure => !figure.IntersectsWith(rotated)))
+                return rotated;
         }
-
-        return rectangle;
     }
 }
