@@ -4,7 +4,7 @@ namespace TagsCloudVisualization;
 
 public class Layout
 {
-    private readonly HashSet<Point> occupiedPixels = new();
+    private readonly List<Rectangle> _rectangles = new();
 
     public Layout(Point center)
     {
@@ -22,31 +22,20 @@ public class Layout
         {
             for (var dx = -offset; dx <= offset; dx++)
             for (var dy = -offset; dy <= offset; dy++)
-            {
-                if (!(Math.Abs(dx) != offset || Math.Abs(dy) != offset))
-                    continue;
-
-                yield return Center + new Size(dx, dy);
-            }
+                if (Math.Abs(dx) == offset || Math.Abs(dy) == offset)
+                    yield return Center + new Size(dx, dy);
 
             offset++;
         }
     }
 
-    public bool CanPutInCoords(Rectangle rectangle)
+    public bool CanPutRectangle(Rectangle rectangle)
     {
-        for (var i = rectangle.Left; i <= rectangle.Right; i++)
-        for (var j = rectangle.Top; j <= rectangle.Bottom; j++)
-            if (occupiedPixels.Contains(new Point(i, j)))
-                return false;
-
-        return true;
+        return !_rectangles.Any(rectangle.IntersectsWith);
     }
 
-    public void OccupyCoords(Rectangle rectangle)
+    public void PutRectangle(Rectangle rectangle)
     {
-        for (var i = rectangle.Left; i <= rectangle.Right; i++)
-        for (var j = rectangle.Top; j <= rectangle.Bottom; j++)
-            occupiedPixels.Add(new Point(i, j));
+        _rectangles.Add(rectangle);
     }
 }
