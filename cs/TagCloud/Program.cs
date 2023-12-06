@@ -10,7 +10,7 @@ public class CloudDrawer
 
         var random = new Random();
 
-        for (var i = 0; i < 50; i++)
+        for (var i = 0; i < 150; i++)
         {
             layouter.PutNextRectangle(new Size(50 + random.Next(0, 100), 50 + random.Next(0, 100)));
         }
