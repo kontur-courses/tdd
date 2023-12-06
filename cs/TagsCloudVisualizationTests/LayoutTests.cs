@@ -1,7 +1,13 @@
 namespace TagsCloudVisualizationTests;
 
-public static class Layout_Should
+public static class LayoutTests
 {
+    [SetUp]
+    public static void SetUp()
+    {
+        _layout = new Layout(new Point(0, 0));
+    }
+    
     #region Center
 
     private static IEnumerable<TestCaseData> CenterInSource()
@@ -30,41 +36,7 @@ public static class Layout_Should
 
     #endregion
     
-    #region CanPutRectangle
-    
-    private static IEnumerable<TestCaseData> CanPutRectangleSource()
-    {
-        yield return new TestCaseData((Layout layout) => { }, new Rectangle(0, 0, 1, 1), true)
-            .SetName("Layout_CanPutRectangle_ReturnsTrueWhenLayoutIsEmpty");
-        
-        yield return new TestCaseData(
-                (Layout layout) =>
-                {
-                    layout.PutRectangle(new Rectangle(0, 0, 1, 1));
-                }, 
-                new Rectangle(2, 2, 1, 1), 
-                true)
-            .SetName("Layout_CanPutRectangle_ReturnsTrueOnPuttingRectangleToEmptyPlace");
-        
-        yield return new TestCaseData(
-                (Layout layout) =>
-                {
-                    layout.PutRectangle(new Rectangle(0, 0, 1, 1));
-                }, 
-                new Rectangle(0, 0, 1, 1), 
-                false)
-            .SetName("Layout_CanPutRectangle_ReturnsFalseOnPuttingRectangleToOccupiedPlace");
-    }
-
-    #endregion
-    
     private static Layout _layout;
-    
-    [SetUp]
-    public static void SetUp()
-    {
-        _layout = new Layout(new Point(0, 0));
-    }
     
     [TestCaseSource(nameof(CenterInSource))]
     public static void Layout_HasCenterInInitCoords(Action<Layout> action, Point expected)
@@ -106,12 +78,21 @@ public static class Layout_Should
             .ToArray();
     }
 
-    [TestCaseSource(nameof(CanPutRectangleSource))]
-    public static void Layout_CanPutRectangle_Returns(Action<Layout> action, Rectangle rectangle, bool expected)
+    [TestCase(
+        new []{0, 0, 1, 1}, 
+        new [] {2, 2, 1, 1}, 
+        true,
+        TestName = "Layout_CanPutRectangle_ReturnsTrueOnPuttingRectangleToEmptyPlace")]
+    [TestCase(
+        new []{0, 0, 1, 1}, 
+        new [] {0, 0, 1, 1}, 
+        false,
+        TestName = "Layout_CanPutRectangle_ReturnsFalseOnPuttingRectangleToOccupiedPlace")]
+    public static void Layout_CanPutRectangle_Returns(int[] r1, int[] r2, bool expected)
     {
-        action(_layout);
+        _layout.PutRectangle(new Rectangle(r1[0], r1[1], r1[2], r1[3]));
 
-        _layout.CanPutRectangle(rectangle)
+        _layout.CanPutRectangle(new Rectangle(r2[0], r2[1], r2[2], r2[3]))
             .Should()
             .Be(expected);
     }
