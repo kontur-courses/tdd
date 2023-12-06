@@ -21,14 +21,15 @@ namespace TagCloud
             var filename = "Sample";
             var bitmap = CloudDrawer.DrawTagCloud(layouter);
             var path = @$"{Environment.CurrentDirectory}\..\..\..\Samples";
+            var absPath = Path.GetFullPath(path);
             
-            if (!Directory.Exists(path))
+            if (!Directory.Exists(absPath))
             {
-                Directory.CreateDirectory(path);
+                Directory.CreateDirectory(absPath);
             }
 
-            path += @$"\{filename}.png";
-            bitmap.Save(path);
+            absPath += @$"\{filename}.png";
+            bitmap.Save(absPath);
         }
     }
 }

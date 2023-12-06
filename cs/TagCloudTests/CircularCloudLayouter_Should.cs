@@ -1,4 +1,3 @@
-using System.Collections;
 using NUnit.Framework.Interfaces;
 
 [TestFixture]
@@ -23,18 +22,19 @@ public class CircularCloudLayouter_Should
             var bitmap = CloudDrawer.DrawTagCloud(sut);
 
             var path = @$"{Environment.CurrentDirectory}\..\..\..\FailedTests\{this.GetType()}";
+            var absPath = Path.GetFullPath(path);
 
-            if (!Directory.Exists(path))
+            if (!Directory.Exists(absPath))
             {
-                Directory.CreateDirectory(path);
+                Directory.CreateDirectory(absPath);
             }
 
             var fileName = TestContext.CurrentContext.Test.Name;
-            path += @$"\{fileName}.png";
+            absPath += @$"\{fileName}.png";
 
-            bitmap.Save(path);
+            bitmap.Save(absPath);
             
-            TestContext.Out.WriteLine($"Tag cloud visualization saved to file <{Path.GetFullPath(path)}>");
+            TestContext.Out.WriteLine($"Tag cloud visualization saved to file <{absPath}>");
         }
     }
 
