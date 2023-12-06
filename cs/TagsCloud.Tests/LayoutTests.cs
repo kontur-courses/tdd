@@ -7,7 +7,7 @@ using static TagsCloud.Tests.TestConfiguration;
 namespace TagsCloud.Tests;
 
 [TestFixture]
-public class CircularCloudLayoutTests
+public class LayoutTests
 {
     [OneTimeSetUp]
     public void OneTimeSetUp()
@@ -48,21 +48,21 @@ public class CircularCloudLayoutTests
     public void PutNextRectangle_ShouldNot_SkipRectangles()
     {
         var rectCount = random.Next(1, 250);
-        PutNRectanglesInLayout(rectCount);
+        PutNFiguresInLayout(rectCount);
 
         layout.PlacedFigures.Should().HaveCount(rectCount);
     }
 
     [Test]
-    public void PlacedRectangles_ShouldNot_HaveIntersections()
+    public void PlacedFigures_ShouldNot_HaveIntersections()
     {
         var rectCount = random.Next(1, 250);
-        PutNRectanglesInLayout(rectCount);
+        PutNFiguresInLayout(rectCount);
 
-        PlacedRectanglesHaveIntersections().Should().Be(false);
+        PlacedFiguresHaveIntersections().Should().Be(false);
     }
 
-    private void PutNRectanglesInLayout(int amount)
+    private void PutNFiguresInLayout(int amount)
     {
         for (var i = 0; i < amount; i++)
         {
@@ -71,7 +71,7 @@ public class CircularCloudLayoutTests
         }
     }
 
-    private bool PlacedRectanglesHaveIntersections()
+    private bool PlacedFiguresHaveIntersections()
     {
         var rects = layout.PlacedFigures;
 

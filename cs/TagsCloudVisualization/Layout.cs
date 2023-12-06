@@ -22,7 +22,6 @@ public class Layout : ILayout
     {
         var rectangle = GetCorrectlyPlacedRectangle(rectSize);
         var moved = GetMovedToCenterRectangle(rectangle);
-
         PlacedFigures.Add(moved);
     }
 
