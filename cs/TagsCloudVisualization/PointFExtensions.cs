@@ -12,7 +12,7 @@ public static class PointFExtensions
         var y = radius * (float)Math.Sin(angle);
 
         (point.X, point.Y) = (x, y);
-        
+
         return point;
     }
 
@@ -20,7 +20,7 @@ public static class PointFExtensions
     {
         point.X += center.X;
         point.Y += center.Y;
-        
+
         return point;
     }
 

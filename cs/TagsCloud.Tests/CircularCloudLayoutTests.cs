@@ -25,14 +25,14 @@ public class CircularCloudLayoutTests
 
     private Layout layout;
     private Random random;
-    
+
     [Test]
     public void PutNextRectangle_ShouldNot_SkipRectangles()
     {
         var rectCount = random.Next(1, 250);
         PutNRectanglesInLayout(rectCount);
 
-        layout.PlacedRectangles.Should().HaveCount(rectCount);
+        layout.PlacedFigures.Should().HaveCount(rectCount);
     }
 
     [Test]
@@ -55,8 +55,8 @@ public class CircularCloudLayoutTests
 
     private bool PlacedRectanglesHaveIntersections()
     {
-        var rects = layout.PlacedRectangles;
-        
+        var rects = layout.PlacedFigures;
+
         return (from current in rects
             from another in rects
             where current != another

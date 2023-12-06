@@ -4,5 +4,6 @@ namespace TagsCloudVisualization;
 
 public interface ILayout
 {
-    public RectangleF PutNextRectangle(SizeF rectSize);
+    public ICollection<RectangleF> PlacedFigures { get; }
+    public void PutNextRectangle(SizeF rectSize);
 }

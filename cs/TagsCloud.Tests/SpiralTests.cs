@@ -45,7 +45,7 @@ public class SpiralTests
         var radius = distanceDelta * angleDelta;
         var expected = new PointF(radius, angleDelta)
             .ConvertToCartesian();
-        
+
         spiral.GetNextPoint().Should().Be(expected);
     }
 
@@ -59,7 +59,7 @@ public class SpiralTests
             var actual = spiral.GetNextPoint();
             var expected = new PointF(distanceDelta * angle, angle)
                 .ConvertToCartesian();
-            
+
             actual.Should().Be(expected);
         }
     }

@@ -5,9 +5,6 @@ namespace TagsCloudVisualization;
 
 public class Layout : ILayout
 {
-    // Public to enable Unit testing
-    public readonly List<RectangleF> PlacedRectangles = new();
-
     private readonly PointF center;
     private readonly ILayoutFunction layoutFunction;
 
@@ -15,16 +12,18 @@ public class Layout : ILayout
     {
         this.center = center;
         this.layoutFunction = layoutFunction;
+        PlacedFigures = new List<RectangleF>();
     }
 
-    public RectangleF PutNextRectangle(SizeF rectSize)
+    // Public to enable Unit testing.
+    public ICollection<RectangleF> PlacedFigures { get; }
+
+    public void PutNextRectangle(SizeF rectSize)
     {
         var rectangle = GetCorrectlyPlacedRectangle(rectSize);
         var moved = GetMovedToCenterRectangle(rectangle);
 
-        PlacedRectangles.Add(moved);
-        
-        return moved;
+        PlacedFigures.Add(moved);
     }
 
     private RectangleF GetMovedToCenterRectangle(RectangleF rectangle)
@@ -32,7 +31,7 @@ public class Layout : ILayout
         var currentRect = rectangle;
 
         // Skip 1-st rectangle, because it's already in (0, 0) point.
-        if (PlacedRectangles.Count == 0)
+        if (PlacedFigures.Count == 0)
             return currentRect;
 
         var toCenter = new Vector2(center.X - currentRect.X, center.Y - currentRect.Y);
@@ -44,7 +43,7 @@ public class Layout : ILayout
             var point = new PointF(currentRect.X + normalized.X, currentRect.Y + normalized.Y);
             var newRect = new RectangleF(point, currentRect.Size);
 
-            if (PlacedRectangles.Any(rect => rect.IntersectsWith(newRect)))
+            if (PlacedFigures.Any(rect => rect.IntersectsWith(newRect)))
                 break;
 
             currentRect = newRect;
@@ -66,7 +65,7 @@ public class Layout : ILayout
 
             (rectangle.X, rectangle.Y) = point;
 
-            if (PlacedRectangles.All(rect => !rect.IntersectsWith(rectangle)))
+            if (PlacedFigures.All(rect => !rect.IntersectsWith(rectangle)))
                 break;
 
             point = layoutFunction.GetNextPoint();
