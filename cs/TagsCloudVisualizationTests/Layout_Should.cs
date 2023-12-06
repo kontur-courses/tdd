@@ -4,7 +4,7 @@ public static class Layout_Should
 {
     #region Center
 
-    public static IEnumerable<TestCaseData> CenterInSource()
+    private static IEnumerable<TestCaseData> CenterInSource()
     {
         yield return new TestCaseData((Layout l) => {}, new Point(0, 0))
             .SetName("Layout_HasCenterInInitCoords_WhenEmpty");

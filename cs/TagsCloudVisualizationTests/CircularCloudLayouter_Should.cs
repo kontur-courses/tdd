@@ -4,7 +4,7 @@ public static class CircularCloudLayouter_Should
 {
     #region Exceptions
 
-    public static IEnumerable<TestCaseData> ExceptionsSource()
+    private static IEnumerable<TestCaseData> ExceptionsSource()
     {
         yield return new TestCaseData(
                 (CircularCloudLayouter layouter) =>
