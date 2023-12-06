@@ -8,9 +8,9 @@ namespace TagCloud
         private int i;
         private List<RectangleF> rectangles = new List<RectangleF>();
         private PointF center;
-        private RectangleF cur;
-        private int max = 2;
-        private List<Vector2> dirs;
+        private RectangleF currentRectangle;
+        private int segmentsCount = 2;
+        private List<Vector2> directions;
 
         public Rectangle[] Rectangles => rectangles.Select(Rectangle.Truncate).ToArray();
 
@@ -21,30 +21,28 @@ namespace TagCloud
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            cur = new RectangleF(
+            currentRectangle = new RectangleF(
                 center.X,
                 center.Y,
                 rectangleSize.Width,
                 rectangleSize.Height);
 
-            MoveOutOfcenter(ref cur);
+            MoveOutOfCenterInDirection(ref currentRectangle, GetDirection());
 
-            MoveToCenter(ref cur);
+            MoveTowardsCenter(ref currentRectangle);
 
-            rectangles.Add(cur);
+            rectangles.Add(currentRectangle);
 
-            return Rectangle.Truncate(cur);
+            return Rectangle.Truncate(currentRectangle);
         }
 
-        private void MoveOutOfcenter(ref RectangleF rect)
+        private void MoveOutOfCenterInDirection(ref RectangleF rect, Vector2 direction)
         {
-            var dir = GetDir();
-
-            while (IntersectsWithAny(cur))
-                cur.Offset(dir.X, dir.Y);
+            while (IntersectsWithAny(rect))
+                rect.Offset(direction.X, direction.Y);
         }
 
-        private void MoveToCenter(ref RectangleF rect)
+        private void MoveTowardsCenter(ref RectangleF rect)
         {
             bool movedDx = true, movedDy = true;
             while (movedDx || movedDy)
@@ -79,41 +77,41 @@ namespace TagCloud
             return rectangles.Any(r => rect.IntersectsWith(r));
         }
 
-        private Vector2 GetDir()
+        private Vector2 GetDirection()
         {
             if (i % 100 == 0)
             {
-                max++;
-                UpdateDirs();
+                segmentsCount++;
+                UpdateDirections();
             }
 
-            return dirs[i++ % dirs.Count];
+            return directions[i++ % directions.Count];
         }
 
-        private void UpdateDirs()
+        private void UpdateDirections()
         {
-            var dirs = new List<Vector2>();
+            var directions = new List<Vector2>();
 
-            var step = 90f / max;
+            var step = 90f / segmentsCount;
 
-            var muls = new[] { -1, 1, 1, -1, -1 };
+            var multipliers = new[] { -1, 1, 1, -1, -1 };
 
-            for (var i = step; i <= 90 - step; i += step)
+            for (var angle = step; angle <= 90 - step; angle += step)
             {
-                var rad = i * Math.PI / 180;
-                var tan = Math.Tan(rad);
+                var radians = angle * Math.PI / 180;
+                var tangent = Math.Tan(radians);
                 var x = 1f;
-                var y = (float)(tan * x);
+                var y = (float)(tangent * x);
 
-                for (var j = 0; j < muls.Length - 1; j++)
+                for (var j = 0; j < multipliers.Length - 1; j++)
                 {
-                    var vector = new Vector2(x * muls[j], y * muls[j + 1]);
+                    var vector = new Vector2(x * multipliers[j], y * multipliers[j + 1]);
                     vector /= vector.Length();
-                    dirs.Add(vector);
+                    directions.Add(vector);
                 }
             }
 
-            this.dirs = dirs;
+            this.directions = directions;
         }
     }
 }
