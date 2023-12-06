@@ -1,46 +1,68 @@
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing.Processing;
+using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using Color = SixLabors.ImageSharp.Color;
+using PointF = SixLabors.ImageSharp.PointF;
+using Rectangle = System.Drawing.Rectangle;
 
 namespace TagsCloudVisualization;
 
-public static class ImageGenerator
+public class ImageGenerator : IDisposable
 {
     private const string FontPath = "src/JosefinSans-Regular";
+    private readonly Image<Rgba32> image;
+    private readonly string outputName;
+    private readonly int fontSize;
+    private readonly FontFamily family;
+    private readonly ImageEncoder encoder;
 
-    public static void GenerateImage(Dictionary<string, System.Drawing.Rectangle> placedWords,
-        string outputName, int fontSize)
+    public ImageGenerator(string outputName,
+        int fontSize = 30, int width = 1920, int height = 1080, int quality = 100)
     {
-        Image<Rgba32> image = new(1920, 1080);
+        image = new Image<Rgba32>(width, height);
+        this.outputName = $"../../../../TagsCloudVisualization/out/{outputName}.jpg";
+        encoder = new JpegEncoder { Quality = quality };
 
-        // Задаём фон изображения
-        image.Mutate(x => x.Fill(Color.FromRgb(7, 42, 22)));
+        this.fontSize = fontSize;
+        family = new FontCollection().Add($"../../../../TagsCloudVisualization/{FontPath}.ttf");
 
-        foreach (var kvp in placedWords)
-        {
-            var frequency = kvp.Value.Height - fontSize;
+        SetBackground(Color.FromRgb(7, 42, 22));
+    }
 
-            FontCollection collection = new();
-            var family = collection.Add($"../../../../TagsCloudVisualization/{FontPath}.ttf");
-            var font = family.CreateFont(fontSize + frequency, FontStyle.Italic);
+    private Font FontCreator(int size)
+    {
+        return family.CreateFont(size, FontStyle.Italic);
+    }
 
-            // Рисование прямоугольников
-            // var rectangle = new RectangleF(target.X, target.Y, target.Width, target.Height);
-            // image.Mutate(x => x.Draw(Color.Black, 2f, rectangle));
+    private void SetBackground(Color color)
+    {
+        image.Mutate(x => x.Fill(color));
+    }
 
-            image.Mutate(x => x.DrawText(
-                kvp.Key, font,
-                Color.FromRgba(211, 226, 157, (byte)Math.Min(255, 100 + frequency * 10)),
-                new PointF(kvp.Value.X, kvp.Value.Y))
-            );
-        }
+    public void DrawWord(string word, int frequency, Rectangle rectangle)
+    {
+        image.Mutate(x => x.DrawText(
+            word, FontCreator(fontSize + frequency),
+            Color.FromRgba(211, 226, 157, (byte)Math.Min(255, 100 + frequency * 10)),
+            new PointF(rectangle.X, rectangle.Y))
+        );
+    }
 
-        var encoder = new JpegEncoder { Quality = 100 };
+    public System.Drawing.Size GetOutward(string word, int frequency)
+    {
+        var textOption = new TextOptions(FontCreator(fontSize + frequency));
+        var size = TextMeasurer.MeasureSize(word, textOption);
 
-        image.Save($"../../../../TagsCloudVisualization/{outputName}.jpg", encoder);
+        return new System.Drawing.Size((int)size.Width + fontSize / 3, (int)size.Height + fontSize / 3);
+    }
+
+    public void Dispose()
+    {
+        image.Save(outputName, encoder);
         image.Dispose();
     }
 }

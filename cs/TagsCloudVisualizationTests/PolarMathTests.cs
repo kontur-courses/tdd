@@ -2,7 +2,7 @@ using System.Drawing;
 using FluentAssertions;
 using Utility;
 
-namespace UtilityTests;
+namespace TagsCloudVisualizationTests;
 
 public class Tests
 {

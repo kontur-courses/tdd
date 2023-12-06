@@ -7,7 +7,7 @@ namespace TagsCloudVisualizationTests;
 public class WordsDataSetTests
 {
     [Test]
-    public void CreateFrequencyDict_Works_Fine()
+    public void FreqDictIs_Three3Two2One1()
     {
         var expected = new Dictionary<string, int>
         {
@@ -16,7 +16,7 @@ public class WordsDataSetTests
             { "One", 1 }
         };
 
-        var actual = WordsDataSet.CreateFrequencyDict(
+        var actual = new WordsDataSet().CreateFrequencyDict(
             "../../../../TagsCloudVisualization/src/testNumberWords.txt"
         );
         
