@@ -1,12 +1,11 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Drawing;
 using NUnit.Framework;
 using TagsCloudVisualization;
 using FluentAssertions;
 
-namespace TagsCloudVizualizationTest
+namespace TagsCloudVisualizationTest
 {
     [TestFixture]
     public class CircularCloudLayouterTests
@@ -14,13 +13,15 @@ namespace TagsCloudVizualizationTest
         private CircularCloudLayouter layouter;
 
         [SetUp]
-        public void Initial() =>
+        public void Initial()
+        {
             layouter = new CircularCloudLayouter(new Point(400, 400));
+        }
 
         [Test]
         public static void CircularCloudLayouterCtor_WhenPassValidArguments_DoesNotThrowException() =>
             Assert.DoesNotThrow(() => new CircularCloudLayouter(new Point(200, 200)));
-       
+
         public static TestCaseData[] InvalidArguments =
         {
             new TestCaseData(-200, 200).SetName("PassNegativeWidth"),
@@ -38,7 +39,7 @@ namespace TagsCloudVizualizationTest
         public void WhenPutNewRectangle_ShouldBeAddedToList()
         {
             layouter.PutNextRectangle(new Size(4, 2));
-            
+
             layouter.Rectangles.Count.Should().Be(1);
         }
 
@@ -84,7 +85,7 @@ namespace TagsCloudVizualizationTest
 
                 rectanglesSquare += rectangle.Size.Height * rectangle.Size.Width;
 
-                var biggestDistance= Math.Abs(Math.Sqrt(Math.Pow(rectangle.X - center.X, 2)
+                var biggestDistance = Math.Abs(Math.Sqrt(Math.Pow(rectangle.X - center.X, 2)
                                                          + Math.Pow(rectangle.Y - center.Y, 2)));
                 if (biggestDistance > radius)
                     radius = biggestDistance;
@@ -92,9 +93,9 @@ namespace TagsCloudVizualizationTest
 
             var circleSquare = Math.PI * radius * radius;
 
-            var percentOfRatio = (rectanglesSquare / circleSquare) * 100;
+            var percentOfRatio = rectanglesSquare / circleSquare * 100;
 
-            percentOfRatio.Should().BeGreaterThan(80);
+            percentOfRatio.Should().BeGreaterThan(90);
         }
     }
 }
