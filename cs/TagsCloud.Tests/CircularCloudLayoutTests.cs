@@ -23,6 +23,24 @@ public class CircularCloudLayoutTests
         layout = new Layout(layoutFunction, screenCenter);
     }
 
+    [TearDown]
+    public void TearDown()
+    {
+        var context = TestContext.CurrentContext;
+        var writer = TestContext.Out;
+
+        if (context.Result.FailCount == 0)
+            return;
+
+        var fileName = $"{TestContext.CurrentContext.Test.MethodName}-fail.png";
+        var filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
+
+        layout.SaveVisualization(ImageCenter, Color.Red,
+            1f, Color.White, filePath);
+
+        writer.WriteLine($"Tag cloud visualization saved to file <{filePath}>");
+    }
+
     private Layout layout;
     private Random random;
 
