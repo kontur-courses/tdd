@@ -1,8 +1,9 @@
 ﻿using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
+using TagsCloudVisualization;
 
-namespace TagsCloudVisualization.UnitTests
+namespace TagsCloudVisualizationTests.UnitTests
 {
     [TestFixture]
     public class ArchimedeanSpiral_Should

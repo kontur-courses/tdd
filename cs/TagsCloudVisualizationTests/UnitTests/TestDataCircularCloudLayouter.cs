@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using NUnit.Framework;
 
-namespace TagsCloudVisualization.UnitTests
+namespace TagsCloudVisualizationTests.UnitTests
 {
     public class TestDataCircularCloudLayouter
     {
