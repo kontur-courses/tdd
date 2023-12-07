@@ -18,7 +18,7 @@ namespace Tests
             new TestCaseData(new Cloud (new Point(0,0), new List<Rectangle>()), 1, 1)
             .SetName("WhenGivenCloudWithEmptyArray")
         };
-
+ 
         [TestCaseSource(nameof(DrawArgumentException))]
         public void Draw_ShouldThrowArgumentException(Cloud cloud, int width, int height) =>
             Assert.Throws<ArgumentException>(() => CloudDrawer.Draw(cloud, width, height));

@@ -2,7 +2,7 @@
 
 namespace TagsCloudVisualization.Utils;
 
-public static class Utills
+public static class Utils
 {
     public static int CalculateShortestDistance(Rectangle rect1, Rectangle rect2)
     {
@@ -22,8 +22,8 @@ public static class Utills
         return Math.Min(horizontalDistance, verticalDistance);
     }
 
-    public static List<Size> GenerateSizes
-        (int amount,
+    public static List<Size> GenerateSizes(
+        int amount,
         int minWidth = 10,
         int maxWidth = 100,
         int minHeight = 10,
@@ -35,5 +35,20 @@ public static class Utills
             sizes.Add(new Size(rnd.Next(minWidth, maxWidth), rnd.Next(minHeight, maxHeight)));
 
         return sizes;
+    }
+
+    public static Rectangle GetRectangleFromCenter(Point center, Size size)
+    {
+        var x = center.X - size.Width/2;
+        var y = center.Y - size.Height/2;
+
+        return new Rectangle(new Point(x, y), size);
+    }
+
+    public static Point GetRectangleCenter(Rectangle rectangle)
+    {
+        var x = rectangle.X;
+        var y = rectangle.Y;
+        return new Point(x + rectangle.Width/2, y+rectangle.Height/2);
     }
 }

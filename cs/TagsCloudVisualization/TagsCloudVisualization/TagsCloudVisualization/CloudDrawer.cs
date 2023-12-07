@@ -16,6 +16,7 @@ public static class CloudDrawer
         graphics.Clear(Color.White);
         var pen = new Pen(Color.Black);
         graphics.DrawRectangles(pen, cloud.Rectangles.ToArray());
+
         return bitmap;
     }
 }

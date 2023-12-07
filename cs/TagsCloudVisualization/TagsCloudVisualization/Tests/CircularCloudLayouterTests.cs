@@ -24,7 +24,7 @@ namespace Tests
             var testResult = TestContext.CurrentContext.Result.Outcome;
             var testName = TestContext.CurrentContext.Test.FullName;
 
-            if (Equals(testResult, ResultState.Failure) 
+            if (Equals(testResult, ResultState.Failure)
                 || Equals(testResult == ResultState.Error))
             {
                 var cloud = circularLayouter.GetCloud();
@@ -74,11 +74,21 @@ namespace Tests
             var firstPutRectangle = circularLayouter.PutNextRectangle(new Size(10, 10));
             var secondPutRectangle = circularLayouter.PutNextRectangle(new Size(5, 5));
 
-            var distanceBetweenRectangles = Utills.CalculateShortestDistance(firstPutRectangle, secondPutRectangle);
+            var distanceBetweenRectangles = Utils.CalculateShortestDistance(firstPutRectangle, secondPutRectangle);
 
             distanceBetweenRectangles.Should().BeLessThan(1);
         }
 
+        [Test]
+        public void PutNextRectangle_ShouldPutRectangleWithCenterInTheCloudCenter()
+        {
+            var center = circularLayouter.GetCloud().Center;
+
+            var firstRectangle = circularLayouter.PutNextRectangle(new Size(10, 10));
+            var firstRectnagleCenter = Utils.GetRectangleCenter(firstRectangle);
+
+            firstRectnagleCenter.Should().Be(center);
+        }
 
         private static IEnumerable<TestCaseData> PutRectanglesArgumnetException = new[]
         {
@@ -104,10 +114,8 @@ namespace Tests
         public void Layout_ShouldContainRectanglesWhichDoNotIntersectWithEachOther()
         {
             var rectanglesAmount = 20;
-            var sizes = Utills.GenerateSizes(rectanglesAmount);
 
-            circularLayouter.PutRectangles(sizes);
-            var rectanglesLayout = circularLayouter.GetCloud().Rectangles;
+            var rectanglesLayout = GetRectanglesLayout(rectanglesAmount);
 
             for (var i = 0; i < rectanglesAmount; i++)
             {
@@ -123,11 +131,7 @@ namespace Tests
         [Test]
         public void Layout_ShouldContainTightPlacedRectangles()
         {
-            var rectanglesAmount = 100;
-            var sizes = Utills.GenerateSizes(rectanglesAmount);
-
-            circularLayouter.PutRectangles(sizes);
-            var rectanglesLayout = circularLayouter.GetCloud().Rectangles;
+            var rectanglesLayout = GetRectanglesLayout(100);
             var rectanglesSpace = rectanglesLayout.Sum(rect => rect.Width * rect.Height);
             var circleRadiusOfHorizontalAxe =
                 (rectanglesLayout.Max(rect => rect.X) - rectanglesLayout.Min(rect => rect.X)) / 2;
@@ -138,6 +142,13 @@ namespace Tests
             var freeSpaceProportionInPercentage = freeSpace / circleOccupiedSpace * 100;
 
             freeSpaceProportionInPercentage.Should().BeLessThan(30);
+        }
+
+        private List<Rectangle> GetRectanglesLayout(int rectanglesAmount)
+        {
+            var sizes = Utils.GenerateSizes(rectanglesAmount);
+            circularLayouter.PutRectangles(sizes);
+            return circularLayouter.GetCloud().Rectangles;
         }
     }
 }

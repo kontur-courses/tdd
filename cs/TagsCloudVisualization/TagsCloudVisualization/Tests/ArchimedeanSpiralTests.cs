@@ -16,6 +16,6 @@ namespace Tests
 
         [TestCaseSource(nameof(ConstructorArgumentException))]
         public void Constructor_ShouldThrowArgumentException(Point center, double step, double radius, double angle) =>
-            Assert.Throws<ArgumentException>(() => new ArchimedeanSpiralPlacer(center, step, radius, angle));
+            Assert.Throws<ArgumentException>(() => new ArchimedeanSpiralPointer(center, step, radius, angle));
     }
 }

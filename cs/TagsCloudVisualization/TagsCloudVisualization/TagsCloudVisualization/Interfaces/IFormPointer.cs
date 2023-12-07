@@ -2,8 +2,7 @@
 
 namespace TagsCloudVisualization.Interfaces;
 
-public interface IRectanglesPlacer
+public interface IFormPointer
 {
-    Point Center { get; }
     Point GetNextPoint();
 }
