@@ -16,12 +16,12 @@ namespace TagsCloudVisualizationTest
         [SetUp]
         public void Initial()
         {
-            layouter = new CircularCloudLayouter(new Point(400, 400));
+            layouter = new CircularCloudLayouter(new Point(400, 400), new Spiral());
         }
 
         [Test]
         public static void CircularCloudLayouterCtor_WhenPassValidArguments_DoesNotThrowException() =>
-            Assert.DoesNotThrow(() => new CircularCloudLayouter(new Point(200, 200)));
+            Assert.DoesNotThrow(() => new CircularCloudLayouter(new Point(200, 200), new Spiral()));
 
         public static TestCaseData[] InvalidArguments =
         {
@@ -70,33 +70,17 @@ namespace TagsCloudVisualizationTest
         }
 
         [Test]
-        public void WhenPutNewRectangles_TheyShouldBeTightlyPositioned()
+        [TestOf(nameof(CircularCloudLayouter.PutNextRectangle))]
+        public void WhenPassFirstPoint_ShouldBeInCenter()
         {
-            var currentRectangles = new List<Rectangle>();
+            layouter = new CircularCloudLayouter(new Point(400, 400), new Spiral());
 
-            for (var i = 0; i < 15; i++)
-                currentRectangles.Add(layouter.PutNextRectangle(new Size(4, 2)));
-
-            var rectanglesSquare = 0;
-            var radius = 0.0;
-
-            foreach (var rectangle in currentRectangles)
+            var currentRectangles = new List<Rectangle>()
             {
-                var center = new Point(400, 400);
+                layouter.PutNextRectangle(new Size(4,2))
+            };
 
-                rectanglesSquare += rectangle.Size.Height * rectangle.Size.Width;
-
-                var biggestDistance = Math.Abs(Math.Sqrt(Math.Pow(rectangle.X - center.X, 2)
-                                                         + Math.Pow(rectangle.Y - center.Y, 2)));
-                if (biggestDistance > radius)
-                    radius = biggestDistance;
-            }
-
-            var circleSquare = Math.PI * radius * radius;
-
-            var percentOfRatio = rectanglesSquare / circleSquare * 100;
-
-            percentOfRatio.Should().BeGreaterThan(90);
+            currentRectangles.First().Location.Should().Be(new Point(398, 399));
         }
     }
 }

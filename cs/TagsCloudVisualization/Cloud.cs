@@ -11,6 +11,6 @@ namespace TagsCloudVisualization
         }
 
         public readonly Point Center;
-        public List<Rectangle> Rectangles = new List<Rectangle>();
+        public List<Rectangle> Rectangles = new();
     }
 }
