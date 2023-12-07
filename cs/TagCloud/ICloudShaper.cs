@@ -4,5 +4,5 @@ namespace TagCloud;
 
 public interface ICloudShaper
 {
-    Rectangle GetNextPossibleRectangle(Size size);
+    Point GetNextPossiblePoint();
 }

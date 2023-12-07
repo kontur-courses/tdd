@@ -17,12 +17,20 @@ public class CircularCloudLayouter
         shaper = new SpiralCloudShaper(this.center);
     }
 
-    public Rectangle PutNextRectangle(Size rectangleSize)
+    public Rectangle PutNextRectangle(Size size)
     {
-        var rectangle = shaper.GetNextPossibleRectangle(rectangleSize);
+        if (size.Width <= 0)
+            throw new ArgumentException("Size width must be positive number");
+        if (size.Height <= 0)
+            throw new ArgumentException("Size height must be positive number");
+        
+        var point = shaper.GetNextPossiblePoint();
+        var rectangle = new Rectangle(point, size);
         while (Rectangles.Any(rect => rect.IntersectsWith(rectangle)))
-            rectangle = shaper.GetNextPossibleRectangle(rectangleSize);
-
+        {
+            point = shaper.GetNextPossiblePoint();
+            rectangle = new Rectangle(point, size);
+        }
         rectangles.Add(rectangle);
         return rectangle;
     }
