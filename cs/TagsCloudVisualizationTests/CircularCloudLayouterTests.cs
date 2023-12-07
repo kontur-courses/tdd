@@ -1,5 +1,4 @@
 using System.Drawing;
-using Moq;
 using NUnit.Framework.Interfaces;
 using TagsCloudVisualization;
 
@@ -20,7 +19,7 @@ public class CircularCloudLayouterTests
     [SetUp]
     public void SetUp()
     {
-        layouter = new CircularCloudLayouter(new CircularCloudBuilder(new Point(500, 500), 1, 0.1d));
+        layouter = new CircularCloudLayouter(new Point(500, 500), new CircularCloudBuilder(1, 0.1d));
     }
 
     [TestCase(-200, -300)]
@@ -33,19 +32,14 @@ public class CircularCloudLayouterTests
     }
 
     [Test]
-    public void GetCloudBorders_ThrowsInvalidOperationException_WhenListOfRectanglesIsNullOrEmpty(
-        [Values(false, true)] bool isNull)
+    public void GetCloudBorders_ThrowsInvalidOperationException_WhenListOfRectanglesIsEmpty()
     {
-        var mockLayouter = new Mock<ICloudLayouter>();
-        mockLayouter.Setup(t => t.GetCloudBorders()).CallBase();
-        if (!isNull)
-            mockLayouter.Setup(l => l.PlacedRectangles).Returns(new List<Rectangle>());
-        Assert.Throws<InvalidOperationException>(() => mockLayouter.Object.GetCloudBorders());
+        Assert.Throws<InvalidOperationException>(() => new List<Rectangle>().GetBorders());
     }
 
     [Test]
     public void PutNextRecangle_PlacesRectangleWithoutIntersection_OnMultipleRectangles(
-        [Values(false, true)] bool randomRectangleSize)
+        [Values] bool randomRectangleSize)
     {
         var rectangles = new List<Rectangle>();
         var rectSize = new Size(20, 10);
@@ -67,11 +61,11 @@ public class CircularCloudLayouterTests
     [Test]
     public void PutNextRectangle_HasCircularShape_OnDifferentInputData(
         [Values(50, 100)] int numberOfRectangles,
-        [Values(true, false)] bool randomRectangleSize)
+        [Values] bool randomRectangleSize)
     {
         PlaceRectangles(numberOfRectangles, randomRectangleSize);
 
-        var borders = layouter.GetCloudBorders();
+        var borders = layouter.PlacedRectangles.GetBorders();
 
         var heightToWidthRatio =
             (double) Math.Min(borders.Width, borders.Height) / Math.Max(borders.Width, borders.Height);
@@ -82,11 +76,11 @@ public class CircularCloudLayouterTests
     [Test]
     public void PutNextRectangle_IsDenseEnough_OnDifferentInputData(
         [Values(50, 100)] int numberOfRectangles,
-        [Values(true, false)] bool randomRectangleSize)
+        [Values] bool randomRectangleSize)
     {
         PlaceRectangles(numberOfRectangles, randomRectangleSize);
 
-        var borders = layouter.GetCloudBorders();
+        var borders = layouter.PlacedRectangles.GetBorders();
 
         var radius = Math.Max(borders.Width, borders.Height) / 2;
         var circleSquare = Math.PI * radius * radius;
@@ -100,7 +94,7 @@ public class CircularCloudLayouterTests
     [Timeout(5000)]
     [Test]
     public void PutNextRectangle_HasSufficientPerformance_OnLargeAmountOfRectangles(
-        [Values(true, false)]bool randomRectangleSize)
+        [Values] bool randomRectangleSize)
     {
         PlaceRectangles(200, randomRectangleSize);
     }
@@ -111,7 +105,7 @@ public class CircularCloudLayouterTests
         if (TestContext.CurrentContext.Result.Outcome == ResultState.Success)
             return;
 
-        var drawer = new TagsCloudDrawer(layouter, new RectangleDrawer(new Pen(Color.Red, 1), 5));
+        var drawer = new TagsCloudDrawer(layouter, new Pen(Color.Red, 1), 5);
         var bitmap = drawer.DrawTagCloud();
         TagsCloudDrawer.SaveImage(bitmap, @"..\..\..\FailedTests", $"{TestContext.CurrentContext.Test.Name}.jpeg");
     }
