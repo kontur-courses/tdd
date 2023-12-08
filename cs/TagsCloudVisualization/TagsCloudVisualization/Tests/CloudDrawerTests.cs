@@ -21,7 +21,7 @@ namespace Tests
  
         [TestCaseSource(nameof(DrawArgumentException))]
         public void Draw_ShouldThrowArgumentException(Cloud cloud, int width, int height) =>
-            Assert.Throws<ArgumentException>(() => CloudDrawer.Draw(cloud, width, height));
+            Assert.Throws<ArgumentException>(() => CloudDrawer.DrawCloud(cloud, width, height));
 
         private static IEnumerable<TestCaseData> DrawNoException => new[]
         {
@@ -35,6 +35,6 @@ namespace Tests
 
         [TestCaseSource(nameof(DrawNoException))]
         public void Draw_ShouldNotThrow(Cloud cloud, int width, int height) =>
-            Assert.DoesNotThrow(() => CloudDrawer.Draw(cloud, width, height));
+            Assert.DoesNotThrow(() => CloudDrawer.DrawCloud(cloud, width, height));
     }
 }

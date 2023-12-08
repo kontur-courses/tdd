@@ -28,7 +28,7 @@ namespace Tests
                 || Equals(testResult == ResultState.Error))
             {
                 var cloud = circularLayouter.GetCloud();
-                var bitmap = CloudDrawer.Draw(cloud, 1000, 1000);
+                var bitmap = CloudDrawer.DrawCloud(cloud, 1000, 1000);
                 var path = @$"{Environment.CurrentDirectory}..\..\..\..\FailedTestsLayouts\{testName}.jpg";
                 bitmap.Save(path);
                 Console.WriteLine($"Tag cloud visualization saved to file {path}");
@@ -133,10 +133,8 @@ namespace Tests
         {
             var rectanglesLayout = GetRectanglesLayout(100);
             var rectanglesSpace = rectanglesLayout.Sum(rect => rect.Width * rect.Height);
-            var circleRadiusOfHorizontalAxe =
-                (rectanglesLayout.Max(rect => rect.X) - rectanglesLayout.Min(rect => rect.X)) / 2;
-            var circleRadiusOfVerticleAxe =
-                (rectanglesLayout.Max(rect => rect.Y) - rectanglesLayout.Min(rect => rect.Y)) / 2;
+            var circleRadiusOfHorizontalAxe = circularLayouter.GetCloud().GetWidth() / 2;
+            var circleRadiusOfVerticleAxe = circularLayouter.GetCloud().GetHeight() / 2;
             var circleOccupiedSpace = Math.PI * circleRadiusOfHorizontalAxe * circleRadiusOfVerticleAxe;
             var freeSpace = circleOccupiedSpace - rectanglesSpace;
             var freeSpaceProportionInPercentage = freeSpace / circleOccupiedSpace * 100;

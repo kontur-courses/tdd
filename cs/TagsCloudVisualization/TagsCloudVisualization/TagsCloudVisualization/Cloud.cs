@@ -15,4 +15,10 @@ public class Cloud
 
     public void AddRectangle(Rectangle rectangle) =>
         Rectangles.Add(rectangle);
+
+    public int GetWidth() =>
+        Rectangles.Max(rect => rect.X) - Rectangles.Min(rect => rect.X);
+
+    public int GetHeight() =>
+        Rectangles.Max(rect => rect.Y) - Rectangles.Min(rect => rect.Y);
 }
