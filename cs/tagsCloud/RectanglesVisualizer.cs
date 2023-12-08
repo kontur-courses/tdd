@@ -1,31 +1,34 @@
 using System.Drawing;
 
-namespace tagsCloud;
+namespace TagsCloud;
 
-public class RectanglesVisualizer
+public class RectanglesVisualizer : IRectanglesVisualizer
 {
-    private readonly List<Rectangle> rectangles;
-    private readonly Bitmap image;
-    private readonly Graphics graphics;
+    private List<Rectangle> rectangles;
+    private Graphics graphics;
     private Point shift;
-    private static readonly Size DefaultSize = new(100, 100);
     private const int Border = 50;
 
-
-    public RectanglesVisualizer(List<Rectangle> rectangles)
+    public Bitmap GetTagsCloudImage(List<Rectangle> rectangles)
     {
         this.rectangles = rectangles;
-        var sizeImage = PrepareImage();
-        image = new Bitmap(sizeImage.Width, sizeImage.Height);
-        graphics = Graphics.FromImage(image);
-        var background = new SolidBrush(Color.Black);
-        graphics.FillRectangle(background, new Rectangle(0, 0, image.Width, image.Height));
+        var sizeImage = GetImageSize();
+        var image = new Bitmap(sizeImage.Width, sizeImage.Height);
+        using (graphics = Graphics.FromImage(image))
+        {
+            var background = new SolidBrush(Color.Black);
+            graphics.FillRectangle(background, new Rectangle(0, 0, image.Width, image.Height));
+            DrawTagsCloud();
+            return image;
+        }
     }
 
-    private Size PrepareImage()
+    private Size GetImageSize()
     {
+        Size defaultSize = new(100, 100);
+
         if (!rectangles.Any())
-            return DefaultSize;
+            return defaultSize;
 
         var leftmost = rectangles.Min(rectangle => rectangle.Left);
         var rightmost = rectangles.Max(rectangle => rectangle.Right);
@@ -42,15 +45,13 @@ public class RectanglesVisualizer
         return new Size(width, height);
     }
 
-    public Bitmap DrawTagCloud()
+    private void DrawTagsCloud()
     {
         foreach (var rectangle in rectangles)
         {
             var vizRect = new Rectangle(new Point(rectangle.X + shift.X, rectangle.Y + shift.Y), rectangle.Size);
-            var pen = new Pen(Utils.GetRandomColor());
+            using var pen = new Pen(Utils.GetRandomColor());
             graphics.DrawRectangle(pen, vizRect);
         }
-
-        return image;
     }
 }

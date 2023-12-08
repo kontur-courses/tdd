@@ -1,24 +1,35 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Drawing.Imaging;
 
-namespace tagsCloud;
+namespace TagsCloud;
 
 public class MainProgram
 {
     public static void Main(string[] args)
     {
-        var layout = new CircularCloudLayouter(new Point(100, 100));
-        for (var i = 0; i < 10; i++)
+        var spiral = new Spiral(new Point(100, 100));
+        var layout = new CircularCloudLayouter(spiral);
+         
+        for (var i = 0; i < 10000; i++)
         {
             var rectangle = layout.PutNextRectangle(Utils.GetRandomSize());
         }
-
-        var visualizer = new RectanglesVisualizer(layout.Rectangles);
+        
+        var visualizer = new RectanglesVisualizer();
         var workingDirectory = Environment.CurrentDirectory;
-        var projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
-        var path = projectDirectory + @"\images\";
+        var imagesDirectoryPath = Path.Combine(workingDirectory, "images");
+        
+        if (!Directory.Exists(imagesDirectoryPath))
+        {
+            Directory.CreateDirectory(imagesDirectoryPath);
+        }
+
         var imageName = "10rect";
-        var image = visualizer.DrawTagCloud();
-        image.Save($"{path}{imageName}.png", ImageFormat.Png);
+        var imagePath = Path.Combine(imagesDirectoryPath, $"{imageName}.png");
+
+        using var image = visualizer.GetTagsCloudImage(layout.Rectangles);
+        image.Save(imagePath, ImageFormat.Png);
     }
 }

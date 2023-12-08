@@ -1,21 +1,16 @@
 using System.Drawing;
 
-namespace tagsCloud;
+namespace TagsCloud;
 
 public class CircularCloudLayouter : ICircularCloudLayouter
 {
     public List<Rectangle> Rectangles { get; }
 
-    private readonly Spiral _spiral;
-    private readonly Size _sizeZone;
-    private Rectangle _zonePossibleIntersections;
-    private List<Rectangle> _nearestRectangles;
+    private readonly ISpiral spiral;
 
-    public CircularCloudLayouter(Point center)
+    public CircularCloudLayouter(ISpiral spiral)
     {
-        _nearestRectangles = new List<Rectangle>();
-        _spiral = new Spiral(center);
-        _sizeZone = new Size(500, 500);
+        this.spiral = spiral;
         Rectangles = new List<Rectangle>();
     }
 
@@ -30,30 +25,22 @@ public class CircularCloudLayouter : ICircularCloudLayouter
 
     private Rectangle CreateNextRectangle(Size rectangleSize)
     {
-        var point = _spiral.GetPoint();
+        var point = spiral.GetPoint();
         var rect = new Rectangle(point, rectangleSize);
-        GetNearestRectangles(point);
-        while (_nearestRectangles.Any(x => x.IntersectsWith(rect)))
+        while (!HasNoIntersections(rect))
         {
-            point = _spiral.GetPoint();
+            point = spiral.GetPoint();
             rect = new Rectangle(point, rectangleSize);
-            if (!Utils.IsInside(rect, _zonePossibleIntersections))
-                GetNearestRectangles(point);
         }
 
         return rect;
     }
 
-    private void GetNearestRectangles(Point point)
+    private bool HasNoIntersections(Rectangle rect)
     {
-        _zonePossibleIntersections =
-            new Rectangle(new Point(point.X - _sizeZone.Width / 2, point.Y - _sizeZone.Height / 2), _sizeZone);
-        _nearestRectangles = Rectangles.Where(x =>
-            x.IntersectsWith(_zonePossibleIntersections) || Utils.IsInside(_zonePossibleIntersections, x)).ToList();
-    }
-
-    public List<Point> GetRectanglesLocation()
-    {
-        return Rectangles.Select(rectangle => rectangle.Location).ToList();
+        for (var i = Rectangles.Count - 1; i >= 0; i--)
+            if (Rectangles[i].IntersectsWith(rect))
+                return false;
+        return true;
     }
 }

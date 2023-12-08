@@ -1,10 +1,9 @@
 using System.Drawing;
 
-namespace tagsCloud;
+namespace TagsCloud;
 
 public interface ICircularCloudLayouter
 {
     List<Rectangle> Rectangles { get; }
     Rectangle PutNextRectangle(Size rectangleSize);
-    List<Point> GetRectanglesLocation();
 }
