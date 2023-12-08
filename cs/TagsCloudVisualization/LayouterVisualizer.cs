@@ -5,9 +5,9 @@ using System.Drawing.Imaging;
 
 namespace TagsCloudVisualization;
 
-public class LayouterVisualizer
+public class LayouterVisualizer: IDisposable
 {
-    private readonly Bitmap bitmap;
+    private bool isDisposed;
 
     public LayouterVisualizer(Size imageSize)
     {
@@ -35,5 +35,28 @@ public class LayouterVisualizer
     {
         bitmap.Save(file, format);
         Console.WriteLine($"Tag cloud visualization saved to {file}");
+    }
+
+    ~LayouterVisualizer()
+    {
+        Dispose(false);
+    }
+    
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    private void Dispose(bool fromDisposeMethod)
+    {
+        if (isDisposed) return;
+        if (fromDisposeMethod)
+        {
+            Bitmap.Dispose();
+            Pen.Dispose();
+        }
+
+        isDisposed = true;
     }
 }
