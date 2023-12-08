@@ -16,7 +16,7 @@ public class Layout : ILayout
     }
 
     // Public to enable Unit testing.
-    public ICollection<RectangleF> PlacedFigures { get; }
+    public IList<RectangleF> PlacedFigures { get; }
 
     public void PutNextRectangle(SizeF rectSize)
     {
@@ -66,13 +66,24 @@ public class Layout : ILayout
             (common.X, common.Y) = (commonPoint.X, commonPoint.Y);
             (rotated.X, rotated.Y) = (rotatedPoint.X, rotatedPoint.Y);
 
-            if (PlacedFigures.All(figure => !figure.IntersectsWith(common)))
+            if (!Intersects(common))
                 return common;
 
-            // Don't check for collisions if rotated is square.
-            if (Math.Abs(rotated.Width - rotated.Height) < 1e-3 &&
-                PlacedFigures.All(figure => !figure.IntersectsWith(rotated)))
+            if (Math.Abs(rotated.Width - rotated.Height) < 1e-3 && !Intersects(rotated))
                 return rotated;
         }
+    }
+
+    private bool Intersects(RectangleF rectangle)
+    {
+        for (var i = PlacedFigures.Count - 1; i > -1; i--)
+        {
+            if (rectangle.IntersectsWith(PlacedFigures[i]))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

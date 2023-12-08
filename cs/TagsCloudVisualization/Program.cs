@@ -5,8 +5,9 @@ using TagsCloudVisualization;
 
 var random = new Random();
 
-// Determine screen center:
-var center = new PointF((float)1920 / 2, (float)1080 / 2);
+// Determine screen size and center:
+var screenSize = new Size(1920, 1080);
+var center = new PointF((float)screenSize.Width / 2, (float)screenSize.Height / 2);
 
 // Create random set of sizes:
 var sizes = Enumerable
@@ -28,7 +29,7 @@ foreach (var size in sizes) layout.PutNextRectangle(size);
 
 // Save image of created layout:
 layout.SaveVisualization(
-    new Size(1920, 1080),
+    screenSize,
     Color.White,
     1.2f,
     Color.Blue,
