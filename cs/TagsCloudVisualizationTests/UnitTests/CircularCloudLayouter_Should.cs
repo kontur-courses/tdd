@@ -55,7 +55,7 @@ namespace TagsCloudVisualizationTests.UnitTests
         public void DensityTest()
         {
             var layouter = new CircularCloudLayouter(new Point());
-            for (var i = 0; i < 200; i++)
+            for (var i = 0; i < 2000; i++)
                 layouter.PutNextRectangle(new Size(35, 15));
             var rectanglesSquare = 0;
             var maxdX = 0;
@@ -70,7 +70,7 @@ namespace TagsCloudVisualizationTests.UnitTests
             var radius = Math.Max(maxdX, maxdY);
             var circleSquare = Math.PI * radius * radius;
 
-            (rectanglesSquare / circleSquare).Should().BeGreaterOrEqualTo(0.65);
+            (rectanglesSquare / circleSquare).Should().BeGreaterOrEqualTo(0.9);
         }
 
         private static CircularCloudLayouter CreateValidator_WithSeveralRectangles(int amount)
