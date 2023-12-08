@@ -26,7 +26,7 @@ namespace TagsCloudVisualization
             for (var i = 0; i < 200; i++)
                 layouter.PutNextRectangle(new Size(40, 20));
             
-            return Drawer.GetImage(new Point(340, 340), layouter.GetRectangles());
+            return Drawer.GetImage(new Point(340, 340), layouter.Rectangles);
         }
 
         private static Image DrawSameSize()
@@ -35,7 +35,7 @@ namespace TagsCloudVisualization
             for (var i = 0; i < 200; i++) 
                 layouter.PutNextRectangle(new Size(30, 30));
 
-            return Drawer.GetImage(new Point(340, 340), layouter.GetRectangles());
+            return Drawer.GetImage(new Point(340, 340), layouter.Rectangles);
         }
 
         private static Image DrawRandomSize()
@@ -45,7 +45,7 @@ namespace TagsCloudVisualization
             for (var i = 0; i < 200; i++) 
                 layouter.PutNextRectangle(new Size(rnd.Next(5, 50), rnd.Next(5, 50)));
 
-            return Drawer.GetImage(new Point(340, 340), layouter.GetRectangles());
+            return Drawer.GetImage(new Point(340, 340), layouter.Rectangles);
         }
     }
 }

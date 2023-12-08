@@ -20,7 +20,7 @@ namespace TagsCloudVisualizationTests.UnitTests
         public void RectanglesEmpty_AfterCreation()
         {
             var layouter = new CircularCloudLayouter(new Point());
-            layouter.GetRectangles().Should().BeEmpty();
+            layouter.Rectangles.Should().BeEmpty();
         }
 
         [TestCaseSource(typeof(TestDataArchimedeanSpiral), nameof(TestDataArchimedeanSpiral.Different_CenterPoints))]
@@ -28,7 +28,7 @@ namespace TagsCloudVisualizationTests.UnitTests
         {
             var layouter = new CircularCloudLayouter(center);
             layouter.PutNextRectangle(new Size(10, 2));
-            layouter.GetRectangles().Should().HaveCount(1)
+            layouter.Rectangles.Should().HaveCount(1)
                 .And.BeEquivalentTo(new Rectangle(
                     new Point(center.X - 10 / 2, center.Y - 2 / 2), new Size(10, 2)));
         }
@@ -42,7 +42,7 @@ namespace TagsCloudVisualizationTests.UnitTests
                 layouter.PutNextRectangle(new Size(i * 20, i * 10));
             }
 
-            layouter.GetRectangles().Should().HaveCount(25).And.AllBeOfType(typeof(Rectangle));
+            layouter.Rectangles.Should().HaveCount(25).And.AllBeOfType(typeof(Rectangle));
         }
 
         [TestCaseSource(typeof(TestDataArchimedeanSpiral), nameof(TestDataArchimedeanSpiral.Different_CenterPoints))]
@@ -54,7 +54,7 @@ namespace TagsCloudVisualizationTests.UnitTests
                 layouter.PutNextRectangle(new Size(i * 20, i * 10));
             }
 
-            var rectangles = layouter.GetRectangles();
+            var rectangles = layouter.Rectangles;
             for (var i = 1; i < rectangles.Count; i++)
                 rectangles.Skip(i).All(x => !rectangles[i - 1].IntersectsWith(x)).Should().Be(true);
         }
@@ -68,7 +68,7 @@ namespace TagsCloudVisualizationTests.UnitTests
             var rectanglesSquare = 0;
             var maxdX = 0;
             var maxdY = 0;
-            foreach (var rectangle in layouter.GetRectangles())
+            foreach (var rectangle in layouter.Rectangles)
             {
                 rectanglesSquare += rectangle.Width * rectangle.Height;
                 maxdX = Math.Max(maxdX, Math.Abs(rectangle.X) + rectangle.Width / 2 - layouter.CenterPoint.X);
