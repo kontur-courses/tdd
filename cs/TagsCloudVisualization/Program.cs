@@ -19,23 +19,23 @@ namespace TagsCloudVisualization
         {
             var layouter = new CircularCloudLayouter(new Point(340, 340));
             layouter.PutNextRectangle(new Size(200, 80));
-            
+
             for (var i = 0; i < 20; i++)
                 layouter.PutNextRectangle(new Size(80, 40));
-            
+
             for (var i = 0; i < 200; i++)
                 layouter.PutNextRectangle(new Size(40, 20));
-            
-            return Drawer.GetImage(new Point(340, 340), layouter.Rectangles);
+
+            return Drawer.GetImage(new Size(340 * 2, 340 * 2), layouter.Rectangles);
         }
 
         private static Image DrawSameSize()
         {
             var layouter = new CircularCloudLayouter(new Point(340, 340));
-            for (var i = 0; i < 200; i++) 
+            for (var i = 0; i < 200; i++)
                 layouter.PutNextRectangle(new Size(50, 25));
 
-            return Drawer.GetImage(new Point(340, 340), layouter.Rectangles);
+            return Drawer.GetImage(new Size(340 * 2, 340 * 2), layouter.Rectangles);
         }
 
         private static Image DrawRandomSize()
@@ -48,7 +48,7 @@ namespace TagsCloudVisualization
                 layouter.PutNextRectangle(new Size(width, rnd.Next(width / 2 - 10, width / 2)));
             }
 
-            return Drawer.GetImage(new Point(340, 340), layouter.Rectangles);
+            return Drawer.GetImage(new Size(340 * 2, 340 * 2), layouter.Rectangles);
         }
     }
 }

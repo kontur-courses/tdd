@@ -4,9 +4,11 @@ namespace TagsCloudVisualization
 {
     public class Drawer
     {
-        public static Image GetImage(Point centerPoint, IEnumerable<Rectangle> rectangles)
+        public static Image GetImage(Size size, IEnumerable<Rectangle> rectangles)
         {
-            var image = new Bitmap(centerPoint.X * 2, centerPoint.Y * 2);
+            if (size.Width <= 0 || size.Height <= 0)
+                throw new ArgumentException("size width and height should be positive", "size");
+            var image = new Bitmap(size.Width, size.Height);
             using (var gr = Graphics.FromImage(image))
             {
                 gr.Clear(Color.Black);
