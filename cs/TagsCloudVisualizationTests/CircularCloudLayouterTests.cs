@@ -27,7 +27,9 @@ public class CircularCloudLayouterTests
     {
         if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
         {
-            new TagCloudVisualizer().GenerateTagCloud(circularCloudLayouter, outputName: FailOutputName);
+            using var tagCloudVisualizer =
+                new TagCloudVisualizer(circularCloudLayouter, new ImageGenerator(FailOutputName));
+            tagCloudVisualizer.GenerateTagCloud();
             Console.WriteLine("Tag cloud visualization saved to file " +
                               $"../../../../TagsCloudVisualization/out/{FailOutputName}.jpg");
         }
@@ -51,13 +53,15 @@ public class CircularCloudLayouterTests
         (words1000Time.Nanoseconds / words100Time.Nanoseconds).Should().BeLessOrEqualTo(100);
     }
 
-    private TimeSpan AlgorithmTimeComplexity(string wordsFileName, string outputName)
+    private TimeSpan AlgorithmTimeComplexity(string wordsFileName, string timeOutputName)
     {
         var sw = new Stopwatch();
 
         sw.Start();
 
-        new TagCloudVisualizer().GenerateTagCloud(new CircularCloudLayouter(), wordsFileName, outputName);
+        using var tagCloudVisualizer =
+            new TagCloudVisualizer(new CircularCloudLayouter(), new ImageGenerator(timeOutputName));
+        tagCloudVisualizer.GenerateTagCloud(wordsFileName);
 
         sw.Stop();
 
@@ -67,7 +71,9 @@ public class CircularCloudLayouterTests
     [Test]
     public void Rectangles_NotIntersects()
     {
-        new TagCloudVisualizer().GenerateTagCloud(circularCloudLayouter, outputName: OutputName);
+        using var tagCloudVisualizer = 
+            new TagCloudVisualizer(circularCloudLayouter, new ImageGenerator(OutputName));
+        tagCloudVisualizer.GenerateTagCloud();
 
         circularCloudLayouter.AllRectanglesArea.Should().Be(circularCloudLayouter.GetCloudArea());
     }

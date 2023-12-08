@@ -1,17 +1,29 @@
 namespace TagsCloudVisualization;
 
-public class TagCloudVisualizer
+public class TagCloudVisualizer : IDisposable
 {
-    public void GenerateTagCloud(CircularCloudLayouter circularCloudLayouter, 
-        string wordsFileName = "words", string outputName = "rectangles")
+    private CircularCloudLayouter circularCloudLayouter;
+    private ImageGenerator imageGenerator;
+
+    public TagCloudVisualizer(CircularCloudLayouter circularCloudLayouter, ImageGenerator imageGenerator)
+    {
+        this.circularCloudLayouter = circularCloudLayouter;
+        this.imageGenerator = imageGenerator;
+    }
+
+    public void GenerateTagCloud(string wordsFileName = "words")
     {
         var freqDict = new WordsDataSet().CreateFrequencyDict(wordsFileName);
 
-        using var imageGenerator = new ImageGenerator(outputName);
         foreach (var kvp in freqDict)
         {
             var rectangle = circularCloudLayouter.PutNextRectangle(imageGenerator.GetOutward(kvp.Key, kvp.Value));
             imageGenerator.DrawWord(kvp.Key, kvp.Value, rectangle);
         }
+    }
+
+    public void Dispose()
+    {
+        imageGenerator.Dispose();
     }
 }

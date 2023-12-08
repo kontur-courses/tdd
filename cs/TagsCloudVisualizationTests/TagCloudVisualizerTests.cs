@@ -16,13 +16,19 @@ public class TagCloudVisualizerTests
         var center = new Point(960, 540);
         var resolution = new Size(1920, 1080);
         circularCloudLayouter = new CircularCloudLayouter(center, resolution);
-        tagCloudVisualizer = new TagCloudVisualizer();
+        tagCloudVisualizer = new TagCloudVisualizer(circularCloudLayouter, new ImageGenerator(OutputName));
+    }
+
+    [TearDown]
+    public void TagCloudVisualizerTearDown()
+    {
+        tagCloudVisualizer.Dispose();
     }
 
     [Test]
     public void GenerateTagCloudShouldCreateFile()
     {
-        tagCloudVisualizer.GenerateTagCloud(circularCloudLayouter, outputName: OutputName);
+        tagCloudVisualizer.GenerateTagCloud();
 
         File.Exists($"../../../../TagsCloudVisualization/out/{OutputName}.jpg").Should().BeTrue();
     }
@@ -30,7 +36,7 @@ public class TagCloudVisualizerTests
     [Test]
     public void TagCloudIsDensityAndShapeCloseToCircleWithCenter()
     {
-        tagCloudVisualizer.GenerateTagCloud(circularCloudLayouter, outputName: OutputName);
+        tagCloudVisualizer.GenerateTagCloud();
 
         const double densityRatio = 0.6;
 
