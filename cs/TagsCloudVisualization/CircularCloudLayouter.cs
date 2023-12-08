@@ -7,6 +7,8 @@ public class CircularCloudLayouter
     private readonly List<Rectangle> placedWords = new();
     private readonly Point center;
     private readonly Size resolution;
+    public int CloudArea { get; private set; }
+    public double MaxRadius { get; private set; }
 
     public CircularCloudLayouter()
     {
@@ -36,6 +38,9 @@ public class CircularCloudLayouter
             {
                 placedWords.Add(target);
 
+                MaxRadius = Math.Max(MaxRadius, MathWithPoints.DistanceToCenter(coordinate, center));
+                CloudArea += rectangleSize.Height * rectangleSize.Width;
+
                 return target;
             }
         }
@@ -52,7 +57,7 @@ public class CircularCloudLayouter
             // Угол рандомизирую для менее детерминированного распределения, i - счётчик для поворота только на 360
             var i = 0;
             for (var angle = rnd.Next(360); i < 360; angle++, i++)
-                yield return PolarMath.PolarToCartesian(radius, angle, center);
+                yield return MathWithPoints.PolarToCartesian(radius, angle, center);
         }
     }
 

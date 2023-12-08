@@ -2,4 +2,4 @@
 
 using TagsCloudVisualization;
 
-new TagCloudVisualizer().GenerateTagCloud();
+new TagCloudVisualizer().GenerateTagCloud(new CircularCloudLayouter());
