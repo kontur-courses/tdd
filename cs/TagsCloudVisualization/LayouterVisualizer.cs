@@ -11,19 +11,21 @@ public class LayouterVisualizer: IDisposable
 
     public LayouterVisualizer(Size imageSize)
     {
-        bitmap = new Bitmap(imageSize.Width, imageSize.Height);
+        Bitmap = new Bitmap(imageSize.Width, imageSize.Height);
+        Pen = new Pen(Color.White, 3);
     }
+
+    public Bitmap Bitmap { get; }
+
+    public Pen Pen { get; set; }
 
     public void VisualizeRectangle(Rectangle rectangle)
     {
-        using var g = Graphics.FromImage(bitmap);
-        using var brush = new SolidBrush(Color.White);
-        
-        var pen = new Pen(brush, 3); ;
-        g.DrawRectangle(pen, rectangle);
+        using var g = Graphics.FromImage(Bitmap);
+        g.DrawRectangle(Pen, rectangle);
     }
 
-    public void VisualizeRectangles(IReadOnlyCollection<Rectangle> rectangles)
+    public void VisualizeRectangles(IEnumerable<Rectangle> rectangles)
     {
         foreach (var rect in rectangles)
         {
@@ -33,8 +35,24 @@ public class LayouterVisualizer: IDisposable
 
     public void SaveImage(string file, ImageFormat format)
     {
-        bitmap.Save(file, format);
-        Console.WriteLine($"Tag cloud visualization saved to {file}");
+        if (TrySaveImage(file, format))
+        {
+            Console.WriteLine($"Tag cloud visualization saved to {file}");
+        }
+    }
+
+    private bool TrySaveImage(string file, ImageFormat format)
+    {
+        try
+        {
+            Bitmap.Save(file, format);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("An error occurred while saving the image: " + ex.Message);
+            return false;
+        }
     }
 
     ~LayouterVisualizer()
