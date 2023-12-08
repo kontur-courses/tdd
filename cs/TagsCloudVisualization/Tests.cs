@@ -34,20 +34,13 @@ public class Tests
         cloudLayouter = new CircularCloudLayouter(center);
     }
 
-
     [TearDown]
     public void TearDown()
     {
         var status = TestContext.CurrentContext.Result.Outcome.Status;
         var test = TestContext.CurrentContext.Test;
         if (status != TestStatus.Failed) return;
-
-        var visualizer = new LayouterVisualizer(canvasSize);
-        visualizer.VisualizeRectangles(cloudLayouter.AddedRectangles);
-
-        Directory.CreateDirectory(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestsResults"));
-        var pathToImage = Path.Combine(path, test.Name + ".jpeg");
-        visualizer.SaveImage(pathToImage, ImageFormat.Jpeg);
+        SaveFailedTestResult(test);
     }
 
     [Test]
@@ -118,6 +111,18 @@ public class Tests
         }
     }
 
+    private void SaveFailedTestResult(TestContext.TestAdapter test)
+    {
+        Directory.CreateDirectory(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestsResults"));
+        var pathToImage = Path.Combine(path, test.Name + ".jpeg");
+
+        var visualizer = new LayouterVisualizer(canvasSize);
+        visualizer.VisualizeRectangles(cloudLayouter.AddedRectangles);
+
+        visualizer.SaveImage(pathToImage, ImageFormat.Jpeg);
+        visualizer.Dispose();
+    }
+    
     private Size GetRandomSize()
     {
         //return new Size(Random.Next(30, 40), Random.Next(30, 40));
