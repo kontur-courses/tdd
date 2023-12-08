@@ -21,21 +21,21 @@ public class TagCloudVisualizerTests
 
     [Test]
     public void GenerateTagCloudShouldCreateFile()
-    { 
+    {
         tagCloudVisualizer.GenerateTagCloud(circularCloudLayouter, outputName: OutputName);
 
         File.Exists($"../../../../TagsCloudVisualization/out/{OutputName}.jpg").Should().BeTrue();
     }
-    
+
     [Test]
     public void TagCloudIsDensityAndShapeCloseToCircleWithCenter()
     {
         tagCloudVisualizer.GenerateTagCloud(circularCloudLayouter, outputName: OutputName);
 
         const double densityRatio = 0.6;
-        
+
         var cloudArea = circularCloudLayouter.GetCloudArea();
-        var outlineCircleArea = 
+        var outlineCircleArea =
             Math.PI * circularCloudLayouter.MaxRadius * circularCloudLayouter.MaxRadius;
 
         (outlineCircleArea / cloudArea).Should().BeGreaterThan(densityRatio);
