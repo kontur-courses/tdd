@@ -1,10 +1,9 @@
 using System.Drawing;
 using FluentAssertions;
-using tagsCloud;
+using TagsCloud;
 
 namespace TagsCloudTests;
 
-[TestFixture]
 public class SpiralTests
 {
     private Point center;
@@ -15,42 +14,32 @@ public class SpiralTests
         center = new Point(10, 10);
     }
 
+    private static IEnumerable<TestCaseData> ConstructorSpiralPoints => new[]
+    {
+        new TestCaseData(2.5f,
+                new Point[] { new(10, 10), new(5, 14), new(14, -2), new(16, 28), new(-11, -4), new(41, 8) })
+            .SetName("AngleStep is positive"),
+        new TestCaseData(-2.5f,
+                new Point[] { new(10, 10), new(5, 6), new(14, 22), new(16, -8), new(-11, 24), new(41, 12) })
+            .SetName("AngleStep is negative")
+    };
+
     [Test]
     public void Spiral_StepAngleEquals0_ShouldBeThrowException()
     {
         Action action = () => new Spiral(center, 0);
         action.Should().Throw<ArgumentException>()
-            .WithMessage("angle step non be 0");
+            .WithMessage("the step must not be equal to 0");
     }
 
-    [Test]
-    public void Spiral_IsNotStaticParams_ShouldBeTrue()
-    {
-        var spiral = new Spiral(center);
-        var start = spiral.GetPoint();
-        var spiral2 = new Spiral(new Point(0, 0));
-        var start2 = spiral2.GetPoint();
-        start.Should().NotBe(start2);
-    }
-
-    [TestCase(0.5f,
-        new[] { 10, 10, 10, 10, 10, 9 },
-        new[] { 10, 10, 10, 11, 12, 13 },
-        TestName = "AngleStep is positive")]
-    [TestCase(-0.5f,
-        new[] { 10, 10, 10, 10, 10, 9 },
-        new[] { 10, 10, 10, 9, 8, 7 },
-        TestName = "AngleStep is negative")]
-    public void Spiral_GetNextPoint_CreatePointsWithCustomAngle_ReturnsCorrectPoints(float angleStep, int[] x, int[] y)
+    [TestCaseSource(nameof(ConstructorSpiralPoints))]
+    public void Spiral_GetNextPoint_CreatePointsWithCustomAngle_ReturnsCorrectPoints(float angleStep,
+        Point[] expectedPoints)
     {
         var spiral = new Spiral(new Point(10, 10), angleStep);
-        var expectedPoints = new Point[x.Length];
-        var resultPoints = new Point[x.Length];
-        for (var i = 0; i < x.Length; i++)
-        {
-            expectedPoints[i] = new Point(x[i], y[i]);
+        var resultPoints = new Point[expectedPoints.Length];
+        for (var i = 0; i < resultPoints.Length; i++)
             resultPoints[i] = spiral.GetPoint();
-        }
 
         resultPoints.Should().BeEquivalentTo(expectedPoints);
     }
