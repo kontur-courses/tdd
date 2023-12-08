@@ -19,7 +19,6 @@ namespace TagCloud
             }
 
             var filename = "Sample";
-            var bitmap = CloudDrawer.DrawTagCloud(layouter.Rectangles);
             var path = @$"{Environment.CurrentDirectory}\..\..\..\Samples";
             var absPath = Path.GetFullPath(path);
 
@@ -29,6 +28,8 @@ namespace TagCloud
             }
 
             absPath += @$"\{filename}.png";
+
+            using var bitmap = CloudDrawer.DrawTagCloud(layouter.Rectangles);
             bitmap.Save(absPath);
         }
     }

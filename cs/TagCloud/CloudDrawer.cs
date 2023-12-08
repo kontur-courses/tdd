@@ -4,17 +4,17 @@ namespace TagCloud;
 
 public static class CloudDrawer
 {
-    public static Bitmap DrawTagCloud(CircularCloudLayouter layouter, int border = 10)
+    public static Bitmap DrawTagCloud(IList<Rectangle> rectangles, int border = 10)
     {
-        var rectangles = layouter.Rectangles;
         var imageSize = GetImageSize(rectangles, border);
         var shift = GetImageShift(rectangles, border);
         var image = new Bitmap(imageSize.Width, imageSize.Height);
-        var graphics = Graphics.FromImage(image);
+        using var graphics = Graphics.FromImage(image);
         foreach (var rectangle in rectangles)
         {
             var shiftedCoordinates = new Point(rectangle.X - shift.Width, rectangle.Y - shift.Height);
-            graphics.FillRectangle(new SolidBrush(GetRandomColor()), new Rectangle(shiftedCoordinates, rectangle.Size));
+            using var brush = new SolidBrush(GetRandomColor());
+            graphics.FillRectangle(brush, new Rectangle(shiftedCoordinates, rectangle.Size));
         }
 
         return image;
