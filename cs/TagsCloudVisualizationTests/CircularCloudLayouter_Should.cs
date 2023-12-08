@@ -26,55 +26,46 @@ namespace TagsCloudVisualizationTests
         public void Tear_Down()
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
-                SaveIncorrectResultsToJpg();
+                SaveIncorrectResultsToPng();
         }
 
-        public static IEnumerable TestCasesForWrongCenterPoint
+        public static TestCaseData[] TestCasesForWrongCenterPoint = new[]
         {
-            get
-            {
-                yield return new TestCaseData(new Point(-1, 0)).SetName("Throw argument exception when the X coordinate of the center is negative");
-                yield return new TestCaseData(new Point(2, -1)).SetName("Throw argument exception when the Y coordinate of the center is negative");
-                yield return new TestCaseData(new Point(-6, -1)).SetName("Throw argument exception when all coordinates of the center is negative");
-            }
-        }
+            new TestCaseData(new Point(-1, 0)).SetName("Throw argument exception when the X coordinate of the center is negative"),
+            new TestCaseData(new Point(2, -1)).SetName("Throw argument exception when the Y coordinate of the center is negative"),
+            new TestCaseData(new Point(-6, -1)).SetName("Throw argument exception when all coordinates of the center is negative")
 
-        public static IEnumerable TestCasesForCorrectCenterPoint
-        {
-            get
-            {
-                yield return new TestCaseData(new Point(0, 0)).SetName("Dont throw argument exception when all the coordinates of the center are zero");
-                yield return new TestCaseData(new Point(2, 1)).SetName("Dont throw argument exception when all the coordinates of the center are positive");
-                yield return new TestCaseData(new Point(0, 4)).SetName("Dont throw argument exception when the X coordinate of the center is zero");
-                yield return new TestCaseData(new Point(6, 0)).SetName("Dont throw argument exception when the Y coordinate of the center is zero");
-            }
-        }
+        };
 
-        public static IEnumerable TestCasesForWrongRectangleSize
+        public static TestCaseData[] TestCasesForCorrectCenterPoint = new[]
         {
-            get
-            {
-                yield return new TestCaseData(new Size(0, 0)).SetName("Throw argument exception when the rectangle dimensions are zero");
-                yield return new TestCaseData(new Size(-1, 5)).SetName("Throw argument exception when the width of the rectangle is negative");
-                yield return new TestCaseData(new Size(6, -6)).SetName("Throw argument exception when the height of the rectangle is negative");
-                yield return new TestCaseData(new Size(6, -6)).SetName("Throw argument exception when the rectangle dimensions are negative");
-            }
-        }
+            new TestCaseData(new Point(0, 0)).SetName("Dont throw argument exception when all the coordinates of the center are zero"),
+            new TestCaseData(new Point(2, 1)).SetName("Dont throw argument exception when all the coordinates of the center are positive"),
+            new TestCaseData(new Point(0, 4)).SetName("Dont throw argument exception when the X coordinate of the center is zero"),
+            new TestCaseData(new Point(6, 0)).SetName("Dont throw argument exception when the Y coordinate of the center is zero")
+        };
 
-        public static IEnumerable TestCasesForCorrectRectangleSize
+        public static TestCaseData[] TestCasesForWrongRectangleSize = new[]
         {
-            get
-            {
-                yield return new TestCaseData(new Size(1, 1)).SetName("Dont throw argument exception when the rectangle dimensions are positive");
-                yield return new TestCaseData(new Size(2, 5)).SetName("Dont throw argument exception when the rectangle dimensions are positive");
-                yield return new TestCaseData(new Size(34, 100)).SetName("Dont throw argument exception when the rectangle dimensions are positive");
-            }
-        }
+            new TestCaseData(new Size(0, 0)).SetName("Throw argument exception when the rectangle dimensions are zero"),
+            new TestCaseData(new Size(-1, 5)).SetName("Throw argument exception when the width of the rectangle is negative"),
+            new TestCaseData(new Size(6, -6)).SetName("Throw argument exception when the height of the rectangle is negative"),
+            new TestCaseData(new Size(6, -6)).SetName("Throw argument exception when the rectangle dimensions are negative"),
+
+        };
+
+        public static TestCaseData[] TestCasesForCorrectRectangleSize = new[]
+        {
+            new TestCaseData(new Size(1, 1)).SetName("Dont throw argument exception when the rectangle dimensions are positive"),
+            new TestCaseData(new Size(2, 5)).SetName("Dont throw argument exception when the rectangle dimensions are positive"),
+            new TestCaseData(new Size(34, 100)).SetName("Dont throw argument exception when the rectangle dimensions are positive")
+        };
 
         [Test]
         public void ReturnEmptyList_WhenCreated()
         {
-            CircularCloudLayouter layouter = new CircularCloudLayouter(new Point(1, 1));
+            var layouter = new CircularCloudLayouter(new Point(1, 1));
+
             layouter.Rectangles.Should().BeEmpty();
         }
 
@@ -114,7 +105,7 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void ReturnOneRectangle_WhenAddOne()
         {
-            CircularCloudLayouter layouter = new CircularCloudLayouter(new Point(100, 100));
+            var layouter = new CircularCloudLayouter(new Point(100, 100));
 
             layouter.PutNextRectangle(new Size(50, 50));
 
@@ -124,7 +115,7 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void ReturnTwoRectangle_WhenAddTwo()
         {
-            CircularCloudLayouter layouter = new CircularCloudLayouter(new Point(100, 100));
+            var layouter = new CircularCloudLayouter(new Point(100, 100));
 
             layouter.PutNextRectangle(new Size(50, 50));
             layouter.PutNextRectangle(new Size(50, 50));
@@ -179,7 +170,7 @@ namespace TagsCloudVisualizationTests
             for (int i = 0; i < count; i++)
                 layouter.PutNextRectangle(size);
 
-            isIntersections().Should().BeFalse();
+            IsIntersections().Should().BeFalse();
         }
 
         [TestCase(15, 75, 10, 40, 100)]
@@ -193,10 +184,10 @@ namespace TagsCloudVisualizationTests
                 layouter.PutNextRectangle(size);
             }
 
-            isIntersections().Should().BeFalse();
+            IsIntersections().Should().BeFalse();
         }
 
-        private void SaveIncorrectResultsToJpg()
+        private void SaveIncorrectResultsToPng()
         {
             var rectangles = layouter.Rectangles;
             if (rectangles.Count() == 0)
@@ -206,15 +197,14 @@ namespace TagsCloudVisualizationTests
             var absolutePath = Path.GetFullPath(pathToFile);
             var visualizator = new TagsCloudVisualizator(layouter, new Size(1600, 1600));
 
-            visualizator.drawCloud();
-            visualizator.saveImage(pathToFile);
+            visualizator.DrawAndSaveCloud(pathToFile);
             
             Console.WriteLine($"Tag cloud visualization saved to file {absolutePath}");
         }
 
-        public bool isIntersections()
+        public bool IsIntersections()
         {
-            var rectList = layouter.Rectangles;
+            var rectList = new List<Rectangle>(layouter.Rectangles);
 
             for (int i = 0; i < rectList.Count; i++)
                 for(int j = i + 1; j < rectList.Count; j++)

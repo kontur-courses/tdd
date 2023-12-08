@@ -5,16 +5,18 @@ using System.Drawing;
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter
+    public sealed class CircularCloudLayouter
     {
-        private List<Rectangle> rectangles;
-        private Point center;
-        private Spiral spiral;
+        private readonly ICollection<Rectangle> rectangles;
+        private readonly RectanglePlacer rectanglePlacer;
+        
+        public IReadOnlyCollection<Rectangle> Rectangles => (IReadOnlyCollection<Rectangle>)rectangles;
+
         public CircularCloudLayouter(Point center)
         {
             if (center.X < 0 || center.Y < 0)
                 throw new ArgumentException("the coordinates of the center must be positive numbers");
-            spiral = new Spiral(center);
+            rectanglePlacer = new RectanglePlacer(center);
             rectangles = new List<Rectangle>();
         }
 
@@ -23,13 +25,10 @@ namespace TagsCloudVisualization
             if (rectangleSize.Width <= 0  || rectangleSize.Height <= 0)
                 throw new ArgumentException("the width and height of the rectangle must be positive numbers");
             
-            Rectangle nextRengtanle = spiral.GetPossibleNextRectangle(rectangles, rectangleSize);
+            var nextRengtanle = rectanglePlacer.GetPossibleNextRectangle((IReadOnlyCollection<Rectangle>)rectangles, rectangleSize);
             rectangles.Add(nextRengtanle);
             return nextRengtanle;
         }
 
-        public List<Rectangle> Rectangles => rectangles;
-
-        public Point Center => center;
     }
 }

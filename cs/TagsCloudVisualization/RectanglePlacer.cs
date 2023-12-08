@@ -6,7 +6,7 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace TagsCloudVisualization
 {
-    public class Spiral
+    public sealed class RectanglePlacer
     {
         private Point center;
         private double radius;
@@ -14,7 +14,7 @@ namespace TagsCloudVisualization
         private double deltaRadius;
         private double deltaAngle;
 
-        public Spiral(Point center, double deltaRadius = 0.1, double deltaAngle = 0.1) 
+        public RectanglePlacer(Point center, double deltaRadius = 0.1, double deltaAngle = 0.1) 
         {
             if (center.X < 0 || center.Y < 0)
                 throw new ArgumentException("the coordinates of the center must be positive numbers");
@@ -25,18 +25,23 @@ namespace TagsCloudVisualization
             angle = 0;
         }
 
-        public Rectangle GetPossibleNextRectangle(List<Rectangle> cloudRectangles, Size rectangleSize)
+        public Rectangle GetPossibleNextRectangle(IReadOnlyCollection<Rectangle> cloudRectangles, Size rectangleSize)
         {
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException("the width and height of the rectangle must be positive numbers");
 
+            return FindPossibleNextRectangle(cloudRectangles, rectangleSize);
+        }
+
+        private Rectangle FindPossibleNextRectangle(IReadOnlyCollection<Rectangle> cloudRectangles, Size rectangleSize)
+        {
             while (true)
             {
-                Point point = new Point(
+                var point = new Point(
                     (int)(center.X + radius * Math.Cos(angle)),
                     (int)(center.Y + radius * Math.Sin(angle))
                     );
-                Rectangle possibleRectangle = new Rectangle(point, rectangleSize);
+                var possibleRectangle = new Rectangle(point, rectangleSize);
 
                 if (!cloudRectangles.Any(rectangle => rectangle.IntersectsWith(possibleRectangle)))
                 {

@@ -9,18 +9,18 @@ namespace TagsCloudVisualization
     public class TagsCloudVisualizator
     {
         private CircularCloudLayouter layouter;
-        private Bitmap image;
-        private Graphics graphics;
+        private Size imageSize;
 
         public TagsCloudVisualizator(CircularCloudLayouter layouter, Size imageSize)
         {
             this.layouter = layouter;
-            image = new Bitmap(imageSize.Width, imageSize.Height);
-            graphics = Graphics.FromImage(image);
+            this.imageSize = imageSize;
         }
 
-        public void drawCloud()
+        public void DrawAndSaveCloud(string fileName)
         {
+            var image = new Bitmap(imageSize.Width, imageSize.Height);
+            var graphics = Graphics.FromImage(image);
             graphics.Clear(Color.White);
             foreach (var rect in layouter.Rectangles)
             {
@@ -28,12 +28,8 @@ namespace TagsCloudVisualization
                 graphics.DrawRectangle(Pens.Black, rect);
             }
             graphics.Save();
-
-        }
-
-        public void saveImage(string fileName)
-        {
             image.Save(fileName);
+
         }
     }
 }
