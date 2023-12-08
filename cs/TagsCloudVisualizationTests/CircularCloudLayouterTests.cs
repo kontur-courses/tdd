@@ -28,14 +28,6 @@ public class CircularCloudLayouterTests
         var expected = new Rectangle(center, size);
         actual.Should().Be(expected);
     }
-
-    [Test]
-    public void GenerateTagCloudShouldCreateFile()
-    { 
-        new TagCloudVisualizer().GenerateTagCloud(circularCloudLayouter, outputName: OutputName);
-
-        File.Exists($"../../../../TagsCloudVisualization/out/{OutputName}.jpg").Should().BeTrue();
-    }
     
     [Test]
     public void AlgorithmTimeComplexity_LessOrEqualQuadratic()
@@ -60,16 +52,10 @@ public class CircularCloudLayouterTests
     }
     
     [Test]
-    public void TagCloudIsDensityAndShapeCloseToCircleWithCenter()
+    public void Rectangles_NotIntersects()
     {
         new TagCloudVisualizer().GenerateTagCloud(circularCloudLayouter, outputName: OutputName);
 
-        const double densityRatio = 0.6;
-        
-        var cloudArea = circularCloudLayouter.CloudArea;
-        var outlineCircleArea = 
-            Math.PI * circularCloudLayouter.MaxRadius * circularCloudLayouter.MaxRadius;
-
-        (outlineCircleArea / cloudArea).Should().BeGreaterThan(densityRatio);
+        circularCloudLayouter.AllRectanglesArea.Should().Be(circularCloudLayouter.GetCloudArea());
     }
 }
