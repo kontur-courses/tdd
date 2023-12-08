@@ -4,14 +4,14 @@ namespace TagsCloudVisualization;
 
 public class CloudLayouter
 {
-    private readonly IPointGenerator pointsGenerator;
+    private readonly IPointGenerator pointGenerator;
     private readonly List<Rectangle> createdRectangles = new();
 
-    public IEnumerable<Rectangle> CreatedRectangles => createdRectangles.AsReadOnly();
+    public IEnumerable<Rectangle> CreatedRectangles => createdRectangles.AsEnumerable();
 
     public CloudLayouter(IPointGenerator pointGenerator)
     {
-        pointsGenerator = pointGenerator;
+        this.pointGenerator = pointGenerator;
     }
 
     public Rectangle PutNextRectangle(Size rectangleSize)
@@ -21,7 +21,7 @@ public class CloudLayouter
 
         while (true)
         {
-            var nextPoint = pointsGenerator.GetNextPoint();
+            var nextPoint = pointGenerator.GetNextPoint();
 
             var rectangleLocation = new Point(nextPoint.X - rectangleSize.Width / 2,
                 nextPoint.Y - rectangleSize.Height / 2);
