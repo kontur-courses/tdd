@@ -41,13 +41,10 @@ public class CloudLayouter_Should
         rectangleCreation.Should().Throw<ArgumentException>();
     }
 
-    private static IPointGenerator[] Generators =
-    {
-        new SpiralGenerator()
-    };
-
-    [TestCaseSource(nameof(Generators))]
-    public void PutNextRectanglePlacesSquaresNear_WithDifferentRealisations(IPointGenerator pointGenerator)
+    [TestCaseSource(nameof(GeneratorsAndMaxDistance))]
+    public void PutNextRectanglePlacesSquaresNear_WithDifferentRealisations(
+        IPointGenerator pointGenerator,
+        int closestRectangleMaxDistance)
     {
         circularCloudLayouter = new CloudLayouter(pointGenerator);
         var squareSide = 20;
@@ -61,13 +58,18 @@ public class CloudLayouter_Should
         {
             var currentRectangle = circularCloudLayouter.PutNextRectangle(rectangleSize);
 
-            var minimalDistanceToClosestRectangle = rectanglesWithoutCurrent
+            var closestRectangleDistance = rectanglesWithoutCurrent
                 .Min(existingRectangle => CalculateDistanceBetweenRectangles(currentRectangle, existingRectangle));
 
-            minimalDistanceToClosestRectangle.Should().BeLessThan(2 * squareSide);
+            closestRectangleDistance.Should().BeLessThan(closestRectangleMaxDistance);
             rectanglesWithoutCurrent.Add(currentRectangle);
         }
     }
+
+    private static object[][] GeneratorsAndMaxDistance =
+    {
+        new object[] { new SpiralGenerator(), 21 }
+    };
 
     private double CalculateDistanceBetweenRectangles(Rectangle firstRectangle, Rectangle secondRectangle)
     {
