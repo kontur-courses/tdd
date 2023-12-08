@@ -11,7 +11,7 @@ public class CircularCloudLayouter_Should
     [SetUp]
     public void Setup()
     {
-        sut = new CircularCloudLayouter(new Point(Width / 2, Height / 2));
+        sut = new CircularCloudLayouter(new SpiralGenerator(new Point(Width / 2, Height / 2)));
     }
 
     [TearDown]
@@ -19,7 +19,7 @@ public class CircularCloudLayouter_Should
     {
         if (TestContext.CurrentContext.Result.Outcome == ResultState.Failure)
         {
-            var bitmap = CloudDrawer.DrawTagCloud(sut);
+            var bitmap = CloudDrawer.DrawTagCloud(sut.Rectangles);
 
             var path = @$"{Environment.CurrentDirectory}\..\..\..\FailedTests\{this.GetType()}";
             var absPath = Path.GetFullPath(path);

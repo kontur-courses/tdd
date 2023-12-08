@@ -9,7 +9,7 @@ namespace TagCloud
 
         static void Main(string[] args)
         {
-            var layouter = new CircularCloudLayouter(new Point(Width / 2, Height / 2));
+            var layouter = new CircularCloudLayouter(new SpiralGenerator(new Point(Width / 2, Height / 2), 1, 0.01));
 
             var random = new Random();
 
@@ -19,10 +19,10 @@ namespace TagCloud
             }
 
             var filename = "Sample";
-            var bitmap = CloudDrawer.DrawTagCloud(layouter);
+            var bitmap = CloudDrawer.DrawTagCloud(layouter.Rectangles);
             var path = @$"{Environment.CurrentDirectory}\..\..\..\Samples";
             var absPath = Path.GetFullPath(path);
-            
+
             if (!Directory.Exists(absPath))
             {
                 Directory.CreateDirectory(absPath);

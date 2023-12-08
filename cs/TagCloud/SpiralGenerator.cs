@@ -2,7 +2,7 @@
 
 namespace TagCloud;
 
-public class SpiralGenerator
+public class SpiralGenerator : IPointGenerator
 {
     private readonly Point startPoint;
     private readonly int spiralDensity;

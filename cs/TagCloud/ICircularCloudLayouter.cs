@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Drawing;
+﻿using System.Drawing;
 
-namespace TagCloud
+namespace TagCloud;
+
+public interface ICircularCloudLayouter
 {
-    public interface ICircularCloudLayouter
-    {
-        Rectangle PutNextRectangle(Size rectangleSize);
-    }
+    Rectangle PutNextRectangle(Size rectangleSize);
 }
