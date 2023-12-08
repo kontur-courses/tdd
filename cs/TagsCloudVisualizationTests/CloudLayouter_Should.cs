@@ -59,12 +59,19 @@ public class CloudLayouter_Should
             var currentRectangle = circularCloudLayouter.PutNextRectangle(rectangleSize);
 
             var closestRectangleDistance = rectanglesWithoutCurrent
+            var closestRectangleDistance = rectanglesWithoutCurrent
                 .Min(existingRectangle => CalculateDistanceBetweenRectangles(currentRectangle, existingRectangle));
 
+            closestRectangleDistance.Should().BeLessThan(closestRectangleMaxDistance);
             closestRectangleDistance.Should().BeLessThan(closestRectangleMaxDistance);
             rectanglesWithoutCurrent.Add(currentRectangle);
         }
     }
+
+    private static object[][] GeneratorsAndMaxDistance =
+    {
+        new object[] { new SpiralGenerator(), 21 }
+    };
 
     private static object[][] GeneratorsAndMaxDistance =
     {

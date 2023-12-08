@@ -17,10 +17,15 @@ public class SpiralGenerator : IPointGenerator
     {
         var x = (int)Math.Round(Center.X + Radius * Math.Cos(Angle));
         var y = (int)Math.Round(Center.Y + Radius * Math.Sin(Angle));
+        var x = (int)Math.Round(Center.X + Radius * Math.Cos(Angle));
+        var y = (int)Math.Round(Center.Y + Radius * Math.Sin(Angle));
 
+        var nextAngle = Angle + AngleDelta;
         var nextAngle = Angle + AngleDelta;
         var angleMoreThan2Pi = Math.Abs(nextAngle) >= Math.PI * 2;
 
+        Radius = angleMoreThan2Pi ? Radius + RadiusDelta : Radius;
+        Angle = angleMoreThan2Pi ? 0 : nextAngle;
         Radius = angleMoreThan2Pi ? Radius + RadiusDelta : Radius;
         Angle = angleMoreThan2Pi ? 0 : nextAngle;
 
