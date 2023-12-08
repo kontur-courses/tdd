@@ -1,5 +1,5 @@
-![Getting Started](./TagsCloudVisualization/bin/Debug/50rectanglesR.jpg)
+![Getting Started](./images/50rectanglesR.jpg)
 
-![Getting Started](./TagsCloudVisualization/bin/Debug/150rectangles.jpg)
+![Getting Started](./images/150rectangles.jpg)
 
-![Getting Started](./TagsCloudVisualization/bin/Debug/500.jpg)
+![Getting Started](./images/500.jpg)
