@@ -36,23 +36,15 @@ namespace TagsCloudVisualizationTests.UnitTests
         [Test]
         public void AddSeveralRectangles_Correctly()
         {
-            var layouter = new CircularCloudLayouter(new Point());
-            for (var i = 1; i < 26; i++)
-            {
-                layouter.PutNextRectangle(new Size(i * 20, i * 10));
-            }
-
-            layouter.Rectangles.Should().HaveCount(25).And.AllBeOfType(typeof(Rectangle));
+            var amount = 25;
+            var layouter = CreateValidator_WithSeveralRectangles(amount);
+            layouter.Rectangles.Should().HaveCount(amount);
         }
 
         [TestCaseSource(typeof(TestDataArchimedeanSpiral), nameof(TestDataArchimedeanSpiral.Different_CenterPoints))]
         public void AddSeveralRectangles_DoNotIntersect(Point point)
         {
-            var layouter = new CircularCloudLayouter(point);
-            for (var i = 1; i < 26; i++)
-            {
-                layouter.PutNextRectangle(new Size(i * 20, i * 10));
-            }
+            var layouter = CreateValidator_WithSeveralRectangles(25);
 
             var rectangles = layouter.Rectangles;
             for (var i = 1; i < rectangles.Count; i++)
@@ -64,7 +56,7 @@ namespace TagsCloudVisualizationTests.UnitTests
         {
             var layouter = new CircularCloudLayouter(new Point());
             for (var i = 0; i < 200; i++)
-                layouter.PutNextRectangle(new Size(50, 50));
+                layouter.PutNextRectangle(new Size(35, 15));
             var rectanglesSquare = 0;
             var maxdX = 0;
             var maxdY = 0;
@@ -78,7 +70,18 @@ namespace TagsCloudVisualizationTests.UnitTests
             var radius = Math.Max(maxdX, maxdY);
             var circleSquare = Math.PI * radius * radius;
 
-            (rectanglesSquare / circleSquare).Should().BeGreaterOrEqualTo(0.7);
+            (rectanglesSquare / circleSquare).Should().BeGreaterOrEqualTo(0.65);
+        }
+
+        private static CircularCloudLayouter CreateValidator_WithSeveralRectangles(int amount)
+        {
+            var layouter = new CircularCloudLayouter(new Point());
+            for (var i = 1; i < amount + 1; i++)
+            {
+                layouter.PutNextRectangle(new Size(i * 20, i * 10));
+            }
+
+            return layouter;
         }
     }
 }

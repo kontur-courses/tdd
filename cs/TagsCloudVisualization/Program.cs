@@ -33,7 +33,7 @@ namespace TagsCloudVisualization
         {
             var layouter = new CircularCloudLayouter(new Point(340, 340));
             for (var i = 0; i < 200; i++) 
-                layouter.PutNextRectangle(new Size(30, 30));
+                layouter.PutNextRectangle(new Size(50, 25));
 
             return Drawer.GetImage(new Point(340, 340), layouter.Rectangles);
         }
@@ -42,8 +42,11 @@ namespace TagsCloudVisualization
         {
             var layouter = new CircularCloudLayouter(new Point(340, 340));
             var rnd = new Random();
-            for (var i = 0; i < 200; i++) 
-                layouter.PutNextRectangle(new Size(rnd.Next(5, 50), rnd.Next(5, 50)));
+            for (var i = 0; i < 200; i++)
+            {
+                var width = rnd.Next(30, 60);
+                layouter.PutNextRectangle(new Size(width, rnd.Next(width / 2 - 10, width / 2)));
+            }
 
             return Drawer.GetImage(new Point(340, 340), layouter.Rectangles);
         }
