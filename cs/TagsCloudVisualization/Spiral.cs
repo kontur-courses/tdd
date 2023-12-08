@@ -5,7 +5,17 @@ namespace TagsCloudVisualization
 {
     public class Spiral : IPointDistributor
     {
-        private readonly int step = 1;
+        public Spiral()
+        {
+            step = 1;
+        }
+
+        public Spiral(int step)
+        {
+            this.step = step;
+        }
+
+        private readonly int step;
         private double angle;
 
         public Point GetPosition(Cloud cloud, Size rectangleSize, double deltaAngle = 0.1)

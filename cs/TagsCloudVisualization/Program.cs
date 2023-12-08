@@ -4,8 +4,8 @@ namespace TagsCloudVisualization
 {
     internal class Program
     {
-        public const int ImageWidth = 800;
-        public const int ImageHeight = 800;
+        public const int ImageWidth = 1000;
+        public const int ImageHeight = 1000;
 
         public static void Main(string[] args)
         {

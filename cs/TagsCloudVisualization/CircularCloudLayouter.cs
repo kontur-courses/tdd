@@ -45,10 +45,8 @@ namespace TagsCloudVisualization
             return newRectangle;
         }
 
-        private Point FindNewRectanglePosition(Size rectangleSize, double deltaAngle = 0.1)
-        {
-            return distributor.GetPosition(cloud, rectangleSize, 0.1);
-        }
+        private Point FindNewRectanglePosition(Size rectangleSize, double deltaAngle = 0.1) =>
+            distributor.GetPosition(cloud, rectangleSize, 0.1);
 
         private bool HaveIntersection(Rectangle newRectangle) =>
             cloud.Rectangles.Any(rectangle => rectangle.IntersectsWith(newRectangle));
