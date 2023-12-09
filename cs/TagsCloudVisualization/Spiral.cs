@@ -8,26 +8,39 @@ namespace TagsCloudVisualization
         public Spiral()
         {
             step = 1;
+            deltaAngle = 0.1;
+            center = new Point(0, 0);
         }
 
-        public Spiral(int step)
+        public Spiral(int step, Point center, double deltaAngle)
         {
             this.step = step;
+            this.center = center;
+            this.deltaAngle = deltaAngle;
         }
 
         private readonly int step;
         private double angle;
+        private readonly double deltaAngle;
+        private Point center;
+        private bool centerOnPoint;
 
-        public Point GetPosition(Cloud cloud, Size rectangleSize, double deltaAngle = 0.1)
+        public Point GetPosition()
         {
+            if (!centerOnPoint)
+            {
+                centerOnPoint = true;
+                return center;
+            }
+
             angle += deltaAngle;
 
             var k = step / (2 * Math.PI);
             var radius = k * angle;
 
             var position = new Point(
-                cloud.Center.X + (int)(Math.Cos(angle) * radius),
-                cloud.Center.Y + (int)(Math.Sin(angle) * radius));
+                center.X + (int)(Math.Cos(angle) * radius),
+                center.Y + (int)(Math.Sin(angle) * radius));
 
             return position;
         }

@@ -23,11 +23,11 @@ namespace TagsCloudVisualization
             if (cloud.Rectangles.Count == 0)
                 return AddToCenterPosition(rectangleSize);
 
-            var rectangle = new Rectangle(FindNewRectanglePosition(rectangleSize), rectangleSize);
+            var rectangle = new Rectangle(distributor.GetPosition(), rectangleSize);
 
             while (HaveIntersection(rectangle))
             {
-                rectangle.Location = FindNewRectanglePosition(rectangleSize);
+                rectangle.Location = distributor.GetPosition();
             }
 
             cloud.Rectangles.Add(rectangle);
@@ -44,9 +44,6 @@ namespace TagsCloudVisualization
 
             return newRectangle;
         }
-
-        private Point FindNewRectanglePosition(Size rectangleSize, double deltaAngle = 0.1) =>
-            distributor.GetPosition(cloud, rectangleSize, 0.1);
 
         private bool HaveIntersection(Rectangle newRectangle) =>
             cloud.Rectangles.Any(rectangle => rectangle.IntersectsWith(newRectangle));

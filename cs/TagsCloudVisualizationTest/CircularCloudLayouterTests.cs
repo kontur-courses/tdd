@@ -14,32 +14,23 @@ namespace TagsCloudVisualizationTest
     [TestFixture]
     public class CircularCloudLayouterTests
     {
-        private CircularCloudLayouter layouter;
+        private CircularCloudLayouter layouter = new CircularCloudLayouter(Center, new Spiral());
         private static readonly Point Center = new Point(500, 500);
         private RectangleF[] currentRectangles;
-
-        [SetUp]
-        public void Initial()
-        {
-            layouter = new CircularCloudLayouter(Center, new Spiral());
-        }
 
         [TearDown]
         public void TearDown()
         {
-            var cloudCreator = new TagCloudCreator();
-          
-            if (currentRectangles == null)
+            if (currentRectangles == null ||
+                TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
                 return;
 
-            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
-            {
-                var imageName = TestContext.CurrentContext.Test.Name;
-                cloudCreator.CreateCloud(currentRectangles, imageName);
+            var cloudCreator = new TagCloudCreator();
+            var imageName = TestContext.CurrentContext.Test.Name;
+            cloudCreator.CreateCloud(currentRectangles, imageName);
 
-                var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
-                Console.WriteLine($"Tag cloud visualization saved to {path}\\{imageName}");
-            }
+            var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
+            Console.WriteLine($"Tag cloud visualization saved to {path}\\{imageName}");
         }
 
         [Test]
@@ -98,7 +89,7 @@ namespace TagsCloudVisualizationTest
         {
             currentRectangles = new RectangleF[]
             {
-                layouter.PutNextRectangle(new Size(40,20))
+                layouter.PutNextRectangle(new Size(40, 20))
             };
 
             currentRectangles.First().Location.X.Should().Be(480);

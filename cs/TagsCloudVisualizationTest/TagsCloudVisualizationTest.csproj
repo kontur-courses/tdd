@@ -10,8 +10,8 @@
     <ProjectGuid>{09F90167-009F-4E35-94DD-DBD7A4B6A814}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TagsCloudVizuaizationTest</RootNamespace>
-    <AssemblyName>TagsCloudVizuaizationTest</AssemblyName>
+    <RootNamespace>TagsCloudVisualizationTest</RootNamespace>
+    <AssemblyName>TagsCloudVisualizationTest</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="CircularCloudLayouterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpiralTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
