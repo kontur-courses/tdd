@@ -4,7 +4,7 @@ namespace TagsCloudVisualization;
 
 public class Layout
 {
-    private readonly List<Rectangle> _rectangles = new();
+    
 
     public Layout(Point center)
     {
@@ -27,15 +27,5 @@ public class Layout
 
             offset++;
         }
-    }
-
-    public bool CanPutRectangle(Rectangle rectangle)
-    {
-        return !_rectangles.Any(rectangle.IntersectsWith);
-    }
-
-    public void PutRectangle(Rectangle rectangle)
-    {
-        _rectangles.Add(rectangle);
     }
 }

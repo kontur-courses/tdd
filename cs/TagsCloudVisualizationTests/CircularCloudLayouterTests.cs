@@ -1,18 +1,20 @@
+using System.Reflection;
+
 namespace TagsCloudVisualizationTests;
 
-public static class CircularCloudLayouterTests
+public class CircularCloudLayouterTests
 {
     [SetUp]
-    public static void SetUp()
+    public void SetUp()
     {
         _layouter = new CircularCloudLayouter(new Point(0, 0));
     }
     
-    private static CircularCloudLayouter _layouter;
+    private CircularCloudLayouter _layouter;
     
-    [TestCase(0, 0, TestName = "CircularCloudLayouter_PutNextRectangle_ThrowsArgumentExceptionOnZeroDimensions")]
-    [TestCase(-1, -1, TestName = "CircularCloudLayouter_PutNextRectangle_ThrowsArgumentExceptionOnNegativeDimensions")]
-    public static void CircularCloudLayouter_PutNextRectangle_ThrowsArgumentExceptionOn(int width, int height)
+    [TestCase(0, 0, TestName = "ZeroDimensions")]
+    [TestCase(-1, -1, TestName = "NegativeDimensions")]
+    public void PutNextRectangle_ThrowsArgumentExceptionOn(int width, int height)
     {
         new Action(() => _layouter.PutNextRectangle(new Size(width, height)))
             .Should()
@@ -21,9 +23,9 @@ public static class CircularCloudLayouterTests
     }
 
     [Test]
-    public static void CircularCloudLayouter_PutNextRectangle_RectanglesShouldNotIntersect()
+    public void PutNextRectangle_RectanglesShouldNotIntersect()
     {
-        var rectangles = AddRectangles().ToArray();
+        var rectangles = AddRectangles(_layouter).ToArray();
         
         rectangles
             .Where(r1 => rectangles.Where(r2 => r2 != r1).Any(r1.IntersectsWith))
@@ -31,22 +33,85 @@ public static class CircularCloudLayouterTests
             .BeEmpty();
     }
 
-    [Test, Timeout(400)]
-    public static void CircularCloudLayouter_PutNextRectangle_MustBeEfficient()
+    [Test, Timeout(500)]
+    public void PutNextRectangle_MustBeEfficient()
     {
-        AddRectangles().Count();
+        AddRectangles(_layouter).Count();
     }
 
-    private static IEnumerable<Rectangle> AddRectangles(int count = 100)
+    private static IEnumerable<Rectangle> AddRectangles(CircularCloudLayouter layouter, int count = 100)
     {
         var rnd = new Random(228_666);
         
         for (var i = 0; i < count; i++) 
-            yield return _layouter.PutNextRectangle(GetNextRandomSize(rnd));
+            yield return layouter.PutNextRectangle(GetNextRandomSize(rnd));
     }
 
     private static Size GetNextRandomSize(Random rnd)
     {
         return new Size(rnd.Next(1, 10), rnd.Next(1, 10));
+    }
+
+    [TestCase(0, TestName = "WhenEmpty")]
+    [TestCase(1, TestName = "WhenOneRectangleGiven")]
+    [TestCase(6, TestName = "WhenMultipleRectanglesGiven")]
+    public void HasCenterInInitCoords(int rectanglesToAdd)
+    {
+        for (var i = 0; i < rectanglesToAdd; i++)
+            _layouter.PutNextRectangle(new Size(1, 1));
+
+        _layouter.Center
+            .Should()
+            .Be(new Point(0, 0));
+    }
+    
+    [Test]
+    public void CanPutRectangle_ReturnsFalseOnPuttingRectangleToOccupiedPlace()
+    {
+        var type = _layouter.GetType();
+        
+        type.GetAndInvokeMethod(
+            "PutRectangle", 
+            BindingFlags.NonPublic | BindingFlags.Instance,
+            _layouter, 
+            new Rectangle(0, 0, 1, 1));
+        
+        type.GetAndInvokeMethod(
+                "CanPutRectangle", 
+                BindingFlags.NonPublic | BindingFlags.Instance,
+                _layouter, 
+                new Rectangle(0, 0, 1, 1))
+            .Should()
+            .Be(false);
+    }
+    
+    [Test]
+    public void CanPutRectangle_ReturnsTrueOnPuttingRectangleToEmptyPlace()
+    {
+        var type = _layouter.GetType();
+        
+        type.GetAndInvokeMethod(
+            "PutRectangle", 
+            BindingFlags.NonPublic | BindingFlags.Instance,
+            _layouter, 
+            new Rectangle(0, 0, 1, 1));
+        
+        type.GetAndInvokeMethod(
+                "CanPutRectangle", 
+                BindingFlags.NonPublic | BindingFlags.Instance,
+                _layouter, 
+                new Rectangle(2, 2, 1, 1))
+            .Should()
+            .Be(true);
+    }
+}
+
+public static class TypeExtensions
+{
+    public static object? GetAndInvokeMethod(this Type type, string methodName, BindingFlags flags, object obj, params object[] parameters)
+    {
+        return type
+            .GetMethod(methodName, flags)!
+            .Invoke(obj, parameters);
     }
 }

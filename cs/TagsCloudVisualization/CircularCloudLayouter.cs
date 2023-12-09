@@ -1,43 +1,49 @@
 using System.Drawing;
+using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization;
 
 public class CircularCloudLayouter
 {
     private readonly Layout layout;
+    private readonly List<Rectangle> _rectangles = new();
 
     public CircularCloudLayouter(Point center)
     {
         layout = new Layout(center);
     }
 
+    public Point Center => layout.Center;
+
     public Rectangle PutNextRectangle(Size rectangleSize)
     {
-        return AddRectangle(rectangleSize);
-    }
-
-    private Rectangle AddRectangle(Size size)
-    {
-        if (size.Width <= 0 || size.Height <= 0)
+        if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
             throw new ArgumentException("Width and height of rectangle must be positive");
 
-        var offsetBeforeCenter = new Size(
-            size.Width / 2 + (size.Width % 2 == 0 ? 0 : 1),
-            size.Height / 2 + (size.Height % 2 == 0 ? 0 : 1));
-
-        var result = default(Rectangle);
+        var offsetBeforeCenter = rectangleSize.GetGreaterHalf();
 
         foreach (var coord in layout.GetNextCoord())
         {
-            result = new Rectangle(coord - offsetBeforeCenter, size);
+            var now = new Rectangle(coord - offsetBeforeCenter, rectangleSize);
             
-            if (!layout.CanPutRectangle(result))
+            if (!CanPutRectangle(now))
                 continue;
 
-            layout.PutRectangle(result);
-            break;
+            PutRectangle(now);
+
+            return now;
         }
 
-        return result;
+        throw new IndexOutOfRangeException("Cannot find suitable place on the layout");
+    }
+    
+    private bool CanPutRectangle(Rectangle rectangle)
+    {
+        return !_rectangles.Any(rectangle.IntersectsWith);
+    }
+
+    private void PutRectangle(Rectangle rectangle)
+    {
+        _rectangles.Add(rectangle);
     }
 }
