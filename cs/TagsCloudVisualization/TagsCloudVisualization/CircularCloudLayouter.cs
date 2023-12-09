@@ -5,24 +5,23 @@ namespace TagsCloudVisualization
     public class CircularCloudLayouter : ICircularCloudLayouter
     {
         public Point Center { get; }
-        public List<Rectangle> TagCloud { get; } = new();
 
-        private double step = Math.PI / 100;
-        private double radiusDelta = 2;
+        private const double ANGLE_STEP = Math.PI / 100;
+        private const double RADIUS_DELTA = 2;
 
         public CircularCloudLayouter(Point center)
         {
             Center = center;
         }
 
-        public Rectangle PutNextRectangle(Size rectangleSize)
+        public Rectangle PutNextRectangle(Size rectangleSize, ICollection<Rectangle> existingRectangles)
         {
             Rectangle rectangle;
             var iteration = 0;
             do
             {
-                var angle = iteration * step;
-                var radius = radiusDelta * angle / (2 * Math.PI);
+                var angle = iteration * ANGLE_STEP;
+                var radius = RADIUS_DELTA * angle / (2 * Math.PI);
                 var position = new Point(
                     Center.X + (int)Math.Round(Math.Cos(angle) * radius),
                     Center.Y + (int)Math.Round(Math.Sin(angle) * radius));
@@ -30,15 +29,10 @@ namespace TagsCloudVisualization
                 rectangle = new Rectangle(position, rectangleSize);
                 iteration += 1;
             }
-            while (IsIntersect(rectangle));
-            TagCloud.Add(rectangle);
+            while (existingRectangles.Any(r => r.IntersectsWith(rectangle)));
+            existingRectangles.Add(rectangle);
 
             return rectangle;
-        }
-
-        private bool IsIntersect(Rectangle rectangle)
-        {
-            return TagCloud.Any(rect => rect.IntersectsWith(rectangle));
         }
     }
 }

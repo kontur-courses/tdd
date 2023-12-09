@@ -6,6 +6,6 @@ namespace TagsCloudVisualization
     {
         public Point Center { get; }
 
-        public Rectangle PutNextRectangle(Size rectangleSize);
+        public Rectangle PutNextRectangle(Size rectangleSize, ICollection<Rectangle> existingRectangles);
     }
 }

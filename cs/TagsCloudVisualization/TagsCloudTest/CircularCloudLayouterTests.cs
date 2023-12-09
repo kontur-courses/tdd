@@ -5,7 +5,6 @@ namespace TagsCloudTest
 {
     public class CircularCloudLayouterTests
     {
-        private static List<Size> sizes;
         private static List<Rectangle> rectangles;
         private static CircularCloudLayouter circularLayouter;
 
@@ -13,17 +12,13 @@ namespace TagsCloudTest
         public void OneTimeSetup()
         {
             var rnd = new Random();
-            sizes = new();
+            circularLayouter = new CircularCloudLayouter(new(500, 500));
+            rectangles = [];
             for (var i = 0; i < 500; i++)
             {
-                sizes.Add(new(10 + rnd.Next(40), 1 + rnd.Next(40)));
+                var size = new Size(10 + rnd.Next(90), 1 + rnd.Next(40));
+                circularLayouter.PutNextRectangle(size, rectangles);
             }
-            circularLayouter = new CircularCloudLayouter(new(500, 500));
-            foreach (var size in sizes)
-            {
-                circularLayouter.PutNextRectangle(size);
-            }
-            rectangles = circularLayouter.TagCloud;
         }
 
         [TearDown]
@@ -41,7 +36,7 @@ namespace TagsCloudTest
         [Test]
         public void CountTest()
         {
-            Assert.That(rectangles, Has.Count.EqualTo(sizes.Count));
+            Assert.That(rectangles, Has.Count.EqualTo(500));
         }
 
         [Test]
