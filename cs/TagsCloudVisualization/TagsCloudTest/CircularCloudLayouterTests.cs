@@ -3,7 +3,7 @@ using TagsCloudVisualization;
 
 namespace TagsCloudTest
 {
-    public class Tests
+    public class CircularCloudLayouterTests
     {
         private static List<Size> sizes;
         private static List<Rectangle> rectangles;
@@ -33,7 +33,7 @@ namespace TagsCloudTest
             if (context.Result.Outcome.Status == NUnit.Framework.Interfaces.TestStatus.Failed)
             {
                 var path = $"{context.Test.Name}.png";
-                TagCloudSaver.Save(rectangles, path);
+                TagCloudSaver.SaveAsPng(rectangles, path);
                 Console.WriteLine($"Tag cloud visualization saved to file <{path}>");
             }
         }

@@ -1,35 +1,38 @@
 ﻿using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace TagsCloudVisualization
 {
     public static class TagCloudSaver
     {
-        private static Random random = new();
-
-        public static void Save(List<Rectangle> rectangles, string fileName)
+        private const int BOUND_LENGTH = 10;
+        public static void SaveAsPng(List<Rectangle> rectangles, string fileName)
         {
-            using var bitmap = new Bitmap(1000, 1000);
-            foreach (var rect in rectangles)
-            {
-                DrawRectangle(rect, bitmap);
-            }
-            bitmap.Save(fileName);
-        }
+            var width = 0;
+            var height = 0;
 
-        private static void DrawRectangle(Rectangle rectangle, Bitmap bitmap)
-        {
-            var color = Color.FromKnownColor((KnownColor)(1 + random.Next(175)));
-            for (var i = rectangle.Left; i <= rectangle.Right; i++)
+            foreach (var rectangle in rectangles)
             {
-                bitmap.SetPixel(i, rectangle.Top, color);
-                bitmap.SetPixel(i, rectangle.Bottom, color);
+                width = Math.Max(width, rectangle.Right);
+                height = Math.Max(height, rectangle.Bottom);
             }
 
-            for (var i = rectangle.Top; i <= rectangle.Bottom; i++)
+            using var bitmap = new Bitmap(width + BOUND_LENGTH, height + BOUND_LENGTH);
+            using var graphics = Graphics.FromImage(bitmap);
+            var pen = new Pen(Color.AliceBlue);
+            var rnd = new Random();
+            foreach (var rectangle in rectangles)
             {
-                bitmap.SetPixel(rectangle.Left, i, color);
-                bitmap.SetPixel(rectangle.Right, i, color);
+                pen.Color = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
+                graphics.DrawRectangle(pen, rectangle);
             }
+
+            var directory = Path.GetDirectoryName(fileName);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+            bitmap.Save(fileName, ImageFormat.Png);
         }
     }
 }
