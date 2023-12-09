@@ -17,7 +17,6 @@ public class MainProgram
             var rectangle = layout.PutNextRectangle(Utils.GetRandomSize());
         }
         
-        var visualizer = new RectanglesVisualizer();
         var workingDirectory = Environment.CurrentDirectory;
         var imagesDirectoryPath = Path.Combine(workingDirectory, "images");
         
@@ -26,10 +25,10 @@ public class MainProgram
             Directory.CreateDirectory(imagesDirectoryPath);
         }
 
-        var imageName = "10rect";
+        const string imageName = "10rect";
         var imagePath = Path.Combine(imagesDirectoryPath, $"{imageName}.png");
 
-        using var image = visualizer.GetTagsCloudImage(layout.Rectangles);
+        using var image = RectanglesVisualizer.GetTagsCloudImage(layout.Rectangles);
         image.Save(imagePath, ImageFormat.Png);
     }
 }

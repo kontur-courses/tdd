@@ -18,28 +18,28 @@ public class CircularCloudLayouter : ICircularCloudLayouter
     {
         if (rectangleSize.Height <= 0 || rectangleSize.Width <= 0)
             throw new ArgumentException("Sides of the rectangle should not be non-positive");
-        var rect = CreateNextRectangle(rectangleSize);
-        Rectangles.Add(rect);
-        return rect;
+        var rectangles = CreateNextRectangle(rectangleSize);
+        Rectangles.Add(rectangles);
+        return rectangles;
     }
 
     private Rectangle CreateNextRectangle(Size rectangleSize)
     {
         var point = spiral.GetPoint();
-        var rect = new Rectangle(point, rectangleSize);
-        while (!HasNoIntersections(rect))
+        var rectangles = new Rectangle(point, rectangleSize);
+        while (!HasNoIntersections(rectangles))
         {
             point = spiral.GetPoint();
-            rect = new Rectangle(point, rectangleSize);
+            rectangles = new Rectangle(point, rectangleSize);
         }
 
-        return rect;
+        return rectangles;
     }
 
-    private bool HasNoIntersections(Rectangle rect)
+    private bool HasNoIntersections(Rectangle rectangles)
     {
         for (var i = Rectangles.Count - 1; i >= 0; i--)
-            if (Rectangles[i].IntersectsWith(rect))
+            if (Rectangles[i].IntersectsWith(rectangles))
                 return false;
         return true;
     }

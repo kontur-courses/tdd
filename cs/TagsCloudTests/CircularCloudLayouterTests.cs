@@ -22,7 +22,6 @@ public class CircularCloudLayouterTests
     public void TearDown()
     {
         if (TestContext.CurrentContext.Result.Outcome != ResultState.Failure) return;
-        var visualizer = new RectanglesVisualizer();
         var workingDirectory = Environment.CurrentDirectory;
         var parentDirectory = Directory.GetParent(workingDirectory)?.Parent;
             
@@ -38,17 +37,15 @@ public class CircularCloudLayouterTests
         var imageName = TestContext.CurrentContext.Test.Name;
         var imagePath = Path.Combine(directoryPath, $"{imageName}.png");
             
-        visualizer.GetTagsCloudImage(sut.Rectangles).Save(imagePath, ImageFormat.Png);
+        RectanglesVisualizer.GetTagsCloudImage(sut.Rectangles).Save(imagePath, ImageFormat.Png);
 
         Console.WriteLine($"Tag cloud visualization saved to file {imagePath}");
     }
 
 
-    private static bool IsRectanglesIntersect(List<Rectangle> rectangles)
-    {
-        return rectangles.Any(rectangle => rectangles.Any(nextRectangle =>
+    private static bool IsRectanglesIntersect(List<Rectangle> rectangles) =>
+    rectangles.Any(rectangle => rectangles.Any(nextRectangle =>
             nextRectangle.IntersectsWith(rectangle) && !rectangle.Equals(nextRectangle)));
-    }
 
 
     [Test]
@@ -73,7 +70,7 @@ public class CircularCloudLayouterTests
     [Test]
     public void PutOneRectangle_IsNotEmpty()
     {
-        var rect = sut.PutNextRectangle(new Size(10, 10));
+        var rectangle = sut.PutNextRectangle(new Size(10, 10));
         var location = sut.GetRectanglesLocation();
         location.Should().NotBeEmpty();
     }
@@ -84,7 +81,7 @@ public class CircularCloudLayouterTests
         for (var i = 0; i < 1000; i++)
         {
             var size = Utils.GetRandomSize();
-            var rect = sut.PutNextRectangle(size);
+            var rectangle = sut.PutNextRectangle(size);
         }
 
         IsRectanglesIntersect(sut.Rectangles).Should().BeFalse();
