@@ -9,17 +9,14 @@ namespace TagsCloudVisualizationTests;
 public class CircularCloudLayouterTests
 {
     private CircularCloudLayouter circularCloudLayouter = null!;
-    private const string OutputName = "testFile";
     private const string FailOutputName = "failFile";
     private Point center;
-    private Size resolution;
 
     [SetUp]
     public void CircularCloudLayouterSetUp()
     {
         center = new Point(960, 540);
-        resolution = new Size(1920, 1080);
-        circularCloudLayouter = new CircularCloudLayouter(center, resolution);
+        circularCloudLayouter = new CircularCloudLayouter(center);
     }
 
     [TearDown]
@@ -28,10 +25,12 @@ public class CircularCloudLayouterTests
         if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
         {
             using var tagCloudVisualizer =
-                new TagCloudVisualizer(circularCloudLayouter, new ImageGenerator(FailOutputName));
+                new TagCloudVisualizer(circularCloudLayouter,
+                    new ImageGenerator(FileHandler.GetRelativeFilePath($"out/{FailOutputName}.jpg"), 30, 1920, 1080),
+                    new WordsDataSet("words"));
             tagCloudVisualizer.GenerateTagCloud();
             Console.WriteLine("Tag cloud visualization saved to file " +
-                              $"../../../../TagsCloudVisualization/out/{FailOutputName}.jpg");
+                              FileHandler.GetRelativeFilePath($"out/{FailOutputName}.jpg"));
         }
     }
 
@@ -60,8 +59,10 @@ public class CircularCloudLayouterTests
         sw.Start();
 
         using var tagCloudVisualizer =
-            new TagCloudVisualizer(new CircularCloudLayouter(), new ImageGenerator(timeOutputName));
-        tagCloudVisualizer.GenerateTagCloud(wordsFileName);
+            new TagCloudVisualizer(new CircularCloudLayouter(new Point(0, 0)),
+                new ImageGenerator(FileHandler.GetRelativeFilePath($"out/{timeOutputName}.jpg"), 30, 1920, 1080),
+                new WordsDataSet(wordsFileName));
+        tagCloudVisualizer.GenerateTagCloud();
 
         sw.Stop();
 
@@ -71,10 +72,17 @@ public class CircularCloudLayouterTests
     [Test]
     public void Rectangles_NotIntersects()
     {
-        using var tagCloudVisualizer = 
-            new TagCloudVisualizer(circularCloudLayouter, new ImageGenerator(OutputName));
-        tagCloudVisualizer.GenerateTagCloud();
+        var wordsDataSet = new WordsDataSet("words");
 
-        circularCloudLayouter.AllRectanglesArea.Should().Be(circularCloudLayouter.GetCloudArea());
+        var allRectanglesArea = 0;
+        foreach (var kvp in wordsDataSet.CreateFrequencyDict())
+        {
+            var rectangle = circularCloudLayouter.PutNextRectangle(new Size(45, 15));
+            allRectanglesArea += rectangle.Height * rectangle.Width;
+        }
+        
+        var cloudArea = circularCloudLayouter.PlacedRectangles.Sum(rectangle => rectangle.Height * rectangle.Width);
+        
+        allRectanglesArea.Should().Be(cloudArea);
     }
 }

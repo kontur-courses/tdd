@@ -3,9 +3,9 @@
 using System.Drawing;
 using TagsCloudVisualization;
 
-var resolution = new Size(1920, 1080);
 using var tagCloudVisualizer = new TagCloudVisualizer(
-    new CircularCloudLayouter(new Point(960, 540), resolution),
-    new ImageGenerator("rectangles", 30, resolution.Width, resolution.Height, 100)
+    new CircularCloudLayouter(new Point(960, 540)),
+    new ImageGenerator(FileHandler.GetRelativeFilePath("out/rectangles.jpg"), 30, 1920, 1080),
+    new WordsDataSet("words")
 );
 tagCloudVisualizer.GenerateTagCloud();

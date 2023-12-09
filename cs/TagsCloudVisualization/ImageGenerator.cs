@@ -13,22 +13,24 @@ namespace TagsCloudVisualization;
 
 public class ImageGenerator : IDisposable
 {
-    private const string FontPath = "src/JosefinSans-Regular";
+    private const string FontPath = "JosefinSans-Regular";
     private readonly Image<Rgba32> image;
-    private readonly string outputName;
+    private readonly string outputPath;
     private readonly int fontSize;
     private readonly FontFamily family;
     private readonly ImageEncoder encoder;
 
-    public ImageGenerator(string outputName,
-        int fontSize = 30, int width = 1920, int height = 1080, int quality = 100)
+    public ImageGenerator(string outputPath, int fontSize, int width, int height, int quality = 100)
     {
         image = new Image<Rgba32>(width, height);
-        this.outputName = $"../../../../TagsCloudVisualization/out/{outputName}.jpg";
+
+        this.outputPath = outputPath;
+
         encoder = new JpegEncoder { Quality = quality };
 
         this.fontSize = fontSize;
-        family = new FontCollection().Add($"../../../../TagsCloudVisualization/{FontPath}.ttf");
+
+        family = new FontCollection().Add(FileHandler.GetRelativeFilePath($"src/{FontPath}.ttf"));
 
         SetBackground(Color.FromRgb(7, 42, 22));
     }
@@ -52,7 +54,7 @@ public class ImageGenerator : IDisposable
         );
     }
 
-    public System.Drawing.Size GetOutward(string word, int frequency)
+    public System.Drawing.Size GetOuterRectangle(string word, int frequency)
     {
         var textOption = new TextOptions(FontCreator(fontSize + frequency));
         var size = TextMeasurer.MeasureSize(word, textOption);
@@ -60,9 +62,13 @@ public class ImageGenerator : IDisposable
         return new System.Drawing.Size((int)size.Width + fontSize / 3, (int)size.Height + fontSize / 3);
     }
 
+    public void Save()
+    {
+        image.Save(outputPath, encoder);
+    }
+
     public void Dispose()
     {
-        image.Save(outputName, encoder);
         image.Dispose();
     }
 }

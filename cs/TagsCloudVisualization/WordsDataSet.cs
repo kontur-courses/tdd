@@ -4,12 +4,17 @@ namespace TagsCloudVisualization;
 
 public class WordsDataSet
 {
-    public Dictionary<string, int> CreateFrequencyDict(string fileName)
+    private readonly string wordsFileName;
+
+    public WordsDataSet(string wordsFileName)
+    {
+        this.wordsFileName = wordsFileName;
+    }
+
+    public Dictionary<string, int> CreateFrequencyDict()
     {
         var words = Regex
-            .Matches(File.ReadAllText(
-                    $"../../../../TagsCloudVisualization/src/{fileName}.txt"), @"[\w\d]+"
-            )
+            .Matches(FileHandler.ReadText($"src/{wordsFileName}.txt"), @"[\w\d]+")
             .Select(m => m.Value)
             .ToArray();
 

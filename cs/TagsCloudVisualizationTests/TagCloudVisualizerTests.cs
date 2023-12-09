@@ -9,14 +9,16 @@ public class TagCloudVisualizerTests
     private CircularCloudLayouter circularCloudLayouter = null!;
     private TagCloudVisualizer tagCloudVisualizer = null!;
     private const string OutputName = "testFile";
+    private Point center;
 
     [SetUp]
     public void TagCloudVisualizerSetUp()
     {
-        var center = new Point(960, 540);
-        var resolution = new Size(1920, 1080);
-        circularCloudLayouter = new CircularCloudLayouter(center, resolution);
-        tagCloudVisualizer = new TagCloudVisualizer(circularCloudLayouter, new ImageGenerator(OutputName));
+        center = new Point(960, 540);
+        circularCloudLayouter = new CircularCloudLayouter(center);
+        tagCloudVisualizer = new TagCloudVisualizer(circularCloudLayouter, 
+            new ImageGenerator(OutputName, 30, 1920, 1080),
+            new WordsDataSet("words"));
     }
 
     [TearDown]
@@ -30,7 +32,7 @@ public class TagCloudVisualizerTests
     {
         tagCloudVisualizer.GenerateTagCloud();
 
-        File.Exists($"../../../../TagsCloudVisualization/out/{OutputName}.jpg").Should().BeTrue();
+        File.Exists(FileHandler.GetRelativeFilePath($"out/{OutputName}.jpg")).Should().BeTrue();
     }
 
     [Test]
@@ -40,9 +42,11 @@ public class TagCloudVisualizerTests
 
         const double densityRatio = 0.6;
 
-        var cloudArea = circularCloudLayouter.GetCloudArea();
-        var outlineCircleArea =
-            Math.PI * circularCloudLayouter.MaxRadius * circularCloudLayouter.MaxRadius;
+        var cloudArea = circularCloudLayouter.PlacedRectangles.Sum(rectangle => rectangle.Height * rectangle.Width);
+        
+        var maxRadius = circularCloudLayouter.PlacedRectangles.Max(
+            rectangle => PointMath.DistanceToCenter(rectangle.Location, center));
+        var outlineCircleArea = Math.PI * maxRadius * maxRadius;
 
         (outlineCircleArea / cloudArea).Should().BeGreaterThan(densityRatio);
     }

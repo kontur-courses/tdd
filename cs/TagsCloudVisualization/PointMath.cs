@@ -2,7 +2,7 @@ using System.Drawing;
 
 namespace TagsCloudVisualization;
 
-public static class MathWithPoints
+public static class PointMath
 {
     public static Point PolarToCartesian(int radius, int angle, Point offset = default)
     {
