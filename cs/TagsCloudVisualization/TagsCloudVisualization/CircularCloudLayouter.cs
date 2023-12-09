@@ -2,20 +2,17 @@
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter : ICircularCloudLayouter
+    public class CircularCloudLayouter(Point center) : ICircularCloudLayouter
     {
-        public Point Center { get; }
+        public Point Center { get; } = center;
 
         private const double ANGLE_STEP = Math.PI / 100;
         private const double RADIUS_DELTA = 2;
 
-        public CircularCloudLayouter(Point center)
-        {
-            Center = center;
-        }
-
         public Rectangle PutNextRectangle(Size rectangleSize, ICollection<Rectangle> existingRectangles)
         {
+            ArgumentNullException.ThrowIfNull(existingRectangles);
+
             Rectangle rectangle;
             var iteration = 0;
             do
