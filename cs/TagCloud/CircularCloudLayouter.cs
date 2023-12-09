@@ -7,10 +7,10 @@ namespace TagCloud
     {
         private int i;
         private List<RectangleF> rectangles = new List<RectangleF>();
-        private PointF center;
+        private readonly PointF center;
         private RectangleF currentRectangle;
         private int segmentsCount = 2;
-        private List<Vector2> directions;
+        private List<Vector2> directions = new List<Vector2>();
 
         public Rectangle[] Rectangles => rectangles.Select(Rectangle.Truncate).ToArray();
 
@@ -21,11 +21,10 @@ namespace TagCloud
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            currentRectangle = new RectangleF(
-                center.X,
-                center.Y,
-                rectangleSize.Width,
-                rectangleSize.Height);
+            if (rectangleSize.Width < 0 || rectangleSize.Height < 0)
+                throw new ArgumentException("Rectangle can't be negative size.");
+
+            currentRectangle = new RectangleF(center, rectangleSize);
 
             MoveOutOfCenterInDirection(ref currentRectangle, GetDirection());
 
@@ -52,8 +51,8 @@ namespace TagCloud
                 dx /= dx != 0 ? Math.Abs(dx) : 1;
                 dy /= dy != 0 ? Math.Abs(dy) : 1;
 
-                movedDx = dx == 0 ? false : OffsetIfDontCollide(ref rect, dx, 0);
-                movedDy = dy == 0 ? false : OffsetIfDontCollide(ref rect, 0, dy);
+                movedDx = dx != 0 && OffsetIfDontCollide(ref rect, dx, 0);
+                movedDy = dy != 0 && OffsetIfDontCollide(ref rect, 0, dy);
             }
         }
 

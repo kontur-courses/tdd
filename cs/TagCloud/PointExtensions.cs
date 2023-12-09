@@ -3,7 +3,7 @@ using System.Runtime.ConstrainedExecution;
 
 namespace TagCloud
 {
-    public static class MathHelpers
+    public static class PointExtensions
     {
         public static float DistanceTo(this PointF p1, PointF p2)
         {
