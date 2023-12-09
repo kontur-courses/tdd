@@ -86,6 +86,16 @@ namespace TagCloud.Tests
             }
         }
 
+        [TestCase(-1, 0)]
+        [TestCase(0, -1)]
+        [TestCase(-1, -1)]
+        public void PutNextRectangle_NegativeSize_ShouldThrowArgumentException(int width, int height)
+        {
+            var size = new Size(width, height);
+
+            Assert.Throws<ArgumentException>(() => layouter.PutNextRectangle(size));
+        }
+
         public static Size[] GenerateSizes()
         {
             var sizes = new List<Size>();
