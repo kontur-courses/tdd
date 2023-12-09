@@ -5,10 +5,10 @@ using SixLabors.ImageSharp.Processing;
 
 namespace TagsCloudVisualization;
 
-public static class LayoutExtensions
+public static class LayoutVisualizer
 {
-    public static void SaveVisualization(
-        this ILayout layout,
+    public static void CreateVisualization(
+        IList<RectangleF> rectangles,
         Size imageSize,
         Color backgroundColor,
         float thickness,
@@ -21,7 +21,7 @@ public static class LayoutExtensions
         {
             ctx.Clear(backgroundColor);
 
-            foreach (var figure in layout.PlacedFigures)
+            foreach (var figure in rectangles)
                 ctx.Draw(borderColor, thickness, figure);
         });
 

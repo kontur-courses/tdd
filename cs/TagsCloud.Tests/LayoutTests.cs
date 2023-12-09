@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SixLabors.ImageSharp;
+using System.Reflection;
 using TagsCloudVisualization;
 using static TagsCloud.Tests.TestConfiguration;
 
@@ -35,8 +36,17 @@ public class LayoutTests
         var fileName = $"{TestContext.CurrentContext.Test.MethodName}-fail.png";
         var filePath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
 
-        layout.SaveVisualization(ImageCenter, Color.Red,
-            1f, Color.White, filePath);
+        var rects = typeof(Layout)
+            .GetField("placedRectangles", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .GetValue(layout) as IList<RectangleF>;
+
+        LayoutVisualizer.CreateVisualization(
+            rects!,
+            ImageCenter,
+            Color.Red,
+            1f,
+            Color.White,
+            filePath);
 
         writer.WriteLine($"Tag cloud visualization saved to file <{filePath}>");
     }
@@ -48,35 +58,37 @@ public class LayoutTests
     public void PutNextRectangle_ShouldNot_SkipRectangles()
     {
         var rectCount = random.Next(1, 250);
-        PutNFiguresInLayout(rectCount);
+        PutNRectanglesInLayout(rectCount);
 
-        layout.PlacedFigures.Should().HaveCount(rectCount);
+        layout.RectangleCount.Should().Be(rectCount);
     }
 
     [Test]
-    public void PlacedFigures_ShouldNot_HaveIntersections()
+    public void PlacedRectangles_ShouldNot_HaveIntersections()
     {
         var rectCount = random.Next(1, 250);
-        PutNFiguresInLayout(rectCount);
+        var rects = PutNRectanglesInLayout(rectCount);
 
-        PlacedFiguresHaveIntersections().Should().Be(false);
+        RectanglesHaveIntersections(rects).Should().Be(false);
     }
 
-    private void PutNFiguresInLayout(int amount)
+    private IList<RectangleF> PutNRectanglesInLayout(int amount)
     {
+        var rects = new List<RectangleF>(amount);
+
         for (var i = 0; i < amount; i++)
         {
-            var currentSize = new Size(random.Next(1, 250), random.Next(1, 250));
-            layout.PutNextRectangle(currentSize);
+            var size = new SizeF(random.Next(1, 250), random.Next(1, 250));
+            rects.Add(layout.PutNextRectangle(size));
         }
+
+        return rects;
     }
 
-    private bool PlacedFiguresHaveIntersections()
+    private static bool RectanglesHaveIntersections(IList<RectangleF> rectangles)
     {
-        var rects = layout.PlacedFigures;
-
-        return (from current in rects
-            from another in rects
+        return (from current in rectangles
+            from another in rectangles
             where current != another
             where current.IntersectsWith(another)
             select current).Any();

@@ -11,8 +11,8 @@ var center = new PointF((float)screenSize.Width / 2, (float)screenSize.Height / 
 
 // Create random set of sizes:
 var sizes = Enumerable
-    .Range(0, 50)
-    .Select(rect => new SizeF(random.Next(25, 150), random.Next(25, 150)))
+    .Range(0, 100)
+    .Select(rect => new SizeF(random.Next(25, 100), random.Next(25, 100)))
     .ToArray();
 
 // Try sorting for better distribution
@@ -25,10 +25,13 @@ var layoutFunction = new Spiral(0.1f, (float)Math.PI / 180);
 var layout = new Layout(layoutFunction, center);
 
 // Put rectangles in layout:
-foreach (var size in sizes) layout.PutNextRectangle(size);
+var rects = sizes
+    .Select(size => layout.PutNextRectangle(size))
+    .ToList();
 
 // Save image of created layout:
-layout.SaveVisualization(
+LayoutVisualizer.CreateVisualization(
+    rects,
     screenSize,
     Color.White,
     1.2f,

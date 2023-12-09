@@ -7,22 +7,24 @@ public class Layout : ILayout
 {
     private readonly PointF center;
     private readonly ILayoutFunction layoutFunction;
+    private readonly IList<RectangleF> placedRectangles;
 
     public Layout(ILayoutFunction layoutFunction, PointF center)
     {
         this.center = center;
         this.layoutFunction = layoutFunction;
-        PlacedFigures = new List<RectangleF>();
+        placedRectangles = new List<RectangleF>();
     }
 
-    // Public to enable Unit testing.
-    public IList<RectangleF> PlacedFigures { get; }
+    public int RectangleCount => placedRectangles.Count;
 
-    public void PutNextRectangle(SizeF rectSize)
+    public RectangleF PutNextRectangle(SizeF rectSize)
     {
         var rectangle = GetCorrectlyPlacedRectangle(rectSize);
-        var moved = GetMovedToCenterRectangle(rectangle);
-        PlacedFigures.Add(moved);
+        var movedRectangle = GetMovedToCenterRectangle(rectangle);
+        placedRectangles.Add(movedRectangle);
+
+        return movedRectangle;
     }
 
     private RectangleF GetMovedToCenterRectangle(RectangleF rectangle)
@@ -30,7 +32,7 @@ public class Layout : ILayout
         var currentRect = rectangle;
 
         // Skip 1-st rectangle, because it's already in (0, 0) point.
-        if (PlacedFigures.Count == 0)
+        if (placedRectangles.Count == 0)
             return currentRect;
 
         var toCenter = new Vector2(center.X - currentRect.X, center.Y - currentRect.Y);
@@ -42,7 +44,7 @@ public class Layout : ILayout
             var point = new PointF(currentRect.X + normalized.X, currentRect.Y + normalized.Y);
             var newRect = new RectangleF(point, currentRect.Size);
 
-            if (PlacedFigures.Any(rect => rect.IntersectsWith(newRect)))
+            if (placedRectangles.Any(rect => rect.IntersectsWith(newRect)))
                 break;
 
             currentRect = newRect;
@@ -76,13 +78,9 @@ public class Layout : ILayout
 
     private bool Intersects(RectangleF rectangle)
     {
-        for (var i = PlacedFigures.Count - 1; i > -1; i--)
-        {
-            if (rectangle.IntersectsWith(PlacedFigures[i]))
-            {
+        for (var i = placedRectangles.Count - 1; i > -1; i--)
+            if (rectangle.IntersectsWith(placedRectangles[i]))
                 return true;
-            }
-        }
 
         return false;
     }
