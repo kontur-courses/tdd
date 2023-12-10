@@ -61,7 +61,7 @@ namespace TagsCloudVisualization
         }
 
 
-        public Rectangle CompressByAxis(Rectangle rectangle, bool isByX, out int changes)
+        private Rectangle CompressByAxis(Rectangle rectangle, bool isByX, out int changes)
         {
             changes = 0;
             var stepX = rectangle.X < Center.X ? 1 : -1;
@@ -86,5 +86,6 @@ namespace TagsCloudVisualization
 
             return rectangle;
         }
+
     }
 }

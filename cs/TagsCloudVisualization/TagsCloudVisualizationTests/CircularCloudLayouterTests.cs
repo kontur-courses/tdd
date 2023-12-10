@@ -12,6 +12,7 @@ namespace TagsCloudVisualization
         private Point center;
         private CircularCloudLayouter tagsCloud;
         private SpiralDistribution distribution;
+        private CloudLayouterDrawer drawer;
 
         [SetUp]
         public void SetUp()
@@ -19,19 +20,20 @@ namespace TagsCloudVisualization
             center = new Point();
             distribution = new SpiralDistribution(center);
             tagsCloud = new CircularCloudLayouter(center, distribution);
+            drawer = new CloudLayouterDrawer(10);
         }
 
-        [TearDown]
+       [TearDown]
         public void TearDown()
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                var fileName = TestContext.CurrentContext.Test.FullName;
-                CloudLayouterDrawer.DrawCloudLayout(tagsCloud, fileName);
-                Console.WriteLine($"Tag cloud visualization saved to file /images/{fileName}.png");
+                var fileName =$"{TestContext.CurrentContext.Test.FullName}.png";
+                drawer.DrawCloud(fileName, tagsCloud.WordPositions);
+                Console.WriteLine($"Tag cloud visualization saved to file /images/{fileName}");
             }
         }
-
+      
         [Test]
         public void CircularCloudLayouter_Initialize_Params()
         {
