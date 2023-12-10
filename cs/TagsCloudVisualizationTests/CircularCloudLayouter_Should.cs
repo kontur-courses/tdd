@@ -44,6 +44,13 @@ namespace TagsCloudVisualizationTests
         }
 
         [TestCaseSource(typeof(TestDataArchimedeanSpiral), nameof(TestDataArchimedeanSpiral.Different_CenterPoints))]
+        public void PutNextRectangle_DoesNotAffectCeterPoint(Point centerPoint)
+        {
+            layouter = CreateLayouter_With_SeveralRectangles(30, centerPoint);
+            layouter.CenterPoint.Should().BeEquivalentTo(centerPoint);
+        }
+        
+        [TestCaseSource(typeof(TestDataArchimedeanSpiral), nameof(TestDataArchimedeanSpiral.Different_CenterPoints))]
         public void Add_FirstRectangle_ToCenter(Point center)
         {
             layouter = new CircularCloudLayouter(center);
