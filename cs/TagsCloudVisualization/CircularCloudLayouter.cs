@@ -17,9 +17,9 @@ namespace TagsCloudVisualization
             WordPositions = new List<Rectangle>();
         }
 
-        public Point Center { get; private set; }
-        public List<Rectangle> WordPositions { get; private set; }
-        public IDistribution Distribution { get; private set; }
+        public Point Center { get; }
+        public List<Rectangle> WordPositions { get; }
+        public IDistribution Distribution { get; }
 
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -86,6 +86,5 @@ namespace TagsCloudVisualization
 
             return rectangle;
         }
-
     }
 }
