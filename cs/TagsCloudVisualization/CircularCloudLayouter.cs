@@ -64,9 +64,11 @@ namespace TagsCloudVisualization
             var horizontalDiffer = CenterPoint.X - rectangle.Size.Width / 2 - rectangle.X;
             var verticalDiffer = CenterPoint.Y - rectangle.Size.Height / 2 - rectangle.Y;
             var directions = new List<(int X, int Y)>();
+            if (horizontalDiffer != 0 && verticalDiffer != 0)
+                directions.Add((horizontalDiffer > 0 ? 1 : -1, verticalDiffer > 0 ? 1 : -1));
             if (horizontalDiffer != 0)
                 directions.Add((horizontalDiffer > 0 ? 1 : -1, 0));
-            if (CenterPoint.Y - rectangle.Size.Height / 2 != rectangle.Y)
+            if (verticalDiffer != 0)
                 directions.Add((0, verticalDiffer > 0 ? 1 : -1));
             return directions;
         }
