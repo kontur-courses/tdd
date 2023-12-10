@@ -54,7 +54,7 @@ public class CircularCloudLayouterTests
         var words100Time = AlgorithmTimeComplexity(100);
         var words1000Time = AlgorithmTimeComplexity(1000);
 
-        (words1000Time.Nanoseconds / words100Time.Nanoseconds).Should().BeLessOrEqualTo(100);
+        (words1000Time.TotalNanoseconds / words100Time.TotalNanoseconds).Should().BeLessOrEqualTo(100);
     }
 
     private TimeSpan AlgorithmTimeComplexity(int count)
