@@ -2,4 +2,4 @@
 
 ![](Examples/LandscapeCloud200Rectangles.png)
 ![](Examples/PortraitCloud200Rectangles.png)
-![](IExamples/SquareCloud100Rectangles.png)
+![](Examples/SquareCloud100Rectangles.png)

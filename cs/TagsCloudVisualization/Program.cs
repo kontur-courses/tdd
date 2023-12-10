@@ -10,19 +10,19 @@ namespace TagCloudVisualisation
     {
         public static void Main()
         {
-            var layouter = new CircularCloudLayouter(new Point(600, 300));
+            var layouter = new CircularCloudLayouter(new Point(300, 300));
 
             var sizes = new List<Size>();
             var rnd = new Random();
 
             for (int i = 0; i < 200; i++)
             {
-                sizes.Add(new Size(rnd.Next(1, 50), rnd.Next(1, 50)));
+                sizes.Add(new Size(rnd.Next(5, 50), rnd.Next(5, 50)));
             }
 
-            var c = layouter.CreateCloud(sizes);
+            layouter.LayoutRectancles(sizes);
 
-            var image = layouter.CreateImage();
+            var image = layouter.ToImage();
 
             image.Save("cloud.png");
             Console.WriteLine("Image saved to file cloud.png");

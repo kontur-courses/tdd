@@ -2,98 +2,87 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentAssertions;
-using NUnit.Framework;
 
 namespace TagsCloudVisualization
 {
     public class CircularCloudLayouter
     {
         private readonly Point center;
-        private List<Rectangle> cloud;
-
-        //Spiral coeffs
-        int i = 0;
-        float it = (float)Math.PI / 21;
-        float ri = 50;
+        public ICollection<Rectangle> Cloud { get; private set; }
+        private IPointsProvider pointsProvider;
 
         public CircularCloudLayouter(Point center)
         {
             if (center.X <= 0 || center.Y <= 0)
                 throw new ArgumentException("Central point coordinates should be in positive");
-            cloud = new List<Rectangle>();
+
             this.center = center;
+
         }
 
-        public Rectangle PutNextRectangle(Size rectSize)
+        public Rectangle PutNextRectangle(Size rectangleSize)
         {
-            if (rectSize.Width <= 0 || rectSize.Height <= 0)
+            if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
                 throw new ArgumentException("Size width and height should be positive");
 
-            if (!cloud.Any())
-                return new Rectangle(center, rectSize);
+            if (Cloud == null || !Cloud.Any())
+                return new Rectangle(center, rectangleSize);
 
-            Rectangle rect;
+            Rectangle rectangle;
+            bool placingIsCorrect;
 
-            while (true)
+            var enumerator = pointsProvider.Points().GetEnumerator();
+            enumerator.MoveNext();
+
+            do
             {
-                bool findPlace = true;
-                var point = GetNextPoint();
+                var point = enumerator.Current;
+                enumerator.MoveNext();
 
-                rect = new Rectangle(new Point(point.X - rectSize.Width / 2, point.Y - rectSize.Height / 2), rectSize);
-                foreach (var previous in cloud)
-                {
-                    if (rect.IntersectsWith(previous))
-                    {
-                        findPlace = false;
-                        break;
-                    }
-                }
+                rectangle = new Rectangle(new Point(point.X - rectangleSize.Width / 2,
+                        point.Y - rectangleSize.Height / 2),
+                    rectangleSize);
+                placingIsCorrect = PlacedCorrectly(rectangle, Cloud, new Size(center.X * 2, center.Y * 2));
 
-                if (findPlace)
-                    break;
-            }
+            } while (!placingIsCorrect);
 
-            return rect;
+            return rectangle;
         }
 
-        public List<Rectangle> CreateCloud(List<Size> rectangleSizes)
+        public void LayoutRectancles(List<Size> rectangleSizes)
         {
-            cloud = new List<Rectangle>();
+            Cloud = new List<Rectangle>();
+            pointsProvider = new SpiralPointsProvider(center);
 
-            foreach (var rectangleSize in rectangleSizes)
-            {
-                cloud.Add(PutNextRectangle(rectangleSize));
-            }
-
-            return cloud;
+            foreach (var size in rectangleSizes)
+                Cloud.Add(PutNextRectangle(size));
         }
 
-        public Image CreateImage()
+        public Image ToImage()
         {
-            Bitmap image = new Bitmap(center.X * 2, center.Y * 2);
-            Graphics gr = Graphics.FromImage(image);
-            Pen pen = new Pen(Color.White);
+            var image = new Bitmap(center.X * 2, center.Y * 2);
+            var gr = Graphics.FromImage(image);
+            var pen = new Pen(Color.White);
 
             gr.Clear(Color.Black);
-            gr.DrawRectangles(pen, cloud.ToArray());
+            gr.DrawRectangles(pen, Cloud.ToArray());
 
             return image;
         }
 
-        private Point GetNextPoint()
+        public bool PlacedCorrectly(Rectangle rectangle, ICollection<Rectangle> rectanglesCloud, Size canvasSize)
         {
-            float r = (float)Math.Sqrt(ri * i);
-            float t = it * i;
-            float x = (float)(r * Math.Cos(t) + center.X);
-            float y = (float)(r * Math.Sin(t) + center.Y);
-            i++;
+            if (rectangle.Top < 0 || rectangle.Left < 0 || rectangle.Bottom > canvasSize.Height ||
+                rectangle.Right > canvasSize.Width)
+                return false;
 
-            //Console.WriteLine("{0} {1}", x, y);
+            foreach (var previous in Cloud)
+            {
+                if (rectangle.IntersectsWith(previous))
+                    return false;
+            }
 
-            return new Point((int)x, (int)y);
+            return true;
         }
     }
 }
