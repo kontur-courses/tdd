@@ -1,13 +1,31 @@
 using System.Reflection;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualizationTests;
 
+[TestFixture]
 public class CircularCloudLayouterTests
 {
     [SetUp]
     public void SetUp()
     {
         _layouter = new CircularCloudLayouter(new Point(0, 0));
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
+            return;
+        
+        var visualizerParams = new VisualizerParams(width:100, height: 100);
+        visualizerParams.PathToFile = $"../../../TestFailedVisualization";
+        visualizerParams.FileName = $"{TestContext.CurrentContext.Test.Name}.png";
+        
+        var visualizer = new CircularCloudVisualizer(visualizerParams);
+        visualizer.Visualize(_layouter);
+        
+        Console.WriteLine($"Tag cloud visualization saved to file {Path.GetFullPath(visualizerParams.PathWithFileName)}");
     }
     
     private CircularCloudLayouter _layouter;
@@ -95,6 +113,27 @@ public class CircularCloudLayouterTests
             BindingFlags.NonPublic | BindingFlags.Instance,
             _layouter, 
             new Rectangle(0, 0, 1, 1));
+        
+        type.GetAndInvokeMethod(
+                "CanPutRectangle", 
+                BindingFlags.NonPublic | BindingFlags.Instance,
+                _layouter, 
+                new Rectangle(2, 2, 1, 1))
+            .Should()
+            .Be(true);
+    }
+    
+    // Тест сделан для демонстрации метода TearDown
+    [Test]
+    public void Teardown_Fails()
+    {
+        var type = _layouter.GetType();
+        
+        type.GetAndInvokeMethod(
+            "PutRectangle", 
+            BindingFlags.NonPublic | BindingFlags.Instance,
+            _layouter, 
+            new Rectangle(0, 0, 3, 3));
         
         type.GetAndInvokeMethod(
                 "CanPutRectangle", 
