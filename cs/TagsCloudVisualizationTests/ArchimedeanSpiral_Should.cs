@@ -3,7 +3,8 @@ using FluentAssertions;
 using NUnit.Framework;
 using TagsCloudVisualization;
 
-namespace TagsCloudVisualizationTests.UnitTests
+
+namespace TagsCloudVisualizationTests
 {
     [TestFixture]
     public class ArchimedeanSpiral_Should
