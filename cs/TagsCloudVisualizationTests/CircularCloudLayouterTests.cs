@@ -24,13 +24,15 @@ public class CircularCloudLayouterTests
     {
         if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
         {
-            using var tagCloudVisualizer =
-                new TagCloudVisualizer(circularCloudLayouter,
-                    new ImageGenerator(FileHandler.GetRelativeFilePath($"out/{FailOutputName}.jpg"), 30, 1920, 1080),
-                    new WordsDataSet("words"));
-            tagCloudVisualizer.GenerateTagCloud();
+            new TagCloudVisualizer(circularCloudLayouter,
+                    new ImageGenerator(
+                        FileHandler.GetOutputRelativeFilePath($"{FailOutputName}.jpg"),
+                        FileHandler.GetSourceRelativeFilePath("JosefinSans-Regular.ttf"),
+                        30, 1920, 1080),
+                    new MockWordsDataSet())
+                .ShowTagCloudLayout();
             Console.WriteLine("Tag cloud visualization saved to file " +
-                              FileHandler.GetRelativeFilePath($"out/{FailOutputName}.jpg"));
+                              FileHandler.GetOutputRelativeFilePath($"{FailOutputName}.jpg"));
         }
     }
 
@@ -46,8 +48,8 @@ public class CircularCloudLayouterTests
     [Test]
     public void AlgorithmTimeComplexity_LessOrEqualQuadratic()
     {
-        var words100Time = AlgorithmTimeComplexity("words100", "words100");
-        var words1000Time = AlgorithmTimeComplexity("words1000", "words1000");
+        var words100Time = AlgorithmTimeComplexity("words100", "testFile");
+        var words1000Time = AlgorithmTimeComplexity("words1000", "testFile");
 
         (words1000Time.Nanoseconds / words100Time.Nanoseconds).Should().BeLessOrEqualTo(100);
     }
@@ -58,10 +60,13 @@ public class CircularCloudLayouterTests
 
         sw.Start();
 
-        using var tagCloudVisualizer =
+        var tagCloudVisualizer =
             new TagCloudVisualizer(new CircularCloudLayouter(new Point(0, 0)),
-                new ImageGenerator(FileHandler.GetRelativeFilePath($"out/{timeOutputName}.jpg"), 30, 1920, 1080),
-                new WordsDataSet(wordsFileName));
+                new ImageGenerator(
+                    FileHandler.GetOutputRelativeFilePath($"{timeOutputName}.jpg"),
+                    FileHandler.GetSourceRelativeFilePath("JosefinSans-Regular.ttf"),
+                    30, 1920, 1080),
+                new WordsDataSet(FileHandler.ReadText(wordsFileName)));
         tagCloudVisualizer.GenerateTagCloud();
 
         sw.Stop();
@@ -72,17 +77,64 @@ public class CircularCloudLayouterTests
     [Test]
     public void Rectangles_NotIntersects()
     {
-        var wordsDataSet = new WordsDataSet("words");
+        circularCloudLayouter.PlacedRectangles
+            .All(rect1 => circularCloudLayouter.PlacedRectangles
+                .All(rect2 => !rect1.IntersectsWith(rect2))).Should().BeFalse();
+    }
 
-        var allRectanglesArea = 0;
-        foreach (var kvp in wordsDataSet.CreateFrequencyDict())
-        {
-            var rectangle = circularCloudLayouter.PutNextRectangle(new Size(45, 15));
-            allRectanglesArea += rectangle.Height * rectangle.Width;
-        }
-        
+    [Test]
+    public void TagCloudIsDensityAndShapeCloseToCircleWithCenter()
+    {
+        new TagCloudVisualizer(circularCloudLayouter,
+            new ImageGenerator(
+                FileHandler.GetOutputRelativeFilePath("testFile.jpg"),
+                FileHandler.GetSourceRelativeFilePath("JosefinSans-Regular.ttf"),
+                30, 1920, 1080),
+            new WordsDataSet(FileHandler.ReadText("words"))).GenerateTagCloud();
+
+        const double densityRatio = 0.6;
+
         var cloudArea = circularCloudLayouter.PlacedRectangles.Sum(rectangle => rectangle.Height * rectangle.Width);
-        
-        allRectanglesArea.Should().Be(cloudArea);
+
+        var maxRadius = circularCloudLayouter.PlacedRectangles.Max(
+            rectangle => Math.Max(
+                Math.Max(
+                    PointMath.DistanceToCenter(
+                        rectangle.Location,
+                        center),
+                    PointMath.DistanceToCenter(
+                        new Point(
+                            rectangle.Location.X + rectangle.Width,
+                            rectangle.Location.Y),
+                        center)),
+                Math.Max(
+                    PointMath.DistanceToCenter(
+                        new Point(
+                            rectangle.Location.X,
+                            rectangle.Location.Y + rectangle.Width),
+                        center),
+                    PointMath.DistanceToCenter(
+                        new Point(
+                            rectangle.Location.X + rectangle.Width,
+                            rectangle.Location.Y + rectangle.Width),
+                        center))
+            )
+        );
+        var outlineCircleArea = Math.PI * maxRadius * maxRadius;
+
+        (outlineCircleArea / cloudArea).Should().BeGreaterThan(densityRatio);
+    }
+
+    private class MockWordsDataSet() : WordsDataSet("")
+    {
+        public override Dictionary<string, int> CreateFrequencyDict()
+        {
+            var dict = new Dictionary<string, int>();
+
+            for (var i = 0; i < 100; i++)
+                dict.Add(i.ToString(), 0);
+
+            return dict;
+        }
     }
 }

@@ -1,19 +1,8 @@
 namespace TagsCloudVisualization;
 
-public class TagCloudVisualizer : IDisposable
-{
-    private readonly CircularCloudLayouter circularCloudLayouter;
-    private readonly ImageGenerator imageGenerator;
-    private readonly WordsDataSet wordsDataSet;
-
-    public TagCloudVisualizer(CircularCloudLayouter circularCloudLayouter, 
+public class TagCloudVisualizer(CircularCloudLayouter circularCloudLayouter,
         ImageGenerator imageGenerator, WordsDataSet wordsDataSet)
-    {
-        this.circularCloudLayouter = circularCloudLayouter;
-        this.imageGenerator = imageGenerator;
-        this.wordsDataSet = wordsDataSet;
-    }
-
+{
     public void GenerateTagCloud()
     {
         foreach (var kvp in wordsDataSet.CreateFrequencyDict())
@@ -23,9 +12,14 @@ public class TagCloudVisualizer : IDisposable
         }
         imageGenerator.Save();
     }
-
-    public void Dispose()
+    
+    public void ShowTagCloudLayout()
     {
-        imageGenerator.Dispose();
+        foreach (var kvp in wordsDataSet.CreateFrequencyDict())
+        {
+            circularCloudLayouter.PutNextRectangle(imageGenerator.GetOuterRectangle(kvp.Key, kvp.Value));
+        }
+        imageGenerator.DrawLayout(circularCloudLayouter.PlacedRectangles);
+        imageGenerator.Save();
     }
 }

@@ -2,19 +2,12 @@ using System.Text.RegularExpressions;
 
 namespace TagsCloudVisualization;
 
-public class WordsDataSet
+public class WordsDataSet(string text)
 {
-    private readonly string wordsFileName;
-
-    public WordsDataSet(string wordsFileName)
-    {
-        this.wordsFileName = wordsFileName;
-    }
-
-    public Dictionary<string, int> CreateFrequencyDict()
+    public virtual Dictionary<string, int> CreateFrequencyDict()
     {
         var words = Regex
-            .Matches(FileHandler.ReadText($"src/{wordsFileName}.txt"), @"[\w\d]+")
+            .Matches(text, @"[\w\d]+")
             .Select(m => m.Value)
             .ToArray();
 
