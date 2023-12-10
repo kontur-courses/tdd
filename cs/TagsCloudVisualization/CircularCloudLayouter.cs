@@ -17,7 +17,7 @@ namespace TagsCloudVisualization
             WordPositions = new List<Rectangle>();
         }
 
-        public Point Center { get;private set; }
+        public Point Center { get; private set; }
         public List<Rectangle> WordPositions { get; private set; }
         public IDistribution Distribution { get; private set; }
 

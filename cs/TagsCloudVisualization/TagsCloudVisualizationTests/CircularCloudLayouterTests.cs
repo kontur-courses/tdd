@@ -18,7 +18,7 @@ namespace TagsCloudVisualization
         {
             center = new Point();
             distribution = new SpiralDistribution(center);
-            tagsCloud = new CircularCloudLayouter(center,distribution);
+            tagsCloud = new CircularCloudLayouter(center, distribution);
         }
 
         [TearDown]
@@ -27,8 +27,8 @@ namespace TagsCloudVisualization
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
                 var fileName = TestContext.CurrentContext.Test.FullName;
-                CloudLayouterDrawer.DrawCloudLayout(tagsCloud,fileName);
-                Console.WriteLine($"Tag cloud visualization saved to file /images/{fileName}");
+                CloudLayouterDrawer.DrawCloudLayout(tagsCloud, fileName);
+                Console.WriteLine($"Tag cloud visualization saved to file /images/{fileName}.png");
             }
         }
 
@@ -50,7 +50,8 @@ namespace TagsCloudVisualization
         }
 
         [TestCaseSource(nameof(PutNextRectangleIncorrectArguments))]
-        public void PutNextRectangle_ThrowsArgumentException_WhenIncorrectArguments(Size rectangleSize, CircularCloudLayouter tagsCloud)
+        public void PutNextRectangle_ThrowsArgumentException_WhenIncorrectArguments(Size rectangleSize,
+            CircularCloudLayouter tagsCloud)
         {
             Assert.Throws<ArgumentException>(() => tagsCloud.PutNextRectangle(rectangleSize));
         }
@@ -80,7 +81,7 @@ namespace TagsCloudVisualization
         {
             var center = new Point();
             var distribution = new SpiralDistribution(center);
-            var tagsCloud = new CircularCloudLayouter(center,distribution);
+            var tagsCloud = new CircularCloudLayouter(center, distribution);
 
             yield return new TestCaseData(new Size(-1, 1), tagsCloud)
                 .SetName("PutNextReactangle_Throws_ArgumentException_When_Width_Is_Negative");
@@ -117,7 +118,7 @@ namespace TagsCloudVisualization
         {
             var center = new Point();
             var distributionEmpty = new SpiralDistribution(center);
-            var cloudEmpty = new CircularCloudLayouter(center,distributionEmpty);
+            var cloudEmpty = new CircularCloudLayouter(center, distributionEmpty);
             var distributionWithElements = new SpiralDistribution(center);
             var cloudWithElements = new CircularCloudLayouter(center, distributionWithElements);
             cloudWithElements.PutNextRectangle(new Size(1, 1));
@@ -131,6 +132,5 @@ namespace TagsCloudVisualization
                 .SetName("RectangleCompression_When_Cloud_Has_Rectangles_Set_Rectangle_Position_Closer_To_Center")
                 .Returns(new Point(0, 1));
         }
-
     }
 }

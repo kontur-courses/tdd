@@ -63,6 +63,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TagsCloudVisualizationTests\CircularCloudLayouterTests.cs" />
     <Compile Include="SpiralDistribution.cs" />
+    <Compile Include="TagsCloudVisualizationTests\SpiralDistributionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
