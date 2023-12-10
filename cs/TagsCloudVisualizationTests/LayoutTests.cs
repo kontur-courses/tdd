@@ -2,18 +2,10 @@ namespace TagsCloudVisualizationTests;
 
 public class LayoutTests
 {
-    [SetUp]
-    public void SetUp()
-    {
-        _layout = new Layout(new Point(0, 0));
-    }
-    
-    private Layout _layout;
-
     [Test]
     public void GetNextCoord_GivesLayerByLayerCoords()
     {
-        var coords = _layout.GetNextCoord().Take(10);
+        var coords = Layout.GetNextCoord(new Point(0, 0)).Take(10);
 
         coords
             .Should()
@@ -35,7 +27,7 @@ public class LayoutTests
     [Test, Timeout(50)]
     public void GetNextCoord_MustBeEfficient()
     {
-        _layout.GetNextCoord()
+        Layout.GetNextCoord(new Point(0, 0))
             .Take(30_000)
             .ToArray();
     }

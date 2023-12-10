@@ -1,4 +1,4 @@
-using System.Drawing;
+using Aspose.Drawing;
 
 namespace TagsCloudVisualization.Extensions;
 

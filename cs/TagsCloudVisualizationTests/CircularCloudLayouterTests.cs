@@ -104,6 +104,14 @@ public class CircularCloudLayouterTests
             .Should()
             .Be(true);
     }
+
+    [Test]
+    public void GetRectanglesIsReadOnly()
+    {
+        _layouter.GetRectangles.GetType()
+            .Should()
+            .Implement(typeof(IReadOnlyCollection<Rectangle>));
+    }
 }
 
 public static class TypeExtensions

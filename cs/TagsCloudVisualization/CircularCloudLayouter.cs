@@ -1,19 +1,19 @@
-using System.Drawing;
+using Aspose.Drawing;
 using TagsCloudVisualization.Extensions;
 
 namespace TagsCloudVisualization;
 
 public class CircularCloudLayouter
 {
-    private readonly Layout layout;
     private readonly List<Rectangle> _rectangles = new();
 
     public CircularCloudLayouter(Point center)
     {
-        layout = new Layout(center);
+        Center = center;
     }
 
-    public Point Center => layout.Center;
+    public Point Center { get; }
+    public IReadOnlyCollection<Rectangle> GetRectangles => _rectangles;
 
     public Rectangle PutNextRectangle(Size rectangleSize)
     {
@@ -22,7 +22,7 @@ public class CircularCloudLayouter
 
         var offsetBeforeCenter = rectangleSize.GetGreaterHalf();
 
-        foreach (var coord in layout.GetNextCoord())
+        foreach (var coord in Layout.GetNextCoord(Center))
         {
             var now = new Rectangle(coord - offsetBeforeCenter, rectangleSize);
             
