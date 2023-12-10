@@ -2,12 +2,19 @@
 
 namespace TagsCloudVisualization
 {
-    public class CircularCloudLayouter(Point centerPoint)
+    public class CircularCloudLayouter
     {
-        public Point CenterPoint { get; } = centerPoint;
-        public IReadOnlyList<Rectangle> Rectangles => rectangles.AsReadOnly();
+        private readonly ArchimedeanSpiral spiral;
         private readonly List<Rectangle> rectangles = [];
-        private readonly ArchimedeanSpiral spiral = new(centerPoint);
+
+        public IReadOnlyList<Rectangle> Rectangles => rectangles.AsReadOnly();
+        public Point CenterPoint { get; }
+
+        public CircularCloudLayouter(Point centerPoint)
+        {
+            CenterPoint = centerPoint;
+            spiral = new ArchimedeanSpiral(centerPoint);
+        }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
@@ -19,11 +26,9 @@ namespace TagsCloudVisualization
             while (true)
             {
                 var nextPoint = spiral.GetNextPoint();
-                var rectangle = new Rectangle(
-                    new Point(nextPoint.X - rectangleSize.Width / 2, nextPoint.Y - rectangleSize.Height / 2),
-                    rectangleSize
-                );
-                if (CheckIfIntersectsWithOthers(rectangle)) continue;
+                var newPoint = new Point(nextPoint.X - rectangleSize.Width / 2, nextPoint.Y - rectangleSize.Height / 2);
+                var rectangle = new Rectangle(newPoint, rectangleSize);
+                if (IsIntersectsWithOthers(rectangle)) continue;
                 rectangle = GetCloserToCenterRectangle(rectangle);
                 rectangles.Add(rectangle);
                 break;
@@ -32,7 +37,7 @@ namespace TagsCloudVisualization
             return rectangles[^1];
         }
 
-        private bool CheckIfIntersectsWithOthers(Rectangle rectangle) =>
+        private bool IsIntersectsWithOthers(Rectangle rectangle) =>
             rectangles.Any(x => x.IntersectsWith(rectangle));
 
         private Rectangle GetCloserToCenterRectangle(Rectangle rectangle)
@@ -41,7 +46,7 @@ namespace TagsCloudVisualization
             for (var i = 0; i < direction.Count; i++)
             {
                 var newRectangle = GetMovedRectangle(rectangle, direction[i].X, direction[i].Y);
-                while (!CheckIfIntersectsWithOthers(newRectangle))
+                while (!IsIntersectsWithOthers(newRectangle))
                 {
                     if (CenterPoint.X - newRectangle.Size.Width / 2 == newRectangle.X
                         || CenterPoint.Y - newRectangle.Size.Height / 2 == newRectangle.Y)
