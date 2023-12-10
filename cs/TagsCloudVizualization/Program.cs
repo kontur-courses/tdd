@@ -1,18 +1,19 @@
 ﻿using System.Drawing;
+using TagsCloudVizualization.Utility;
 
 namespace TagsCloudVizualization;
 
 public class Program
 {
-    public const int ImageWidth = 720;
-    public const int ImageHeight = 720;
-    public const int CountRectangles = 10000;
+    public const int ImageWidth = 800;
+    public const int ImageHeight = 800;
+    public const int CountRectangles = 122;
     public const string PathToImages = @"..\..\..\Images";
 
     public static void Main(string[] args)
     {
         var layouter = CreateLayouter();
-        GenerateRandomRectangles(layouter);
+        AddRandomRectangles(layouter);
 
         var image = VisualizeLayout(layouter);
 
@@ -25,7 +26,7 @@ public class Program
         return new CircularCloudLayouter(center);
     }
 
-    private static void GenerateRandomRectangles(CircularCloudLayouter layouter)
+    private static void AddRandomRectangles(CircularCloudLayouter layouter)
     {
         var random = new Random();
         for (int i = 0; i < CountRectangles; i++)

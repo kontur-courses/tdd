@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace TagsCloudVizualization;
+namespace TagsCloudVizualization.Interfaces;
 
 public interface ICircularCloudLayouter
 {

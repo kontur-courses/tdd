@@ -1,6 +1,7 @@
 using System.Drawing;
 using TagsCloudVizualization;
 using FluentAssertions;
+using TagsCloudVizualization.Utility;
 
 namespace TagsCloudVizualizationTests;
 
@@ -14,15 +15,15 @@ public class CircularCloudLayouterTests
     {
         sut = new CircularCloudLayouter(center);
     }
-
+    
     [Test]
     public void Constructor_ShouldNotThrow()
     {
         Assert.DoesNotThrow(() => new CircularCloudLayouter(center));
     }
 
-    [TestCase(-4, 16, TestName = "PutNextRectangle_WidthNotPositive_ThrowsArgumentException")]
-    [TestCase(77, -8, TestName = "PutNextRectangle_HeightNotPositive_ThrowsArgumentException")]
+    [TestCase(-4, 16, TestName = "with negative rectangle width")]
+    [TestCase(77, -8, TestName = "with negative rectangle height")]
     public void PutNextRectangle_InvalidSize_ThrowsArgumentException(int rectangleWidth, int rectangleHeight)
     {
         Assert.Throws<ArgumentException>(() => sut.PutNextRectangle(new Size(rectangleWidth, rectangleHeight)));
@@ -67,6 +68,33 @@ public class CircularCloudLayouterTests
         var secondRectangle = sut.PutNextRectangle(new Size(77, 77));
         
         secondRectangle.IntersectsWith(firstRectangle).Should().BeFalse();
+    }
+    
+    [TearDown]
+    public void SaveImageWhenTestFails()
+    {
+        if (TestContext.CurrentContext.Result.Outcome.Status == NUnit.Framework.Interfaces.TestStatus.Failed)
+        {
+            SaveFailedTestImage();
+        }
+    }
+
+    private void SaveFailedTestImage()
+    {
+        var pathToFailedTests = @"..\..\..\FailedTests";
+        CreateDirectoryIfNotExists(pathToFailedTests);
+
+        var image = Visualizer.VisualizeRectangles(sut.Rectangles, 500, 500);
+        var fileName = $"{TestContext.CurrentContext.Test.Name}.png";
+        Visualizer.SaveBitmap(image, fileName, pathToFailedTests);
+    }
+
+    private void CreateDirectoryIfNotExists(string path)
+    {
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+        }
     }
     
 }

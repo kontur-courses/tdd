@@ -1,6 +1,6 @@
 using System.Drawing;
 
-namespace TagsCloudVizualization;
+namespace TagsCloudVizualization.Utility;
 
 public static class Visualizer
 {
