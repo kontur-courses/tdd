@@ -4,7 +4,7 @@ namespace TagsCloudVisualization;
 
 public class WordsDataSet(string text)
 {
-    public virtual Dictionary<string, int> CreateFrequencyDict()
+    public Dictionary<string, int> CreateFrequencyDict()
     {
         var words = Regex
             .Matches(text, @"[\w\d]+")

@@ -1,9 +1,11 @@
+using System.Drawing;
+
 namespace TagsCloudVisualization;
 
 public class TagCloudVisualizer(CircularCloudLayouter circularCloudLayouter,
-        ImageGenerator imageGenerator, WordsDataSet wordsDataSet)
+        ImageGenerator imageGenerator)
 {
-    public void GenerateTagCloud()
+    public void GenerateTagCloud(WordsDataSet wordsDataSet)
     {
         foreach (var kvp in wordsDataSet.CreateFrequencyDict())
         {
@@ -13,12 +15,10 @@ public class TagCloudVisualizer(CircularCloudLayouter circularCloudLayouter,
         imageGenerator.Save();
     }
     
-    public void ShowTagCloudLayout()
+    public void GenerateLayout(List<Size> rectangleSizes)
     {
-        foreach (var kvp in wordsDataSet.CreateFrequencyDict())
-        {
-            circularCloudLayouter.PutNextRectangle(imageGenerator.GetOuterRectangle(kvp.Key, kvp.Value));
-        }
+        foreach (var size in rectangleSizes)
+            circularCloudLayouter.PutNextRectangle(size);
         imageGenerator.DrawLayout(circularCloudLayouter.PlacedRectangles);
         imageGenerator.Save();
     }

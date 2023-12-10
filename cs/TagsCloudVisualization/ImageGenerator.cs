@@ -53,7 +53,7 @@ public class ImageGenerator : IDisposable
         );
     }
     
-    public void DrawLayout(List<Rectangle> rectangles)
+    public void DrawLayout(IReadOnlyList<Rectangle> rectangles)
     {
         foreach (var tmpRect in rectangles)
         {
