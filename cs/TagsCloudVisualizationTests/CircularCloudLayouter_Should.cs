@@ -10,7 +10,9 @@ namespace TagsCloudVisualizationTests
     class CircularCloudLayouter_Should
     {
         private static CircularCloudLayouter? layouter;
-        private string imagePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\FailedLayout.png";
+
+        private string imagePath =
+            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\FailedLayout.png";
 
         [TearDown]
         public void TagCloudVisualizerCircularCloudLayouterTearDown()
@@ -49,7 +51,7 @@ namespace TagsCloudVisualizationTests
             layouter = CreateLayouter_With_SeveralRectangles(30, centerPoint);
             layouter.CenterPoint.Should().BeEquivalentTo(centerPoint);
         }
-        
+
         [TestCaseSource(typeof(TestDataArchimedeanSpiral), nameof(TestDataArchimedeanSpiral.Different_CenterPoints))]
         public void Add_FirstRectangle_ToCenter(Point center)
         {
@@ -86,8 +88,12 @@ namespace TagsCloudVisualizationTests
             foreach (var rectangle in layouter.Rectangles)
             {
                 rectanglesSquare += rectangle.Width * rectangle.Height;
-                var x = Math.Abs(rectangle.X) + rectangle.Width - layouter.CenterPoint.X;
-                var y = Math.Abs(rectangle.Y) + rectangle.Height - layouter.CenterPoint.Y;
+                var x = Math.Abs(layouter.CenterPoint.X - rectangle.X);
+                if (rectangle.X > layouter.CenterPoint.X)
+                    x += rectangle.Width;
+                var y = Math.Abs(layouter.CenterPoint.Y - rectangle.Y);
+                if (rectangle.Y > layouter.CenterPoint.Y)
+                    y += rectangle.Height;
                 radius = Math.Max(radius, (int)Math.Sqrt(x * x + y * y));
             }
 
