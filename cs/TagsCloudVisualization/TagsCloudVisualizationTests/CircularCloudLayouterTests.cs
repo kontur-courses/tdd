@@ -2,55 +2,85 @@
 using System.Collections.Generic;
 using System.Drawing;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization
 {
     [TestFixture]
     public class CircularCloudLayouterTests
     {
+        private Point center;
+        private CircularCloudLayouter tagsCloud;
+        private SpiralDistribution distribution;
+
+        [SetUp]
+        public void SetUp()
+        {
+            center = new Point();
+            distribution = new SpiralDistribution(center);
+            tagsCloud = new CircularCloudLayouter(center,distribution);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+            {
+                var fileName = TestContext.CurrentContext.Test.FullName;
+                CloudLayouterDrawer.DrawCloudLayout(tagsCloud,fileName);
+                Console.WriteLine($"Tag cloud visualization saved to file /images/{fileName}");
+            }
+        }
+
         [Test]
         public void CircularCloudLayouter_Initialize_Params()
         {
-            var center = new Point(1, 2);
-            var tagsCloud = new CircularCloudLayouter(center);
-
-            Assert.AreEqual(0, tagsCloud.Radius);
-            Assert.AreEqual(0, tagsCloud.Angle);
             Assert.AreEqual(0, tagsCloud.WordPositions.Count);
             Assert.AreEqual(center, tagsCloud.Center);
+            Assert.AreEqual(distribution, tagsCloud.Distribution);
+        }
+
+        [Test]
+        public void CircularCloudLayouter_Initialize_Throws_ArgumentException_When_Distribution_Have_Different_Center()
+        {
+            var center = new Point(1, 5);
+            var centerDistribution = new Point(2, 4);
+            var distribution = new SpiralDistribution(centerDistribution);
+            Assert.Throws<ArgumentException>(() => new CircularCloudLayouter(center, distribution));
         }
 
         [TestCaseSource(nameof(PutNextRectangleIncorrectArguments))]
-        public void PutNextRectangle_With_Incorrect_Arguments(Size rectangleSize, CircularCloudLayouter tagsCloud)
+        public void PutNextRectangle_ThrowsArgumentException_WhenIncorrectArguments(Size rectangleSize, CircularCloudLayouter tagsCloud)
         {
             Assert.Throws<ArgumentException>(() => tagsCloud.PutNextRectangle(rectangleSize));
         }
 
         [Test]
-        public void PutNextRectangleFirstRectanglePositionEqualCenter()
+        public void PutNextRectangle_Should_Place_First_On_Center()
         {
-            var tagsCloud = new CircularCloudLayouter(new Point(4, 2));
             tagsCloud.PutNextRectangle(new Size(3, 1));
             Assert.AreEqual(tagsCloud.Center, tagsCloud.WordPositions[0].Location);
         }
 
         [TestCaseSource(nameof(CheckIntersectionCaseData))]
-        public bool CheckIntersectionTest(Size size1, Rectangle rectangle)
+        public bool CheckIntersectionTest(Size rectangleSize, Rectangle rectangle)
         {
-            var tagsCloud = new CircularCloudLayouter(new Point(0, 0));
-            tagsCloud.PutNextRectangle(size1);
+            tagsCloud.PutNextRectangle(rectangleSize);
             return tagsCloud.CheckIntersection(rectangle);
         }
 
         [TestCaseSource(nameof(RectangleCompressionCaseData))]
         public Point RectangleCompression(CircularCloudLayouter cloud, Rectangle rectangle)
         {
-            return cloud.RectangleCompression(rectangle).Location;
+            return cloud.ComperessRectangle(rectangle).Location;
         }
+
 
         private static IEnumerable<TestCaseData> PutNextRectangleIncorrectArguments()
         {
-            var tagsCloud = new CircularCloudLayouter(new Point());
+            var center = new Point();
+            var distribution = new SpiralDistribution(center);
+            var tagsCloud = new CircularCloudLayouter(center,distribution);
 
             yield return new TestCaseData(new Size(-1, 1), tagsCloud)
                 .SetName("PutNextReactangle_Throws_ArgumentException_When_Width_Is_Negative");
@@ -85,8 +115,11 @@ namespace TagsCloudVisualization
 
         private static IEnumerable<TestCaseData> RectangleCompressionCaseData()
         {
-            var cloudEmpty = new CircularCloudLayouter(new Point());
-            var cloudWithElements = new CircularCloudLayouter(new Point());
+            var center = new Point();
+            var distributionEmpty = new SpiralDistribution(center);
+            var cloudEmpty = new CircularCloudLayouter(center,distributionEmpty);
+            var distributionWithElements = new SpiralDistribution(center);
+            var cloudWithElements = new CircularCloudLayouter(center, distributionWithElements);
             cloudWithElements.PutNextRectangle(new Size(1, 1));
             var rectangle = new Rectangle(new Point(5, 5), new Size(1, 1));
 
@@ -98,5 +131,6 @@ namespace TagsCloudVisualization
                 .SetName("RectangleCompression_When_Cloud_Has_Rectangles_Set_Rectangle_Position_Closer_To_Center")
                 .Returns(new Point(0, 1));
         }
+
     }
 }

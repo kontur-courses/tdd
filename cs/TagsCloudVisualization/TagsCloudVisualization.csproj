@@ -57,15 +57,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CircularCloudLayouter.cs" />
+    <Compile Include="CloudLayouterDrawer.cs" />
+    <Compile Include="IDistribution.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CircularCloudLayouterTests.cs" />
+    <Compile Include="TagsCloudVisualizationTests\CircularCloudLayouterTests.cs" />
+    <Compile Include="SpiralDistribution.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Readme.md" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Content Include="images\example1.png" />
+    <Content Include="images\example2.png" />
+    <Content Include="images\example3.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
