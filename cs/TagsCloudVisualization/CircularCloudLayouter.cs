@@ -8,7 +8,7 @@ public class CircularCloudLayouter(Point center)
     private int minDimension = int.MaxValue;
     private readonly List<Rectangle> placedRectangles = new();
 
-    public IReadOnlyList<Rectangle> PlacedRectangles => placedRectangles.AsReadOnly();
+    public IEnumerable<Rectangle> PlacedRectangles => placedRectangles.AsReadOnly();
 
     public Rectangle PutNextRectangle(Size rectangleSize)
     {

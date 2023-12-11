@@ -5,10 +5,9 @@ namespace TagsCloudVisualization;
 public class TagCloudVisualizer(CircularCloudLayouter circularCloudLayouter,
     ImageGenerator imageGenerator)
 {
-    private readonly List<(string word, int frequency, Rectangle outline)> wordsFrequenciesOutline = new();
-
     public void GenerateTagCloud(WordsDataSet wordsDataSet)
     {
+        var wordsFrequenciesOutline = new List<(string word, int frequency, Rectangle outline)>();
         foreach (var kvp in wordsDataSet.CreateFrequencyDict())
         {
             var rectangle =
