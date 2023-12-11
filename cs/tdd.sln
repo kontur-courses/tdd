@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BowlingGame", "BowlingGame\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.csproj", "{B5108E20-2ACF-4ED9-84FE-2A718050FC94}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCloud", "TagCloud\TagCloud.csproj", "{449E90CC-3D52-4E1C-8BB9-73C93CA79781}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCloudTests", "TagCloudTests\TagCloudTests.csproj", "{C7C10229-7576-41A9-B0A0-2A9939985DB0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{449E90CC-3D52-4E1C-8BB9-73C93CA79781}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{449E90CC-3D52-4E1C-8BB9-73C93CA79781}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{449E90CC-3D52-4E1C-8BB9-73C93CA79781}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{449E90CC-3D52-4E1C-8BB9-73C93CA79781}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7C10229-7576-41A9-B0A0-2A9939985DB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7C10229-7576-41A9-B0A0-2A9939985DB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7C10229-7576-41A9-B0A0-2A9939985DB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7C10229-7576-41A9-B0A0-2A9939985DB0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
