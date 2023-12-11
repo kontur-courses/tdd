@@ -24,7 +24,7 @@ namespace TagsCloudVisualization
 
             while(true)
             {
-                rectangle = new Rectangle(spiralFunction.NextPoint(), sizeRectangle);
+                rectangle = new Rectangle(spiralFunction.GetNextPoint(), sizeRectangle);
                 if(rectangle.IsIntersectOthersRectangles(_rectangles))
                     break;
             }

@@ -14,7 +14,7 @@ public class SpiralFunction
         _step = step;
     }
     
-    public Point NextPoint()
+    public Point GetNextPoint()
     {
         var newX = (int)(_pastPoint.X + _step * angle * Math.Cos(angle));
         var newY = (int)(_pastPoint.Y + _step * angle * Math.Sin(angle));

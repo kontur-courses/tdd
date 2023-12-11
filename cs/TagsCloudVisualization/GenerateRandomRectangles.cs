@@ -2,9 +2,9 @@
 
 namespace TagsCloudVisualization;
 
-public class GenerateRandomRectangles
+public class RectangleGenerator
 {
-    public List<Rectangle> RectangleGenerator(CircularCloudLayouter layouter, int count)
+    public List<Rectangle> GenerateRandomRectangles(CircularCloudLayouter layouter, int count)
     {
         var rectangles = new List<Rectangle>();
         var random = new Random(1);
