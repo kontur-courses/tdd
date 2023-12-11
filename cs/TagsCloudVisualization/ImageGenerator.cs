@@ -53,7 +53,7 @@ public class ImageGenerator : IDisposable
         );
     }
     
-    public void DrawLayout(IReadOnlyList<Rectangle> rectangles)
+    public void DrawLayout(IEnumerable<Rectangle> rectangles)
     {
         foreach (var tmpRect in rectangles)
         {
@@ -63,10 +63,10 @@ public class ImageGenerator : IDisposable
         image.Save(outputPath, encoder);
     }
     
-    public void DrawTagCloud(List<((string, int), Rectangle)> wordsFrequenciesOutline)
+    public void DrawTagCloud(List<(string word, int frequency, Rectangle outline)> wordsFrequenciesOutline)
     {
         foreach (var wordFrequencyOutline in wordsFrequenciesOutline)
-            DrawWord(wordFrequencyOutline.Item1.Item1, wordFrequencyOutline.Item1.Item2, wordFrequencyOutline.Item2);
+            DrawWord(wordFrequencyOutline.word, wordFrequencyOutline.frequency, wordFrequencyOutline.outline);
         image.Save(outputPath, encoder);
     }
 

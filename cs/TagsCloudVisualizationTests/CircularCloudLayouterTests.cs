@@ -24,12 +24,11 @@ public class CircularCloudLayouterTests
     {
         if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
         {
-            new TagCloudVisualizer(circularCloudLayouter,
-                    new ImageGenerator(
-                        FileHandler.GetOutputRelativeFilePath($"{FailOutputName}.jpg"),
-                        FileHandler.GetSourceRelativeFilePath("JosefinSans-Regular.ttf"),
-                        30, 1920, 1080))
-                .DrawLayout();
+            new ImageGenerator(
+                FileHandler.GetOutputRelativeFilePath($"{FailOutputName}.jpg"),
+                FileHandler.GetSourceRelativeFilePath("JosefinSans-Regular.ttf"),
+                30, 1920, 1080
+            ).DrawLayout(circularCloudLayouter.PlacedRectangles);
             Console.WriteLine("Tag cloud visualization saved to file " +
                               FileHandler.GetOutputRelativeFilePath($"{FailOutputName}.jpg"));
         }
@@ -63,10 +62,10 @@ public class CircularCloudLayouterTests
         sw.Start();
 
         var tmpLayouter = new CircularCloudLayouter(center);
-        
+
         for (var _ = 0; _ < count; _++)
             tmpLayouter.PutNextRectangle(new Size(45, 15));
-        
+
         sw.Stop();
 
         return sw.Elapsed;
@@ -77,7 +76,7 @@ public class CircularCloudLayouterTests
     {
         for (var _ = 0; _ < 5; _++)
             circularCloudLayouter.PutNextRectangle(new Size(45, 15));
-        
+
         circularCloudLayouter.PlacedRectangles
             .All(rect1 => circularCloudLayouter.PlacedRectangles
                 .All(rect2 => rect1 == rect2 || !rect1.IntersectsWith(rect2))).Should().BeTrue();

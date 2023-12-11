@@ -6,12 +6,12 @@ public static class FileHandler
     {
         return File.ReadAllText(GetSourceRelativeFilePath($"{fileName}.txt"));
     }
-    
+
     public static string GetOutputRelativeFilePath(string fileName)
     {
         return $"../../../../TagsCloudVisualization/out/{fileName}";
     }
-    
+
     public static string GetSourceRelativeFilePath(string fileName)
     {
         return $"../../../../TagsCloudVisualization/src/{fileName}";

@@ -15,9 +15,9 @@ public class Tests
     {
         var offset = new Point(offsetX, offsetY);
         var expected = new Point(expectedX, expectedY);
-        
+
         var actual = PolarMath.PolarToCartesian(radius, angle, offset);
-        
+
         actual.Should().Be(expected);
     }
 }

@@ -67,7 +67,7 @@ public class CircularCloudLayouter(Point center)
                 }
 
                 target.Y += Math.Sign(center.Y - (target.Y + target.Height / 2));
-                
+
                 if (IntersectWithPlaced(target))
                 {
                     target.Y -= Math.Sign(center.Y - (target.Y + target.Height / 2));
