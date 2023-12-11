@@ -15,10 +15,8 @@ public class TagCloudVisualizer(CircularCloudLayouter circularCloudLayouter,
         imageGenerator.Save();
     }
     
-    public void GenerateLayout(List<Size> rectangleSizes)
+    public void DrawCurrentLayout()
     {
-        foreach (var size in rectangleSizes)
-            circularCloudLayouter.PutNextRectangle(size);
         imageGenerator.DrawLayout(circularCloudLayouter.PlacedRectangles);
         imageGenerator.Save();
     }

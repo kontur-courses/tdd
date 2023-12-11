@@ -7,7 +7,7 @@ namespace TagsCloudVisualizationTests;
 public class WordsDataSetTests
 {
     [Test]
-    public void FreqDictIs_Three3Two2One1()
+    public void FreqDict_CorrectWordCount()
     {
         const string testString = "One, Two, Three, Two, Three, Three";
 

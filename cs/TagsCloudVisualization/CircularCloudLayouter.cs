@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Security.Cryptography;
 
 namespace TagsCloudVisualization;
 
@@ -43,26 +44,34 @@ public class CircularCloudLayouter(Point center)
         {
             if (movableX)
             {
-                target.X += Math.Sign(center.X - target.X);
-                if (center.X == target.X)
+                if (center.X == target.X + target.Width / 2)
+                {
                     movableX = false;
+                    continue;
+                }
+
+                target.X += Math.Sign(center.X - (target.X + target.Width / 2));
 
                 if (IntersectWithPlaced(target))
                 {
-                    target.X -= Math.Sign(center.X - target.X);
+                    target.X -= Math.Sign(center.X - (target.X + target.Width / 2));
                     movableX = false;
                 }
             }
 
             if (movableY)
             {
-                target.Y += Math.Sign(center.Y - target.Y);
-                if (center.Y == target.Y)
+                if (center.Y == target.Y + target.Height / 2)
+                {
                     movableY = false;
+                    continue;
+                }
 
+                target.Y += Math.Sign(center.Y - (target.Y + target.Height / 2));
+                
                 if (IntersectWithPlaced(target))
                 {
-                    target.Y -= Math.Sign(center.Y - target.Y);
+                    target.Y -= Math.Sign(center.Y - (target.Y + target.Height / 2));
                     movableY = false;
                 }
             }
