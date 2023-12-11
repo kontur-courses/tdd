@@ -1,11 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33424.131
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BowlingGame", "BowlingGame\BowlingGame.csproj", "{AD0F018A-732E-4074-8527-AB2EEC8D0BF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BowlingGame", "BowlingGame\BowlingGame.csproj", "{AD0F018A-732E-4074-8527-AB2EEC8D0BF3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.csproj", "{B5108E20-2ACF-4ED9-84FE-2A718050FC94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples", "Samples\Samples.csproj", "{B5108E20-2ACF-4ED9-84FE-2A718050FC94}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TagCloud", "TagCloud\TagCloud.csproj", "{4C3E55E4-1DF1-4EF9-988F-6C530AD0E42C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TagCloud.Tests", "TagCloud.Tests\TagCloud.Tests.csproj", "{36EBCC54-4C64-4694-9E6E-4658AEB19EC4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4C3E55E4-1DF1-4EF9-988F-6C530AD0E42C} = {4C3E55E4-1DF1-4EF9-988F-6C530AD0E42C}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCloud.Visualization", "TagCloud.Visualization\TagCloud.Visualization.csproj", "{D740987A-8261-4BA1-9ED5-3A5F96DBAD24}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,8 +30,23 @@ Global
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C3E55E4-1DF1-4EF9-988F-6C530AD0E42C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C3E55E4-1DF1-4EF9-988F-6C530AD0E42C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C3E55E4-1DF1-4EF9-988F-6C530AD0E42C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C3E55E4-1DF1-4EF9-988F-6C530AD0E42C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36EBCC54-4C64-4694-9E6E-4658AEB19EC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36EBCC54-4C64-4694-9E6E-4658AEB19EC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36EBCC54-4C64-4694-9E6E-4658AEB19EC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36EBCC54-4C64-4694-9E6E-4658AEB19EC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D740987A-8261-4BA1-9ED5-3A5F96DBAD24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D740987A-8261-4BA1-9ED5-3A5F96DBAD24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D740987A-8261-4BA1-9ED5-3A5F96DBAD24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D740987A-8261-4BA1-9ED5-3A5F96DBAD24}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {17444AC1-20D2-4EAD-8581-7B4DB32E3717}
 	EndGlobalSection
 EndGlobal
