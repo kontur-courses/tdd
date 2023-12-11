@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 
@@ -9,11 +11,6 @@ namespace TagsCloudVisualization
     [TestFixture]
     public class CircularCloudLayouterTests
     {
-        private Point center;
-        private CircularCloudLayouter tagsCloud;
-        private SpiralDistribution distribution;
-        private CloudLayouterDrawer drawer;
-
         [SetUp]
         public void SetUp()
         {
@@ -23,23 +20,28 @@ namespace TagsCloudVisualization
             drawer = new CloudLayouterDrawer(10);
         }
 
-       [TearDown]
+        [TearDown]
         public void TearDown()
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
             {
-                var fileName =$"{TestContext.CurrentContext.Test.FullName}.png";
+                var fileName = $"{TestContext.CurrentContext.Test.FullName}.png";
                 drawer.DrawCloud(fileName, tagsCloud.WordPositions);
                 Console.WriteLine($"Tag cloud visualization saved to file /images/{fileName}");
             }
         }
-      
+
+        private Point center;
+        private CircularCloudLayouter tagsCloud;
+        private SpiralDistribution distribution;
+        private CloudLayouterDrawer drawer;
+
         [Test]
         public void CircularCloudLayouter_Initialize_Params()
         {
-            Assert.AreEqual(0, tagsCloud.WordPositions.Count);
-            Assert.AreEqual(center, tagsCloud.Center);
-            Assert.AreEqual(distribution, tagsCloud.Distribution);
+            tagsCloud.WordPositions.Count.Should().Be(0);
+            tagsCloud.Center.Should().Be(center);
+            tagsCloud.Distribution.Should().Be(distribution);
         }
 
         [Test]
@@ -62,20 +64,28 @@ namespace TagsCloudVisualization
         public void PutNextRectangle_Should_Place_First_On_Center()
         {
             tagsCloud.PutNextRectangle(new Size(3, 1));
-            Assert.AreEqual(tagsCloud.Center, tagsCloud.WordPositions[0].Location);
+            tagsCloud.WordPositions[0].Location.Should().Be(tagsCloud.Center);
         }
 
-        [TestCaseSource(nameof(CheckIntersectionCaseData))]
-        public bool CheckIntersectionTest(Size rectangleSize, Rectangle rectangle)
+        [Test]
+        public void CircularCloudLayouter_Should_Has_No_Intersections_When_1000_Rectangles()
         {
-            tagsCloud.PutNextRectangle(rectangleSize);
-            return tagsCloud.CheckIntersection(rectangle);
+            getRandomTagsCloud().WordPositions.Any(tag1 =>
+                    tagsCloud.WordPositions.Any(tag2 => tag1.IntersectsWith(tag2) && tag1 != tag2))
+                .Should().BeFalse();
         }
 
-        [TestCaseSource(nameof(RectangleCompressionCaseData))]
-        public Point RectangleCompression(CircularCloudLayouter cloud, Rectangle rectangle)
+
+        [Test]
+        public void CircularCloudLayouter_Should_Be_Close_To_Circle()
         {
-            return cloud.ComperessRectangle(rectangle).Location;
+            var randomTagsCloud = getRandomTagsCloud();
+            randomTagsCloud.WordPositions.All(tag =>
+            {
+                var distanceToCenter =
+                    Math.Sqrt(Math.Pow(tag.X - tagsCloud.Center.X, 2) + Math.Pow(tag.Y - tagsCloud.Center.Y, 2));
+                return distanceToCenter <= GetCircilarCloudLayouterRadius(randomTagsCloud);
+            }).Should().BeTrue();
         }
 
 
@@ -98,41 +108,23 @@ namespace TagsCloudVisualization
                 .SetName("PutNextReactangle_Throws_ArgumentException_When_Height_Is_Zero");
         }
 
-        private static IEnumerable<TestCaseData> CheckIntersectionCaseData()
+
+        private CircularCloudLayouter getRandomTagsCloud()
         {
-            yield return new TestCaseData(new Size(4, 2), new Rectangle(new Point(1, 1), new Size(2, 2)))
-                .SetName(
-                    "CheckIntersection_Return_True_When_Rectangle_Intersection_With_Any_Rectangle_In_CircularCloudLayouter")
-                .Returns(true);
+            var randomTagCloud = new CircularCloudLayouter(center, distribution);
+            var random = new Random();
+            for (var i = 0; i < 1000; i++)
+            {
+                var size = new Size(random.Next(1, 100), random.Next(1, 100));
+                randomTagCloud.PutNextRectangle(size);
+            }
 
-            yield return new TestCaseData(new Size(1, 1), new Rectangle(new Point(1, 0), new Size(1, 1)))
-                .SetName(
-                    "CheckIntersection_Return_False_When_Rectangle_Have_Common_Side_With_Another_Rectangle")
-                .Returns(false);
-
-            yield return new TestCaseData(new Size(4, 2), new Rectangle(new Point(4, 4), new Size(2, 2)))
-                .SetName(
-                    "CheckIntersection_Return_True_When_Rectangle_Intersection_With_Any_Rectangle_In_CircularCloudLayouter")
-                .Returns(false);
+            return randomTagCloud;
         }
 
-        private static IEnumerable<TestCaseData> RectangleCompressionCaseData()
+        public static double GetCircilarCloudLayouterRadius(CircularCloudLayouter layouter)
         {
-            var center = new Point();
-            var distributionEmpty = new SpiralDistribution(center);
-            var cloudEmpty = new CircularCloudLayouter(center, distributionEmpty);
-            var distributionWithElements = new SpiralDistribution(center);
-            var cloudWithElements = new CircularCloudLayouter(center, distributionWithElements);
-            cloudWithElements.PutNextRectangle(new Size(1, 1));
-            var rectangle = new Rectangle(new Point(5, 5), new Size(1, 1));
-
-            yield return new TestCaseData(cloudEmpty, rectangle)
-                .SetName("RectangleCompression_When_Cloud_Is_Empty_Set_Rectangle_Position_On_Center")
-                .Returns(cloudEmpty.Center);
-
-            yield return new TestCaseData(cloudWithElements, rectangle)
-                .SetName("RectangleCompression_When_Cloud_Has_Rectangles_Set_Rectangle_Position_Closer_To_Center")
-                .Returns(new Point(0, 1));
+            return layouter.WordPositions.Max(tag => Math.Sqrt(Math.Pow(tag.X, 2) + Math.Pow(tag.Y, 2)));
         }
     }
 }

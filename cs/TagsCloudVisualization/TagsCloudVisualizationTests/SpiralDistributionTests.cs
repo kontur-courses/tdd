@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace TagsCloudVisualization.TagsCloudVisualizationTests
@@ -11,47 +8,65 @@ namespace TagsCloudVisualization.TagsCloudVisualizationTests
     [TestFixture]
     public class SpiralDistributionTests
     {
-        private Point center;
-        private SpiralDistribution spiralDistribution;
-
         [SetUp]
         public void SetUp()
         {
             center = new Point();
-            spiralDistribution = new SpiralDistribution(center);
+            spiralDistribution = new SpiralDistribution();
         }
+
+        private Point center;
+        private SpiralDistribution spiralDistribution;
 
 
         [Test]
-        public void SprialDistribution_Initialize_Params()
+        public void SprialDistribution_Initialize__Default_Params()
         {
-            Assert.AreEqual(center, spiralDistribution.Center);
-            Assert.AreEqual(0, spiralDistribution.Angle);
-            Assert.AreEqual(0, spiralDistribution.Radius);
+            spiralDistribution.Center.Should().Be(center);
+            spiralDistribution.Angle.Should().Be(0);
+            spiralDistribution.Radius.Should().Be(0);
+            spiralDistribution.AngleStep.Should().Be(0.1);
+            spiralDistribution.RadiusStep.Should().Be(0.1);
+        }
+
+        [Test]
+        public void SprialDistribution_Initialize__Custom_Params()
+        {
+            var customCenter = new Point(1, 1);
+            var customSpiralDistribution = new SpiralDistribution(customCenter,0.6, 0.7);
+
+            customSpiralDistribution.Center.Should().Be(customCenter);
+            customSpiralDistribution.AngleStep.Should().Be(0.6);
+            customSpiralDistribution.RadiusStep.Should().Be(0.7);
+        }
+
+        [TestCase(0,1, TestName = "When_AngleStep_Is_Zero")]
+        [TestCase(0.6, -1, TestName = "When_Radius_Is_Negative")]
+        [TestCase(0.6, 0, TestName = "When_Radius_Is_Zero")]
+        public void SpiralDistribution_Initialize_Throw_ArgumentException(double angleStep,double radiusStep)
+        {
+            Assert.Throws<ArgumentException>(()=> new SpiralDistribution(center, angleStep, radiusStep));
         }
 
         [Test]
         public void SpiralDistribution_First_Call_GetNextPoint_Should_Return_Center()
         {
-            Assert.AreEqual(center, spiralDistribution.GetNextPoint());
+             spiralDistribution.GetNextPoint().Should().Be(center);
         }
 
         [Test]
         public void SpiralDistribution_Should_Increase_Angle_After_Call_GetNextPoint()
         {
             spiralDistribution.GetNextPoint();
-            Assert.AreEqual(0.1, spiralDistribution.Angle);
+            spiralDistribution.Angle.Should().Be(spiralDistribution.AngleStep);
         }
 
         [Test]
-        public void SpiralDistribution_Should_Increase_Radius_And_Reset_Angle_When_Angle_More_Than_2Pi()
+        public void SpiralDistribution_Should_Increase_Radius_When_Angle_More_Than_2Pi()
         {
-            for (int i = 0; i < 63; i++)
-            {
-                spiralDistribution.GetNextPoint();
-            }
-            Assert.AreEqual(0,spiralDistribution.Angle);
-            Assert.AreEqual(0.1,spiralDistribution.Radius);
+            var expectedAngle = spiralDistribution.Angle * 64 - 2 * Math.PI;
+            for (var i = 0; i < 63; i++) spiralDistribution.GetNextPoint();
+            spiralDistribution.Radius.Should().Be(spiralDistribution.Radius);
         }
     }
 }

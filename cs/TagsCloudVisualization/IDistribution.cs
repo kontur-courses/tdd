@@ -6,5 +6,6 @@ namespace TagsCloudVisualization
     {
         Point Center { get; }
         Point GetNextPoint();
+
     }
 }

@@ -19,7 +19,7 @@ namespace TagsCloudVisualization
 
         public Point Center { get; }
         public List<Rectangle> WordPositions { get; }
-        public IDistribution Distribution { get; }
+        public IDistribution Distribution { get; private set; }
 
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -42,13 +42,13 @@ namespace TagsCloudVisualization
         }
 
 
-        public bool CheckIntersection(Rectangle currRectangle)
+        private bool CheckIntersection(Rectangle currRectangle)
         {
             return WordPositions.Any(rec => currRectangle.IntersectsWith(rec));
         }
 
 
-        public Rectangle ComperessRectangle(Rectangle rectangle)
+        private Rectangle ComperessRectangle(Rectangle rectangle)
         {
             var changes = 1;
             while (changes > 0)

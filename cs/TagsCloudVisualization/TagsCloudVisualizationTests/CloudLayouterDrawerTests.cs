@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace TagsCloudVisualization.TagsCloudVisualizationTests
@@ -8,44 +10,53 @@ namespace TagsCloudVisualization.TagsCloudVisualizationTests
     [TestFixture]
     public class CloudLayouterDrawerTests
     {
-        private CloudLayouterDrawer drawer;
-        private string fileName;
-        private string TestFilePath;
-
-
         [SetUp]
         public void SetUp()
         {
             drawer = new CloudLayouterDrawer(10);
-            fileName = "testcreation.png";
             var projectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName;
-            TestFilePath = Path.Combine(projectDirectory, "images", fileName);
-            if (File.Exists(TestFilePath))
-            {
-                File.Delete(TestFilePath);
-            }
+            testFilePath = Path.Combine(projectDirectory, "images", fileName);
+            if (File.Exists(testFilePath)) File.Delete(testFilePath);
         }
 
         [TearDown]
         public void TearDown()
         {
-            if (File.Exists(TestFilePath))
-            {
-                File.Delete(TestFilePath);
-            }
+            if (File.Exists(testFilePath)) File.Delete(testFilePath);
         }
+
+        private CloudLayouterDrawer drawer;
+        private const string fileName = "testcreation.png";
+        private string testFilePath;
+
         [Test]
         public void CloudLayouterDrawer_Initialize_Params()
         {
-            Assert.AreEqual(10,drawer.margin);
+            drawer.Margin.Should().Be(10);
         }
 
         [Test]
-        public void CloudLayouterDrawer_IsCreate_Imgae()
+        public void CloudLayouterDrawer_Initialize_Throws_ArgumentException_When_Rectangles_length_Is_Zero()
         {
-            var rectanglesCollection = new Rectangle[] { new Rectangle(0, 0, 5, 10) };
-            drawer.DrawCloud(fileName,rectanglesCollection);
-            Assert.IsTrue(File.Exists(TestFilePath), $"File at path '{TestFilePath}' should have been created.");
+            var rectangles = new List<Rectangle>();
+            Assert.Throws<ArgumentException>(()=>drawer.DrawCloud("output.png",rectangles));
+        }
+
+        [TestCase("",TestName = "When_Filename_Is_Empty")]
+        [TestCase(null, TestName = "When_Filename_Is_Null")]
+
+        public void CloudLayouterDrawer_Initialize_Throws_ArgumentException(string filename)
+        {
+            var rectangles = new List<Rectangle>(){new Rectangle(1,1,1,1)};
+            Assert.Throws<ArgumentException>(() => drawer.DrawCloud(filename, rectangles));
+        }
+
+        [Test]
+        public void CloudLayouterDrawer_IsCreate_Image()
+        {
+            var rectanglesCollection = new[] { new Rectangle(0, 0, 5, 10) };
+            drawer.DrawCloud(fileName, rectanglesCollection);
+            File.Exists(testFilePath).Should().BeTrue();
         }
     }
 }
