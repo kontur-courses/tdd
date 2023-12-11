@@ -2,13 +2,13 @@
 
 namespace TagsCloudVisualization;
 
-public class Spiral
+public class SpiralFunction
 {
     private double angle;
     private readonly Point _pastPoint;
     private readonly double _step;
     
-    public Spiral(Point start, double step)
+    public SpiralFunction(Point start, double step)
     {
         _pastPoint = start;
         _step = step;

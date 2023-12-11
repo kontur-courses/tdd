@@ -10,15 +10,15 @@ public class DrawCloud
 {
     private Bitmap _bitmap;
     private readonly Size shiftToBitmapCenter;
-    private readonly List<Rectangle> _rectangles;
-    public DrawCloud(List<Rectangle> rectangles, int width, int height)
+    private List<Rectangle> _rectangles;
+    public DrawCloud(int width, int height)
     {
-        _rectangles = rectangles;
         _bitmap = new Bitmap(width, height);
         shiftToBitmapCenter = new Size(_bitmap.Width / 2, _bitmap.Height / 2);
     }
-    public void CreateImage(string filename)
+    public void CreateImage(List<Rectangle> rectangles, string filename)
     {
+        _rectangles = rectangles;
         using (Graphics g = Graphics.FromImage(_bitmap))
         {
             g.Clear(Color.White);

@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Drawing.Imaging;
 using FluentAssertions;
 using NUnit.Framework;
@@ -7,7 +7,7 @@ namespace TagsCloudVisualization
 {
     
     [TestFixture]
-    public class Spiral_Should
+    public class SpiralFunction_Should
     {
         [TestCase(0, 0, 1)]
         [TestCase(2, 10, 2)]

@@ -12,21 +12,10 @@ namespace TagsCloudVisualization
         {
             var center = new Point(0, 0);
             var layouter = new CircularCloudLayouter(center);
-            var drawer = new DrawCloud(GenerateRandomRectangles(layouter, 50), 1500, 1500);
-            drawer.CreateImage("RandomRectangles50.png");
-           
-
-            List<Rectangle> GenerateRandomRectangles(CircularCloudLayouter layouter, int count)
-            {
-                var rectangles = new List<Rectangle>();
-                var random = new Random(1);
-                for (var i = 0; i < count; i++)
-                {
-                    var size = new Size(random.Next(40,100), random.Next(20, 60));
-                    rectangles.Add(layouter.PutNextRectangle(size));
-                }
-                return rectangles;
-            }
+            var cloud = new GenerateRandomRectangles();
+            var rectangles = cloud.RectangleGenerator(layouter, 50);
+            var drawer = new DrawCloud( 1500, 1500);
+            drawer.CreateImage(rectangles, "RandomRectangles50.png");
         }
     }
 }
