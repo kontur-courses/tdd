@@ -5,19 +5,27 @@ namespace TagsCloudVisualization;
 public class TagCloudVisualizer(CircularCloudLayouter circularCloudLayouter,
         ImageGenerator imageGenerator)
 {
-    public void GenerateTagCloud(WordsDataSet wordsDataSet)
+    private readonly List<((string, int), Rectangle)> wordsFrequenciesOutline = new();
+    
+    public TagCloudVisualizer GenerateLayout(WordsDataSet wordsDataSet)
     {
         foreach (var kvp in wordsDataSet.CreateFrequencyDict())
         {
-            var rectangle = circularCloudLayouter.PutNextRectangle(imageGenerator.GetOuterRectangle(kvp.Key, kvp.Value));
-            imageGenerator.DrawWord(kvp.Key, kvp.Value, rectangle);
+            var rectangle = circularCloudLayouter.PutNextRectangle(imageGenerator.GetOuterRectangle(kvp.Item1, kvp.Item2));
+            var item = (kvp.Item1, kvp.Item2);
+            wordsFrequenciesOutline.Add((item, rectangle));
         }
-        imageGenerator.Save();
+
+        return this;
     }
     
-    public void DrawCurrentLayout()
+    public void DrawTagCloud()
+    {
+        imageGenerator.DrawTagCloud(wordsFrequenciesOutline);
+    }
+    
+    public void DrawLayout()
     {
         imageGenerator.DrawLayout(circularCloudLayouter.PlacedRectangles);
-        imageGenerator.Save();
     }
 }

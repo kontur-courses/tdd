@@ -4,7 +4,7 @@ namespace TagsCloudVisualization;
 
 public class WordsDataSet(string text)
 {
-    public Dictionary<string, int> CreateFrequencyDict()
+    public IEnumerable<(string, int)> CreateFrequencyDict()
     {
         var words = Regex
             .Matches(text, @"[\w\d]+")
@@ -21,6 +21,6 @@ public class WordsDataSet(string text)
                 dict.Add(word, 1);
         }
 
-        return dict;
+        return dict.Select(kv => (kv.Key, kv.Value));
     }
 }

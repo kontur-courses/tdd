@@ -44,7 +44,7 @@ public class ImageGenerator : IDisposable
         image.Mutate(x => x.Fill(color));
     }
 
-    public void DrawWord(string word, int frequency, Rectangle rectangle)
+    private void DrawWord(string word, int frequency, Rectangle rectangle)
     {
         image.Mutate(x => x.DrawText(
             word, FontCreator(fontSize + frequency),
@@ -60,6 +60,14 @@ public class ImageGenerator : IDisposable
             var rectangle = new RectangleF(tmpRect.X, tmpRect.Y, tmpRect.Width, tmpRect.Height);
             image.Mutate(x => x.Draw(Color.FromRgb(211, 226, 157), 2f, rectangle));
         }
+        image.Save(outputPath, encoder);
+    }
+    
+    public void DrawTagCloud(List<((string, int), Rectangle)> wordsFrequenciesOutline)
+    {
+        foreach (var wordFrequencyOutline in wordsFrequenciesOutline)
+            DrawWord(wordFrequencyOutline.Item1.Item1, wordFrequencyOutline.Item1.Item2, wordFrequencyOutline.Item2);
+        image.Save(outputPath, encoder);
     }
 
     public System.Drawing.Size GetOuterRectangle(string word, int frequency)
@@ -68,11 +76,6 @@ public class ImageGenerator : IDisposable
         var size = TextMeasurer.MeasureSize(word, textOption);
 
         return new System.Drawing.Size((int)size.Width + fontSize / 3, (int)size.Height + fontSize / 3);
-    }
-
-    public void Save()
-    {
-        image.Save(outputPath, encoder);
     }
 
     public void Dispose()

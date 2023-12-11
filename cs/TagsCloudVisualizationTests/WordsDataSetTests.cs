@@ -13,13 +13,13 @@ public class WordsDataSetTests
 
         var expected = new Dictionary<string, int>
         {
-            { "Three", 3 },
+            { "One", 1 },
             { "Two", 2 },
-            { "One", 1 }
-        };
+            { "Three", 3 }
+        }.Select(kv => (kv.Key, kv.Value));
 
         var actual = new WordsDataSet(testString).CreateFrequencyDict();
-        
+
         actual.Should().Equal(expected);
     }
 }

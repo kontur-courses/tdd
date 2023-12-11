@@ -29,7 +29,7 @@ public class CircularCloudLayouterTests
                         FileHandler.GetOutputRelativeFilePath($"{FailOutputName}.jpg"),
                         FileHandler.GetSourceRelativeFilePath("JosefinSans-Regular.ttf"),
                         30, 1920, 1080))
-                .DrawCurrentLayout();
+                .DrawLayout();
             Console.WriteLine("Tag cloud visualization saved to file " +
                               FileHandler.GetOutputRelativeFilePath($"{FailOutputName}.jpg"));
         }
