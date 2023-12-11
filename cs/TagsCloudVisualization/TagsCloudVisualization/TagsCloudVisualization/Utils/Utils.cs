@@ -39,8 +39,8 @@ public static class Utils
 
     public static Rectangle GetRectangleFromCenter(Point center, Size size)
     {
-        var x = center.X - size.Width/2;
-        var y = center.Y - size.Height/2;
+        var x = center.X - size.Width / 2;
+        var y = center.Y - size.Height / 2;
 
         return new Rectangle(new Point(x, y), size);
     }
@@ -49,6 +49,6 @@ public static class Utils
     {
         var x = rectangle.X;
         var y = rectangle.Y;
-        return new Point(x + rectangle.Width/2, y+rectangle.Height/2);
+        return new Point(x + rectangle.Width / 2, y + rectangle.Height / 2);
     }
 }

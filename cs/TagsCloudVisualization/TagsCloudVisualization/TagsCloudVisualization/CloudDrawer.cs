@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Drawing.Drawing2D;
 
 namespace TagsCloudVisualization;
 
@@ -9,7 +10,7 @@ public static class CloudDrawer
         if (cloud.Rectangles.Count == 0)
             throw new ArgumentException("rectangles are empty");
         if (imageWidth <= 0 || imageHeight <= 0)
-            throw new ArgumentException("either width or height of rectangle size is not possitive");
+            throw new ArgumentException("either width or height of rectangle size is not positive");
 
         var drawingScale = CalculateObjectDrawingScale(cloud.GetWidth(), cloud.GetHeight(), imageWidth, imageHeight);
         var bitmap = new Bitmap(imageWidth, imageHeight);
@@ -17,22 +18,24 @@ public static class CloudDrawer
         var pen = new Pen(Color.Black);
 
         graphics.TranslateTransform(-cloud.Center.X, -cloud.Center.Y);
-        graphics.ScaleTransform(drawingScale, drawingScale, System.Drawing.Drawing2D.MatrixOrder.Append);
-        graphics.TranslateTransform(cloud.Center.X, cloud.Center.Y, System.Drawing.Drawing2D.MatrixOrder.Append);
+        graphics.ScaleTransform(drawingScale, drawingScale, MatrixOrder.Append);
+        graphics.TranslateTransform(cloud.Center.X, cloud.Center.Y, MatrixOrder.Append);
         graphics.Clear(Color.White);
         graphics.DrawRectangles(pen, cloud.Rectangles.ToArray());
 
         return bitmap;
     }
 
-    public static float CalculateObjectDrawingScale(float width, float heigth, float imageWidth, float imageHeight)
+    public static float CalculateObjectDrawingScale(float width, float height, float imageWidth, float imageHeight)
     {
         var scale = 1f;
         var scaleAccuracy = 0.03f;
+        var widthScale = scale;
+        var heightScale = scale;
         if (width * scale > imageWidth)
-            scale = imageWidth / width - scaleAccuracy;
-        if (heigth * scale > imageHeight)
-            scale = imageHeight / heigth - scaleAccuracy;
-        return scale;
+            widthScale = imageWidth / width - scaleAccuracy;
+        if (height * scale > imageHeight)
+            heightScale = imageHeight / height - scaleAccuracy;
+        return Math.Max(widthScale, heightScale);
     }
 }

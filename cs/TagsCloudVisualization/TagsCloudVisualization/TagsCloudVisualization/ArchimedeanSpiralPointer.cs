@@ -5,33 +5,33 @@ namespace TagsCloudVisualization;
 
 public class ArchimedeanSpiralPointer : IFormPointer
 {
-    private double сurrentDifference;
-    private readonly double step;
-    private Point center;
-    private readonly double dadiusConst;
-    private readonly double angleConst;
-    private double Angle => сurrentDifference * angleConst;
-    private double Radius => сurrentDifference * dadiusConst;
+    private readonly double _angleConst;
+    private readonly Point _center;
+    private readonly double _radiusConst;
+    private readonly double _step;
+    private double _сurrentDifference;
 
     public ArchimedeanSpiralPointer(Point center, double step, double radiusConst, double angleConst)
     {
         if (step <= 0 || radiusConst <= 0 || angleConst <= 0)
             throw new ArgumentException("either step or radius or angle is not possitive");
 
-        this.center = center;
-        сurrentDifference = step;
-        this.step = step;
-        dadiusConst = radiusConst;
-        this.angleConst = angleConst;
+        _center = center;
+        _сurrentDifference = step;
+        _step = step;
+        _radiusConst = radiusConst;
+        _angleConst = angleConst;
     }
+
+    private double Angle => _сurrentDifference * _angleConst;
+    private double Radius => _сurrentDifference * _radiusConst;
 
     public Point GetNextPoint()
     {
-        сurrentDifference += step;
-        var x = center.X + (int)(Radius * Math.Cos(Angle));
-        var y = center.Y + (int)(Radius * Math.Sin(Angle));
+        _сurrentDifference += _step;
+        var x = _center.X + (int)(Radius * Math.Cos(Angle));
+        var y = _center.Y + (int)(Radius * Math.Sin(Angle));
 
         return new Point(x, y);
     }
 }
-
