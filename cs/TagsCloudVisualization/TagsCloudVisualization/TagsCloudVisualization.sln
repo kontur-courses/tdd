@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34202.233
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{3B411457-F79C-472E-ABE4-F0D60F3E71AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{69E878CA-753E-41C2-829B-8BC74B179992}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3B411457-F79C-472E-ABE4-F0D60F3E71AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B411457-F79C-472E-ABE4-F0D60F3E71AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B411457-F79C-472E-ABE4-F0D60F3E71AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B411457-F79C-472E-ABE4-F0D60F3E71AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69E878CA-753E-41C2-829B-8BC74B179992}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69E878CA-753E-41C2-829B-8BC74B179992}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69E878CA-753E-41C2-829B-8BC74B179992}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69E878CA-753E-41C2-829B-8BC74B179992}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {04C00585-EA28-4409-AEE5-FB1348018BA4}
+	EndGlobalSection
+EndGlobal
