@@ -6,13 +6,13 @@ namespace TagsCloudVisualization
     {
         private readonly ArchimedeanSpiral spiral;
         private readonly List<Rectangle> rectangles = [];
+        private readonly Point centerPoint;
 
         public IReadOnlyList<Rectangle> Rectangles => rectangles.AsReadOnly();
-        public Point CenterPoint { get; }
 
         public CircularCloudLayouter(Point centerPoint)
         {
-            CenterPoint = centerPoint;
+            this.centerPoint = centerPoint;
             spiral = new ArchimedeanSpiral(centerPoint);
         }
 
@@ -48,8 +48,8 @@ namespace TagsCloudVisualization
                 var newRectangle = GetMovedRectangle(rectangle, direction.X, direction.Y);
                 while (!IsIntersectsWithOthers(newRectangle))
                 {
-                    if (CenterPoint.X - newRectangle.Size.Width / 2 == newRectangle.X
-                        || CenterPoint.Y - newRectangle.Size.Height / 2 == newRectangle.Y)
+                    if (centerPoint.X - newRectangle.Size.Width / 2 == newRectangle.X
+                        || centerPoint.Y - newRectangle.Size.Height / 2 == newRectangle.Y)
                         break;
                     rectangle = newRectangle;
                     newRectangle = GetMovedRectangle(rectangle, direction.X, direction.Y);
@@ -61,8 +61,8 @@ namespace TagsCloudVisualization
 
         private List<(int X, int Y)> GetDirection(Rectangle rectangle)
         {
-            var horizontalDiffer = CenterPoint.X - rectangle.Size.Width / 2 - rectangle.X;
-            var verticalDiffer = CenterPoint.Y - rectangle.Size.Height / 2 - rectangle.Y;
+            var horizontalDiffer = centerPoint.X - rectangle.Size.Width / 2 - rectangle.X;
+            var verticalDiffer = centerPoint.Y - rectangle.Size.Height / 2 - rectangle.Y;
             var directions = new List<(int X, int Y)>();
             if (horizontalDiffer != 0 && verticalDiffer != 0)
                 directions.Add((horizontalDiffer > 0 ? 1 : -1, verticalDiffer > 0 ? 1 : -1));

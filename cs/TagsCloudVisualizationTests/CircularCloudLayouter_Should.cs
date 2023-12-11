@@ -44,13 +44,6 @@ namespace TagsCloudVisualizationTests
         }
 
         [TestCaseSource(typeof(TestDataArchimedeanSpiral), nameof(TestDataArchimedeanSpiral.Different_CenterPoints))]
-        public void PutNextRectangle_DoesNotAffectCeterPoint(Point centerPoint)
-        {
-            layouter = CreateLayouter_With_SeveralRectangles(30, centerPoint);
-            layouter.CenterPoint.Should().BeEquivalentTo(centerPoint);
-        }
-
-        [TestCaseSource(typeof(TestDataArchimedeanSpiral), nameof(TestDataArchimedeanSpiral.Different_CenterPoints))]
         public void Add_FirstRectangle_ToCenter(Point center)
         {
             layouter = new CircularCloudLayouter(center);
@@ -80,7 +73,8 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void DensityTest()
         {
-            layouter = CreateLayouter_With_SeveralRectangles(4000, new Point(960, 540));
+            var centerPoint = new Point(960, 540);
+            layouter = CreateLayouter_With_SeveralRectangles(4000, centerPoint);
             var rectanglesSquare = 0;
             var radius = 0;
             foreach (var rectangle in layouter.Rectangles)
@@ -88,12 +82,12 @@ namespace TagsCloudVisualizationTests
                 rectanglesSquare += rectangle.Width * rectangle.Height;
 
                 var x = Math.Max(
-                    Math.Abs(layouter.CenterPoint.X - rectangle.X),
-                    rectangle.X + rectangle.Width - layouter.CenterPoint.X
+                    Math.Abs(centerPoint.X - rectangle.X),
+                    rectangle.X + rectangle.Width - centerPoint.X
                     );
                 var y = Math.Max(
-                    Math.Abs(layouter.CenterPoint.Y - rectangle.Y),
-                    rectangle.Y + rectangle.Height - layouter.CenterPoint.Y
+                    Math.Abs(centerPoint.Y - rectangle.Y),
+                    rectangle.Y + rectangle.Height - centerPoint.Y
                 );
                 radius = Math.Max(radius, (int)Math.Sqrt(x * x + y * y));
             }
