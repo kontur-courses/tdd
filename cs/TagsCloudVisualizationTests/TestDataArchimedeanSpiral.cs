@@ -7,7 +7,7 @@ namespace TagsCloudVisualizationTests
     {
         public static IEnumerable<TestCaseData> Different_CenterPoints()
         {
-            yield return new TestCaseData(new Point(1, 1)).SetName("(1, 1) center");
+            yield return new TestCaseData(new Point(0, 0)).SetName("(0, 0) center");
             yield return new TestCaseData(new Point(343, 868)).SetName("(343, 868) center");
             yield return new TestCaseData(new Point(960, 540)).SetName("(960, 540) center");
         }

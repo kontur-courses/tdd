@@ -42,17 +42,17 @@ namespace TagsCloudVisualization
 
         private Rectangle GetCloserToCenterRectangle(Rectangle rectangle)
         {
-            var direction = GetDirection(rectangle);
-            for (var i = 0; i < direction.Count; i++)
+            var directions = GetDirection(rectangle);
+            foreach (var direction in directions)
             {
-                var newRectangle = GetMovedRectangle(rectangle, direction[i].X, direction[i].Y);
+                var newRectangle = GetMovedRectangle(rectangle, direction.X, direction.Y);
                 while (!IsIntersectsWithOthers(newRectangle))
                 {
                     if (CenterPoint.X - newRectangle.Size.Width / 2 == newRectangle.X
                         || CenterPoint.Y - newRectangle.Size.Height / 2 == newRectangle.Y)
                         break;
                     rectangle = newRectangle;
-                    newRectangle = GetMovedRectangle(rectangle, direction[i].X, direction[i].Y);
+                    newRectangle = GetMovedRectangle(rectangle, direction.X, direction.Y);
                 }
             }
 

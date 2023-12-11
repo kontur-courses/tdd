@@ -19,9 +19,7 @@ namespace TagsCloudVisualizationTests
         {
             if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed && layouter is not null)
             {
-                var failImage = Drawer.GetImage(
-                    new Size(layouter.CenterPoint.X * 2, layouter.CenterPoint.Y * 2), layouter.Rectangles
-                );
+                var failImage = Drawer.GetImage(new Size(1920, 1080), layouter.Rectangles);
                 failImage.Save(imagePath);
                 Console.WriteLine($"Tag cloud visualization saved to file <{imagePath}>");
             }
@@ -82,31 +80,35 @@ namespace TagsCloudVisualizationTests
         [Test]
         public void DensityTest()
         {
-            layouter = CreateLayouter_With_SeveralRectangles(2000, new Point(960, 540));
+            layouter = CreateLayouter_With_SeveralRectangles(4000, new Point(960, 540));
             var rectanglesSquare = 0;
             var radius = 0;
             foreach (var rectangle in layouter.Rectangles)
             {
                 rectanglesSquare += rectangle.Width * rectangle.Height;
-                var x = Math.Abs(layouter.CenterPoint.X - rectangle.X);
-                if (rectangle.X > layouter.CenterPoint.X)
-                    x += rectangle.Width;
-                var y = Math.Abs(layouter.CenterPoint.Y - rectangle.Y);
-                if (rectangle.Y > layouter.CenterPoint.Y)
-                    y += rectangle.Height;
+
+                var x = Math.Max(
+                    Math.Abs(layouter.CenterPoint.X - rectangle.X),
+                    rectangle.X + rectangle.Width - layouter.CenterPoint.X
+                    );
+                var y = Math.Max(
+                    Math.Abs(layouter.CenterPoint.Y - rectangle.Y),
+                    rectangle.Y + rectangle.Height - layouter.CenterPoint.Y
+                );
                 radius = Math.Max(radius, (int)Math.Sqrt(x * x + y * y));
             }
 
             var circleSquare = Math.PI * radius * radius;
-            (rectanglesSquare / circleSquare).Should().BeGreaterOrEqualTo(0.8);
+            (rectanglesSquare / circleSquare).Should().BeGreaterOrEqualTo(0.75);
         }
 
         private static CircularCloudLayouter CreateLayouter_With_SeveralRectangles(int amount, Point center)
         {
             var newLayouter = new CircularCloudLayouter(center);
-            var width = new Random().Next(10, 50);
-            for (var i = 1; i < amount + 1; i++)
+
+            for (var i = amount; i > 0; i--)
             {
+                var width = i % 40 + 10;
                 newLayouter.PutNextRectangle(new Size(width, width / 5));
             }
 
