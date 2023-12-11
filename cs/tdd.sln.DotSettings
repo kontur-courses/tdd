@@ -80,4 +80,5 @@ public void SetUp()&#xD;
 {&#xD;
 	$END$&#xD;
 }&#xD;
-</s:String></wpf:ResourceDictionary>
+</s:String>
+	</wpf:ResourceDictionary>
