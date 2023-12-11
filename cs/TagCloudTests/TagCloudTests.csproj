@@ -27,4 +27,9 @@
       <Reference Include="System.Drawing.Common" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Examples\" />
+      <Folder Include="Test\" />
+    </ItemGroup>
+
 </Project>

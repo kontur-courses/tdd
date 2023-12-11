@@ -5,45 +5,49 @@ namespace TagCloud;
 public class SpiralCloudShaper : ICloudShaper
 {
     private Point center;
-    private Point previousPoint;
-    
-    private double currentAngle;
     private double coefficient;
     private double deltaAngle;
-
-    public double Radius => coefficient * currentAngle;
     
-    public SpiralCloudShaper(Point center, double coefficient = 1, double deltaAngle = 0.1)
+    private SpiralCloudShaper(Point center, double coefficient, double deltaAngle)
     {
         this.center = center;
-        if (coefficient <= 0)
-            throw new ArgumentException("Spiral coefficient must be positive number");
-        this.coefficient = coefficient;
-        
-        if (deltaAngle <= 0)
-            throw new ArgumentException("Spiral delta angle must be positive number");
         this.deltaAngle = deltaAngle;
-        
-        currentAngle = 0;
-        previousPoint = center;
+        this.coefficient = coefficient;
     }
-    public Point GetNextPossiblePoint()
+    
+    public IEnumerable<Point> GetPossiblePoints()
     {
-        currentAngle += deltaAngle;
-        var position = CalculatePointByCurrentAngle();
-        while (position == previousPoint)
+        var currentAngle = 0D;
+        var position = center;
+        var previousPoint = position;
+        while(true)
         {
-            currentAngle += deltaAngle;
-            position = CalculatePointByCurrentAngle();
+            while (position == previousPoint)
+            {
+                currentAngle += deltaAngle;
+                previousPoint = position;
+                position = CalculatePointByCurrentAngle(currentAngle);
+            }
+            yield return position;
+            previousPoint = position;
+            position = CalculatePointByCurrentAngle(currentAngle);
         }
-        return position;
     }
 
-    private Point CalculatePointByCurrentAngle()
+    private Point CalculatePointByCurrentAngle(double angle)
     {
         return new Point(
-            center.X + (int)(Radius * Math.Cos(currentAngle)), 
-            center.Y + (int)(Radius * Math.Sin(currentAngle))
+            center.X + (int)(coefficient * angle * Math.Cos(angle)), 
+            center.Y + (int)(coefficient * angle * Math.Sin(angle))
         );
+    }
+
+    public static SpiralCloudShaper Create(Point center, double coefficient = 0.1, double deltaAngle = 0.1)
+    {
+        if (coefficient <= 0)
+            throw new ArgumentException("Spiral coefficient must be positive number");
+        if (deltaAngle <= 0)
+            throw new ArgumentException("Spiral delta angle must be positive number");
+        return new SpiralCloudShaper(center, coefficient, deltaAngle);
     }
 }

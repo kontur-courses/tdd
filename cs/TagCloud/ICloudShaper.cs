@@ -4,5 +4,5 @@ namespace TagCloud;
 
 public interface ICloudShaper
 {
-    Point GetNextPossiblePoint();
+    IEnumerable<Point> GetPossiblePoints();
 }

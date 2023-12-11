@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics.Metrics;
+using System.Drawing;
 
 namespace TagCloudTests;
 
@@ -16,10 +17,16 @@ public static class Extensions
 
     public static bool HasIntersectedRectangles(this IEnumerable<Rectangle> rectangles)
     {
-        foreach (var (first, second) in rectangles.CartesianProduct())
-            if (first.IntersectsWith(second))
-                return true;
+        return rectangles
+            .SelectMany(
+                (x, i) => rectangles.Skip(i + 1), 
+                (x, y) => Tuple.Create(x, y)
+            )
+            .Any(tuple => tuple.Item1.IntersectsWith(tuple.Item2));
+    }
 
-        return false;
+    public static double GetDistanceTo(this Point first, Point second)
+    {
+        return Math.Sqrt((first.X - second.X) * (first.X - second.X) + (first.Y - second.Y) * (first.Y - second.Y));
     }
 }
