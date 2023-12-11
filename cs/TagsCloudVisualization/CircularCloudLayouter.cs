@@ -14,7 +14,7 @@ namespace TagsCloudVisualization
             cloud = new Cloud(center);
             distributor = type;
         }
-
+        
         public Rectangle PutNextRectangle(Size rectangleSize)
         {
             if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)

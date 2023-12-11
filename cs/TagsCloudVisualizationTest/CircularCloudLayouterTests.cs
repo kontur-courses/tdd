@@ -14,8 +14,8 @@ namespace TagsCloudVisualizationTest
     [TestFixture]
     public class CircularCloudLayouterTests
     {
-        private CircularCloudLayouter layouter = new CircularCloudLayouter(Center, new Spiral());
-        private static readonly Point Center = new Point(500, 500);
+        private readonly CircularCloudLayouter layouter = new CircularCloudLayouter(Center, new Spiral());
+        private static readonly Point Center = new Point(50, 50);
         private RectangleF[] currentRectangles;
 
         [TearDown]
@@ -25,12 +25,12 @@ namespace TagsCloudVisualizationTest
                 TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
                 return;
 
-            var cloudCreator = new TagCloudCreator();
-            var imageName = TestContext.CurrentContext.Test.Name;
-            cloudCreator.CreateCloud(currentRectangles, imageName);
+            var cloudCreator = new TagCloudRenderer();
+            var settings = new VisualizingSettings(TestContext.CurrentContext.Test.Name, new Size(100, 100));
+            cloudCreator.DrawCloud(currentRectangles, settings);
 
             var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().CodeBase);
-            Console.WriteLine($"Tag cloud visualization saved to {path}\\{imageName}");
+            Console.WriteLine($"Tag cloud visualization saved to {path}\\{settings.ImageName}");
         }
 
         [Test]
@@ -71,8 +71,7 @@ namespace TagsCloudVisualizationTest
 
         [TestOf(nameof(CircularCloudLayouter.PutNextRectangle))]
         [TestCaseSource(nameof(RectanglesPosition))]
-        public bool WhenPassSeveralRectangles_ShouldReturnCorrectIntersectionResult(Size rectangleSize,
-            Size newRectangleSize)
+        public bool WhenPassSeveralRectangles_ShouldReturnCorrectIntersectionResult(Size rectangleSize, Size newRectangleSize)
         {
             currentRectangles = new RectangleF[]
             {
@@ -92,8 +91,8 @@ namespace TagsCloudVisualizationTest
                 layouter.PutNextRectangle(new Size(40, 20))
             };
 
-            currentRectangles.First().Location.X.Should().Be(480);
-            currentRectangles.First().Location.Y.Should().Be(490);
+            currentRectangles.First().Location.X.Should().Be(30);
+            currentRectangles.First().Location.Y.Should().Be(40);
         }
     }
 }
