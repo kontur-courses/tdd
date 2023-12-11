@@ -72,7 +72,10 @@ namespace TagCloud.Tests
         }
 
         [Test]
-        public void PutNextRectangle_PlaceManyRectangles_ShouldFitInCircleAroundCenter()
+        [Description(
+            "Проверяет, что прямоугольники расположены внутри узкого круга с центром в точке center." +
+            "Это гарантирует, что прямоугольники расположены в виде круга достаточно плотно.")]
+        public void PutNextRectangle_PlaceManyRectangles_ShouldFitInTightCircleAroundCenter()
         {
             var rectangles = sizes.Select(x => layouter.PutNextRectangle(x)).ToArray();
 

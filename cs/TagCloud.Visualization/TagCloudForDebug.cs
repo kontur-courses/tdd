@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Numerics;
 
-namespace TagCloud
+namespace TagCloud.Visualization
 {
     public class TagCloudForDebug
     {
@@ -109,7 +109,7 @@ namespace TagCloud
                 var tan = Math.Tan(rad);
                 var x = 1f;
                 var y = (float)(tan * x);
-                
+
                 for (var j = 0; j < muls.Length - 1; j++)
                 {
                     var vector = new Vector2(x * muls[j], y * muls[j + 1]);
@@ -145,7 +145,7 @@ namespace TagCloud
 
             foreach (var dir in dirs)
             {
-                g.FillRectangle(Brushes.Red ,new RectangleF(dir.X * 200 + center.X
+                g.FillRectangle(Brushes.Red, new RectangleF(dir.X * 200 + center.X
                     , dir.Y * 200 + center.Y, 5, 5));
             }
 
