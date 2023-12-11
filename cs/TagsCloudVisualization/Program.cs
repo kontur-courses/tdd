@@ -32,9 +32,5 @@ public class CircularCloudLayouter : ITagCloudLayouter
     
     static void Main(string[] args)
     {
-        var myCenter = new Point(0, 0);
-        var test = new CircularCloudLayouter(myCenter);
-        var ans = test.spiralPointsGenerator.GetPoints().Take(100000).ToList();
-        //Console.WriteLine(test.spiralPointsGenerator.GetPoints().Take(100).ToList());
     }
 }

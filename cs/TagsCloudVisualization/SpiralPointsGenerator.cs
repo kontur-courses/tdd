@@ -25,8 +25,6 @@ public sealed class SpiralPointsGenerator : IPointsGenerator
             for (var pointNumber = 0; pointNumber < 360; pointNumber++)
             {
                 var pointAngle = 2 * Math.PI * pointNumber / 360;
-                // yield return new Point((int)(Math.Cos(pointAngle) * radius) + center.X,
-                //     (int)(Math.Sin(pointAngle) * radius) + center.Y);
                 var currentPoint = new Point(center.X, center.Y);
                 currentPoint.Offset((int)(Math.Cos(pointAngle) * radius), (int)(Math.Sin(pointAngle) * radius));
                 yield return currentPoint;
