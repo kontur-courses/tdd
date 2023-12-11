@@ -1,11 +1,10 @@
 ﻿using System.Drawing;
 
-namespace TagsCloudVisualization;
+namespace TagsCloudVisualization.CloudLayouters;
 
 public interface ITagsCloudLayouter
 {
+    Point Center { get; }
     IEnumerable<Rectangle> Rectangles { get; }
     Rectangle PutNextRectangle(Size rectangleSize);
-    Point FindPositionForRectangle(Size rectangleSize);
-    bool IsPlaceSuitableForRectangle(Rectangle rectangle);
 }
