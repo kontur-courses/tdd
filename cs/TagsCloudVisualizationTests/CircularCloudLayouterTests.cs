@@ -24,11 +24,12 @@ public class CircularCloudLayouterTests
     {
         if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
         {
-            new ImageGenerator(
+            using var imageGenerator = new ImageGenerator(
                 FileHandler.GetOutputRelativeFilePath($"{FailOutputName}.jpg"),
                 FileHandler.GetSourceRelativeFilePath("JosefinSans-Regular.ttf"),
                 30, 1920, 1080
-            ).DrawLayout(circularCloudLayouter.PlacedRectangles);
+            );
+            imageGenerator.DrawLayout(circularCloudLayouter.PlacedRectangles);
             Console.WriteLine("Tag cloud visualization saved to file " +
                               FileHandler.GetOutputRelativeFilePath($"{FailOutputName}.jpg"));
         }

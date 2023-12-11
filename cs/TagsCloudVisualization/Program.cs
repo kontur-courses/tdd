@@ -9,4 +9,4 @@ using var imageGenerator = new ImageGenerator(
 new TagCloudVisualizer(
     new CircularCloudLayouter(new Point(960, 540)),
     imageGenerator
-).GenerateLayout(new WordsDataSet(FileHandler.ReadText("words1000"))).DrawTagCloud();
+).GenerateTagCloud(new WordsDataSet(FileHandler.ReadText("words1000")));

@@ -7,7 +7,7 @@ public class TagCloudVisualizer(CircularCloudLayouter circularCloudLayouter,
 {
     private readonly List<(string word, int frequency, Rectangle outline)> wordsFrequenciesOutline = new();
 
-    public TagCloudVisualizer GenerateLayout(WordsDataSet wordsDataSet)
+    public void GenerateTagCloud(WordsDataSet wordsDataSet)
     {
         foreach (var kvp in wordsDataSet.CreateFrequencyDict())
         {
@@ -16,11 +16,6 @@ public class TagCloudVisualizer(CircularCloudLayouter circularCloudLayouter,
             wordsFrequenciesOutline.Add((kvp.word, kvp.count, rectangle));
         }
 
-        return this;
-    }
-
-    public void DrawTagCloud()
-    {
         imageGenerator.DrawTagCloud(wordsFrequenciesOutline);
     }
 }
