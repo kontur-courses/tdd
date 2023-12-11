@@ -11,7 +11,7 @@ static class Program
             new Point(100, 100), 
             64,
             new VisualizerParams(200, 200));
-
+        
         var visualizerParams = new VisualizerParams();
         visualizerParams.BgColor = Color.Cyan;
         visualizerParams.RectangleColor = Color.Black;
@@ -20,6 +20,17 @@ static class Program
             new Point(250, 250), 
             512,
             visualizerParams);
+        
+        GenerateExample(new Point(100, 100), 32);
+    }
+
+    private static void GenerateExample(Point center, int rectanglesAmount)
+    {
+        var layouter = GetLayouter(center, rectanglesAmount);
+        var visualizerParams = new VisualizerParams(layouter, $"Example{rectanglesAmount}.png");
+        
+        var visualizer = new CircularCloudVisualizer(visualizerParams);
+        visualizer.Visualize(layouter);
     }
 
     private static void GenerateExample(Point center, int rectanglesAmount, VisualizerParams visualizerParams)
