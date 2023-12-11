@@ -1,5 +1,6 @@
 using System.Reflection;
 using NUnit.Framework.Interfaces;
+using TagsCloudVisualizationTests.Extensions;
 
 namespace TagsCloudVisualizationTests;
 
@@ -55,19 +56,6 @@ public class CircularCloudLayouterTests
     public void PutNextRectangle_MustBeEfficient()
     {
         AddRectangles(_layouter).Count();
-    }
-
-    private static IEnumerable<Rectangle> AddRectangles(CircularCloudLayouter layouter, int count = 100)
-    {
-        var rnd = new Random(228_666);
-        
-        for (var i = 0; i < count; i++) 
-            yield return layouter.PutNextRectangle(GetNextRandomSize(rnd));
-    }
-
-    private static Size GetNextRandomSize(Random rnd)
-    {
-        return new Size(rnd.Next(1, 10), rnd.Next(1, 10));
     }
 
     [TestCase(0, TestName = "WhenEmpty")]
@@ -151,14 +139,17 @@ public class CircularCloudLayouterTests
             .Should()
             .Implement(typeof(IReadOnlyCollection<Rectangle>));
     }
-}
-
-public static class TypeExtensions
-{
-    public static object? GetAndInvokeMethod(this Type type, string methodName, BindingFlags flags, object obj, params object[] parameters)
+    
+    private static IEnumerable<Rectangle> AddRectangles(CircularCloudLayouter layouter, int count = 100)
     {
-        return type
-            .GetMethod(methodName, flags)!
-            .Invoke(obj, parameters);
+        var rnd = new Random(228_666);
+        
+        for (var i = 0; i < count; i++) 
+            yield return layouter.PutNextRectangle(GetNextRandomSize(rnd));
+    }
+
+    private static Size GetNextRandomSize(Random rnd)
+    {
+        return new Size(rnd.Next(1, 10), rnd.Next(1, 10));
     }
 }

@@ -32,6 +32,8 @@ public class CircularCloudVisualizer
 
         var rectanglesPen = new Pen(_visualizerParams.RectangleColor);
         graphics.DrawRectangles(rectanglesPen, rectangles.ToArray());
+        
+        graphics.Dispose();
 
         return bitmap;
     }

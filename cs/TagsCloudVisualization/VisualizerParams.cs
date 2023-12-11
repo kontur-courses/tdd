@@ -10,15 +10,46 @@ public class VisualizerParams
     private int _height;
     private string _pathToFile;
     private string _fileName;
-    
-    public VisualizerParams(int width = 500, int height = 500, string fileName = "TagsCloud.png")
+
+    private VisualizerParams(string fileName = "TagsCloud.png")
     {
-        Width = width;
-        Height = height;
         PathToFile = "../../../TagCloudImages";
         BgColor = Color.Black;
         RectangleColor = Color.Chocolate;
         FileName = fileName;
+    }
+    
+    public VisualizerParams(int width, int height, string fileName = "TagsCloud.png") 
+        : this(fileName)
+    {
+        Width = width;
+        Height = height;
+    }
+    
+    public VisualizerParams() : this(500, 500)
+    {
+    }
+    
+    public VisualizerParams(IEnumerable<Rectangle> rectangles, string fileName = "TagsCloud.png") 
+        : this(fileName)
+    {
+        var (maxRight, maxBottom, minLeft, minTop) = (int.MinValue, int.MinValue, int.MaxValue, int.MaxValue);
+
+        foreach (var rectangle in rectangles)
+        {
+            maxRight = Math.Max(maxRight, rectangle.Right);
+            maxBottom = Math.Max(maxBottom, rectangle.Bottom);
+            minLeft = Math.Min(minLeft, rectangle.Left);
+            minTop = Math.Min(minTop, rectangle.Top);
+        }
+
+        Width = maxRight + minLeft;
+        Height = maxBottom + minTop;
+    }
+    
+    public VisualizerParams(CircularCloudLayouter layouter, string fileName = "TagsCloud.png") 
+        : this(layouter.GetRectangles, fileName)
+    {
     }
 
     public int Width
