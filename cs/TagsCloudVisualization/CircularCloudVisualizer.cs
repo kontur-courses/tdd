@@ -25,16 +25,14 @@ public class CircularCloudVisualizer
 
     private Image GetImage(IEnumerable<Rectangle> rectangles)
     {
-        var bitmap = new Bitmap(_visualizerParams.Width, _visualizerParams.Height);
-        var graphics = Graphics.FromImage(bitmap);
+        using var bitmap = new Bitmap(_visualizerParams.Width, _visualizerParams.Height);
+        using var graphics = Graphics.FromImage(bitmap);
         
         graphics.FillRectangle(new SolidBrush(_visualizerParams.BgColor), new Rectangle(0, 0, _visualizerParams.Width, _visualizerParams.Height));
 
         var rectanglesPen = new Pen(_visualizerParams.RectangleColor);
         graphics.DrawRectangles(rectanglesPen, rectangles.ToArray());
-        
-        graphics.Dispose();
-
+                
         return bitmap;
     }
 
