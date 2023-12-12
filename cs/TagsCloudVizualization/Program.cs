@@ -23,7 +23,8 @@ public class Program
     private static CircularCloudLayouter CreateLayouter()
     {
         var center = new Point(ImageWidth / 2, ImageHeight / 2);
-        return new CircularCloudLayouter(center);
+        var spiral = new Spiral(center, 0.02, 0.01);
+        return new CircularCloudLayouter(center, spiral);
     }
 
     private static void AddRandomRectangles(CircularCloudLayouter layouter)

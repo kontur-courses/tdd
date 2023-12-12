@@ -3,12 +3,23 @@ using TagsCloudVizualization.Interfaces;
 
 namespace TagsCloudVizualization.Utility;
 
-public class Spiral : ISpiral
+public class Spiral : INextPointProvider
 {
     private readonly Point center;
     private readonly double angleStep;
     private readonly double radiusStep;
+    private double angle;
+    private double radius;  
 
+      
+    public Point GetNextPoint()
+    {
+        var point = ConvertFromPolarToCartesian(angle, radius);
+        point.Offset(center);
+        angle += angleStep;
+        radius += radiusStep;
+        return point;
+    }
     public Spiral(Point center, double angleStep, double radiusStep)
     {
         if (radiusStep <= 0 || angleStep <= 0)
@@ -20,6 +31,7 @@ public class Spiral : ISpiral
         this.angleStep = angleStep;
         this.radiusStep = radiusStep;
     }
+  
 
     public IEnumerable<Point> GetPointsOnSpiral()
     {

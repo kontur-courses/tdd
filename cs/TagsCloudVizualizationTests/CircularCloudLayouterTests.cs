@@ -13,13 +13,15 @@ public class CircularCloudLayouterTests
     [SetUp]
     public void Setup()
     {
-        sut = new CircularCloudLayouter(center);
+        center = new Point(720, 720);
+        var spiral = new Spiral(center, 0.02, 0.01);
+        sut = new CircularCloudLayouter(center, spiral);
     }
     
     [Test]
     public void Constructor_ShouldNotThrow()
     {
-        Assert.DoesNotThrow(() => new CircularCloudLayouter(center));
+        Assert.DoesNotThrow(() => new CircularCloudLayouter(center, new Spiral(center, 0.02, 0.01)));
     }
 
     [TestCase(-4, 16, TestName = "with negative rectangle width")]
@@ -42,7 +44,9 @@ public class CircularCloudLayouterTests
     [TestCase(200, TestName = "200 rectangles with maximum density")]
    public void PutNextRectangle_RectanglesShouldHaveMaximumDensity(int rectanglesCount)
 {
-    var layouter = new CircularCloudLayouter(new Point(0, 0));
+    var center = new Point(0, 0);
+    var spiral = new Spiral(center, 0.02, 0.01);
+    var layouter = new CircularCloudLayouter(center, spiral);
     var rectangleSize = new Size(10, 10);
 
     GenerateRectangles(layouter, rectangleSize, rectanglesCount);

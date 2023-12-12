@@ -8,15 +8,13 @@ public class CircularCloudLayouter : ICircularCloudLayouter
 {
     private readonly Point center;
     private readonly List<Rectangle> rectangles;
-    private readonly Spiral spiral;
-    private readonly IEnumerator<Point> spiralPointsEnumerator;
+    private readonly INextPointProvider pointProvider;
 
-    public CircularCloudLayouter(Point center)
+    public CircularCloudLayouter(Point center, INextPointProvider pointProvider)
     {
         this.center = center;
         rectangles = new();
-        spiral = new(center, 0.02, 0.01);
-        spiralPointsEnumerator = spiral.GetPointsOnSpiral().GetEnumerator();
+        this.pointProvider = pointProvider;
     }
 
     public Point CloudCenter => center;
@@ -44,8 +42,8 @@ public class CircularCloudLayouter : ICircularCloudLayouter
     {
         while (true)
         {
-            spiralPointsEnumerator.MoveNext();
-            var rectangleLocation = GetUpperLeftCorner(spiralPointsEnumerator.Current, rectangleSize);
+            var nextPoint = pointProvider.GetNextPoint();
+            var rectangleLocation = GetUpperLeftCorner(nextPoint, rectangleSize);
             var rectangle = new Rectangle(rectangleLocation, rectangleSize);
 
             if (!RectanglesIntersect(rectangle))
