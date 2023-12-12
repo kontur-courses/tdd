@@ -27,11 +27,12 @@ public class CircularCloudVisualizer
     {
         using var bitmap = new Bitmap(_visualizerParams.Width, _visualizerParams.Height);
         using var graphics = Graphics.FromImage(bitmap);
+        using var brush = new SolidBrush(_visualizerParams.BgColor);
+        using var pen = new Pen(_visualizerParams.RectangleColor);
         
-        graphics.FillRectangle(new SolidBrush(_visualizerParams.BgColor), new Rectangle(0, 0, _visualizerParams.Width, _visualizerParams.Height));
-
-        var rectanglesPen = new Pen(_visualizerParams.RectangleColor);
-        graphics.DrawRectangles(rectanglesPen, rectangles.ToArray());
+        graphics.FillRectangle(brush, new Rectangle(0, 0, _visualizerParams.Width, _visualizerParams.Height));
+        
+        graphics.DrawRectangles(pen, rectangles.ToArray());
                 
         return bitmap;
     }
