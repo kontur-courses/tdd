@@ -9,7 +9,7 @@ public class CircularCloudLayouterTests
 {
     private CircularCloudLayouter sut;
     private Point center = new(720, 720);
-
+    
     [SetUp]
     public void Setup()
     {
@@ -36,7 +36,42 @@ public class CircularCloudLayouterTests
         
         rectangle.Size.Should().Be(new Size(8, 8));
     }
+    
+    [TestCase(10, TestName = "10 rectangles with maximum density")]
+    [TestCase(100, TestName = "100 rectangles with maximum density")]
+    [TestCase(200, TestName = "200 rectangles with maximum density")]
+   public void PutNextRectangle_RectanglesShouldHaveMaximumDensity(int rectanglesCount)
+{
+    var layouter = new CircularCloudLayouter(new Point(0, 0));
+    var rectangleSize = new Size(10, 10);
 
+    GenerateRectangles(layouter, rectangleSize, rectanglesCount);
+
+    CheckDensity(layouter.Rectangles).Should().BeTrue();
+}
+        private void GenerateRectangles(CircularCloudLayouter layouter, Size rectangleSize, int rectanglesCount)
+        {
+            for (int i = 0; i < rectanglesCount; i++)
+            {
+                layouter.PutNextRectangle(rectangleSize);
+            }
+        }
+
+        private bool CheckDensity(IList<Rectangle> rectangles)
+        {
+            var thresholdOverlapPercentage = 0.2;
+            var totalPairs = rectangles.Count * (rectangles.Count - 1) / 2;
+
+            var intersectedPairsCount = rectangles
+                .SelectMany((rect1, index1) => rectangles.Skip(index1 + 1)
+                    .Select(rect2 => rect1.IntersectsWith(rect2)))
+                .Count(isIntersected => isIntersected);
+
+            var overlapPercentage = (double)intersectedPairsCount / totalPairs;
+
+            return overlapPercentage <= thresholdOverlapPercentage;
+        }
+        
     [Test]
     public void PutNextRectangle_FirstRectangle_ShouldHaveCenterAtLayoutCenter()
     {
@@ -68,6 +103,44 @@ public class CircularCloudLayouterTests
         var secondRectangle = sut.PutNextRectangle(new Size(77, 77));
         
         secondRectangle.IntersectsWith(firstRectangle).Should().BeFalse();
+    }
+    
+    [TestCase(10, TestName = "10 rectangles WithNoIntersects")]
+    [TestCase(100, TestName = "100 rectangles WithNoIntersects")]
+    [TestCase(200, TestName = "200 rectangles WithNoIntersects")]
+    public void PutNextRectangle_GeneratesRectanglesWithoutIntersects(int rectanglesCount)
+    {
+        GenerateRectangles(rectanglesCount, new Size(10, 10));
+
+        Assert.IsFalse(HasIntersectedRectangles(sut.Rectangles));
+    }
+    
+    private bool HasIntersectedRectangles(IList<Rectangle> rectangles)
+    {
+        for (var i = 0; i < rectangles.Count - 1; i++)
+        {
+            for (var j = i + 1; j < rectangles.Count; j++)
+            {
+                if (RectanglesIntersect(rectangles[i], rectangles[j]))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private bool RectanglesIntersect(Rectangle first, Rectangle second)
+    {
+        return first.IntersectsWith(second);
+    }
+
+    private void GenerateRectangles(int count, Size rectangleSize)
+    {
+        for (var i = 0; i < count; i++)
+        {
+            sut.PutNextRectangle(rectangleSize);
+        }
     }
     
     [TearDown]

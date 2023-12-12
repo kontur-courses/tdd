@@ -8,8 +8,6 @@ public class Spiral : ISpiral
     private readonly Point center;
     private readonly double angleStep;
     private readonly double radiusStep;
-    private double radius;
-    private double angle;
 
     public Spiral(Point center, double angleStep, double radiusStep)
     {
@@ -21,8 +19,6 @@ public class Spiral : ISpiral
         this.center = center;
         this.angleStep = angleStep;
         this.radiusStep = radiusStep;
-        radius = 0;
-        angle = 0;
     }
 
     public IEnumerable<Point> GetPointsOnSpiral()
@@ -35,7 +31,7 @@ public class Spiral : ISpiral
         }
     }
 
-    public static Point ConvertFromPolarToCartesian(double angle, double radius)
+    private static Point ConvertFromPolarToCartesian(double angle, double radius)
     {
         var x = (int)Math.Round(Math.Cos(angle) * radius);
         var y = (int)Math.Round(Math.Sin(angle) * radius);
