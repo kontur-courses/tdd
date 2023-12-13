@@ -29,7 +29,7 @@ public class CircularCloudLayouter : ICircularCloudLayouter
 
         return currentRectangle;
     }
-    
+
     private void ValidateRectangleSize(Size rectangleSize)
     {
         if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)

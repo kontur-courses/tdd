@@ -9,9 +9,9 @@ public class Spiral : INextPointProvider
     private readonly double angleStep;
     private readonly double radiusStep;
     private double angle;
-    private double radius;  
+    private double radius;
 
-      
+
     public Point GetNextPoint()
     {
         var point = ConvertFromPolarToCartesian(angle, radius);
@@ -20,6 +20,7 @@ public class Spiral : INextPointProvider
         radius += radiusStep;
         return point;
     }
+
     public Spiral(Point center, double angleStep, double radiusStep)
     {
         if (radiusStep <= 0 || angleStep <= 0)
@@ -31,11 +32,11 @@ public class Spiral : INextPointProvider
         this.angleStep = angleStep;
         this.radiusStep = radiusStep;
     }
-  
+
 
     public IEnumerable<Point> GetPointsOnSpiral()
     {
-        for (double angle = 0, radius = 0; ; angle += angleStep, radius += radiusStep)
+        for (double angle = 0, radius = 0;; angle += angleStep, radius += radiusStep)
         {
             var point = ConvertFromPolarToCartesian(angle, radius);
             point.Offset(center);

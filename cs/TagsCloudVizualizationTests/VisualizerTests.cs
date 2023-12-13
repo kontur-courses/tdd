@@ -27,7 +27,7 @@ public class VisualizerTests
         var rectangles = new[] { new Rectangle(0, 0, 10, 10), new Rectangle(15, 15, 20, 20) };
 
         var bitmap = Visualizer.VisualizeRectangles(rectangles, 100, 100);
-        
+
         bitmap.Should().NotBeNull();
     }
 
@@ -35,7 +35,7 @@ public class VisualizerTests
     public void SaveBitmap_ShouldSaveImageToDirectory()
     {
         var bitmap = new Bitmap(100, 100);
-        
+
         Visualizer.SaveBitmap(bitmap, "test_image.png", testDirectory);
 
         var imagePath = Path.Combine(testDirectory, "test_image.png");
@@ -47,7 +47,7 @@ public class VisualizerTests
     {
         var bitmap = new Bitmap(100, 100);
         var nonExistentDirectory = Path.Combine(testDirectory, "NonExistent");
-        
+
         Assert.Throws<DirectoryNotFoundException>(() =>
             Visualizer.SaveBitmap(bitmap, "test_image.png", nonExistentDirectory));
     }
