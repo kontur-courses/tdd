@@ -1,16 +1,14 @@
 ﻿using System.Drawing;
 using System.Drawing.Imaging;
-using System.Text.Encodings.Web;
 using FluentAssertions;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 
-namespace TagsCloudVisualization;
+namespace TagsCloudVisualization.Tests;
 
 [TestFixture]
-public class Tests
+public class CircularCloudLayouter_Should
 {
     private readonly string path = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestsResults");
     private CircularCloudLayouter cloudLayouter;
