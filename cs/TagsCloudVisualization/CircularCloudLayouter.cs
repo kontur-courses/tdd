@@ -9,6 +9,10 @@ public class CircularCloudLayouter : ILayouter
     private Point center;
     private double spiralStep;
     private double angle;
+    private const double DefaultAngleStep = Math.PI / 10;
+    private const double DefaultSpiralStep = 1;
+    private const double FullCircle = Math.PI * 2;
+    private const int SpiralStepThreshold = 10;
 
     public CircularCloudLayouter(Point center)
     {
@@ -56,12 +60,7 @@ public class CircularCloudLayouter : ILayouter
                 return candidateRectangle.Location;
             }
 
-            currentAngle += GetAngleStep();
-            if (currentAngle > Math.PI * 2)
-            {
-                currentAngle %= Math.PI * 2;
-                UpdateSpiral();
-            }
+            currentAngle = CalculateAngle(currentAngle);
         }
     }
 
@@ -71,20 +70,30 @@ public class CircularCloudLayouter : ILayouter
             .Any(candidateRectangle.IntersectsWith);
     }
 
+    private double CalculateAngle(double currentAngle)
+    {
+        currentAngle += GetAngleStep();
+        if (currentAngle > FullCircle)
+        {
+            currentAngle %= FullCircle;
+            UpdateSpiral();
+        }
+
+        return currentAngle;
+    }
+
     private void UpdateSpiral()
     {
-        spiralStep += 1;
+        spiralStep += DefaultSpiralStep;
     }
 
     private double GetAngleStep()
     {
-        var defaultStep = Math.PI / 10;
-        var count = (int)spiralStep / 10;
-        if (count > 0)
-        {
-            defaultStep /= count;
-        }
+        var angleStep = DefaultAngleStep;
+        var stepCount = (int)spiralStep / SpiralStepThreshold;
+        if (stepCount > 0)
+            angleStep /= stepCount;
 
-        return defaultStep;
+        return angleStep;
     }
 }
