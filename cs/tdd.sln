@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BowlingGame", "BowlingGame\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.csproj", "{B5108E20-2ACF-4ED9-84FE-2A718050FC94}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{67D793C9-2F5B-4583-AB88-B389A926A40D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualizationTest", "TagsCloudVisualizationTest\TagsCloudVisualizationTest.csproj", "{26089CBC-A21C-465E-9B1F-ABE8AC078ED3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67D793C9-2F5B-4583-AB88-B389A926A40D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67D793C9-2F5B-4583-AB88-B389A926A40D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67D793C9-2F5B-4583-AB88-B389A926A40D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67D793C9-2F5B-4583-AB88-B389A926A40D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26089CBC-A21C-465E-9B1F-ABE8AC078ED3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26089CBC-A21C-465E-9B1F-ABE8AC078ED3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26089CBC-A21C-465E-9B1F-ABE8AC078ED3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26089CBC-A21C-465E-9B1F-ABE8AC078ED3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
