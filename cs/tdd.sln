@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BowlingGame", "BowlingGame\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.csproj", "{B5108E20-2ACF-4ED9-84FE-2A718050FC94}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{9A15B51A-1DD6-46C0-B51D-4C4CA20519EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualizationTests", "tests\TagsCloudVisualizationTests\TagsCloudVisualizationTests.csproj", "{35A3C69B-E90C-4302-A2CC-52DC5EFEB57B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{12ED18DC-E693-46FC-845B-9F6B276B6034}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,8 +27,19 @@ Global
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A15B51A-1DD6-46C0-B51D-4C4CA20519EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A15B51A-1DD6-46C0-B51D-4C4CA20519EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A15B51A-1DD6-46C0-B51D-4C4CA20519EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A15B51A-1DD6-46C0-B51D-4C4CA20519EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35A3C69B-E90C-4302-A2CC-52DC5EFEB57B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35A3C69B-E90C-4302-A2CC-52DC5EFEB57B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35A3C69B-E90C-4302-A2CC-52DC5EFEB57B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35A3C69B-E90C-4302-A2CC-52DC5EFEB57B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{35A3C69B-E90C-4302-A2CC-52DC5EFEB57B} = {12ED18DC-E693-46FC-845B-9F6B276B6034}
 	EndGlobalSection
 EndGlobal
