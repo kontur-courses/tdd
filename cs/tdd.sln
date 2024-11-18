@@ -1,11 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BowlingGame", "BowlingGame\BowlingGame.csproj", "{AD0F018A-732E-4074-8527-AB2EEC8D0BF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BowlingGame", "BowlingGame\BowlingGame.csproj", "{C85E7A84-31BB-4BF0-9FE3-7BA9849DA0D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.csproj", "{B5108E20-2ACF-4ED9-84FE-2A718050FC94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples", "Samples\Samples.csproj", "{659717CA-38A3-4CE2-BB32-18142E4C5373}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{1E0AAECB-7355-4B9F-95FB-11961EE556E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization.Tests", "TagsCloudVisualization.Tests\TagsCloudVisualization.Tests.csproj", "{743C21B9-556A-4097-B188-21A0B29BA967}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,16 +17,27 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AD0F018A-732E-4074-8527-AB2EEC8D0BF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AD0F018A-732E-4074-8527-AB2EEC8D0BF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AD0F018A-732E-4074-8527-AB2EEC8D0BF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AD0F018A-732E-4074-8527-AB2EEC8D0BF3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B5108E20-2ACF-4ED9-84FE-2A718050FC94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C85E7A84-31BB-4BF0-9FE3-7BA9849DA0D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C85E7A84-31BB-4BF0-9FE3-7BA9849DA0D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C85E7A84-31BB-4BF0-9FE3-7BA9849DA0D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C85E7A84-31BB-4BF0-9FE3-7BA9849DA0D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{659717CA-38A3-4CE2-BB32-18142E4C5373}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{659717CA-38A3-4CE2-BB32-18142E4C5373}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{659717CA-38A3-4CE2-BB32-18142E4C5373}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{659717CA-38A3-4CE2-BB32-18142E4C5373}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E0AAECB-7355-4B9F-95FB-11961EE556E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E0AAECB-7355-4B9F-95FB-11961EE556E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E0AAECB-7355-4B9F-95FB-11961EE556E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E0AAECB-7355-4B9F-95FB-11961EE556E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{743C21B9-556A-4097-B188-21A0B29BA967}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{743C21B9-556A-4097-B188-21A0B29BA967}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{743C21B9-556A-4097-B188-21A0B29BA967}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{743C21B9-556A-4097-B188-21A0B29BA967}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EBCD5248-163A-4DB3-9D95-B245CFD2D6FD}
 	EndGlobalSection
 EndGlobal
