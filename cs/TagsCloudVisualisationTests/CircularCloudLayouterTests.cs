@@ -61,6 +61,13 @@ namespace TagsCloudVisualisationTests
         }
 
         [Test]
+        public void Constructor_ThrowsException_WithInvalidCenter()
+        {
+            var center = new Point(-100, -100);
+            Assert.Throws<ArgumentException>(() => new CircularCloudLayouter(center));
+        }
+
+        [Test]
         public void PutNextRectangle_ThrowsException_WithNegativeSize()
         {
             var negativeSize = new Size(-10, -5);
@@ -116,6 +123,87 @@ namespace TagsCloudVisualisationTests
         }
 
         [Test]
+        public void WithCenterAt_ThrowsException_WithNewInvalidCenter()
+        {
+            var center = new Point(-100, -100);
+            Assert.Throws<ArgumentException>(() => cloudLayouter.WithCenterAt(center));
+        }
+
+        [Test]
+        public void WithCenterAt_DoesNotThrowException_WithNewValidCenter()
+        {
+            var center = new Point(100, 100);
+            Assert.DoesNotThrow(() => cloudLayouter.WithCenterAt(center));
+        }
+
+        [Test]
+        public void WithHeightInRange_DoesNotThrowException_WithValidLimits()
+        {
+            Assert.DoesNotThrow(() => cloudLayouter.WithHeightInRange(10, 30));
+        }
+
+        [Test]
+        public void WithHeightInRange_ThrowsException_WithMinBiggerThamMax()
+        {
+            Assert.Throws<ArgumentException>(() => cloudLayouter.WithHeightInRange(30, 10));
+        }
+
+        [Test]
+        public void WithWidthInRange_DoesNotThrowException_WithValidLimits()
+        {
+            Assert.DoesNotThrow(() => cloudLayouter.WithWidthInRange(10, 30));
+        }
+
+        [Test]
+        public void WithWidthInRange_ThrowsException_WithMinBiggerThamMax()
+        {
+            Assert.Throws<ArgumentException>(() => cloudLayouter.WithWidthInRange(30, 10));
+        }
+
+        [Test]
+        public void WithCountOfRectangles_ThrowsException_WithNegativeArgument()
+        {
+            Assert.Throws<ArgumentException>(() => cloudLayouter.WithCountOfRectangles(-1));
+        }
+
+        [Test]
+        public void Generate_ReturnsCorrectNumberOfRectangles()
+        {
+            int expectedCount = 25;
+
+            rectangles = cloudLayouter.WithCountOfRectangles(expectedCount).Generate();
+
+            Assert.That(rectangles.Count, Is.EqualTo(expectedCount));
+        }
+
+        [Test]
+        public void Generate_RectanglesHaveSizesInSpecifiedRange()
+        {
+            int minWidth = 15, maxWidth = 30;
+            int minHeight = 10, maxHeight = 20;
+
+            rectangles = cloudLayouter
+                .WithCountOfRectangles(50)
+                .WithWidthInRange(minWidth, maxWidth)
+                .WithHeightInRange(minHeight, maxHeight)
+                .Generate();
+
+            foreach (var rect in rectangles)
+            {
+                Assert.That(rect.Width, Is.InRange(minWidth, maxWidth));
+                Assert.That(rect.Height, Is.InRange(minHeight, maxHeight));
+            }
+        }
+
+        [Test]
+        public void Generate_WithZeroCount_ReturnsEmptyList()
+        {
+            rectangles = cloudLayouter.WithCountOfRectangles(0).Generate();
+
+            Assert.That(rectangles, Is.Empty);
+        }
+
+        [Test]
         public void PutNextRectangle_PutsRectanglesInCircleShape_WithRectanglesOfOneSize()
         {
             var rectangleSize = new Size(20, 20);
@@ -129,6 +217,17 @@ namespace TagsCloudVisualisationTests
             double packingDensity = CalculatePackingDensity(rectangles, center);
             Assert.That(packingDensity, Is.GreaterThan(0.60),
                 $"Packing density {packingDensity:P2} is too low for circular shape");
+        }
+
+        [Test]
+        public void Reset_ClearsAllRectangles()
+        {
+            cloudLayouter.WithCountOfRectangles(20).Generate();
+
+            cloudLayouter.Reset();
+            var rectanglesAfterReset = cloudLayouter.Generate();
+
+            Assert.That(rectanglesAfterReset.Count, Is.EqualTo(10));
         }
 
         [Test]

@@ -10,10 +10,19 @@ namespace TagsCloudVisualisation.Entities.Layouters
 {
     public class CircularCloudLayouter : ICloudLayouter
     {
-        private readonly Point center;
-        private readonly List<Rectangle> rectangles;
-        private double currentAngle;
-        private double currentRadius;
+        private Point center;
+
+        private readonly Random random = new Random();
+
+        private readonly List<Rectangle> rectangles = new List<Rectangle>();
+
+        private double currentAngle = 0;
+        private double currentRadius = 0;
+
+        private int countToGenerate = 10;
+
+        private (int min, int max) width = new(20, 21);
+        private (int min, int max) height = new(20, 21);
 
         private double angleStep = 0.1;
         private double radiusStep = 0.5;
@@ -22,9 +31,11 @@ namespace TagsCloudVisualisation.Entities.Layouters
         {
             if (center.X <= 0 || center.Y <= 0) throw new ArgumentException("Center coordinates must be positives");
             this.center = center;
-            rectangles = new List<Rectangle>();
-            currentAngle = 0;
-            currentRadius = 0;
+        }
+
+        public CircularCloudLayouter()
+        {
+            this.center = new Point(0, 0);
         }
 
         public Rectangle PutNextRectangle(Size rectangleSize)
@@ -78,18 +89,72 @@ namespace TagsCloudVisualisation.Entities.Layouters
             return first;
         }
 
-        public List<Rectangle> GenerateRandomRectangles(int count)
+        public CircularCloudLayouter WithHeightInRange(int min, int max)
         {
-            var rectangles = new List<Rectangle>();
-            var random = new Random();
+            if (min > max) throw new ArgumentException("Minimum can't be bigger than maximum");
+            height.min = min;
+            height.max = max + 1;
+            return this;
+        }
 
-            for (int i = 0; i < count; i++)
+        public CircularCloudLayouter WithWidthInRange(int min, int max)
+        {
+            if (min > max) throw new ArgumentException("Minimum can't be bigger than maximum");
+            width.min = min;
+            width.max = max + 1;
+            return this;
+        }
+
+        public CircularCloudLayouter WithHeight(int value)
+        {
+            return WithHeightInRange(value, value);
+        }
+
+        public CircularCloudLayouter WithWidth(int value)
+        {
+            return WithWidthInRange(value, value);
+        }
+
+        public CircularCloudLayouter WithCountOfRectangles(int count)
+        {
+            if(count < 0) throw new ArgumentException("Number of rectangles must be positive");
+            countToGenerate = count;
+            return this;
+        }
+
+        public CircularCloudLayouter WithCenterAt(Point point)
+        {
+            if (point.X <= 0 || point.Y <= 0) throw new ArgumentException("Center coordinates must be positives");
+            center = point;
+            return this;
+        }
+
+        public List<Rectangle> Generate()
+        {
+            //must clear list to keep the alrgorith working
+            if (rectangles.Count > 0) rectangles.Clear();
+
+            var result = new List<Rectangle>();
+            for (int i = 0; i < countToGenerate; i++)
             {
-                var size = new Size(random.Next(20, 21), random.Next(20, 21));
-                rectangles.Add(PutNextRectangle(size));
+                var newHeight = random.Next(height.min, height.max);
+                var newWidth = random.Next(width.min, width.max);
+                result.Add(PutNextRectangle(new Size(newWidth, newHeight)));
             }
 
-            return rectangles;
+            return result;
+        }
+
+        public CircularCloudLayouter Reset()
+        {
+            rectangles.Clear();
+
+            countToGenerate = 10;
+            width = (20, 21);
+            height = (20, 21);
+            center = new Point(0, 0);  
+
+            return this;
         }
     }
 }
