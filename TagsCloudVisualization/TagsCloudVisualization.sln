@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{056B599F-94D7-49B9-B637-A7EB8CA37230}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualizationConsoleApp", "TagsCloudVisualizationConsoleApp\TagsCloudVisualizationConsoleApp.csproj", "{C5FDCAD7-FB37-4A10-82F0-A5315F97EE00}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualizationTests", "TagsCloudVisualizationTests\TagsCloudVisualizationTests.csproj", "{006402D9-52CF-46B8-9656-A032FD2703DE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{056B599F-94D7-49B9-B637-A7EB8CA37230}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{056B599F-94D7-49B9-B637-A7EB8CA37230}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{056B599F-94D7-49B9-B637-A7EB8CA37230}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{056B599F-94D7-49B9-B637-A7EB8CA37230}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5FDCAD7-FB37-4A10-82F0-A5315F97EE00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5FDCAD7-FB37-4A10-82F0-A5315F97EE00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5FDCAD7-FB37-4A10-82F0-A5315F97EE00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5FDCAD7-FB37-4A10-82F0-A5315F97EE00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{006402D9-52CF-46B8-9656-A032FD2703DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{006402D9-52CF-46B8-9656-A032FD2703DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{006402D9-52CF-46B8-9656-A032FD2703DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{006402D9-52CF-46B8-9656-A032FD2703DE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
