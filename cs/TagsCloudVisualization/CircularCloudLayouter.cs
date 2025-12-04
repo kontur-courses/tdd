@@ -2,11 +2,11 @@
 
 namespace TagCloud;
 
-public class CircularCloudLayouter
+public class CircularCloudLayouter : ICircularCloudLayouter
 {
     private readonly List<Rectangle> rectanglesInLayout;
-    private readonly Spiral spiral;
     private readonly IEnumerator<Point> pointsOnSpiral;
+    private readonly Spiral spiral;
 
     public Point Center { get; }
 
@@ -16,10 +16,13 @@ public class CircularCloudLayouter
     {
         Center = center;
         rectanglesInLayout = new();
-        spiral = new(center, 0.05, 0.01);
+        spiral = new(center);
         pointsOnSpiral = spiral.GetPointsOnSpiral().GetEnumerator();
     }
 
+    public CircularCloudLayouter() : this(new Point(0, 0))
+    {
+    }
 
     public Rectangle PutNextRectangle(Size rectangleSize)
     {

@@ -8,12 +8,13 @@ namespace TagCloud.Tests;
 [TestFixture]
 public class SpiralTests
 {
-    private Spiral spiral = new Spiral(new(), 0.1, 1.0);
+    private SpiralSettings spiralSettings = new SpiralSettings(new Point(400, 400), 0.1, 1.0);
+    private Spiral spiral;
 
     [SetUp]
     public void SetUp()
     {
-        spiral = new Spiral(new Point(400, 400), 0.1, 1.0);
+        spiral = new Spiral(spiralSettings);
     }
 
     [Test]
@@ -21,7 +22,7 @@ public class SpiralTests
     [TestCase(0.1, -1.0, TestName = "WithNegativeDeltaRadius")]
     public void Constructor_OnWrongArguments_ShouldThrow(double deltaAngle, double deltaRadius)
     {
-        var act = () => new Spiral(new(), deltaAngle, deltaRadius);
+        var act = () => new Spiral(deltaAngle, deltaRadius);
         
         act.Should().Throw();
     }
@@ -31,7 +32,7 @@ public class SpiralTests
     {
         var firstPoint = spiral.GetPointsOnSpiral().First();
 
-        firstPoint.Should().Be(new Point(400, 400));
+        firstPoint.Should().Be(spiralSettings.Center);
     }
 
     [Test]
@@ -57,7 +58,7 @@ public class SpiralTests
     [Test]
     public void ConvertFromPolarCoordinates_With45DegreeAngle_ShouldReturnEqualCoordinates()
     {
-        var angle = Math.PI / 4; // 45°
+        var angle = Math.PI / 4;
         var radius = 10.0;
 
         var point = Spiral.ConvertFromPolarCoordinates(angle, radius);
@@ -69,7 +70,7 @@ public class SpiralTests
     [Test]
     public void GetPointsOnSpiral_ShouldNotProduceDuplicatePoints()
     {
-        var spiral = new Spiral(new(), 0.5, 2.0);
+        var spiral = new Spiral(0.5, 2.0);
 
         var points = spiral.GetPointsOnSpiral().Take(100).ToList();
 
