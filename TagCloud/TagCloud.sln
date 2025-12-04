@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCloud", "TagCloud\TagCloud.csproj", "{B2A6872D-E6F7-43AD-99EE-0ED4993B83B7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCloud.Tests", "TagCloud.Tests\TagCloud.Tests.csproj", "{59BC72BE-9D64-4C90-AEB2-6D08B4EE47F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagCloud.Visualization", "TagCloud.Visualization\TagCloud.Visualization.csproj", "{528F0975-AE27-40EF-B2C3-4520223E2AF2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B2A6872D-E6F7-43AD-99EE-0ED4993B83B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2A6872D-E6F7-43AD-99EE-0ED4993B83B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2A6872D-E6F7-43AD-99EE-0ED4993B83B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2A6872D-E6F7-43AD-99EE-0ED4993B83B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59BC72BE-9D64-4C90-AEB2-6D08B4EE47F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59BC72BE-9D64-4C90-AEB2-6D08B4EE47F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59BC72BE-9D64-4C90-AEB2-6D08B4EE47F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59BC72BE-9D64-4C90-AEB2-6D08B4EE47F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{528F0975-AE27-40EF-B2C3-4520223E2AF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{528F0975-AE27-40EF-B2C3-4520223E2AF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{528F0975-AE27-40EF-B2C3-4520223E2AF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{528F0975-AE27-40EF-B2C3-4520223E2AF2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
