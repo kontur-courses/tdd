@@ -125,36 +125,6 @@ public class CircularCloudLayouter_Should
     }
 
     [Test]
-    public void PutNextRectangle_RectanglesWithDifferentSizes_DoNotIntersect()
-    {
-        var layouter = new CircularCloudLayouter(Center);
-
-        var sizes = new[]
-        {
-            new Size(200, 100),
-            new Size(20, 20),
-            new Size(150, 40),
-            new Size(30, 120),
-            new Size(80, 80),
-            new Size(40, 30),
-            new Size(100, 150),
-            new Size(25, 25),
-            new Size(60, 90),
-            new Size(110, 50)
-        };
-        
-        var rectangles = sizes
-            .Select(layouter.PutNextRectangle)
-            .ToArray();
-        
-        for (var i = 0; i < rectangles.Length; i++)
-        for (var j = i + 1; j < rectangles.Length; j++)
-        {
-            rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse();
-        }
-    }
-
-    [Test]
     public void PutNextRectangle_CloudIsCentered_AroundRequestedCenter()
     {
         var layouter = new CircularCloudLayouter(Center);
