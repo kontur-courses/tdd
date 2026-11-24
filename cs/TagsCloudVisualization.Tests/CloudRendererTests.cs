@@ -43,4 +43,35 @@ public class CloudRendererTests
 
         act.Should().Throw<ArgumentOutOfRangeException>();
     }
+
+    [Test]
+    public void Render_EmptyLayout_ReturnsBlankImage()
+    {
+        var renderer = new CloudRenderer(
+            10,
+            Pens.Black,
+            Brushes.LightGray,
+            Color.White);
+
+        using var image = renderer.Render([]);
+
+        image.Size.Should().Be(new Size(20, 20));
+
+        image.GetPixel(10, 10).ToArgb()
+            .Should().Be(Color.White.ToArgb());
+    }
+
+    [TestCase(0, 0.05)]
+    [TestCase(-1, 0.05)]
+    [TestCase(0.8, 0)]
+    [TestCase(0.8, -1)]
+    [TestCase(double.NaN, 0.05)]
+    [TestCase(0.8, double.PositiveInfinity)]
+    public void Constructor_InvalidSpiralParameters_ThrowsException(
+        double radiusFactor, double angleStep)
+    {
+        var act = () => new CircularCloudLayouter(Point.Empty, radiusFactor, angleStep);
+
+        act.Should().Throw<ArgumentOutOfRangeException>();
+    }
 }
