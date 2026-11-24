@@ -31,4 +31,16 @@ public class CloudRendererTests
         image.GetPixel(5, 5).ToArgb()
             .Should().Be(Color.White.ToArgb());
     }
+
+    [Test]
+    public void CloudRendererConstructor_NegativePadding_ThrowsException()
+    {
+        var act = () => new CloudRenderer(
+            -1,
+            Pens.Black,
+            Brushes.LightGray,
+            Color.White);
+
+        act.Should().Throw<ArgumentOutOfRangeException>();
+    }
 }

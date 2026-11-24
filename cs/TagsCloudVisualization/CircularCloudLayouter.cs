@@ -5,16 +5,33 @@ namespace TagsCloudVisualization;
 public class CircularCloudLayouter
 {
     private readonly Point _center;
+    private readonly double _radiusFactor;
+    private readonly double _angleStep;
+
     private readonly List<Rectangle> _rectangles = new();
     public IReadOnlyList<Rectangle> Rectangles => _rectangles.AsReadOnly();
 
-    public CircularCloudLayouter(Point center)
+    public CircularCloudLayouter(
+        Point center,
+        double radiusFactor = 0.8,
+        double angleStep = 0.05)
     {
+        if (!double.IsFinite(radiusFactor) || radiusFactor <= 0)
+            throw new ArgumentOutOfRangeException(nameof(radiusFactor));
+
+        if (!double.IsFinite(angleStep) || angleStep <= 0)
+            throw new ArgumentOutOfRangeException(nameof(angleStep));
+
         _center = center;
+        _radiusFactor = radiusFactor;
+        _angleStep = angleStep;
     }
 
     public Rectangle PutNextRectangle(Size rectangleSize)
     {
+        if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+            throw new ArgumentOutOfRangeException(nameof(rectangleSize));
+
         foreach (var point in GetSpiralPoints())
         {
             var rectangle = new Rectangle(
@@ -36,12 +53,9 @@ public class CircularCloudLayouter
 
     private IEnumerable<Point> GetSpiralPoints()
     {
-        var radiusFactor = 0.8;
-        var angleStep = 0.05;
-
-        for (var angle = 0.0; ; angle += angleStep)
+        for (var angle = 0.0; ; angle += _angleStep)
         {
-            var radius = radiusFactor * angle;
+            var radius = _radiusFactor * angle;
 
             var x = _center.X + radius * Math.Cos(angle);
             var y = _center.Y + radius * Math.Sin(angle);

@@ -59,6 +59,20 @@ public class CircularCloudLayouterTests
                     .Should().BeFalse();
     }
 
+    [Test]
+    public void PutNextRectangle_PreservesRectangleSize()
+    {
+        _layouter = new CircularCloudLayouter(Point.Empty);
+
+        Size[] sizes = [new(60, 40), new(31, 21), new(80, 15)];
+
+        var rectangles = sizes
+            .Select(_layouter.PutNextRectangle)
+            .ToArray();
+
+        rectangles.Select(r => r.Size).Should().Equal(sizes);
+    }
+
     [TearDown]
     public void SaveLayoutOnFailure()
     {
