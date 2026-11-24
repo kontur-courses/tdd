@@ -6,6 +6,7 @@ public class CircularCloudLayouter
 {
     private readonly Point _center;
     private readonly List<Rectangle> _rectangles = new();
+    public IReadOnlyList<Rectangle> Rectangles => _rectangles.AsReadOnly();
 
     public CircularCloudLayouter(Point center)
     {
