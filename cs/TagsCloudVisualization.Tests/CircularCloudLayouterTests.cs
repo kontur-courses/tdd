@@ -11,15 +11,36 @@ public class CircularCloudLayouterTests
 {
     private CircularCloudLayouter _layouter = null!;
 
-    [Test]
-    public void PutNextRectangle_FirstRectangle_PlacesAtCenter()
+    [TestCase(0, 0, 60, 40)]
+    [TestCase(100, 200, 20, 80)]
+    [TestCase(-100, -200, 40, 20)]
+    [TestCase(50, -50, 100, 100)]
+    public void PutNextRectangle_FirstRectangle_PlacesAtCenter(
+        int x, int y, int width, int height)
     {
-        _layouter = new CircularCloudLayouter(new Point(0, 0));
-        var size = new Size(60, 40);
+        _layouter = new CircularCloudLayouter(new Point(x, y));
+        var size = new Size(width, height);
 
         var rectangle = _layouter.PutNextRectangle(size);
 
-        rectangle.Should().Be(new Rectangle(-30, -20, 60, 40));
+        rectangle.Size.Should().Be(size);
+        rectangle.Location.Should().Be(
+            new Point(x - width / 2, y - height / 2));
+    }
+
+    [TestCase(0, 20)]
+    [TestCase(20, 0)]
+    [TestCase(-10, 20)]
+    [TestCase(20, -10)]
+    [TestCase(0, 0)]
+    public void PutNextRectangle_InvalidSize_ThrowsException(int width, int height)
+    {
+        _layouter = new CircularCloudLayouter(new Point(0, 0));
+        var size = new Size(width, height);
+
+        var act = () => _layouter.PutNextRectangle(size);
+
+        act.Should().Throw<ArgumentOutOfRangeException>();
     }
 
     [Test]
@@ -55,7 +76,11 @@ public class CircularCloudLayouterTests
 
         using var image = renderer.Render(_layouter.Rectangles);
 
-        var path = Path.Combine(context.WorkDirectory, $"{Guid.NewGuid()}.png");
+        var directory = Path.Combine(context.WorkDirectory, "FailedLayouts");
+        Directory.CreateDirectory(directory);
+
+        var fileName = $"{context.Test.MethodName}_{DateTime.Now:HHmmssfff}.png";
+        var path = Path.Combine(directory, fileName);
         image.Save(path, ImageFormat.Png);
 
         TestContext.Out.WriteLine($"Tag cloud visualization saved to file {path}");
