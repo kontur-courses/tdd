@@ -1,8 +1,10 @@
 ﻿using System.Drawing;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
+using TagCloudVisualization.Visualization;
 
-namespace TagCloudVisualization;
+namespace TagCloudVisualization.Tests;
 
 [TestFixture]
 public class CircularCloudLayouter_Should
@@ -15,18 +17,33 @@ public class CircularCloudLayouter_Should
     
     private static readonly Point Center = new(1000, 1000);
     
-    [Test]
-    public void Constructor_Initialization_WorksCorrectly()
+    private CircularCloudLayouter layouter;
+    
+    [SetUp]
+    public void SetUp() => layouter = new CircularCloudLayouter(Center);
+    
+    [TearDown]
+    public void SaveVisualizationOnFailure()
     {
-        var act = () => new CircularCloudLayouter(new Point(0, 0));
+        var context = TestContext.CurrentContext;
+        
+        if (context.Result.Outcome.Status != TestStatus.Failed) 
+            return;
+        
+        if (layouter.Rectangles.Count == 0) 
+            return;
 
-        act.Should().NotThrow();
+        var path = Path.Combine(context.WorkDirectory, $"{context.Test.Name}.png");
+
+        var image = CloudRenderer.Render(layouter.Rectangles);
+        CloudImageSaver.Save(image, path);
+
+        Console.WriteLine($"Tag cloud visualization saved to file {path}");
     }
 
     [Test]
     public void PutNextRectangle_FirstRectangle_IsPlacedAtCloudCenter()
     {
-        var layouter = new CircularCloudLayouter(Center);
         var size = new Size(100, 60);
 
         var rect = layouter.PutNextRectangle(size);
@@ -41,7 +58,6 @@ public class CircularCloudLayouter_Should
     [Test]
     public void PutNextRectangle_ReturnedRectangle_HasRequestedSize()
     {
-        var layouter = new CircularCloudLayouter(Center);
         var size = new Size(120, 60);
         
         var rectangle = layouter.PutNextRectangle(size);
@@ -53,7 +69,6 @@ public class CircularCloudLayouter_Should
     [Test]
     public void PutNextRectangle_MultipleRectangles_DoNotIntersect()
     {
-        var layouter = new CircularCloudLayouter(Center);
         var sizes = new[]
         {
             new Size(100, 50),
@@ -80,8 +95,6 @@ public class CircularCloudLayouter_Should
     [Test]
     public void PutNextRectangle_MultipleRectangles_ProducesApproximatelyCircularCloud()
     {
-        var layouter = new CircularCloudLayouter(Center);
-
         var sizes = Enumerable
             .Range(0, 40)
             .Select(i => new Size(50, 50))
@@ -101,8 +114,6 @@ public class CircularCloudLayouter_Should
     [Test]
     public void PutNextRectangle_MultipleRectangles_ProducesCompactCloud()
     {
-        var layouter = new CircularCloudLayouter(Center);
-
         var sizes = Enumerable
             .Range(0, 40)
             .Select(i => new Size(50, 50))
@@ -127,8 +138,6 @@ public class CircularCloudLayouter_Should
     [Test]
     public void PutNextRectangle_CloudIsCentered_AroundRequestedCenter()
     {
-        var layouter = new CircularCloudLayouter(Center);
-
         var sizes = Enumerable
             .Range(0, 40)
             .Select(i => new Size(50, 50))
@@ -150,8 +159,6 @@ public class CircularCloudLayouter_Should
     [Test]
     public void PutNextRectangle_ZeroSizedRectangle_ProducesEmptyRectangle()
     {
-        var layouter = new CircularCloudLayouter(Center);
-
         var rect = layouter.PutNextRectangle(new Size(0, 0));
 
         rect.Size.Should().Be(Size.Empty);
