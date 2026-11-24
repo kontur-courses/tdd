@@ -24,7 +24,7 @@ public class TagsCloudVisualizationAcceptanceTests
             var testName = TestContext.CurrentContext.Test.Name;
             var fileName = $"FailedTest_{testName}_{DateTime.Now:HH_mm_ss}.png";
             var path = Path.Combine(TestContext.CurrentContext.WorkDirectory, fileName);
-            _layouter.Save(path, 100, 100);
+            SaveTagCloud.Save(_layouter, path, 100, 100);
             Console.WriteLine($"Tag cloud visualization saved to file {path}");
         }
     }
