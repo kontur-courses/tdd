@@ -13,7 +13,7 @@ public class CircularCloudLayouter
 
     public CircularCloudLayouter(
         Point center,
-        double radiusFactor = 0.8,
+        double radiusFactor = 0.5,
         double angleStep = 0.05)
     {
         if (!double.IsFinite(radiusFactor) || radiusFactor <= 0)

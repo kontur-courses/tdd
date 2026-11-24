@@ -21,7 +21,9 @@ public class CloudRenderer
 
     public Bitmap Render(IReadOnlyCollection<Rectangle> rectangles)
     {
-        var bounds = rectangles.Aggregate(Rectangle.Union);
+        var bounds = rectangles.Count == 0
+            ? Rectangle.Empty
+            : rectangles.Aggregate(Rectangle.Union);
 
         var bitmap = new Bitmap(
             bounds.Width + _padding * 2,
