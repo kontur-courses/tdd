@@ -4,7 +4,7 @@ using System.Runtime.Versioning;
 
 namespace TagsCloudVisualization;
 
-public class SaveTagCloud
+public static class TagCloudSaver
 {
     [SupportedOSPlatform("windows")]
     public static void Save(CircularCloudLayouter tagCloud, string path, int x, int y)

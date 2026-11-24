@@ -12,6 +12,6 @@ public class Program
         {
             layouter.PutNextRectangle(new Size(random.Next(20), random.Next(20)));
         }
-        SaveTagCloud.Save(layouter, "output.png", 400, 400);
+        TagCloudSaver.Save(layouter, "output.png", 400, 400);
     }
 }

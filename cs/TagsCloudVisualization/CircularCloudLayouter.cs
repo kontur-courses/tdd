@@ -1,6 +1,4 @@
 ﻿using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.Versioning;
 
 namespace TagsCloudVisualization;
 
@@ -12,6 +10,12 @@ public class CircularCloudLayouter
     private readonly double radiusOffset;
     private readonly int indent;
 
+    /// <summary>
+    /// <param name="center">Coordinates of the tag cloud center</param>
+    /// <param name="spiralStep">The step of the spiral along which the tags will be placed</param>
+    /// <param name="radiusOffset">The coefficient that determines the distance between the turns of the spiral</param>
+    /// <param name="indent">Indentation between tags</param>
+    /// </summary>
     public CircularCloudLayouter(Point center, double spiralStep = 0.05, double radiusOffset = 3.0, int indent = 0)
     {
         this.center = center;
