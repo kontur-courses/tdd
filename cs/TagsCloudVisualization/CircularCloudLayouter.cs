@@ -2,6 +2,10 @@
 
 namespace TagsCloudVisualization;
 
+/// <summary>
+/// Формирует облако непересекающихся прямоугольников
+/// с помощью спирали Архимеда.
+/// </summary>
 public class CircularCloudLayouter
 {
     private readonly Point _center;
@@ -27,6 +31,11 @@ public class CircularCloudLayouter
         _angleStep = angleStep;
     }
 
+    /// <summary>
+    /// Размещает прямоугольник в первой свободной позиции вдоль спирали.
+    /// </summary>
+    /// <param name="rectangleSize">Размер размещаемого прямоугольника.</param>
+    /// <returns>Размещённый прямоугольник с рассчитанными координатами.</returns>
     public Rectangle PutNextRectangle(Size rectangleSize)
     {
         if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
@@ -51,6 +60,10 @@ public class CircularCloudLayouter
         throw new InvalidOperationException();
     }
 
+    /// <summary>
+    /// Лениво генерирует точки спирали Архимеда, начиная с центра облака.
+    /// </summary>
+    /// <returns>Бесконечная последовательность точек с целочисленными координатами.</returns>
     private IEnumerable<Point> GetSpiralPoints()
     {
         for (var angle = 0.0; ; angle += _angleStep)

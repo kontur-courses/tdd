@@ -2,6 +2,9 @@
 
 namespace TagsCloudVisualization;
 
+/// <summary>
+/// Создаёт изображения облака из прямоугольников
+/// </summary>
 public class CloudRenderer
 {
     private readonly int _padding;
@@ -19,6 +22,11 @@ public class CloudRenderer
         _backgroundColor = backgroundColor;
     }
 
+    /// <summary>
+    /// Создаёт изображение, вмещающее все облако прямоугольников с заданными параметрами отрисовки.
+    /// </summary>
+    /// <param name="rectangles">Прямоугольники для отрисовки.</param>
+    /// <returns>Изображение облака из прямоугольников</returns>
     public Bitmap Render(IReadOnlyCollection<Rectangle> rectangles)
     {
         var bounds = rectangles.Count == 0

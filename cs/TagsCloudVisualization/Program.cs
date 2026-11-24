@@ -38,6 +38,13 @@ public class Program
                     random.Next(15, 50))));
     }
 
+    /// <summary>
+    /// Строит облако прямоугольников заданных размеров и сохраняет её в PNG-файл.
+    /// </summary>
+    /// <param name="directory">Директория для сохранения изображения.</param>
+    /// <param name="fileName">Имя выходного файла.</param>
+    /// <param name="renderer">Рендерер облака</param>
+    /// <param name="sizes">Размеры размещаемых прямоугольников.</param>
     private static void GenerateCloud(
         string directory,
         string fileName,
