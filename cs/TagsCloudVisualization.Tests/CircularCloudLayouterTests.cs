@@ -73,6 +73,39 @@ public class CircularCloudLayouterTests
         rectangles.Select(r => r.Size).Should().Equal(sizes);
     }
 
+    [Test]
+    public void PutNextRectangle_ProducesDenseLayout()
+    {
+        var center = new Point(0, 0);
+        _layouter = new CircularCloudLayouter(center);
+
+        var sizes = Enumerable.Repeat(new Size(40, 40), 100);
+
+        var rectangles = sizes
+            .Select(_layouter.PutNextRectangle)
+            .ToArray();
+
+        var totalArea = rectangles.Sum(r => (double)r.Width * r.Height);
+
+        var radiusSquared = rectangles.Max(r =>
+        {
+            var dx = Math.Max(
+                Math.Abs(r.Left - center.X),
+                Math.Abs(r.Right - center.X));
+
+            var dy = Math.Max(
+                Math.Abs(r.Top - center.Y),
+                Math.Abs(r.Bottom - center.Y));
+
+            return (double)dx * dx + (double)dy * dy;
+        });
+
+        var circleArea = Math.PI * radiusSquared;
+        var density = totalArea / circleArea;
+
+        density.Should().BeGreaterThanOrEqualTo(0.6);
+    }
+
     [TearDown]
     public void SaveLayoutOnFailure()
     {
