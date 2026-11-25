@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
+﻿using System.Drawing;
 
 namespace TagsCloudVisualization;
 
 public class CircularCloudLayouter : ICircularCloudLayouter
 {
-    private readonly Point center;
-    private readonly List<Rectangle> rectangles = new();
     private const double SpiralStep = 0.5;
     private const double AngleStep = 0.1;
+
+    private readonly Point center;
+    private readonly List<Rectangle> rectangles = new();
+    private readonly RectangleSpatialGrid spatialGrid = new();
+
+    private double maxCornerDistance;
 
     public IReadOnlyList<Rectangle> Rectangles => rectangles;
 
@@ -22,52 +23,133 @@ public class CircularCloudLayouter : ICircularCloudLayouter
     public Rectangle PutNextRectangle(Size rectangleSize)
     {
         if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
-            throw new ArgumentException("Size must be positive", nameof(rectangleSize));
+            throw new ArgumentOutOfRangeException("Size must be positive", nameof(rectangleSize));
 
         if (rectangles.Count == 0)
         {
             var firstRect = CreateRectangle(center, rectangleSize);
-            rectangles.Add(firstRect);
+            AddRectangle(firstRect);
             return firstRect;
         }
 
-        var maxRadius = CalculateMaxSearchRadius(rectangleSize);
+        var candidate = FindPositionOnSpiral(rectangleSize);
+        var compacted = CompactToCenter(candidate);
+
+        AddRectangle(compacted);
+        return compacted;
+    }
+
+    private Rectangle FindPositionOnSpiral(Size size)
+    {
+        var maxRadius = CalculateMaxSearchRadius(size);
+
         double angle = 0;
         double radius = 0;
 
-        for (; radius <= maxRadius; radius += SpiralStep)
+        while (radius <= maxRadius)
         {
             angle += AngleStep;
-            var x = center.X + (int)(radius * Math.Cos(angle));
-            var y = center.Y + (int)(radius * Math.Sin(angle));
-            var candidateRectangle = CreateRectangle(new Point(x, y), rectangleSize);
+            radius += SpiralStep;
 
-            if (IntersectsWithAny(candidateRectangle))
-                continue;
+            var x = center.X + (int)Math.Round(radius * Math.Cos(angle));
+            var y = center.Y + (int)Math.Round(radius * Math.Sin(angle));
 
-            var compactedRect = CompactToCenter(candidateRectangle);
-            rectangles.Add(compactedRect);
-            return compactedRect;
+            var candidate = CreateRectangle(new Point(x, y), size);
+
+            if (!spatialGrid.IntersectsWithAny(candidate))
+                return candidate;
         }
         throw new InvalidOperationException("Unable to find a place for rectangle");
     }
 
+    private Rectangle CompactToCenter(Rectangle rectangle)
+    {
+        var current = rectangle;
+
+        var dirX = Math.Sign(center.X - (current.X + current.Width / 2));
+        var dirY = Math.Sign(center.Y - (current.Y + current.Height / 2));
+
+        current = MoveAlongX(current, dirX);
+        current = MoveAlongY(current, dirY);
+        current = MoveAlongX(current, dirX);
+
+        return current;
+    }
+
+    private Rectangle MoveAlongX(Rectangle current, int dir)
+    {
+        if (dir == 0) return current;
+
+        while (true)
+        {
+            var next = new Rectangle(current.X + dir, current.Y, current.Width, current.Height);
+
+            var nextCenterX = next.X + next.Width / 2;
+            if (dir > 0 && nextCenterX > center.X)
+                return current;
+            if (dir < 0 && nextCenterX < center.X)
+                return current;
+
+            if (spatialGrid.IntersectsWithAny(next))
+                return current;
+
+            current = next;
+        }
+    }
+
+    private Rectangle MoveAlongY(Rectangle current, int dir)
+    {
+        if (dir == 0) return current;
+
+        while (true)
+        {
+            var next = new Rectangle(current.X, current.Y + dir,current.Width, current.Height);
+
+            var nextCenterY = next.Y + next.Height / 2;
+            if (dir > 0 && nextCenterY > center.Y)
+                return current;
+            if (dir < 0 && nextCenterY < center.Y)
+                return current;
+            if (spatialGrid.IntersectsWithAny(next))
+                return current;
+
+            current = next;
+        }
+    }
+
     private double CalculateMaxSearchRadius(Size rectangleSize)
     {
-        var maxExistingRadius = rectangles.SelectMany(r => new[]
-            {
-            new Point(r.Left, r.Top),
-            new Point(r.Right, r.Top),
-            new Point(r.Right, r.Bottom),
-            new Point(r.Left, r.Bottom)
-            })
-            .Max(p => Distance(center, p));
-
         var newRectangleRadius = Math.Sqrt(
-            rectangleSize.Width * rectangleSize.Width +
-            rectangleSize.Height * rectangleSize.Height) / 2;
+            (double)rectangleSize.Width * rectangleSize.Width +
+            (double)rectangleSize.Height * rectangleSize.Height) / 2;
 
-        return maxExistingRadius + newRectangleRadius + SpiralStep;
+        return maxCornerDistance + newRectangleRadius + SpiralStep;
+    }
+
+    private void AddRectangle(Rectangle rectangle)
+    {
+        rectangles.Add(rectangle);
+        spatialGrid.Add(rectangle);
+        var cornerDistance = GetCornerDistances(rectangle).Max();
+        if (cornerDistance > maxCornerDistance)
+            maxCornerDistance = cornerDistance;
+    }
+
+    private IEnumerable<double> GetCornerDistances(Rectangle rectangle)
+    {
+        yield return Distance(center, new Point(rectangle.Left, rectangle.Top));
+        yield return Distance(center, new Point(rectangle.Right, rectangle.Top));
+        yield return Distance(center, new Point(rectangle.Right, rectangle.Bottom));
+        yield return Distance(center, new Point(rectangle.Left, rectangle.Bottom));
+    }
+
+    private static Rectangle CreateRectangle(Point centerPoint, Size size)
+    {
+        return new Rectangle(
+            centerPoint.X - size.Width / 2,
+            centerPoint.Y - size.Height / 2,
+            size.Width,
+            size.Height);
     }
 
     private static double Distance(Point first, Point second)
@@ -75,38 +157,5 @@ public class CircularCloudLayouter : ICircularCloudLayouter
         var dx = (double)first.X - second.X;
         var dy = (double)first.Y - second.Y;
         return Math.Sqrt(dx * dx + dy * dy);
-    }
-
-    private Rectangle CreateRectangle(Point centerPoint, Size size)
-    {
-        return new Rectangle(centerPoint.X - size.Width / 2, centerPoint.Y - size.Height / 2, size.Width,size.Height);
-    }
-
-    private bool IntersectsWithAny(Rectangle rect)
-    {
-        return rectangles.Any(r => r.IntersectsWith(rect));
-    }
-
-    private Rectangle CompactToCenter(Rectangle rectangle)
-    {
-        var currentRectangle = rectangle;
-        var dx = Math.Sign(center.X - currentRectangle.X - currentRectangle.Width / 2);
-        var dy = Math.Sign(center.Y - currentRectangle.Y - currentRectangle.Height / 2);
-        while (dx != 0 || dy != 0)
-        {
-            var nextRectangle = new Rectangle(
-                currentRectangle.X + dx,
-                currentRectangle.Y + dy,
-                currentRectangle.Width,
-                currentRectangle.Height);
-
-            if (IntersectsWithAny(nextRectangle))
-                break;
-
-            currentRectangle = nextRectangle;
-            dx = Math.Sign(center.X - currentRectangle.X - currentRectangle.Width / 2);
-            dy = Math.Sign(center.Y - currentRectangle.Y - currentRectangle.Height / 2);
-        }
-        return currentRectangle;
     }
 }

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Drawing;
-using System.IO;
+﻿using System.Drawing;
 using TagsCloudVisualization;
 
 var center = new Point(500, 500);
-var baseDirectory = AppContext.BaseDirectory;
-var projectDirectory = Path.GetFullPath(Path.Combine(baseDirectory, "../../../"));
+
+var projectDirectory = FindProjectDirectory(AppContext.BaseDirectory);
 var imagesDirectory = Path.Combine(projectDirectory, "Images");
+
 Directory.CreateDirectory(imagesDirectory);
 
 var seeds = new[] { 42, 100, 999 };
@@ -25,4 +24,19 @@ for (int i = 0; i < seeds.Length; i++)
     var filePath = Path.Combine(imagesDirectory, fileName);
 
     CloudVisualizer.SaveToFile(layouter.Rectangles, center, filePath);
+}
+
+static string FindProjectDirectory(string startDirectory)
+{
+    var directory = new DirectoryInfo(startDirectory);
+
+    while (directory != null)
+    {
+        if (directory.GetFiles("*.csproj").Any())
+            return directory.FullName;
+
+        directory = directory.Parent;
+    }
+
+    throw new DirectoryNotFoundException("Project directory not found");
 }

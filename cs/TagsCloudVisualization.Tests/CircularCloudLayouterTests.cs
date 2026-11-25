@@ -1,9 +1,4 @@
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
-using System.Linq;
 using NUnit.Framework.Interfaces;
 
 namespace TagsCloudVisualization.Tests;
@@ -12,7 +7,7 @@ namespace TagsCloudVisualization.Tests;
 public class CircularCloudLayouterTests
 {
     private const double MinCircularity = 0.75;
-    private const double MinDensity = 0.4;
+    private const double MinDensity = 0.7;
 
     private Point center;
     private CircularCloudLayouter layouter;
@@ -117,10 +112,11 @@ public class CircularCloudLayouterTests
         }
 
         var rectangles = layouter.Rectangles;
-        var bounds = GetCloudBounds(rectangles);
-        var cloudArea = (long)bounds.Width * bounds.Height;
         var rectanglesArea = rectangles.Sum(r => (long)r.Width * r.Height);
-        var density = (double)rectanglesArea / cloudArea;
+
+        var radius = GetCloudRadius(rectangles, center);
+        var circleArea = Math.PI * radius * radius;
+        var density = rectanglesArea / circleArea;
 
         Assert.That(density, Is.GreaterThan(MinDensity),
             $"Cloud is too sparse. Density: {density:F2}, expected more than {MinDensity}");
@@ -151,7 +147,7 @@ public class CircularCloudLayouterTests
         var invalidSize = new Size(width, height);
         var rectanglesBeforeCall = layouter.Rectangles.Count;
 
-        Assert.Throws<ArgumentException>(
+        Assert.Throws<ArgumentOutOfRangeException>(
             () => layouter.PutNextRectangle(invalidSize));
 
         Assert.That(layouter.Rectangles, Has.Count.EqualTo(rectanglesBeforeCall),
@@ -185,6 +181,26 @@ public class CircularCloudLayouterTests
             layouter.PutNextRectangle(size);
 
         Assert.That(layouter.Rectangles, Has.Count.EqualTo(sizes.Length));
+    }
+
+    [Test]
+    public void PutNextRectangle_ManyRectangles_CloudCenteredAtCenter()
+    {
+        var random = new Random(42);
+        for (var i = 0; i < 100; i++)
+            layouter.PutNextRectangle(new Size(random.Next(20, 60), random.Next(20, 60)));
+
+        var bounds = GetCloudBounds(layouter.Rectangles);
+        var cloudCenter = new Point(
+            bounds.X + bounds.Width / 2,
+            bounds.Y + bounds.Height / 2);
+
+        var tolerance = Math.Max(bounds.Width, bounds.Height) / 10.0;
+
+        Assert.That(Math.Abs(cloudCenter.X - center.X), Is.LessThan(tolerance),
+            $"Cloud is shifted horizontally: cloud center X={cloudCenter.X}, expected ≈{center.X}");
+        Assert.That(Math.Abs(cloudCenter.Y - center.Y), Is.LessThan(tolerance),
+            $"Cloud is shifted vertically: cloud center Y={cloudCenter.Y}, expected ≈{center.Y}");
     }
 
     [TearDown]
@@ -263,7 +279,7 @@ public class CircularCloudLayouterTests
 
         var upper = new List<Point>();
 
-        foreach (var point in sortedPoints.AsEnumerable().Reverse())
+        foreach (var point in sortedPoints.ReverseWithoutAllocation())
         {
             while (upper.Count >= 2 &&
                    Cross(upper[^2], upper[^1], point) <= 0)
@@ -318,5 +334,32 @@ public class CircularCloudLayouterTests
         }
 
         return perimeter;
+    }
+
+    private static double GetCloudRadius(
+    IReadOnlyList<Rectangle> rectangles, Point center)
+    {
+        var distances = new List<double>();
+
+        foreach (var rectangle in rectangles)
+        {
+            foreach (var corner in new[]
+            {
+            new Point(rectangle.Left, rectangle.Top),
+            new Point(rectangle.Right, rectangle.Top),
+            new Point(rectangle.Right, rectangle.Bottom),
+            new Point(rectangle.Left, rectangle.Bottom)
+        })
+            {
+                var dx = (double)corner.X - center.X;
+                var dy = (double)corner.Y - center.Y;
+                distances.Add(Math.Sqrt(dx * dx + dy * dy));
+            }
+        }
+
+        distances.Sort();
+        //Не будем учитывать примерно 2 процента, так как краевой многоугольник выпирает и добавляет ненужное пространство
+        var index = (int)(distances.Count * 0.98);
+        return distances[Math.Min(index, distances.Count - 1)];
     }
 }
