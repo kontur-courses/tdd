@@ -1,6 +1,7 @@
 ﻿using System.Drawing;
+using TagsCloudVisualization.Abstractions;
 
-public sealed class PlacementStrategy 
+public sealed class PlacementStrategy : IRectanglePlacementStrategy
 {
     private readonly int maxSpiralSteps;
 
@@ -10,12 +11,17 @@ public sealed class PlacementStrategy
         this.maxSpiralSteps = maxSpiralSteps;
     }
 
-    public Rectangle FindPosition(
+    Rectangle FindPosition(
         Size size,
         List<Rectangle> placed,
-        ArchimedeanSpiral spiral,
+        ISpiral spiral,
         Point center)
     {
         throw new NotImplementedException();
     }
+
+    //Rectangle IRectanglePlacementStrategy.FindPosition(Size size, List<Rectangle> placed, ISpiral spiral, Point center)
+    //{
+    //     throw new NotImplementedException();
+    //}
 }
