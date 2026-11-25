@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 
 namespace TagsCloudVisualization.Abstractions
 {
-    internal interface ICentripetalCompactor
+    public interface ICentripetalCompactor
     {
+        public Rectangle Compact(
+            Rectangle candidate,
+            List<Rectangle> placed,
+            Point center);
     }
 }

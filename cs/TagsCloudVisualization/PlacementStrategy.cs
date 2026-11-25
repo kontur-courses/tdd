@@ -11,7 +11,7 @@ public sealed class PlacementStrategy : IRectanglePlacementStrategy
         this.maxSpiralSteps = maxSpiralSteps;
     }
 
-    Rectangle FindPosition(
+    public Rectangle FindPosition(
         Size size,
         List<Rectangle> placed,
         ISpiral spiral,
@@ -20,8 +20,5 @@ public sealed class PlacementStrategy : IRectanglePlacementStrategy
         throw new NotImplementedException();
     }
 
-    //Rectangle IRectanglePlacementStrategy.FindPosition(Size size, List<Rectangle> placed, ISpiral spiral, Point center)
-    //{
-    //     throw new NotImplementedException();
-    //}
+
 }

@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 
 namespace TagsCloudVisualization.Abstractions
 {
-    internal interface ISpiral
+    public interface ISpiral
     {
+        public Point Current { get; }
+
+        public Point Next();
+
+        public void Reset();
+
     }
 }
