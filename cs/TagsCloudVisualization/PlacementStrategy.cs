@@ -1,13 +1,13 @@
 ﻿using System.Drawing;
 
-public sealed class NonOverlappingPlacementStrategy 
+public sealed class PlacementStrategy 
 {
-    private readonly int _maxSpiralSteps;
+    private readonly int maxSpiralSteps;
 
-    public NonOverlappingPlacementStrategy(int maxSpiralSteps = 100_000)
+    public PlacementStrategy(int maxSpiralSteps = 100_000)
     {
         if (maxSpiralSteps <= 0) throw new ArgumentOutOfRangeException(nameof(maxSpiralSteps));
-        _maxSpiralSteps = maxSpiralSteps;
+        this.maxSpiralSteps = maxSpiralSteps;
     }
 
     public Rectangle FindPosition(

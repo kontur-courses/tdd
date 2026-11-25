@@ -7,17 +7,16 @@ namespace TagsCloudVisualization
     {
         private readonly Point center;
         private readonly ArchimedeanSpiral spiral;
-        private readonly NonOverlappingPlacementStrategy placement;
+        private readonly PlacementStrategy placement;
         private readonly CentripetalCompactor compactor;
         private readonly List<Rectangle> placed = new();
-
 
 
         public CircularCloudLayouter(Point center)
         {
             this.center = center;
             spiral = new ArchimedeanSpiral(center: center,radiusStep: 0.5, angleStep: Math.PI / 32);
-            placement = new NonOverlappingPlacementStrategy();
+            placement = new PlacementStrategy();
             compactor = new CentripetalCompactor();
         }
 
