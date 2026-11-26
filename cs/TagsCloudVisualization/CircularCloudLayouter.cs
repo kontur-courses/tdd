@@ -8,7 +8,7 @@ public class CircularCloudLayouter
     private const double SpiralPitchFactor = 0.5;
 
     private readonly Point center;
-    private readonly List<Rectangle> placedRectangles = new();
+    private readonly RectangleSpatialIndex rectangleIndex = new();
 
     public CircularCloudLayouter(Point center)
     {
@@ -24,11 +24,11 @@ public class CircularCloudLayouter
                 rectangleSize,
                 "Rectangle dimensions must be positive.");
         }
-        var rectangle = placedRectangles.Count == 0
+        var rectangle = rectangleIndex.Count == 0
             ? CreateCenteredRectangle(center, rectangleSize)
             : FindAvailableRectangle(rectangleSize);
 
-        placedRectangles.Add(rectangle);
+        rectangleIndex.Add(rectangle);
 
         return rectangle;
     }
@@ -44,13 +44,7 @@ public class CircularCloudLayouter
 
     private bool OverlapsPlacedRectangle(Rectangle candidate)
     {
-        foreach (var placedRectangle in placedRectangles)
-        {
-            if (placedRectangle.IntersectsWith(candidate))
-                return true;
-        }
-
-        return false;
+        return rectangleIndex.IntersectsAny(candidate);
     }
 
     private Rectangle FindAvailableRectangle(Size rectangleSize)

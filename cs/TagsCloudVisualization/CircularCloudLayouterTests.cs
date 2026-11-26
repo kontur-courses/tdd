@@ -157,6 +157,43 @@ public class CircularCloudLayouterTests
         Assert.That(rectangle, Is.EqualTo(new Rectangle(80, 90, 40, 20)));
     }
 
+    [Test]
+    public void PutNextRectangle_DoesNotIntersectWhenCenterIsNegativeAndSizesGrow() // такие названия вообще легальны или перестарался??
+    {
+        var layouter = new CircularCloudLayouter(new Point(-100, -100));
+
+        var sizes = new[]
+        {
+            new Size(20, 20),
+            new Size(80, 40),
+            new Size(140, 30),
+            new Size(15, 90),
+            new Size(48, 48),
+            new Size(200, 100)
+        };
+
+        var rectangles = new List<Rectangle>();
+
+        foreach (var size in sizes)
+            rectangles.Add(layouter.PutNextRectangle(size));
+
+        AssertNoIntersections(rectangles);
+    }
+
+    [Test]
+    public void PutNextRectangle_DoesNotIntersectWhenPlacingManyRectangles()
+    {
+        const int rectangleCount = 240;
+        var layouter = new CircularCloudLayouter(new Point(-500, -500));
+
+        var rectangles = PlaceRectangles(
+            layouter,
+            new Size(20, 20),
+            rectangleCount);
+
+        AssertNoIntersections(rectangles);
+    }
+
     private static Rectangle[] PlaceRectangles(CircularCloudLayouter layouter, Size size, int count)
     {
         var rectangles = new Rectangle[count];
@@ -183,5 +220,16 @@ public class CircularCloudLayouterTests
         var deltaY = rectangle.Y + rectangle.Height / 2.0 - center.Y;
 
         return deltaX * deltaX + deltaY * deltaY;
+    }
+
+    private static void AssertNoIntersections(IReadOnlyList<Rectangle> rectangles) // А асёрты можно так выносить отдельно??
+    {
+        for (var i = 0; i < rectangles.Count; i++)
+        {
+            for (var j = i + 1; j < rectangles.Count; j++)
+            {
+                Assert.That(rectangles[i].IntersectsWith(rectangles[j]), Is.False, $"Rectangles {i} and {j} intersect.");
+            }
+        }
     }
 }
