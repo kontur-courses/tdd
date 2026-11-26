@@ -4,7 +4,8 @@ namespace TagsCloudVisualization;
 
 public class CircularCloudLayouter
 {
-    private const double AngularStep = 0.1;
+    private const double SpiralAngleStep = 0.075;
+    private const double SpiralPitchFactor = 0.5;
 
     private readonly Point center;
     private readonly List<Rectangle> placedRectangles = new();
@@ -16,6 +17,13 @@ public class CircularCloudLayouter
 
     public Rectangle PutNextRectangle(Size rectangleSize)
     {
+        if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(rectangleSize),
+                rectangleSize,
+                "Rectangle dimensions must be positive.");
+        }
         var rectangle = placedRectangles.Count == 0
             ? CreateCenteredRectangle(center, rectangleSize)
             : FindAvailableRectangle(rectangleSize);
@@ -50,11 +58,10 @@ public class CircularCloudLayouter
         var angle = 0.0;
         var spiralPitch = Math.Max(
             rectangleSize.Width,
-            rectangleSize.Height);
-
+            rectangleSize.Height) * SpiralPitchFactor;
         while (true)
         {
-            angle += AngularStep;
+            angle += SpiralAngleStep;
 
             var radius = spiralPitch * angle / (2 * Math.PI);
 
@@ -67,7 +74,53 @@ public class CircularCloudLayouter
                 rectangleSize);
 
             if (!OverlapsPlacedRectangle(candidate))
-                return candidate;
+                return MoveTowardsCenter(candidate);
+        }
+    }
+
+    private double GetDistanceSquared(Rectangle rectangle)
+    {
+        var deltaX = rectangle.X + rectangle.Width / 2.0 - center.X;
+        var deltaY = rectangle.Y + rectangle.Height / 2.0 - center.Y;
+
+        return deltaX * deltaX + deltaY * deltaY;
+    }
+
+    private Rectangle MoveTowardsCenter(Rectangle rectangle)
+    {
+        while (true)
+        {
+            var closestRectangle = rectangle;
+            var closestDistance = GetDistanceSquared(rectangle);
+
+            for (var offsetX = -1; offsetX <= 1; offsetX++)
+            {
+                for (var offsetY = -1; offsetY <= 1; offsetY++)
+                {
+                    if (offsetX == 0 && offsetY == 0)
+                        continue;
+
+                    var candidate = new Rectangle(
+                        rectangle.X + offsetX,
+                        rectangle.Y + offsetY,
+                        rectangle.Width,
+                        rectangle.Height);
+
+                    var candidateDistance = GetDistanceSquared(candidate);
+
+                    if (candidateDistance >= closestDistance ||
+                        OverlapsPlacedRectangle(candidate))
+                        continue;
+
+                    closestRectangle = candidate;
+                    closestDistance = candidateDistance;
+                }
+            }
+
+            if (closestRectangle.Equals(rectangle))
+                return rectangle;
+
+            rectangle = closestRectangle;
         }
     }
 }
