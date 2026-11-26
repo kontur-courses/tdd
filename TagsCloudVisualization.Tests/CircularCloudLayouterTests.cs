@@ -31,6 +31,28 @@ public class CircularCloudLayouterTests
     }
 
     [Test]
+    public void PutNextRectangle_ManyRectanglesOfDifferentSizes_DoNotIntersect()
+    {
+        const int rectangleCount = 30;
+        var random = new Random(42);
+        var layouter = new CircularCloudLayouter(new Point(100, 100));
+        var sizes = Enumerable.Range(0, rectangleCount)
+            .Select(_ => new Size(random.Next(5, 31), random.Next(5, 31)))
+            .ToArray();
+
+        var rectangles = sizes.Select(layouter.PutNextRectangle).ToArray();
+
+        for (var i = 0; i < rectangles.Length; i++)
+        {
+            for (var j = i + 1; j < rectangles.Length; j++)
+            {
+                Assert.That(rectangles[i].IntersectsWith(rectangles[j]), Is.False,
+                    $"Rectangle {i} {rectangles[i]} intersects rectangle {j} {rectangles[j]}.");
+            }
+        }
+    }
+
+    [Test]
     public void PutNextRectangle_ManyEqualSquares_CloudHasComparableWidthAndHeight()
     {
         var layouter = new CircularCloudLayouter(new Point(100, 100));
