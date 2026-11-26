@@ -17,4 +17,16 @@ public class CircularCloudLayouterTests
 
         Assert.That(rectangle, Is.EqualTo(new Rectangle(90, 195, 20, 10)));
     }
+
+    [Test]
+    public void PutNextRectangle_TwoRectangles_DoNotIntersect()
+    {
+        var layouter = new CircularCloudLayouter(new Point(100, 100));
+        var rectangleSize = new Size(20, 10);
+        var firstRectangle = layouter.PutNextRectangle(rectangleSize);
+
+        var secondRectangle = layouter.PutNextRectangle(rectangleSize);
+
+        Assert.That(secondRectangle.IntersectsWith(firstRectangle), Is.False);
+    }
 }
