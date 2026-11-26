@@ -29,4 +29,20 @@ public class CircularCloudLayouterTests
 
         Assert.That(secondRectangle.IntersectsWith(firstRectangle), Is.False);
     }
+
+    [Test]
+    public void PutNextRectangle_ManyEqualSquares_CloudHasComparableWidthAndHeight()
+    {
+        var layouter = new CircularCloudLayouter(new Point(100, 100));
+        var squareSize = new Size(10, 10);
+        const int squareCount = 100;
+
+        var rectangles = Enumerable.Range(0, squareCount)
+            .Select(_ => layouter.PutNextRectangle(squareSize))
+            .ToArray();
+
+        var bounds = rectangles.Aggregate(Rectangle.Union);
+        var aspectRatio = bounds.Width / (double)bounds.Height;
+        Assert.That(aspectRatio, Is.InRange(0.5, 2.0));
+    }
 }
