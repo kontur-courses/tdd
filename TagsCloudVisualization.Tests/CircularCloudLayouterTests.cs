@@ -6,6 +6,20 @@ namespace TagsCloudVisualization.Tests;
 [TestFixture]
 public class CircularCloudLayouterTests
 {
+    [TestCase(0, 10)]
+    [TestCase(10, 0)]
+    [TestCase(-1, 10)]
+    [TestCase(10, -1)]
+    public void PutNextRectangle_NonPositiveDimension_ThrowsArgumentOutOfRangeException(int width, int height)
+    {
+        var layouter = new CircularCloudLayouter(new Point(100, 100));
+        var rectangleSize = new Size(width, height);
+
+        TestDelegate placeRectangle = () => layouter.PutNextRectangle(rectangleSize);
+
+        Assert.That(placeRectangle, Throws.TypeOf<ArgumentOutOfRangeException>());
+    }
+
     [Test]
     public void PutNextRectangle_FirstRectangle_IsCenteredAtCloudCenter()
     {

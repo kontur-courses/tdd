@@ -21,8 +21,15 @@ public class CircularCloudLayouter
     /// <summary>
     /// Определяет позицию следующего прямоугольника в облаке и возвращает его с заданным размером.
     /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">Ширина или высота прямоугольника меньше либо равна нулю.</exception>
     public Rectangle PutNextRectangle(Size rectangleSize)
     {
+        if (rectangleSize.Width <= 0 || rectangleSize.Height <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(rectangleSize), rectangleSize, "Высота и ширина прямоугольника должны быть больше 0.");
+        }
+
         for (var angle = 0.0; ; angle += SpiralAngleStep)
         {
             var offset = GetSpiralOffset(angle);
