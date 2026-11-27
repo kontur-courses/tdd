@@ -1,12 +1,10 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
 
-namespace TagsCloudVisualization;
+namespace TagsCloudVisualization.Layout;
 
-public class CircularCloudLayouter(Point center)
+public class CircularCloudLayouter(Point center, IPlacementPointSource placementPointSource, IRectangleCompactor compactor)
 {
-    private readonly ArchimedeanSpiral spiral = new(center);
-    private readonly RectangleCompactor compactor = new(center);
     private readonly List<Rectangle> rectangles = [];
 
     public IReadOnlyList<Rectangle> Rectangles => rectangles.AsReadOnly();
@@ -16,19 +14,19 @@ public class CircularCloudLayouter(Point center)
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(rectangleSize.Width);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(rectangleSize.Height);
 
-        foreach (var point in spiral.GetPoints())
+        foreach (var point in placementPointSource.GetPoints())
         {
             var rectangle = CreateCenteredAt(point, rectangleSize);
 
             if (rectangles.Exists(rect => rect.IntersectsWith(rectangle)))
                 continue;
 
-            rectangle = compactor.MoveTowardsCenter(rectangle, rectangles);
+            rectangle = compactor.MoveTowardsCenter(rectangle, rectangles, center);
             rectangles.Add(rectangle);
             return rectangle;
         }
 
-        throw new UnreachableException("The spiral is infinite, so a free place is always found.");
+        throw new ArgumentOutOfRangeException($"No suitable placement point found for rectangle of size {rectangleSize}");
     }
 
     private static Rectangle CreateCenteredAt(Point center, Size size) =>

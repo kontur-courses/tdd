@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using FluentAssertions;
+using TagsCloudVisualization.Layout;
 
 namespace TagsCloudVisualization.Tests;
 
@@ -12,7 +13,7 @@ public class CircularCloudLayouterTests
     [TestCase(1, -1)]
     public void PutNextRectangle_WidthOrHeightAreNotPositive_ThrowsArgumentOutOfRangeException(int width, int height)
     {
-        var layouter = new CircularCloudLayouter(new Point(0, 0));
+        var layouter = CreateDefaultLayouter(Point.Empty);
 
         var action = () => layouter.PutNextRectangle(new Size(width, height));
 
@@ -22,7 +23,7 @@ public class CircularCloudLayouterTests
     [TestCaseSource(nameof(CenterPointCases))]
     public void PutNextRectangle_FirstRectangle_PutAtCenter(Point center)
     {
-        var layouter = new CircularCloudLayouter(center);
+        var layouter = CreateDefaultLayouter(center);
         var size = new Size(100, 50);
 
         var rectangle = layouter.PutNextRectangle(size);
@@ -37,7 +38,7 @@ public class CircularCloudLayouterTests
     {
         const double centerTolerance = 10;
 
-        var layouter = new CircularCloudLayouter(center);
+        var layouter = CreateDefaultLayouter(center);
 
         var rectangles = GenerateRandomSizes(100, seed: 15)
             .Select(layouter.PutNextRectangle)
@@ -53,7 +54,7 @@ public class CircularCloudLayouterTests
     [TestCaseSource(nameof(RectangleSizesCases))]
     public void PutNextRectangle_ManyRectangles_DoesNotIntersect(Size[] sizes)
     {
-        var layouter = new CircularCloudLayouter(new Point(0, 0));
+        var layouter = CreateDefaultLayouter(Point.Empty);
 
         var rectangles = sizes.Select(layouter.PutNextRectangle).ToList();
 
@@ -65,7 +66,7 @@ public class CircularCloudLayouterTests
     {
         const double maxWidthRatio = 1.2;
 
-        var layouter = new CircularCloudLayouter(new Point(0, 0));
+        var layouter = CreateDefaultLayouter(Point.Empty);
         var rectangles = sizes.Select(layouter.PutNextRectangle).ToArray();
 
         var horizontalWidth = rectangles.Max(r => r.Right)
@@ -94,8 +95,8 @@ public class CircularCloudLayouterTests
     {
         const double minDensity = 0.6;
 
-        var center = new Point(0, 0);
-        var layouter = new CircularCloudLayouter(center);
+        var center = Point.Empty;
+        var layouter = CreateDefaultLayouter(center);
 
         var rectangles = sizes.Select(layouter.PutNextRectangle).ToList();
 
@@ -161,5 +162,12 @@ public class CircularCloudLayouterTests
             Math.Abs(rect.Top - center.Y));
 
         return Math.Sqrt(dx * dx + dy * dy);
+    }
+
+    private static CircularCloudLayouter CreateDefaultLayouter(Point center)
+    {
+        var compactor = new RectangleCompactor();
+        var spiral = new ArchimedeanSpiral(center);
+        return new CircularCloudLayouter(center, spiral, compactor);
     }
 }

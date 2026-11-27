@@ -1,10 +1,10 @@
 ﻿using System.Drawing;
 
-namespace TagsCloudVisualization;
+namespace TagsCloudVisualization.Layout;
 
-public class RectangleCompactor(Point center)
+public class RectangleCompactor : IRectangleCompactor
 {
-    public Rectangle MoveTowardsCenter(Rectangle rectangle, IReadOnlyList<Rectangle> obstacles)
+    public Rectangle MoveTowardsCenter(Rectangle rectangle, IReadOnlyList<Rectangle> obstacles, Point center)
     {
         var current = rectangle;
         bool moved;
@@ -23,8 +23,7 @@ public class RectangleCompactor(Point center)
         return current;
     }
 
-    private static Rectangle TryShift(
-        Rectangle rectangle, IReadOnlyList<Rectangle> obstacles, int dx, int dy)
+    private static Rectangle TryShift(Rectangle rectangle, IReadOnlyList<Rectangle> obstacles, int dx, int dy)
     {
         var shifted = rectangle with { X = rectangle.X + dx, Y = rectangle.Y + dy };
 

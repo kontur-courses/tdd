@@ -1,8 +1,8 @@
 ﻿using System.Drawing;
 
-namespace TagsCloudVisualization;
+namespace TagsCloudVisualization.Layout;
 
-public class ArchimedeanSpiral
+public class ArchimedeanSpiral : IPlacementPointSource
 {
     private readonly Point center;
     private readonly double spiralStep;
