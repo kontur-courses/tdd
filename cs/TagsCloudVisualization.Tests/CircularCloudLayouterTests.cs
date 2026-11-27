@@ -106,7 +106,6 @@ public class CircularCloudLayouterTests
 
         var density = rectanglesArea / cloudArea;
 
-        //TODO сейчас удалось добиться только 0.6 плотности (и то не всегда✌️😐🥲), но хотелось бы больше. Мы конечно можем уменшить шаг спирали - но лучше сделать компактор
         density.Should().BeGreaterThan(minDensity);
     }
 
