@@ -6,13 +6,16 @@ public class ArchimedeanSpiral
 {
     private readonly Point center;
     private readonly double spiralStep;
+    private readonly double pointSpacing;
 
-    public ArchimedeanSpiral(Point center, double spiralStep = 5)
+    public ArchimedeanSpiral(Point center, double spiralStep = 5, double pointSpacing = 2)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(spiralStep);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(pointSpacing);
 
         this.center = center;
         this.spiralStep = spiralStep;
+        this.pointSpacing = pointSpacing;
     }
 
     /// <summary>
@@ -22,19 +25,27 @@ public class ArchimedeanSpiral
     /// The sequence never ends, so limit it with <c>Take</c>, <c>First</c> or <c>FirstOrDefault</c>.
     /// Calling <c>ToList</c>, <c>Count</c> or <c>Last</c> will hang.
     /// </remarks>
-    public IEnumerable<Point> GetSpiralPoints()
+    public IEnumerable<Point> GetPoints()
     {
-        var angle = 0D;
+        var angle = 0.0;
+        Point? previousPoint = null;
 
         while (true)
         {
-            var r = spiralStep * angle;
-            var x = center.X + r * Math.Cos(angle);
-            var y = center.Y + r * Math.Sin(angle);
+            var radius = spiralStep * angle;
 
-            yield return new Point((int)Math.Round(x), (int)Math.Round(y));
+            var point = new Point(
+                (int)Math.Round(center.X + radius * Math.Cos(angle)),
+                (int)Math.Round(center.Y + radius * Math.Sin(angle)));
 
-            angle += 1 / Math.Max(r, 1);
+            if (point != previousPoint)
+            {
+                previousPoint = point;
+                yield return point;
+            }
+
+            angle += pointSpacing / Math.Sqrt(
+                radius * radius + spiralStep * spiralStep);
         }
     }
 }

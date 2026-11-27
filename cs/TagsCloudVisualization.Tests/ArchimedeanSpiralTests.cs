@@ -13,7 +13,7 @@ public class ArchimedeanSpiralTests
         var center = new Point(x, y);
         var spiral = new ArchimedeanSpiral(center);
 
-        var firstPoint = spiral.GetSpiralPoints().First();
+        var firstPoint = spiral.GetPoints().First();
 
         firstPoint.Should().BeEquivalentTo(center);
     }
@@ -29,7 +29,7 @@ public class ArchimedeanSpiralTests
         var spiral = new ArchimedeanSpiral(center, spiralStep);
         var turnDistance = 2 * Math.PI * spiralStep;
 
-        var radii = spiral.GetSpiralPoints()
+        var radii = spiral.GetPoints()
             .Take(pointsCount)
             .Where(p => p.Y == center.Y && p.X > center.X)
             .Select(p => (double)(p.X - center.X))
@@ -42,11 +42,18 @@ public class ArchimedeanSpiralTests
 
     [TestCase(-1)]
     [TestCase(0)]
-    public void Constructor_StepIsZeroOrNegative_ThrowsArgumentOutOfRangeException(double spiralStep)
+    public void Constructor_StepIsNotPositive_ThrowsArgumentOutOfRangeException(double spiralStep)
     {
-        var center = new Point(0, 0);
+        Action act = () => new ArchimedeanSpiral(Point.Empty, spiralStep: spiralStep);
 
-        Action act = () => new ArchimedeanSpiral(center, spiralStep);
+        act.Should().Throw<ArgumentOutOfRangeException>();
+    }
+
+    [TestCase(-1)]
+    [TestCase(0)]
+    public void Constructor_PointSpacingIsNotPositive_ThrowsArgumentOutOfRangeException(double pointSpacing)
+    {
+        Action act = () => new ArchimedeanSpiral(Point.Empty, pointSpacing: pointSpacing);
 
         act.Should().Throw<ArgumentOutOfRangeException>();
     }
