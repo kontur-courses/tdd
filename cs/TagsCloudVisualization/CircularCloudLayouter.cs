@@ -3,9 +3,10 @@ using System.Drawing;
 
 namespace TagsCloudVisualization;
 
-public class CircularCloudLayouter(Point center, double spiralStep = 5, double pointSpacing = 2)
+public class CircularCloudLayouter(Point center)
 {
-    private readonly ArchimedeanSpiral spiral = new(center, spiralStep, pointSpacing);
+    private readonly ArchimedeanSpiral spiral = new(center);
+    private readonly RectangleCompactor compactor = new(center);
     private readonly List<Rectangle> rectangles = [];
 
     public IReadOnlyList<Rectangle> Rectangles => rectangles.AsReadOnly();
@@ -17,18 +18,19 @@ public class CircularCloudLayouter(Point center, double spiralStep = 5, double p
 
         foreach (var point in spiral.GetPoints())
         {
-            var location = new Point(point.X - rectangleSize.Width / 2,
-                point.Y - rectangleSize.Height / 2);
+            var rectangle = CreateCenteredAt(point, rectangleSize);
 
-            var rectangle = new Rectangle(location, rectangleSize);
-
-            if (rectangles.Any(rect => rect.IntersectsWith(rectangle)))
+            if (rectangles.Exists(rect => rect.IntersectsWith(rectangle)))
                 continue;
 
+            rectangle = compactor.MoveTowardsCenter(rectangle, rectangles);
             rectangles.Add(rectangle);
             return rectangle;
         }
 
         throw new UnreachableException("The spiral is infinite, so a free place is always found.");
     }
+
+    private static Rectangle CreateCenteredAt(Point center, Size size) =>
+        new(center.X - size.Width / 2, center.Y - size.Height / 2, size.Width, size.Height);
 }
