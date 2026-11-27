@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TagsCloudVisualization", "TagsCloudVisualization\TagsCloudVisualization.csproj", "{FE13AA19-8B3D-4A87-B565-24EF546DAC7D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CircularCloudLayouterTests", "CircularCloudLayouterTests\CircularCloudLayouterTests.csproj", "{66579B3E-2A95-43BA-A09F-A9260A86424B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,8 +29,15 @@ Global
 		{FE13AA19-8B3D-4A87-B565-24EF546DAC7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE13AA19-8B3D-4A87-B565-24EF546DAC7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE13AA19-8B3D-4A87-B565-24EF546DAC7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66579B3E-2A95-43BA-A09F-A9260A86424B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66579B3E-2A95-43BA-A09F-A9260A86424B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66579B3E-2A95-43BA-A09F-A9260A86424B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66579B3E-2A95-43BA-A09F-A9260A86424B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {05395D04-694D-4CE2-9F35-EFA373CA7432}
 	EndGlobalSection
 EndGlobal
