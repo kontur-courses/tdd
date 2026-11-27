@@ -67,4 +67,41 @@ public class CircularCloudLayouterTests
         var aspectRatio = bounds.Width / (double)bounds.Height;
         Assert.That(aspectRatio, Is.InRange(0.5, 2.0));
     }
+
+    [Test]
+    public void PutNextRectangle_ManyEqualSquares_CloudStaysNearRequestedCenter()
+    {
+        var center = new Point(100, 200);
+        var squareSize = new Size(10, 10);
+        const int squareCount = 100;
+        var maxDistance = squareSize.Width;
+        var layouter = new CircularCloudLayouter(center);
+
+        var rectangles = Enumerable.Range(0, squareCount)
+            .Select(_ => layouter.PutNextRectangle(squareSize))
+            .ToArray();
+
+        var bounds = rectangles.Aggregate(Rectangle.Union);
+        var offsetX = bounds.Left + bounds.Width / 2.0 - center.X;
+        var offsetY = bounds.Top + bounds.Height / 2.0 - center.Y;
+        var distance = Math.Sqrt(offsetX * offsetX + offsetY * offsetY);
+        Assert.That(distance, Is.LessThanOrEqualTo(maxDistance));
+    }
+
+    [Test]
+    public void PutNextRectangle_ManyEqualSquares_CloudFillsAtLeastHalfOfItsBounds()
+    {
+        const int squareCount = 100;
+        var squareSize = new Size(10, 10);
+        var layouter = new CircularCloudLayouter(new Point(100, 100));
+
+        var rectangles = Enumerable.Range(0, squareCount)
+            .Select(_ => layouter.PutNextRectangle(squareSize))
+            .ToArray();
+
+        var bounds = rectangles.Aggregate(Rectangle.Union);
+        var occupiedArea = rectangles.Sum(rectangle => rectangle.Width * rectangle.Height);
+        var boundsArea = (double)bounds.Width * bounds.Height;
+        Assert.That(occupiedArea / boundsArea, Is.GreaterThanOrEqualTo(0.5));
+    }
 }
