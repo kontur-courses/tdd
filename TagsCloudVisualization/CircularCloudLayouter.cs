@@ -25,12 +25,10 @@ public class CircularCloudLayouter
     {
         for (var angle = 0.0; ; angle += SpiralAngleStep)
         {
-            var radius = SpiralRadiusGrowth * angle;
-            var offsetX = (int)Math.Round(radius * Math.Cos(angle));
-            var offsetY = (int)Math.Round(radius * Math.Sin(angle));
+            var offset = GetSpiralOffset(angle);
             var location = new Point(
-                center.X + offsetX - rectangleSize.Width / 2,
-                center.Y + offsetY - rectangleSize.Height / 2);
+                center.X + offset.X - rectangleSize.Width / 2,
+                center.Y + offset.Y - rectangleSize.Height / 2);
             var candidate = new Rectangle(location, rectangleSize);
 
             if (placedRectangles.Any(rectangle => rectangle.IntersectsWith(candidate)))
@@ -39,5 +37,16 @@ public class CircularCloudLayouter
             placedRectangles.Add(candidate);
             return candidate;
         }
+    }
+
+    /// <summary>
+    /// Вычисляет целочисленное смещение от центра по архимедовой спирали для угла в радианах.
+    /// </summary>
+    private static Point GetSpiralOffset(double angle)
+    {
+        var radius = SpiralRadiusGrowth * angle;
+        return new Point(
+            (int)Math.Round(radius * Math.Cos(angle)),
+            (int)Math.Round(radius * Math.Sin(angle)));
     }
 }
