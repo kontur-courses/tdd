@@ -15,4 +15,8 @@
       <Folder Include="ImageExamples\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="ImageExamples\cloud1.png" />
+    </ItemGroup>
+
 </Project>
