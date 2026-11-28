@@ -12,20 +12,15 @@ public class CircularCloudLayouterTests
     private readonly Size defaultSize = new Size(4, 2);
 
     [TestCase(6, 10, 3, 3)] // четные стороны
-    [TestCase(5, 7, 0, 0)] // нечетные стороны
-    public void CircularCloudLayouter_PutsFirstRectangleInCenter(
+    public void CircularCloudLayouter_PutsFirstRectangleInCenter_WhenSidesAreEven(
         int width, int height, int centerX, int centerY)
-    {
-        var provider = A.Fake<ICenterPointProvider>();
-        A.CallTo(() => provider.GetNextCenterPosition()).Returns(new Point(centerX, centerY));
-        var layouter = new CircularCloudLayouter(provider);
-        var expectedRect = new Rectangle(centerX - width / 2, centerY - height / 2, width, height);
+        => AssertFirstRectangleInCenter(width, height, centerX, centerY);
 
-        var actualRect = layouter.PutNextRectangle(new Size(width, height));
-
-        actualRect.Should().Be(expectedRect);
-    }
-
+    [TestCase(5, 7, 0, 0)] // нечетные стороны
+    public void CircularCloudLayouter_PutsFirstRectangleInCenter_WhenSidesAreOdd(
+        int width, int height, int centerX, int centerY)
+        => AssertFirstRectangleInCenter(width, height, centerX, centerY);
+    
     [TestCase(-10, 10)]
     [TestCase(10, -10)]
     [TestCase(10, 0)]
@@ -98,5 +93,18 @@ public class CircularCloudLayouterTests
 
         secondRect.GetCenter().Should().NotBe(conflictingPoint);
         firstRect.IntersectsWith(secondRect).Should().BeFalse();
+    }
+
+    private static void AssertFirstRectangleInCenter(
+        int width, int height, int centerX, int centerY)
+    {
+        var provider = A.Fake<ICenterPointProvider>();
+        A.CallTo(() => provider.GetNextCenterPosition()).Returns(new Point(centerX, centerY));
+        var layouter = new CircularCloudLayouter(provider);
+        var expectedRect = new Rectangle(centerX - width / 2, centerY - height / 2, width, height);
+
+        var actualRect = layouter.PutNextRectangle(new Size(width, height));
+
+        actualRect.Should().Be(expectedRect);
     }
 }
