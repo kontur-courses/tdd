@@ -26,7 +26,7 @@ public class ArchimedeanSpiralTests
         const int pointsCount = 20_000;
         const double maxRadialDeviation = 1.0;
 
-        var center = new Point(0, 0);
+        var center = Point.Empty;
         var spiral = new ArchimedeanSpiral(center, spiralStep);
         var turnDistance = 2 * Math.PI * spiralStep;
 
