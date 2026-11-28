@@ -59,7 +59,7 @@ public class CircularCloudLayouterTests
         var provider = A.Fake<ICenterPointProvider>();
         var firstCenter = new Point(5, 5);
         var size = new Size(4, 4);
-        var farawayPoint = new Point(100, 100); // берем далекую точку, чтобы не было пересечения 
+        var farawayPoint = new Point(100, 100);
         A.CallTo(() => provider.GetNextCenterPosition())
             .ReturnsNextFromSequence(
                 firstCenter,
