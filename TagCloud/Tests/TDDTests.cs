@@ -46,4 +46,25 @@ public class TDDTests
                 "прямоугольники {0} и {1} не должны перекрываться", i, j);
         }
     }
+    
+    [Test]
+    public void PutNextRectangle_PreservesRequestedSizeForEachRectangle()
+    {
+        // Arrange
+        var layouter = new CircularCloudLayouter(new Point(100, 100));
+        var sizes = new[]
+        {
+            new Size(40, 20),
+            new Size(20, 40),
+            new Size(30, 10),
+            new Size(15, 25)
+        };
+
+        // Act
+        var rectangles = sizes.Select(layouter.PutNextRectangle).ToArray();
+
+        // Assert
+        rectangles.Select(rectangle => rectangle.Size)
+            .Should().Equal(sizes);
+    }
 }
