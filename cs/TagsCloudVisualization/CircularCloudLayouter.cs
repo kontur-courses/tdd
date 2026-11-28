@@ -6,9 +6,16 @@ namespace TagsCloudVisualization;
 /// Располагает прямоугольники в виде облака вокруг заданного центра.
 /// </summary>
 /// <param name="center">Центр облака тегов.</param>
+/// <param name="provider">Провайдер, определяющий последовательность центров,
+/// на которых располагаются прямоугольники</param>
 public class CircularCloudLayouter(ICenterPointProvider provider)
 {
     private readonly List<Rectangle> rectangles = [];
+
+    public CircularCloudLayouter(Point center)
+        : this(ArchimedeanSpiralDefaults.Create(center))
+    {
+    }
 
     public Rectangle PutNextRectangle(Size rectangleSize)
     {
