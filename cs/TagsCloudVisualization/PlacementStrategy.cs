@@ -1,24 +1,27 @@
 ﻿using System.Drawing;
 using TagsCloudVisualization.Abstractions;
 
-public sealed class PlacementStrategy : IRectanglePlacementStrategy
+namespace TagsCloudVisualization
 {
-    private readonly int maxSpiralSteps;
-
-    public PlacementStrategy(int maxSpiralSteps = 100_000)
+    public sealed class PlacementStrategy : IPlacementStrategy
     {
-        if (maxSpiralSteps <= 0) throw new ArgumentOutOfRangeException(nameof(maxSpiralSteps));
-        this.maxSpiralSteps = maxSpiralSteps;
+        private readonly int maxSpiralSteps;
+
+        public PlacementStrategy(int maxSpiralSteps = 100_000)
+        {
+            if (maxSpiralSteps <= 0) throw new ArgumentOutOfRangeException(nameof(maxSpiralSteps));
+            this.maxSpiralSteps = maxSpiralSteps;
+        }
+
+        public Rectangle FindPosition(
+            Size size,
+            List<Rectangle> placed,
+            ISpiral spiral,
+            Point center)
+        {
+            throw new NotImplementedException();
+        }
+
+
     }
-
-    public Rectangle FindPosition(
-        Size size,
-        List<Rectangle> placed,
-        ISpiral spiral,
-        Point center)
-    {
-        throw new NotImplementedException();
-    }
-
-
 }

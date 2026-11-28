@@ -1,14 +1,14 @@
 ﻿using System.Drawing;
-
+using TagsCloudVisualization.Abstractions;
 
 namespace TagsCloudVisualization
 {
     public  class CircularCloudLayouter
     {
         private readonly Point center;
-        private readonly ArchimedeanSpiral spiral;
-        private readonly PlacementStrategy placement;
-        private readonly CentripetalCompactor compactor;
+        private readonly ISpiral spiral;
+        private readonly IPlacementStrategy placement;
+        private readonly ICentripetalCompactor compactor;
         private readonly List<Rectangle> placed = new();
 
 

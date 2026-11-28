@@ -2,7 +2,7 @@
 
 namespace TagsCloudVisualization.Abstractions
 {
-    public interface IRectanglePlacementStrategy
+    public interface IPlacementStrategy
     {
         public Rectangle FindPosition(
             Size size,
