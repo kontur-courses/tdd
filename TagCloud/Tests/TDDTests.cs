@@ -65,6 +65,39 @@ public class TDDTests
 
         // Assert
         rectangles.Select(rectangle => rectangle.Size)
-            .Should().Equal(sizes);
+            .Should().Equal(sizes,
+                "добавление прямоугольников не должно менять их размер");
+    }
+
+    [Test]
+    public void PutNextRectangle_PlacesSecondRectangleCloseToFirst()
+    {
+        // Arrange
+        var layouter = new CircularCloudLayouter(new Point(100, 100));
+        var size = new Size(20, 20);
+        
+        // Act
+        var rectangle1 = layouter.PutNextRectangle(size);
+        var rectangle2 = layouter.PutNextRectangle(size);
+        
+        // Assert
+        var distance = GetGapBetweenRectangles(rectangle1, rectangle2);
+
+        distance.Should().BeLessThanOrEqualTo(2,
+            "зазор между первыми двумя прямоугольниками не должен превышать 2 пикселей");
+    }
+
+    private static double GetGapBetweenRectangles(Rectangle rect1, Rectangle rect2)
+    {
+        var horizontalGap = Math.Max(0, Math.Max(
+            rect2.Left - rect1.Right,
+            rect1.Left - rect2.Right));
+
+        var verticalGap = Math.Max(0, Math.Max(
+            rect2.Top - rect1.Bottom,
+            rect1.Top - rect2.Bottom));
+
+        return Math.Sqrt(
+            horizontalGap * horizontalGap + verticalGap * verticalGap);
     }
 }
