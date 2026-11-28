@@ -1,21 +1,49 @@
 ﻿using System.Drawing;
 using FluentAssertions;
+using NUnit.Framework.Interfaces;
 using TagsCloudVisualization.Layout;
+using TagsCloudVisualization.Visualization;
 
 namespace TagsCloudVisualization.Tests;
 
 [TestFixture]
 public class CircularCloudLayouterTests
 {
+    private CircularCloudLayouter? layouter;
+
+    [SetUp]
+    public void SetUpLayouter()
+    {
+        layouter = CreateDefaultLayouter(Point.Empty);
+    }
+
+    [TearDown]
+    public void SaveCloudImageIfTestFailed()
+    {
+        var context = TestContext.CurrentContext;
+
+        if (context.Result.Outcome.Status != TestStatus.Failed
+            || layouter is null
+            || layouter.Rectangles.Count == 0)
+            return;
+
+
+        var directory = Path.Combine(context.WorkDirectory, "FailedLayouts");
+        Directory.CreateDirectory(directory);
+
+        var path = Path.Combine(directory, $"{context.Test.Name}-{Guid.NewGuid():N}.png");
+
+        CloudVisualizer.SaveImage(layouter.Rectangles, path);
+        TestContext.Progress.WriteLine($"Tag cloud visualization saved to file {path}");
+    }
+
     [TestCase(0, 1)]
     [TestCase(-1, 1)]
     [TestCase(1, 0)]
     [TestCase(1, -1)]
     public void PutNextRectangle_WidthOrHeightAreNotPositive_ThrowsArgumentOutOfRangeException(int width, int height)
     {
-        var layouter = CreateDefaultLayouter(Point.Empty);
-
-        var action = () => layouter.PutNextRectangle(new Size(width, height));
+        var action = () => layouter!.PutNextRectangle(new Size(width, height));
 
         action.Should().Throw<ArgumentOutOfRangeException>();
     }
@@ -23,7 +51,7 @@ public class CircularCloudLayouterTests
     [TestCaseSource(nameof(CenterPointCases))]
     public void PutNextRectangle_FirstRectangle_PutAtCenter(Point center)
     {
-        var layouter = CreateDefaultLayouter(center);
+        layouter = CreateDefaultLayouter(center);
         var size = new Size(100, 50);
 
         var rectangle = layouter.PutNextRectangle(size);
@@ -38,10 +66,10 @@ public class CircularCloudLayouterTests
     {
         const double centerTolerance = 10;
 
-        var layouter = CreateDefaultLayouter(center);
+        layouter = CreateDefaultLayouter(center);
 
         var rectangles = GenerateRandomSizes(100, seed: 15)
-            .Select(layouter.PutNextRectangle)
+            .Select(layouter!.PutNextRectangle)
             .ToList();
 
         var actualCenterX = (rectangles.Max(r => r.Right) + rectangles.Min(r => r.Left)) / 2.0;
@@ -54,9 +82,7 @@ public class CircularCloudLayouterTests
     [TestCaseSource(nameof(RectangleSizesCases))]
     public void PutNextRectangle_ManyRectangles_DoesNotIntersect(Size[] sizes)
     {
-        var layouter = CreateDefaultLayouter(Point.Empty);
-
-        var rectangles = sizes.Select(layouter.PutNextRectangle).ToList();
+        var rectangles = sizes.Select(layouter!.PutNextRectangle).ToList();
 
         rectangles.Should().OnlyContain(rectangle => rectangles.Count(rectangle.IntersectsWith) == 1);
     }
@@ -66,8 +92,7 @@ public class CircularCloudLayouterTests
     {
         const double maxWidthRatio = 1.2;
 
-        var layouter = CreateDefaultLayouter(Point.Empty);
-        var rectangles = sizes.Select(layouter.PutNextRectangle).ToArray();
+        var rectangles = sizes.Select(layouter!.PutNextRectangle).ToArray();
 
         var horizontalWidth = rectangles.Max(r => r.Right)
                               - rectangles.Min(r => r.Left);
@@ -95,14 +120,12 @@ public class CircularCloudLayouterTests
     {
         const double minDensity = 0.6;
 
-        var center = Point.Empty;
-        var layouter = CreateDefaultLayouter(center);
-
-        var rectangles = sizes.Select(layouter.PutNextRectangle).ToList();
+        var rectangles = sizes.Select(layouter!.PutNextRectangle).ToList();
 
         var rectanglesArea = rectangles.Sum(r => r.Width * r.Height);
 
-        var cloudArea = Math.PI * Math.Pow(rectangles.Max(r => GetMaxDistanceFromCenter(r, center)), 2);
+        var cloudArea = Math.PI * Math.Pow(
+            rectangles.Max(r => GetMaxDistanceFromCenter(r, Point.Empty)), 2);
 
         var density = rectanglesArea / cloudArea;
 
