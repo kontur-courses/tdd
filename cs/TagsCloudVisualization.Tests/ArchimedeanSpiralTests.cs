@@ -16,22 +16,17 @@ public class ArchimedeanSpiralTests
     [TestCase(-10,-20)]
     public void ArchimedeanSpiral_ReturnsCenter_WhenGettingFirstPoint(int centerX, int centerY)
     {
-        var center = new Point(centerX, centerY);
-        var spiral = new ArchimedeanSpiral(DefaultSpiralAngleStep, DefaultSpiralRadiusCoefficient, DefaultStartRadius, center);
+        var spiral = CreateSpiral(centerX, centerY);
 
         var firstPoint = spiral.GetNextCenterPosition();
 
-        firstPoint.Should().Be(center);
+        firstPoint.Should().Be(new Point(centerX, centerY));
     }
 
     [Test]
     public void ArchimedeanSpiral_ChangesSecondPoint_AfterGettingFirstPoint()
     {
-        var spiral = new ArchimedeanSpiral(
-            DefaultSpiralAngleStep, 
-            DefaultSpiralRadiusCoefficient, 
-            DefaultStartRadius, 
-            defaultCenterPoint); 
+        var spiral = CreateSpiral(defaultCenterPoint);
         
         var firstPoint = spiral.GetNextCenterPosition();
         var secondPoint = spiral.GetNextCenterPosition();
@@ -88,4 +83,12 @@ public class ArchimedeanSpiralTests
             actualPoint.Should().Be(expectedPoint);
         }
     }
+
+    private static ArchimedeanSpiral CreateSpiral(int centerX, int centerY)
+    {
+        var center = new Point(centerX, centerY);
+        return new ArchimedeanSpiral(DefaultSpiralAngleStep, DefaultSpiralRadiusCoefficient, DefaultStartRadius, center);
+    }
+
+    private static ArchimedeanSpiral CreateSpiral(Point center) => CreateSpiral(center.X, center.Y);
 }
