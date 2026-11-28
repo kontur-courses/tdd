@@ -9,6 +9,9 @@ public static class CloudVisualizer
     public static void SaveImage(IReadOnlyList<Rectangle> rectangles, string path,
         Color backgroundColor = default, Color rectangleColor = default)
     {
+        if (rectangles.Count == 0)
+            throw new ArgumentException("Cannot visualize an empty list of rectangles.", nameof(rectangles));
+
         var minX = rectangles.Min(r => r.Left);
         var minY = rectangles.Min(r => r.Top);
         var width = rectangles.Max(r => r.Right) - minX;
