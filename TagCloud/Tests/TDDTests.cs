@@ -10,15 +10,15 @@ public class TDDTests
     public void PutNextRectangle_CentersFirstRectangle()
     {
         // Arrange
-        var center = new Point(0, 0);
+        var center = new Point(100, 50);
         var layouter = new CircularCloudLayouter(center);
-        var rectangleSize = new Size(10, 10);
+        var rectangleSize = new Size(40, 20);
         
         // Act
         var rectangle = layouter.PutNextRectangle(rectangleSize);
         
         // Assert
-        rectangle.Should().Be(new Rectangle(-5, -5, 10, 10),
+        rectangle.Should().Be(new Rectangle(80, 40, 40, 20),
             "Первый прямоугольник должен всставляться ровно в центр");
     }
     
