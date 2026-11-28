@@ -8,14 +8,40 @@ namespace TagsCloudVisualization.Tests;
 [TestFixture]
 public class CircularCloudLayouter_Tests
 {
-    private Point defaultCenter;
-    private CircularCloudLayouter layouter;
-
     [SetUp]
     public void SetUp()
     {
         defaultCenter = new Point(0, 0);
         layouter = new CircularCloudLayouter(defaultCenter);
+    }
+
+    private Point defaultCenter;
+    private CircularCloudLayouter layouter = null!;
+
+    [TestCase(0, 0)]
+    [TestCase(120, -80)]
+    public void Constructor_ValidCenter_InitializesCenterAndEmptyRectangles(int centerX, int centerY)
+    {
+        var center = new Point(centerX, centerY);
+
+        layouter = new CircularCloudLayouter(center);
+
+        layouter.Center.Should().Be(center);
+        layouter.Rectangles.Should().BeEmpty();
+    }
+
+    [TestCase(0, 10)]
+    [TestCase(10, 0)]
+    [TestCase(-5, 10)]
+    [TestCase(10, -5)]
+    [TestCase(0, 0)]
+    public void PutNextRectangle_NonPositiveSize_ThrowsArgumentOutOfRangeException(int width, int height)
+    {
+        var invalidSize = new Size(width, height);
+
+        var act = () => layouter.PutNextRectangle(invalidSize);
+
+        act.Should().Throw<ArgumentOutOfRangeException>();
     }
 
     [TestCase(10, 10)]
@@ -30,19 +56,32 @@ public class CircularCloudLayouter_Tests
         rectangle.Size.Should().Be(requestedSize);
     }
 
-    [TestCase(0, 0)]
-    [TestCase(100, 200)]
-    [TestCase(-50, -30)]
-    public void PutNextRectangle_FirstRectangle_PlacesCenteredAtCloudCenter(int centerX, int centerY)
+    [Test]
+    public void PutNextRectangle_MultipleCalls_StoresPlacedRectanglesInOrder()
+    {
+        var sizes = new[] { new Size(40, 20), new Size(30, 15), new Size(25, 25) };
+
+        var returned = PutAll(layouter, sizes);
+
+        layouter.Rectangles.Should().Equal(returned);
+    }
+
+    [TestCase(0, 0, 40, 20)]
+    [TestCase(100, 200, 40, 20)]
+    [TestCase(-50, -30, 41, 21)]
+    public void PutNextRectangle_FirstRectangle_PlacesCenteredAtCloudCenter(
+        int centerX,
+        int centerY,
+        int width,
+        int height)
     {
         var center = new Point(centerX, centerY);
-        var customLayouter = new CircularCloudLayouter(center);
-        var size = new Size(40, 20);
+        layouter = new CircularCloudLayouter(center);
+        var size = new Size(width, height);
 
-        var firstRectangle = customLayouter.PutNextRectangle(size);
+        var firstRectangle = layouter.PutNextRectangle(size);
 
-        var expectedCenter = new PointF(center.X, center.Y);
-        firstRectangle.GetCenter().Should().Be(expectedCenter);
+        CloudUtils.Distance(firstRectangle.GetCenter(), center).Should().BeLessThan(1.0);
     }
 
     [Test]
@@ -57,7 +96,7 @@ public class CircularCloudLayouter_Tests
     }
 
     [Test]
-    public void PutNextRectangle_TwoRectangles_PlacedTightlyWithoutGap()
+    public void PutNextRectangle_TwoRectangles_TouchWithoutGapOrOverlap()
     {
         var size = new Size(40, 20);
 
@@ -78,13 +117,26 @@ public class CircularCloudLayouter_Tests
     }
 
     [Test]
-    public void PutNextRectangle_ManyRectangles_DoNotIntersect()
+    public void PutNextRectangle_ManyVariedRectangles_DoNotIntersect()
     {
-        var sizes = GenerateRandomSizes(count: 150, seed: 42);
+        var sizes = GenerateRandomSizes(150, 42);
 
         var rectangles = PutAll(layouter, sizes);
 
         CloudUtils.HasAnyIntersection(rectangles).Should().BeFalse();
+    }
+
+    [Test]
+    public void PutNextRectangle_DescendingTagSizes_PacksDenselyWithoutIntersections()
+    {
+        var sizes = GenerateRandomSizes(150, 7)
+            .OrderByDescending(s => s.Width * s.Height)
+            .ToList();
+
+        var rectangles = PutAll(layouter, sizes);
+
+        CloudUtils.HasAnyIntersection(rectangles).Should().BeFalse();
+        CloudUtils.GetCirclePackingDensity(rectangles, defaultCenter).Should().BeGreaterThan(2.0 / Math.PI);
     }
 
     [TestCase(0, 0)]
@@ -92,10 +144,10 @@ public class CircularCloudLayouter_Tests
     public void PutNextRectangle_ManyRectangles_KeepsCloudCentered(int centerX, int centerY)
     {
         var center = new Point(centerX, centerY);
-        var customLayouter = new CircularCloudLayouter(center);
-        var sizes = GenerateRandomSizes(count: 100, seed: 42);
+        layouter = new CircularCloudLayouter(center);
+        var sizes = GenerateRandomSizes(150, 42);
 
-        var rectangles = PutAll(customLayouter, sizes);
+        var rectangles = PutAll(layouter, sizes);
 
         var boundingBox = CloudUtils.GetBoundingBox(rectangles);
         var cloudRadius = CloudUtils.GetMaxDistanceFromCenter(rectangles, center);
@@ -106,35 +158,27 @@ public class CircularCloudLayouter_Tests
     [Test]
     public void PutNextRectangle_ManyVariedRectangles_FormsCircularAspectRatio()
     {
-        var sizes = GenerateRandomSizes(count: 150, seed: 42);
+        var sizes = GenerateRandomSizes(150, 42);
 
         var rectangles = PutAll(layouter, sizes);
 
         var boundingBox = CloudUtils.GetBoundingBox(rectangles);
-        CloudUtils.GetAspectRatio(boundingBox).Should().BeGreaterOrEqualTo(0.8);
+        CloudUtils.GetAspectRatio(boundingBox).Should().BeGreaterOrEqualTo(0.85);
     }
 
     [Test]
-    public void PutNextRectangle_ManyVariedRectangles_StaysWithinCompactCircleRadius()
+    public void PutNextRectangle_ManyVariedRectangles_PacksDenselyIntoCircularShape()
     {
-        var sizes = GenerateRandomSizes(count: 150, seed: 42);
+        var sizes = GenerateRandomSizes(150, 42);
 
         var rectangles = PutAll(layouter, sizes);
 
-        var enclosingRadius = CloudUtils.GetMaxDistanceFromCenter(rectangles, defaultCenter);
-        var idealRadius = CloudUtils.GetIdealCircleRadius(rectangles);
-        enclosingRadius.Should().BeLessOrEqualTo(idealRadius * 1.35);
-    }
-
-    [Test]
-    public void PutNextRectangle_ManyVariedRectangles_PacksDenselyWithinEnclosingCircle()
-    {
-        var sizes = GenerateRandomSizes(count: 150, seed: 42);
-
-        var rectangles = PutAll(layouter, sizes);
-
+        // Любой прямоугольник, вписанный в окружность, имеет плотность не выше 2 / π(≈ 0.637)
+        // Превышение этого предела доказывает одновременно
+        // высокую плотность упаковки и скруглённую (не квадратную) форму облака.
+        var maxPossibleRectangleInCircleDensity = 2.0 / Math.PI;
         var density = CloudUtils.GetCirclePackingDensity(rectangles, defaultCenter);
-        density.Should().BeGreaterOrEqualTo(0.60);
+        density.Should().BeGreaterThan(maxPossibleRectangleInCircleDensity);
     }
 
     private static List<Rectangle> PutAll(CircularCloudLayouter targetLayouter, IEnumerable<Size> sizes)
@@ -150,7 +194,7 @@ public class CircularCloudLayouter_Tests
         for (var i = 0; i < count; i++)
         {
             var width = random.Next(15, 80);
-            var height = random.Next(10, 40);
+            var height = random.Next(10, 50);
             sizes.Add(new Size(width, height));
         }
 
