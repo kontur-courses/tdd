@@ -25,22 +25,38 @@ public class ArchimedeanSpiralGen_Tests
     {
         var spiral = new ArchimedeanSpiralGen(new Point(0, 0));
 
-        var points = spiral.GetPoints().Take(100).ToList();
+        var points = spiral.GetPoints().Take(200).ToList();
 
         for (var i = 1; i < points.Count; i++)
             points[i].Should().NotBe(points[i - 1]);
     }
 
     [Test]
-    public void GetPoints_MultiplePoints_MovesFromCenter()
+    public void GetPoints_MultipleTurns_VisitsAllQuadrantsAroundCenter()
     {
-        var center = new Point(0, 0);
+        var center = new Point(50, -30);
         var spiral = new ArchimedeanSpiralGen(center);
 
         var points = spiral.GetPoints().Take(500).ToList();
 
-        var earlyDistance = CloudUtils.Distance(points[10], center);
-        var lateDistance = CloudUtils.Distance(points[^1], center);
-        lateDistance.Should().BeGreaterThan(earlyDistance);
+        points.Should().Contain(p => p.X > center.X && p.Y > center.Y);
+        points.Should().Contain(p => p.X < center.X && p.Y > center.Y);
+        points.Should().Contain(p => p.X < center.X && p.Y < center.Y);
+        points.Should().Contain(p => p.X > center.X && p.Y < center.Y);
+    }
+
+    [Test]
+    public void GetPoints_MultiplePoints_ExpandsFromCenter()
+    {
+        var center = new Point(0, 0);
+        var spiral = new ArchimedeanSpiralGen(center);
+
+        var points = spiral.GetPoints().Take(1000).ToList();
+
+        var nearDistance = CloudUtils.Distance(points[10], center);
+        var midDistance = CloudUtils.Distance(points[200], center);
+        var farDistance = CloudUtils.Distance(points[^1], center);
+        midDistance.Should().BeGreaterThan(nearDistance);
+        farDistance.Should().BeGreaterThan(midDistance);
     }
 }

@@ -19,6 +19,23 @@ public class ArchimedeanSpiralGen : ISpiralGen
 
     public IEnumerable<Point> GetPoints()
     {
-        throw new NotImplementedException();
+        Point? previousPoint = null;
+        var angle = 0.0;
+
+        while (true)
+        {
+            var radius = SpiralStep * angle;
+            var x = Center.X + (int)Math.Round(radius * Math.Cos(angle));
+            var y = Center.Y + (int)Math.Round(radius * Math.Sin(angle));
+            var currentPoint = new Point(x, y);
+
+            if (currentPoint != previousPoint)
+            {
+                yield return currentPoint;
+                previousPoint = currentPoint;
+            }
+
+            angle += AngleStep;
+        }
     }
 }
