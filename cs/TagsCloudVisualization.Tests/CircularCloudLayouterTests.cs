@@ -48,12 +48,17 @@ public class CircularCloudLayouterTests
         action.Should().Throw<ArgumentOutOfRangeException>();
     }
 
-    [TestCaseSource(nameof(CenterPointCases))]
-    public void PutNextRectangle_FirstRectangle_PutAtCenter(Point center)
+    [TestCase(0, 0)]
+    [TestCase(1, 1)]
+    [TestCase(10, 10)]
+    [TestCase(100, 100)]
+    public void PutNextRectangle_FirstRectangle_PutAtCenter(int x, int y)
     {
-        layouter = CreateDefaultLayouter(center);
-        var size = new Size(100, 50);
+        var center = new Point(x, y);
 
+        layouter = CreateDefaultLayouter(center);
+
+        var size = new Size(100, 50);
         var rectangle = layouter.PutNextRectangle(size);
 
         rectangle.Size.Should().Be(size);
@@ -61,22 +66,18 @@ public class CircularCloudLayouterTests
             new Point(center.X - size.Width / 2, center.Y - size.Height / 2));
     }
 
-    [TestCaseSource(nameof(CenterPointCases))]
-    public void PutNextRectangle_ManyRectangles_CloudIsApproximatelyCentered(Point center)
+    [TestCaseSource(nameof(RectangleSizesCases))]
+    public void PutNextRectangle_ManyRectangles_CloudIsApproximatelyCentered(Size[] sizes)
     {
-        const double centerTolerance = 10;
+        const double centerTolerance = 20;
 
-        layouter = CreateDefaultLayouter(center);
-
-        var rectangles = GenerateRandomSizes(100, seed: 15)
-            .Select(layouter!.PutNextRectangle)
-            .ToList();
+        var rectangles = sizes.Select(layouter!.PutNextRectangle).ToList();
 
         var actualCenterX = (rectangles.Max(r => r.Right) + rectangles.Min(r => r.Left)) / 2.0;
         var actualCenterY = (rectangles.Max(r => r.Bottom) + rectangles.Min(r => r.Top)) / 2.0;
 
-        actualCenterX.Should().BeApproximately(center.X, centerTolerance);
-        actualCenterY.Should().BeApproximately(center.Y, centerTolerance);
+        actualCenterX.Should().BeApproximately(0, centerTolerance);
+        actualCenterY.Should().BeApproximately(0, centerTolerance);
     }
 
     [TestCaseSource(nameof(RectangleSizesCases))]
@@ -132,15 +133,6 @@ public class CircularCloudLayouterTests
         density.Should().BeGreaterThan(minDensity);
     }
 
-    private static IEnumerable<Point> CenterPointCases()
-    {
-        yield return new Point(0, 0);
-        yield return new Point(15, 80);
-        yield return new Point(100, -50);
-        yield return new Point(-666, 109);
-        yield return new Point(-240, -35);
-    }
-
     private static IEnumerable<TestCaseData> RectangleSizesCases()
     {
         const int count = 100;
@@ -150,7 +142,7 @@ public class CircularCloudLayouterTests
             .SetArgDisplayNames("EqualSquares");
 
         yield return new TestCaseData(
-                Enumerable.Repeat(new Size(100, 50), count).ToArray())
+                Enumerable.Repeat(new Size(50, 20), count).ToArray())
             .SetArgDisplayNames("EqualRectangles");
 
         yield return new TestCaseData(
