@@ -65,7 +65,7 @@ public class ArchimedeanSpiralTests
                 new Point(5, 6),
                 new Point(5, 13)
             }
-        );
+        ).SetName("StartRadius = 0, AngleStep = PI/2, RadiusCoefficient = 5, Center = (5, 6)");
         
         yield return new TestCaseData(
             new ArchimedeanSpiral(Math.PI / 2, 2, 1, new Point(5, 6)),
@@ -75,7 +75,7 @@ public class ArchimedeanSpiralTests
                 new Point(5, 10),
                 new Point(-2, 6)
             }
-        );
+        ).SetName("StartRadius = 1, AngleStep = PI/2, RadiusCoefficient = 2, Center = (5, 6)");
     }
     
     [TestCaseSource(nameof(PointCases))]
