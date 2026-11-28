@@ -21,20 +21,20 @@ public class CircularCloudLayouterTests
         int width, int height, int centerX, int centerY)
         => AssertFirstRectangleInCenter(width, height, centerX, centerY);
     
-    [TestCase(-10, 10)]
-    [TestCase(10, -10)]
-    [TestCase(10, 0)]
-    [TestCase(0, 10)]
-    [TestCase(0, 0)]
+    [TestCase(-10, 10, "rectangleSize.Width")]
+    [TestCase(10, -10, "rectangleSize.Height")]
+    [TestCase(10, 0, "rectangleSize.Height")]
+    [TestCase(0, 10, "rectangleSize.Width")]
     public void CircularCloudLayouter_ThrowsArgumentException_IfSideIsNotPositive(
-        int width, int height)
+        int width, int height, string expectedParamName)
     {
         var provider = A.Fake<ICenterPointProvider>();
         var layouter = new CircularCloudLayouter(provider);
 
         var action = () => layouter.PutNextRectangle(new Size(width, height));
 
-        action.Should().Throw<ArgumentOutOfRangeException>();
+        action.Should().Throw<ArgumentOutOfRangeException>()
+            .Which.ParamName.Should().Be(expectedParamName);
     }
 
     [Test]
