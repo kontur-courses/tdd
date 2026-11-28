@@ -1,6 +1,7 @@
-﻿using System.Drawing;
+﻿using FluentAssertions;
+using System.Drawing;
 using TagsCloudVisualization.Models;
-using FluentAssertions;
+
 namespace CircularCloudLayouterTests
 {
     [TestFixture]
