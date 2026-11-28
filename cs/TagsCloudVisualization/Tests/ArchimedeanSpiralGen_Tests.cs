@@ -28,7 +28,9 @@ public class ArchimedeanSpiralGen_Tests
         var points = spiral.GetPoints().Take(200).ToList();
 
         for (var i = 1; i < points.Count; i++)
+        {
             points[i].Should().NotBe(points[i - 1]);
+        }
     }
 
     [Test]

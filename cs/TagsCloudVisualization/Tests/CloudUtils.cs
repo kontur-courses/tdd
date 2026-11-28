@@ -11,7 +11,9 @@ public static class CloudUtils
             for (var j = i + 1; j < rectangles.Count; j++)
             {
                 if (rectangles[i].IntersectsWith(rectangles[j]))
+                {
                     return true;
+                }
             }
         }
 
@@ -21,7 +23,9 @@ public static class CloudUtils
     public static Rectangle GetBoundingBox(IReadOnlyCollection<Rectangle> rectangles)
     {
         if (rectangles.Count == 0)
+        {
             return Rectangle.Empty;
+        }
 
         var minX = rectangles.Min(r => r.Left);
         var minY = rectangles.Min(r => r.Top);
@@ -34,27 +38,27 @@ public static class CloudUtils
     public static double GetMaxDistanceFromCenter(IReadOnlyCollection<Rectangle> rectangles, Point center)
     {
         if (rectangles.Count == 0)
+        {
             return 0;
+        }
 
         return rectangles
             .SelectMany(GetCorners)
             .Max(corner => Distance(corner, center));
     }
 
-    public static double GetIdealCircleRadius(IReadOnlyCollection<Rectangle> rectangles)
-    {
-        var totalArea = rectangles.Sum(r => (double)r.Width * r.Height);
-        return Math.Sqrt(totalArea / Math.PI);
-    }
-
     public static double GetCirclePackingDensity(IReadOnlyCollection<Rectangle> rectangles, Point center)
     {
         if (rectangles.Count == 0)
+        {
             return 0;
+        }
 
         var enclosingRadius = GetMaxDistanceFromCenter(rectangles, center);
         if (enclosingRadius <= 0)
+        {
             return 0;
+        }
 
         var totalRectanglesArea = rectangles.Sum(r => (double)r.Width * r.Height);
         var enclosingCircleArea = Math.PI * enclosingRadius * enclosingRadius;
@@ -64,7 +68,9 @@ public static class CloudUtils
     public static double GetAspectRatio(Rectangle boundingBox)
     {
         if (boundingBox.Width <= 0 || boundingBox.Height <= 0)
+        {
             return 0;
+        }
 
         return (double)Math.Min(boundingBox.Width, boundingBox.Height)
                / Math.Max(boundingBox.Width, boundingBox.Height);
@@ -72,6 +78,13 @@ public static class CloudUtils
 
     public static double GetGapBetween(Rectangle a, Rectangle b)
     {
+        if (a.IntersectsWith(b))
+        {
+            var overlapX = Math.Min(a.Right, b.Right) - Math.Max(a.Left, b.Left);
+            var overlapY = Math.Min(a.Bottom, b.Bottom) - Math.Max(a.Top, b.Top);
+            return -Math.Min(overlapX, overlapY);
+        }
+
         var dx = Math.Max(0, Math.Max(a.Left - b.Right, b.Left - a.Right));
         var dy = Math.Max(0, Math.Max(a.Top - b.Bottom, b.Top - a.Bottom));
         return Math.Sqrt(dx * dx + dy * dy);
