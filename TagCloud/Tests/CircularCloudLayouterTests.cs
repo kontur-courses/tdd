@@ -13,15 +13,15 @@ public class CircularCloudLayouterTests
         var center = new Point(100, 50);
         var layouter = new CircularCloudLayouter(center);
         var rectangleSize = new Size(40, 20);
-        
+
         // Act
         var rectangle = layouter.PutNextRectangle(rectangleSize);
-        
+
         // Assert
         rectangle.Should().Be(new Rectangle(80, 40, 40, 20),
             "первый прямоугольник должен располагаться ровно в центре");
     }
-    
+
     [Test]
     public void PutNextRectangle_DoesNotIntersectAnyPlacedRectangle()
     {
@@ -40,15 +40,11 @@ public class CircularCloudLayouterTests
 
         // Assert
         for (var i = 0; i < rectangles.Length; i++)
-        {
-            for (var j = i + 1; j < rectangles.Length; j++)
-            {
-                rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse(
-                    "прямоугольники {0} и {1} не должны перекрываться", i, j);
-            }
-        }
+        for (var j = i + 1; j < rectangles.Length; j++)
+            rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse(
+                "прямоугольники {0} и {1} не должны перекрываться", i, j);
     }
-    
+
     [Test]
     public void PutNextRectangle_PreservesRequestedSizeForEachRectangle()
     {
@@ -78,18 +74,18 @@ public class CircularCloudLayouterTests
         var layouter = new CircularCloudLayouter(new Point(100, 100));
         var size = new Size(20, 20);
         const double maxGapInPixels = 2;
-        
+
         // Act
         var rectangle1 = layouter.PutNextRectangle(size);
         var rectangle2 = layouter.PutNextRectangle(size);
-        
+
         // Assert
         var distance = GetGapBetweenRectangles(rectangle1, rectangle2);
 
         distance.Should().BeLessThanOrEqualTo(maxGapInPixels,
             "зазор между первыми двумя прямоугольниками не должен превышать {0} пикселей", maxGapInPixels);
     }
-    
+
     [Test]
     public void PutNextRectangle_DistributesRectanglesAcrossAllFourQuadrants()
     {
@@ -127,7 +123,7 @@ public class CircularCloudLayouterTests
             point => point.X > center.X && point.Y > center.Y,
             "хотя бы один прямоугольник должен быть справа снизу");
     }
-    
+
     [Test]
     public void PutNextRectangle_FormsApproximatelyCircularCloud()
     {
@@ -169,9 +165,10 @@ public class CircularCloudLayouterTests
         }).ToArray();
 
         extents.Max().Should().BeLessThanOrEqualTo(extents.Min() * maxExtentRatio,
-            "вылеты облака от центра в восьми направлениях должны отличаться не более чем на {0:P0}%", (maxExtentRatio - 1) * 100);
+            "вылеты облака от центра в восьми направлениях должны отличаться не более чем на {0:P0}%",
+            (maxExtentRatio - 1) * 100);
     }
-    
+
     [Test]
     public void PutNextRectangle_PacksRectanglesDensely()
     {
