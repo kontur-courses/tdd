@@ -22,7 +22,7 @@ public class CircularCloudLayouter
         this.spiral = spiral;
     }
 
-    public Rectangle PlaceNextRectangle(Size rectangleSize)
+    public Rectangle PutNextRectangle(Size rectangleSize)
     {
         throw new NotImplementedException();
     }
