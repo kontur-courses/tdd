@@ -4,7 +4,7 @@ using FluentAssertions;
 
 namespace Tests;
 
-public class TDDTests
+public class CircularCloudLayouterTests
 {
     [Test]
     public void PutNextRectangle_CentersFirstRectangle()
@@ -85,6 +85,43 @@ public class TDDTests
 
         distance.Should().BeLessThanOrEqualTo(2,
             "зазор между первыми двумя прямоугольниками не должен превышать 2 пикселей");
+    }
+    
+    [Test]
+    public void PutNextRectangle_DistributesRectanglesAcrossAllFourQuadrants()
+    {
+        // Arrange
+        var center = new Point(100, 100);
+        var layouter = new CircularCloudLayouter(center);
+        var size = new Size(20, 20);
+
+        // Act
+        var rectangles = Enumerable.Range(0, 50)
+            .Select(_ => layouter.PutNextRectangle(size))
+            .ToArray();
+
+        // Assert
+        var rectangleCenters = rectangles
+            .Select(rectangle => new Point(
+                rectangle.Left + rectangle.Width / 2,
+                rectangle.Top + rectangle.Height / 2))
+            .ToArray();
+
+        rectangleCenters.Should().Contain(
+            point => point.X < center.X && point.Y < center.Y,
+            "хотя бы один прямоугольник должен быть слева сверху");
+
+        rectangleCenters.Should().Contain(
+            point => point.X > center.X && point.Y < center.Y,
+            "хотя бы один прямоугольник должен быть справа сверху");
+
+        rectangleCenters.Should().Contain(
+            point => point.X < center.X && point.Y > center.Y,
+            "хотя бы один прямоугольник должен быть слева снизу");
+
+        rectangleCenters.Should().Contain(
+            point => point.X > center.X && point.Y > center.Y,
+            "хотя бы один прямоугольник должен быть справа снизу");
     }
 
     private static double GetGapBetweenRectangles(Rectangle rect1, Rectangle rect2)
