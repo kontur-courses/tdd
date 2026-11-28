@@ -27,7 +27,7 @@ public class CircularCloudLayouterTests
     }
 
     [TestCaseSource(typeof(Sources), nameof(Sources.Source_ShouldPutRectanglesCorrectly))]
-    public void ShouldPutRectanglesCorrectly(IEnumerable<Size> sizes)
+    public void ShouldPutUncollidingRectangles(IEnumerable<Size> sizes)
     {
         List<Rectangle> rectangles = new();
 
@@ -40,7 +40,7 @@ public class CircularCloudLayouterTests
     }
 
     [Test]
-    public void ShouldThrow_WhenRectangleIsInvalid()
+    public void ShouldThrow_WhenRectangleSizeIsInvalid()
     {
         Size invalidSize = new(-1, -3);
 
