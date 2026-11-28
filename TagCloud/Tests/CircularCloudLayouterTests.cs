@@ -19,7 +19,7 @@ public class CircularCloudLayouterTests
         
         // Assert
         rectangle.Should().Be(new Rectangle(80, 40, 40, 20),
-            "Первый прямоугольник должен всставляться ровно в центр");
+            "первый прямоугольник должен располагаться ровно в центре");
     }
     
     [Test]
@@ -40,10 +40,12 @@ public class CircularCloudLayouterTests
 
         // Assert
         for (var i = 0; i < rectangles.Length; i++)
-        for (var j = i + 1; j < rectangles.Length; j++)
         {
-            rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse(
-                "прямоугольники {0} и {1} не должны перекрываться", i, j);
+            for (var j = i + 1; j < rectangles.Length; j++)
+            {
+                rectangles[i].IntersectsWith(rectangles[j]).Should().BeFalse(
+                    "прямоугольники {0} и {1} не должны перекрываться", i, j);
+            }
         }
     }
     
@@ -75,6 +77,7 @@ public class CircularCloudLayouterTests
         // Arrange
         var layouter = new CircularCloudLayouter(new Point(100, 100));
         var size = new Size(20, 20);
+        const double maxGapInPixels = 2;
         
         // Act
         var rectangle1 = layouter.PutNextRectangle(size);
@@ -83,8 +86,8 @@ public class CircularCloudLayouterTests
         // Assert
         var distance = GetGapBetweenRectangles(rectangle1, rectangle2);
 
-        distance.Should().BeLessThanOrEqualTo(2,
-            "зазор между первыми двумя прямоугольниками не должен превышать 2 пикселей");
+        distance.Should().BeLessThanOrEqualTo(maxGapInPixels,
+            "зазор между первыми двумя прямоугольниками не должен превышать {0} пикселей", maxGapInPixels);
     }
     
     [Test]
@@ -94,9 +97,10 @@ public class CircularCloudLayouterTests
         var center = new Point(100, 100);
         var layouter = new CircularCloudLayouter(center);
         var size = new Size(20, 20);
+        const int rectangleCount = 50;
 
         // Act
-        var rectangles = Enumerable.Range(0, 50)
+        var rectangles = Enumerable.Range(0, rectangleCount)
             .Select(_ => layouter.PutNextRectangle(size))
             .ToArray();
 
@@ -165,7 +169,44 @@ public class CircularCloudLayouterTests
         }).ToArray();
 
         extents.Max().Should().BeLessThanOrEqualTo(extents.Min() * maxExtentRatio,
-            "вылеты облака от центра в восьми направлениях должны отличаться не более чем на 30%");
+            "вылеты облака от центра в восьми направлениях должны отличаться не более чем на {0}%", (maxExtentRatio - 1) * 100);
+    }
+    
+    [Test]
+    public void PutNextRectangle_PacksRectanglesDensely()
+    {
+        // Arrange
+        var center = new Point(100, 100);
+        var layouter = new CircularCloudLayouter(center);
+        var size = new Size(20, 20);
+        const int rectangleCount = 100;
+        const double minimumDensity = 0.50;
+
+        // Act
+        var rectangles = Enumerable.Range(0, rectangleCount)
+            .Select(_ => layouter.PutNextRectangle(size))
+            .ToArray();
+
+        // Assert
+        var radiusSquared = rectangles.Max(rectangle =>
+        {
+            // У самого дальнего угла максимальное смещение по обеим осям.
+            var dx = Math.Max(Math.Abs((double)rectangle.Left - center.X),
+                Math.Abs((double)rectangle.Right - center.X));
+            var dy = Math.Max(Math.Abs((double)rectangle.Top - center.Y),
+                Math.Abs((double)rectangle.Bottom - center.Y));
+
+            return dx * dx + dy * dy;
+        });
+
+        var rectanglesArea = rectangles.Sum(rectangle =>
+            (double)rectangle.Width * rectangle.Height);
+
+        var enclosingCircleArea = Math.PI * radiusSquared;
+        var density = rectanglesArea / enclosingCircleArea;
+
+        density.Should().BeGreaterThanOrEqualTo(minimumDensity,
+            "прямоугольники должны занимать хотя бы {0} площади круга, в который помещается облако", minimumDensity);
     }
 
     private static double GetGapBetweenRectangles(Rectangle rect1, Rectangle rect2)
