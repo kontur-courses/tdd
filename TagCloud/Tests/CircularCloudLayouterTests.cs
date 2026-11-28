@@ -123,6 +123,50 @@ public class CircularCloudLayouterTests
             point => point.X > center.X && point.Y > center.Y,
             "хотя бы один прямоугольник должен быть справа снизу");
     }
+    
+    [Test]
+    public void PutNextRectangle_FormsApproximatelyCircularCloud()
+    {
+        // Arrange
+        var center = new Point(100, 100);
+        var layouter = new CircularCloudLayouter(center);
+        var size = new Size(20, 20);
+        const int rectangleCount = 100;
+        const double maxExtentRatio = 1.30;
+
+        var directions = new (int X, int Y)[]
+        {
+            (1, 0), (-1, 0), (0, 1), (0, -1),
+            (1, 1), (1, -1), (-1, 1), (-1, -1)
+        };
+
+        // Act
+        var rectangles = Enumerable.Range(0, rectangleCount)
+            .Select(_ => layouter.PutNextRectangle(size))
+            .ToArray();
+
+        // Assert
+        var corners = rectangles.SelectMany(rectangle => new[]
+        {
+            new Point(rectangle.Left, rectangle.Top),
+            new Point(rectangle.Right, rectangle.Top),
+            new Point(rectangle.Left, rectangle.Bottom),
+            new Point(rectangle.Right, rectangle.Bottom)
+        }).ToArray();
+
+        var extents = directions.Select(direction =>
+        {
+            var directionLength = Math.Sqrt(
+                direction.X * direction.X + direction.Y * direction.Y);
+
+            return corners.Max(corner =>
+                ((corner.X - center.X) * direction.X +
+                 (corner.Y - center.Y) * direction.Y) / directionLength);
+        }).ToArray();
+
+        extents.Max().Should().BeLessThanOrEqualTo(extents.Min() * maxExtentRatio,
+            "вылеты облака от центра в восьми направлениях должны отличаться не более чем на 30%");
+    }
 
     private static double GetGapBetweenRectangles(Rectangle rect1, Rectangle rect2)
     {
