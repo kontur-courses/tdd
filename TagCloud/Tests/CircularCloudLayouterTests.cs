@@ -169,7 +169,7 @@ public class CircularCloudLayouterTests
         }).ToArray();
 
         extents.Max().Should().BeLessThanOrEqualTo(extents.Min() * maxExtentRatio,
-            "вылеты облака от центра в восьми направлениях должны отличаться не более чем на {0}%", (maxExtentRatio - 1) * 100);
+            "вылеты облака от центра в восьми направлениях должны отличаться не более чем на {0:P0}%", (maxExtentRatio - 1) * 100);
     }
     
     [Test]
@@ -206,7 +206,7 @@ public class CircularCloudLayouterTests
         var density = rectanglesArea / enclosingCircleArea;
 
         density.Should().BeGreaterThanOrEqualTo(minimumDensity,
-            "прямоугольники должны занимать хотя бы {0} площади круга, в который помещается облако", minimumDensity);
+            "прямоугольники должны занимать хотя бы {0:P0} площади круга, в который помещается облако", minimumDensity);
     }
 
     private static double GetGapBetweenRectangles(Rectangle rect1, Rectangle rect2)
