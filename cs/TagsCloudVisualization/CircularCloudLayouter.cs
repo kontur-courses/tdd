@@ -17,6 +17,18 @@ public class CircularCloudLayouter(ICenterPointProvider provider)
     {
     }
 
+    /// <summary>
+    /// Размещает очередной прямоугольник заданного размера в облаке
+    /// </summary>
+    /// <param name="rectangleSize">
+    /// Размер прямоугольника
+    /// (<see cref="Size.Width"/> &gt; 0 и <see cref="Size.Height"/> &gt; 0).
+    /// Нулевые и отрицательные значения недопустимы
+    /// </param>
+    /// <returns>Размещённый прямоугольник</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// Если <see cref="Size.Width"/> или <see cref="Size.Height"/> меньше либо равны нулю
+    /// </exception>
     public Rectangle PutNextRectangle(Size rectangleSize)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(rectangleSize.Width);
